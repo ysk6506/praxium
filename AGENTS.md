@@ -14,10 +14,11 @@ covers:
 ## 시작하기 (3분)
 
 0. 제품 설계 한 장: [product-design.md](docs/design-docs/product-design.md) — 제품의 값, 원칙, 넘겨받은 숙제, 순서. 설계와 구현 전에 먼저 읽는다.
-1. 요구사항: [requirements.md](docs/product-specs/requirements.md) — 모든 요구사항은 `REQ-NNN`. 목표는 아직 초안이다(ADR-0001).
+1. 요구사항: [requirements.md](docs/product-specs/requirements.md) — 목표와 `REQ-NNN`.
 2. 구조: [ARCHITECTURE.md](ARCHITECTURE.md) — 단위와 의존 방향.
 3. 문서 색인: [docs/index.md](docs/index.md)
 4. 지금 하던 일: [진행 중 계획](docs/exec-plans/active/plan.md)
+5. 테라리움에서 넘겨받은 것: [from-terrarium.md](docs/references/from-terrarium.md) — 그때의 요구사항, 설계 결정, 풀리지 않은 쟁점. 출발 자료이지 결정이 아니다. 제품 설계를 시작하기 전에 6절부터 읽는다(ADR-0004).
 
 ```
 pnpm install

@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "b1aed07640203e90"
+hash: "1b56019a87496406"
 date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+note: "ADR-0004: 구조와 목표를 끝으로 적고 다음 일을 넘겨받은 쟁점에 답하는 설계로 고침"
 text_changed: true
-doc_hash: "8847d39c0259ee41"
+doc_hash: "db328748b4d9367c"

@@ -11,7 +11,7 @@ follows:
 
 **현실의 IT 인프라를 데이터로 받아 운영 세계를 짓고, 그 위에서 에이전트가 맡는 E2E 프로세스를 정하고 맡기고 재는 사내 운영 관리 플랫폼.**
 
-지금은 **구조만 세운 단계**예요. 제품 기능은 아직 없어요. 목표 문장도 초안이에요([요구사항](docs/product-specs/requirements.md)).
+지금은 **구조만 세운 단계**예요. 제품 기능은 아직 없어요. 목표와 요구사항은 [요구사항](docs/product-specs/requirements.md)에, 테라리움 때의 요구사항·설계 결정·쟁점은 [넘겨받은 것](docs/references/from-terrarium.md)에 있어요.
 
 ## 이름
 
