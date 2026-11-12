@@ -1,0 +1,15 @@
+# Changes to guardrails need approval from a maintainer (or a designated reviewer agent).
+# Replace @ysk6506 with the real user or team when the repo is hosted.
+# Keep in sync with harness/config/protected-paths.txt (checked by PROT003).
+/harness/** @ysk6506
+/package.json @ysk6506
+/**/package.json @ysk6506
+/pnpm-workspace.yaml @ysk6506
+/tsconfig.base.json @ysk6506
+/tsconfig.json @ysk6506
+/biome.json @ysk6506
+/vitest.config.ts @ysk6506
+/.github/** @ysk6506
+/docs/design-docs/adr/** @ysk6506
+/docs/product-specs/requirements.md @ysk6506
+/AGENTS.md @ysk6506

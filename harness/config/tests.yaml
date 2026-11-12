@@ -1,0 +1,23 @@
+# Test integrity contract. Enforced by harness/src/checks/testguard.ts and coverage.ts
+# (REQ-023, ADR-0002). Protected path: change only with an accepted ADR.
+test_globs: ["packages/**/*.test.ts", "apps/**/*.test.ts", "apps/**/*.test.tsx", "harness/src/**/*.test.ts", "tests/spec/**/*.test.ts"]
+support_globs: ["packages/**/test-support/**", "apps/**/test-support/**", "harness/src/test-support/**"]
+data_globs: ["**/__fixtures__/**", "tests/**/fixtures/**"]
+lock: harness/config/test-lock.json
+
+# Configuration that decides which tests run must stay exactly like this.
+vitest_config: vitest.config.ts
+test_script: vitest run --coverage
+vitest_include: ["packages/**/src/**/*.test.ts", "apps/**/src/**/*.test.{ts,tsx}", "harness/src/**/*.test.ts", "tests/spec/**/*.test.ts"]
+coverage_include: ["packages/*/src/**", "apps/server/src/**", "apps/web/src/logic/**", "harness/src/**"]
+coverage_exclude_allowed: ["**/*.test.ts", "**/*.test.tsx", "**/test-support/**"]
+forbidden_test_options: [exclude, passWithNoTests, allowOnly, retry, bail, testNamePattern, setupFiles, globalSetup, onConsoleLog, dangerouslyIgnoreUnhandledErrors]
+# setupFiles is forbidden except for exactly this list: a file that only gives the worker an event-loop turn
+# between tests so long spec files can report progress (ADR-0002).
+allowed_setup_files: [tests/setup/yield-between-tests.ts]
+
+# Coverage ratchet.
+coverage_summary: coverage/coverage-summary.json
+coverage_floor: harness/config/coverage-floor.json
+min_floor: 90
+max_ignore_comments: 3   # `/* v8 ignore */` budget in production code; each needs a reason

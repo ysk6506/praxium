@@ -1,0 +1,11 @@
+{
+  "name": "@praxium/harness",
+  "license": "Apache-2.0",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "typescript": "5.9.3",
+    "yaml": "2.8.4"
+  }
+}

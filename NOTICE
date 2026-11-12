@@ -1,0 +1,6 @@
+Praxium
+Copyright 2026 The Praxium authors
+
+This product includes software developed for Terrarium (https://github.com/ysk6506/terrarium),
+licensed under the Apache License, Version 2.0: the structure checks under harness/ and the
+kernel under packages/core/src/kernel.

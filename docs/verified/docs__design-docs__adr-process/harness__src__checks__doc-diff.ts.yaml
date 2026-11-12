@@ -1,0 +1,7 @@
+doc: "docs/design-docs/adr-process.md"
+target: "harness/src/checks/doc-diff.ts"
+hash: "6a82bd24ac384805"
+date: "2026-11-12"
+note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+text_changed: true
+doc_hash: "57f525cdc5d61411"

@@ -1,0 +1,137 @@
+# CI is the merge gate (ADR-0002). The `gate` job is the one required check.
+# A pull request whose changed files are all documents takes the light path: `changes` decides, the test job is skipped
+# and `docs` runs the structure checks instead. Anything else, and every push to main, takes the full path.
+# Tests run once, with coverage, and the structure checks read that coverage in the same job.
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  # Is every changed file a document? Documents are *.md under docs/ (not docs/generated/) and *.md in the repository
+  # root. Everything else is an input of some check. The diff is against the branch the pull request merges into; if it
+  # cannot be taken, or is empty, or this is not a pull request, the answer is false (full path).
+  changes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      docs_only: ${{ steps.scope.outputs.docs_only }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Are all changed files documents?
+        id: scope
+        env:
+          EVENT: ${{ github.event_name }}
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          docs_only=false
+          reason="not a pull request"
+          if [ "$EVENT" = "pull_request" ]; then
+            if files=$(git -c core.quotepath=off diff --name-only --no-renames "origin/$BASE_REF...HEAD") && [ -n "$files" ]; then
+              others=""
+              while IFS= read -r f; do
+                case "$f" in
+                  docs/generated/*) others="$others$f"$'\n' ;;
+                  docs/*.md) ;;
+                  */*) others="$others$f"$'\n' ;;
+                  *.md) ;;
+                  *) others="$others$f"$'\n' ;;
+                esac
+              done <<< "$files"
+              if [ -z "$others" ]; then
+                docs_only=true
+                reason="every changed file is a document"
+              else
+                reason="files that are not documents:"
+              fi
+            else
+              reason="the diff against the base could not be taken or is empty"
+            fi
+          fi
+          echo "docs_only=$docs_only" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Path: $([ "$docs_only" = true ] && echo light || echo full)"
+            echo "$reason"
+            [ -n "${others:-}" ] && printf '%s' "$others" | head -20 | sed 's/^/- /'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  lint-types:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm lint
+      - run: pnpm typecheck
+
+  # Tests once, with coverage; then every structure check, which reads that coverage.
+  test:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - run: pnpm test
+      - if: github.event_name == 'pull_request'
+        run: pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
+      - if: github.event_name != 'pull_request'
+        run: pnpm tsx harness/src/run-all.ts --with-coverage
+      - name: Quality grades of this change
+        if: always()
+        run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"
+
+  # The light path: structure checks without coverage.
+  docs:
+    needs: changes
+    if: needs.changes.outputs.docs_only == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: ./.github/actions/setup
+      - run: pnpm tsx harness/src/run-all.ts --base origin/${{ github.base_ref }}
+
+  gate:
+    needs: [changes, lint-types, test, docs]
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Every job on the path this change took must have passed
+        env:
+          DOCS_ONLY: ${{ needs.changes.outputs.docs_only }}
+          CHANGES: ${{ needs.changes.result }}
+          LINT: ${{ needs.lint-types.result }}
+          TEST: ${{ needs.test.result }}
+          DOCS: ${{ needs.docs.result }}
+        run: |
+          fail=0
+          check() { if [ "$2" != "success" ]; then echo "::error::$1 is $2"; fail=1; else echo "$1: ok"; fi; }
+          check changes "$CHANGES"
+          if [ "$DOCS_ONLY" = "true" ]; then
+            echo "light path (documents only)"
+            check docs "$DOCS"
+          else
+            echo "full path"
+            check lint-types "$LINT"
+            check test "$TEST"
+          fi
+          exit $fail

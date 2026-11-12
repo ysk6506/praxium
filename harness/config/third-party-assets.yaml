@@ -1,0 +1,20 @@
+# Third-party material that is not an npm package and ships in the repository. harness/src/checks/licenses.ts
+# reads this to write THIRD_PARTY_NOTICES.md. Add an entry when material from outside is copied in (ADR-0002).
+# Fields: id, name, version, license (SPDX), source (URL), where (what the notice says it is used for),
+# paths (files in this repository), license_file (a copy of the license text in this repository), copyright.
+assets:
+  - id: terrarium-harness
+    name: Terrarium harness and kernel
+    version: ysk6506/terrarium commit 3a8a83d, 2026-11-12
+    license: Apache-2.0
+    source: https://github.com/ysk6506/terrarium
+    where: 구조 검사(harness/)와 기본 부품(packages/core/src/kernel)의 출발점
+    paths:
+      - harness/src/run-all.ts
+      - packages/core/src/kernel/index.ts
+    license_file: LICENSE
+    copyright: Copyright 2026 The Terrarium authors
+
+# Data drawn by hand with outside material as a guide. Nothing is copied, so no license applies; the notices
+# file says so in a section of its own. Say only what is known; do not add who gave it or which service it was.
+references: []

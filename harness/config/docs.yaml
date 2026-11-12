@@ -1,0 +1,37 @@
+# Documentation quality contract. Enforced by harness/src/checks/docs.ts (REQ-020, ADR-0002).
+# Protected path: change only with an accepted ADR.
+docs_root: docs
+index: docs/index.md
+root_docs: [README.md, AGENTS.md, ARCHITECTURE.md]
+adr_dir: docs/design-docs/adr
+generated_dir: docs/generated
+archive_dir: docs/archive
+
+kinds: [guide, reference, spec, plan, decision]
+statuses: [active, superseded, archived]
+# Verification state (dates, hashes, notes) is not front matter: it lives in docs/verified/ (ADR-0002).
+required_keys: [title, kind, status]
+
+# An active doc whose newest verification record is older than this many days fails (null = never ages).
+max_age_days: {guide: 30, reference: 90, spec: 180, plan: 14, decision: null}
+
+# Line limits keep docs readable and force splitting instead of sprawl.
+max_lines: {AGENTS.md: 120, default: 400}
+
+# `inline code` that looks like a path and starts with one of these is checked for existence.
+path_roots: [packages/, apps/, docs/, harness/, tests/, .github/]
+root_files: [package.json, README.md, AGENTS.md, ARCHITECTURE.md, vitest.config.ts, biome.json, tsconfig.json, pnpm-workspace.yaml]
+
+# The product goal sentence (the bold line under goal_heading in goal_source) leads these docs (DOC093, ADR-0002).
+goal_source: docs/product-specs/requirements.md
+goal_docs: [README.md, AGENTS.md]
+# Made from ADR front matter by `docs.ts decisions` (ADR-0002); a stale copy is a notice, not a failure.
+decisions_file: docs/generated/decisions.md
+
+# The list of documents in docs/index.md is made from front matter titles between two marker comments (ADR-0002).
+# Each group is a folder and the heading its documents get; documents elsewhere go under a last group.
+index_groups:
+  - {dir: docs/product-specs, title: "제품 명세"}
+  - {dir: docs/design-docs, title: "설계"}
+  - {dir: docs/guides, title: "안내"}
+  - {dir: docs/exec-plans, title: "계획"}

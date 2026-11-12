@@ -1,0 +1,33 @@
+# No-silent-ignores contract. Enforced by harness/src/checks/ignores.ts (REQ-022, ADR-0002).
+# Protected path: change only with an accepted ADR.
+#
+# Every lint/type suppression comment, skipped test and CI `continue-on-error` needs a reason and a basis
+# (an open TD-NNNN, or a sealed ADR-NNNN) on its own line or the line above, and the count per kind may only fall.
+scan_dirs: [packages, apps, harness/src, tests, scripts]
+workflow_dirs: [.github]
+adr_dir: docs/design-docs/adr
+baseline: harness/config/ignores-baseline.json
+
+# Suppressing these Biome rules needs a reason only (Biome already demands one). They are heuristics about a
+# list or a stylesheet whose answer is local to the site; ADR-0002 explains the line between these and the rest.
+# A prefix ends in `/`. Any other rule (noExplicitAny, a11y, dependency and type rules...) needs TD-NNNN or
+# ADR-NNNN as well.
+reason_only_rules:
+  - lint/suspicious/noArrayIndexKey
+  - lint/complexity/noImportantStyles
+  - lint/style/noDescendingSpecificity
+
+# A basis held for a whole rule, for ignores that cannot carry a number on their own line yet. An ignore of such a
+# rule passes while that debt item is open; when the item is closed, every remaining ignore of the rule fails
+# (IGN003). A TD-NNNN written on the line itself takes precedence. A prefix ends in `/`.
+# The two numbers are Terrarium's (the harness tests read this file). No such item is open in this ledger, so an
+# ignore of these rules fails here until an item is opened and the number below is changed (TD-0003).
+basis_by_rule:
+  lint/a11y/: TD-0013
+  lint/correctness/useExhaustiveDependencies: TD-0014
+
+# A type test asserts a compile error on purpose, so `@ts-expect-error` in a test file needs a reason only.
+reason_only_ts_expect_error_in_tests: true
+
+# A reason is at least this many characters once spaces, punctuation and the numbers are taken out.
+min_reason_chars: 8

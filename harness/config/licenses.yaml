@@ -1,0 +1,40 @@
+# License contract for what ships with Praxium. Enforced by harness/src/checks/licenses.ts (ADR-0002).
+# Protected path: change only with an accepted ADR that lists it in touches_protected.
+#
+# This is a list of license identifiers the project accepts, not legal advice. A distributed component is
+# one the web bundle or the server runs on, or an asset in the manifest below.
+notices_file: THIRD_PARTY_NOTICES.md
+assets_manifest: harness/config/third-party-assets.yaml
+
+# The npm packages these workspaces list under `dependencies` (and what those need, all the way down).
+distributed_workspaces: [packages/core]
+
+# Root devDependencies the shipped program cannot start without (none yet).
+extra_runtime_roots: []
+
+# Package name -> license file inside the package, for packages that keep it outside the top folder.
+license_files: {}
+
+# SPDX identifiers accepted as they are. CC-BY-4.0 is for data; its attribution is kept in the notices.
+# OFL-1.1 is for fonts. For an "A OR B" expression the first alternative on this list (in the order written) applies.
+allowed:
+  - MIT
+  - Apache-2.0
+  - BSD-2-Clause
+  - BSD-3-Clause
+  - ISC
+  - 0BSD
+  - CC0-1.0
+  - Unlicense
+  - BlueOak-1.0.0
+  - OFL-1.1
+  - Python-2.0
+  - CC-BY-4.0
+
+# Accepted only while the package is unmodified (a pnpm patch on it makes LIC001 fail). Shown as its own group.
+allowed_unmodified:
+  - MPL-2.0
+
+# Each exception names the package, the license it is taken to be under, and why. Every run prints them.
+# Entry fields: package, version (optional), license (SPDX id), reason.
+exceptions: []

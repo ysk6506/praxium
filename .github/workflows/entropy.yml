@@ -1,0 +1,17 @@
+name: entropy
+# Weekly: docs expire by age and debt comes due even when nobody pushes. A red run here is the alarm.
+on:
+  schedule:
+    - cron: "0 3 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  gc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - run: pnpm tsx harness/src/run-all.ts

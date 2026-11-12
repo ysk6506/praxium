@@ -1,0 +1,9 @@
+{
+  "biome-ignore": 0,
+  "eslint-disable": 0,
+  "ts-ignore": 0,
+  "ts-expect-error": 0,
+  "ts-nocheck": 0,
+  "test-skip": 0,
+  "continue-on-error": 0
+}

@@ -1,0 +1,33 @@
+# Technical debt register (REQ-022, ADR-0002). One entry per known compromise.
+# Rules, enforced by `pnpm check`:
+#   - every TODO/FIXME/HACK/XXX comment must read TODO(TD-NNNN) and point at an open item here
+#   - open items past `due` fail the build; so does exceeding the open-debt budget (harness/config/debt.yaml)
+#   - closing an item (done/wontfix) needs a `resolution`, and no marker for it may remain in code
+#   - an item may name the architecture units it touches with `units: [core.kernel]`; the quality table
+#     (docs/generated/quality.md) also places an item where code comments cite it
+#   - a suppression comment, skipped test or `continue-on-error` may cite an open item as its basis (IGN*)
+# Statuses: open | done | wontfix. Severity: low | medium | high.
+items:
+  - id: TD-0001
+    title: "하네스와 바탕 부품(kernel)이 테라리움의 복사본이다. 두 저장소에서 따로 고쳐지면 같은 규칙이 다르게 지켜진다"
+    severity: medium
+    cost: "두 저장소가 함께 쓰는 패키지로 빼거나, 테라리움의 하네스 변경을 옮겨 오는 절차를 정리 작업에 넣는다"
+    created: "2026-11-12"
+    due: "2027-02-01"
+    status: open
+    units: [harness]
+  - id: TD-0002
+    title: "UX 측정 하네스와 화면 도우미 검사를 가져오지 않았다. 화면이 없어서다. 첫 화면이 생기는 변경에서 가져와야 화면이 측정 없이 쌓이지 않는다"
+    severity: low
+    cost: "테라리움의 UX 측정(여정, 일곱 면 점수, CI 조각)을 가져와 첫 화면의 여정 하나를 건다"
+    created: "2026-11-12"
+    due: "2027-02-01"
+    status: open
+  - id: TD-0003
+    title: "하네스 코드에 테라리움 제품에 묶인 조각이 남아 있다: 문서의 숫자 검사가 아는 이름(entity_kinds, tools 등), 서버 환경 변수와 API 길을 찾는 자리(apps/server, contract/routes). 지금은 쓰이지 않아 통과한다"
+    severity: low
+    cost: "프락시움의 서버와 계약이 생길 때 그 자리에 맞추거나 설정으로 뺀다"
+    created: "2026-11-12"
+    due: "2027-02-01"
+    status: open
+    units: [harness]
