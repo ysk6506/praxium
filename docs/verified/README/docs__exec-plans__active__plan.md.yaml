@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "8847d39c0259ee41"
+hash: "db328748b4d9367c"
 date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+note: "ADR-0004: 초안 문장을 지우고 넘겨받은 것을 가리킴"
 text_changed: true
-doc_hash: "d564e32f98032ba7"
+doc_hash: "75f3201a453517d2"

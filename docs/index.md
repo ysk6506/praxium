@@ -13,8 +13,9 @@ covers:
 
 - [AGENTS.md](../AGENTS.md) — 에이전트 진입점, 절대 규칙
 - [ARCHITECTURE.md](../ARCHITECTURE.md) — 단위와 의존 방향
-- [요구사항](product-specs/requirements.md) — 목표(초안)와 `REQ-NNN`의 단일 출처
+- [요구사항](product-specs/requirements.md) — 목표와 `REQ-NNN`의 단일 출처
 - [제품 설계 한 장](design-docs/product-design.md) — 값, 원칙, 넘겨받은 숙제, 순서
+- [테라리움에서 넘겨받은 것](references/from-terrarium.md) — 그때의 요구사항, 설계 결정, 풀리지 않은 쟁점 (출발 자료)
 - [품질 등급표](generated/quality.md) — 단위별 등급 A~D (하네스가 만든 생성물)
 
 ## 문서 목록
@@ -36,6 +37,10 @@ covers:
 ### 계획
 
 - [지금의 순서 — 구조를 세우고, 목표를 굳히고, 설계를 가져온다](exec-plans/active/plan.md)
+
+### 그 밖의 문서
+
+- [테라리움에서 넘겨받은 것 — 요구사항, 설계 결정, 풀리지 않은 쟁점](references/from-terrarium.md)
 
 <!-- docs-list:end -->
 

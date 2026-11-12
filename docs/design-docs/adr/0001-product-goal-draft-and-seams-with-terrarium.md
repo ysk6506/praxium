@@ -15,6 +15,9 @@ touches_protected:
   - AGENTS.md
 amends_tests: []
 decision_hash: f63d1a5a9091774d
+amended_by:
+  - adr: "0004"
+    what: 목표는 초안이 아니다
 ---
 # ADR-0001 프락시움은 테라리움에서 나온 운영 쪽 제품이다 — 목표는 초안으로 두고, 테라리움과는 파일 둘로만 잇는다
 

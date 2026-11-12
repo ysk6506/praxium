@@ -6,6 +6,7 @@
 
 | 결정 | 상태 | 무엇이 고쳤나 |
 |---|---|---|
-| [ADR-0001 프락시움은 테라리움에서 나온 운영 쪽 제품이다 — 목표는 초안으로 두고, 테라리움과는 파일 둘로만 잇는다](../design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md) | 유효 |  |
+| [ADR-0001 프락시움은 테라리움에서 나온 운영 쪽 제품이다 — 목표는 초안으로 두고, 테라리움과는 파일 둘로만 잇는다](../design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md) | 유효 | 일부 고침: [0004](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) (목표는 초안이 아니다) |
 | [ADR-0002 구조와 하네스는 테라리움의 것을 가져온다 — 기계가 강제하는 규칙, 짧은 지도, 스스로 낡았음을 아는 문서](../design-docs/adr/0002-harness-and-working-rules-from-terrarium.md) | 유효 |  |
 | [ADR-0003 저장소에는 공개된 사실만 둔다 — 내부에서 들은 사실, 실제 데이터, 비밀 값은 넣지 않는다](../design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md) | 유효 |  |
+| [ADR-0004 제품 목표를 굳히고, 저장소는 공개로 두며, 테라리움에서 넘겨받은 것을 한 장으로 둔다](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) | 유효 |  |

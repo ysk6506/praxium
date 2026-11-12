@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "fba52068b6ae6d59"
+hash: "978910a74c8efa97"
 date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+note: "ADR-0004: 초안 표시를 지우고 순서 2를 끝으로, 3을 넘겨받은 쟁점에 답하는 설계로 고침"
 text_changed: true
-doc_hash: "b1aed07640203e90"
+doc_hash: "1b56019a87496406"
