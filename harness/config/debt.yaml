@@ -1,0 +1,17 @@
+# Technical debt contract. Enforced by harness/src/checks/debt.ts (REQ-022, ADR-0002).
+# Protected path: change only with an accepted ADR.
+register: docs/exec-plans/tech-debt.yaml
+baseline: harness/config/debt-baseline.json
+marker_dirs: [packages, apps, harness/src, tests]   # TODO/FIXME/HACK/XXX must cite a debt id
+quality_dirs: [packages, apps, harness/src]         # size/complexity limits (test files exempt)
+markers: [TODO, FIXME, HACK, XXX]
+
+# Open-debt budget: going over means "pay down before adding more".
+max_open: 12
+max_open_high: 2
+
+limits:
+  max_file_lines: 500
+  max_function_lines: 80
+  max_complexity: 12
+  max_params: 6

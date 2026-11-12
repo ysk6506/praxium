@@ -1,0 +1,32 @@
+# Architecture contract. Enforced by harness/src/checks/architecture.ts (REQ-021, ADR-0002).
+# Protected path: change only with an accepted ADR that lists it in touches_protected.
+#
+# A *unit* is a folder. A file belongs to the first unit (in this order) whose path contains it.
+# A unit may import only the units in may_import ("core.*" = every unit whose name starts "core.").
+# Other units are reached only through their index.ts (or the @praxium/core/<path> alias).
+#
+# Add a unit here in the same change that creates its folder. The layers a new unit should sit in are
+# described in ARCHITECTURE.md: kernel -> model -> (pipeline | work) -> contract -> server -> web.
+units:
+  core.kernel:              {path: packages/core/src/kernel, may_import: []}
+  harness:                  {path: harness/src, may_import: [], public_index: false}
+
+# Only these units may import Node built-ins (core must run anywhere, without Node).
+node_builtins: [harness]
+
+# Third-party package -> units allowed to import it. Unknown packages are errors (ARCH020):
+# adding a dependency is a decision and needs an ADR plus an entry here.
+third_party:
+  typescript: [harness]
+  yaml: [harness]
+
+# Packages only test code (*.test.ts, test-support/) may import.
+test_only: [vitest, fast-check]
+
+# Code that may read the wall clock or global randomness (REQ-001, ADR-0002).
+nondeterminism_allowed: [packages/core/src/kernel/entropy.ts, harness/]
+
+source_roots: [packages, apps, harness/src, tests/spec]
+alias_prefix: "@praxium/core/"
+alias_target: packages/core/src
+ignored_files: []

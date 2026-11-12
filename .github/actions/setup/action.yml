@@ -1,0 +1,12 @@
+name: setup
+description: Check out is done by the caller; install Node 22 and the pnpm workspace (store cached).
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        cache: pnpm
+    - run: pnpm install --frozen-lockfile
+      shell: bash

@@ -1,0 +1,7 @@
+doc: "ARCHITECTURE.md"
+target: "packages/core/src/kernel/index.ts"
+hash: "a0e635f3462c49c3"
+date: "2026-11-12"
+note: "kernel의 내보내는 이름 차례만 바뀜(포매터). 문서의 단위 표와 맞다"
+text_changed: false
+doc_hash: "a7ab6489cf202cef"

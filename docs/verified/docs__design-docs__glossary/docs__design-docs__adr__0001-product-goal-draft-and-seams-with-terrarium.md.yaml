@@ -1,0 +1,7 @@
+doc: "docs/design-docs/glossary.md"
+target: "docs/design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md"
+hash: "f63d1a5a9091774d"
+date: "2026-11-12"
+note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+text_changed: true
+doc_hash: "f8993df00deaba54"

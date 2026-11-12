@@ -1,0 +1,15 @@
+# Protected paths (REQ-021, REQ-023, ADR-0005). Changing any of these can weaken a guardrail, so the
+# change needs a sealed ADR, added in the same change, that lists the path under touches_protected.
+# CI enforces this (harness/src/checks/protected.ts --base); .github/CODEOWNERS adds human review.
+harness/**
+package.json
+**/package.json
+pnpm-workspace.yaml
+tsconfig.base.json
+tsconfig.json
+biome.json
+vitest.config.ts
+.github/**
+docs/design-docs/adr/**
+docs/product-specs/requirements.md
+AGENTS.md
