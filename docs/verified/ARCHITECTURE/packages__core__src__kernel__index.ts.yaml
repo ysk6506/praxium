@@ -2,6 +2,6 @@ doc: "ARCHITECTURE.md"
 target: "packages/core/src/kernel/index.ts"
 hash: "a0e635f3462c49c3"
 date: "2026-11-12"
-note: "kernel의 내보내는 이름 차례만 바뀜(포매터). 문서의 단위 표와 맞다"
-text_changed: false
-doc_hash: "a7ab6489cf202cef"
+note: "kernel이 하는 일에 바깥을 읽는 입구와 숫자 도우미가 빠져 있었고, 시계·난수를 직접 읽는 곳에 하네스 예외가 빠져 있었고, 한도에 매개변수 6개가 빠져 있었다. 구조 계약, 부채 계약, kernel의 index.ts에 대어 보고 채웠다"
+text_changed: true
+doc_hash: "9d1a75812c8ae186"

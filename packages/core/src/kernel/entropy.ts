@@ -1,6 +1,6 @@
 /**
  * The only place in core that may read the outside world (wall clock, randomness).
- * Everything else receives a Clock, Rng or IdGenerator as an argument (ADR-0006, rule ARCH052).
+ * Everything else receives a Clock, Rng or IdGenerator as an argument (REQ-001, ADR-0002, rule ARCH052).
  */
 
 /** Milliseconds since the Unix epoch. For timestamps on records, never for simulation state. */
