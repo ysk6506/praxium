@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "db328748b4d9367c"
+hash: "e8ed6ab8bc5e087d"
 date: "2026-11-12"
-note: "ADR-0004: 초안 문장을 지우고 넘겨받은 것을 가리킴"
-text_changed: true
+note: "따라가는 계획의 바뀐 곳은 정리 작업 예약 한 줄. README와 어긋나지 않는다"
+text_changed: false
 doc_hash: "75f3201a453517d2"
