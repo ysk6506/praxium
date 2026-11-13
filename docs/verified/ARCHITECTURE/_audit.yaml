@@ -1,0 +1,4 @@
+doc: "ARCHITECTURE.md"
+date: "2026-11-12"
+note: "구조 계약(architecture.yaml), 부채 한도(debt.yaml), kernel의 index.ts와 파일들, tsconfig·vitest 별칭, ADR-0001에 줄마다 대어 봄. 틀린 곳은 없고 빠진 곳 셋(바깥 입구·숫자 도우미, 하네스 예외, 매개변수 한도)을 채움"
+doc_hash: "9d1a75812c8ae186"

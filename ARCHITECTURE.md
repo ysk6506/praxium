@@ -15,7 +15,7 @@ covers:
 
 | 단위 | 언어 | 자리 | 하는 일 | import해도 되는 것 |
 |---|---|---|---|---|
-| `core.kernel` | TypeScript | `packages/core/src/kernel` | ID, 오류, 시계·난수·ID 발급의 포트, 안정된 해시, 한국어 조사와 시간 표기 | 없음 |
+| `core.kernel` | TypeScript | `packages/core/src/kernel` | ID, 오류, 시계·난수·ID 발급의 포트, 바깥(벽시계, 난수)을 읽는 하나뿐인 입구, 안정된 해시, 숫자 도우미(자르기, 반올림, 다가가기), 한국어 조사와 시간 표기 | 없음 |
 | `harness` | TypeScript | `harness/src` | 구조 검사. Go 코드도 읽는다(ADR-0019) | 없음(제품 코드를 import하지 않는다) |
 | `core.kernel` | Go | `backend/internal/kernel` | 타입 있는 ID, 안정된 코드를 가진 오류, 시계·난수·ID 발급의 포트와 구현, 정규 인코딩 위의 SHA-256. 시계와 난수를 읽는 곳은 `entropy.go` 한 파일뿐이다 | 없음 |
 | `core.contract` | Go | `backend/internal/contract` | 밖으로 내는 모양(HTTP 길과 스키마, MCP 툴, 파일 형식). 지금은 비어 있고 등록만 되어 있다 | `core.kernel` |
@@ -31,9 +31,9 @@ TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 �
 
 - 다른 단위는 그 단위의 `index.ts`로만 닿는다. 코어의 단위는 `@praxium/core/<단위>` 별칭으로 부른다.
 - 코어는 Node를 모른다. 파일, 네트워크, 프로세스는 코어 밖(서버의 어댑터)에 두고, 코어는 포트(인터페이스)만 안다.
-- 시계와 난수는 `kernel`의 `Clock`과 `Rng`를 주입받는다. 직접 읽을 수 있는 곳은 `kernel`의 한 파일뿐이다(REQ-001).
+- 시계와 난수는 `kernel`의 `Clock`과 `Rng`를 주입받는다. 제품 코드에서 직접 읽을 수 있는 곳은 `kernel`의 한 파일(`packages/core/src/kernel/entropy.ts`)뿐이다(REQ-001, `ARCH052`). 하네스는 제품 코드가 아니라서 이 규칙에서 빠진다.
 - 외부 패키지는 구조 계약의 `third_party`에 적힌 단위에서만 쓴다. 새 패키지는 결정 기록이 있어야 들어온다.
-- 파일 500줄, 함수 80줄, 복잡도 12가 한도다(`DEBT*`).
+- 파일 500줄, 함수 80줄, 복잡도 12, 매개변수 6개가 한도다(`DEBT*`).
 
 ## Go 백엔드의 규칙 (ADR-0019)
 

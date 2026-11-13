@@ -2,6 +2,6 @@ doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
 hash: "a8442eff1c95d71e"
 date: "2026-11-13"
-note: "Go 단위 표와 go: 절, backend/go.mod, 규칙 코드와 모듈 표 형식을 구조 계약과 하네스 소스와 대조"
+note: "main을 합친 뒤 단위 표와 구조 계약(go 절 포함)을 다시 맞춰 읽었다"
 text_changed: true
-doc_hash: "acdda11cd5c611a4"
+doc_hash: "bd34f8a215c4e2f7"
