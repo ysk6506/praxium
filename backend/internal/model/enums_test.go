@@ -9,8 +9,9 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
+// [REQ-101]
 func TestClosedListsHaveTheDocumentedSizes(t *testing.T) {
-	// [REQ-101, REQ-103, REQ-105, REQ-106] The closed lists are closed: only a decision record changes their size.
+	// The closed lists are closed: only a decision record changes their size.
 	sizes := map[string][2]int{
 		"namespaces": {len(model.Namespaces()), 4},
 		"layers":     {len(model.Layers()), 10},
@@ -36,18 +37,18 @@ func TestValid(t *testing.T) {
 		ok   bool
 		want bool
 	}{
-		{"[REQ-107] namespace sys", model.Namespace("sys").Valid(), true},
-		{"[REQ-107] namespace team", model.Namespace("team").Valid(), false},
-		{"[REQ-105] layer cross_cutting", model.Layer("cross_cutting").Valid(), true},
-		{"[REQ-105] layer wireless", model.Layer("wireless").Valid(), false},
+		{"namespace sys", model.Namespace("sys").Valid(), true},
+		{"namespace team", model.Namespace("team").Valid(), false},
+		{"layer cross_cutting", model.Layer("cross_cutting").Valid(), true},
+		{"layer wireless", model.Layer("wireless").Valid(), false},
 		{"[REQ-101] channel management", model.Channel("management").Valid(), true},
 		{"[REQ-101] channel light", model.Channel("light").Valid(), false},
 		{"[REQ-101] meaning record_only", model.Meaning("record_only").Valid(), true},
 		{"[REQ-101] meaning depends_on", model.Meaning("depends_on").Valid(), false},
-		{"[REQ-103] grade assumed", model.Grade("assumed").Valid(), true},
-		{"[REQ-103] grade likely", model.Grade("likely").Valid(), false},
-		{"[REQ-106] basis derived", model.Basis("derived").Valid(), true},
-		{"[REQ-106] basis guessed", model.Basis("guessed").Valid(), false},
+		{"grade assumed", model.Grade("assumed").Valid(), true},
+		{"grade likely", model.Grade("likely").Valid(), false},
+		{"basis derived", model.Basis("derived").Valid(), true},
+		{"basis guessed", model.Basis("guessed").Valid(), false},
 		{"[REQ-100] base kind quantity", model.BaseKind("quantity").Valid(), true},
 		{"[REQ-100] base kind text", model.BaseKind("text").Valid(), false},
 	}
@@ -61,17 +62,17 @@ func TestValid(t *testing.T) {
 }
 
 func TestLowestGrade(t *testing.T) {
-	// [REQ-103] The grade of an answer is the lowest grade of the inputs it used.
+	// The grade of an answer is the lowest grade of the inputs it used.
 	tests := []struct {
 		name string
 		in   []model.Grade
 		want model.Grade
 	}{
-		{"[REQ-103] facts only", []model.Grade{model.GradeFact, model.GradeFact}, model.GradeFact},
-		{"[REQ-103] an assumption among facts", []model.Grade{model.GradeFact, model.GradeAssumed, model.GradeFact}, model.GradeAssumed},
-		{"[REQ-103] an unknown among assumptions", []model.Grade{model.GradeAssumed, model.GradeUnknown}, model.GradeUnknown},
-		{"[REQ-103] no inputs", nil, model.GradeUnknown},
-		{"[REQ-103] only grades outside the list", []model.Grade{"likely"}, model.GradeUnknown},
+		{"facts only", []model.Grade{model.GradeFact, model.GradeFact}, model.GradeFact},
+		{"an assumption among facts", []model.Grade{model.GradeFact, model.GradeAssumed, model.GradeFact}, model.GradeAssumed},
+		{"an unknown among assumptions", []model.Grade{model.GradeAssumed, model.GradeUnknown}, model.GradeUnknown},
+		{"no inputs", nil, model.GradeUnknown},
+		{"only grades outside the list", []model.Grade{"likely"}, model.GradeUnknown},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -113,8 +114,9 @@ func TestNameForms(t *testing.T) {
 	}
 }
 
+// [REQ-101]
 func TestMeaningSpecsAreSound(t *testing.T) {
-	// [REQ-101] Each of the eleven meanings says which channel of the start depends on which channel of the end.
+	// Each of the eleven meanings says which channel of the start depends on which channel of the end.
 	specs := model.MeaningSpecs()
 	if len(specs) != 11 {
 		t.Fatalf("there are %d meaning specs, want 11", len(specs))
@@ -155,8 +157,9 @@ func TestMeaningSpecsAreSound(t *testing.T) {
 	}
 }
 
+// [REQ-101]
 func TestMeaningSpecsAreCopies(t *testing.T) {
-	// [REQ-101] The closed list cannot be changed through what MeaningSpecs returns.
+	// The closed list cannot be changed through what MeaningSpecs returns.
 	specs := model.MeaningSpecs()
 	specs[1].Params[0].Values[0] = "changed"
 	specs[1].Params = nil
@@ -166,8 +169,9 @@ func TestMeaningSpecsAreCopies(t *testing.T) {
 	}
 }
 
+// [REQ-101]
 func TestNotSpreadingMeanings(t *testing.T) {
-	// [REQ-101] Only the meanings that carry state have channels: contained_in, owned_by and record_only do not.
+	// Only the meanings that carry state have channels: contained_in, owned_by and record_only do not.
 	var quiet []model.Meaning
 	for _, spec := range model.MeaningSpecs() {
 		if !spec.Spreads() {
@@ -181,7 +185,7 @@ func TestNotSpreadingMeanings(t *testing.T) {
 }
 
 func TestCodeCatalogueIsStable(t *testing.T) {
-	// [REQ-100] The codes of this unit are a contract: a code is never renamed or removed, and a new one is added here on purpose.
+	// The codes of this unit are a contract: a code is never renamed or removed, and a new one is added here on purpose.
 	want := []kernel.Code{
 		"model_action_ref", "model_action_risk", "model_binding_constraint", "model_binding_duplicate", "model_binding_endpoint",
 		"model_data_invalid", "model_duplicate_id", "model_enum_values", "model_identity_context", "model_identity_key", "model_identity_key_changed", "model_identity_key_volatile", "model_identity_set",
@@ -213,7 +217,7 @@ func TestCodeCatalogueIsStable(t *testing.T) {
 }
 
 func TestDefinitionsCloneSharesNothing(t *testing.T) {
-	// [REQ-233] A clone can be changed without changing the original.
+	// A clone can be changed without changing the original.
 	d := baseline()
 	c := d.Clone()
 	objectType(&c, "ot.server").Traits[0] = trID("tr.nothing")

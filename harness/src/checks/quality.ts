@@ -20,12 +20,20 @@ import {
   type Violation,
   violation,
 } from "../common";
-import { loadArchConfig } from "./arch-model";
 import { coverageByUnit } from "./coverage";
 import { loadDebtConfig, loadRegister } from "./debt";
+import { loadGoConfig } from "./go-config";
 import { collect, counts, loadIgnoresConfig } from "./ignores";
 import { KINDS } from "./ignores-scan";
-import { gatherFacts, NO_UNIT, RECORD_FILE, readRecord, type UnitFacts } from "./quality-facts";
+import {
+  gatherFacts,
+  NO_UNIT,
+  RECORD_FILE,
+  readRecord,
+  tableUnits,
+  type UnitFacts,
+} from "./quality-facts";
+import { coverageRecord } from "./quality-go";
 import { loadTestsConfig } from "./testguard";
 
 export const TABLE_FILE = "docs/generated/quality.md";
@@ -78,6 +86,7 @@ const RULES = `## 등급 규칙
 
 - **모름**: 커버리지는 CI의 coverage 작업에서만 재서, 마지막으로 기록한 값(\`${RECORD_FILE}\`)을 읽어요. 그 단위의 기록이 없으면 "모름"이고, 지어내지 않아요. 모름인 단위는 A가 될 수 없고 B가 가장 좋아요. 한도 아래로 알려진 값이 아니면 D로 내리지도 않아요.
 - **—**: 커버리지를 재지 않는 단위예요(하한이 없어요). 커버리지는 등급에 들어가지 않아요.
+- **Go 단위**: 이름이 \`go:\`로 시작하는 줄이에요(ADR-0023). 위와 같은 규칙으로 재고, 커버리지는 문장 커버리지(하한은 \`coverage-floor.json\`의 \`go:<단위>\`)예요. 기록에 \`go:<단위>\`가 없으면 "모름"이에요. 한도, 끄기(\`GOIGN*\`), 부채, 문서도 Go 코드에서 같은 방식으로 세요.
 - **끄기**: \`biome-ignore\` 같은 검사 끄기 주석, 건너뛴 시험, CI의 \`continue-on-error\`예요 (ADR-0148, \`IGN*\`).
 - **한도 90%를 넘음**: 파일 500줄, 함수 80줄, 복잡도 12 한도의 90%(450줄, 72줄, 10.8)를 넘은 파일·함수 수예요. 괄호는 그중 한도 자체를 넘은 것이에요(매개변수 6개 한도 포함).
 - **열린 부채**: 장부의 열린 항목이에요. 항목이 \`units\`로 단위를 적었거나, 그 단위의 코드 주석이 \`TD-NNNN\`으로 가리키면 그 단위의 부채예요. 어느 단위에도 속하지 않는 항목은 "(단위 밖)" 줄에 있어요. 괄호는 그중 가장 이른 기한이에요.
@@ -141,7 +150,7 @@ export function render(root: string): string {
 }
 
 function unitNameProblems(root: string): Violation[] {
-  const known = new Set(loadArchConfig(root).units.map((u) => u.name));
+  const known = new Set(tableUnits(root));
   const config = loadDebtConfig(root);
   return loadRegister(root, config).flatMap((item) =>
     (Array.isArray(item.units) ? item.units : [])
@@ -197,11 +206,17 @@ export function recordCoverage(root: string): string {
   const summary = JSON.parse(readFileSync(summaryFile, "utf8")) as Parameters<
     typeof coverageByUnit
   >[1];
-  const units = Object.fromEntries(
-    [...coverageByUnit(root, summary)]
-      .sort(([a], [b]) => Number(a > b) - Number(a < b))
-      .map(([unit, c]) => [unit, Math.round(c.percent * 100) / 100]),
-  );
+  const goConfig = loadGoConfig(root);
+  const measured = Object.entries({
+    ...Object.fromEntries(
+      [...coverageByUnit(root, summary)].map(([unit, c]) => [
+        unit,
+        Math.round(c.percent * 100) / 100,
+      ]),
+    ),
+    ...(goConfig ? coverageRecord(root, goConfig) : {}),
+  });
+  const units = Object.fromEntries(measured.sort(([a], [b]) => Number(a > b) - Number(a < b)));
   const text = `${JSON.stringify({ measuredOn: today(), units }, null, 2)}\n`;
   mkdirSync(path.dirname(path.join(root, RECORD_FILE)), { recursive: true });
   writeFileSync(path.join(root, RECORD_FILE), text);

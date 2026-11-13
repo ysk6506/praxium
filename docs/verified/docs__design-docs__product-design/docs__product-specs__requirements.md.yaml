@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "b308cb566cd77dc2"
+hash: "dc2ce7c8022f9d86"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
-text_changed: true
+note: "요구사항 표에서 REQ-233의 별명 문장을 새 REQ-241(예정, ADR-0016)로 옮겼을 뿐이다. 제품 설계와 어긋나지 않아 고칠 것 없다"
+text_changed: false
 doc_hash: "21d54c87111f1d83"

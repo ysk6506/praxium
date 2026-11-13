@@ -19,38 +19,38 @@ func TestRulesOfIdentitySetsAndContextOnlyKeys(t *testing.T) {
 		return model.IdentityKey{Strength: model.IdentityStrong, Components: []model.KeyComponent{{Context: ltID(id), Set: true, Incoming: incoming, Size: size}}}
 	}
 	runRuleCases(t, []ruleCase{
-		{"[REQ-104] set over a link type that does not exist", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"set over a link type that does not exist", model.CodeIdentitySet, func(d *model.Definitions) {
 			server(d).IdentityKeys = []model.IdentityKey{setOf("lt.nothing", false, 0)}
 		}},
-		{"[REQ-104] set over a link with no binding that leaves the type", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"set over a link with no binding that leaves the type", model.CodeIdentitySet, func(d *model.Definitions) {
 			asset(d).IdentityKeys = append(asset(d).IdentityKeys, setOf("lt.mounted_in", false, 0))
 		}},
-		{"[REQ-104] incoming set over a link with no binding that arrives at the type", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"incoming set over a link with no binding that arrives at the type", model.CodeIdentitySet, func(d *model.Definitions) {
 			server(d).IdentityKeys = []model.IdentityKey{setOf("lt.mounted_in", true, 0)}
 		}},
-		{"[REQ-104] set with a negative size", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"set with a negative size", model.CodeIdentitySet, func(d *model.Definitions) {
 			server(d).IdentityKeys = []model.IdentityKey{setOf("lt.mounted_in", false, -1)}
 		}},
-		{"[REQ-104] property component that says it is a set", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"property component that says it is a set", model.CodeIdentitySet, func(d *model.Definitions) {
 			asset(d).IdentityKeys[0].Components[0].Set = true
 		}},
-		{"[REQ-104] context component with a size but no set", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"context component with a size but no set", model.CodeIdentitySet, func(d *model.Definitions) {
 			asset(d).IdentityKeys[1].Components[0].Size = 2
 		}},
-		{"[REQ-104] context component that is incoming but not a set", model.CodeIdentitySet, func(d *model.Definitions) {
+		{"context component that is incoming but not a set", model.CodeIdentitySet, func(d *model.Definitions) {
 			asset(d).IdentityKeys[1].Components[0].Incoming = true
 		}},
-		{"[REQ-104] key of a context alone when the link is many to one", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"key of a context alone when the link is many to one", model.CodeIdentityKey, func(d *model.Definitions) {
 			server(d).IdentityKeys = []model.IdentityKey{{Strength: model.IdentityStrong, Components: []model.KeyComponent{{Context: ltID("lt.mounted_in")}}}}
 		}},
-		{"[REQ-104] two keys that differ only in the size of a set", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"two keys that differ only in the size of a set", model.CodeIdentityKey, func(d *model.Definitions) {
 			server(d).IdentityKeys = []model.IdentityKey{setOf("lt.mounted_in", false, 2), setOf("lt.mounted_in", false, 2)}
 		}},
 	})
 }
 
 func TestIdentitySetsAndContextOnlyKeysAreAccepted(t *testing.T) {
-	// [REQ-104] A set stands alone as a key, and a context alone is a key when the link is one to one.
+	// A set stands alone as a key, and a context alone is a key when the link is one to one.
 	d := baseline()
 	srv := objectType(&d, "ot.server")
 	srv.IdentityKeys = []model.IdentityKey{
@@ -64,7 +64,7 @@ func TestIdentitySetsAndContextOnlyKeysAreAccepted(t *testing.T) {
 }
 
 func TestIdentitySetFieldsChangeTheHash(t *testing.T) {
-	// [REQ-104] The set flag, its direction and its size are part of what a key means; a key without them hashes as before.
+	// The set flag, its direction and its size are part of what a key means; a key without them hashes as before.
 	hashWith := func(c model.KeyComponent) string {
 		d := baseline()
 		objectType(&d, "ot.server").IdentityKeys = []model.IdentityKey{{Strength: model.IdentityStrong, Components: []model.KeyComponent{c}}}
@@ -87,8 +87,9 @@ func TestIdentitySetFieldsChangeTheHash(t *testing.T) {
 	}
 }
 
+// [REQ-233]
 func TestStandardNumbersAreStable(t *testing.T) {
-	// [REQ-233] Every number and binding id the standard model had before the correction step is still there, unchanged.
+	// Every number and binding id the standard model had before the correction step is still there, unchanged.
 	var want struct {
 		TypeNo   map[string]int `json:"type_no"`
 		LinkNo   map[string]int `json:"link_type_no"`

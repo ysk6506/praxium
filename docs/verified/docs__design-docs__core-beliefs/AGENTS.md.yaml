@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "6f2bd0a351d4b6fe"
+hash: "92b46be5bb9f9564"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
+note: "AGENTS.md와 ADR 절차의 바뀐 줄은 Go 시험 잠금 키와 태그 규칙뿐이다. 이 문서의 믿음과 맞는지 읽었고 고칠 것 없다"
 text_changed: false
 doc_hash: "c68185f5b10e5ba0"

@@ -11,7 +11,9 @@ import { type FunctionStat, functionStats, type Limits, lineCount } from "./debt
 import { loadDocsConfig } from "./doc-config";
 import { latestDate, readDocRecords } from "./doc-records";
 import { DocFiles } from "./doc-targets";
+import { loadGoConfig } from "./go-config";
 import type { Suppression } from "./ignores-scan";
+import * as goq from "./quality-go";
 import { loadTestsConfig } from "./testguard";
 
 export const NO_UNIT = "(단위 밖)";
@@ -104,6 +106,9 @@ function sizeFacts(root: string): Map<string, Counts> {
     const bucket = out.get(unit) ?? { near: 0, over: 0 };
     out.set(unit, { near: bucket.near + found.near, over: bucket.over + found.over });
   }
+  const go = loadGoConfig(root);
+  if (go)
+    for (const [label, c] of goq.sizeCounts(root, go, debt.limits, NEAR_SHARE)) out.set(label, c);
   return out;
 }
 
@@ -125,6 +130,8 @@ export function debtUnits(root: string, items: readonly DebtItem[]): Map<string,
     for (const comment of comments(file, readFileSync(path.join(root, file), "utf8")))
       for (const id of comment.text.match(/TD-\d{4}/g) ?? []) add(id, unit);
   }
+  const go = loadGoConfig(root);
+  if (go) for (const [id, label] of goq.markerUnits(root, go)) add(id, label ?? NO_UNIT);
   return byItem;
 }
 
@@ -152,6 +159,9 @@ function debtFacts(
 function docFacts(root: string): Map<string, { date: string; file: string }> {
   const config = loadDocsConfig(root);
   const arch = loadArchConfig(root);
+  const go = loadGoConfig(root);
+  const unitName = (f: string): string =>
+    (go && goq.labelOfFile(go, f)) || unitOf(arch, f)?.name || NO_UNIT;
   const files = new DocFiles(root);
   const docs = [
     ...config.root_docs,
@@ -167,12 +177,21 @@ function docFacts(root: string): Map<string, { date: string; file: string }> {
     const date = latestDate(readDocRecords(root, file).records.values());
     if (covers.length === 0 || date === null) continue;
     const covered = covers.flatMap((glob) => files.expand(glob));
-    for (const unit of new Set(covered.map((f) => unitOf(arch, f)?.name ?? NO_UNIT))) {
+    for (const unit of new Set(covered.map(unitName))) {
       const known = oldest.get(unit);
       if (!known || date < known.date) oldest.set(unit, { date, file });
     }
   }
   return oldest;
+}
+
+/** The names of the rows: the TypeScript units, then the Go units as `go:<unit>` (the key of their coverage floor). */
+export function tableUnits(root: string): string[] {
+  const go = loadGoConfig(root);
+  return [
+    ...loadArchConfig(root).units.map((u) => u.name),
+    ...(go ? go.units.map((u) => goq.goLabel(u.name)) : []),
+  ];
 }
 
 /** One row per architecture unit, then the files that belong to no unit. */
@@ -188,7 +207,9 @@ export function gatherFacts(root: string, found: readonly Suppression[]): UnitFa
     const unit = unitOf(arch, s.file)?.name ?? NO_UNIT;
     ignores.set(unit, (ignores.get(unit) ?? 0) + 1);
   }
-  return [...arch.units.map((u) => u.name), NO_UNIT].map((unit) => ({
+  const go = loadGoConfig(root);
+  for (const [label, n] of go ? goq.ignoreCounts(root, go) : []) ignores.set(label || NO_UNIT, n);
+  return [...tableUnits(root), NO_UNIT].map((unit) => ({
     unit,
     floor: floors[unit],
     percent: record?.units[unit],

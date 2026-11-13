@@ -36,7 +36,7 @@ var groupRules = []struct {
 	{"platform", "ot.control_plane", "lt.runs_on"},
 }
 
-// [REQ-104] Every redundancy domain has real groups: members that belong to the
+// Every redundancy domain has real groups: members that belong to the
 // group, and consumers that depend on the group, not on one member.
 func TestEveryDomainHasGroupsWithMembersAndConsumers(t *testing.T) {
 	data, _ := truthOf(t, smallWorld(t, 3, 40000, func(p *Params) { p.Sites = 2 }))
@@ -82,7 +82,7 @@ func problemsOf(t *testing.T, body string) string {
 	return strings.Join(rep.Problems, "\n")
 }
 
-// [REQ-104] The rules of the groups each have a failing example.
+// The rules of the groups each have a failing example.
 func TestGroupRulesHaveFailingExamples(t *testing.T) {
 	sw := func(id string) string {
 		return `{"kind":"object","id":"` + id + `","type":"ot.switch","props":{}}` + "\n"
@@ -110,7 +110,7 @@ func TestGroupRulesHaveFailingExamples(t *testing.T) {
 	}
 }
 
-// [REQ-104] An object whose type has no identity key, or whose key the recipe
+// An object whose type has no identity key, or whose key the recipe
 // cannot form, is flagged as not ingestible. No standard type is keyless now,
 // so the rule is shown on types that are made up here.
 func TestClassifyFlagsObjectsThatCannotBeKeyed(t *testing.T) {
@@ -136,7 +136,7 @@ func TestClassifyFlagsObjectsThatCannotBeKeyed(t *testing.T) {
 	}
 }
 
-// [REQ-104] A set key reads the links that leave the object or the ones that arrive at it.
+// A set key reads the links that leave the object or the ones that arrive at it.
 func TestSetKeysReadLinksInBothDirections(t *testing.T) {
 	ts := &typeSpec{props: []propSpec{{}}, keys: []keySpec{
 		{comps: []keyComp{{prop: 0, ctx: -1}, {prop: -1, ctx: lOwnedBy, set: true}, {prop: -1, ctx: lMemberOf, set: true, incoming: true}}},
@@ -162,7 +162,7 @@ func TestSetKeysReadLinksInBothDirections(t *testing.T) {
 	}
 }
 
-// [REQ-104] A bigger UPS bank is N+1 and still has its panels depend on the bank.
+// A bigger UPS bank is N+1 and still has its panels depend on the bank.
 func TestUpsBankWithMoreThanOneUnitIsNPlusOne(t *testing.T) {
 	data, _ := truthOf(t, smallWorld(t, 2, 6000, func(p *Params) { p.UpsPerSide = 2 }))
 	if !bytes.Contains(data, []byte(`"mode":"n_plus_1"`)) {
@@ -174,7 +174,7 @@ func TestUpsBankWithMoreThanOneUnitIsNPlusOne(t *testing.T) {
 	}
 }
 
-// [REQ-104] A group that is flagged as not ingestible is not checked as a group.
+// A group that is flagged as not ingestible is not checked as a group.
 func TestValidateSkipsGroupsThatAreNotIngestible(t *testing.T) {
 	body := `{"kind":"object","id":"g","type":"ot.ha_pair","props":{"min_alive":2,"mode":"quorum"},"not_ingestible":"no_identity_key"}` + "\n"
 	if got := problemsOf(t, body); strings.Contains(got, "min_alive") {
@@ -182,7 +182,7 @@ func TestValidateSkipsGroupsThatAreNotIngestible(t *testing.T) {
 	}
 }
 
-// [REQ-104] A key that names something the generator cannot make is left out, not guessed.
+// A key that names something the generator cannot make is left out, not guessed.
 func TestKeySpecLeavesOutWhatTheGeneratorCannotForm(t *testing.T) {
 	sch, err := newSchemaFor(loadReg(t))
 	if err != nil {

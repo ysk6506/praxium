@@ -2,7 +2,9 @@
 # (REQ-023, ADR-0002). Protected path: change only with an accepted ADR.
 test_globs: ["packages/**/*.test.ts", "apps/**/*.test.ts", "apps/**/*.test.tsx", "harness/src/**/*.test.ts", "tests/spec/**/*.test.ts"]
 support_globs: ["packages/**/test-support/**", "apps/**/test-support/**", "harness/src/test-support/**"]
-data_globs: ["**/__fixtures__/**", "tests/**/fixtures/**"]
+data_globs: ["**/__fixtures__/**", "tests/**/fixtures/**", "backend/**/testdata/**"]
+# Go tests (ADR-0023) are found from the `go:` section of architecture.yaml: every Test, Fuzz and Example function of the
+# `_test.go` files, locked by package folder and name. Their golden files sit in `testdata/`, locked as data above.
 lock: harness/config/test-lock.json
 
 # Configuration that decides which tests run must stay exactly like this.

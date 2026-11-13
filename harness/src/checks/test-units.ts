@@ -9,6 +9,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { expandGlobs } from "../files";
 import { dotted, isFunctionLike, lineOf, parse, sha16, structureOf, ts, walk } from "../ts-ast";
+import { goTestUnits } from "./go-test-units";
 
 export interface Unit {
   readonly key: string;
@@ -20,6 +21,8 @@ export interface Unit {
   readonly literals: readonly string[];
   readonly precision: readonly number[];
   readonly skips: number;
+  /** Requirement ids tagged on the test (Go tests only: a TypeScript test carries them in its title). */
+  readonly reqs?: readonly string[];
 }
 
 const TEST_NAMES = new Set(["test", "it"]);
@@ -275,6 +278,7 @@ export function currentUnits(root: string, globs: UnitGlobs): Map<string, Unit> 
   for (const file of testFiles(root, globs)) {
     for (const unit of collectUnits(root, file)) units.set(unit.key, unit);
   }
+  for (const unit of goTestUnits(root)) units.set(unit.key, unit);
   for (const file of expandGlobs(root, globs.data_globs)) {
     const key = `${file}::<data>`;
     units.set(key, {

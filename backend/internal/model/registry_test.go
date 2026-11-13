@@ -23,8 +23,9 @@ func newBaseline(t *testing.T, damage ...func(d *model.Definitions)) *model.Regi
 	return r
 }
 
+// [REQ-001] [REQ-233]
 func TestNumbersAreAssignedDeterministically(t *testing.T) {
-	// [REQ-233] The numbers written in the data are kept; the others follow in the order of the ids, whatever the order of the data.
+	// The numbers written in the data are kept; the others follow in the order of the ids, whatever the order of the data.
 	r := newBaseline(t)
 	wantTypes := map[string]int{"ot.asset": 1, "ot.acme_server": 2, "ot.cluster": 3, "ot.rack": 4, "ot.redundancy_group": 5, "ot.server": 6}
 	for id, want := range wantTypes {
@@ -64,8 +65,9 @@ func mustHash(t *testing.T, fn func() (kernelHash, error)) kernelHash {
 	return h
 }
 
+// [REQ-233]
 func TestNumbersSkipReservedAndNeverReuse(t *testing.T) {
-	// [REQ-233] A reserved number is never given again, and a new definition goes above everything in use.
+	// A reserved number is never given again, and a new definition goes above everything in use.
 	r := newBaseline(t, func(d *model.Definitions) {
 		d.Reserved.TypeNos = []int{2, 3}
 		objectType(d, "ot.asset").TypeNo = 7
@@ -88,8 +90,9 @@ func TestNumbersSkipReservedAndNeverReuse(t *testing.T) {
 	}
 }
 
+// [REQ-100]
 func TestLookups(t *testing.T) {
-	// [REQ-100] A type is found by id, by number and by name; a link type and an action type by id, number and name.
+	// A type is found by id, by number and by name; a link type and an action type by id, number and name.
 	r := newBaseline(t, func(d *model.Definitions) { objectType(d, "ot.rack").Aliases = []string{"Cabinet"} })
 	byName, ok := r.ObjectTypeByName("Rack")
 	if !ok || byName.ID != otID("ot.rack") {
@@ -148,8 +151,9 @@ func TestLookups(t *testing.T) {
 
 func has[T any](_ T, ok bool) bool { return ok }
 
+// [REQ-233]
 func TestRenameKeepsIdNumberAndHash(t *testing.T) {
-	// [REQ-233] A name can be changed: the id, the number and the hash stay, and the old name is an alias.
+	// A name can be changed: the id, the number and the hash stay, and the old name is an alias.
 	before := newBaseline(t)
 	after := newBaseline(t, func(d *model.Definitions) {
 		rack := objectType(d, "ot.rack")
@@ -177,8 +181,9 @@ func TestRenameKeepsIdNumberAndHash(t *testing.T) {
 	}
 }
 
+// [REQ-233]
 func TestHashFollowsMeaning(t *testing.T) {
-	// [REQ-233] What gives a definition its meaning is in the hash; the number of a definition is in the numbering hash.
+	// What gives a definition its meaning is in the hash; the number of a definition is in the numbering hash.
 	base := newBaseline(t)
 	changes := map[string]func(d *model.Definitions){
 		"cardinality": func(d *model.Definitions) { linkType(d, "lt.runs_on").Bindings[0].Cardinality = model.CardOneToOne },
@@ -228,8 +233,9 @@ func TestHashFollowsMeaning(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestHashIgnoresTheOrderOfSets(t *testing.T) {
-	// [REQ-001] The same definitions in another order have the same hash.
+	// The same definitions in another order have the same hash.
 	base := newBaseline(t)
 	reordered := newBaseline(t, func(d *model.Definitions) {
 		d.ObjectTypes[0], d.ObjectTypes[2] = d.ObjectTypes[2], d.ObjectTypes[0]
@@ -245,8 +251,9 @@ func TestHashIgnoresTheOrderOfSets(t *testing.T) {
 	}
 }
 
+// [REQ-100]
 func TestSubtypeQueries(t *testing.T) {
-	// [REQ-100] Subtype queries: ancestors, is-a, all subtypes, a layer, a trait.
+	// Subtype queries: ancestors, is-a, all subtypes, a layer, a trait.
 	r := newBaseline(t)
 	if got := r.Ancestors(otID("ot.acme_server")); !reflect.DeepEqual(got, []model.ObjectTypeID{otID("ot.server"), otID("ot.asset")}) {
 		t.Errorf("Ancestors() = %v", got)
@@ -283,7 +290,7 @@ func TestSubtypeQueries(t *testing.T) {
 }
 
 func TestInheritance(t *testing.T) {
-	// [REQ-107, REQ-165] A child inherits properties, scope keys, identity keys and needs; a type overrides a trait's need.
+	// A child inherits properties, scope keys, identity keys and needs; a type overrides a trait's need.
 	r := newBaseline(t)
 	var names []string
 	for _, p := range r.EffectiveProperties(otID("ot.acme_server")) {
@@ -313,8 +320,9 @@ func TestInheritance(t *testing.T) {
 	}
 }
 
+// [REQ-100]
 func TestBindingsForAPair(t *testing.T) {
-	// [REQ-100] The bindings for a pair of types: by type, by subtype, by trait and for any object.
+	// The bindings for a pair of types: by type, by subtype, by trait and for any object.
 	r := newBaseline(t)
 	ids := func(pairs []model.BoundLink) []string {
 		var out []string
@@ -344,7 +352,7 @@ func TestBindingsForAPair(t *testing.T) {
 }
 
 func TestRegistryIsImmutable(t *testing.T) {
-	// [REQ-233] What the registry returns is a copy; changing it does not change the registry.
+	// What the registry returns is a copy; changing it does not change the registry.
 	d := baseline()
 	r, err := model.NewRegistry(d)
 	if err != nil {
@@ -375,8 +383,9 @@ func TestRegistryIsImmutable(t *testing.T) {
 	}
 }
 
+// [REQ-233]
 func TestListsAreOrdered(t *testing.T) {
-	// [REQ-233] Lists come in a fixed order: types and link types by number, the rest by name.
+	// Lists come in a fixed order: types and link types by number, the rest by name.
 	r := newBaseline(t)
 	types := r.ObjectTypes()
 	for i := 1; i < len(types); i++ {
@@ -408,8 +417,9 @@ func TestListsAreOrdered(t *testing.T) {
 	}
 }
 
+// [REQ-233]
 func TestPropertyLookups(t *testing.T) {
-	// [REQ-233] A property is found by id and by its attribute number, with its owner.
+	// A property is found by id and by its attribute number, with its owner.
 	r := newBaseline(t)
 	ref, ok := r.Property(prID("pr.asset.site"))
 	if !ok || ref.OwnerKind != "object_type" || ref.Owner != "ot.asset" || ref.Property.AttrNo == 0 {

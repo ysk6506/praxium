@@ -31,6 +31,7 @@ func TestWorldsAreValidAgainstTheRegistry(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestSameParametersSameBytes(t *testing.T) {
 	a, ia := truthOf(t, smallWorld(t, 5, 12000, nil))
 	b, ib := truthOf(t, smallWorld(t, 5, 12000, nil))

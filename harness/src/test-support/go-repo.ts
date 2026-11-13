@@ -138,7 +138,9 @@ const BASE: Record<string, string> = {
     'import "testing"',
     "",
     "func TestRuns(t *testing.T) {",
-    '\tt.Log("ok")',
+    "\tif 1+1 != 2 {",
+    '\t\tt.Fatal("arithmetic")',
+    "\t}",
     "}",
   ),
 };

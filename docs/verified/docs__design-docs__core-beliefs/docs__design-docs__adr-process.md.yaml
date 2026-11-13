@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "docs/design-docs/adr-process.md"
-hash: "57f525cdc5d61411"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
-text_changed: true
+hash: "33e21f736a6e53ab"
+date: "2026-11-13"
+note: "AGENTS.md와 ADR 절차의 바뀐 줄은 Go 시험 잠금 키와 태그 규칙뿐이다. 이 문서의 믿음과 맞는지 읽었고 고칠 것 없다"
+text_changed: false
 doc_hash: "c68185f5b10e5ba0"

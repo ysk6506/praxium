@@ -35,7 +35,7 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 
 | 하지 말 것 | 강제 장치 |
 |---|---|
-| 테스트가 실패하는데 테스트를 고치기 | 테스트는 잠겨 있다 (`TLOCK*`). 코드를 고친다. 요구사항이 바뀐 게 확실할 때만 결정 기록의 `amends_tests` 절차 |
+| 테스트가 실패하는데 테스트를 고치기 | 테스트는 잠겨 있다 (`TLOCK*`, Go 시험 함수도 `go:<디렉터리>::<함수>` 키로). 코드를 고친다. 요구사항이 바뀐 게 확실할 때만 결정 기록의 `amends_tests` 절차 |
 | skip/only/삭제/약화, 커버리지 제외 | `TEST*`, `TCFG*`, `COV*` |
 | 단위 의존 방향 위반, 다른 단위 내부 import | `ARCH010`, `ARCH011`, Go는 `GOARCH010`, `GOARCH011` |
 | 선언 안 된 패키지·Go 모듈 추가 | `ARCH020`, Go는 `GOARCH020`, `GODEP010` — ADR + 계약 등록 + ARCHITECTURE.md의 모듈 표 |
@@ -63,7 +63,7 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 ## 자주 하는 일
 
 - **`DOC010`** → 문서를 코드와 대조해 고치고 `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "확인한 것"`. 확인 상태는 `docs/verified/`의 (문서, 대상) 기록에 있다.
-- **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고, 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
+- **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고(Go는 `Test` 함수 바로 위 주석 `// [REQ-NNN] [REQ-MMM]`), 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
 - **새 단위(폴더) 추가** → 같은 변경에서 `harness/config/architecture.yaml`에 등록하고(Go는 `go:` 절, 폴더는 `backend/internal/<단위>`) ARCHITECTURE.md를 고친다(보호 경로라 ADR이 필요하다).
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결하고, `updates_docs`에 바꾸는 문서를 적어 같은 변경에서 고친다. 앞선 결정의 일부를 바꾸면 `amends`를 적고 `docs.ts link-amends <ADR>`를 돌린다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.

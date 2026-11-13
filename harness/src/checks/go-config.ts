@@ -1,5 +1,5 @@
 /** The Go part of the architecture contract (ADR-0019) and the Go files it covers. */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { loadYaml } from "../common";
 import { listFiles } from "../files";
@@ -55,6 +55,7 @@ const trimSlash = (p: string): string => p.replace(/\/$/, "");
 
 /** The `go:` section of the architecture contract; undefined when the repository has no Go code. */
 export function loadGoConfig(root: string): GoConfig | undefined {
+  if (!existsSync(path.join(root, CONFIG_PATH))) return undefined;
   const raw = loadYaml<{ go?: RawGo }>(path.join(root, CONFIG_PATH)).go;
   if (!raw) return undefined;
   return {
