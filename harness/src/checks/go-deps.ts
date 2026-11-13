@@ -81,7 +81,7 @@ const cells = (line: string): string[] =>
     .split("|")
     .map((c) => c.trim());
 
-/** Rows of the table whose header has the columns module, licence and reason (모듈, 라이선스, 까닭). */
+/** Rows of the table whose header has the columns module, licence and reason (모듈, 라이선스, 이유). */
 export function dependencyRows(text: string): TableRow[] {
   const rows: TableRow[] = [];
   let inTable = false;
@@ -91,7 +91,7 @@ export function dependencyRows(text: string): TableRow[] {
       return;
     }
     const row = cells(raw);
-    if (row[0] === "모듈" && row[1] === "라이선스" && row[2] === "까닭") {
+    if (row[0] === "모듈" && row[1] === "라이선스" && row[2] === "이유") {
       inTable = true;
       return;
     }

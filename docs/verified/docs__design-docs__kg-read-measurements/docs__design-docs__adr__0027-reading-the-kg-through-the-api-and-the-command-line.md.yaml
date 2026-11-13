@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-read-measurements.md"
 target: "docs/design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md"
-hash: "29f3b66604ad7660"
+hash: "ebb17d5971ee019a"
 date: "2026-11-13"
-note: "ADR-0027의 길 표기(queries:이름)와 요구사항의 바뀐 글을 읽고 이 문서의 말과 어긋나지 않음을 확인"
-text_changed: false
-doc_hash: "e39e4182b744e728"
+note: "kg-read-measurements 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 16줄), 결정과 숫자는 그대로"
+text_changed: true
+doc_hash: "ff661deb80593b6b"

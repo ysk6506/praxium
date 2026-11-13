@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "docs/design-docs/adr-process.md"
-hash: "b21628cac2ca8629"
+hash: "96fb5112a5d05991"
 date: "2026-11-13"
-note: "adr-process.md에 늘어난 5항(임시 커밋)이 신념 6과 어긋나지 않음을 읽었다"
-text_changed: false
-doc_hash: "c68185f5b10e5ba0"
+note: "core-beliefs 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 4줄), 결정과 숫자는 그대로"
+text_changed: true
+doc_hash: "b6dbe9997ada99ae"

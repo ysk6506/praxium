@@ -1,7 +1,7 @@
 doc: "docs/references/from-terrarium.md"
 target: "docs/design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md"
-hash: "f63d1a5a9091774d"
-date: "2026-11-12"
-note: "처음 씀: 테라리움 커밋 0053386의 보관함 설계 여섯, 결정 기록 0144~0192, 요구사항 문서의 이력, 현실 연결 코드 목록에 대어 봄"
-text_changed: true
-doc_hash: "aa481662dfccf1ca"
+hash: "8270a47d56571e39"
+date: "2026-11-13"
+note: "from-terrarium 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+text_changed: false
+doc_hash: "fc479372178a2017"

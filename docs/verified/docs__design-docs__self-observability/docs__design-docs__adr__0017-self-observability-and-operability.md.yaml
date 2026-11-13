@@ -1,7 +1,7 @@
 doc: "docs/design-docs/self-observability.md"
 target: "docs/design-docs/adr/0017-self-observability-and-operability.md"
-hash: "c2d5194616acbbaf"
+hash: "02eb9f96f1a3c76d"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "self-observability 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
 text_changed: true
-doc_hash: "611b88035b753683"
+doc_hash: "ae70baa4882bb8ca"

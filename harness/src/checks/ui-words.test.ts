@@ -17,29 +17,23 @@ const found = (source: string, file = "apps/web/src/ui/pages/x.tsx"): string[] =
 
 describe("the word list: old words on screen fail with the word to use [REQ-003]", () => {
   test.each([
-    ['const a = "3회 실행";', "회"],
-    ["const a = `$" + "{n}회 끝`;", "회"],
-    ['const a = "5번째가 아니라 5회째예요";', "회째"],
-    ["const a = <p>지금 {n}회 실행 중</p>;", "회"],
-    ['const a = <Field unit="회" />;', "회"],
-    ['const a = "툴 호출 횟수";', "횟수"],
-    ['const a = "이미 돌린 시드예요";', "시드"],
+    ['const a = "이미 돌린 씨앗이에요";', "씨앗"],
     ['const a = "서비스 개체에 저장돼요";', "개체"],
     ['const a = "관계 종류를 골라요";', "관계 종류"],
     ['const a = "매핑하지 못한 라벨·관계";', "라벨·관계"],
-    ['const a = "에스컬레이션 처리";', "에스컬레이션"],
+    ['const a = "알림 넘기기 처리";', "알림 넘기기"],
+    ['const a = "넘긴 일 2번";', "넘긴 일"],
     ['const a = "이 세계를 E2E로 가려면";', "E2E로 가려면"],
-    ["const state = { 횟수: 3 };", "횟수"],
-    ["const state = { 시드_번호: 3 };", "시드"],
+    ["const state = { 씨앗_번호: 3 };", "씨앗"],
   ])("%s", (source, word) => {
     expect(found(source).map((f) => f.split(":")[1])).toEqual([word]);
   });
 
   test("it names the line, the found word and the word to use", () => {
-    const [v] = checkText("apps/web/src/a.ts", 'const a = 1;\nconst b = "3회";\n', config.rules);
+    const [v] = checkText("apps/web/src/a.ts", 'const a = 1;\nconst b = "개체";\n', config.rules);
     expect(v).toMatchObject({ code: "WORD001", path: "apps/web/src/a.ts", line: 2 });
-    expect(v?.message).toContain('"회"');
-    expect(v?.fix).toContain('"번"');
+    expect(v?.message).toContain('"개체"');
+    expect(v?.fix).toContain('"객체"');
   });
 
   test.each([
@@ -49,7 +43,9 @@ describe("the word list: old words on screen fail with the word to use [REQ-003]
     'const a = "냉방 관계가 없는 랙이에요";',
     'const a = "관계없이 돌아가요";',
     'const a = "객체 종류와 링크 종류";',
-    'const a = "넘긴 일 2번";',
+    'const a = "3회 실행하고 횟수를 세요";',
+    'const a = "시드를 고르세요";',
+    'const a = "에스컬레이션 처리";',
     'const a = "escalate 툴을 불러요";',
     'const a = "3 states";',
     "const a = 3; // 3회 횟수 시드 개체 in a comment",

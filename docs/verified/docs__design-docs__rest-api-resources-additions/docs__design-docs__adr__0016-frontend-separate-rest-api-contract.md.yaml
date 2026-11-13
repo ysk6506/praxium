@@ -1,7 +1,7 @@
 doc: "docs/design-docs/rest-api-resources-additions.md"
 target: "docs/design-docs/adr/0016-frontend-separate-rest-api-contract.md"
-hash: "bb6c4cfdc46cfeb7"
+hash: "86f285b020e12bee"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "rest-api-resources-additions 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 94줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "33e08b08b423c433"
+doc_hash: "5aaf9fc91fe7ee05"

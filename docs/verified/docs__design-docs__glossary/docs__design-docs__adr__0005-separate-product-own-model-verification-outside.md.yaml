@@ -1,7 +1,7 @@
 doc: "docs/design-docs/glossary.md"
 target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
-hash: "0a5542b1b8b7c8c7"
+hash: "1140a12760ae3546"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
-text_changed: true
-doc_hash: "1e40f25a0752e78c"
+note: "glossary 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+text_changed: false
+doc_hash: "97ef572b72ab912d"

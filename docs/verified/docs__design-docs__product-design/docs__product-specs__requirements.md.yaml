@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "a6554a082b00662f"
+hash: "5118723d5dc9d23b"
 date: "2026-11-13"
-note: "requirements.md의 REQ-229, REQ-241 문구 변경과 REQ-262 신설을 읽고 제품 설계 한 장의 요구 목록과 어긋나지 않음을 확인했다"
+note: "product-design 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
 text_changed: false
-doc_hash: "21d54c87111f1d83"
+doc_hash: "70b794278472f4b3"

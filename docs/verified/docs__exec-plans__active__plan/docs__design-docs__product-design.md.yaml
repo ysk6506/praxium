@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "21d54c87111f1d83"
+hash: "70b794278472f4b3"
 date: "2026-11-13"
-note: "5단계 상태에 생성기 완료(ADR-0021)를 적고 읽어 맞춤"
+note: "plan 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 30줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "c73f6496e74e9798"
+doc_hash: "49f959fec76e9c92"

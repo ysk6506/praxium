@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-queries.md"
 target: "docs/design-docs/adr/0010-kg-queries-and-impact.md"
-hash: "9c7a60c87efd2ba6"
+hash: "b4f3ebf38a2f8ed6"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "kg-queries 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 220줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "a37a6b4550f91ede"
+doc_hash: "f4b0707bbc0545f9"

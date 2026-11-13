@@ -9,7 +9,7 @@
 # Statuses: open | done | wontfix. Severity: low | medium | high.
 items:
   - id: TD-0001
-    title: "하네스와 바탕 부품(kernel)이 테라리움의 복사본이다. 두 저장소에서 따로 고쳐지면 같은 규칙이 다르게 지켜진다"
+    title: "하네스와 공통 기반 코드(kernel)이 테라리움의 복사본이다. 두 저장소에서 따로 고쳐지면 같은 규칙이 다르게 지켜진다"
     severity: medium
     cost: "두 저장소가 함께 쓰는 패키지로 빼거나, 테라리움의 하네스 변경을 옮겨 오는 절차를 정리 작업에 넣는다"
     created: "2026-11-12"
@@ -23,7 +23,7 @@ items:
     created: "2026-11-12"
     due: "2027-02-01"
     status: wontfix
-    resolution: "화면은 다른 저장소의 일이 되었다(ADR-0016). 이 저장소의 알파는 모든 기능이 API와 명령줄 클라이언트로 되는 것이고, UX 측정은 화면 저장소가 정한다."
+    resolution: "화면은 다른 저장소의 일이 되었다(ADR-0016). 이 저장소의 알파는 모든 기능이 API와 CLI로 되는 것이고, UX 측정은 화면 저장소가 정한다."
   - id: TD-0003
     title: "하네스 코드에 테라리움 제품에 묶인 조각이 남아 있다: 문서의 숫자 검사가 아는 이름(entity_kinds, tools 등), 서버 환경 변수와 API 길을 찾는 자리(apps/server, contract/routes). 지금은 쓰이지 않아 통과한다"
     severity: low
@@ -35,20 +35,20 @@ items:
   - id: TD-0004
     title: "kernel의 해시가 JavaScript의 문자열 표현에 기댄다. 저장되거나 다른 언어와 나누는 값에는 UTF-8 SHA-256과 정규 인코딩을 써야 한다(ADR-0006)"
     severity: medium
-    cost: "백엔드의 바탕 부품(Go)에서 정규 바이너리 인코딩 위의 SHA-256을 쓰고, 저장되거나 밖으로 나가는 값이 kernel의 해시를 쓰지 않게 한다"
+    cost: "백엔드의 공통 기반 코드(Go)에서 정규 바이너리 인코딩 위의 SHA-256을 쓰고, 저장되거나 밖으로 나가는 값이 kernel의 해시를 쓰지 않게 한다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
     units: [core.kernel]
   - id: TD-0005
-    title: "하네스에 Go 코드를 읽는 검사가 없다(의존 방향, 공개 면, 복잡도와 크기, 시험 잠금과 커버리지, 라이선스, 검사 끄기 주석). 첫 Go 제품 코드가 들어가는 변경에서 함께 만들어야 한다(ADR-0006)"
+    title: "하네스에 Go 코드를 읽는 검사가 없다(의존 방향, 공개 면, 복잡도와 크기, 테스트 잠금과 커버리지, 라이선스, 검사 무시 주석). 첫 Go 제품 코드가 들어가는 변경에서 함께 만들어야 한다(ADR-0006)"
     severity: medium
     cost: "하네스는 TypeScript 도구로 두고 Go 코드를 읽는 조각을 더한다. 그 전에는 Go 제품 코드를 합치지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: done
     units: [harness]
-    resolution: "ADR-0019가 Go 코드를 읽는 검사를 만들었다: 단위와 의존 방향과 공개 면, 시계·난수·환경, 모듈 표, 크기와 복잡도, 끄기, 시험의 있음과 커버리지, gofmt와 vet(GOARCH*, GODEP*, GODEBT*, GOIGN*, GOTEST*, GOCOV*, GOTOOL*). 시험 잠금과 품질 등급표와 요구사항 추적은 아직 Go를 읽지 않아 TD-0008로 남겼다."
+    resolution: "ADR-0019가 Go 코드를 읽는 검사를 만들었다: 단위와 의존 방향과 공개 면, 시계·난수·환경, 모듈 표, 크기와 복잡도, 끄기, 테스트의 있음과 커버리지, gofmt와 vet(GOARCH*, GODEP*, GODEBT*, GOIGN*, GOTEST*, GOCOV*, GOTOOL*). 테스트 잠금과 품질 등급표와 요구사항 추적은 아직 Go를 읽지 않아 TD-0008로 남겼다."
   - id: TD-0006
     title: "core.kernel의 한국어 부품(조사, 시간 표기)과 REQ-002, REQ-003은 화면 저장소의 것이다. 화면 저장소가 서면 옮겨야 한다(ADR-0016)"
     severity: low
@@ -58,71 +58,71 @@ items:
     status: open
     units: [core.kernel]
   - id: TD-0007
-    title: "임시 콘솔(클로즈 베타까지 기능을 눌러 보는 지울 수 있는 화면)이 이 저장소의 따로 된 폴더에 있다. 프런트엔드 저장소가 서거나 클로즈 베타가 끝나면 지워야 한다(ADR-0016)"
+    title: "임시 콘솔(클로즈드 베타까지 기능을 눌러 보는 지울 수 있는 화면)이 이 저장소의 따로 된 폴더에 있다. 프런트엔드 저장소가 서거나 클로즈드 베타가 끝나면 지워야 한다(ADR-0016)"
     severity: low
     cost: "폴더와 켜는 설정 하나를 지운다. 백엔드의 어떤 코드도 그것을 import하지 않으므로 다른 곳은 고치지 않는다"
     created: "2026-11-13"
     due: "2027-06-01"
     status: open
   - id: TD-0008
-    title: "Go 코드에는 시험 잠금(시험을 지우거나 약화하거나 기대값을 바꾸는 것 막기), 품질 등급표, 시험 제목의 [REQ-NNN]을 읽는 요구사항 추적이 아직 없다(ADR-0019). TypeScript 시험에만 있는 보호다"
+    title: "Go 코드에는 테스트 잠금(테스트를 지우거나 약화하거나 기대값을 바꾸는 것 막기), 품질 등급표, 테스트 제목의 [REQ-NNN]을 읽는 요구사항 추적이 아직 없다(ADR-0019). TypeScript 테스트에만 있는 보호다"
     severity: medium
-    cost: "Go 시험 함수의 지문을 잠그는 검사를 만들고, 품질 등급표와 요구사항 추적이 Go 단위와 Go 시험을 읽게 한다. 그 전에는 Go 시험을 고치는 변경을 리뷰가 지킨다"
+    cost: "Go 테스트 함수의 지문을 잠그는 검사를 만들고, 품질 등급표와 요구사항 추적이 Go 단위와 Go 테스트를 읽게 한다. 그 전에는 Go 테스트를 고치는 변경을 리뷰가 지킨다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: done
-    resolution: "ADR-0023이 Go 시험 함수를 시험 잠금(TLOCK*)에, [REQ-NNN] 주석을 요구사항 추적(TRACE*)에, Go 단위를 품질 등급표에 넣었다. 단위는 최상위 시험 함수이고 지문은 본문과 닿는 도우미·표·골든 값·testdata다"
+    resolution: "ADR-0023이 Go 테스트 함수를 테스트 잠금(TLOCK*)에, [REQ-NNN] 주석을 요구사항 추적(TRACE*)에, Go 단위를 품질 등급표에 넣었다. 단위는 최상위 테스트 함수이고 지문은 본문과 닿는 도우미·표·골든 값·testdata다"
     units: [harness]
   - id: TD-0009
     title: "표준 모델의 타입 20개에 식별 키가 없다. 키가 생길 때까지 어떤 원천도 이 타입의 객체를 채울 수 없고, 수집 단계가 이 타입의 객체를 만들기 전에 풀어야 한다(ADR-0020)"
     severity: medium
-    cost: "후속 변경에서 (1) 키가 문맥 구성요소를 둘 이상 가질 수 있게 하고, (2) 이름 붙은 링크로 닿는 순서 없는 객체 집합을 새 구성요소 종류로 두며(끝점 쌍과 멤버 집합, 멤버 ID를 정렬해 정규화), (3) 문맥 링크가 1:1이면 문맥만 있는 키를 허용하고, (4) 키가 요구하는 부모 바인딩은 표준 모델에 보통 바인딩으로 더하며, (5) UnknownObject에 힌트 해시 방식을 선언한다. 시험의 키 없는 타입 목록은 의도해서만 줄인다"
+    cost: "후속 변경에서 (1) 키가 문맥 구성요소를 둘 이상 가질 수 있게 하고, (2) 이름 붙은 링크로 닿는 순서 없는 객체 집합을 새 구성요소 종류로 두며(끝점 쌍과 멤버 집합, 멤버 ID를 정렬해 정규화), (3) 문맥 링크가 1:1이면 문맥만 있는 키를 허용하고, (4) 키가 요구하는 부모 바인딩은 표준 모델에 보통 바인딩으로 더하며, (5) UnknownObject에 힌트 해시 방식을 선언한다. 테스트의 키 없는 타입 목록은 의도해서만 줄인다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: done
-    resolution: "ADR-0022가 다섯을 모두 했다: 문맥 구성요소를 여럿 두고, 집합 구성요소(링크 타입, 나가는 쪽이나 들어오는 쪽, 정확한 크기 선택)를 더하고, 문맥만 있는 키는 1:1 링크일 때 허용하고, 부모 바인딩을 보통 바인딩으로 더하고, UnknownObject에 힌트 해시 방식(is.hint_hash)을 선언했다. 표준 타입 168개가 모두 자기 키를 가지고 키 없는 목록은 비었다(시험이 잠근다)."
+    resolution: "ADR-0022가 다섯을 모두 했다: 문맥 구성요소를 여럿 두고, 집합 구성요소(링크 타입, 나가는 쪽이나 들어오는 쪽, 정확한 크기 선택)를 더하고, 문맥만 있는 키는 1:1 링크일 때 허용하고, 부모 바인딩을 보통 바인딩으로 더하고, UnknownObject에 힌트 해시 방식(is.hint_hash)을 선언했다. 표준 타입 168개가 모두 자기 키를 가지고 키 없는 목록은 비었다(테스트가 잠근다)."
   - id: TD-0010
-    title: "API의 인증은 개발용 인증기(고정 토큰 하나)뿐이다. 사내 로그인(OIDC)과 시스템 계정 토큰이 없어서 `api serve -mode production`은 늘 시작을 거부하고(닫힌 쪽이 기본), 개발 모드의 서버도 토큰이 없으면 상태 확인과 오류 설명 말고는 모두 401이다(ADR-0024)"
+    title: "API의 인증은 개발용 인증기(고정 토큰 하나)뿐이다. 사내 로그인(OIDC)과 서비스 계정 토큰이 없어서 `api serve -mode production`은 늘 시작을 거부하고(닫힌 쪽이 기본), 개발 모드의 서버도 토큰이 없으면 상태 확인과 오류 설명 말고는 모두 401이다(ADR-0024)"
     severity: medium
-    cost: "`access.Authenticator` 포트를 OIDC 어댑터와 시스템 계정 토큰 발급·검증으로 구현하고, `api serve`의 운영 모드 거부(`requireRealAuthenticator`)를 풀어 그것을 고르게 한 뒤 개발용 인증기를 지운다. 길과 계약은 바뀌지 않는다"
+    cost: "`access.Authenticator` 포트를 OIDC 어댑터와 서비스 계정 토큰 발급·검증으로 구현하고, `api serve`의 운영 모드 거부(`requireRealAuthenticator`)를 풀어 그것을 고르게 한 뒤 개발용 인증기를 지운다. 길과 계약은 바뀌지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
   - id: TD-0011
     title: "API의 저장소는 메모리 구현(`adapter.memstore`)뿐이다. 운영용 저장소(PostgreSQL 어댑터)가 없어서 `api serve -mode production`은 늘 시작을 거부하고, 개발 모드의 서버는 시작할 때마다 `-dev-truth`로 세계를 다시 적재한다. 서버가 끝나면 KG도 없어진다(ADR-0027)"
     severity: medium
-    cost: "저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)를 PostgreSQL 어댑터로 구현해 적합 시험(`adapter.graphcheck`)을 통과시키고, 시작점이 운영 모드에서 그것을 고르게 하고(`requireRealAuthenticator`의 거부가 TD-0010과 함께 풀린다), 개발 모드의 메모리 저장소와 `-dev-truth`는 시험과 개발의 길로 남긴다. 길과 계약은 바뀌지 않는다"
+    cost: "저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)를 PostgreSQL 어댑터로 구현해 적합성 테스트(`adapter.graphcheck`)을 통과시키고, 시작점이 운영 모드에서 그것을 고르게 하고(`requireRealAuthenticator`의 거부가 TD-0010과 함께 풀린다), 개발 모드의 메모리 저장소와 `-dev-truth`는 테스트와 개발의 길로 남긴다. 길과 계약은 바뀌지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
     units: [go:adapter.memstore]
   # TD-0013 and TD-0014 are not used: harness/config/ignores.yaml (basis_by_rule) holds those two numbers for Terrarium's items.
   - id: TD-0012
-    title: "시험 태그가 넓다. `memstore`의 `TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber`가 요구사항 여섯 개를 한꺼번에 달고, 보안 시험(`TestApiServeInProductionAlwaysRefuses`와 `devauth`의 시험)이 인증을 말하지 않는 REQ-148에 붙어 있다(조항은 REQ-245)"
+    title: "테스트 태그가 넓다. `memstore`의 `TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber`가 요구사항 여섯 개를 한꺼번에 달고, 보안 테스트(`TestApiServeInProductionAlwaysRefuses`와 `devauth`의 테스트)이 인증을 말하지 않는 REQ-148에 붙어 있다(조항은 REQ-245)"
     severity: low
-    cost: "넓은 태그는 사례마다 `[REQ-NNN]`을 단 하위 시험으로 나누고, 보안 시험의 태그를 REQ-245로 옮긴다. 둘 다 잠긴 시험의 변경이라 `amends_tests`가 든다"
+    cost: "넓은 태그는 사례마다 `[REQ-NNN]`을 단 하위 테스트로 나누고, 보안 테스트의 태그를 REQ-245로 옮긴다. 둘 다 잠긴 테스트의 변경이라 `amends_tests`가 든다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
     units: [go:adapter.memstore, go:adapter.devauth, go:cmd.praxium]
   - id: TD-0015
-    title: "Go 시험 규칙(`GOTEST004`, `GOTEST005`)이 이름으로 닿는 상수(`const want = 3`와 `if got != want`)를 풀지 않고, `_ = err`처럼 에러를 버리는 것도 보지 않는다"
+    title: "Go 테스트 규칙(`GOTEST004`, `GOTEST005`)이 이름으로 닿는 상수(`const want = 3`와 `if got != want`)를 풀지 않고, `_ = err`처럼 에러를 버리는 것도 보지 않는다"
     severity: low
-    cost: "같은 패키지의 상수를 값으로 풀어 조건을 평가하고, `_`에 에러를 담아 버리는 문장을 세어 시험 안에서는 위반으로 한다"
+    cost: "같은 패키지의 상수를 값으로 풀어 조건을 평가하고, `_`에 에러를 담아 버리는 문장을 세어 테스트 안에서는 위반으로 한다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
     units: [harness]
   - id: TD-0016
-    title: "문서 다시 확인이 읽었다는 증거를 남기지 못한다. `reverify`는 같은 메모와 한 번에 열 개가 넘는 대상은 막지만(ADR-0028), 문서와 대상이 모두 그대로인 채 도장만 다시 찍는 것은 된다(기존 시험의 바탕 자료가 그렇다). `ARCHITECTURE.md`의 단위 표와 `architecture.yaml`의 `may_import`를 기계가 견주지 않아 표가 어긋난 채 세 번 확인 기록이 찍혔고, 독립 감사(`docs.ts audit`)는 `ARCHITECTURE.md`에 한 번뿐이다"
+    title: "문서 다시 확인이 읽었다는 증거를 남기지 못한다. `reverify`는 같은 메모와 한 번에 열 개가 넘는 대상은 막지만(ADR-0028), 문서와 대상이 모두 그대로인 채 도장만 다시 찍는 것은 된다(기존 테스트의 바탕 자료가 그렇다). `ARCHITECTURE.md`의 단위 표와 `architecture.yaml`의 `may_import`를 기계가 견주지 않아 표가 어긋난 채 세 번 확인 기록이 찍혔고, 독립 감사(`docs.ts audit`)는 `ARCHITECTURE.md`에 한 번뿐이다"
     severity: medium
-    cost: "대상과 문서의 해시가 모두 같으면 기록을 거부하고(문서 시험의 바탕 자료를 고치는 `amends_tests`가 든다), `ARCHITECTURE.md`의 단위 표를 `architecture.yaml`과 견주는 검사(`DOC*`)를 더하고, 감사 대기열(`docs.ts audit-queue`)의 앞 셋을 독립된 눈으로 읽는 일을 정리 작업에 넣는다"
+    cost: "대상과 문서의 해시가 모두 같으면 기록을 거부하고(문서 테스트의 바탕 자료를 고치는 `amends_tests`가 든다), `ARCHITECTURE.md`의 단위 표를 `architecture.yaml`과 견주는 검사(`DOC*`)를 더하고, 감사 대기열(`docs.ts audit-queue`)의 앞 셋을 독립된 눈으로 읽는 일을 정리 작업에 넣는다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
     units: [harness]
   - id: TD-0017
-    title: "품질 등급표를 운영하는 길이 약하다. 표는 부채 장부, 코드 크기, 문서 확인 기록에서 계산되는데 작성자가 표를 만든 뒤 그 셋 중 하나를 더 바꿔 병합 열 번 중 네 번이 낡은 표였다. 낡음(`QUAL001`)은 알림일 뿐이고 정리 작업이 하루에 한 번 고치며, 정리 작업이 본 문제(CI 실패 등)를 사람의 결정으로 잇는 길이 없다. CI는 커버리지 기록을 만들지만(ADR-0028) 커밋하지 않아서 main의 표에는 정리 작업이 기록한 날의 값만 있다"
+    title: "품질 등급표를 운영하는 길이 약하다. 표는 부채 대장, 코드 크기, 문서 확인 기록에서 계산되는데 작성자가 표를 만든 뒤 그 셋 중 하나를 더 바꿔 병합 열 번 중 네 번이 낡은 표였다. 낡음(`QUAL001`)은 알림일 뿐이고 정리 작업이 하루에 한 번 고치며, 정리 작업이 본 문제(CI 실패 등)를 사람의 결정으로 잇는 길이 없다. CI는 커버리지 기록을 만들지만(ADR-0028) 커밋하지 않아서 main의 표에는 정리 작업이 기록한 날의 값만 있다"
     severity: low
     cost: "main에 합쳐진 뒤 봇이 표와 기록을 한 번에 새로 만들어 올리게 하거나 변경의 마지막 단계에서만 만들게 한다. 정리 작업의 보고가 열린 이슈나 담당자 알림으로 이어지게 한다"
     created: "2026-11-13"
@@ -132,7 +132,7 @@ items:
   - id: TD-0018
     title: "스스로 선언하는 면제가 남아 있다. API 계약의 `x-safe`는 자기 선언이라 안전하다고 적은 POST가 `Idempotency-Key` 검사(`API013`)를 건너뛴다(지금 길 24개는 모두 GET이라 잠복). `breaks_contract`는 이유 40자만 요구한다. Go 부채 검사는 첫 줄의 `debt-ok` 하나(`waiverOn(file, 1)`)가 파일 안의 모든 함수 한도를 면제한다"
     severity: low
-    cost: "`api-contract.yaml`에 `safe_posts` 허용 목록을 두고 `x-safe`는 거기 있는 길에만 인정한다. 첫 줄 면제는 파일 길이 한도에만 쓰게 좁힌다(잠긴 시험의 변경이라 `amends_tests`가 든다)"
+    cost: "`api-contract.yaml`에 `safe_posts` 허용 목록을 두고 `x-safe`는 거기 있는 길에만 인정한다. 첫 줄 면제는 파일 길이 한도에만 쓰게 좁힌다(잠긴 테스트의 변경이라 `amends_tests`가 든다)"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open

@@ -1,7 +1,7 @@
 /**
- * DOC096 (ADR-0180, notice only): a table of "시험" rows says what is tested; each row of a built feature should
- * carry the path of the test. Two kinds of tables count: any table under a heading that contains "시험", and any
- * table with a column headed "시험 파일". A row with a path to an existing test file passes; a row marked "예정"
+ * DOC096 (ADR-0180, notice only): a table of "테스트" rows says what is tested; each row of a built feature should
+ * carry the path of the test. Two kinds of tables count: any table under a heading that contains "테스트", and any
+ * table with a column headed "테스트 파일". A row with a path to an existing test file passes; a row marked "예정"
  * (planned) is skipped. The notice says how many rows lack a path, per document.
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -10,7 +10,7 @@ import { splitFrontMatter } from "../common";
 import { listFiles } from "../files";
 
 export const TEST_ROWS_CODE = "DOC096";
-const PATH_COLUMN = "시험 파일";
+const PATH_COLUMN = "테스트 파일";
 
 const cells = (line: string): string[] =>
   line
@@ -57,7 +57,7 @@ function tableRows(body: string): TableRow[] {
   for (const line of body.split("\n")) {
     if (line.trimStart().startsWith("```")) inFence = !inFence;
     if (inFence) continue;
-    if (/^#{1,6}\s/.test(line)) inTestSection = line.includes("시험");
+    if (/^#{1,6}\s/.test(line)) inTestSection = line.includes("테스트");
     if (!isTable(line)) header = null;
     else if (header === null) header = cells(line);
     else if (!isSeparator(line)) rows.push({ header, line, inTestSection });
@@ -97,6 +97,6 @@ export function testRowNotes(root: string, docs: readonly string[]): string[] {
   const total = reports.reduce((sum, r) => sum + r.missing, 0);
   const list = reports.map((r) => `${r.file} (${r.missing}/${r.rows})`).join(", ");
   return [
-    `NOTE docs [${TEST_ROWS_CODE}] 시험 표의 줄 ${total}개(문서 ${reports.length}개)에 시험 파일 경로가 없음: ${list}`,
+    `NOTE docs [${TEST_ROWS_CODE}] 테스트 표의 줄 ${total}개(문서 ${reports.length}개)에 테스트 파일 경로가 없음: ${list}`,
   ];
 }

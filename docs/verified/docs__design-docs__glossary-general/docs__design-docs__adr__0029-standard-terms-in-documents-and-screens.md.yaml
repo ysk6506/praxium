@@ -1,0 +1,7 @@
+doc: "docs/design-docs/glossary-general.md"
+target: "docs/design-docs/adr/0029-standard-terms-in-documents-and-screens.md"
+hash: "766ca73ec8ee0fa6"
+date: "2026-11-13"
+note: "glossary-general 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+text_changed: false
+doc_hash: "c5b0dc55d5202e1d"

@@ -7,7 +7,7 @@ const table = (...rows: string[]): string =>
   goLines(
     "# Architecture",
     "",
-    "| 모듈 | 라이선스 | 까닭 | 쓰는 단위 |",
+    "| 모듈 | 라이선스 | 이유 | 쓰는 단위 |",
     "|---|---|---|---|",
     ...rows,
   );
@@ -77,7 +77,7 @@ describe("Go modules: go.mod is read [REQ-239]", () => {
       "| 구분 | 무엇 | 없을 때 |",
       "|---|---|---|",
       "| 필수 | `not-a-module` | x |",
-      "| 모듈 | 라이선스 | 까닭 | 쓰는 단위 |",
+      "| 모듈 | 라이선스 | 이유 | 쓰는 단위 |",
       "|---|---|---|---|",
       "| `example.test/one` | MIT | parses a format | `core.kernel` |",
       "| (아직 없다) | | | |",
