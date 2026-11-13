@@ -39,7 +39,7 @@ func newClusterWorld(t *testing.T, uid string) *clusterWorld {
 }
 
 // inside adds an object of a type that is identified inside the cluster and its link to the cluster.
-func (cw *clusterWorld) inside(t *testing.T, typ, name string) {
+func (cw *clusterWorld) placeInside(t *testing.T, typ, name string) {
 	t.Helper()
 	up := ObjectUpsert{Type: cw.u.fx.typeID(typ), Name: name, Attrs: map[int]Attr{cw.nameAttr: fact(name)},
 		Key: []KeyPart{{Kind: PartContext, Ref: "lt.part_of", Objects: []ObjectID{cw.cluster}},
@@ -52,39 +52,39 @@ func (cw *clusterWorld) inside(t *testing.T, typ, name string) {
 	cw.links = append(cw.links, LinkUpsert{Type: cw.partOf, Src: id, Dst: cw.cluster, Grade: model.GradeFact, Basis: model.BasisConfigured})
 }
 
-func (cw *clusterWorld) apply() error {
+func (cw *clusterWorld) applyAll() error {
 	_, err := cw.u.a.Apply(cw.u.ctx, cw.u.kg.ID, cw.u.lease, Batch{Kind: BatchSync, Objects: cw.upserts, Links: cw.links})
 	return err
 }
 
-// [REQ-260]
+// [REQ-261]
 func TestACardinalityBelongsToABindingNotToALinkType(t *testing.T) {
 	// A cluster holds one control plane (a 1:1 binding of PART_OF) and any number of namespaces (an N:1 binding of
 	// the same link type): the namespaces do not count against the control plane.
 	cw := newClusterWorld(t, "k8s-A")
-	cw.inside(t, "ControlPlane", "cp")
-	cw.inside(t, "Namespace", "ns-one")
-	cw.inside(t, "Namespace", "ns-two")
-	if err := cw.apply(); err != nil {
+	cw.placeInside(t, "ControlPlane", "cp")
+	cw.placeInside(t, "Namespace", "ns-one")
+	cw.placeInside(t, "Namespace", "ns-two")
+	if err := cw.applyAll(); err != nil {
 		t.Fatalf("a cluster with one control plane and two namespaces: %v", err)
 	}
 	// A second control plane breaks the 1:1 binding, in the same batch as in a later one.
 	again := newClusterWorld(t, "k8s-B")
-	again.inside(t, "ControlPlane", "cp-one")
-	again.inside(t, "ControlPlane", "cp-two")
-	if err := again.apply(); kernel.CodeOf(err) != CodeCardinality {
+	again.placeInside(t, "ControlPlane", "cp-one")
+	again.placeInside(t, "ControlPlane", "cp-two")
+	if err := again.applyAll(); kernel.CodeOf(err) != CodeCardinality {
 		t.Fatalf("two control planes in one batch: %v", err)
 	}
 	later := newClusterWorld(t, "k8s-A")
 	later.u = cw.u
 	later.upserts, later.links = nil, nil
-	later.inside(t, "ControlPlane", "cp-extra")
-	if err := later.apply(); kernel.CodeOf(err) != CodeCardinality {
+	later.placeInside(t, "ControlPlane", "cp-extra")
+	if err := later.applyAll(); kernel.CodeOf(err) != CodeCardinality {
 		t.Fatalf("a second control plane in a later batch: %v", err)
 	}
 	// A namespace has one cluster: the N:1 binding limits its outgoing links.
 	two := newClusterWorld(t, "k8s-C")
-	two.inside(t, "Namespace", "ns")
+	two.placeInside(t, "Namespace", "ns")
 	extra := two.links[0]
 	other := ObjectUpsert{Type: two.upserts[0].Type, Name: "other", Attrs: two.upserts[0].Attrs,
 		Key: []KeyPart{{Kind: PartScheme, Ref: "is.k8s_cluster_uid", Value: "k8s-D"}}}
@@ -95,7 +95,7 @@ func TestACardinalityBelongsToABindingNotToALinkType(t *testing.T) {
 	extra.Dst = otherID
 	two.upserts = append(two.upserts, other)
 	two.links = append(two.links, extra)
-	if err := two.apply(); kernel.CodeOf(err) != CodeCardinality {
+	if err := two.applyAll(); kernel.CodeOf(err) != CodeCardinality {
 		t.Fatalf("a namespace in two clusters: %v", err)
 	}
 }

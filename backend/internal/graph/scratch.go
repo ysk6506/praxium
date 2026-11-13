@@ -181,6 +181,21 @@ func (s *ScratchStore) ApplyChunk(_ context.Context, w ChunkWrite) error {
 	if w.ExpectedSeq != s.head.AppliedSeq {
 		return kernel.Errorf(CodeHeadMoved, "expected applied_seq %d, the head is at %d", w.ExpectedSeq, s.head.AppliedSeq)
 	}
+	s.applyRows(w)
+	s.applyIdentifiers(w.Identifiers)
+	s.events = append(s.events, w.Events...)
+	if w.Order != nil {
+		s.order = append(s.order, *w.Order)
+	}
+	s.head = w.Head.Clone()
+	if w.Serve {
+		s.kg.State = StateServing
+	}
+	return nil
+}
+
+// applyRows replaces the rows the chunk closes with the rows it opens.
+func (s *ScratchStore) applyRows(w ChunkWrite) {
 	for _, c := range w.Objects {
 		if c.Old != nil {
 			delete(s.objects, c.Old.ID)
@@ -200,7 +215,11 @@ func (s *ScratchStore) ApplyChunk(_ context.Context, w ChunkWrite) error {
 	for _, v := range w.Volatile {
 		s.volatile[scratchKey{v.Object, v.AttrNo}] = v.Clone()
 	}
-	for _, c := range w.Identifiers {
+}
+
+// applyIdentifiers opens the records the chunk opens and drops the ones it closes: no history is kept.
+func (s *ScratchStore) applyIdentifiers(changes []IdentifierChange) {
+	for _, c := range changes {
 		if !c.Closes {
 			s.idents = append(s.idents, c.Record)
 			continue
@@ -213,15 +232,6 @@ func (s *ScratchStore) ApplyChunk(_ context.Context, w ChunkWrite) error {
 		}
 		s.idents = kept
 	}
-	s.events = append(s.events, w.Events...)
-	if w.Order != nil {
-		s.order = append(s.order, *w.Order)
-	}
-	s.head = w.Head.Clone()
-	if w.Serve {
-		s.kg.State = StateServing
-	}
-	return nil
 }
 
 // Seal implements Writer.
@@ -286,6 +296,15 @@ func (s *ScratchStore) Snapshot(_ context.Context, rp ReadPoint) (Snapshot, erro
 	if rp.Generation != 0 && rp.Generation != s.kg.Generation {
 		return nil, kernel.Errorf(CodeGenerationChanged, "generation %d, the KG is at %d", rp.Generation, s.kg.Generation)
 	}
+	info, err := s.readInfo(rp)
+	if err != nil {
+		return nil, err
+	}
+	return scratchSnap{s: s, info: info}, nil
+}
+
+// readInfo says what a read point reads. Only the newest state is there, so a read at an older place is refused.
+func (s *ScratchStore) readInfo(rp ReadPoint) (SnapshotInfo, error) {
 	info := SnapshotInfo{KG: rp.KG, Generation: s.kg.Generation, Seq: s.head.ReadableThrough, Volatile: VolatileLatest}
 	switch rp.Kind {
 	case ReadLatest:
@@ -293,25 +312,25 @@ func (s *ScratchStore) Snapshot(_ context.Context, rp ReadPoint) (Snapshot, erro
 		info.Seq = s.head.AppliedSeq
 	case ReadSeq:
 		if rp.Seq > s.head.ReadableThrough || rp.Seq < 0 {
-			return nil, kernel.Errorf(CodeNotReadable, "change number %d is not readable: readable_through is %d", rp.Seq, s.head.ReadableThrough)
+			return info, kernel.Errorf(CodeNotReadable, "change number %d is not readable: readable_through is %d", rp.Seq, s.head.ReadableThrough)
 		}
 		if rp.Seq != s.head.ReadableThrough {
-			return nil, scratchUnsupported("reads at an older change number")
+			return info, scratchUnsupported("reads at an older change number")
 		}
 		info.Volatile = VolatileOmitted
 	case ReadVersion:
 		v, ok := s.sealed(rp.Version)
 		if !ok {
-			return nil, kernel.Errorf(CodeKGNotFound, "no version %q", rp.Version)
+			return info, kernel.Errorf(CodeKGNotFound, "no version %q", rp.Version)
 		}
 		if v.SealedSeq != s.head.ReadableThrough {
-			return nil, scratchUnsupported("reads at an older version")
+			return info, scratchUnsupported("reads at an older version")
 		}
 		info.Seq, info.Version, info.Volatile = v.SealedSeq, v.ID, VolatileOmitted
 	default:
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "unknown read kind %d", rp.Kind)
+		return info, kernel.Errorf(kernel.CodeInvalidValue, "unknown read kind %d", rp.Kind)
 	}
-	return scratchSnap{s: s, info: info}, nil
+	return info, nil
 }
 
 func (s *ScratchStore) sealed(id VersionID) (Version, bool) {

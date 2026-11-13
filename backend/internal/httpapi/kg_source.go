@@ -29,23 +29,14 @@ func (c *call) readFilter() query.ReadFilter {
 	return query.NewGrants(c.s.reg, true, query.Grant{Max: model.SensitivityOpen})
 }
 
-// fail maps an error of the storage or of the queries to a code of the catalogue.
+// failErr maps an error of the storage or of the queries to a code of the catalogue.
 func (c *call) failErr(err error) {
-	switch kernel.CodeOf(err) {
-	case query.CodeHiddenFilter:
-		c.fail("permission.hidden_attribute", map[string]any{"detail": err.Error()})
-	case query.CodeVolatileFilter, query.CodeFilterField:
-		c.fail("invalid_input.filter_field_unknown", map[string]any{"detail": err.Error()})
-	case query.CodeFilterOp:
-		c.fail("invalid_input.filter_op_unknown", map[string]any{"detail": err.Error()})
-	case query.CodeScopeUnsupported:
-		c.fail("invalid_input.param_invalid", map[string]any{"param": "scope_id", "detail": err.Error()})
-	case query.CodeCursorInvalid:
-		c.fail("invalid_input.cursor_invalid", nil)
-	case query.CodeLimitInvalid:
-		c.fail("invalid_input.limit_invalid", map[string]any{"min": 1, "max": query.MaxLimit})
-	case query.CodeIncludeUnknown:
-		c.fail("invalid_input.include_unknown", map[string]any{"detail": err.Error()})
+	code := kernel.CodeOf(err)
+	if problem, ok := queryProblems[code]; ok {
+		c.fail(problem.code, problem.params(err))
+		return
+	}
+	switch code {
 	case query.CodeObjectNotFound:
 		c.notFound("object")
 	case graph.CodeKGNotFound:
@@ -53,15 +44,34 @@ func (c *call) failErr(err error) {
 	case graph.CodeGenerationChanged:
 		c.fail("conflict.generation_changed", nil)
 	case graph.CodeWaitTimeout, graph.CodeNotReadable:
-		c.fail("stale.min_seq_not_reached", map[string]any{"detail": err.Error()})
+		c.fail("stale.min_seq_not_reached", detail(err))
 	case kernel.CodeInvalidValue:
-		c.fail("invalid_input.field", map[string]any{"detail": err.Error()})
+		c.fail("invalid_input.field", detail(err))
 	case kernel.CodeUnsupported:
-		c.fail("server.unavailable", map[string]any{"detail": err.Error()})
+		c.fail("server.unavailable", detail(err))
 	default:
 		c.s.log.Error("a read of the KG failed", "error", err, "trace_id", c.trace)
 		c.fail("server.internal", nil)
 	}
+}
+
+func detail(err error) map[string]any { return map[string]any{"detail": err.Error()} }
+
+// queryProblem is the code of the catalogue a refusal of the queries becomes, and its parameters.
+type queryProblem struct {
+	code   string
+	params func(error) map[string]any
+}
+
+var queryProblems = map[kernel.Code]queryProblem{
+	query.CodeHiddenFilter:     {"permission.hidden_attribute", detail},
+	query.CodeVolatileFilter:   {"invalid_input.filter_field_unknown", detail},
+	query.CodeFilterField:      {"invalid_input.filter_field_unknown", detail},
+	query.CodeFilterOp:         {"invalid_input.filter_op_unknown", detail},
+	query.CodeIncludeUnknown:   {"invalid_input.include_unknown", detail},
+	query.CodeCursorInvalid:    {"invalid_input.cursor_invalid", func(error) map[string]any { return nil }},
+	query.CodeLimitInvalid:     {"invalid_input.limit_invalid", func(error) map[string]any { return map[string]any{"min": 1, "max": query.MaxLimit} }},
+	query.CodeScopeUnsupported: {"invalid_input.param_invalid", func(err error) map[string]any { return map[string]any{"param": "scope_id", "detail": err.Error()} }},
 }
 
 // graphReady says whether the server has a store; without one the KG routes answer 503.

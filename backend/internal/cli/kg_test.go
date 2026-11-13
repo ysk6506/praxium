@@ -2,13 +2,13 @@ package cli_test
 
 import (
 	"bytes"
+	"embed"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
-	"os"
-	"path/filepath"
+	"path"
 	"reflect"
 	"strings"
 	"testing"
@@ -24,9 +24,14 @@ type kgFake struct {
 	got []seen
 }
 
+// fixtures holds the answers the fake server gives and the golden files of the commands.
+//
+//go:embed testdata
+var fixtures embed.FS
+
 func readFixture(t *testing.T, name string) string {
 	t.Helper()
-	raw, err := os.ReadFile(filepath.Join("testdata", name))
+	raw, err := fixtures.ReadFile(path.Join("testdata", name))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -101,7 +106,7 @@ func TestKGCommandsPrintWhatTheServerAnswered(t *testing.T) {
 			if code != 0 {
 				t.Fatalf("code %d: %s", code, errOut)
 			}
-			want, err := os.ReadFile(filepath.Join("testdata", "golden", tc.golden))
+			want, err := fixtures.ReadFile(path.Join("testdata", "golden", tc.golden))
 			if err != nil {
 				t.Fatal(err)
 			}

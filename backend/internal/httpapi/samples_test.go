@@ -25,12 +25,13 @@ import (
 //   - without an override the body is the example the contract itself gives
 //     for the request, and the status is 200.
 //
-// A handler's own test file fills these in an init function. An operation whose
-// request cannot be built, or that does not answer as its sample says, fails
-// the conformance tests: there is no way to leave a route unexercised.
+// A route that needs more than the contract gives is added to these two tables. An
+// operation whose request cannot be built, or that does not answer as its
+// sample says, fails the conformance tests: there is no way to leave a route unexercised.
 var pathSamples = map[string]string{
 	"type_id": "ot.site", "link_type_id": "lt.located_in", "action_type_id": "ac.acknowledge_alarm",
 	"trait_id": "tr.common", "scheme_id": "is.array_system_id", "code": "auth.token_missing",
+	"kg": "main", "object_id": sampleRackID,
 }
 
 // sampleSpec overrides what a sample would otherwise be.
@@ -43,7 +44,11 @@ type sampleSpec struct {
 	Status int
 }
 
-var requestSamples = map[string]sampleSpec{}
+var requestSamples = map[string]sampleSpec{
+	"POST /v1/kgs/{kg}/questions/get":       {Body: `{"object_id":"` + sampleRackID + `","include":["attributes","link_counts"]}`},
+	"POST /v1/kgs/{kg}/questions/neighbors": {Body: `{"object_id":"` + sampleRackID + `","direction":"in","max_steps":2,"shape":"items"}`},
+	"POST /v1/kgs/{kg}/questions/find":      {Body: `{"object_type":"Rack","limit":2,"shape":"items"}`},
+}
 
 // sample is one request for an operation.
 type sample struct {

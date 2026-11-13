@@ -58,6 +58,8 @@ POST /v1/kgs/main/questions/paths
 - `impact`, `paths`, `exposure`은 질의 엔진이 답할 수 있어요. 투영이 아직 안 만들어졌으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 답했는지 보여 줘요.
 - 계산은 전체 그래프에서 하고, 가려진 객체는 결과에 안 나와요. `paths`의 가려진 걸음은 "가려진 객체 하나"로 보여요.
 
+**첫 셋이 선 모양**(ADR-0027, 계약의 `kg` 태그). 길 여덟이 계약에 있다: `GET /v1/kgs`, `/v1/kgs/{kg}`, `/objects`, `/objects/{object_id}`, `/objects/{object_id}/links`와 `POST /v1/kgs/{kg}/questions/find|get|neighbors`. 짝의 GET은 같은 질의를 부르고 목록 길은 `shape` 기본이 `items`다. POST의 몸은 질의의 칸을 평평하게 받고(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`(ISO 8601 기간), `max_staleness`, `limit`, `cursor`, `shape`), 모르는 칸은 칸별 `422`, JSON이 아닌 몸은 `415`다. 답의 봉투는 `meta`로 간다(`as_of`는 `kg`와 `volatile_as_of`를 품고, `hidden`은 `has_hidden`을 달고, `freshness`, `evidence`, `result_complete`가 함께 간다). 저장소가 없는 서버는 `503 server.unavailable`(`reason: no_store`)로 답한다. 아직 없는 것: `objects:batch-get`, `issue-reports`, 나머지 일곱 질의, `/questions/{question_name}`의 일반 길.
+
 ### 1-3. 버전, 변경, 범위, 고정
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
