@@ -4,6 +4,8 @@ import path from "node:path";
 import YAML from "yaml";
 import { reverify } from "../checks/doc-audit";
 import { discoverDocs, loadDocsConfig } from "../checks/doc-config";
+import { docState } from "../checks/doc-freshness";
+import { DocContext } from "../checks/doc-targets";
 import { findRoot, splitFrontMatter } from "../common";
 import { miniRepo } from "./mini-repo";
 
@@ -27,14 +29,22 @@ export function front(fields: Record<string, unknown> = {}): string {
 export const adr = (fields: Record<string, unknown> = {}, body = "# D\nWe do X.\n"): string =>
   `${front({ kind: "decision", enforced_by: ["ARCH010"], follows: undefined, ...fields })}${body}`;
 
-/** Verify, as of `now`, every document that only follows package.json (the default fixture document). */
+/**
+ * Verify, as of `now`, every document that only follows package.json (the default fixture document) and has no current
+ * record yet. A document that is already verified keeps its record: a note is not written twice (ADR-0028).
+ */
 export function verifyDefaults(root: string, now: string = TODAY): void {
   const config = loadDocsConfig(root);
   for (const file of discoverDocs(root, config)) {
     const { data } = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
     const follows = Array.isArray(data?.follows) ? data.follows : [];
-    if (data && data.kind !== "decision" && !data.covers && follows.join() === "package.json")
-      reverify(root, file, "fixture", now);
+    const wanted =
+      data && data.kind !== "decision" && !data.covers && follows.join() === "package.json";
+    if (!wanted) continue;
+    const ctx = new DocContext(root);
+    const state = docState(ctx, file, data);
+    if (state.records.size === 0 || state.stale.length > 0)
+      reverify(root, file, `fixture ${ctx.files.hash("package.json")}`, now);
   }
 }
 

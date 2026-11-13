@@ -63,7 +63,11 @@ jobs:
           {
             echo "### Path: $([ "$docs_only" = true ] && echo light || echo full)"
             echo "$reason"
-            [ -n "${others:-}" ] && printf '%s' "$others" | head -20 | sed 's/^/- /'
+            # An `if`, not `[ -n ... ] && ...`: with nothing to list (every push to main) the test would end the
+            # step with status 1 and fail the job.
+            if [ -n "${others:-}" ]; then
+              printf '%s' "$others" | head -20 | sed 's/^/- /'
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
   lint-types:
@@ -93,6 +97,10 @@ jobs:
         run: pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
         run: pnpm tsx harness/src/run-all.ts --with-coverage
+      # The quality table's coverage column is read from a record made here, from the coverage this job just measured
+      # (docs/generated/coverage-record.json, not committed). Without it every coverage cell says "unknown".
+      - name: Record the measured coverage
+        run: pnpm tsx harness/src/checks/quality.ts record > /dev/null
       - name: Quality grades of this change
         if: always()
         run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"

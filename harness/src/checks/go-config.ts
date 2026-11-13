@@ -20,7 +20,10 @@ export interface GoUnit {
   readonly name: string;
   /** Repo-relative folder of the unit's package. */
   readonly path: string;
+  /** Units that production code and test files may import. */
   readonly mayImport: readonly string[];
+  /** Units that only `_test.go` files may import, on top of `mayImport` (ADR-0028). */
+  readonly testMayImport: readonly string[];
 }
 
 export interface GoConfig {
@@ -32,23 +35,32 @@ export interface GoConfig {
   readonly compositionRoot: string;
   /** Module path -> units allowed to import it. */
   readonly thirdParty: ReadonlyMap<string, readonly string[]>;
-  /** Standard-library package -> units allowed to import it (the core knows no operating system or network). */
+  /**
+   * Standard-library package -> who may import it (the core knows no operating system or network). An entry is a
+   * unit name (or pattern) or, when it ends in `.go`, one file (ADR-0028).
+   */
   readonly restrictedStdlib: ReadonlyMap<string, readonly string[]>;
   /** Files (exact) or folders (ending in `/`) that may read the clock, randomness and the environment. */
   readonly nondeterminismAllowed: readonly string[];
   /** The document holding the table of Go modules (REQ-239). */
   readonly dependencyTable: string;
+  /**
+   * Package folders or files of non-test code that locked tests lean on (a conformance suite, a case table). They are
+   * fingerprinted into every test that reaches them, like a test helper is (ADR-0028).
+   */
+  readonly lockedSupport: readonly string[];
 }
 
 interface RawGo {
   root: string;
   module: string;
-  units: Record<string, { path: string; may_import: string[] }>;
+  units: Record<string, { path: string; may_import: string[]; test_may_import?: string[] }>;
   composition_root: string;
   third_party?: Record<string, string[]>;
   restricted_stdlib?: Record<string, string[]>;
   nondeterminism_allowed?: string[];
   dependency_table?: string;
+  locked_support?: string[];
 }
 
 const trimSlash = (p: string): string => p.replace(/\/$/, "");
@@ -65,12 +77,14 @@ export function loadGoConfig(root: string): GoConfig | undefined {
       name,
       path: trimSlash(spec.path),
       mayImport: spec.may_import,
+      testMayImport: spec.test_may_import ?? [],
     })),
     compositionRoot: raw.composition_root,
     thirdParty: new Map(Object.entries(raw.third_party ?? {})),
     restrictedStdlib: new Map(Object.entries(raw.restricted_stdlib ?? {})),
     nondeterminismAllowed: raw.nondeterminism_allowed ?? [],
     dependencyTable: raw.dependency_table ?? "ARCHITECTURE.md",
+    lockedSupport: (raw.locked_support ?? []).map(trimSlash),
   };
 }
 

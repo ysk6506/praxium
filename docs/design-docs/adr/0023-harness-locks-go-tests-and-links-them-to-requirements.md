@@ -35,6 +35,9 @@ amends_tests:
   - harness/src/test-support/go-repo.ts::=BASE
 test_change_reason: Go 시험에도 "실패를 부를 길이 없는 시험은 안 된다"(GOTEST003)가 적용되어, Go 하네스 시험의 작은 Go 모듈 견본(go-repo.ts)에서 cmd/app의 시험이 로그만 남기던 것을 실제로 실패할 수 있는 시험으로 바꾼다. 견본의 뜻은 그대로이고 요구사항이 아닌 견본 데이터만 바뀐다.
 decision_hash: b0f80c89d28d385a
+amended_by:
+  - adr: "0028"
+    what: Go 시험 규칙의 이식과 잠금의 지문 범위
 ---
 # ADR-0023 하네스가 Go 시험을 잠그고 요구사항에 잇는다
 

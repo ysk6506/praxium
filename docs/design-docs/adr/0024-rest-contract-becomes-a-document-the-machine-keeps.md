@@ -45,6 +45,9 @@ amends:
   - adr: "0019"
     what: 코어 단위 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)
 decision_hash: ee9ba83fca08db6f
+amended_by:
+  - adr: "0028"
+    what: "`core.kernel`이 `os`를 import하는 범위"
 ---
 # ADR-0024 REST 계약이 기계가 지키는 문서가 된다
 

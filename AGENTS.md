@@ -47,8 +47,9 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 | 하지 말 것 | 강제 장치 |
 |---|---|
 | 테스트가 실패하는데 테스트를 고치기 | 테스트는 잠겨 있다 (`TLOCK*`, Go 시험 함수도 `go:<디렉터리>::<함수>` 키로). 코드를 고친다. 요구사항이 바뀐 게 확실할 때만 결정 기록의 `amends_tests` 절차 |
-| skip/only/삭제/약화, 커버리지 제외 | `TEST*`, `TCFG*`, `COV*` |
-| 단위 의존 방향 위반, 다른 단위 내부 import | `ARCH010`, `ARCH011`, Go는 `GOARCH010`, `GOARCH011` |
+| skip/only/삭제/약화, 커버리지 제외. Go는 상수로 정해지는 단언, 에러를 삼키는 시험, 다른 시험을 가리는 `TestMain` | `TEST*`, `TCFG*`, `COV*`, Go는 `GOTEST004`~`GOTEST006` |
+| 단위 의존 방향 위반, 다른 단위 내부 import. 시험 파일에만 허용된 단위(`test_may_import`)를 제품 코드에서 import | `ARCH010`, `ARCH011`, Go는 `GOARCH010`, `GOARCH011` |
+| Go import 경로를 이스케이프로 적기, 시험 파일에 빌드 제약(`//go:build`, `_linux_test.go`) 달기, 실행 파일·시험 바이너리 커밋 | `GOARCH054`, `GOARCH055`, `GOARCH056` |
 | 선언 안 된 패키지·Go 모듈 추가 | `ARCH020`, Go는 `GOARCH020`, `GODEP010` — ADR + 계약 등록 + ARCHITECTURE.md의 모듈 표 |
 | `harness/`, 설정 파일, ADR, 이 파일 수정 | 보호 경로 (`PROT001`) — 같은 변경에 봉인된 ADR 필요 |
 | 검사 끄기 주석(`biome-ignore`, Go의 `//nolint` 등)·건너뛴 테스트·CI `continue-on-error`를 이유와 근거 없이 두기, 그 수를 늘리기 | `IGN001`~`IGN007`, Go는 `GOIGN001`~`GOIGN004` — 같은 줄이나 윗줄에 이유와 `TD-NNNN`(열린 부채) 또는 `ADR-NNNN`을 적는다. 원인을 고치는 쪽이 먼저다 |
@@ -75,11 +76,11 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 
 - **`DOC010`** → 문서를 코드와 대조해 고치고 `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "확인한 것"`. 확인 상태는 `docs/verified/`의 (문서, 대상) 기록에 있다.
 - **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고(Go는 `Test` 함수 바로 위 주석 `// [REQ-NNN] [REQ-MMM]`), 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
-- **새 단위(폴더) 추가** → 같은 변경에서 `harness/config/architecture.yaml`에 등록하고(Go는 `go:` 절, 폴더는 `backend/internal/<단위>`) ARCHITECTURE.md를 고친다(보호 경로라 ADR이 필요하다).
+- **새 단위(폴더) 추가** → 같은 변경에서 `harness/config/architecture.yaml`에 등록하고(Go는 `go:` 절, 폴더는 `backend/internal/<단위>`) ARCHITECTURE.md를 고친다(보호 경로라 ADR이 필요하다). 시험에서만 쓰는 단위는 `may_import`가 아니라 `test_may_import`에 적는다.
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결하고, `updates_docs`에 바꾸는 문서를 적어 같은 변경에서 고친다. 앞선 결정의 일부를 바꾸면 `amends`를 적고 `docs.ts link-amends <ADR>`를 돌린다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
-- **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정.
-- **정리 작업** → `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를, `pnpm tsx harness/src/checks/docs.ts generate`로 [결정 목록](docs/generated/decisions.md)과 색인의 문서 목록을 새로 만든다. 일반 변경은 이 생성물을 커밋하지 않는다. 이어서 `docs.ts audit-queue`의 앞 셋을 독립된 눈으로 읽고 `docs.ts audit <문서> --note "한 줄"`.
+- **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정. 하한이 잰 값보다 1점 넘게 낮으면 `COV006`, `GOCOV003`으로 실패한다.
+- **정리 작업** → `pnpm test`로 커버리지를 잰 뒤 `pnpm tsx harness/src/checks/quality.ts record`로 기록하고(CI도 같은 기록을 만든다), `pnpm quality write`로 [품질 등급표](docs/generated/quality.md)를, `pnpm tsx harness/src/checks/docs.ts generate`로 [결정 목록](docs/generated/decisions.md)과 색인의 문서 목록을 새로 만든다. 일반 변경은 이 생성물을 커밋하지 않는다. 이어서 `docs.ts audit-queue`의 앞 셋을 독립된 눈으로 읽고 `docs.ts audit <문서> --note "한 줄"`.
 
 ## 철학
 

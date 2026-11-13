@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "69c1e6e61e390346"
+hash: "d586ed641cb394ca"
 date: "2026-11-13"
-note: "AGENTS.md와 plan.md의 ADR-0027 변경을 읽고 이 문서의 말과 어긋나지 않음을 확인"
+note: "AGENTS.md와 adr-process.md의 바뀐 곳이 신념 6과 7(잠긴 시험, 부채 래칫)과 맞는지 읽었고 고칠 곳이 없었다"
 text_changed: false
 doc_hash: "c68185f5b10e5ba0"

@@ -14,11 +14,26 @@
  *                                                         os.Exit or log.Fatal outside the composition root)
  * GOARCH051 dot import, or blank import outside the composition root     GOARCH052 clock, randomness or environment
  * GOARCH053 `func init`                                   read outside the designated files (REQ-001)
+ * GOARCH054 import path written with an escape or with characters a package path never has (ADR-0028)
+ * GOARCH055 build constraint on a test file: `//go:build`, `// +build`, an OS or architecture file suffix (ADR-0028)
+ * GOARCH005 test_may_import repeats what may_import already allows (ADR-0028)
+ * GOARCH006 restricted_stdlib or locked_support names a unit or file that does not exist (ADR-0028)
+ * GOARCH056 a compiled binary among the files a commit would take (ADR-0028)
+ *
+ * GOARCH010 reads `may_import` for production files and `may_import` + `test_may_import` for `_test.go` files.
  */
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { type Violation, violation } from "../common";
 import { allowedBy } from "./arch-model";
+import {
+  binaryProblems,
+  checkNamedScopes,
+  constraintProblems,
+  HINT,
+  isFileEntry,
+  PLAIN_PATH,
+} from "./go-arch-rules";
 import {
   type GoConfig,
   type GoFile,
@@ -30,10 +45,6 @@ import {
 } from "./go-config";
 import { selectorsOf } from "./go-lex";
 import { findCycles } from "./import-graph";
-
-const HINT =
-  "If the rule itself is wrong, write an ADR and change the `go:` section of harness/config/architecture.yaml; " +
-  "otherwise change the code.";
 
 /** Packages and calls that make a run depend on the outside world (REQ-001). */
 const NONDETERMINISTIC_IMPORTS = new Set(["math/rand", "math/rand/v2", "crypto/rand"]);
@@ -55,7 +66,6 @@ const EXIT_CALLS = new Set([
   "log.Panicln",
 ]);
 const BANNED_IMPORTS = new Set(["unsafe", "plugin", "C"]);
-
 export function checkStructure(
   root: string,
   config: GoConfig,
@@ -76,19 +86,32 @@ export function checkStructure(
         ),
       );
     }
-    for (const other of unit.mayImport.filter((n) => !n.endsWith(".*") && !names.has(n))) {
+    const listed = [...unit.mayImport, ...unit.testMayImport];
+    for (const other of listed.filter((n) => !n.endsWith(".*") && !names.has(n))) {
       out.push(
         violation(
           "GOARCH004",
           "harness/config/architecture.yaml",
           0,
-          `Go unit '${unit.name}' may import '${other}', which is not a Go unit`,
+          `Go unit '${unit.name}' lists '${other}' as importable, but it is not a Go unit`,
           `Fix the name. ${HINT}`,
+        ),
+      );
+    }
+    for (const other of unit.testMayImport.filter((n) => allowedBy(unit.mayImport, n))) {
+      out.push(
+        violation(
+          "GOARCH005",
+          "harness/config/architecture.yaml",
+          0,
+          `Go unit '${unit.name}' lists '${other}' in test_may_import, but may_import already allows it`,
+          `Remove it from test_may_import: that list is for what only tests may import. ${HINT}`,
         ),
       );
     }
     out.push(...checkUnitRoot(unit, files));
   }
+  out.push(...checkNamedScopes(root, config, names));
   for (const file of files.filter((f) => !f.unit)) {
     out.push(
       violation(
@@ -164,13 +187,19 @@ function internalImport(
   }
   if (!target || target === site.unit) return [];
   const out: Violation[] = [];
-  if (!allowedBy(site.unit.mayImport, target.name)) {
+  const allowed =
+    allowedBy(site.unit.mayImport, target.name) ||
+    (site.file.isTest && allowedBy(site.unit.testMayImport, target.name));
+  if (!allowed) {
+    const onlyTests = allowedBy(site.unit.testMayImport, target.name);
     out.push(
       violation(
         "GOARCH010",
         site.file.path,
         site.line,
-        `${site.unit.name} must not import ${target.name} (imports ${importPath})`,
+        onlyTests
+          ? `${site.unit.name} may import ${target.name} in test files only (imports ${importPath} from production code)`
+          : `${site.unit.name} must not import ${target.name} (imports ${importPath})`,
         `Depend downward only: move the shared code to a lower layer, or define a port (interface) lower down. ${HINT}`,
       ),
     );
@@ -217,16 +246,22 @@ function moduleImport(config: GoConfig, site: Site, importPath: string): Violati
   ];
 }
 
+/** A file entry of the scope allows that one file; any other entry is a unit name or pattern. */
+function stdlibAllowed(scope: readonly string[], site: Site): boolean {
+  const units = scope.filter((entry) => !isFileEntry(entry));
+  return allowedBy(units, site.unit.name) || scope.includes(site.file.path);
+}
+
 function stdlibImport(config: GoConfig, site: Site, importPath: string): Violation[] {
   const out: Violation[] = [];
   const scope = config.restrictedStdlib.get(importPath);
-  if (scope && !allowedBy(scope, site.unit.name)) {
+  if (scope && !stdlibAllowed(scope, site)) {
     out.push(
       violation(
         "GOARCH021",
         site.file.path,
         site.line,
-        `'${importPath}' in ${site.unit.name}: only ${scope.join(", ")} may know the operating system or the network`,
+        `'${importPath}' in ${site.file.path}: only ${scope.join(", ")} may know the operating system or the network`,
         `Put it behind a port defined in the core and implement the port in an outer unit. ${HINT}`,
       ),
     );
@@ -294,6 +329,12 @@ function importProblems(config: GoConfig, file: GoFile): Violation[] {
   for (const imp of file.imports) {
     const at = (code: string, message: string, fix: string): number =>
       out.push(violation(code, file.path, imp.line, message, fix));
+    if (!PLAIN_PATH.test(imp.path))
+      at(
+        "GOARCH054",
+        `import path ${JSON.stringify(imp.path)} is not written plainly`,
+        "Write the import path as plain text: an escape such as \\x73 hides which package it is from every import rule.",
+      );
     if (BANNED_IMPORTS.has(imp.path))
       at(
         "GOARCH050",
@@ -382,6 +423,7 @@ export function checkConstructs(config: GoConfig, files: readonly GoFile[]): Vio
     ...importProblems(config, file),
     ...callProblems(config, file),
     ...initProblems(file),
+    ...constraintProblems(file),
   ]);
 }
 
@@ -393,5 +435,6 @@ export function run(root: string, config: GoConfig): Violation[] {
     ...violations,
     ...checkCycles(graph),
     ...checkConstructs(config, files),
+    ...binaryProblems(root, config),
   ];
 }

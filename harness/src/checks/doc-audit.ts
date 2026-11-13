@@ -23,6 +23,9 @@ import {
 } from "./doc-records";
 import { DocContext } from "./doc-targets";
 
+/** More targets than this in one call is a stamp, not a reading: verify them in groups with `--target` (ADR-0028). */
+export const MAX_BATCH_TARGETS = 10;
+
 function readDoc(root: string, file: string): { data: Record<string, unknown>; body: string } {
   const { data, body } = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
   if (data === null) throw new Error(`${file} has no front matter`);
@@ -68,6 +71,7 @@ export function reverify(
   const previous = [...state.records.values()].sort((a, b) => b.date.localeCompare(a.date))[0];
   const changed = previous === undefined || previous.doc_hash !== docHash;
   const chosen = chosenTargets(state, file, only);
+  refuseStamps(file, note.trim(), chosen, state.records, only !== undefined);
   for (const target of chosen.filter((t) => state.targets.includes(t))) {
     writeRecord(root, {
       doc: file,
@@ -82,6 +86,28 @@ export function reverify(
   for (const target of state.gone.filter((t) => only === undefined || only === t))
     removeRecord(root, file, target);
   return chosen;
+}
+
+/**
+ * A note is what a reader saw. The same words as the last record of a target say nothing new about it, and one note
+ * for a dozen targets says nothing about each (ADR-0028).
+ */
+function refuseStamps(
+  file: string,
+  note: string,
+  chosen: readonly string[],
+  records: ReadonlyMap<string, VerificationRecord>,
+  named: boolean,
+): void {
+  const repeated = chosen.filter((t) => records.get(t)?.note.trim() === note);
+  if (repeated.length > 0)
+    throw new Error(
+      `the note of ${file} is the same as the one already recorded for ${repeated.join(", ")}: say what you read this time`,
+    );
+  if (!named && chosen.length > MAX_BATCH_TARGETS)
+    throw new Error(
+      `${file} has ${chosen.length} targets to verify at once (at most ${MAX_BATCH_TARGETS}): read them in groups and record each with --target <path> and a note of its own`,
+    );
 }
 
 /** Record that another reader checked `file` against what it covers and follows. */

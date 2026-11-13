@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-audit.ts"
-hash: "b11d3f801472b265"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+hash: "5382939a19876f98"
+date: "2026-11-13"
+note: "doc-audit.ts의 같은 메모와 열 개 초과 거절, doc-decisions.ts의 머리말 문구 변경을 읽고 절차 설명과 잠긴 시험 절차 5항을 고쳤다"
 text_changed: true
-doc_hash: "57f525cdc5d61411"
+doc_hash: "8d4aa902e562a7cd"
