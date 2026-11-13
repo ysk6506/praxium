@@ -1,4 +1,5 @@
-# One vocabulary on every screen (ADR-0002). Enforced by harness/src/checks/ui-words.ts (WORD001).
+# One vocabulary on every screen and in every document (ADR-0002, ADR-0029). Enforced by harness/src/checks/ui-words.ts
+# (WORD001 for source text, WORD003 and WORD004 for documents, see doc-terms.ts).
 # Protected path: change only with an accepted ADR.
 #
 # The check reads the string literals, template text, JSX text and Korean field names of the non-test source files
@@ -6,25 +7,11 @@
 # either an exact phrase or a path glob, and always carries the reason it may stay. Keep patterns narrow: a rule that
 # fires on ordinary prose is worse than no rule.
 #
-# The rules start as Terrarium's (the two products share their words, docs/design-docs/glossary.md). Add a rule when
-# a word is retired here.
+# A rule bans a spelling that the glossary (docs/design-docs/glossary.md) retires. Standard terms are never banned: the
+# rules that banned 회, 횟수, 시드 and 에스컬레이션 were removed or turned around by ADR-0029.
 scan_dirs: [apps/web/src, apps/server/src, packages/core/src]
 
 rules:
-  - id: count-hoe
-    # "회" as a counting word: "3회", "${n}회", "회 중", "5회째", "회차". A Hangul letter on either side means a
-    # longer word (회사, 회색, 개회), so those never match.
-    pattern: '(?<![가-힣])회(?![가-힣])|회째|회차'
-    use: '"번" ("3번", "3번째")'
-
-  - id: count-times
-    pattern: '횟수'
-    use: '"몇 번" or "부른 수" (rewrite the sentence)'
-
-  - id: seed
-    pattern: '시드'
-    use: '"상황" (for the number that rebuilds a world: "다시 만들기 번호")'
-
   - id: entity
     pattern: '개체'
     use: '"객체"'
@@ -34,12 +21,31 @@ rules:
     pattern: '관계 (?:종류|타입|잇기|정의)|라벨·관계|관계를 (?:잇|만들|그어)'
     use: '"링크" ("링크 종류", "링크 잇기")'
 
+  - id: seed
+    # The standard word is "시드" (seed). The coined "씨앗" is the old spelling.
+    pattern: '씨앗'
+    use: '"시드"'
+
   - id: escalation
-    # The glossary retires "에스컬레이션" for "넘기기" (the result is "넘긴 일"). The tool name `escalate` is English
-    # and is not matched.
-    pattern: '에스컬레이션'
-    use: '"넘기기" or "넘긴 일"'
+    # "에스컬레이션" is the standard word (ADR-0029). The coined "넘기기" for it is the old spelling; the tool name
+    # `escalate` is English and is not matched.
+    pattern: '알림 넘기기|넘긴 일|넘기기 기한'
+    use: '"에스컬레이션"'
 
   - id: e2e-heading
     pattern: 'E2E로 가려면'
     use: '"세계 범위" (the tab) or "이 세계에 필요한 액션" (the heading)'
+
+# Documents are read too (ADR-0029). The dictionary is the glossary tables, so there is no second list.
+# mode: report counts the old spellings per document and never fails; fail makes each one a WORD003 failure.
+# The last stage of the terminology clean-up switches `mode` to `fail`.
+documents:
+  mode: report
+  scan: ["docs/**/*.md", README.md, AGENTS.md, ARCHITECTURE.md]
+  # Reference documents are starting material and keep the spellings of their time (ADR-0029).
+  skip:
+    - docs/references/from-terrarium.md
+    - docs/references/owner-requirements-from-terrarium.md
+  dictionary: [docs/design-docs/glossary.md, docs/design-docs/glossary-general.md]
+  # Everyday words with many meanings. They are never dictionary entries; only their compounds are.
+  ambiguous_words: [길, 묶음, 자리, 칸, 쪽, 뜻, 줄, 판, 흐름, 걸음, 차례, 짝, 갈래, 모양, 기록, 단위, 저장소, 일, 답, 표, 벌, 몫, 닿다, 물러나다, 풀기, 맡기, 가려진]

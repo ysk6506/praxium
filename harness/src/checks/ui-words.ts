@@ -1,6 +1,8 @@
 /**
- * One vocabulary on every screen (ADR-0183). The words people read must not drift back to the old ones.
+ * One vocabulary on every screen and in every document (ADR-0029). The words people read must not drift back to the
+ * old ones.
  *
+ * WORD003, WORD004 the old spellings of the glossary in documents: see doc-terms.ts
  * WORD001 a user-visible string (string literal, template text or JSX text of a non-test source file) holds a
  *         banned word from `harness/config/ui-words.yaml`; the message names the word to use instead
  * WORD002 the word list itself is malformed (bad pattern, missing replacement, exception without a reason)
@@ -20,6 +22,7 @@ import {
 } from "../common";
 import { isSourceFile, isTestFile, listFiles, matchesGlob } from "../files";
 import { lineOf, parse, walk } from "../ts-ast";
+import { type DocumentsConfig, documentsReport, perDocument, scanDocuments } from "./doc-terms";
 
 const CONFIG_PATH = "harness/config/ui-words.yaml";
 
@@ -43,6 +46,8 @@ export interface WordRule {
 export interface WordsConfig {
   readonly scan_dirs: readonly string[];
   readonly rules: readonly WordRule[];
+  /** The document-terminology check (ADR-0029). Absent: documents are not read. */
+  readonly documents?: DocumentsConfig;
 }
 
 export interface TextPiece {
@@ -96,7 +101,7 @@ export function checkText(file: string, source: string, rules: readonly WordRule
             file,
             piece.line,
             `"${m[0].trim()}" is an old word on screen (rule ${rule.id})`,
-            `Write ${rule.use} instead. The word list is ${CONFIG_PATH}; the vocabulary is ADR-0183.`,
+            `Write ${rule.use} instead. The word list is ${CONFIG_PATH}; the vocabulary is ADR-0029.`,
           ),
         );
       }
@@ -121,23 +126,52 @@ export function configProblems(config: WordsConfig): Violation[] {
       if (!a.reason || (!a.phrase && !a.path))
         bad(`rule ${rule.id}: an exception needs a phrase or a path, and a reason`);
   }
+  const docs = config.documents;
+  if (docs) {
+    if (docs.mode !== "report" && docs.mode !== "fail") bad("documents.mode is neither report nor fail");
+    if (!docs.scan?.length || !docs.dictionary?.length) bad("documents needs scan and dictionary");
+  }
   return out;
 }
 
-export function run(root: string): Violation[] {
+export function report(root: string): { violations: Violation[]; notes: string[] } {
   const config = loadYaml<WordsConfig>(path.join(root, CONFIG_PATH));
   const problems = configProblems(config);
-  if (problems.length > 0) return problems;
+  if (problems.length > 0) return { violations: problems, notes: [] };
   const out: Violation[] = [];
   const files = listFiles(root, config.scan_dirs, isSourceFile).filter((f) => !isTestFile(f));
   for (const file of files)
     out.push(...checkText(file, readText(path.join(root, file)), config.rules));
-  return out;
+  const docs = config.documents ? documentsReport(root, config.documents) : { violations: [], notes: [] };
+  return { violations: [...out, ...docs.violations], notes: docs.notes };
+}
+
+export function run(root: string): Violation[] {
+  return report(root).violations;
+}
+
+/** `--documents`: the old spellings per document, worst first; `--detail` lists each one. */
+function printDocuments(root: string, detail: boolean, out: (line: string) => void): void {
+  const config = loadYaml<WordsConfig>(path.join(root, CONFIG_PATH)).documents;
+  if (!config) return out("no `documents` section in the config");
+  const { hits, problems } = scanDocuments(root, config);
+  for (const p of problems) out(`${p.code} ${p.path}: ${p.message}`);
+  out(`mode: ${config.mode}; old spellings: ${hits.length}`);
+  for (const [file, n] of perDocument(hits)) out(`${String(n).padStart(5)}  ${file}`);
+  if (detail) for (const h of hits) out(`${h.file}:${h.line}  ${h.term.old} -> ${h.term.standard}`);
 }
 
 export function main(argv: readonly string[], out: (line: string) => void = console.log): number {
   const { flags } = parseArgs(argv);
-  return finish("ui-words", run(findRoot(flag(flags, "root"))), out);
+  const root = findRoot(flag(flags, "root"));
+  if (flags.has("documents")) {
+    printDocuments(root, flags.has("detail"), out);
+    return 0;
+  }
+  const { violations, notes } = report(root);
+  const code = finish("ui-words", violations, out);
+  for (const line of notes) out(line);
+  return code;
 }
 
 if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));

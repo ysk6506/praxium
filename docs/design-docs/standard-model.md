@@ -7,13 +7,13 @@ follows:
 ---
 # 표준 모델의 요약
 
-**이 문서는 요약이에요.** 표준 모델의 실체(진실의 자리)는 `backend/internal/model/standard/`의 JSON 데이터 파일이에요(ADR-0020). 여기서는 층별 요약과 대표 타입, 규칙만 적고, 둘이 다르면 데이터 파일이 맞아요. 모델의 칸과 규칙은 [KG의 모델](kg-model.md), 결정은 [ADR-0007](adr/0007-kg-model.md)이에요.
+**이 문서는 요약이에요.** 표준 모델의 실체(단일 진실 공급원)는 `backend/internal/model/standard/`의 JSON 데이터 파일이에요(ADR-0020). 여기서는 층별 요약과 대표 타입, 규칙만 적고, 둘이 다르면 데이터 파일이 맞아요. 모델의 칸과 규칙은 [KG의 모델](kg-model.md), 결정은 [ADR-0007](adr/0007-kg-model.md)이에요.
 
-- **수는 데이터 파일이 굳힌 수예요.** 객체 타입 168개(핵심 122, 확장 46), 링크 타입 이름 55개와 바인딩 551개(출발과 도착의 한 쌍이 하나), 액션 타입 112개, 특성 19개예요. 조사 담당의 초안은 이름 58개와 바인딩 표의 줄 157개였어요. 이름이 셋 줄어든 까닭은 `INSTALLED_IN`과 `REQUIRES_PART`가 `PART_OF`(`whole_needs_part`)로 합쳐지고, `SUPPLIED_BY`(`fuel`)는 닫힌 채널 밖이라 빠진 것이에요. 바인딩은 표의 줄 157개를 쌍마다 하나로 풀어 528개였고 ADR-0022가 23개를 더해 551개예요(키의 부모 바인딩, 이중화 묶음의 구성원과 쓰는 쪽, `DEPENDS_ON`). 식별 키는 235개이고 모든 타입이 자기 키를 가져요(ADR-0022, 스키마 37개). 번호와 ID는 그대로예요. 수는 시험이 잠가요.
+- **수는 데이터 파일이 굳힌 수예요.** 객체 타입 168개(핵심 122, 확장 46), 링크 타입 이름 55개와 바인딩 551개(출발과 도착의 한 쌍이 하나), 액션 타입 112개, 특성 19개예요. 조사 담당의 초안은 이름 58개와 바인딩 표의 줄 157개였어요. 이름이 셋 줄어든 이유는 `INSTALLED_IN`과 `REQUIRES_PART`가 `PART_OF`(`whole_needs_part`)로 합쳐지고, `SUPPLIED_BY`(`fuel`)는 닫힌 채널 밖이라 빠진 것이에요. 바인딩은 표의 줄 157개를 쌍마다 하나로 풀어 528개였고 ADR-0022가 23개를 더해 551개예요(키의 부모 바인딩, 이중화 그룹의 구성원과 쓰는 쪽, `DEPENDS_ON`). 식별 키는 235개이고 모든 타입이 자기 키를 가져요(ADR-0022, 스키마 37개). 번호와 ID는 그대로예요. 수는 테스트가 잠가요.
 - **핵심**은 영향 범위의 계산에 필요한 타입이고 **확장**은 소스가 흔히 주거나 운영에 흔히 필요한 타입이에요. 표의 타입은 모두 핵심이고, 확장 타입은 표 아래에 이름만 적어요.
-- **빌린 표준**에는 조사로 확인한 것만 표준 이름을 적어요. 확인하지 못한 것은 "프락시움이 정함"이에요. 표준에서는 이름, 골격, 식별자, 고르기 값만 빌리고 링크의 뜻, 번짐, 근거, 시간은 프락시움이 정해요. 223P(건물 설비의 개념 모델)는 승인되지 않은 초안이라 개념만 참고해요.
-- 모든 항목의 이름 공간은 `std`예요. 링크의 뜻은 [KG의 모델](kg-model.md) 5절의 열하나, 액션의 축은 `mutates`·`reversibility`·`disruption`·`physical` 순이에요(kg-model의 12절).
-- **층.** 아래 2~10절이 객체 타입의 `layer` 칸의 값(아홉 층)이에요. `layer` 값의 이름은 `facility`, `hardware`, `network`, `storage`, `virtualization`, `container`, `platform`, `service`, `cross_cutting`이에요. 닫힌 목록에는 **열째 값 `system`**이 더 있어요. 프락시움 자신의 부품(예약된 이름 공간 `sys`의 타입)이 놓이는 층이고, 이 문서의 표준 모델의 데이터 파일과 따로 제품이 실어요(ADR-0017). 링크는 `volatile`이 될 수 없어요. 자주 옮기는 `runs_on`도 보통의 변경이에요(ADR-0007). 속성마다 바뀌는 빠르기(`change_class`: `static` / `slow` / `dynamic`)도 데이터 파일에 적어요. 예를 들어 `Sensor`의 값과 `Pod`의 놓인 곳은 `dynamic`이고 `serial_number`는 `static`이에요.
+- **빌린 표준**에는 조사로 확인한 것만 표준 이름을 적어요. 확인하지 못한 것은 "프락시움이 정함"이에요. 표준에서는 이름, 골격, 식별자, 고르기 값만 빌리고 링크 의미, 전파, 근거, 시간은 프락시움이 정해요. 223P(건물 설비의 개념 모델)는 승인되지 않은 초안이라 개념만 참고해요.
+- 모든 항목의 이름 공간은 `std`예요. 링크 의미는 [KG의 모델](kg-model.md) 5절의 열하나, 액션의 축은 `mutates`·`reversibility`·`disruption`·`physical` 순이에요(kg-model의 12절).
+- **층.** 아래 2~10절이 객체 타입의 `layer` 칸의 값(아홉 층)이에요. `layer` 값의 이름은 `facility`, `hardware`, `network`, `storage`, `virtualization`, `container`, `platform`, `service`, `cross_cutting`이에요. 고정 목록에는 **열째 값 `system`**이 더 있어요. 프락시움 자신의 부품(예약된 이름 공간 `sys`의 타입)이 놓이는 층이고, 이 문서의 표준 모델의 데이터 파일과 따로 제품이 실어요(ADR-0017). 링크는 `volatile`이 될 수 없어요. 자주 옮기는 `runs_on`도 보통의 변경이에요(ADR-0007). 속성마다 바뀌는 빠르기(`change_class`: `static` / `slow` / `dynamic`)도 데이터 파일에 적어요. 예를 들어 `Sensor`의 값과 `Pod`의 놓인 곳은 `dynamic`이고 `serial_number`는 `static`이에요.
 
 ## 1. 초안을 이 모델에 맞게 옮긴 규칙
 
@@ -21,7 +21,7 @@ follows:
 |---|---|
 | 부품과 전체의 `INSTALLED_IN`과 `REQUIRES_PART`, 롤업 정책 | `PART_OF`(`part_of`) 하나. 전체가 부품을 필요로 하는지는 `whole_needs_part`. 이중화하는 부품은 `none`이고 묶음을 거쳐요 |
 | 자리의 `contained_in` | `LOCATED_IN`, `MOUNTED_IN`만. 부품에는 쓰지 않아요 |
-| 번지지 않는 논리 구획(`contained_in`, 번짐 없음) | `LogicalGroup`의 하위 타입과 `MEMBER_OF` (`VirtualDatacenter`, `Namespace`, `Environment`, `Team`, `PlacementRule` 등) |
+| 번지지 않는 논리 구획(`contained_in`, 전파 없음) | `LogicalGroup`의 하위 타입과 `MEMBER_OF` (`VirtualDatacenter`, `Namespace`, `Environment`, `Team`, `PlacementRule` 등) |
 | 위험 등급 하나(초안) | 축 넷. 읽기는 `mutates`가 아니요, 되돌리는 액션이 있으면 `reversible`, 데이터를 덮거나 지우면 `data_loss`, 현장 작업이면 `physical` |
 | 구성에서만 끌어낸 묶음 | 묶음마다 설정·표·문서의 길을 받아요([KG의 모델](kg-model.md) 8절) |
 | 신호 하나인 상태 | 채널 여섯. `POWERED_BY`는 `supplied_by(power)`, `COOLED_BY`는 `supplied_by(cooling)`, `UPLINKED_VIA`는 `supplied_by(network)`, `BACKED_BY`는 `supplied_by(storage)` |
@@ -291,7 +291,7 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 | 링크 | 출발 → 도착 | 뜻 |
 |---|---|---|
 | `REALIZED_BY` | `BusinessService` → `ServiceOffering` → `ApplicationService` → `Workload`, `SoftwareInstance` | `realized_by` |
-| `DEPENDS_ON` | 서비스 → 응용 서비스(ADR-0022), `DatabaseInstance`, `Endpoint`, 이중화 묶음 | `requires` |
+| `DEPENDS_ON` | 서비스 → 응용 서비스(ADR-0022), `DatabaseInstance`, `Endpoint`, 이중화 그룹 | `requires` |
 | `MEMBER_OF` | `ApplicationService` → `Environment` | `member_of` |
 | `OWNED_BY` | 아무 객체 → `Team`, `Tenant` | `owned_by` |
 
@@ -300,11 +300,11 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 | `schedule_maintenance` | `~Schedulable` | 예 · reversible · none · 아니요 |
 
 ## 10. 가로지르는 것
-이중화 묶음, 논리 묶음, 장애 영역, 센서, 자리 표시 객체를 덮어요.
+이중화 그룹, 논리 묶음, 장애 영역, 센서, 플레이스홀더 객체를 덮어요.
 
 | 이름 | 뜻 | 빌린 표준 |
 |---|---|---|
-| `RedundancyGroup` | 이중화 묶음의 상위 | OpenConfig의 `min-links` 개념 |
+| `RedundancyGroup` | 이중화 그룹의 상위 | OpenConfig의 `min-links` 개념 |
 | `LogicalGroup` | 번지지 않는 논리 묶음의 상위 | OpenStack의 호스트 aggregate, Backstage `Group` 개념 |
 | `PowerRedundancyGroup` | 전력 이중화(서버 전원 장치, 급전 A·B) | Redfish `PowerSupplyRedundancy` 등의 속성 이름 |
 | `CoolingRedundancyGroup` | 냉방 이중화 | Redfish `CoolingUnitRedundancy` 등의 속성 이름 |
@@ -312,7 +312,7 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 | `QuorumGroup` | 과반 정족수 | 프락시움이 정함 |
 | `FailureDomain` | 논리 장애 영역(가용 영역, 전원·냉방 영역) | OpenStack의 availability zone |
 | `Sensor` | 센서, 계측점 | OpenConfig 컴포넌트 `SENSOR` |
-| `UnknownObject` | 참조됐으나 아직 못 본 객체의 자리 표시 | 프락시움이 정함 |
+| `UnknownObject` | 참조됐으나 아직 못 본 객체의 플레이스홀더 | 프락시움이 정함 |
 
 확장: `MetricSource`. `Sensor`의 값은 `volatile` 속성이고 시계열은 KG에 쌓지 않아요.
 
@@ -340,11 +340,11 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 | `BACKED_BY` | `Datastore`, `PersistentVolume` → `StorageVolume` | `supplied_by(storage)` |
 | `OWNED_BY`, `IN_FAILURE_DOMAIN` | 아무 객체 → `Team`, `FailureDomain` | `owned_by`, `contained_in` |
 
-## 12. 이중화 묶음의 하위 타입과 끌어내는 곳
+## 12. 이중화 그룹의 하위 타입과 끌어내는 곳
 
-구성원과 문턱은 설정에서 끌어내고, 표나 문서에서도 받아요([KG의 모델](kg-model.md) 8절의 길). 같은 묶음에 길이 여럿이면 종류별로 받아 두고 어긋남은 문제 목록에 올라요.
+구성원과 임계값은 설정에서 끌어내고, 표나 문서에서도 받아요([KG의 모델](kg-model.md) 8절의 길). 같은 묶음에 길이 여럿이면 종류별로 받아 두고 어긋남은 문제 목록에 올라요.
 
-| 하위 타입 | 구성원 | 방식과 문턱 | 끌어내는 곳 |
+| 하위 타입 | 구성원 | 방식과 임계값 | 끌어내는 곳 |
 |---|---|---|---|
 | `PowerRedundancyGroup` | `PowerSupply`, 상류 급전 | `capacity` 또는 `count` | 서버가 말하는 전원 장치 목록과 이중화 설정, 급전선 표(엑셀) |
 | `CoolingRedundancyGroup` | `Crah`, `Crac`, `Chiller`, `Cdu` | `capacity`(N+1) | 설비 목록과 구역 매핑 |
@@ -394,5 +394,5 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 
 ## 16. 관련 결정과 요구사항
 
-- [ADR-0007](adr/0007-kg-model.md): 이 문서의 결정. [KG의 모델](kg-model.md): 칸과 규칙. [KG에 묻기](kg-queries.md): 번짐의 계산.
-- 요구사항: REQ-105(표준 모델), REQ-100(타입 등록부), REQ-101(링크의 뜻과 채널), REQ-102(이중화 묶음).
+- [ADR-0007](adr/0007-kg-model.md): 이 문서의 결정. [KG의 모델](kg-model.md): 칸과 규칙. [KG에 묻기](kg-queries.md): 전파의 계산.
+- 요구사항: REQ-105(표준 모델), REQ-100(타입 등록부), REQ-101(링크 의미와 채널), REQ-102(이중화 그룹).
