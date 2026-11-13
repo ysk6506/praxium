@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-storage.md"
 target: "docs/design-docs/adr/0009-kg-storage-and-versions.md"
-hash: "e6a7be54916dcce8"
+hash: "1366bf985331a7c3"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
 text_changed: true
-doc_hash: "0ad6c40909eea199"
+doc_hash: "4f01fcb9a3e1b9f1"

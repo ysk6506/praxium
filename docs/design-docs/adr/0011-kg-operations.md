@@ -11,7 +11,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 4dae8e026e17ebce
+decision_hash: c36dfb9551c941e6
 ---
 # ADR-0011 KG를 운영한다: 문제는 규칙으로 풀고, 묻기는 멈추지 않고, 흐름이 멈춰도 잃지 않는다
 

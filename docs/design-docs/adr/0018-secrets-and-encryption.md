@@ -12,7 +12,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: d4561adf894c26a7
+decision_hash: b8aee5990028b45b
 ---
 # ADR-0018 비밀 값과 암호화 — 평문으로 두지 않고, 쓰는 자리에서만 풀고, 다시 나오지 않고, 쓴 기록이 남는다
 

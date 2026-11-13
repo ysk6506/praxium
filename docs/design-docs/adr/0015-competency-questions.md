@@ -13,7 +13,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: a9ff4ff5b3a83394
+decision_hash: 0741f04c93468685
 ---
 # ADR-0015 역량 질문과 충족률: KG가 답해야 하는 물음을 정의로 적고, 객체마다 저절로 따져 비율로 낸다
 

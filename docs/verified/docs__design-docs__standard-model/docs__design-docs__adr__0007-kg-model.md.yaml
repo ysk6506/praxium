@@ -1,7 +1,7 @@
 doc: "docs/design-docs/standard-model.md"
 target: "docs/design-docs/adr/0007-kg-model.md"
-hash: "2f26a94dbb9dc021"
+hash: "122bc214a8c4df0a"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
-text_changed: false
-doc_hash: "09d98a80bffc27c1"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+text_changed: true
+doc_hash: "4851dd28c46fa715"

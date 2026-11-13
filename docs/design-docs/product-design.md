@@ -8,7 +8,7 @@ follows:
 ---
 # 제품 설계 한 장
 
-새 요구사항을 설계하기 전에, 그리고 구현을 맡기기 전에 이 문서부터 읽어요. 지금은 KG를 짓고 운영하는 기반의 설계가 끝난 단계예요(ADR-0005~0018). 코드는 아직 없어요. 단계는 알파, 클로즈 베타, 오픈 베타, 정식 넷이에요(5절).
+새 요구사항을 설계하기 전에, 그리고 구현을 맡기기 전에 이 문서부터 읽어요. 지금은 KG를 짓고 운영하는 기반의 설계가 끝난 단계예요(ADR-0005~0018). 코드는 아직 없어요. 단계는 알파 1, 알파 2, 클로즈 베타, 오픈 베타, 정식이에요(5절).
 
 ## 1. 프락시움의 값
 
@@ -76,12 +76,12 @@ follows:
 | 4 | KG 기반의 설계 (ADR-0005~0018) | 결정 기록과 설계 문서, 예정 요구사항 |
 | 5 | 뼈대와 지어낸 세계 | 표준 모델이 스스로 맞는지 보는 시험, 같은 씨앗이면 같은 세계 |
 | 6 | 계약 | OpenAPI 문서와 계약의 검사, 명령줄 클라이언트의 뼈대 |
-| 7 | 얇게 끝까지 한 줄 | 파일 소스 하나에서 KG 버전이 나오고 `find`/`get`/`neighbors`가 API와 명령줄로 답한다 |
+| 7 | 얇게 끝까지 한 줄(알파 1: 제품 책임자가 여기서부터 눌러 봐요) | 파일 소스 하나에서 KG 버전이 나오고 `find`/`get`/`neighbors`가 API와 명령줄로 답한다 |
 | 8 | 받기를 넓힌다 | 지어낸 세계의 정답 KG와 맞고, 흩뜨린 입력에서 안전장치가 멈춘다 |
 | 9 | 정의의 브랜치와 제안과 되돌리기, 권한 | 병합과 되돌리기가 검사를 거쳐 들어간다 |
 | 10 | 영향 범위 | 지어낸 100만 객체에서 기능과 결정성이 시험된다. 제품 책임자의 숫자와 견주는 재기는 클로즈 베타에서 한다 |
 | 11 | 관측성과 역량 질문, 프락시움 자신의 관측성과 운영 행위 | 건강과 충족률이 API로 나오고, `diagnose`와 운영 행위가 API로 된다 |
-| 12 | 알파 | 객체와 링크 100만 개 수준에서 모든 기능이 API와 명령줄 클라이언트와 임시 콘솔로 돈다 |
+| 12 | 알파 2 | 객체와 링크 100만 개 수준에서 모든 기능이 API와 명령줄 클라이언트와 임시 콘솔로 돈다 |
 | 13 | 클로즈 베타 | 수천만 개로 재서 숫자가 문서에 있다 |
 | 14 | 오픈 베타 | 프로덕션에 나갈 수 있는 수준: 비밀 값과 암호화, 자신의 운영, 에이전트 시대의 정의 버전, 저장소의 운영 수준이 구현돼 있다 |
 | 정식, 그 뒤 | 프런트엔드 저장소(아직 없다), E2E 프로세스의 구체화 | |
@@ -92,14 +92,14 @@ follows:
 |---|---|---|
 | [KG의 모델](kg-model.md), [표준 모델](standard-model.md) | 타입 등록부, 링크의 뜻과 채널, 이중화 묶음, 근거, 식별, 타입의 관리, 층별 표준 타입 | ADR-0007 |
 | [현실 데이터 받기](ingestion.md), [파이프라인](pipeline.md), [받기를 넓히는 길](ingestion-extensions.md) | 소스와 어댑터, 받는 방식, 읽기 전용, 안전장치, 수집 봉투, 실행기와 정제·공급·식별·링크 정의, 밀어 넣기, 다시 받기, 매핑을 돕는 길 | ADR-0008 |
-| [KG의 저장과 버전](kg-storage.md), [저장소의 운영](postgres-operations.md) | 저장, 변경 묶음, 봉한 버전, 적용, 쓰기 길과 복제와 신호 | ADR-0009 |
-| [KG에 묻기](kg-queries.md), [엔진의 모양](query-engine-shape.md) | 닫힌 질의, 영향 범위, 투영과 질의 엔진, 엔진의 언어와 규모 검증 | ADR-0010 |
+| [KG의 저장과 버전](kg-storage.md), [적용](kg-storage-apply.md), [저장소의 운영](postgres-operations.md) | 저장, 변경 묶음, 봉한 버전, 적용, 쓰기 길과 복제와 신호 | ADR-0009 |
+| [KG에 묻기](kg-queries.md), [예시](kg-queries-examples.md), [엔진의 모양](query-engine-shape.md) | 닫힌 질의, 영향 범위, 투영과 질의 엔진, 엔진의 언어와 규모 검증 | ADR-0010 |
 | [KG 운영](kg-operations.md) | 문제 목록, 가용성, 실패 처리 | ADR-0011 |
-| [권한](access-control.md) | SSO, 역할 일곱, 범위, 감사 | ADR-0012 |
+| [권한](access-control.md) | SSO, 역할 여덟, 범위, 감사 | ADR-0012 |
 | [데이터 관측성](data-observability.md) | 신호, 건강, 목표, 알림 | ADR-0013 |
-| [정의의 버전과 브랜치](definitions.md), [에이전트 시대의 정의](definitions-at-agent-scale.md) | 정의 묶음, 제안과 검사, 병합, 되돌리기, 계보, 주체와 위험의 등급과 자동 병합 | ADR-0014 |
+| [정의의 버전과 브랜치](definitions.md), [에이전트 시대의 정의](definitions-at-agent-scale.md), [계보와 적용의 표](definitions-lineage.md) | 정의 묶음, 제안과 검사, 병합, 되돌리기, 계보, 주체와 위험의 등급과 자동 병합 | ADR-0014 |
 | [역량 질문](competency-questions.md), [예시](competency-examples.md) | 역량 질문과 충족률 | ADR-0015 |
-| [REST API](rest-api.md), [자원 (1)](rest-api-resources-data.md), [자원 (2)](rest-api-resources-graph.md), [자원 (3)](rest-api-resources-additions.md), [예시](rest-api-walkthroughs.md) | 계약의 규칙, 자원과 길, 로그인, 명령줄 클라이언트 | ADR-0016 |
+| [REST API](rest-api.md), [자원 (1)](rest-api-resources-data.md), [자원 (2)](rest-api-resources-graph.md), [자원 (3)](rest-api-resources-additions.md), [기능마다의 길](rest-api-feature-routes.md), [예시](rest-api-walkthroughs.md) | 계약의 규칙, 자원과 길, 로그인, 명령줄 클라이언트 | ADR-0016 |
 | [프락시움 자신의 관측성](self-observability.md) | 신호, 스스로 재기, 진단, 운영 행위, 설정, 운영의 MCP 면 | ADR-0017 |
 | [아키텍처](../../ARCHITECTURE.md) | 단위와 의존 방향, 역할 넷 | ADR-0006 |
 | [E2E 프로세스의 방향](process-direction.md) | 조사해서 잡은 방향. 결정이 아니다 | 없음 |

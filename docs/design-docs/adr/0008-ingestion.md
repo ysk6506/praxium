@@ -14,7 +14,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 8f2a4a934361f67f
+decision_hash: 4ee896210d5bf070
 ---
 # ADR-0008 현실 데이터 받기: 어댑터와 프리셋, 받는 방식 넷, 변경을 받아 변경을 내는 실행기 하나, 속성 단위로 객체를 짓는 공급, 읽기 전용 세 겹, 안전장치
 

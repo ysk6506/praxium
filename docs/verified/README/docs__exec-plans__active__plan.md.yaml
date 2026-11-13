@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "e076f2e852a55fec"
+hash: "2317585ee4868973"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
 text_changed: true
-doc_hash: "d62b42941bf1efd4"
+doc_hash: "ae073d2edd0bc4f8"

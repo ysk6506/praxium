@@ -6,13 +6,14 @@ enforced_by:
   - none
 no_enforcement_reason: 아직 코드가 없는 설계 결정이다. 요구사항이 예정에서 벗어날 때 시험이 건다. 구현이 들어오는 변경에서 기준 구현과 속성 기반 시험, 구조 계약이 이 결정을 지킨다.
 updates_docs:
+  - docs/design-docs/kg-queries-examples.md
   - docs/design-docs/query-engine-shape.md
   - docs/product-specs/requirements.md
   - docs/design-docs/kg-queries.md
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 88de20fc80e8504e
+decision_hash: 9c7a60c87efd2ba6
 ---
 # ADR-0010 KG에 묻기 — 닫힌 질의, 영향 범위의 뜻, 투영과 엔진
 

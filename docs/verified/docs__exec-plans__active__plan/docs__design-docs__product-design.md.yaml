@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "6ecc97b40aba4028"
+hash: "2f62e54c118f75d6"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
 text_changed: true
-doc_hash: "e076f2e852a55fec"
+doc_hash: "2317585ee4868973"

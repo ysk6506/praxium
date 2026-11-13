@@ -1,7 +1,7 @@
 doc: "docs/references/design-research.md"
 target: "docs/design-docs/adr/0006-go-backend-clean-architecture-backend-first.md"
-hash: "4f75bb39aaf22c87"
+hash: "42a84e1b42fe2cfc"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
 text_changed: true
-doc_hash: "ebec7885ed30e123"
+doc_hash: "9eef232951cc1085"

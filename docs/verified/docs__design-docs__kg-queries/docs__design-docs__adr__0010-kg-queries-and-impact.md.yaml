@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-queries.md"
 target: "docs/design-docs/adr/0010-kg-queries-and-impact.md"
-hash: "88de20fc80e8504e"
+hash: "9c7a60c87efd2ba6"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
 text_changed: true
-doc_hash: "beed1a808e78e9ab"
+doc_hash: "a37a6b4550f91ede"

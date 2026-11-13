@@ -32,7 +32,7 @@ follows:
 | `/v1/action-types`, `/v1/action-types/{id}` | GET | 액션 타입 | 읽기 | - | kg-model |
 | `/v1/value-types` | GET | 값 타입(바탕, 검사, 다듬기) | 읽기 | - | kg-model |
 | `/v1/traits` | GET | 특성과 그 특성이 요구하는 속성 | 읽기 | - | kg-model |
-| `/v1/layers` | GET | 층의 닫힌 목록과 층마다의 타입 수. 프락시움 자신의 부품(`sys` 타입)은 `platform` 층에 놓여요 | 읽기 | - | kg-model |
+| `/v1/layers` | GET | 층의 닫힌 목록과 층마다의 타입 수. 프락시움 자신의 부품(`sys` 타입)은 `system` 층에 놓여요 | 읽기 | - | kg-model |
 | `/v1/object-types/{type_id}/usage` | GET | 타입의 쓰임: 정의의 `what_depends`(12-4)와 같은 답을 이 타입에서 시작해 줘요 | 읽기(정의를 읽는 범위) | - | definitions |
 | `/v1/type-usage` | GET | 타입별 쓰임의 보고(몇 객체, 몇 공급, 마지막으로 쓰인 때). 올리기와 합치기를 가리는 근거 | 그 타입을 범위에 가진 `viewer`(`model_steward`는 전체) | - | kg-model 13.3 |
 | `/v1/similar-type-pairs` | GET | 겹치는 타입의 짝(주기로 계산한 목록) | `model_steward` | - | kg-model 13.3 |

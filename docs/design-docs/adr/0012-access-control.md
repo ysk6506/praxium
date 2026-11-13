@@ -12,7 +12,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: ea8c083dbaffed8e
+decision_hash: 04a2ffcacdc33817
 ---
 # ADR-0012 권한: 사내 SSO의 사람과 무리에, 제품에 든 역할을, 범위와 함께, 관리자가 준다
 
@@ -78,6 +78,7 @@ decision_hash: ea8c083dbaffed8e
 - **`admin`만 권한을 주고 거두게 영영 두기.** 큰 조직에서 모든 부여가 몇 사람을 지난다. 위임의 자리를 둔다.
 
 ## 결과
+- 검토 뒤에 더한 요구사항: REQ-234(`ingester` 역할), REQ-235(범위 있는 관리의 자리).
 - 요구사항을 더한다: REQ-160(SSO 연결, 특정 제품에 묶이지 않음, 시스템 계정), REQ-161(권한 부여는 누구 × 역할 × 범위이고 관리자가 준다), REQ-162(읽기의 범위: 객체 타입과 민감 등급, 가려진 것의 답), REQ-165(읽기 권한의 객체 조건. 부여마다 (타입 고르기, 객체 조건, 한도)의 세 짝이고 객체의 한도는 맞는 부여들 가운데 가장 높은 것), REQ-163(승인: 범위를 가진 다른 사람, 조직 표준은 `model_steward`), REQ-164(감사 기록). 감사 기록은 ADR-0011에서 이 결정으로 왔다.
 - 설계 문서: [권한](../access-control.md).
 - 용어집에 권한 부여, 역할, 범위, 담당자의 뜻을 더하고 도메인을 권한의 말로 쓰지 않는다고 적는다.
