@@ -9,7 +9,7 @@ covers:
 ---
 # Praxium — 코딩 에이전트 안내서
 
-현실의 IT 인프라를 데이터로 받아 운영 세계를 짓고, 그 위에서 에이전트가 맡는 E2E 프로세스를 정하고 맡기고 재는 사내 운영 관리 플랫폼. 백엔드는 Go로 만들고(ADR-0006), 화면은 다른 저장소에서 REST API의 계약으로만 대화한다(ADR-0016). 지금 있는 TypeScript는 구조 검사(하네스)와 프런트엔드 저장소로 옮길 바탕 부품이다. 이 파일은 **지도**다.
+현실의 IT 인프라를 데이터로 받아 운영 세계를 짓고, 그 위에서 에이전트가 맡는 E2E 프로세스를 정하고 맡기고 재는 사내 운영 관리 플랫폼. 백엔드는 Go로 만들어 `backend/`에 두고(ADR-0006, ADR-0019), 화면은 다른 저장소에서 REST API의 계약으로만 대화한다(ADR-0016). 지금 있는 TypeScript는 구조 검사(하네스)와 프런트엔드 저장소로 옮길 바탕 부품이다. 이 파일은 **지도**다.
 
 ## 시작하기 (3분)
 
@@ -22,7 +22,8 @@ covers:
 
 ```
 pnpm install
-pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사. 이게 통과해야 끝난 것.
+pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사(Go의 gofmt, vet, 시험 포함). 이게 통과해야 끝난 것.
+cd backend && go test ./... && go vet ./...   # Go만 빨리 볼 때. Go 1.24 이상이 있어야 한다.
 ```
 
 CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, 필수 검사 `gate`가 초록일 때만 합친다. 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사만 돈다([ADR-0002](docs/design-docs/adr/0002-harness-and-working-rules-from-terrarium.md)).
@@ -35,15 +36,15 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 |---|---|
 | 테스트가 실패하는데 테스트를 고치기 | 테스트는 잠겨 있다 (`TLOCK*`). 코드를 고친다. 요구사항이 바뀐 게 확실할 때만 결정 기록의 `amends_tests` 절차 |
 | skip/only/삭제/약화, 커버리지 제외 | `TEST*`, `TCFG*`, `COV*` |
-| 단위 의존 방향 위반, 다른 단위 내부 import | `ARCH010`, `ARCH011` |
-| 선언 안 된 패키지 추가 | `ARCH020` — ADR + 계약 등록 |
+| 단위 의존 방향 위반, 다른 단위 내부 import | `ARCH010`, `ARCH011`, Go는 `GOARCH010`, `GOARCH011` |
+| 선언 안 된 패키지·Go 모듈 추가 | `ARCH020`, Go는 `GOARCH020`, `GODEP010` — ADR + 계약 등록 + ARCHITECTURE.md의 모듈 표 |
 | `harness/`, 설정 파일, ADR, 이 파일 수정 | 보호 경로 (`PROT001`) — 같은 변경에 봉인된 ADR 필요 |
-| 검사 끄기 주석(`biome-ignore` 등)·건너뛴 테스트·CI `continue-on-error`를 이유와 근거 없이 두기, 그 수를 늘리기 | `IGN001`~`IGN007` — 같은 줄이나 윗줄에 이유와 `TD-NNNN`(열린 부채) 또는 `ADR-NNNN`을 적는다. 원인을 고치는 쪽이 먼저다 |
+| 검사 끄기 주석(`biome-ignore`, Go의 `//nolint` 등)·건너뛴 테스트·CI `continue-on-error`를 이유와 근거 없이 두기, 그 수를 늘리기 | `IGN001`~`IGN007`, Go는 `GOIGN001`~`GOIGN004` — 같은 줄이나 윗줄에 이유와 `TD-NNNN`(열린 부채) 또는 `ADR-NNNN`을 적는다. 원인을 고치는 쪽이 먼저다 |
 | 품질 등급표·결정 목록·색인의 문서 목록·고지 파일을 손으로 고치기 | 하네스가 만든다. 낡으면 알림 한 줄만 나오고, 손으로 고치면 `DOC099`로 실패한다 |
 | 허용 목록 밖의 라이선스를 가진 의존성·자료를 함께 내보내기 | `LIC001`, `LIC002` — 의존성을 들이기 전에 라이선스를 본다 |
-| 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`) |
+| 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 장부](docs/exec-plans/tech-debt.yaml) (`DEBT001`, Go는 `GODEBT001`) |
 | 내부에서 들은 사실(어느 조직이 무엇을 개발·운영하는지, 내부 시스템의 이름·구조·규모·제조사, 조직과 절차), 실제 데이터, 비밀 값을 코드·문서·PR·이슈·커밋에 적기 | 저장소는 공개돼 있다. 기계가 못 가리니 쓰는 쪽이 지킨다. 요구의 말로 바꿔 적고, 견본은 지어낸다 ([ADR-0003](docs/design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md)) |
-| `Date.now()`, `Math.random()` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`) |
+| `Date.now()`, `Math.random()`, Go의 `time.Now`, `os.Getenv`, `math/rand` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`, `GOARCH052`) |
 | 코드만 바꾸고 문서 방치 | 문서가 `covers`한 코드나 `follows`한 문서가 바뀌면 실패 (`DOC010`). 문서가 가리키는 길·명령·코드·숫자가 없으면 실패 (`DOC094`, `DOC095`). 결정이 바꾸는 문서를 같은 변경에서 안 고치면 실패 (`DOC090`) |
 
 ## 설계할 때 (기계가 못 지키는 것)
@@ -62,7 +63,7 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 
 - **`DOC010`** → 문서를 코드와 대조해 고치고 `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "확인한 것"`. 확인 상태는 `docs/verified/`의 (문서, 대상) 기록에 있다.
 - **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고, 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
-- **새 단위(폴더) 추가** → 같은 변경에서 `harness/config/architecture.yaml`에 등록하고 ARCHITECTURE.md를 고친다(보호 경로라 ADR이 필요하다).
+- **새 단위(폴더) 추가** → 같은 변경에서 `harness/config/architecture.yaml`에 등록하고(Go는 `go:` 절, 폴더는 `backend/internal/<단위>`) ARCHITECTURE.md를 고친다(보호 경로라 ADR이 필요하다).
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결하고, `updates_docs`에 바꾸는 문서를 적어 같은 변경에서 고친다. 앞선 결정의 일부를 바꾸면 `amends`를 적고 `docs.ts link-amends <ADR>`를 돌린다.
 - **부채를 남겨야 함** → 장부에 항목 등록 후 `TODO(TD-NNNN)`. 기한과 예산이 있다.
 - **커버리지를 올렸다** → `pnpm ratchet`으로 하한을 고정.

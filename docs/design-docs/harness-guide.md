@@ -22,8 +22,18 @@ covers:
 | 화면의 말 (한 가지 뜻에 한 가지 말) | `harness/src/checks/ui-words.ts` | `WORD*` |
 | 품질 등급표 (REQ-024, 단위별 등급 A~D, 하네스가 만드는 생성물) | `harness/src/checks/quality.ts` | `QUAL*` |
 | 가드레일 보호 | `harness/src/checks/protected.ts` | `PROT*` |
+| Go 코드(ADR-0019): 단위와 import, 공개 면, 시계·난수·환경, 모듈 표, 크기, 끄기, 시험, 형식 | `harness/src/checks/go-*.ts` | `GOARCH*` `GODEP*` `GODEBT*` `GOIGN*` `GOTEST*` `GOCOV*` `GOTOOL*` |
 
 설정은 `harness/config/`에 있고 보호 경로다. 바꾸려면 같은 변경에 봉인된 결정 기록이 있어야 한다.
+
+## Go 코드를 읽는 검사 (ADR-0019)
+
+하네스는 TypeScript 도구로 남고 Go 코드를 읽는다. Go 검사는 이미 있는 검사 이름 안에서 돈다(검사 이름의 목록은 `common.test.ts`가 잠그고 있다): `architecture`에서 `GOARCH*`(단위, import, 공개 면, 시계·난수·환경, 금지 구문), `GODEP*`(`go.mod`와 ARCHITECTURE.md의 모듈 표), `GOTOOL*`(`gofmt`, `go vet`), `debt`에서 `GODEBT*`, `ignores`에서 `GOIGN*`, `test-integrity`에서 `GOTEST002`(시험 없는 단위), `coverage`에서 `GOTEST001`(`go test` 실패)과 `GOCOV*`(단위의 문장 커버리지 하한)다. 구조 계약은 `harness/config/architecture.yaml`의 `go:` 절이고, 한도와 장부는 TypeScript와 같은 `debt.yaml`과 장부를 쓴다.
+
+- import는 `go list`가 아니라 소스에서 읽는다(`go-lex.ts`). 시험 파일, 빌드 태그가 붙은 파일, 별칭, 줄 번호를 한 번에 보려는 것이다. 컴파일러가 아는 것(타입 오류, 없는 패키지)은 `go vet`이 본다.
+- Go가 설치돼 있어야 한다(`GOTOOL000`). 하네스는 `GOTOOLCHAIN=local`로 다른 Go를 내려받지 않고, 모듈 파일을 고치지 않는다.
+- 커버리지 하한은 `harness/config/coverage-floor.json`에 `go:<단위>`로 있고, `pnpm ratchet`이 올린다.
+- 아직 보지 않는 것은 ADR-0019에 적혀 있다(시험 잠금, 품질 등급표, 시험 제목의 요구사항 추적. 부채 TD-0008).
 
 ## 명령
 

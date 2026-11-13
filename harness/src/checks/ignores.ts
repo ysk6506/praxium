@@ -124,7 +124,7 @@ function reasonOnly(config: IgnoresConfig, s: Suppression): boolean {
 }
 
 /** ADR numbers that exist as an active, sealed decision. */
-function sealedAdrs(root: string, config: IgnoresConfig): Set<string> {
+export function sealedAdrs(root: string, config: IgnoresConfig): Set<string> {
   const dir = path.join(root, config.adr_dir);
   const out = new Set<string>();
   if (!existsSync(dir)) return out;

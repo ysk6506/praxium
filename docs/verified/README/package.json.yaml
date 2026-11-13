@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "package.json"
 hash: "26b41f6091bdbba8"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
-text_changed: true
-doc_hash: "d564e32f98032ba7"
+date: "2026-11-13"
+note: "계획 변경 반영"
+text_changed: false
+doc_hash: "5f43a736e2379c57"

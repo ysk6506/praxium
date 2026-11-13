@@ -4,6 +4,7 @@ import { run as coverage } from "./checks/coverage";
 import { run as debt } from "./checks/debt";
 import { report as docsDiff } from "./checks/doc-diff";
 import { run as docs } from "./checks/docs";
+import * as go from "./checks/go";
 import { report as ignores } from "./checks/ignores";
 import { report as licenses } from "./checks/licenses";
 import { run as protectedPaths } from "./checks/protected";
@@ -28,7 +29,7 @@ export function checks(
         // License rules ride on this check: common.test.ts is locked and lists the check names (ADR-0185).
         const { violations, notes: lic } = licenses(root);
         notes.push(...lic);
-        return [...architecture(root), ...violations];
+        return [...architecture(root), ...violations, ...go.architecture(root)];
       },
     ],
     [
@@ -39,16 +40,16 @@ export function checks(
         return [...docs(root), ...violations];
       },
     ],
-    ["debt", () => debt(root, today(), base)],
+    ["debt", () => [...debt(root, today(), base), ...go.debtOf(root)]],
     [
       "ignores",
       () => {
         const { violations, notes: lowered } = ignores(root, base);
         notes.push(...lowered);
-        return violations;
+        return [...violations, ...go.ignoresOf(root)];
       },
     ],
-    ["test-integrity", () => testguard(root, base)],
+    ["test-integrity", () => [...testguard(root, base), ...go.testIntegrity(root)]],
     [
       "traceability",
       () => {

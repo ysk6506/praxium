@@ -1,7 +1,7 @@
 doc: "docs/design-docs/harness-guide.md"
 target: "harness/src/run-all.ts"
-hash: "b8dc5a726ed172ac"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+hash: "a04fe9569b7c6245"
+date: "2026-11-13"
+note: "run-all.ts와 Go 검사 연결(go.ts), 검사 이름 목록 고정, 코드 접두어를 대조"
 text_changed: true
-doc_hash: "3da8e5b01a4a357f"
+doc_hash: "62b488f3cf6247f3"

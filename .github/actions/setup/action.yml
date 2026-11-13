@@ -1,5 +1,5 @@
 name: setup
-description: Check out is done by the caller; install Node 22 and the pnpm workspace (store cached).
+description: Check out is done by the caller; install Node 22, Go (the version in backend/go.mod, for the Go checks of ADR-0019) and the pnpm workspace (store cached).
 runs:
   using: composite
   steps:
@@ -8,5 +8,14 @@ runs:
       with:
         node-version: 22
         cache: pnpm
+    # The structure checks run gofmt, go vet and go test on the backend (ADR-0019), so Go must be on the PATH.
+    - uses: actions/setup-go@v5
+      with:
+        go-version-file: backend/go.mod
+        cache: false
+    # Warm the Go build cache once (standard library, testing, vet), so the harness tests that run Go on small
+    # fixture modules do not each pay for a cold build. They use the same default cache.
+    - run: cd backend && go test -count=1 -run '^$' ./... && go vet ./...
+      shell: bash
     - run: pnpm install --frozen-lockfile
       shell: bash

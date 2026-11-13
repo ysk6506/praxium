@@ -46,8 +46,9 @@ items:
     cost: "하네스는 TypeScript 도구로 두고 Go 코드를 읽는 조각을 더한다. 그 전에는 Go 제품 코드를 합치지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
-    status: open
+    status: done
     units: [harness]
+    resolution: "ADR-0019가 Go 코드를 읽는 검사를 만들었다: 단위와 의존 방향과 공개 면, 시계·난수·환경, 모듈 표, 크기와 복잡도, 끄기, 시험의 있음과 커버리지, gofmt와 vet(GOARCH*, GODEP*, GODEBT*, GOIGN*, GOTEST*, GOCOV*, GOTOOL*). 시험 잠금과 품질 등급표와 요구사항 추적은 아직 Go를 읽지 않아 TD-0008로 남겼다."
   - id: TD-0006
     title: "core.kernel의 한국어 부품(조사, 시간 표기)과 REQ-002, REQ-003은 화면 저장소의 것이다. 화면 저장소가 서면 옮겨야 한다(ADR-0016)"
     severity: low
@@ -63,3 +64,11 @@ items:
     created: "2026-11-13"
     due: "2027-06-01"
     status: open
+  - id: TD-0008
+    title: "Go 코드에는 시험 잠금(시험을 지우거나 약화하거나 기대값을 바꾸는 것 막기), 품질 등급표, 시험 제목의 [REQ-NNN]을 읽는 요구사항 추적이 아직 없다(ADR-0019). TypeScript 시험에만 있는 보호다"
+    severity: medium
+    cost: "Go 시험 함수의 지문을 잠그는 검사를 만들고, 품질 등급표와 요구사항 추적이 Go 단위와 Go 시험을 읽게 한다. 그 전에는 Go 시험을 고치는 변경을 리뷰가 지킨다"
+    created: "2026-11-13"
+    due: "2027-02-01"
+    status: open
+    units: [harness]

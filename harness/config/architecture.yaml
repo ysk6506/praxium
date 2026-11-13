@@ -30,3 +30,33 @@ source_roots: [packages, apps, harness/src, tests/spec]
 alias_prefix: "@praxium/core/"
 alias_target: packages/core/src
 ignored_files: []
+
+# The Go backend (ADR-0019). One module under `root`, one package per unit, read by harness/src/checks/go-*.ts.
+# A unit is reached only through its package folder; `internal/<unit>` packages mirror the units of ARCHITECTURE.md.
+# Names follow the diagram there. They live apart from the TypeScript units above (a different namespace).
+# Add a unit in the same change that creates its folder, with an ADR (this file is a protected path).
+go:
+  root: backend
+  module: github.com/ysk6506/praxium/backend
+  units:
+    core.kernel:    {path: backend/internal/kernel, may_import: []}
+    core.contract:  {path: backend/internal/contract, may_import: [core.kernel]}
+    cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*"]}
+  # The one unit that assembles the program: it picks a role, wires the units and may end the process.
+  composition_root: cmd.praxium
+  # Module path -> units allowed to import it. None yet: the backend uses the standard library only.
+  # Every module here also needs a row in the table of ARCHITECTURE.md (REQ-239) and an ADR.
+  third_party: {}
+  # Standard-library packages that only the listed units may import: the core knows no operating system and no network.
+  restricted_stdlib:
+    os: [cmd.praxium]
+    os/exec: [cmd.praxium]
+    os/signal: [cmd.praxium]
+    os/user: [cmd.praxium]
+    net: [cmd.praxium]
+    net/http: [cmd.praxium]
+    net/rpc: [cmd.praxium]
+    syscall: [cmd.praxium]
+  # The only files that may read the clock, system randomness and the environment (REQ-001).
+  nondeterminism_allowed: [backend/internal/kernel/entropy.go]
+  dependency_table: ARCHITECTURE.md
