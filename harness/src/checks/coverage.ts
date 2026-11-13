@@ -4,6 +4,10 @@
  *
  * COV001 unit below its floor   COV002 unit without a valid floor   COV003 (with --base) floor lowered
  * COV004 coverage summary missing   COV005 coverage-ignore comment over budget or without a reason
+ *
+ * Go code (ADR-0019) is measured per Go unit as statements by `go test`, and its floors sit in the same file under
+ * the key `go:<unit>`. GOCOV001 Go unit below its floor   GOCOV002 Go unit without a valid floor
+ * (a lowered Go floor is COV003, a failing Go test is GOTEST001)
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -21,6 +25,8 @@ import {
 import { isSourceFile, isTestFile, listFiles } from "../files";
 import { comments } from "../ts-ast";
 import { loadArchConfig, unitOf } from "./arch-model";
+import { loadGoConfig } from "./go-config";
+import { runTests } from "./go-cover";
 import { loadTestsConfig, type TestsConfig } from "./testguard";
 
 interface Counter {
@@ -119,6 +125,46 @@ export function checkSummary(root: string, config: TestsConfig): Violation[] {
   return out;
 }
 
+/** The floor a unit may be raised to: its coverage rounded down to 0.5, kept apart from the minimum when thin. */
+function candidateFloor(coverage: UnitCoverage, minFloor: number): number {
+  if (coverage.measured < MIN_MEASURED_FOR_RATCHET) return minFloor;
+  return Math.min(Math.floor(coverage.percent * 2) / 2, MAX_FLOOR);
+}
+
+/** Go units: run the tests once, then compare each unit with its floor `go:<unit>`. */
+export function checkGoCoverage(root: string, config: TestsConfig): Violation[] {
+  const goConfig = loadGoConfig(root);
+  if (!goConfig) return [];
+  const { violations, units } = runTests(root, goConfig);
+  const floors = loadFloors(root, config);
+  const out = [...violations];
+  for (const [unit, { percent }] of [...units].sort()) {
+    const floor = floors[`go:${unit}`];
+    if (floor === undefined || floor < config.min_floor) {
+      out.push(
+        violation(
+          "GOCOV002",
+          config.coverage_floor,
+          0,
+          `Go unit ${unit} has no valid floor go:${unit} (needs >= ${config.min_floor})`,
+          "Run `pnpm ratchet` to set floors from current coverage.",
+        ),
+      );
+    } else if (percent + 1e-9 < floor) {
+      out.push(
+        violation(
+          "GOCOV001",
+          unit,
+          0,
+          `Go unit ${unit} coverage ${percent.toFixed(1)}% is below its floor ${floor.toFixed(1)}%`,
+          "Add tests for the uncovered code (go test -cover ./... in backend); never lower the floor.",
+        ),
+      );
+    }
+  }
+  return out;
+}
+
 export function checkIgnoreComments(root: string, config: TestsConfig): Violation[] {
   const out: Violation[] = [];
   let count = 0;
@@ -181,11 +227,14 @@ export function ratchet(root: string): Record<string, number> {
   if (!summary) throw new Error("coverage summary missing: run `pnpm test` first");
   const floors = loadFloors(root, config);
   for (const [unit, { percent, measured }] of coverageByUnit(root, summary)) {
-    const candidate =
-      measured < MIN_MEASURED_FOR_RATCHET
-        ? config.min_floor
-        : Math.min(Math.floor(percent * 2) / 2, MAX_FLOOR);
+    const candidate = candidateFloor({ percent, measured }, config.min_floor);
     floors[unit] = Math.max(floors[unit] ?? config.min_floor, candidate, config.min_floor);
+  }
+  const goConfig = loadGoConfig(root);
+  for (const [unit, coverage] of goConfig ? runTests(root, goConfig).units : []) {
+    const key = `go:${unit}`;
+    const candidate = candidateFloor(coverage, config.min_floor);
+    floors[key] = Math.max(floors[key] ?? config.min_floor, candidate, config.min_floor);
   }
   const sorted = Object.fromEntries(Object.entries(floors).sort(([a], [b]) => a.localeCompare(b)));
   writeFileSync(path.join(root, config.coverage_floor), `${JSON.stringify(sorted, null, 2)}\n`);
@@ -198,6 +247,7 @@ export function run(root: string, base?: string): Violation[] {
     ...checkSummary(root, config),
     ...checkIgnoreComments(root, config),
     ...(base ? checkFloorsAgainst(root, config, base) : []),
+    ...checkGoCoverage(root, config),
   ];
 }
 

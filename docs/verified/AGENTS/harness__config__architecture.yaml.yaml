@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "542201256d459420"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+hash: "a8442eff1c95d71e"
+date: "2026-11-13"
+note: "Go 단위와 Go 검사 코드(GOARCH, GODEP, GODEBT, GOIGN, GOTEST, GOCOV, GOTOOL)를 하네스 소스와 대조, pnpm 명령과 규칙 코드가 실제로 있음"
 text_changed: true
-doc_hash: "fb44b4c839f340dd"
+doc_hash: "5e4e3279fb8b859e"

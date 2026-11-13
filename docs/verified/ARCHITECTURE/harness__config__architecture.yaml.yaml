@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "542201256d459420"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+hash: "a8442eff1c95d71e"
+date: "2026-11-13"
+note: "Go 단위 표와 go: 절, backend/go.mod, 규칙 코드와 모듈 표 형식을 구조 계약과 하네스 소스와 대조"
 text_changed: true
-doc_hash: "a7ab6489cf202cef"
+doc_hash: "acdda11cd5c611a4"

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "358b1f96c8ed865a"
+hash: "b308cb566cd77dc2"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "요구사항의 Go 문구와 REQ-239 변경이 설계와 어긋나지 않음, 코드 상태 문장을 고침"
 text_changed: true
-doc_hash: "2f62e54c118f75d6"
+doc_hash: "82b8856ec2ac9a17"

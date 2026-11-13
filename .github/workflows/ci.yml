@@ -1,7 +1,8 @@
 # CI is the merge gate (ADR-0002). The `gate` job is the one required check.
 # A pull request whose changed files are all documents takes the light path: `changes` decides, the test job is skipped
 # and `docs` runs the structure checks instead. Anything else, and every push to main, takes the full path.
-# Tests run once, with coverage, and the structure checks read that coverage in the same job.
+# Tests run once, with coverage, and the structure checks read that coverage in the same job. The structure checks
+# also run the Go backend's gofmt, go vet and go test (ADR-0019): the setup action installs Go for every job.
 name: ci
 on:
   pull_request:

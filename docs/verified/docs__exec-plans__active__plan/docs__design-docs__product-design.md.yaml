@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "2f62e54c118f75d6"
+hash: "82b8856ec2ac9a17"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "제품 설계의 코드 상태 문장 변경과 5단계 진행 상태를 ADR-0019 결과와 대조"
 text_changed: true
-doc_hash: "2317585ee4868973"
+doc_hash: "f9e3f949e08447e7"

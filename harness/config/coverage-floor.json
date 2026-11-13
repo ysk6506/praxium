@@ -1,4 +1,6 @@
 {
   "core.kernel": 98,
+  "go:cmd.praxium": 90,
+  "go:core.kernel": 98,
   "harness": 96
 }

@@ -5,23 +5,29 @@ status: active
 covers:
   - harness/config/architecture.yaml
   - packages/core/src/kernel/index.ts
+  - backend/go.mod
 ---
 # 아키텍처
 
-코드는 **단위**로 나뉜다. 단위는 폴더 하나이고, 무엇을 import해도 되는지는 `harness/config/architecture.yaml`이 정한다. 구조 검사가 이것을 강제한다(`ARCH*`, REQ-021).
+코드는 **단위**로 나뉜다. 단위는 폴더 하나이고, 무엇을 import해도 되는지는 `harness/config/architecture.yaml`이 정한다. 구조 검사가 이것을 강제한다(TypeScript는 `ARCH*`, Go는 `GOARCH*`, REQ-021, ADR-0019).
 
 ## 지금 있는 단위
 
-| 단위 | 자리 | 하는 일 | import해도 되는 것 |
-|---|---|---|---|
-| `core.kernel` | `packages/core/src/kernel` | ID, 오류, 시계·난수·ID 발급의 포트, 안정된 해시, 한국어 조사와 시간 표기 | 없음 |
-| `harness` | `harness/src` | 구조 검사 | 없음(제품 코드를 import하지 않는다) |
+| 단위 | 언어 | 자리 | 하는 일 | import해도 되는 것 |
+|---|---|---|---|---|
+| `core.kernel` | TypeScript | `packages/core/src/kernel` | ID, 오류, 시계·난수·ID 발급의 포트, 안정된 해시, 한국어 조사와 시간 표기 | 없음 |
+| `harness` | TypeScript | `harness/src` | 구조 검사. Go 코드도 읽는다(ADR-0019) | 없음(제품 코드를 import하지 않는다) |
+| `core.kernel` | Go | `backend/internal/kernel` | 타입 있는 ID, 안정된 코드를 가진 오류, 시계·난수·ID 발급의 포트와 구현, 정규 인코딩 위의 SHA-256. 시계와 난수를 읽는 곳은 `entropy.go` 한 파일뿐이다 | 없음 |
+| `core.contract` | Go | `backend/internal/contract` | 밖으로 내는 모양(HTTP 길과 스키마, MCP 툴, 파일 형식). 지금은 비어 있고 등록만 되어 있다 | `core.kernel` |
+| `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 넷(`api`, `worker`, `query`, `collector`) 가운데 하나를 골라 커널을 엮고 한 줄 구조 로그를 남긴 뒤 끝난다. 서버는 아직 없다 | `core.*` |
+
+TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 단위다. 구조 계약에서 Go 단위는 `go:` 절에 따로 적는다.
 
 `core.kernel`은 **화면 쪽의 TypeScript 바탕 부품**(한국어 조사, 시간 표기)이라, 화면이 다른 저장소로 나뉘어 그 저장소가 서면 그리로 옮긴다(부채 TD-0006, ADR-0016). 그때까지 여기에 남고 새 코드가 기대지 않는다. 백엔드는 자기 바탕 부품을 Go로 갖는다(ADR-0006).
 
 ## 규칙
 
-지금 있는 TypeScript 코드(`core.kernel`과 하네스)에 대한 사실이다. 백엔드는 Go로 만들고, 그 구조는 아래 "정해진 구조"에 적는다(ADR-0006).
+아래 첫 목록은 TypeScript 코드(`core.kernel`과 하네스)에 대한 사실이다. 백엔드는 Go로 만들고, 그 규칙은 이 절의 "Go 백엔드의 규칙"과 아래 "정해진 구조"에 적는다(ADR-0006, ADR-0019).
 
 - 다른 단위는 그 단위의 `index.ts`로만 닿는다. 코어의 단위는 `@praxium/core/<단위>` 별칭으로 부른다.
 - 코어는 Node를 모른다. 파일, 네트워크, 프로세스는 코어 밖(서버의 어댑터)에 두고, 코어는 포트(인터페이스)만 안다.
@@ -29,9 +35,23 @@ covers:
 - 외부 패키지는 구조 계약의 `third_party`에 적힌 단위에서만 쓴다. 새 패키지는 결정 기록이 있어야 들어온다.
 - 파일 500줄, 함수 80줄, 복잡도 12가 한도다(`DEBT*`).
 
+## Go 백엔드의 규칙 (ADR-0019)
+
+Go 코드는 `backend/` 한 모듈에 있다. 단위는 `internal/<단위>` 패키지 하나이고, 시작점은 `cmd/praxium` 하나다. 구조 검사가 읽는 계약은 `harness/config/architecture.yaml`의 `go:` 절이다.
+
+- 단위는 폴더 하나의 패키지이고, 다른 단위는 그 패키지의 루트로만 닿는다. 단위 안으로 들어가는 import는 `GOARCH011`, 허용되지 않은 방향의 import는 `GOARCH010`이다. 단위 사이의 순환은 `GOARCH030`이다.
+- 단위마다 패키지 설명(`// Package <이름> ...`)이 있어야 한다(`GOARCH041`). 어느 단위에도 들지 않은 Go 파일은 `GOARCH001`이다.
+- 시계, 난수, 환경 변수는 지정된 파일(`backend/internal/kernel/entropy.go`)에서만 읽는다(`time.Now`, `time.Since`, `time.Until`, `os.Getenv`, `os.LookupEnv`, `os.Environ`, `math/rand`, `crypto/rand`). 나머지는 `kernel.Clock`과 `kernel.Rng`를 주입받는다(`GOARCH052`, REQ-001). 시험 파일도 같다.
+- 코어는 운영체제와 네트워크를 모른다. `os`, `net/http` 같은 패키지는 구조 계약의 `restricted_stdlib`에 적힌 단위만 import한다(`GOARCH021`). 프로세스를 끝내는 `os.Exit`와 `log.Fatal*`은 시작점에서만 쓴다(`GOARCH050`). `func init`, 점 import, 시작점 밖의 빈 import는 쓰지 않는다(`GOARCH053`, `GOARCH051`).
+- 외부 모듈은 구조 계약의 `go.third_party`에 적힌 단위에서만 쓴다(`GOARCH020`). 모듈을 더하는 변경은 결정 기록과 아래 표를 함께 고친다(`GODEP*`).
+- 파일 500줄, 함수 80줄, 복잡도 12, 매개변수 6개가 한도다. 복잡도는 `if`, `for`, `case`, `&&`, `||`를 센 값이다(`GODEBT020`~`GODEBT023`).
+- `//nolint`, `//lint:ignore`, `//go:build ignore`, 건너뛴 시험(`t.Skip`)은 이유와 `TD-NNNN` 또는 `ADR-NNNN`이 있어야 한다(`GOIGN*`).
+- 단위의 코드가 있으면 시험이 있어야 하고(`GOTEST002`), `gofmt`와 `go vet`이 깨끗해야 하고(`GOTOOL001`, `GOTOOL002`), 시험은 단위마다 문장 커버리지 하한을 지킨다(`GOCOV001`, `GOCOV002`). 하한은 `harness/config/coverage-floor.json`의 `go:<단위>` 항목이다.
+- Go가 설치돼 있어야 한다. 없으면 `GOTOOL000`이다.
+
 ## 정해진 구조 (ADR-0006). 코드가 생길 때 구조 계약에 등록한다
 
-원칙은 "하나만 쓴다"가 아니라 "자리에 맞는 것을 쓴다"이고, 지킬 것은 **진실의 자리는 하나**와 **뜻의 구현은 하나**다. 백엔드의 중심(정의, 실행기, API)은 Go, 구조 검사는 TypeScript다. 이 저장소는 백엔드다. 화면은 다른 저장소에서 TypeScript로 만든다(ADR-0016). 질의 엔진도 Go로 직접 만든다(기성 그래프 엔진은 쓰지 않는다. ADR-0006, ADR-0010). 수집 봉투의 클라이언트 라이브러리는 여러 언어(Go, Python, TypeScript부터)로 낸다. 이 절은 정해진 방향이고, 아직 코드가 없다. 단위는 코드가 생기는 변경에서 `harness/config/architecture.yaml`에 등록하고, 폴더의 자리도 구현하는 변경에서 정한다. 첫 Go 제품 코드가 들어가기 전에 Go용 구조 검사를 만든다(TD-0005).
+원칙은 "하나만 쓴다"가 아니라 "자리에 맞는 것을 쓴다"이고, 지킬 것은 **진실의 자리는 하나**와 **뜻의 구현은 하나**다. 백엔드의 중심(정의, 실행기, API)은 Go, 구조 검사는 TypeScript다. 이 저장소는 백엔드다. 화면은 다른 저장소에서 TypeScript로 만든다(ADR-0016). 질의 엔진도 Go로 직접 만든다(기성 그래프 엔진은 쓰지 않는다. ADR-0006, ADR-0010). 수집 봉투의 클라이언트 라이브러리는 여러 언어(Go, Python, TypeScript부터)로 낸다. 이 절은 정해진 방향이다. 지금 코드가 있는 것은 `core.kernel`, `core.contract`(비어 있음), 시작점뿐이다. 나머지 단위는 코드가 생기는 변경에서 `harness/config/architecture.yaml`에 등록하고, 폴더의 자리도 구현하는 변경에서 정한다. Go용 구조 검사는 ADR-0019가 만들었다.
 
 ### 백엔드(Go)의 단위 방향
 
@@ -110,7 +130,15 @@ KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 
 | 선택 | 바깥 비밀 값 저장소 | 제품에 든 봉투 암호화 저장소로 간다 |
 | 선택 | 파일 보관(S3 규약) | 보관 기한 안에서 PostgreSQL에 둔다 |
 | 선택 | 열린 형식으로 관측을 받는 곳 | 제품 안의 신호와 `diagnose`만 쓴다 |
-| 들여오는 라이브러리 | 아직 없다. 질의 엔진의 핵심과 해석기는 표준 라이브러리로 짠다 | |
+| 들여오는 라이브러리 | 아직 없다. 질의 엔진의 핵심과 해석기는 표준 라이브러리로 짠다. 들인 Go 모듈은 아래 표에 있다 | |
 | 들여오는 라이브러리 | YAML 해석(구현하는 변경이 정한다. 쓰는 부분 집합을 직접 읽거나 허용 라이선스의 라이브러리 하나) | 부분 집합을 직접 읽는다 |
 
 기성 그래프 엔진은 들이지 않는다(허용 라이선스, 메모리 상주, 증분 갱신, 과거 버전, 우리의 뜻을 함께 채우는 것이 없다. ADR-0006).
+
+### 들인 Go 모듈 (REQ-239, ADR-0019)
+
+`backend/go.mod`의 `require`는 간접 의존까지 모두 아래 표에 한 줄씩 있어야 한다. 라이선스는 허용 목록(`harness/config/licenses.yaml`)에 있어야 하고, 직접 짜지 않는 까닭이 적혀 있어야 한다. 이 표와 `go.mod`가 다르면 `GODEP010`, `GODEP011`, `GODEP012`가 실패한다. `replace`와 `exclude`는 쓰지 않는다(`GODEP020`).
+
+| 모듈 | 라이선스 | 까닭 | 쓰는 단위 |
+|---|---|---|---|
+| (아직 없다) | | 백엔드는 표준 라이브러리만 쓴다 | |
