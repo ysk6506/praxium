@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "1ffad54249f10282"
+hash: "a6554a082b00662f"
 date: "2026-11-13"
-note: "ADR-0027의 길 표기(queries:이름)와 요구사항의 바뀐 글을 읽고 이 문서의 말과 어긋나지 않음을 확인"
+note: "requirements.md의 REQ-229, REQ-241 문구 변경과 REQ-262 신설을 읽고 제품 설계 한 장의 요구 목록과 어긋나지 않음을 확인했다"
 text_changed: false
 doc_hash: "21d54c87111f1d83"

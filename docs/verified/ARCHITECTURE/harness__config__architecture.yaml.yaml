@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "7f89e29e4dfab7b6"
+hash: "99ad67f2592051c5"
 date: "2026-11-13"
-note: "ADR-0027의 변경(KG 읽기 길, 명령줄, 개발용 적재기, 구조 계약)에 맞춰 대조해 고침"
+note: "locked_support 항목 셋을 규칙 절의 설명과 대조하고 시험용 Fixture, ScratchStore를 적었다"
 text_changed: true
-doc_hash: "36ee85df5e48aa64"
+doc_hash: "4056ed03057d549e"

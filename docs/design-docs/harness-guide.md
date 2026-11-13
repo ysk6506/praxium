@@ -29,11 +29,15 @@ covers:
 
 ## Go 코드를 읽는 검사 (ADR-0019)
 
-하네스는 TypeScript 도구로 남고 Go 코드를 읽는다. Go 검사는 이미 있는 검사 이름 안에서 돈다(검사 이름의 목록은 `common.test.ts`가 잠그고 있다): `architecture`에서 `GOARCH*`(단위, import, 공개 면, 시계·난수·환경, 금지 구문), `GODEP*`(`go.mod`와 ARCHITECTURE.md의 모듈 표), `GOTOOL*`(`gofmt`, `go vet`), `debt`에서 `GODEBT*`, `ignores`에서 `GOIGN*`, `test-integrity`에서 `GOTEST002`(시험 없는 단위), `coverage`에서 `GOTEST001`(`go test` 실패)과 `GOCOV*`(단위의 문장 커버리지 하한)다. 구조 계약은 `harness/config/architecture.yaml`의 `go:` 절이고, 한도와 장부는 TypeScript와 같은 `debt.yaml`과 장부를 쓴다.
+하네스는 TypeScript 도구로 남고 Go 코드를 읽는다. Go 검사는 이미 있는 검사 이름 안에서 돈다(검사 이름의 목록은 `common.test.ts`가 잠그고 있다): `architecture`에서 `GOARCH*`(단위, import, 공개 면, 시계·난수·환경, 금지 구문, 빌드 제약, 컴파일된 실행 파일), `GODEP*`(`go.mod`와 ARCHITECTURE.md의 모듈 표), `GOTOOL*`(`gofmt`, `go vet`), `debt`에서 `GODEBT*`, `ignores`에서 `GOIGN*`, `test-integrity`에서 `GOTEST002`(시험 없는 단위), `GOTEST003`~`GOTEST006`(시험의 정적 규칙), `coverage`에서 `GOTEST001`(`go test` 실패)과 `GOCOV*`(단위의 문장 커버리지 하한)다. 구조 계약은 `harness/config/architecture.yaml`의 `go:` 절이고, 한도와 장부는 TypeScript와 같은 `debt.yaml`과 장부를 쓴다.
 
 - import는 `go list`가 아니라 소스에서 읽는다(`go-lex.ts`). 시험 파일, 빌드 태그가 붙은 파일, 별칭, 줄 번호를 한 번에 보려는 것이다. 컴파일러가 아는 것(타입 오류, 없는 패키지)은 `go vet`이 본다.
 - Go가 설치돼 있어야 한다(`GOTOOL000`). 하네스는 `GOTOOLCHAIN=local`로 다른 Go를 내려받지 않고, 모듈 파일을 고치지 않는다.
-- 커버리지 하한은 `harness/config/coverage-floor.json`에 `go:<단위>`로 있고, `pnpm ratchet`이 올린다.
+- 커버리지 하한은 `harness/config/coverage-floor.json`에 `go:<단위>`로 있고, `pnpm ratchet`이 올린다. 하한이 `ratchet`이 정할 값보다 1점 넘게 낮으면 `COV006`(TypeScript)과 `GOCOV003`(Go)로 실패한다: 올린 커버리지는 곧바로 고정한다.
+- import할 수 있는 단위는 `may_import`(제품 코드와 시험 파일)와 `test_may_import`(`_test.go`만 더)로 나눠 적는다. 제품 코드가 시험 전용 단위를 import하면 `GOARCH010`이고(`GOARCH005`는 두 목록에 같은 이름이 있을 때, `GOARCH004`는 없는 단위일 때), 새 단위에서 "시험에서만 쓴다"고 적은 허용은 이 칸에 둔다.
+- `restricted_stdlib`의 항목이 `.go`로 끝나면 그 파일 하나다(없는 파일이나 단위는 `GOARCH006`). `os`는 `cmd.praxium`과 `backend/internal/kernel/entropy.go`만 import한다.
+- import 경로는 보이는 대로 읽는다: 이스케이프나 쓰지 않는 문자가 든 경로는 `GOARCH054`다. 시험 파일의 빌드 제약(`//go:build`, `// +build`, OS·아키텍처 접미사)은 `GOARCH055`, 커밋할 수 있는 자리의 컴파일된 실행 파일과 `*.test`는 `GOARCH056`이다(`.gitignore`가 막는다).
+- 시험의 정적 규칙(TypeScript의 `TEST003`~`TEST005`에 해당): `GOTEST004`는 상수로 정해지는 조건(`if 1+1 != 2`, `if x != x`), `GOTEST005`는 에러 검사 뒤에 실패 없이 `return`·`continue`·`break`하거나 실패할 길이 없는 `recover()`, `GOTEST006`은 `m.Run`을 부르지 않는 `TestMain`과 `test.run` 같은 플래그를 정하는 코드다. 이름으로 닿는 상수(`const want = 3`)는 풀지 않는다.
 - 시험 잠금, 요구사항 추적, 품질 등급표도 Go를 읽는다(ADR-0023, 부채 TD-0008을 닫았다). 아래 절에 있다.
 
 ## REST 계약 검사 (ADR-0024)
@@ -56,7 +60,8 @@ Go 프로그램은 한 번 빌드해 임시 폴더에서 돌린다. 로그인 �
 - **약화.** TypeScript의 규칙을 Go로 옮긴 것이다: 실패를 부르는 호출(`t.Fatal`, `t.Error`와 그 가족, 그리고 그것을 부르는 도우미)의 수가 줄거나, 건너뛰기(`t.Skip` 가족)가 늘거나, 본문이 비면 지문이 달라지므로 `TLOCK001`이 이유를 밝힌다. 새 시험이 실패를 부를 길이 없으면 `GOTEST003`이다.
 - **요구사항 추적.** `Test` 함수 바로 위 주석 줄 `// [REQ-001] [REQ-002]`과 `t.Run`에 넘긴 부분 시험 이름의 `[REQ-NNN]`이 시험과 요구사항을 잇는다(`TRACE001`, `TRACE002`, `TRACE006`이 TypeScript와 같이 본다). 어디에도 잇지 못하는 태그(몸체 주석, 한 괄호에 여러 id)는 `TRACE007`이다.
 - **품질 등급표.** Go 단위는 `go:<단위>` 행이다. 같은 기준표로 등급이 나오고 Go 쪽 입력은 `go test`의 문장 커버리지(`pnpm quality record`가 기록 파일에 적는다), 크기와 복잡도, 끄기 수, 열린 부채다. 재지 못한 입력은 "모름"이다.
-- **한계.** 함수 이름으로 닿는 곳을 넓게 잡아 지문은 너그럽지 않고 오히려 깐깐하다: 시험이 쓰는 도우미의 본문을 고쳐도 그 도우미를 쓰는 모든 시험이 걸린다. 다른 패키지의 도우미와 컴파일러가 아는 타입 해석은 보지 않는다. `testdata/`가 아닌 곳의 파일은 `go:embed`로 닿을 때만 본다.
+- **잠금에 넣는 지원 코드(ADR-0028).** 시험이 기대는 비시험 코드는 `go.locked_support`(패키지 폴더 또는 파일)에 적는다. 그 폴더의 비시험 파일은 `package.Name`으로 닿는 시험(그 폴더의 시험은 이름만으로도)의 지문에 들어간다. 지금은 적합 시험의 사례표(`backend/internal/graphcheck`)와 시험이 쓰는 `graph/fixture.go`, `graph/scratch.go`이고, 사례를 지우거나 단언을 약하게 하거나 더하면 그것을 돌리는 시험의 `TLOCK001`이 걸린다. 사례의 이름과 차례는 `TestSuiteCaseNamesAreFixed`가 따로 고정한다. 한계는 아래와 같다.
+- **한계.** 함수 이름으로 닿는 곳을 넓게 잡아 지문은 너그럽지 않고 오히려 깐깐하다: 시험이 쓰는 도우미의 본문을 고쳐도 그 도우미를 쓰는 모든 시험이 걸린다. 다른 패키지의 도우미는 `locked_support`에 적은 것만 본다. 컴파일러가 아는 타입 해석은 보지 않는다. `testdata/`가 아닌 곳의 파일은 `go:embed`로 닿을 때만 본다.
 
 ## 명령
 
@@ -66,7 +71,7 @@ Go 프로그램은 한 번 빌드해 임시 폴더에서 돌린다. 로그인 �
 - `pnpm tsx harness/src/run-all.ts --timing` — 검사마다 걸린 시간을 보여 준다.
 - `pnpm quality write` — 품질 등급표(`docs/generated/quality.md`)를 새로 만든다. 손으로 고치지 않는다.
 - `pnpm tsx harness/src/checks/docs.ts generate` — [결정 목록](../generated/decisions.md)과 [색인](../index.md)의 문서 목록을 한 번에 새로 만든다. 변경은 이 파일들을 커밋하지 않는다: 낡으면 알림만 나오고, 손으로 고치면 `DOC099`로 실패한다.
-- `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "…"` — 문서가 낡은 대상 모두에 `docs/verified/` 기록을 쓴다. `--target <경로>`는 한 대상만 쓴다 (`DOC010`, `DOC011`).
+- `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "…"` — 문서가 낡은 대상 모두에 `docs/verified/` 기록을 쓴다. `--target <경로>`는 한 대상만 쓴다 (`DOC010`, `DOC011`). 대상이 이미 가진 기록과 같은 메모는 받지 않고, 한 번에 10개를 넘는 대상은 `--target`으로 나눠 각각 자기 메모를 적게 한다 (ADR-0028).
 - `pnpm tsx harness/src/checks/docs.ts seal-adr <ADR>` — 결정 기록을 봉인한다. 봉인한 뒤에는 본문을 고치지 못한다 (`DOC070`).
 - `pnpm tsx harness/src/checks/docs.ts link-amends <ADR>` — 새 ADR의 `amends`가 가리키는 ADR에 `amended_by`를 남긴다 (`DOC091`).
 - `pnpm tsx harness/src/checks/docs.ts audit-queue` — 본문이 그대로인 채 다시 확인만 된 문서를 오래 감사 못 받은 순으로 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`.
@@ -75,7 +80,7 @@ Go 프로그램은 한 번 빌드해 임시 폴더에서 돌린다. 로그인 �
 
 ## CI
 
-`.github/workflows/ci.yml`이 합치기 관문이다. 필수 검사는 `gate` 하나다.
+`.github/workflows/ci.yml`이 합치기 관문이다. 필수 검사는 `gate` 하나다. main에 합친 뒤(push)에도 같은 전체 경로가 돌아야 하고, `test` 작업은 잰 커버리지를 기록 파일에 적어(`quality.ts record`가 만들고, 커밋하지 않는다) 품질 등급표의 커버리지 칸이 "모름"으로 남지 않게 한다.
 
 - 보통의 변경: `lint-types`(Biome와 타입), `test`(시험과 커버리지를 한 번에 돌리고, 그 커버리지로 구조 검사 전체를 돈다).
 - 문서(`*.md`)만 바뀐 풀 리퀘스트: `docs`(구조 검사만).

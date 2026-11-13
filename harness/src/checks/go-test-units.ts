@@ -19,14 +19,13 @@
  *
  * GOTEST003 a Go test function whose code cannot fail the test (nothing that calls `t.Error`, `t.Fatal`, `t.Fail`...)
  */
-import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { type Violation, violation } from "../common";
-import { listFiles, matchesGlob } from "../files";
 import { sha16 } from "../ts-ast";
 import { type GoConfig, type GoFile, goFiles, loadGoConfig, moduleDir } from "./go-config";
 import { declsOf, type GoDecl, normalizedText } from "./go-decls";
-import { closeOf, type GoTok, localName, stringValue } from "./go-lex";
+import { closeOf, type GoTok, localName } from "./go-lex";
+import { Files } from "./go-test-files";
 import type { Unit } from "./test-units";
 
 export interface GoTestInfo {
@@ -49,8 +48,6 @@ const FAILING = new Set(["Error", "Errorf", "Fatal", "Fatalf", "Fail", "FailNow"
 const SKIPPING = new Set(["Skip", "Skipf", "SkipNow"]);
 const TESTING_TYPES = new Set(["T", "B", "F", "TB"]);
 const TAG = /\[(REQ-\d{3})\]/g;
-const TESTDATA = /(^|\/)testdata(\/|$)/;
-const EMBED = /^\/\/go:embed\s+(.+)$/;
 const LIST_TAG = /\[\s*REQ-\d{3}\s*[,;]/;
 const OUTPUT = /^\/\/\s*(unordered output|output):/i;
 
@@ -294,68 +291,6 @@ function requirementsOf(test: Entry): string[] {
   for (const tok of test.decl.toks)
     if (tok.kind === "string" || tok.kind === "raw") found.push(...tagsIn(tok.text));
   return [...new Set(found)].sort();
-}
-
-/** The files a package's tests can read, found by what their strings and `go:embed` lines name. */
-class Files {
-  private readonly listed = new Map<string, string[]>();
-  private readonly hashes = new Map<string, string>();
-
-  constructor(private readonly root: string) {}
-
-  private under(dir: string): string[] {
-    const hit = this.listed.get(dir);
-    if (hit) return hit;
-    const files = listFiles(this.root, [dir], () => true);
-    this.listed.set(dir, files);
-    return files;
-  }
-
-  private hash(file: string): string {
-    const hit = this.hashes.get(file);
-    if (hit) return hit;
-    const value = sha16(readFileSync(path.join(this.root, file), "latin1"));
-    this.hashes.set(file, value);
-    return value;
-  }
-
-  private embedded(dir: string, entry: Entry): string[] {
-    if (entry.decl.kind !== "var") return [];
-    const patterns = entry.decl.doc.flatMap((c) =>
-      (EMBED.exec(c.text)?.[1] ?? "")
-        .split(/\s+/)
-        .map((p) => p.replace(/^["`]|["`]$/g, "").replace(/^all:/, ""))
-        .filter((p) => p !== ""),
-    );
-    return patterns.flatMap((pattern) =>
-      this.under(dir).filter((f) => {
-        const inner = f.slice(dir.length + 1);
-        return matchesGlob(inner, pattern) || inner.startsWith(`${pattern.replace(/\/$/, "")}/`);
-      }),
-    );
-  }
-
-  private named(dir: string, entry: Entry): string[] {
-    const out: string[] = [];
-    for (const tok of entry.decl.toks) {
-      if (tok.kind !== "string" && tok.kind !== "raw") continue;
-      const value = stringValue(tok);
-      if (!TESTDATA.test(value)) continue;
-      const resolved = path.posix.normalize(path.posix.join(dir, value));
-      const abs = path.join(this.root, resolved);
-      if (resolved.startsWith("..") || !existsSync(abs)) continue;
-      out.push(...(statSync(abs).isDirectory() ? this.under(resolved) : [resolved]));
-    }
-    return out;
-  }
-
-  /** `path:digest` lines of every file the entries embed or name, sorted. */
-  fingerprint(dir: string, entries: readonly Entry[]): string[] {
-    const files = new Set(
-      entries.flatMap((e) => [...this.embedded(dir, e), ...this.named(dir, e)]),
-    );
-    return [...files].sort().map((f) => `file ${f} ${this.hash(f)}`);
-  }
 }
 
 function describe(files: Files, dir: string, pool: Pool, test: Entry, key: string): GoTestInfo {

@@ -5,3 +5,8 @@ coverage/
 .vite/
 .env
 .claude/worktrees/
+
+# Build outputs of the Go backend: compiled programs and test binaries (GOARCH056).
+backend/cmd/praxium/praxium
+backend/**/*.exe
+*.test

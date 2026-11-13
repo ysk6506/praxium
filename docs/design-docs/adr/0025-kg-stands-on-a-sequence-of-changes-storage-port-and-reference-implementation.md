@@ -28,6 +28,9 @@ amends:
   - adr: "0009"
     what: 링크의 내용 해시에 등급과 근거의 종류가 들고, 반쯤 든 배치는 되감아 포기한다
 decision_hash: a90e7f3846abeae3
+amended_by:
+  - adr: "0028"
+    what: 적합 시험 단위가 기준 구현을 import하는 범위
 ---
 # ADR-0025 KG가 변경의 이어짐으로 선다: 저장소 포트와 기준 구현
 

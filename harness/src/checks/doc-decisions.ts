@@ -61,7 +61,7 @@ export function decisionsTable(root: string, config: DocsConfig): string {
   return [
     "# 결정 목록",
     "",
-    "이 문서는 하네스가 만들어요(`pnpm tsx harness/src/checks/docs.ts decisions`). 손으로 고치지 않아요. 결정 기록의 앞부분(제목, 상태, `amends`, `amended_by`, `superseded_by`)에서 번호 순으로 한 줄씩 만들고, 5시간마다 도는 정리 작업이 main에서 새로 만들어 올려요. 결정마다 커밋하지 않아요. 낡으면 구조 검사가 알림 한 줄만 내요.",
+    "이 문서는 하네스가 만들어요(`pnpm tsx harness/src/checks/docs.ts decisions`). 손으로 고치지 않아요. 결정 기록의 앞부분(제목, 상태, `amends`, `amended_by`, `superseded_by`)에서 번호 순으로 한 줄씩 만들고, 하루에 한 번 도는 정리 작업이 main에서 새로 만들어 올려요. 결정마다 커밋하지 않아요. 낡으면 구조 검사가 알림 한 줄만 내요.",
     "",
     "'일부 고침'이 적힌 결정은 뒤의 결정이 그 일부를 바꿨다는 뜻이에요. 본문은 봉인되어 그대로이니, 거기 적힌 결정 가운데 무엇이 지금 유효한지는 고친 결정을 읽어 확인해요.",
     "",

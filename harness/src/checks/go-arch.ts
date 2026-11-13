@@ -18,6 +18,7 @@
  * GOARCH055 build constraint on a test file: `//go:build`, `// +build`, an OS or architecture file suffix (ADR-0028)
  * GOARCH005 test_may_import repeats what may_import already allows (ADR-0028)
  * GOARCH006 restricted_stdlib or locked_support names a unit or file that does not exist (ADR-0028)
+ * GOARCH056 a compiled binary among the files a commit would take (ADR-0028)
  *
  * GOARCH010 reads `may_import` for production files and `may_import` + `test_may_import` for `_test.go` files.
  */
@@ -25,6 +26,14 @@ import { existsSync, statSync } from "node:fs";
 import path from "node:path";
 import { type Violation, violation } from "../common";
 import { allowedBy } from "./arch-model";
+import {
+  binaryProblems,
+  checkNamedScopes,
+  constraintProblems,
+  HINT,
+  isFileEntry,
+  PLAIN_PATH,
+} from "./go-arch-rules";
 import {
   type GoConfig,
   type GoFile,
@@ -36,10 +45,6 @@ import {
 } from "./go-config";
 import { selectorsOf } from "./go-lex";
 import { findCycles } from "./import-graph";
-
-const HINT =
-  "If the rule itself is wrong, write an ADR and change the `go:` section of harness/config/architecture.yaml; " +
-  "otherwise change the code.";
 
 /** Packages and calls that make a run depend on the outside world (REQ-001). */
 const NONDETERMINISTIC_IMPORTS = new Set(["math/rand", "math/rand/v2", "crypto/rand"]);
@@ -61,22 +66,6 @@ const EXIT_CALLS = new Set([
   "log.Panicln",
 ]);
 const BANNED_IMPORTS = new Set(["unsafe", "plugin", "C"]);
-/** What a package path is made of. A backslash, a space or anything else means an escape or a trick. */
-const PLAIN_PATH = /^[A-Za-z0-9._~+/-]+$/;
-
-/** Operating systems and architectures that Go reads from the end of a file name as a build constraint. */
-const GOOS = new Set(
-  "aix android darwin dragonfly freebsd hurd illumos ios js linux nacl netbsd openbsd plan9 solaris wasip1 windows zos".split(
-    " ",
-  ),
-);
-const GOARCH = new Set(
-  "386 amd64 amd64p32 arm armbe arm64 arm64be loong64 mips mipsle mips64 mips64le mips64p32 mips64p32le ppc ppc64 ppc64le riscv riscv64 s390 s390x sparc sparc64 wasm".split(
-    " ",
-  ),
-);
-const CONSTRAINT_LINE = /^\/\/\s*(go:build\b|\+build\b)/;
-
 export function checkStructure(
   root: string,
   config: GoConfig,
@@ -136,40 +125,6 @@ export function checkStructure(
   }
   return out;
 }
-
-/** Units and files that `restricted_stdlib` and `locked_support` name must exist. */
-function checkNamedScopes(root: string, config: GoConfig, names: ReadonlySet<string>): Violation[] {
-  const out: Violation[] = [];
-  const missing = (what: string, fix: string): number =>
-    out.push(violation("GOARCH006", "harness/config/architecture.yaml", 0, what, `${fix} ${HINT}`));
-  for (const [pkg, scope] of config.restrictedStdlib) {
-    for (const entry of scope) {
-      if (isFileEntry(entry)) {
-        if (!existsSync(path.join(root, entry)))
-          missing(
-            `restricted_stdlib '${pkg}' names file ${entry}, which does not exist`,
-            "Fix the path.",
-          );
-      } else if (!entry.endsWith(".*") && !names.has(entry)) {
-        missing(
-          `restricted_stdlib '${pkg}' names '${entry}', which is not a Go unit`,
-          "Fix the name.",
-        );
-      }
-    }
-  }
-  for (const entry of config.lockedSupport) {
-    if (!existsSync(path.join(root, entry)))
-      missing(
-        `locked_support names ${entry}, which does not exist`,
-        "Fix the path or remove the entry.",
-      );
-  }
-  return out;
-}
-
-/** A restricted_stdlib entry that ends in `.go` is one file, anything else a unit name or pattern. */
-const isFileEntry = (entry: string): boolean => entry.endsWith(".go");
 
 /** A unit is a package: it needs Go code in its own folder, and a doc comment saying what it is for. */
 function checkUnitRoot(unit: GoUnit, files: readonly GoFile[]): Violation[] {
@@ -463,39 +418,6 @@ function initProblems(file: GoFile): Violation[] {
   return out;
 }
 
-/**
- * A test file that only some builds compile is counted by the lock and the tracer and never runs on the rest. Test
- * files take no build constraint: neither a `//go:build` or `// +build` line before the package clause, nor an
- * operating-system or architecture suffix in the file name (`x_linux_test.go`, `x_arm64_test.go`).
- */
-function constraintProblems(file: GoFile): Violation[] {
-  if (!file.isTest) return [];
-  const out: Violation[] = [];
-  const fix =
-    "A test file must run everywhere: remove the constraint, or put the platform-specific part in production code behind an interface.";
-  const clause = file.pkg?.line ?? Number.POSITIVE_INFINITY;
-  for (const tok of file.toks) {
-    if (tok.kind === "comment" && tok.line < clause && CONSTRAINT_LINE.test(tok.text))
-      out.push(violation("GOARCH055", file.path, tok.line, "build constraint on a test file", fix));
-  }
-  const parts = path.posix
-    .basename(file.path)
-    .replace(/_test\.go$/, "")
-    .split("_");
-  const last = parts.at(-1) ?? "";
-  if (parts.length > 1 && (GOOS.has(last) || GOARCH.has(last)))
-    out.push(
-      violation(
-        "GOARCH055",
-        file.path,
-        1,
-        `the file name ends in '_${last}', which is a build constraint on a test file`,
-        fix,
-      ),
-    );
-  return out;
-}
-
 export function checkConstructs(config: GoConfig, files: readonly GoFile[]): Violation[] {
   return files.flatMap((file) => [
     ...importProblems(config, file),
@@ -513,5 +435,6 @@ export function run(root: string, config: GoConfig): Violation[] {
     ...violations,
     ...checkCycles(graph),
     ...checkConstructs(config, files),
+    ...binaryProblems(root, config),
   ];
 }

@@ -4,10 +4,11 @@
  *
  * COV001 unit below its floor   COV002 unit without a valid floor   COV003 (with --base) floor lowered
  * COV004 coverage summary missing   COV005 coverage-ignore comment over budget or without a reason
+ * COV006 floor more than MAX_FLOOR_LAG points below what the ratchet would set (ADR-0028)
  *
  * Go code (ADR-0019) is measured per Go unit as statements by `go test`, and its floors sit in the same file under
  * the key `go:<unit>`. GOCOV001 Go unit below its floor   GOCOV002 Go unit without a valid floor
- * (a lowered Go floor is COV003, a failing Go test is GOTEST001)
+ * GOCOV003 Go floor lagging behind the measured coverage (a lowered Go floor is COV003, a failing Go test is GOTEST001)
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -44,9 +45,14 @@ export interface UnitCoverage {
 }
 
 /** Units with less measured code than this keep the minimum floor (too little evidence to ratchet). */
-export const MIN_MEASURED_FOR_RATCHET = 50;
+export const MIN_MEASURED_FOR_RATCHET = 15;
 /** Floors never go above this, leaving room for a defensive branch or two (ADR-0014). */
 export const MAX_FLOOR = 98;
+/**
+ * A floor may sit this many points under what `pnpm ratchet` would set for the unit. Past that the floor lags: coverage
+ * was raised and the ratchet was not run, so a later drop back down would still pass (ADR-0028).
+ */
+export const MAX_FLOOR_LAG = 1;
 
 /** Combined line + branch percentage per unit. */
 export function perUnit(root: string, summary: Summary): Map<string, number> {
@@ -98,6 +104,7 @@ export function checkSummary(root: string, config: TestsConfig): Violation[] {
     ];
   const floors = loadFloors(root, config);
   const out: Violation[] = [];
+  const measured = coverageByUnit(root, summary);
   for (const [unit, percent] of [...perUnit(root, summary)].sort()) {
     const floor = floors[unit];
     if (floor === undefined || floor < config.min_floor) {
@@ -120,9 +127,26 @@ export function checkSummary(root: string, config: TestsConfig): Violation[] {
           "Add tests for the uncovered code (see coverage/); never lower the floor.",
         ),
       );
+    } else if (isLagging(floor, measured.get(unit), config.min_floor)) {
+      out.push(
+        violation(
+          "COV006",
+          config.coverage_floor,
+          0,
+          `${unit} coverage is ${percent.toFixed(1)}% but its floor is only ${floor.toFixed(1)}%`,
+          "Raise the floor with `pnpm ratchet`: a floor that lags lets coverage fall back unnoticed.",
+        ),
+      );
     }
   }
   return out;
+}
+
+/** Whether a floor is more than MAX_FLOOR_LAG under the floor the ratchet would set. */
+function isLagging(floor: number, coverage: UnitCoverage | undefined, minFloor: number): boolean {
+  return (
+    coverage !== undefined && floor + MAX_FLOOR_LAG + 1e-9 < candidateFloor(coverage, minFloor)
+  );
 }
 
 /** The floor a unit may be raised to: its coverage rounded down to 0.5, kept apart from the minimum when thin. */
@@ -158,6 +182,16 @@ export function checkGoCoverage(root: string, config: TestsConfig): Violation[] 
           0,
           `Go unit ${unit} coverage ${percent.toFixed(1)}% is below its floor ${floor.toFixed(1)}%`,
           "Add tests for the uncovered code (go test -cover ./... in backend); never lower the floor.",
+        ),
+      );
+    } else if (isLagging(floor, units.get(unit), config.min_floor)) {
+      out.push(
+        violation(
+          "GOCOV003",
+          config.coverage_floor,
+          0,
+          `Go unit ${unit} coverage is ${percent.toFixed(1)}% but its floor go:${unit} is only ${floor.toFixed(1)}%`,
+          "Raise the floor with `pnpm ratchet`: a floor that lags lets coverage fall back unnoticed.",
         ),
       );
     }

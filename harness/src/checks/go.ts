@@ -11,6 +11,7 @@ import * as cover from "./go-cover";
 import * as debt from "./go-debt";
 import * as deps from "./go-deps";
 import * as ignores from "./go-ignores";
+import { ruleViolations } from "./go-test-rules";
 import { assertionViolations } from "./go-test-units";
 import * as tools from "./go-tools";
 import { loadIgnoresConfig, sealedAdrs } from "./ignores";
@@ -46,10 +47,16 @@ export function ignoresOf(root: string): Violation[] {
 }
 
 /**
- * A unit with code and no test: GOTEST002. A test function that cannot fail: GOTEST003. (Running the tests, GOTEST001,
- * is part of the coverage check; the lock on the tests, TLOCK*, is part of testguard.)
+ * A unit with code and no test: GOTEST002. A test function that cannot fail: GOTEST003. A test that decides by constants,
+ * swallows a failure or hides other tests: GOTEST004 to GOTEST006 (ADR-0028). (Running the tests, GOTEST001, is part of
+ * the coverage check; the lock on the tests, TLOCK*, is part of testguard.)
  */
 export function testIntegrity(root: string): Violation[] {
   const config = loadGoConfig(root);
-  return config ? [...cover.checkPresence(root, config), ...assertionViolations(root, config)] : [];
+  if (!config) return [];
+  return [
+    ...cover.checkPresence(root, config),
+    ...assertionViolations(root, config),
+    ...ruleViolations(root, config),
+  ];
 }

@@ -1,7 +1,11 @@
 /** Gaps the audit of the Go checks found, and the fixtures that keep them shut (ADR-0028). */
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, test } from "vitest";
 import type { Violation } from "../common";
+import { findRoot } from "../common";
 import { goLines, goRepo } from "../test-support/go-repo";
+import { commitAll, writeFiles } from "../test-support/mini-repo";
 import { run } from "./go-arch";
 import { loadGoConfig } from "./go-config";
 import { goTestInfos } from "./go-test-units";
@@ -294,5 +298,40 @@ describe("test support that locked tests lean on is fingerprinted [REQ-023]", ()
     expect(digest(goRepo(unrelated(CASES)), key)).toBe(
       digest(goRepo(unrelated(CASES.slice(0, 1))), key),
     );
+  });
+});
+
+describe("a compiled binary is not committed [REQ-021]", () => {
+  const ELF = "\x7fELF\u0002\u0001\u0001";
+  const BIN = "backend/cmd/app/app";
+
+  test("a binary among the files, or a test binary, is refused", () => {
+    expect(codes({ [BIN]: ELF })).toEqual(["GOARCH056"]);
+    expect(codes({ "backend/internal/model/model.test": "plain text" })).toEqual(["GOARCH056"]);
+    expect(codes({ "backend/cmd/app/app.exe": "MZ\u0090\u0000" })).toEqual(["GOARCH056"]);
+    expect(codes({ "backend/internal/model/notes.txt": "ELF is a word here" })).toEqual([]);
+  });
+
+  test("with git, a binary that .gitignore hides is fine and one that it does not hide is refused", () => {
+    const root = goRepo({ ".gitignore": "backend/cmd/app/app\n" });
+    commitAll(root);
+    writeFiles(root, { [BIN]: ELF });
+    const config = loadGoConfig(root) as NonNullable<ReturnType<typeof loadGoConfig>>;
+    expect(run(root, config)).toEqual([]);
+    writeFiles(root, { ".gitignore": "\n" });
+    expect(run(root, config).map((v) => [v.code, v.path])).toEqual([["GOARCH056", BIN]]);
+  });
+
+  test("this repository's .gitignore hides the program and the test binaries", () => {
+    const root = goRepo({
+      ".gitignore": readFileSync(path.join(findRoot(), ".gitignore"), "utf8"),
+    });
+    commitAll(root);
+    writeFiles(root, {
+      "backend/cmd/praxium/praxium": ELF,
+      "backend/internal/model/model.test": ELF,
+    });
+    const config = loadGoConfig(root) as NonNullable<ReturnType<typeof loadGoConfig>>;
+    expect(run(root, config).filter((v) => v.code === "GOARCH056")).toEqual([]);
   });
 });
