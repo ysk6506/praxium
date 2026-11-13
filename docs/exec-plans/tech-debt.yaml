@@ -56,3 +56,10 @@ items:
     due: "2027-02-01"
     status: open
     units: [core.kernel]
+  - id: TD-0007
+    title: "임시 콘솔(클로즈 베타까지 기능을 눌러 보는 지울 수 있는 화면)이 이 저장소의 따로 된 폴더에 있다. 프런트엔드 저장소가 서거나 클로즈 베타가 끝나면 지워야 한다(ADR-0016)"
+    severity: low
+    cost: "폴더와 켜는 설정 하나를 지운다. 백엔드의 어떤 코드도 그것을 import하지 않으므로 다른 곳은 고치지 않는다"
+    created: "2026-11-13"
+    due: "2027-06-01"
+    status: open

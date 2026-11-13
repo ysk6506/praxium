@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "932c20b25c2d8c2b"
+hash: "6ecc97b40aba4028"
 date: "2026-11-13"
-note: "ADR-0005~0016 봉인과 맞춘 통합 때 본문을 다시 읽고 확인함"
+note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
 text_changed: true
-doc_hash: "9ff321f9a251b459"
+doc_hash: "e076f2e852a55fec"

@@ -13,7 +13,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: c0032f8c521b8b1a
+decision_hash: 2f26a94dbb9dc021
 ---
 # ADR-0007 KG의 모델: 열린 타입과 닫힌 링크의 뜻, 채널마다의 상태, 객체인 이중화 묶음, 근거 등급, 바뀌지 않는 ID, 넉넉한 표준 모델
 

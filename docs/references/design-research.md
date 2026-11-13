@@ -7,7 +7,7 @@ follows:
 ---
 # 설계 조사
 
-ADR-0005~0016을 정하기 전에 공개 자료를 읽고 작은 시제품으로 잰 것을 줄인 문서예요. 결정은 각 결정 기록에 있고, 여기에는 **무엇을 확인했고 무엇을 못 했는지**만 적어요. 구현 전에 숫자와 제한 값은 원문으로 다시 봐야 해요.
+ADR-0005~0018을 정하기 전에 공개 자료를 읽고 작은 시제품으로 잰 것을 줄인 문서예요. 결정은 각 결정 기록에 있고, 여기에는 **무엇을 확인했고 무엇을 못 했는지**만 적어요. 구현 전에 숫자와 제한 값은 원문으로 다시 봐야 해요.
 
 ## 읽는 법
 
@@ -99,7 +99,55 @@ ADR-0005~0016을 정하기 전에 공개 자료를 읽고 작은 시제품으로
 
 못 한 것: Go의 그래프 시험과 지도 시험 값은 이 문서에 옮기지 않았어요. 메모리 비교는 시험 구조의 차이가 있어 계획 10번에서 다시 재요. PostgreSQL에서 시퀀스 번호가 커밋 순서와 다를 수 있어서, KG마다 쓰는 쪽을 하나로 두는 결정을 했어요(ADR-0009).
 
-## 6. 정직하게 남기는 한계
+## 6. 에이전트 시대의 버전 관리와 PostgreSQL의 운영 수준 (ADR-0014, ADR-0009)
+
+물음: 에이전트가 정의 변경의 대부분을 쓰면 병합 큐와 검토와 되돌리기는 어떻게 달라지고, 쓰기 중심의 PostgreSQL을 운영 수준까지 어떻게 두나.
+
+확인한 것(주소를 열어 봤어요):
+- 에이전트 시대의 푸시와 병합 큐를 다룬 글과 딸린 글: [GeekNews 요약](https://news.hada.io/article/git-push-in-the-agent-era), [Aspen](https://news.hada.io/topic?id=36787), [Zed Delta](https://news.hada.io/topic?id=36761), [코드가 검토를 앞지른다](https://news.hada.io/article/code-outruns-review).
+- 대규모 PostgreSQL 운영: [OpenAI의 PostgreSQL 확장 글](https://openai.com/index/scaling-postgresql/)과 [2차 요약](https://www.pixelstech.net/article/1747708863-openai%3a-scaling-postgresql-to-the-next-level).
+- 공식 문서(PostgreSQL 18): [청소](https://www.postgresql.org/docs/current/routine-vacuuming.html), [HOT](https://www.postgresql.org/docs/current/storage-hot.html), [논리 복제의 설명](https://www.postgresql.org/docs/current/logicaldecoding-explanation.html), [분할](https://www.postgresql.org/docs/current/ddl-partitioning.html), [ALTER TABLE](https://www.postgresql.org/docs/current/sql-altertable.html), [복제 설정](https://www.postgresql.org/docs/current/runtime-config-replication.html), [핫 스탠바이](https://www.postgresql.org/docs/current/hot-standby.html), [잠금](https://www.postgresql.org/docs/current/explicit-locking.html), [WAL 설정](https://www.postgresql.org/docs/current/runtime-config-wal.html), [시퀀스](https://www.postgresql.org/docs/current/sql-createsequence.html), [연속 보관](https://www.postgresql.org/docs/current/continuous-archiving.html), [논리 복제의 제약](https://www.postgresql.org/docs/current/logical-replication-restrictions.html), [pg_upgrade](https://www.postgresql.org/docs/current/pgupgrade.html), [연결 풀의 기능](https://www.pgbouncer.org/features.html).
+- 공학 글: [PostgreSQL로 큐 만들기](https://brandur.org/postgres-queues), [LISTEN/NOTIFY가 커지지 않는 까닭](https://www.recall.ai/blog/postgres-listen-notify-does-not-scale), [무중단 스키마 변경의 어려운 점](https://gocardless.com/blog/zero-downtime-postgres-migrations-the-hard-parts/).
+
+다시 확인할 것: 페이지는 요약을 거쳐 읽었고 인용의 글자 그대로는 확인하지 못했어요. `WAIT FOR LSN` 문서는 열리지 않았고, 그 기능은 미확인이에요. 통계 뷰와 함수 문서는 앞부분만 요약됐어요. 글이 말하는 이 분야의 최근 사건들은 그 글이 그렇게 말한다는 뜻이고 독립 확인을 하지 못했어요. WAL이 3~4배라는 것은 추정이에요(가정).
+
+쓴 곳: 쓴 주체와 맡긴 사람의 기록, 위험의 등급과 정책에 의한 자동 병합, 병합 큐의 차례를 싸게 하는 것(ADR-0014). 처음 싣기를 나누기, 머리 행과 차례의 번호, 정족수 동기 복제, 연결 풀과 잠금의 규칙, 스키마 변경의 차례, `kg_id` 길잡이 층(ADR-0009, postgres-operations.md).
+
+## 7. 질의 엔진을 만들까 살까 (ADR-0006, ADR-0010)
+
+물음: 영향 범위를 답하는 엔진을 기성 그래프 엔진으로 할까 직접 만들까, 어느 언어로 할까.
+
+확인한 것(요약을 거쳐 읽었어요. 일부는 미러나 2차 자료라 원문 대조가 필요해요):
+- 그래프 엔진의 라이선스와 상태: [Kuzu 소개](https://www.puppygraph.com/blog/what-is-kuzudb), [Ryu 그래프](https://blog.ryugraph.io/posts/introducing-predictable-labs-and-ryugraph), [Memgraph](https://github.com/memgraph/memgraph)와 [BSL](https://raw.githubusercontent.com/memgraph/memgraph/master/licenses/BSL.txt), [FalkorDB 라이선스](https://docs.falkordb.com/license.html)와 [설계](https://docs.falkordb.com/design/), [Neo4j 라이선스](https://neo4j.com/licensing/?ref=blog), [Nebula](https://github.com/vesoft-inc/nebula), [TigerGraph 판 비교](https://www.tigergraph.com/comparison-of-tigergraph-editions/), [DuckPGQ](https://duckdb.org/community_extensions/extensions/duckpgq).
+- 증분 계산과 규칙 엔진: [DBSP](https://www.vldb.org/pvldb/vol16/p1601-budiu.pdf), [differential dataflow](https://github.com/TimelyDataflow/differential-dataflow), [Feldera](https://github.com/feldera/feldera), [Soufflé](https://github.com/souffle-lang/souffle), [Skyframe](https://bazel.build/reference/skyframe.md).
+- 규모의 사례: [Zanzibar](https://research.google/pubs/zanzibar-googles-consistent-global-authorization-system/), [LinkedIn LIquid](https://engineering.linkedin.com/blog/2020/liquid-the-soul-of-a-new-graph-database-part-1), [TAO](https://usenix.org/system/files/conference/atc13/atc13-bronson.pdf), [Batfish의 교훈](https://foci.uw.edu/papers/sigcomm23-batfish-lessons.pdf), [Uber의 의존 분석](https://www.uber.com/us/en/blog/automated-dependency-analysis/).
+- 그래프 처리와 Go의 메모리: [GAP 벤치](https://ar5iv.arxiv.org/html/1508.03619), [Ligra](https://jshun.csail.mit.edu/ligra.pdf), [Go GC 안내](https://go.dev/doc/gc-guide), [Green Tea GC](https://go.dev/blog/greenteagc), [큰 힙의 GC 부담 줄이기](https://blog.gopheracademy.com/advent-2018/avoid-gc-overhead-large-heaps/).
+- 벤치마크 방법: [LDBC SNB](https://arxiv.org/pdf/2001.02299), [그래프 벤치마크의 조사](https://arxiv.org/html/2404.00766v1).
+
+찾지 못한 것: 우리와 가장 가까운 분야(자산과 서비스 지도의 영향 분석)의 공개된 수는 찾지 못했어요. 사례의 수는 요약 도구로 읽은 것이라 글자 그대로의 인용으로 쓰지 않았어요.
+
+판단: 요구한 뜻(채널별 최소 고정점, 이중화 묶음, 세 값, 과거 버전)을 허용 라이선스로 함께 채우는 엔진이 없었어요. 그래서 직접 만들어요(ADR-0006 2번, query-engine-shape.md).
+
+## 8. 규모별 비용의 측정 (ADR-0010, query-engine-shape.md)
+
+같은 그래프를 Go와 Rust로 짠 엔진으로 쟀어요. 가정이에요(약속이 아니에요).
+
+조건: 지어낸 모양(계층, 중복 구조, 팬아웃, 서비스 그래프를 내가 정한 인자로 만들었어요), 2 vCPU, 메모리 약 8GB, 단일 시드, 규모마다 한 번씩, 디스크 입출력 없음, 속성 거르기와 과거 버전과 읽기·쓰기 동시 접근 없음. 같은 바이너리를 두 번 돌리면 10~40% 편차가 있어요.
+
+| 무엇 | 잰 값 |
+|---|---|
+| 규모 | 노드와 엣지 합 100만, 1천만, 3천만, 1억(1억에서 노드 약 2,630만, 엣지 약 7,400만) |
+| 메모리 | 노드와 엣지 하나에 약 12바이트. 1억에서 짓고 난 뒤 상주 약 1.2GB(Go와 Rust가 같아요) |
+| 짓기(1억) | Go 약 4.7~7.8초, Rust 약 3.8~4.0초 |
+| 홀 하나가 서는 경우 | 가운데값 약 2ms(Go), 약 1.8ms(Rust). 영향받은 VM 약 3.4만 |
+| 사이트의 전원 둘이 다 서는 경우 | 가운데값 약 6~7ms(Go), 약 5ms(Rust). 1억에서 최대 약 46ms와 37ms. 영향받은 VM 약 20만 |
+| 질의 하나의 비용 | 건드린 노드 하나에 약 20~35ns |
+| Go의 GC | 질의 구간에서는 한 번도 돌지 않았어요. 멈춤은 동시 질의의 작업자별 임시 할당과 갱신 단계에서만 생겼고 단일 최대 1ms 아래였어요 |
+| 정확성 | 느리지만 뻔한 기준 구현과 1,367개 질의의 모든 노드 상태가 일치(불일치 0). Go와 Rust의 체크섬도 일치 |
+
+한계: 합성 모양이라 실제 모양과 지연이 크게 달라질 수 있어요. 작은 장비에서 쟀고 동시성은 작업자 둘까지만 봤어요. 지연의 꼬리(최대)는 한 번의 운영체제 지터와 첫 접근의 페이지 폴트에 민감해요. Go가 이 장비에서 먼저 닿는 한계는 지연이나 GC가 아니라 짓기와 합치기의 순간 메모리(추정 2.4억~3억 단위)예요. 이 값들은 클로즈 베타에서 지어낸 세계 생성기로 다시 재서 고쳐요.
+
+## 9. 정직하게 남기는 한계
 
 - 이 조사는 공개 문서와 작은 시제품이 근거예요. 제품 책임자의 운영 환경에 대한 사실은 담지 않았어요(ADR-0003).
 - 요약 도구를 거친 숫자와 제한 값은 구현 전에 원문으로 다시 봐요.

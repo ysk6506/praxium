@@ -20,7 +20,7 @@ touches_protected:
   - docs/design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md
   - AGENTS.md
 amends_tests: []
-decision_hash: ac667819631448bc
+decision_hash: 0a5542b1b8b7c8c7
 ---
 # ADR-0005 프락시움은 별도 제품이다 — 모델은 프락시움이 쥐고, 맡기기 전의 검증은 제품 밖에 둔다
 

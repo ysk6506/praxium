@@ -150,12 +150,12 @@ POST /v1/questions/competency
 | `/v1/events/stream` | GET | 사건의 흐름(서버 전송 이벤트). `kinds`, `resource`로 거르고 `Last-Event-ID`로 이어 받아요 | 읽기(사건마다 읽기 권한을 따라요) | - | rest-api 3-10 |
 | `/v1/events` | GET | 같은 사건을 번호로: `since=<event_id>`, `kinds`, `resource`, `limit`. 너무 옛것이면 `stale.since_too_old` | 읽기 | - | rest-api 3-10 |
 | `/v1/settings` | GET, PATCH | 제품의 설정(SSO 연결, 허용할 출처의 목록, 한도의 기본값). 비밀 값은 참조만. `If-Match` 필요 | `admin` | - | access-control |
-| `/v1/settings/{setting_name}/revisions` | GET, POST | 운영의 설정(한도, 문턱, 보관 기한, 동시 수)의 바뀜의 이력과 되돌리기. 값의 범위를 검사하고 다시 띄워야 먹는 설정은 표시돼요 | `admin` | - | ADR-0017(만드는 중) |
-| `/v1/diagnoses` | POST | 진단(`diagnose`): 지금 아픈 것, 까닭, 근거 신호, 할 수 있는 운영 행위. 저장소 없이도 답해요. 상태를 바꾸지 않아요(안전함) | `operator` | - | ADR-0017(만드는 중) |
-| `/v1/event-codes`, `/v1/event-codes/{code}` | GET | 사건 코드와 오류 코드의 목록(뜻, 심각도, 살펴볼 것, 할 수 있는 운영 행위). 버전이 있어요 | 로그인한 누구나 | - | ADR-0017(만드는 중) |
-| `/v1/operations`, `/v1/operations/{operation_name}` | GET | 운영 행위의 목록(위험의 축 넷, 선언한 효과, 되돌리는 행위, 승인 필요 여부) | `operator` | - | ADR-0017(만드는 중) |
-| `/v1/operations/{operation_name}/previews` | POST | 미리 해 보기: 하지 않고 무엇이 멈추고 무엇이 걸리는지 답해요(안전함) | `operator` | - | ADR-0017(만드는 중) |
-| `/v1/operations/{operation_name}/executions` | POST | 운영 행위를 해요. `Idempotency-Key`를 받고 오래 걸리면 작업을 줘요. 결과에 효과가 신호에 나타났는지 적혀요. 넓은 행위(일꾼을 전부 비우기, 모든 소스를 멈추기)는 `admin`만 | `operator`(넓은 것은 `admin`) | 작업 | ADR-0017(만드는 중) |
+| `/v1/settings/{setting_name}/revisions` | GET, POST | 운영의 설정(한도, 문턱, 보관 기한, 동시 수)의 바뀜의 이력과 되돌리기. 값의 범위를 검사하고 다시 띄워야 먹는 설정은 표시돼요 | `admin` | - | ADR-0017 |
+| `/v1/ops/diagnose` | POST | 진단(`diagnose`): 지금 아픈 것, 까닭, 근거 신호, 할 수 있는 운영 행위. 저장소 없이도 답해요. 상태를 바꾸지 않아요(안전함) | `operator` | - | ADR-0017 |
+| `/v1/ops/event-codes`, `/v1/ops/event-codes/{code}` | GET | 사건 코드와 오류 코드의 목록(뜻, 심각도, 살펴볼 것, 할 수 있는 운영 행위). 버전이 있어요 | 로그인한 누구나 | - | ADR-0017 |
+| `/v1/ops/actions`, `/v1/ops/actions/{action}` | GET | 운영 행위의 목록(위험의 축 넷, 선언한 효과, 되돌리는 행위, 승인 필요 여부) | `operator` | - | ADR-0017 |
+| `/v1/ops/actions/{action}/dry-run` | POST | 미리 해 보기: 하지 않고 무엇이 멈추고 무엇이 걸리는지 답해요(안전함) | `operator` | - | ADR-0017 |
+| `/v1/ops/actions/{action}/runs` | POST | 운영 행위를 해요. `Idempotency-Key`를 받고 오래 걸리면 작업을 줘요. 결과에 효과가 신호에 나타났는지 적혀요. 넓은 행위(일꾼을 전부 비우기, 모든 소스를 멈추기)는 `admin`만 | `operator`(넓은 것은 `admin`) | 작업 | ADR-0017 |
 | `/v1/contract` | GET | 계약 문서(OpenAPI) 자체 | 인증 없이 읽을 수 있는지는 정하지 않았어요(rest-api 7절) | - | rest-api 5-4 |
 | `/v1/capabilities` | GET | 서버의 버전과 켜진 기능(`api_version`, `features`) | 로그인한 누구나 | - | rest-api 5-4 |
 | `/v1/problems/{code}` | GET | 오류 `code`의 설명(`type`이 가리키는 길). 계약의 오류 코드 목록과 같아요 | 로그인 없이 | - | rest-api 3-9 |
@@ -168,9 +168,9 @@ POST /v1/questions/competency
 - `/v1/directory/subjects`를 `editor`가 쓰는 범위(담당자 고르기)는 가정이에요.
 - 알림의 확인과 넘기기의 길 이름(`acknowledge`, `snooze`, `hand-over`)은 상태 이름을 따라 지었어요.
 - 설정에서 어떤 칸이 고칠 수 있는 설정인지는 정하지 않았어요.
-- 진단, 운영 행위, 사건 코드, 운영 설정의 길은 ADR-0017(만드는 중)의 이름을 따라 지은 가정이에요. 설계 문서 프락시움 자신의 관측성 설계 문서(만드는 중)과 맞는지 OpenAPI 문서에서 닫아요.
+- 진단, 운영 행위, 사건 코드, 운영 설정의 길은 ADR-0017의 이름을 따라 지은 가정이에요. 설계 문서 [프락시움 자신의 관측성](self-observability.md)과 맞는지 OpenAPI 문서에서 닫아요.
 - 한 객체를 직접 고치는 길은 없어요. KG는 정의와 원본 기록의 결과예요(ADR-0009).
 
 ## 7. 관련 결정과 요구사항
-- ADR-0016. 원천: ADR-0009(저장), ADR-0010(질의), ADR-0011(운영), ADR-0012(권한), ADR-0013(관측), ADR-0015(역량 질문), ADR-0017(만드는 중, 프락시움 자신의 운영).
+- ADR-0016. 원천: ADR-0009(저장), ADR-0010(질의), ADR-0011(운영), ADR-0012(권한), ADR-0013(관측), ADR-0015(역량 질문), ADR-0017(프락시움 자신의 운영).
 - REQ-143, REQ-147, REQ-148, REQ-149.

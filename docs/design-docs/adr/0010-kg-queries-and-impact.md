@@ -6,12 +6,13 @@ enforced_by:
   - none
 no_enforcement_reason: 아직 코드가 없는 설계 결정이다. 요구사항이 예정에서 벗어날 때 시험이 건다. 구현이 들어오는 변경에서 기준 구현과 속성 기반 시험, 구조 계약이 이 결정을 지킨다.
 updates_docs:
+  - docs/design-docs/query-engine-shape.md
   - docs/product-specs/requirements.md
   - docs/design-docs/kg-queries.md
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 45454659e81e1956
+decision_hash: 88de20fc80e8504e
 ---
 # ADR-0010 KG에 묻기 — 닫힌 질의, 영향 범위의 뜻, 투영과 엔진
 
@@ -60,6 +61,11 @@ decision_hash: 45454659e81e1956
 - **새 버전마다 통째로 다시 만들어 갈아 끼우기를 기본으로**: 변경이 잦은 흐름에서 갈아 끼움이 끊이지 않는다. 큰 변경의 길로만 남긴다.
 - **엔진을 API와 한 프로세스에 두기**: 질의의 부하와 수집의 부하를 따로 늘릴 수 없고, 저장소가 멈추면 함께 멈춘다.
 - **밀어 주기를 먼저**: 받는 쪽마다 전달 보장과 재시도를 풀어야 한다. 가져가기가 먼저다.
+
+## 이어서 정한 것: 질의 엔진의 모양, `min_seq`, 기대와 견주기
+- **질의 엔진은 Go로 직접 만들고 기성 그래프 엔진은 쓰지 않는다**(ADR-0006 2번). 모양과 측정이 드러낸 것(32비트 ID, 조각별 합치기, 닿은 노드 수에 따르는 응답, 노출됨의 번짐)은 [엔진의 모양](../query-engine-shape.md)에 있다. 규모는 지어낸 세계 생성기와 기준 구현과 견주는 시험과 벤치와 모양 카드로 검증한다.
+- **`min_seq`.** 묻는 쪽이 적어도 이 변경 번호까지 본 답을 요구할 수 있고 답에 변경 번호가 실린다(ADR-0009).
+- **기대와 견주기.** 기대하는 값과 기준 시각으로 속성마다 `confirmed`, `not_yet`, `contradicted`, `unverifiable`을 답한다. `observed`만이 `confirmed`를 낸다(ADR-0008). MCP의 읽는 면에도 낸다.
 
 ## 결과
 - 요구사항을 더한다. REQ-140(닫힌 질의와 답에 붙는 것), REQ-141(영향 범위의 뜻: 묶음, 세 값, 사실만 쓴 답과 가정을 넣은 답), REQ-142(영향 범위의 응답 시간: 제품 책임자의 숫자, 재서 확인), REQ-143(버전이 있는 HTTP API, 읽기 전용 MCP, 대량으로 읽기), REQ-144(변경 알림), REQ-145(질의 엔진은 여러 벌 뜨고 저장소가 멈춰도 올려 둔 투영으로 답한다), REQ-146(보는 기준 `as_designed`·`as_observed`와 `max_staleness`).

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/glossary.md"
 target: "docs/design-docs/adr/0015-competency-questions.md"
-hash: "b8a8c3fd80debf4d"
+hash: "a9ff4ff5b3a83394"
 date: "2026-11-13"
-note: "ADR-0005~0016 봉인과 맞춘 통합 때 본문을 다시 읽고 확인함"
+note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
 text_changed: true
-doc_hash: "f2052a101818c8b0"
+doc_hash: "1e40f25a0752e78c"

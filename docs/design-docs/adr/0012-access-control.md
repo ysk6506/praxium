@@ -12,7 +12,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: b7a48eda4422b966
+decision_hash: ea8c083dbaffed8e
 ---
 # ADR-0012 권한: 사내 SSO의 사람과 무리에, 제품에 든 역할을, 범위와 함께, 관리자가 준다
 

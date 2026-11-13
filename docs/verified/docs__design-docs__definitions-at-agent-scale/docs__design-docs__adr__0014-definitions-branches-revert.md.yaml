@@ -1,0 +1,7 @@
+doc: "docs/design-docs/definitions-at-agent-scale.md"
+target: "docs/design-docs/adr/0014-definitions-branches-revert.md"
+hash: "94f0f09f990c1a92"
+date: "2026-11-13"
+note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+text_changed: true
+doc_hash: "3d74b80cde29d07c"

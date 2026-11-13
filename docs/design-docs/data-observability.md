@@ -192,7 +192,7 @@ follows:
 
 ## 6. 목표
 
-목표는 정의의 항목이에요(버전이 있고 제안과 승인을 거쳐요). 칸: `objective_id`(바뀌지 않는 `id`), `target`(붙는 자원: 공급, 타입, 속성, 역량 질문), `kind`(`freshness` 얼마 안에 / `fill_rate` 채워진 비율 이상 / `validity` 어김 비율 이하 / `volume` 받는 양이 최소~최대 안 / `competency_fill` 충족률 이상), `threshold`(종류에 맞는 값), `period`(못 지킨 비율을 세는 기간, 기본 28일), `allowed_miss`(기간 중 못 지켜도 되는 비율), `severity`.
+목표는 정의의 항목이에요(버전이 있고 제안과 승인을 거쳐요). 칸: `objective_id`(바뀌지 않는 `id`), `target`(붙는 자원: 공급, 타입, 속성, 역량 질문), `kind`(`freshness` 얼마 안에 / `fill_rate` 채워진 비율 이상 / `validity` 어김 비율 이하 / `volume` 받는 양이 최소~최대 안 / `competency_fill` 충족률 이상. 프락시움 자신의 목표를 위해 `latency` 응답 시간, `lag` 밀림, `on_time_ratio` 제때 실행의 비율, `error_ratio` 오류의 비율을 더해요. ADR-0013, ADR-0017), `threshold`(종류에 맞는 값), `period`(못 지킨 비율을 세는 기간, 기본 28일), `allowed_miss`(기간 중 못 지켜도 되는 비율), `severity`.
 
 **못 지킨 비율의 계산.** 판정 간격마다(배치는 실행마다, 흐름과 신선도는 기본 5분, 가정) 목표를 "지킴 / 못 지킴 / 모름"으로 판정해요. 못 지킨 비율 = 못 지킨 수 ÷ (지킨 수 + 못 지킨 수). 모름은 분모에서 빼고 `unknown_share`로 따로 보여요(모름이 많으면 목표는 `unknown`). 남은 허용 = `allowed_miss` − 못 지킨 비율.
 

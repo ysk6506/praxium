@@ -319,8 +319,9 @@ impact  of: srv-0042-pdu
 ### 12-2. 기록의 칸
 
 - `audit_id`, `occurred_at`: 기록의 식별자와 때
-- `actor_kind`(`person` / `system_account`), `actor_id`(`subject_id` 또는 `account_id`)
-- `action`: 닫힌 목록의 일 이름. 예: `edit_definition`, `approve_proposal`, `merge_proposal`, `revert_proposal`, `export_definition`, `grant_created`, `grant_revoked`, `read_sensitive`, `bulk_read`, `admin_resolve`
+- `actor_kind`(`person` / `system_account` / `role_instance`), `actor_id`(`subject_id`, `account_id` 또는 역할의 실행). `role_instance`(비밀 값을 풀어 쓴 실행)는 시킨 쪽을 `on_behalf_of`에 적어요
+- 정의의 변경이면 `authored_by`, `on_behalf_of`, `agent_run_id`, 승인의 길(사람 또는 정책의 판). 승인은 사람만 하고 같은 주체나 같은 `on_behalf_of`는 승인하지 못해요(definitions-at-agent-scale.md)
+- `action`: 닫힌 목록의 일 이름. 예: `edit_definition`, `approve_proposal`, `merge_proposal`, `revert_proposal`, `export_definition`, `grant_created`, `grant_revoked`, `read_sensitive`, `bulk_read`, `admin_resolve`, `secret_used`, `secret_changed`
 - `target_kind`, `target_id`: 무엇에 한 일인가
 - `grant_ids_used`, `outcome`(`allowed` / `denied`): 어느 권한 부여가 허락했나
 - `admin_override`: `admin`이 막힌 일을 푼 것인가 (참/거짓)

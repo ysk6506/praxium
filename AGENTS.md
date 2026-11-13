@@ -18,7 +18,7 @@ covers:
 2. 구조: [ARCHITECTURE.md](ARCHITECTURE.md) — 단위와 의존 방향.
 3. 문서 색인: [docs/index.md](docs/index.md)
 4. 지금 하던 일: [진행 중 계획](docs/exec-plans/active/plan.md)
-5. 테라리움에서 넘겨받은 것: [from-terrarium.md](docs/references/from-terrarium.md) — 출발 자료였고, 쟁점의 답은 결정 기록(ADR-0005~0016, 0017은 만드는 중)에 있다. 어느 쟁점이 어디서 답을 얻었는지는 제품 설계 한 장의 지도를 본다.
+5. 테라리움에서 넘겨받은 것: [from-terrarium.md](docs/references/from-terrarium.md) — 출발 자료였고, 쟁점의 답은 결정 기록(ADR-0005~0018)에 있다. 어느 쟁점이 어디서 답을 얻었는지는 제품 설계 한 장의 지도를 본다.
 
 ```
 pnpm install
@@ -55,6 +55,7 @@ CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, �
 - 요구사항을 받으면 그것만 보고 덧붙이지 않는다. 제품 설계 한 장의 원칙에 대 보고, 걸리는 기존 자산을 전부 찾고, 어긋나면 먼저 말한다.
 - 같은 주제의 결정 기록을 하루에 둘 넘게 쓰게 되면 멈추고 전체를 다시 본다.
 - 계획은 날짜가 아니라 순서로 관리한다.
+- 화면 코드는 이 저장소에 없다. 예외는 지울 수 있는 임시 콘솔 하나이고 공개된 `/v1`만 부른다(ADR-0016, TD-0007).
 - 화면의 말은 현업에서 쓰는 말을 쓰고 지어내지 않는다([용어집](docs/design-docs/glossary.md)).
 
 ## 자주 하는 일

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/rest-api-walkthroughs.md"
 target: "docs/design-docs/adr/0016-frontend-separate-rest-api-contract.md"
-hash: "21c43561b56b4262"
+hash: "b63bbcad4a17ea12"
 date: "2026-11-13"
-note: "ADR-0005~0016 봉인과 맞춘 통합 때 본문을 다시 읽고 확인함"
-text_changed: true
+note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+text_changed: false
 doc_hash: "68ad303df87839ec"

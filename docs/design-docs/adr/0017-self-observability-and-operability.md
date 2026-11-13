@@ -1,5 +1,5 @@
 ---
-title: "ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 볼 수 있고, 진단할 수 있고, 정해진 행위로 돌볼 수 있게 만든다"
+title: ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 볼 수 있고, 진단할 수 있고, 정해진 행위로 돌볼 수 있게 만든다
 kind: decision
 status: active
 enforced_by:
@@ -12,6 +12,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
+decision_hash: 9d1c539dd044c61f
 ---
 # ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 볼 수 있고, 진단할 수 있고, 정해진 행위로 돌볼 수 있게 만든다
 
