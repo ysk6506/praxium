@@ -26,7 +26,7 @@ describe("Go architecture: units and imports [REQ-021]", () => {
     expect(check({})).toEqual([]);
     expect(architecture(findRoot())).toEqual([]);
     expect(architecture(goRepo({ "harness/config/architecture.yaml": "units: {}\n" }))).toEqual([]);
-  });
+  }, 120_000); // runs gofmt and go vet; a cold Go build cache needs far more than the default 20 s
 
   test("a unit may import a unit below it, through its package", () => {
     expect(codes({ [`${OTHER}a.go`]: imp('"example.test/app/internal/kernel"') })).toEqual([]);

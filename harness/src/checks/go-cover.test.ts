@@ -50,7 +50,7 @@ describe("Go tests: running them [REQ-023]", () => {
     expect(violations).toEqual([]);
     expect([...units.keys()].sort()).toEqual(["core.kernel", "core.model"]);
     expect(units.get("core.kernel")?.percent).toBe(100);
-  });
+  }, 120_000); // runs go test; a cold Go build cache needs far more than the default 20 s
 
   test("a failing test is GOTEST001 and the message carries the output", () => {
     const failing = goLines(

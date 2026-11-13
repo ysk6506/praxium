@@ -13,5 +13,9 @@ runs:
       with:
         go-version-file: backend/go.mod
         cache: false
+    # Warm the Go build cache once (standard library, testing, vet), so the harness tests that run Go on small
+    # fixture modules do not each pay for a cold build. They use the same default cache.
+    - run: cd backend && go test -count=1 -run '^$' ./... && go vet ./...
+      shell: bash
     - run: pnpm install --frozen-lockfile
       shell: bash
