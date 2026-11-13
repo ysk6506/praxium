@@ -67,11 +67,10 @@ func TestEveryOperationDeclaresTheConventions(t *testing.T) {
 	for _, r := range []string{"viewer", "editor", "approver", "operator", "model_steward", "auditor", "admin", "ingester"} {
 		roles[r] = true
 	}
-	pathRule := regexp.MustCompile(`^/v1(/[a-z0-9]+(-[a-z0-9]+)*|/\{[a-z_]+\})+$`)
 	for _, op := range ops {
 		name := op.Method + " " + op.Path
-		if !pathRule.MatchString(op.Path) {
-			t.Errorf("%s: the path breaks the naming rule", name)
+		if problem := pathProblem(op.Method, op.Path); problem != "" {
+			t.Errorf("%s: %s", name, problem)
 		}
 		if op.OperationID == "" || len(op.Roles) == 0 {
 			t.Errorf("%s: operationId and x-required-role are required", name)
@@ -254,6 +253,54 @@ func TestContractListsExactlyTheCataloguedProblemCodes(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("%s is not in the enum", p.Code)
+		}
+	}
+}
+
+// ADR-0016 and rest-api.md: names are lower-case words joined by hyphens, parameters are snake_case, and an action is
+// written as one :action suffix at the end of the path (POST only), never as a segment of its own.
+var pathRule = regexp.MustCompile(`^/v1(/[a-z0-9]+(-[a-z0-9]+)*|/\{[a-z_]+\})+(:[a-z]+(-[a-z]+)*)?$`)
+
+var bareVerbs = map[string]bool{"find": true, "get": true, "approve": true, "reject": true, "enqueue": true, "close": true,
+	"cancel": true, "revoke": true, "release": true, "discard": true, "resolve": true, "align": true, "retire": true,
+	"rotate": true, "disable": true, "pause": true, "resume": true, "run-now": true, "revert": true, "restore": true}
+
+// pathProblem says what is wrong with the path of an operation, or "" when nothing is.
+func pathProblem(method, path string) string {
+	if !pathRule.MatchString(path) {
+		return "the path breaks the naming rule"
+	}
+	if strings.Contains(path, ":") && method != "POST" {
+		return "an action path answers POST only"
+	}
+	for _, segment := range strings.Split(strings.TrimPrefix(path, "/v1/"), "/") {
+		if bareVerbs[strings.SplitN(segment, ":", 2)[0]] {
+			return "the verb " + segment + " is a segment; write it as :" + segment + " after a resource"
+		}
+	}
+	return ""
+}
+
+// [REQ-143]
+func TestThePathRuleAcceptsActionsAndRefusesWhatTheDecisionRefuses(t *testing.T) {
+	tests := []struct {
+		method, path string
+		ok           bool
+	}{
+		{"POST", "/v1/kgs/{kg}/queries:find", true},
+		{"POST", "/v1/proposals/{proposal_id}:request-review", true},
+		{"GET", "/v1/kgs/{kg}/objects/{object_id}", true},
+		{"GET", "/v1/kgs/{kg}/queries:find", false},
+		{"POST", "/v1/kgs/{kg}/questions/find", false},
+		{"POST", "/v1/things/approve", false},
+		{"POST", "/v1/things:approve/{thing_id}", false},
+		{"POST", "/v1/things/{thing_id}:Approve", false},
+		{"POST", "/v1/things/{thing_id}:approve:again", false},
+		{"POST", "/v1/things/{thingId}", false},
+	}
+	for _, tt := range tests {
+		if got := pathProblem(tt.method, tt.path) == ""; got != tt.ok {
+			t.Errorf("%s %s: accepted = %v, want %v", tt.method, tt.path, got, tt.ok)
 		}
 	}
 }

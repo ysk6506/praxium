@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "63d0041a63b26678"
+hash: "1ffad54249f10282"
 date: "2026-11-13"
-note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
+note: "ADR-0027의 길 표기(queries:이름)와 요구사항의 바뀐 글을 읽고 이 문서의 말과 어긋나지 않음을 확인"
 text_changed: false
 doc_hash: "21d54c87111f1d83"

@@ -28,7 +28,7 @@ KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 
 공통 입력: `kg_version_id`(없으면 지금), `view`(`as_designed`, `as_observed`), `max_staleness`(소스에서 본 값이 얼마나 낡아도 되나), `min_seq`와 `wait_timeout`(복제가 따라오기를 기다리는 것. 둘은 다른 뜻이에요), `limit`, `cursor`, `shape`. **링크는 `volatile`이 될 수 없어요.** `volatile` 속성은 그 버전 때의 답에서 빠져요(`volatile_as_of: omitted`).
 
 ### 1-2. 닫힌 질의 열셋
-모두 `POST /v1/kgs/{kg}/questions/<이름>`이에요. 상태를 바꾸지 않아요(계약에 안전함 표시). 큰 입력(객체 목록, 거름)을 본문으로 받아요. 답은 바로 와요: 시간 예산을 넘기면 202가 아니라 `meta.result_complete.truncated: true`와 `reason: time_budget`이에요(ADR-0010). 길게 걸릴 큰 읽기는 `bulk-reads`(1-4)를 써요. 역할은 `읽기`예요. 입력과 출력의 칸은 [KG에 묻기](kg-queries.md)가 정해요. 아래 표의 길은 `/kgs/{kg}/questions/<이름>`을 `<이름>`으로 줄였어요.
+모두 `POST /v1/kgs/{kg}/queries:<이름>`이에요. 상태를 바꾸지 않아요(계약에 안전함 표시). 큰 입력(객체 목록, 거름)을 본문으로 받아요. 답은 바로 와요: 시간 예산을 넘기면 202가 아니라 `meta.result_complete.truncated: true`와 `reason: time_budget`이에요(ADR-0010). 길게 걸릴 큰 읽기는 `bulk-reads`(1-4)를 써요. 역할은 `읽기`예요. 입력과 출력의 칸은 [KG에 묻기](kg-queries.md)가 정해요. 아래 표의 길은 `/kgs/{kg}/questions/<이름>`을 `<이름>`으로 줄였어요.
 
 | 질의 | 주 입력 | 답의 `data` | 짝이 되는 GET |
 |---|---|---|---|
@@ -49,7 +49,7 @@ KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 
 노출됨은 끝까지 번져요(깊이의 설정이 없어요). `exposed_direct`는 자기의 이중화를 잃은 것이고 `exposed_inherited`는 기대는 것이 노출됨이라서 노출된 것이에요. 답은 둘을 가르고, 무게의 차례는 [KG에 묻기](kg-queries.md)가 정해요.
 
 ```json
-POST /v1/kgs/main/questions/paths
+POST /v1/kgs/main/queries:paths
 {"from_object_id": "obj_srv_a", "to_object_id": "obj_sw_1", "via_meanings": ["connected_to"], "max_steps": 6, "top_k": 3, "dead": ["obj_sw_2"]}
 → {"data": {"reachable": "yes", "found_count": 2, "paths": [{"length": 3, "weakest_grade": "assumed", "steps": [...]}]},
    "meta": {"as_of": {"kg": "kg_main_01", "generation": 1, "change_seq": 88231}, "served_by": {"role": "engine"}, "result_complete": {"truncated": false}}}
@@ -58,7 +58,7 @@ POST /v1/kgs/main/questions/paths
 - `impact`, `paths`, `exposure`은 질의 엔진이 답할 수 있어요. 투영이 아직 안 만들어졌으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 답했는지 보여 줘요.
 - 계산은 전체 그래프에서 하고, 가려진 객체는 결과에 안 나와요. `paths`의 가려진 걸음은 "가려진 객체 하나"로 보여요.
 
-**첫 셋이 선 모양**(ADR-0027, 계약의 `kg` 태그). 길 여덟이 계약에 있다: `GET /v1/kgs`, `/v1/kgs/{kg}`, `/objects`, `/objects/{object_id}`, `/objects/{object_id}/links`와 `POST /v1/kgs/{kg}/questions/find|get|neighbors`. 짝의 GET은 같은 질의를 부르고 목록 길은 `shape` 기본이 `items`다. POST의 몸은 질의의 칸을 평평하게 받고(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`(ISO 8601 기간), `max_staleness`, `limit`, `cursor`, `shape`), 모르는 칸은 칸별 `422`, JSON이 아닌 몸은 `415`다. 답의 봉투는 `meta`로 간다(`as_of`는 `kg`와 `volatile_as_of`를 품고, `hidden`은 `has_hidden`을 달고, `freshness`, `evidence`, `result_complete`가 함께 간다). 저장소가 없는 서버는 `503 server.unavailable`(`reason: no_store`)로 답한다. 아직 없는 것: `objects:batch-get`, `issue-reports`, 나머지 일곱 질의, `/questions/{question_name}`의 일반 길.
+**첫 셋이 선 모양**(ADR-0027, 계약의 `kg` 태그). 길 여덟이 계약에 있다: `GET /v1/kgs`, `/v1/kgs/{kg}`, `/objects`, `/objects/{object_id}`, `/objects/{object_id}/links`와 `POST /v1/kgs/{kg}/queries:find`, `queries:get`, `queries:neighbors`. 짝의 GET은 같은 질의를 부르고 목록 길은 `shape` 기본이 `items`다. POST의 몸은 질의의 칸을 평평하게 받고(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`(ISO 8601 기간), `max_staleness`, `limit`, `cursor`, `shape`), 모르는 칸은 칸별 `422`, JSON이 아닌 몸은 `415`다. 답의 봉투는 `meta`로 간다(`as_of`는 `kg`와 `volatile_as_of`를 품고, `hidden`은 `has_hidden`을 달고, `freshness`, `evidence`, `result_complete`가 함께 간다). 저장소가 없는 서버는 `503 server.unavailable`(`reason: no_store`)로 답한다. 아직 없는 것: `objects:batch-get`, `issue-reports`, 나머지 일곱 질의, `/questions/{question_name}`의 일반 길.
 
 ### 1-3. 버전, 변경, 범위, 고정
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |

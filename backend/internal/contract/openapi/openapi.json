@@ -6433,7 +6433,7 @@
         "x-safe": true
       }
     },
-    "/v1/kgs/{kg}/questions/find": {
+    "/v1/kgs/{kg}/queries:find": {
       "post": {
         "description": "The closed query find with its full input in the body. Safe: it changes nothing and may be sent again.",
         "operationId": "askFind",
@@ -6606,7 +6606,7 @@
         "x-safe": true
       }
     },
-    "/v1/kgs/{kg}/questions/get": {
+    "/v1/kgs/{kg}/queries:get": {
       "post": {
         "description": "The closed query get: one object by id or identifier, with the parts that include asks for.",
         "operationId": "askGet",
@@ -6810,7 +6810,7 @@
         "x-safe": true
       }
     },
-    "/v1/kgs/{kg}/questions/neighbors": {
+    "/v1/kgs/{kg}/queries:neighbors": {
       "post": {
         "description": "The closed query neighbors with its full input in the body.",
         "operationId": "askNeighbors",

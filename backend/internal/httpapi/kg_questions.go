@@ -135,7 +135,7 @@ func (c *call) missing(name string) {
 	c.fail("invalid_input.field_required", nil, field("/"+name, "invalid_input.field_required", nil))
 }
 
-// askFind serves POST /v1/kgs/{kg}/questions/find.
+// askFind serves POST /v1/kgs/{kg}/queries:find.
 func (c *call) askFind() {
 	var b findBody
 	if !c.graphReady() || !c.readBody(&b) {
@@ -153,7 +153,7 @@ func (c *call) askFind() {
 	c.runFind(in)
 }
 
-// askGet serves POST /v1/kgs/{kg}/questions/get.
+// askGet serves POST /v1/kgs/{kg}/queries:get.
 func (c *call) askGet() {
 	var b getBody
 	if !c.graphReady() || !c.readBody(&b) {
@@ -170,7 +170,7 @@ func (c *call) askGet() {
 	c.runGet(query.GetInput{Common: common, ObjectID: b.ObjectID, Identifier: identOf(b.Identifier), Include: b.Include})
 }
 
-// askNeighbors serves POST /v1/kgs/{kg}/questions/neighbors.
+// askNeighbors serves POST /v1/kgs/{kg}/queries:neighbors.
 func (c *call) askNeighbors() {
 	var b neighborsBody
 	if !c.graphReady() || !c.readBody(&b) {

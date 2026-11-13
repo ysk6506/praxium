@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "60d906c9bd1374ca"
+hash: "7f89e29e4dfab7b6"
 date: "2026-11-13"
-note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
+note: "ADR-0027의 변경(KG 읽기 길, 명령줄, 개발용 적재기, 구조 계약)에 맞춰 대조해 고침"
 text_changed: true
-doc_hash: "74a42218d7a0ad49"
+doc_hash: "36ee85df5e48aa64"

@@ -1130,7 +1130,7 @@
         }
       }
     },
-    "/v1/kgs/{kg}/questions/find": {
+    "/v1/kgs/{kg}/queries:find": {
       "post": {
         "operationId": "askFind",
         "summary": "Ask find",
@@ -1293,7 +1293,7 @@
         }
       }
     },
-    "/v1/kgs/{kg}/questions/get": {
+    "/v1/kgs/{kg}/queries:get": {
       "post": {
         "operationId": "askGet",
         "summary": "Ask get",
@@ -1487,7 +1487,7 @@
         }
       }
     },
-    "/v1/kgs/{kg}/questions/neighbors": {
+    "/v1/kgs/{kg}/queries:neighbors": {
       "post": {
         "operationId": "askNeighbors",
         "summary": "Ask neighbors",

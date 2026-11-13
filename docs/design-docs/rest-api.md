@@ -96,11 +96,11 @@ GET /v1/kgs/main/issues?filter[kind][equals]=duplicate_key&filter[status][in]=op
 ```
 
 ### 3-5. 닫힌 질의는 POST의 "물음" 자원
-**규칙.** 닫힌 질의 열셋은 입력이 커서(객체 목록, 거름, 범위) 주소줄에 못 담아요. 그래서 `POST /v1/kgs/{kg}/questions/<질의 이름>`으로 받아요. 이 POST는 상태를 바꾸지 않아요. 계약에 "안전함(`x-safe: true`)"이라고 표시하고(OpenAPI에는 이 표시가 없어 확장 칸으로 둬요), `Idempotency-Key`를 받지 않아요. 부작용이 없어 다시 보내도 돼요. 간단한 `get`과 `find`는 GET도 줘요. 답은 3-2의 봉투예요.
+**규칙.** 닫힌 질의 열셋은 입력이 커서(객체 목록, 거름, 범위) 주소줄에 못 담아요. 그래서 `POST /v1/kgs/{kg}/queries:<질의 이름>`으로 받아요. 이 POST는 상태를 바꾸지 않아요. 계약에 "안전함(`x-safe: true`)"이라고 표시하고(OpenAPI에는 이 표시가 없어 확장 칸으로 둬요), `Idempotency-Key`를 받지 않아요. 부작용이 없어 다시 보내도 돼요. 간단한 `get`과 `find`는 GET도 줘요. 답은 3-2의 봉투예요.
 **까닭.** 주소줄은 길이가 정해져 있고 로그에 남아요. 상태를 바꾸지 않는다는 것을 표시해야 클라이언트와 중간 장치가 다시 보내도 되는 줄 알아요.
 
 ```
-POST /v1/kgs/main/questions/impact
+POST /v1/kgs/main/queries:impact
 {"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "summary", "limit": 50}
 → 200 {"data": {"counts_by_result": {"down": 3, "degraded": 9}}, "meta": {...}}
 
@@ -347,13 +347,13 @@ MCP 서버는 같은 쓰임 위의 얇은 층이에요. **KG의 MCP는 읽기만
 
 | 닫힌 질의 | REST | MCP 툴 | 다른 점 |
 |---|---|---|---|
-| `find` | `GET /v1/kgs/{kg}/objects`, `POST /v1/kgs/{kg}/questions/find` | `find` | |
+| `find` | `GET /v1/kgs/{kg}/objects`, `POST /v1/kgs/{kg}/queries:find` | `find` | |
 | `get` | `GET /v1/kgs/{kg}/objects/{object_id}` | `get` | |
-| `neighbors`, `containment`, `paths`, `impact`, `exposure` | `POST /v1/kgs/{kg}/questions/<이름>` | 같은 이름 | |
-| `changes`, `versions` | `POST /v1/kgs/{kg}/questions/<이름>` | 같은 이름 | REST는 `GET /v1/kgs/{kg}/changes`도 줘요 |
-| `quality`, `health` | `POST /v1/kgs/{kg}/questions/<이름>` | 같은 이름 | |
+| `neighbors`, `containment`, `paths`, `impact`, `exposure` | `POST /v1/kgs/{kg}/queries:<이름>` | 같은 이름 | |
+| `changes`, `versions` | `POST /v1/kgs/{kg}/queries:<이름>` | 같은 이름 | REST는 `GET /v1/kgs/{kg}/changes`도 줘요 |
+| `quality`, `health` | `POST /v1/kgs/{kg}/queries:<이름>` | 같은 이름 | |
 | `scopes` | `GET /v1/kgs/{kg}/scopes` | `scopes` | 범위를 만드는 길은 REST만 |
-| `competency` | `POST /v1/kgs/{kg}/questions/competency` | `competency` | |
+| `competency` | `POST /v1/kgs/{kg}/queries:competency` | `competency` | |
 | 다시 받기 | `POST /v1/kgs/{kg}/refreshes` | `refresh` | 작업을 줘요 |
 | 기대와 견주기 | `POST /v1/kgs/{kg}/value-checks` | `check_values` | |
 | `bulk_read` | `POST /v1/kgs/{kg}/scopes/{scope_id}/bulk-reads` | 없음 | 에이전트에게 주지 않아요 |

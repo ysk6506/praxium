@@ -45,9 +45,9 @@ type sampleSpec struct {
 }
 
 var requestSamples = map[string]sampleSpec{
-	"POST /v1/kgs/{kg}/questions/get":       {Body: `{"object_id":"` + sampleRackID + `","include":["attributes","link_counts"]}`},
-	"POST /v1/kgs/{kg}/questions/neighbors": {Body: `{"object_id":"` + sampleRackID + `","direction":"in","max_steps":2,"shape":"items"}`},
-	"POST /v1/kgs/{kg}/questions/find":      {Body: `{"object_type":"Rack","limit":2,"shape":"items"}`},
+	"POST /v1/kgs/{kg}/queries:get":       {Body: `{"object_id":"` + sampleRackID + `","include":["attributes","link_counts"]}`},
+	"POST /v1/kgs/{kg}/queries:neighbors": {Body: `{"object_id":"` + sampleRackID + `","direction":"in","max_steps":2,"shape":"items"}`},
+	"POST /v1/kgs/{kg}/queries:find":      {Body: `{"object_type":"Rack","limit":2,"shape":"items"}`},
 }
 
 // sample is one request for an operation.

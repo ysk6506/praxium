@@ -95,4 +95,4 @@ items:
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
-    units: [adapter.memstore]
+    units: [go:adapter.memstore]

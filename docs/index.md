@@ -46,6 +46,7 @@ covers:
 - [KG 운영 — 문제 목록, 가용성, 동기화와 흐름의 실패 처리, 백업과 복구](design-docs/kg-operations.md)
 - [영향 범위를 손으로 따라가기 — 지어낸 예시 다섯](design-docs/kg-queries-examples.md)
 - [KG에 묻기 — 닫힌 질의, 영향 범위, 투영과 엔진](design-docs/kg-queries.md)
+- [KG 읽기의 측정 — 개발용 적재와 첫 셋 질의를 메모리 저장소에서 잰 것](design-docs/kg-read-measurements.md)
 - [KG의 적용 — 세 걸음, 큰 적용, 차례, 점유, 세대, 보관](design-docs/kg-storage-apply.md)
 - [KG의 저장과 버전 — 무엇이 어디에 저장되고, 어떻게 봉해지는가](design-docs/kg-storage.md)
 - [파이프라인 설계 — 변경을 받아 변경을 내는 실행기, 정제, 공급, 식별, 링크 정의](design-docs/pipeline.md)

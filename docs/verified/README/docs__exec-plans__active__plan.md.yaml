@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "702b1ac213f9b437"
+hash: "8af94103cdd6b1b8"
 date: "2026-11-13"
-note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
+note: "ADR-0027의 읽기 길과 개발용 적재기를 현재 상태 문장에 더함"
 text_changed: true
-doc_hash: "03c0d080e0dd8234"
+doc_hash: "3c15ec7b172901a9"

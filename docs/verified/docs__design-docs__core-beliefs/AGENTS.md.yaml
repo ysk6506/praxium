@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "59c91679fee1f90d"
+hash: "69c1e6e61e390346"
 date: "2026-11-13"
-note: "ADR-0024: 계약, 요구사항 분할, 계획 6단계 반영 확인"
+note: "AGENTS.md와 plan.md의 ADR-0027 변경을 읽고 이 문서의 말과 어긋나지 않음을 확인"
 text_changed: false
 doc_hash: "c68185f5b10e5ba0"

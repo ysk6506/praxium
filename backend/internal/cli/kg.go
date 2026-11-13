@@ -261,7 +261,7 @@ func askFind(ctx context.Context, c *Client, opts options, w io.Writer) error {
 		if cursor != "" {
 			body["cursor"] = cursor
 		}
-		return c.Post(ctx, kgPath(rf.kg)+"/questions/find", body)
+		return c.Post(ctx, kgPath(rf.kg)+"/queries:find", body)
 	})
 }
 
@@ -290,7 +290,7 @@ func askGet(ctx context.Context, c *Client, opts options, w io.Writer) error {
 	if *include != "" {
 		body["include"] = strings.Split(*include, ",")
 	}
-	env, err := c.Post(ctx, kgPath(rf.kg)+"/questions/get", body)
+	env, err := c.Post(ctx, kgPath(rf.kg)+"/queries:get", body)
 	if err != nil {
 		return err
 	}
@@ -329,7 +329,7 @@ func askNeighbors(ctx context.Context, c *Client, opts options, w io.Writer) err
 		if cursor != "" {
 			body["cursor"] = cursor
 		}
-		return c.Post(ctx, kgPath(rf.kg)+"/questions/neighbors", body)
+		return c.Post(ctx, kgPath(rf.kg)+"/queries:neighbors", body)
 	})
 }
 

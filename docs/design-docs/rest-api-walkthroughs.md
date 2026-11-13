@@ -29,7 +29,7 @@ GET /v1/me          Authorization: Bearer <증표>
 **2) 영향 범위를 물어요.** 닫힌 질의는 POST의 물음 자원이에요. 상태를 바꾸지 않으니 `Idempotency-Key`가 없어요.
 
 ```
-POST /v1/kgs/main/questions/impact
+POST /v1/kgs/main/queries:impact
 {"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "summary", "limit": 2}
 → 200
 {"data": {"facts_only": {"counts_by_result": {"down": 1, "degraded": 4}},
@@ -55,7 +55,7 @@ POST /v1/kgs/main/questions/impact
 **3) 다음 쪽.** 같은 입력에 `cursor`를 더해요.
 
 ```
-POST /v1/kgs/main/questions/impact
+POST /v1/kgs/main/queries:impact
 {"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "items", "limit": 50, "cursor": "c_71Kd"}
 → 200 {"data": {...나머지 10개...}, "meta": {..., "result_complete": {"total": 12, "returned": 10, "truncated": false, "next_cursor": null}}}
 ```

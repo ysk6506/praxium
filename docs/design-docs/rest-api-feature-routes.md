@@ -21,7 +21,7 @@ follows:
 | KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리 | `GET /v1/kgs`, `GET /v1/kgs/{kg}` |
 | 새 KG를 만들기(시험 KG) | 없음. 후보 KG는 후보 실행이 만들어요. 시험 KG를 사람이 만드는 길은 정하지 않았어요 |
 | 봉한 버전의 목록과 한 버전(실행기의 의미 버전, 해시 규칙의 버전 포함) | `GET /v1/kgs/{kg}/graph-versions`, `GET /v1/kgs/{kg}/graph-versions/{kg_version_id}` |
-| 변경의 이어짐을 번호로 가져가기 | `GET /v1/kgs/{kg}/changes`, `POST /v1/kgs/{kg}/questions/changes` |
+| 변경의 이어짐을 번호로 가져가기 | `GET /v1/kgs/{kg}/changes`, `POST /v1/kgs/{kg}/queries:changes` |
 | `min_seq`, `wait_timeout`으로 복제본 읽기 | 질의와 읽기의 공통 입력(rest-api.md 3-15) |
 | 묻는 쪽을 옛 버전에 고정 | `POST /v1/kgs/{kg}/serving-pins`, `DELETE /v1/kgs/{kg}/serving-pins/{pin_id}` |
 | 시점 복구 뒤의 세대 | `as_of`, `cursor`, `event_id`의 칸과 `conflict.generation_changed`. 복구를 여는 길은 없음(운영 행위의 목록이 정해요) |
@@ -46,7 +46,7 @@ follows:
 | 표시 이름과 설명을 언어별로 | 각 자원의 `display_names` |
 | 객체 찾기와 한 객체, 링크, 이웃 | `GET /v1/kgs/{kg}/objects`, `GET /v1/kgs/{kg}/objects/{object_id}`, `GET /v1/kgs/{kg}/objects/{object_id}/links`, `GET /v1/kgs/{kg}/links`, `GET /v1/kgs/{kg}/links/{link_id}` |
 | 여러 객체를 한 번에 읽기 | `POST /v1/kgs/{kg}/objects:batch-get` |
-| 닫힌 질의 열셋 | `POST /v1/kgs/{kg}/questions/find`, `POST /v1/kgs/{kg}/questions/get`, `POST /v1/kgs/{kg}/questions/neighbors`, `POST /v1/kgs/{kg}/questions/{question_name}`(나머지 열 가지) |
+| 닫힌 질의 열셋 | `POST /v1/kgs/{kg}/queries:find`, `POST /v1/kgs/{kg}/queries:get`, `POST /v1/kgs/{kg}/queries:neighbors`, `POST /v1/kgs/{kg}/queries:containment`, `POST /v1/kgs/{kg}/queries:paths`, `POST /v1/kgs/{kg}/queries:impact`, `POST /v1/kgs/{kg}/queries:exposure`, `POST /v1/kgs/{kg}/queries:versions`, `POST /v1/kgs/{kg}/queries:quality`, `POST /v1/kgs/{kg}/queries:health`(나머지 열 가지 가운데 일곱. `changes`와 `competency`는 아래 자기 칸에 있고, `scopes`는 `GET /v1/kgs/{kg}/scopes`) |
 | 노출됨의 둘(`exposed_direct`, `exposed_inherited`) | `impact`의 답 |
 | 지정해서 다시 받기와 그 결과 | `POST /v1/kgs/{kg}/refreshes`, `GET /v1/kgs/{kg}/refreshes/{refresh_id}` |
 | 기대와 견주기 | `POST /v1/kgs/{kg}/value-checks` |
@@ -107,7 +107,7 @@ follows:
 | 시간줄 | `GET /v1/resources/{resource_kind}/{resource_id}/timeline` |
 | 문제 목록과 문제에서 제안 열기 | `GET /v1/kgs/{kg}/issues`, `POST /v1/kgs/{kg}/issues/{issue_id}:open-proposal` |
 | KG가 틀렸다고 알리기 | `POST /v1/kgs/{kg}/objects/{object_id}/issue-reports` |
-| 역량 질문과 충족률 | `GET /v1/competency-questions`, `POST /v1/kgs/{kg}/questions/competency` |
+| 역량 질문과 충족률 | `GET /v1/competency-questions`, `POST /v1/kgs/{kg}/queries:competency` |
 | 표준 모델이 싣는 물음을 고쳐 쓰기 | 브랜치의 항목(`kind: competency_question`) |
 | 본보기 객체에서 역량 질문의 패턴 만들기(REQ-195) | 없음. 길을 정하지 않았어요 |
 | 쓰임에서 올라오는 역량 질문의 제안 | 없음. 클로즈 베타의 구현이고 계약의 자리도 정하지 않았어요 |

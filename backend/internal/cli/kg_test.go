@@ -54,23 +54,23 @@ func newKGFake(t *testing.T) *kgFake {
 			fmt.Fprint(w, `{"code":"not_found.resource","status":404,"title":"Not found","trace_id":"tr-1"}`)
 		case strings.HasPrefix(r.URL.Path, "/v1/kgs/odd"):
 			fmt.Fprint(w, `{"data":[1],"meta":{}}`)
-		case strings.HasPrefix(r.URL.Path, "/v1/kgs/sum") && strings.HasSuffix(r.URL.Path, "/questions/find"):
+		case strings.HasPrefix(r.URL.Path, "/v1/kgs/sum") && strings.HasSuffix(r.URL.Path, "/queries:find"):
 			fmt.Fprint(w, `{"data":{"counts_by_type":[{"object_type":"Rack","count":4}]},"meta":{}}`)
-		case strings.HasPrefix(r.URL.Path, "/v1/kgs/sum") && strings.HasSuffix(r.URL.Path, "/questions/neighbors"):
+		case strings.HasPrefix(r.URL.Path, "/v1/kgs/sum") && strings.HasSuffix(r.URL.Path, "/queries:neighbors"):
 			fmt.Fprint(w, `{"data":{"groups":[]},"meta":{}}`)
 		case strings.HasPrefix(r.URL.Path, "/v1/kgs/sum"):
 			fmt.Fprint(w, `{"data":{"object":{"object_id":"obj_1"}},"meta":{}}`)
 		case pages[r.URL.Path] != "":
 			fmt.Fprint(w, readFixture(t, pages[r.URL.Path]))
-		case strings.HasSuffix(r.URL.Path, "/questions/find") || r.URL.Path == "/v1/kgs/main/objects":
+		case strings.HasSuffix(r.URL.Path, "/queries:find") || r.URL.Path == "/v1/kgs/main/objects":
 			if strings.Contains(string(body), `"cursor"`) || r.URL.Query().Get("cursor") != "" {
 				fmt.Fprint(w, `{"data":{"counts_by_type":[{"object_type":"Rack","count":4}],"items":[{"object_id":"obj_3","object_type":"Rack","display_name":"Rack R02","matched_on":[]}]},"meta":{"result_complete":{"total":4,"next_cursor":null}}}`)
 				return
 			}
 			fmt.Fprint(w, readFixture(t, "find.json"))
-		case strings.HasSuffix(r.URL.Path, "/links") || strings.HasSuffix(r.URL.Path, "/questions/neighbors"):
+		case strings.HasSuffix(r.URL.Path, "/links") || strings.HasSuffix(r.URL.Path, "/queries:neighbors"):
 			fmt.Fprint(w, readFixture(t, "links.json"))
-		case strings.Contains(r.URL.Path, "/objects/") || strings.HasSuffix(r.URL.Path, "/questions/get"):
+		case strings.Contains(r.URL.Path, "/objects/") || strings.HasSuffix(r.URL.Path, "/queries:get"):
 			fmt.Fprint(w, readFixture(t, "get.json"))
 		default:
 			w.Header().Set("Content-Type", "application/problem+json")
@@ -145,13 +145,13 @@ func TestKGCommandsAskTheRoutesTheyName(t *testing.T) {
 		{[]string{"object", "links", "--link-type", "MOUNTED_IN", "--link-type", "LOCATED_IN", "--steps", "3", "--limit", "9", id}, "GET", "/v1/kgs/main/objects/" + id + "/links",
 			[]string{"filter%5Blink_type%5D%5Bin%5D=MOUNTED_IN%2CLOCATED_IN", "max_steps=3", "limit=9"}, nil},
 		{[]string{"query", "find", "--no-subtypes", "--trait", "tr.x", "--text", "R0", "--identifier", "redfish_system_id:a:b",
-			"--attr", "model.in=M1,M2", "--attr", "name.range=A..B", "--attr", "name.prefix=R", "--at-seq", "0", "--limit", "3"}, "POST", "/v1/kgs/main/questions/find", nil,
+			"--attr", "model.in=M1,M2", "--attr", "name.range=A..B", "--attr", "name.prefix=R", "--at-seq", "0", "--limit", "3"}, "POST", "/v1/kgs/main/queries:find", nil,
 			[]string{`"include_subtypes":false`, `"trait":"tr.x"`, `"text":"R0"`, `"scheme":"redfish_system_id"`, `"values":["M1","M2"]`,
 				`"values":["A","B"]`, `"op":"prefix"`, `"change_seq":0`, `"limit":3`, `"shape":"items"`}},
-		{[]string{"query", "find", "--summary"}, "POST", "/v1/kgs/main/questions/find", nil, []string{`"shape":"summary"`}},
-		{[]string{"query", "get", "--identifier", "redfish_system_id:x", "--include", "attributes,identifiers"}, "POST", "/v1/kgs/main/questions/get", nil,
+		{[]string{"query", "find", "--summary"}, "POST", "/v1/kgs/main/queries:find", nil, []string{`"shape":"summary"`}},
+		{[]string{"query", "get", "--identifier", "redfish_system_id:x", "--include", "attributes,identifiers"}, "POST", "/v1/kgs/main/queries:get", nil,
 			[]string{`"identifier":{"scheme":"redfish_system_id","value":"x"}`, `"include":["attributes","identifiers"]`}},
-		{[]string{"query", "neighbors", "--direction", "in", "--meaning", "contained_in", "--peer-type", "Rack", "--link-type", "MOUNTED_IN", id}, "POST", "/v1/kgs/main/questions/neighbors", nil,
+		{[]string{"query", "neighbors", "--direction", "in", "--meaning", "contained_in", "--peer-type", "Rack", "--link-type", "MOUNTED_IN", id}, "POST", "/v1/kgs/main/queries:neighbors", nil,
 			[]string{`"direction":"in"`, `"meanings":["contained_in"]`, `"peer_types":["Rack"]`, `"link_types":["MOUNTED_IN"]`, `"object_id":"` + id + `"`}},
 	} {
 		if code, _, errOut := run(t, fake, tc.args...); code != 0 {

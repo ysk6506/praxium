@@ -159,12 +159,8 @@ func caseConcurrency(tb TB, f Factory) {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			for {
-				select {
-				case <-stop:
-					return
-				default:
-				}
+			// Every reader takes at least one snapshot, however early the writer finishes.
+			for stopped := false; !stopped; {
 				s, err := e.store.Snapshot(e.ctx, graph.ReadPoint{KG: e.kg.ID, Kind: graph.ReadLatest})
 				if err != nil {
 					problems <- "snapshot: " + err.Error()
@@ -183,6 +179,11 @@ func caseConcurrency(tb TB, f Factory) {
 				if len(rows)%3 != 0 || len(links)*3 != len(rows) {
 					problems <- fmt.Sprintf("at %d: %d objects and %d links are not whole batches", s.Info().Seq, len(rows), len(links))
 					return
+				}
+				select {
+				case <-stop:
+					stopped = true
+				default:
 				}
 			}
 		}()

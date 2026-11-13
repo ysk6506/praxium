@@ -220,12 +220,12 @@ func TestQuestionsAnswerLikeTheirShortForm(t *testing.T) {
 	validator := contractValidator(t)
 	rack := w.firstOf("Rack")
 	pairs := []struct{ get, post, body, template string }{
-		{"/v1/kgs/main/objects?filter[object_type][equals]=Rack&limit=3", "/v1/kgs/main/questions/find",
-			`{"object_type":"Rack","limit":3,"shape":"items"}`, "/v1/kgs/{kg}/questions/find"},
-		{"/v1/kgs/main/objects/" + rack + "?include=attributes,link_counts", "/v1/kgs/main/questions/get",
-			`{"object_id":"` + rack + `","include":["attributes","link_counts"],"shape":"items"}`, "/v1/kgs/{kg}/questions/get"},
-		{"/v1/kgs/main/objects/" + rack + "/links?max_steps=2&filter[direction][equals]=in", "/v1/kgs/main/questions/neighbors",
-			`{"object_id":"` + rack + `","max_steps":2,"direction":"in","shape":"items"}`, "/v1/kgs/{kg}/questions/neighbors"},
+		{"/v1/kgs/main/objects?filter[object_type][equals]=Rack&limit=3", "/v1/kgs/main/queries:find",
+			`{"object_type":"Rack","limit":3,"shape":"items"}`, "/v1/kgs/{kg}/queries:find"},
+		{"/v1/kgs/main/objects/" + rack + "?include=attributes,link_counts", "/v1/kgs/main/queries:get",
+			`{"object_id":"` + rack + `","include":["attributes","link_counts"],"shape":"items"}`, "/v1/kgs/{kg}/queries:get"},
+		{"/v1/kgs/main/objects/" + rack + "/links?max_steps=2&filter[direction][equals]=in", "/v1/kgs/main/queries:neighbors",
+			`{"object_id":"` + rack + `","max_steps":2,"direction":"in","shape":"items"}`, "/v1/kgs/{kg}/queries:neighbors"},
 	}
 	for _, p := range pairs {
 		t.Run(p.post, func(t *testing.T) {
@@ -244,14 +244,14 @@ func TestQuestionsAnswerLikeTheirShortForm(t *testing.T) {
 			}
 		})
 	}
-	byID := w.post("/v1/kgs/main/questions/get", `{"identifier":{"scheme":"redfish_system_id","value":"nobody"}}`)
+	byID := w.post("/v1/kgs/main/queries:get", `{"identifier":{"scheme":"redfish_system_id","value":"nobody"}}`)
 	if byID.status != 404 {
 		t.Errorf("an identifier nobody holds = %d %s", byID.status, byID.body)
 	}
-	if r := w.post("/v1/kgs/main/questions/find", ``); r.status != 200 {
+	if r := w.post("/v1/kgs/main/queries:find", ``); r.status != 200 {
 		t.Errorf("find with an empty body asks for everything: %d %s", r.status, r.body)
 	}
-	attr := w.post("/v1/kgs/main/questions/find", `{"object_type":"PhysicalServer","attributes":[{"name":"model","op":"in","values":["M1","M9"]}],"identifier":{"scheme":"redfish_system_id","value":"x"},"limit":1}`)
+	attr := w.post("/v1/kgs/main/queries:find", `{"object_type":"PhysicalServer","attributes":[{"name":"model","op":"in","values":["M1","M9"]}],"identifier":{"scheme":"redfish_system_id","value":"x"},"limit":1}`)
 	if attr.status != 404 && attr.status != 200 && attr.status != 400 {
 		t.Errorf("attributes and an identifier in the body: %d %s", attr.status, attr.body)
 	}
@@ -286,7 +286,7 @@ func TestQuestionBodiesAreRefusedWithAProblem(t *testing.T) {
 	}
 	for _, c := range cases {
 		t.Run(c.name, func(t *testing.T) {
-			r := w.post("/v1/kgs/main/questions/"+c.target, c.body)
+			r := w.post("/v1/kgs/main/queries:"+c.target, c.body)
 			if r.status != c.status && !(c.code == "" && r.status >= 400) {
 				t.Fatalf("status = %d, want %d: %s", r.status, c.status, r.body)
 			}
@@ -295,19 +295,19 @@ func TestQuestionBodiesAreRefusedWithAProblem(t *testing.T) {
 			}
 		})
 	}
-	text := w.send(sample{method: http.MethodPost, target: "/v1/kgs/main/questions/find", body: "x=1"}, true, "Content-Type", "text/plain")
+	text := w.send(sample{method: http.MethodPost, target: "/v1/kgs/main/queries:find", body: "x=1"}, true, "Content-Type", "text/plain")
 	if text.status != 415 {
 		t.Errorf("a body that is not JSON = %d", text.status)
 	}
-	if r := w.do(http.MethodGet, "/v1/kgs/main/questions/find", true); r.status != 405 {
+	if r := w.do(http.MethodGet, "/v1/kgs/main/queries:find", true); r.status != 405 {
 		t.Errorf("GET on a question = %d, want 405", r.status)
 	}
 	bare := newHarness(t, access.RoleViewer)
-	if r := bare.send(sample{method: http.MethodPost, target: "/v1/kgs/main/questions/find", body: `{}`}, true); r.status != 503 {
+	if r := bare.send(sample{method: http.MethodPost, target: "/v1/kgs/main/queries:find", body: `{}`}, true); r.status != 503 {
 		t.Errorf("a question without a store = %d", r.status)
 	}
 	ingester := newKGHarness(t, access.RoleIngester)
-	if r := ingester.post("/v1/kgs/main/questions/find", `{}`); r.status != 403 {
+	if r := ingester.post("/v1/kgs/main/queries:find", `{}`); r.status != 403 {
 		t.Errorf("an ingester asking = %d", r.status)
 	}
 }
@@ -399,11 +399,11 @@ func TestRefusalsOfTheQueriesKeepTheirCatalogueCodes(t *testing.T) {
 			t.Errorf("%s: %d %s, want %s", target, r.status, r.body, want)
 		}
 	}
-	scope := w.post("/v1/kgs/main/questions/find", `{"scope_id":"s1"}`)
+	scope := w.post("/v1/kgs/main/queries:find", `{"scope_id":"s1"}`)
 	if scope.status != 400 || scope.code(t) != "invalid_input.param_invalid" {
 		t.Errorf("a scope: %d %s", scope.status, scope.body)
 	}
-	gone := w.post("/v1/kgs/main/questions/find", `{"kg_version_id":"kv_00000000000000000000000000000000"}`)
+	gone := w.post("/v1/kgs/main/queries:find", `{"kg_version_id":"kv_00000000000000000000000000000000"}`)
 	if gone.status != 404 {
 		t.Errorf("an unknown version: %d %s", gone.status, gone.body)
 	}

@@ -202,3 +202,16 @@ func TestDevLoadTruthRefusesWhatItCannotRun(t *testing.T) {
 		})
 	}
 }
+
+// [REQ-260]
+func TestATruthFileTheEnvironmentCannotReadStopsTheLoad(t *testing.T) {
+	d, _, stop := apiDeps(nil, nil)
+	defer stop()
+	d.open = nil
+	d.env.ReadFile = func(string) ([]byte, error) { return nil, os.ErrNotExist }
+	var errOut bytes.Buffer
+	if code := execute([]string{"dev", "load-truth", "world.jsonl"}, &bytes.Buffer{}, &errOut, d); code != exitFailure ||
+		!strings.Contains(errOut.String(), "cannot read the truth file") {
+		t.Fatalf("code %d: %s", code, errOut.String())
+	}
+}
