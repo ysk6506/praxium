@@ -9,7 +9,9 @@ follows:
 ---
 # Praxium
 
-**실제 IT 인프라의 데이터를 수집해 지식 그래프(KG)로 구축하고, 그 위에서 에이전트가 수행하는 엔드투엔드(E2E) 업무 프로세스를 정의·위임·측정하는 운영 관리 플랫폼.**
+**실제 IT 인프라를 믿을 수 있는 지식 그래프(KG)로 만들고, 그 위에서 AI 에이전트가 수행하는 엔드투엔드(E2E) 운영 업무를 정의·위임·측정하는 오픈소스 플랫폼.**
+
+인프라는 지식 그래프로, 운영은 에이전트에게.
 
 지금은 **KG를 짓고 운영하는 기반의 설계를 끝낸 단계**예요(ADR-0005~0018). 코드는 이제 시작이에요: `backend/`에 Go 모듈이 있고 공통 기반 코드(`core.kernel`), 타입 등록부와 표준 모델(`core.model`), 합성 세계 생성기(`core.worldgen`), KG의 중심과 저장소 포트와 메모리 기준 구현(`core.graph`, `adapter.memstore`, ADR-0025), 사전 정의 질의의 첫 셋(`core.query`, ADR-0026), 그 질의를 API와 명령줄로 읽는 경로와 개발용 적재기(`adapter.devload`, ADR-0027), 시작점이 들어 있어요(ADR-0019, ADR-0020, ADR-0021). 백엔드는 Go로 만들고, 화면은 다른 저장소에서 REST API의 계약으로만 대화해요(ADR-0006, ADR-0016). 지금 있는 TypeScript는 구조 검사(하네스, Go 코드도 읽어요)와 프런트엔드 저장소로 옮길 공통 기반 코드예요. 목표와 요구사항은 [요구사항](docs/product-specs/requirements.md)에, 설계 문서의 지도는 [제품 설계 한 장](docs/design-docs/product-design.md)에 있어요. 테라리움 때의 요구사항과 쟁점은 출발 자료로 [넘겨받은 것](docs/references/from-terrarium.md)에 남아 있어요.
 

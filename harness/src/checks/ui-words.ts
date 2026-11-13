@@ -128,7 +128,8 @@ export function configProblems(config: WordsConfig): Violation[] {
   }
   const docs = config.documents;
   if (docs) {
-    if (docs.mode !== "report" && docs.mode !== "fail") bad("documents.mode is neither report nor fail");
+    if (docs.mode !== "report" && docs.mode !== "fail")
+      bad("documents.mode is neither report nor fail");
     if (!docs.scan?.length || !docs.dictionary?.length) bad("documents needs scan and dictionary");
   }
   return out;
@@ -142,7 +143,9 @@ export function report(root: string): { violations: Violation[]; notes: string[]
   const files = listFiles(root, config.scan_dirs, isSourceFile).filter((f) => !isTestFile(f));
   for (const file of files)
     out.push(...checkText(file, readText(path.join(root, file)), config.rules));
-  const docs = config.documents ? documentsReport(root, config.documents) : { violations: [], notes: [] };
+  const docs = config.documents
+    ? documentsReport(root, config.documents)
+    : { violations: [], notes: [] };
   return { violations: [...out, ...docs.violations], notes: docs.notes };
 }
 

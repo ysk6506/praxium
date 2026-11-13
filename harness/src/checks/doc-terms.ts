@@ -60,7 +60,11 @@ const LIST_HEADER = "옛 표기";
 
 type Table = "dictionary" | "list" | null;
 const tableKind = (header: readonly string[]): Table =>
-  DICT_HEADER.every((h, i) => header[i] === h) ? "dictionary" : header[0] === LIST_HEADER ? "list" : null;
+  DICT_HEADER.every((h, i) => header[i] === h)
+    ? "dictionary"
+    : header[0] === LIST_HEADER
+      ? "list"
+      : null;
 
 /** The text of each line with the parts that are not prose replaced by a placeholder of the same length. */
 export function proseLines(text: string, hideListColumns = false): string[] {
@@ -115,7 +119,8 @@ export function proseLines(text: string, hideListColumns = false): string[] {
       if (!ln.trimStart().startsWith("|")) table = null;
       else if (hideListColumns) {
         if (!prevTable) table = tableKind(cells(ln));
-        else if (table !== null && !isSeparator(ln)) masked = hideColumn(ln, masked, table === "dictionary" ? 1 : 0);
+        else if (table !== null && !isSeparator(ln))
+          masked = hideColumn(ln, masked, table === "dictionary" ? 1 : 0);
       }
       prevTable = ln.trimStart().startsWith("|");
       out.push(masked);
@@ -130,7 +135,8 @@ function hideColumn(line: string, masked: string, n: number): string {
   let seen = -1;
   for (let k = 0; k <= line.length; k++) {
     if (k === line.length || (line[k] === "|" && line[k - 1] !== "\\")) {
-      if (seen === n && k > start) return masked.slice(0, start) + HOLE.repeat(k - start) + masked.slice(k);
+      if (seen === n && k > start)
+        return masked.slice(0, start) + HOLE.repeat(k - start) + masked.slice(k);
       seen++;
       start = k + 1;
     }
@@ -194,7 +200,8 @@ export function dictionaryProblems(terms: readonly Term[], config: DocumentsConf
   for (const t of terms) {
     if (config.ambiguous_words.includes(t.old))
       bad(t.source, `"${t.old}" is an everyday word with many meanings: list only its compounds`);
-    if (standards.has(t.old)) bad(t.source, `"${t.old}" is an old spelling here and a standard term elsewhere`);
+    if (standards.has(t.old))
+      bad(t.source, `"${t.old}" is an old spelling here and a standard term elsewhere`);
     const before = seen.get(t.old);
     if (before && before.standard !== t.standard)
       bad(t.source, `"${t.old}" has two standard terms: "${before.standard}" and "${t.standard}"`);
@@ -203,12 +210,24 @@ export function dictionaryProblems(terms: readonly Term[], config: DocumentsConf
   return out;
 }
 
-export function loadDictionary(root: string, config: DocumentsConfig): { terms: Term[]; problems: Violation[] } {
+export function loadDictionary(
+  root: string,
+  config: DocumentsConfig,
+): { terms: Term[]; problems: Violation[] } {
   const terms: Term[] = [];
   const problems: Violation[] = [];
   for (const file of config.dictionary) {
     const found = parseDictionary(file, readText(path.join(root, file)));
-    if (found.length === 0) problems.push(violation(DICT_CODE, file, 0, "no dictionary table found", "Keep the glossary tables with the header `표준 용어 | 옛 표기(쓰지 않음) | 뜻 | 영어 대응`."));
+    if (found.length === 0)
+      problems.push(
+        violation(
+          DICT_CODE,
+          file,
+          0,
+          "no dictionary table found",
+          "Keep the glossary tables with the header `표준 용어 | 옛 표기(쓰지 않음) | 뜻 | 영어 대응`.",
+        ),
+      );
     terms.push(...found);
   }
   return { terms, problems: [...problems, ...dictionaryProblems(terms, config)] };
@@ -227,21 +246,24 @@ export function findOld(
   proseLines(text, isDictionary).forEach((line, index) => {
     let masked = line;
     for (const word of keep) masked = masked.split(word).join(HOLE.repeat(word.length));
+    const found: Array<{ at: number; hit: Hit }> = [];
     const taken = new Array<boolean>(masked.length).fill(false);
     for (const term of sorted) {
       for (let at = masked.indexOf(term.old); at >= 0; at = masked.indexOf(term.old, at + 1)) {
         if (taken.slice(at, at + term.old.length).some(Boolean)) continue;
         for (let k = at; k < at + term.old.length; k++) taken[k] = true;
-        hits.push({ file, line: index + 1, term });
+        found.push({ at, hit: { file, line: index + 1, term } });
       }
     }
+    hits.push(...found.sort((a, b) => a.at - b.at).map((f) => f.hit));
   });
   return hits;
 }
 
 export function documentFiles(root: string, config: DocumentsConfig): string[] {
   return listFiles(root, ["."], (n) => n.endsWith(".md")).filter(
-    (f) => config.scan.some((g) => matchesGlob(f, g)) && !config.skip.some((g) => matchesGlob(f, g)),
+    (f) =>
+      config.scan.some((g) => matchesGlob(f, g)) && !config.skip.some((g) => matchesGlob(f, g)),
   );
 }
 
@@ -256,7 +278,13 @@ export function scanDocuments(root: string, config: DocumentsConfig): DocumentsR
   const hits: Hit[] = [];
   for (const file of documentFiles(root, config))
     hits.push(
-      ...findOld(file, readText(path.join(root, file)), terms, config.dictionary.includes(file), config.keep),
+      ...findOld(
+        file,
+        readText(path.join(root, file)),
+        terms,
+        config.dictionary.includes(file),
+        config.keep,
+      ),
     );
   return { hits, problems: [] };
 }
