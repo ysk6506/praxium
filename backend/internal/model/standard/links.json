@@ -1,0 +1,7232 @@
+[
+  {
+    "id": "lt.located_in",
+    "link_type_no": 1,
+    "name": "LOCATED_IN",
+    "meaning": "contained_in",
+    "bindings": [
+      {
+        "id": "bd.located_in.site.region",
+        "from": {
+          "kind": "type",
+          "ref": "ot.site"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.region"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.building.site",
+        "from": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.site"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.floor.building",
+        "from": {
+          "kind": "type",
+          "ref": "ot.floor"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.room.floor",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.floor"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.room.building",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.room_zone.room",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.row.room",
+        "from": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.row.room_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.aisle.room",
+        "from": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.aisle.row",
+        "from": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.rack.row",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.rack.room",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.rack.room_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.trait_locatable.site",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.site"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.trait_locatable.building",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.trait_locatable.floor",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.floor"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.trait_locatable.room",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.trait_locatable.room_zone",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.trait_locatable.row",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.mounted_in",
+    "link_type_no": 2,
+    "name": "MOUNTED_IN",
+    "meaning": "contained_in",
+    "properties": [
+      {
+        "id": "pr.mounted_in.position_u",
+        "attr_no": 672,
+        "name": "position_u",
+        "value_type": "vt.integer",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.mounted_in.height_u",
+        "attr_no": 673,
+        "name": "height_u",
+        "value_type": "vt.integer",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.mounted_in.face",
+        "attr_no": 674,
+        "name": "face",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["front", "rear"]
+      },
+      {
+        "id": "pr.mounted_in.side",
+        "attr_no": 675,
+        "name": "side",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["full", "left", "right"]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.mounted_in.trait_rack_mountable.rack",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.rack_mountable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.occupied_by",
+    "link_type_no": 3,
+    "name": "OCCUPIED_BY",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.occupied_by.rack_unit.trait_rack_mountable",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack_unit"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.rack_mountable"
+        },
+        "cardinality": "1:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.runs_on",
+    "link_type_no": 4,
+    "name": "RUNS_ON",
+    "meaning": "runs_on",
+    "properties": [
+      {
+        "id": "pr.runs_on.placement",
+        "attr_no": 676,
+        "name": "placement",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["current", "preferred"]
+      },
+      {
+        "id": "pr.runs_on.ha_protected",
+        "attr_no": 677,
+        "name": "ha_protected",
+        "value_type": "vt.boolean",
+        "change_class": "slow"
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.runs_on.pdu_outlet.rack_pdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rack_pdu"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.pdu_outlet.floor_pdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.floor_pdu"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.pdu_outlet.power_shelf",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_shelf"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.battery_bank.ups",
+        "from": {
+          "kind": "type",
+          "ref": "ot.battery_bank"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.circuit_breaker.power_panel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.circuit_breaker"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.circuit_breaker.rpp",
+        "from": {
+          "kind": "type",
+          "ref": "ot.circuit_breaker"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rpp"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.circuit_breaker.floor_pdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.circuit_breaker"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.floor_pdu"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.physical_server.blade_enclosure",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.blade_enclosure"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.interface.network_adapter",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_adapter"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.interface.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.interface.line_card",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.line_card"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.interface.array_controller",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.interface.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.line_card.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.line_card"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.storage_pool.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.storage_volume.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.storage_volume.array_controller",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.storage_volume.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.file_system.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.file_system.array_controller",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.file_system.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.object_store.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_store"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.object_store.array_controller",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_store"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.object_store.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_store"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.virtual_machine.hypervisor_host",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "failover_to": ["ot.compute_cluster"]
+        }
+      },
+      {
+        "id": "bd.runs_on.hypervisor_host.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "1:1",
+        "param_constraints": {
+          "failover_to": ["ot.compute_cluster"]
+        }
+      },
+      {
+        "id": "bd.runs_on.virtualization_manager.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "failover_to": ["ot.compute_cluster"]
+        }
+      },
+      {
+        "id": "bd.runs_on.virtualization_manager.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "failover_to": ["ot.compute_cluster"]
+        }
+      },
+      {
+        "id": "bd.runs_on.virtualization_manager.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "failover_to": ["ot.compute_cluster"]
+        }
+      },
+      {
+        "id": "bd.runs_on.pod.cluster_node",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.container.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.container"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.software_instance.container",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.software_instance.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.operating_system.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.operating_system.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.os_service.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.os_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.software_instance.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.software_instance.os_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.os_service"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.database_instance.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.database_instance.container",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.database_instance.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.database_instance.os_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.os_service"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.lb_virtual_server.load_balancer_appliance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.load_balancer_appliance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.lb_virtual_server.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.dns_zone.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.powered_by",
+    "link_type_no": 5,
+    "name": "POWERED_BY",
+    "meaning": "supplied_by",
+    "meaning_params": {
+      "resource": "power"
+    },
+    "properties": [
+      {
+        "id": "pr.powered_by.feed_side",
+        "attr_no": 678,
+        "name": "feed_side",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["a", "b", "c", "d", "single"]
+      },
+      {
+        "id": "pr.powered_by.path_role",
+        "attr_no": 679,
+        "name": "path_role",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["primary", "alternate", "backup"]
+      },
+      {
+        "id": "pr.powered_by.phase",
+        "attr_no": 680,
+        "name": "phase",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.powered_by.capacity_w",
+        "attr_no": 681,
+        "name": "capacity_w",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "W"
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.powered_by.trait_powered.trait_power_source",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.powered"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.trait_powered.power_redundancy_group",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.powered"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.ups.switchgear",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.switchgear"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.ups.transfer_switch",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.transfer_switch"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.ups.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.transfer_switch.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.transfer_switch"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.switchgear.transformer",
+        "from": {
+          "kind": "type",
+          "ref": "ot.switchgear"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.transformer"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.switchgear.utility_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.switchgear"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.utility_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.transformer.utility_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.transformer"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.utility_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_panel.ups",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_panel.switchgear",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.switchgear"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.rpp.power_panel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rpp"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.rpp.ups",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rpp"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.rpp.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rpp"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.floor_pdu.power_panel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.floor_pdu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.floor_pdu.ups",
+        "from": {
+          "kind": "type",
+          "ref": "ot.floor_pdu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.floor_pdu.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.floor_pdu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.busway.power_panel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.busway.ups",
+        "from": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.busway.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_feed.power_panel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_panel"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_feed.rpp",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rpp"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_feed.floor_pdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.floor_pdu"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_feed.busway",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_feed.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.rack_pdu.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack_pdu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.rack_pdu.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack_pdu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.rack_pdu.busway",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack_pdu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_shelf.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_shelf"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_shelf.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_shelf"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_shelf.busway",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_shelf"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.crah.trait_power_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.crac.trait_power_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.crac"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.in_row_cooler.trait_power_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.in_row_cooler"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.chiller.trait_power_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chiller"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.cooling_tower.trait_power_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_tower"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.cdu.trait_power_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cdu"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.power_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.physical_server.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.physical_server.pdu_outlet",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.physical_server.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.chassis.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.chassis.pdu_outlet",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.chassis.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.blade_enclosure.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.blade_enclosure"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.blade_enclosure.pdu_outlet",
+        "from": {
+          "kind": "type",
+          "ref": "ot.blade_enclosure"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.blade_enclosure.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.blade_enclosure"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_supply.pdu_outlet",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_supply.power_circuit",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_supply.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_supply.busway",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.busway"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.powered_by.power_supply.power_shelf",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_shelf"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.cooled_by",
+    "link_type_no": 6,
+    "name": "COOLED_BY",
+    "meaning": "supplied_by",
+    "meaning_params": {
+      "resource": "cooling"
+    },
+    "properties": [
+      {
+        "id": "pr.cooled_by.coolant",
+        "attr_no": 682,
+        "name": "coolant",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.cooled_by.ride_through_s",
+        "attr_no": 683,
+        "name": "ride_through_s",
+        "value_type": "vt.number",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.cooled_by.capacity_kw",
+        "attr_no": 684,
+        "name": "capacity_kw",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "kW"
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.cooled_by.trait_cooled.trait_cooling_source",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.cooled"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.cooling_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.trait_cooled.cooling_redundancy_group",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.cooled"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.rack.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.rack.crah",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.rack.crac",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crac"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.rack.in_row_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.in_row_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.aisle.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.aisle.crah",
+        "from": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.aisle.crac",
+        "from": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crac"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.aisle.in_row_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.in_row_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.row.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.row.crah",
+        "from": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.row.crac",
+        "from": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crac"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.row.in_row_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.in_row_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room_zone.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room_zone.crah",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room_zone.crac",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crac"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room_zone.in_row_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.in_row_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room.crah",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room.crac",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.crac"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.room.in_row_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.in_row_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.rack.rear_door_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rear_door_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.rack.cooling_loop",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.crah.cooling_loop",
+        "from": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cooling_loop.chiller",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chiller"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cooling_loop.cooling_tower",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_tower"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cooling_loop.cdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cdu"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cooling_loop.heat_exchanger",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.heat_exchanger"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cooling_loop.dry_cooler",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dry_cooler"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.chiller.cooling_loop",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chiller"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.physical_server.cdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cdu"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.physical_server.cooling_loop",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.accelerator.cdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.accelerator"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cdu"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.accelerator.cooling_loop",
+        "from": {
+          "kind": "type",
+          "ref": "ot.accelerator"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cpu.cdu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cpu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cdu"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cpu.cooling_loop",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cpu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.encloses",
+    "link_type_no": 7,
+    "name": "ENCLOSES",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.encloses.containment.aisle",
+        "from": {
+          "kind": "type",
+          "ref": "ot.containment"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.aisle"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.encloses.containment.row",
+        "from": {
+          "kind": "type",
+          "ref": "ot.containment"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.row"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.encloses.containment.rack",
+        "from": {
+          "kind": "type",
+          "ref": "ot.containment"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.measures",
+    "link_type_no": 8,
+    "name": "MEASURES",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.measures.sensor.trait_sensed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.sensed"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.part_of",
+    "link_type_no": 9,
+    "name": "PART_OF",
+    "meaning": "part_of",
+    "properties": [
+      {
+        "id": "pr.part_of.slot",
+        "attr_no": 685,
+        "name": "slot",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.part_of.cpu.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cpu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.cpu.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cpu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.memory_module.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.memory_module"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.memory_module.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.memory_module"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.drive.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.drive.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.storage_controller.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_controller"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.storage_controller.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_controller"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.network_adapter.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_adapter"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.network_adapter.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_adapter"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.accelerator.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.accelerator"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.accelerator.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.accelerator"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.pcie_device.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pcie_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.pcie_device.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pcie_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.power_supply.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.power_supply.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.fan.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.fan"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.fan.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.fan"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.bmc.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.bmc"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.bmc.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.bmc"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.baseboard.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.baseboard"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.baseboard.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.baseboard"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.chassis_bay.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chassis_bay"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.chassis_bay.blade_enclosure",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chassis_bay"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.blade_enclosure"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.physical_server.chassis_bay",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis_bay"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.physical_server.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.chassis.blade_enclosure",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.blade_enclosure"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.firmware.trait_has_firmware",
+        "from": {
+          "kind": "type",
+          "ref": "ot.firmware"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.has_firmware"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.redundancy_group.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.redundancy_group.chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.chassis"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.line_card.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.line_card"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.interface.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.interface.line_card",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.line_card"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.interface.network_adapter",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_adapter"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.interface.array_controller",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.transceiver.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.transceiver"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.patch_port.patch_panel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.patch_port"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.patch_panel"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.redundancy_group.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.routing_process.network_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.routing_process"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.routing_session.routing_process",
+        "from": {
+          "kind": "type",
+          "ref": "ot.routing_session"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.routing_process"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.static_route.network_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.static_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.network_device.fabric_pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric_pod"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.network_device.fabric",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.fabric_pod.fabric",
+        "from": {
+          "kind": "type",
+          "ref": "ot.fabric_pod"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.prefix.network_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.prefix"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.ip_address.prefix",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.prefix"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.interface.network_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.vlan.fabric",
+        "from": {
+          "kind": "type",
+          "ref": "ot.vlan"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.array_controller.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.drive.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.ha_pair.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.redundancy_group.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.raid_group.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.raid_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard"]
+        }
+      },
+      {
+        "id": "bd.part_of.file_share.file_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.object_bucket.object_store",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_bucket"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.object_store"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.virtual_datacenter.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_datacenter"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.compute_cluster.virtual_datacenter",
+        "from": {
+          "kind": "type",
+          "ref": "ot.compute_cluster"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_datacenter"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.resource_pool.compute_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.resource_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.compute_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.resource_pool.resource_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.resource_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.resource_pool"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.virtual_machine.resource_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.resource_pool"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.virtual_disk.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["hard", "soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.virtual_nic.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_nic"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.vm_snapshot.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.vm_snapshot"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.virtual_switch.virtual_datacenter",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_switch"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_datacenter"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.virtual_switch.hypervisor_host",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_switch"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.virtual_network.virtual_switch",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_network"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_switch"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.datastore.virtual_datacenter",
+        "from": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_datacenter"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.cluster_node.node_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.node_pool"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.cluster_node.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.node_pool.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.node_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.namespace.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.storage_class.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_class"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.persistent_volume.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.workload.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.pod.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.cluster_service.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.gateway_route.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.persistent_volume_claim.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.gateway.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.disruption_budget.namespace",
+        "from": {
+          "kind": "type",
+          "ref": "ot.disruption_budget"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.namespace"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.container.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.container"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.control_plane.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.control_plane"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "1:1",
+        "param_constraints": {
+          "whole_needs_part": ["soft"]
+        }
+      },
+      {
+        "id": "bd.part_of.database.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.dns_record.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.dns_record"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.lb_pool.load_balancer_appliance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.load_balancer_appliance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.lb_pool.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.service_offering.business_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.service_offering"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.service_offering.technical_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.service_offering"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.tenant.tenant",
+        "from": {
+          "kind": "type",
+          "ref": "ot.tenant"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.tenant"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.team.team",
+        "from": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.team.organization",
+        "from": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.organization"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.business_capability.business_capability",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_capability"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.business_capability"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.sensor.trait_locatable",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.locatable"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.sensor.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.sensor.pdu_outlet",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.member_of",
+    "link_type_no": 10,
+    "name": "MEMBER_OF",
+    "meaning": "member_of",
+    "bindings": [
+      {
+        "id": "bd.member_of.power_supply.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.fan.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.fan"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.memory_module.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.memory_module"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.interface.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.routing_session.ecmp_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.routing_session"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ecmp_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.static_route.ecmp_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.static_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ecmp_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.lag.ecmp_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ecmp_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.interface.ecmp_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ecmp_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.network_device.mlag_domain",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.mlag_domain"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.network_device.virtual_chassis",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_chassis"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.switch.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.switch"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.router.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.router"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.firewall.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.firewall"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.array_controller.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.array_controller"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.drive.raid_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.raid_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.storage_volume.replication_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.replication_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.file_system.replication_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.replication_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.interface.initiator_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.initiator_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.interface.san_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.san_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.hypervisor_host.compute_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.compute_cluster"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.hypervisor_host.host_aggregate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.host_aggregate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.hypervisor_host.placement_rule",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.placement_rule"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.virtual_machine.placement_rule",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.placement_rule"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.virtual_machine.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.pod.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.cluster_node.control_plane",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.control_plane"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.lb_pool_member.lb_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_pool"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.database_instance.database_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_cluster"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.software_instance.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.software_instance.quorum_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.quorum_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.software_instance.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.application_service.environment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.environment"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.software_instance.environment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.environment"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.workload.environment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.environment"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.cluster_service.environment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.environment"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.virtual_machine.environment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.environment"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.database.environment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.environment"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.person.team",
+        "from": {
+          "kind": "type",
+          "ref": "ot.person"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.managed_by",
+    "link_type_no": 11,
+    "name": "MANAGED_BY",
+    "meaning": "managed_by",
+    "bindings": [
+      {
+        "id": "bd.managed_by.trait_manageable.bmc",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.manageable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.bmc"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.storage_array.bmc",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.bmc"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.storage_array.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.hypervisor_host.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.compute_cluster.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.compute_cluster"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.virtual_machine.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.datastore.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.operating_system.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.operating_system.bmc",
+        "from": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.bmc"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.managed_by.sensor.metric_source",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.metric_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.managed_by.sensor.bmc",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.bmc"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.managed_by.sensor.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.sensor"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.managed_by.trait_manageable.metric_source",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.manageable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.metric_source"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.managed_by.trait_manageable.virtualization_manager",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.manageable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.replaces",
+    "link_type_no": 12,
+    "name": "REPLACES",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.replaces.cpu.cpu",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cpu"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cpu"
+        },
+        "cardinality": "1:1"
+      },
+      {
+        "id": "bd.replaces.memory_module.memory_module",
+        "from": {
+          "kind": "type",
+          "ref": "ot.memory_module"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.memory_module"
+        },
+        "cardinality": "1:1"
+      },
+      {
+        "id": "bd.replaces.drive.drive",
+        "from": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "cardinality": "1:1"
+      },
+      {
+        "id": "bd.replaces.power_supply.power_supply",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "cardinality": "1:1"
+      },
+      {
+        "id": "bd.replaces.fan.fan",
+        "from": {
+          "kind": "type",
+          "ref": "ot.fan"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fan"
+        },
+        "cardinality": "1:1"
+      },
+      {
+        "id": "bd.replaces.network_adapter.network_adapter",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_adapter"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_adapter"
+        },
+        "cardinality": "1:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.cabled_to",
+    "link_type_no": 13,
+    "name": "CABLED_TO",
+    "meaning": "connected_to",
+    "bindings": [
+      {
+        "id": "bd.cabled_to.interface.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cabled_to.interface.patch_port",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.patch_port"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cabled_to.patch_port.patch_port",
+        "from": {
+          "kind": "type",
+          "ref": "ot.patch_port"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.patch_port"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.adjacent_to",
+    "link_type_no": 14,
+    "name": "ADJACENT_TO",
+    "meaning": "connected_to",
+    "bindings": [
+      {
+        "id": "bd.adjacent_to.interface.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.adjacent_to.network_device.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.terminates_at",
+    "link_type_no": 15,
+    "name": "TERMINATES_AT",
+    "meaning": "connected_to",
+    "properties": [
+      {
+        "id": "pr.terminates_at.end",
+        "attr_no": 686,
+        "name": "end",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["a", "b", "z"]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.terminates_at.cable.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.terminates_at.cable.patch_port",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.patch_port"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.terminates_at.cable.pdu_outlet",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pdu_outlet"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.terminates_at.cable.power_supply",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_supply"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.terminates_at.cable.power_feed",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cable"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.terminates_at.circuit.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.circuit"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.uses_peer_link",
+    "link_type_no": 16,
+    "name": "USES_PEER_LINK",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.uses_peer_link.mlag_domain.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.mlag_domain"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "1:1",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.uplinked_via",
+    "link_type_no": 17,
+    "name": "UPLINKED_VIA",
+    "meaning": "supplied_by",
+    "meaning_params": {
+      "resource": "network"
+    },
+    "properties": [
+      {
+        "id": "pr.uplinked_via.network_role",
+        "attr_no": 687,
+        "name": "network_role",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["data", "storage", "management", "backup"]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.uplinked_via.network_device.ecmp_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ecmp_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.network_device.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.network_device.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.physical_server.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.physical_server.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.physical_server.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.hypervisor_host.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.hypervisor_host.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.hypervisor_host.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.storage_array.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.storage_array.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.storage_array.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.storage_array.san_switch",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.san_switch"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.virtual_switch.lag",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_switch"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.virtual_switch.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_switch"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.assigned_to",
+    "link_type_no": 18,
+    "name": "ASSIGNED_TO",
+    "meaning": "runs_on",
+    "bindings": [
+      {
+        "id": "bd.assigned_to.ip_address.trait_interface_like",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.interface_like"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.allows_vlan",
+    "link_type_no": 19,
+    "name": "ALLOWS_VLAN",
+    "meaning": "connected_to",
+    "properties": [
+      {
+        "id": "pr.allows_vlan.mode",
+        "attr_no": 688,
+        "name": "mode",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["access", "trunk_tagged", "trunk_native", "qinq"]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.allows_vlan.interface.vlan",
+        "from": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.vlan"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.allows_vlan.lag.vlan",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lag"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.vlan"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.maps_to",
+    "link_type_no": 20,
+    "name": "MAPS_TO",
+    "meaning": "connected_to",
+    "bindings": [
+      {
+        "id": "bd.maps_to.vlan.overlay_segment",
+        "from": {
+          "kind": "type",
+          "ref": "ot.vlan"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.overlay_segment"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.realized_by",
+    "link_type_no": 21,
+    "name": "REALIZED_BY",
+    "meaning": "realized_by",
+    "bindings": [
+      {
+        "id": "bd.realized_by.overlay_segment.tunnel",
+        "from": {
+          "kind": "type",
+          "ref": "ot.overlay_segment"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.tunnel"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.overlay_segment.fabric",
+        "from": {
+          "kind": "type",
+          "ref": "ot.overlay_segment"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.fabric.network_device",
+        "from": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.virtual_network.virtual_switch",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_network"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_switch"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.realized_by.cluster_node.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.realized_by.cluster_node.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.realized_by.gateway.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.realized_by.gateway.lb_virtual_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.realized_by.cluster_service.lb_virtual_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.realized_by.endpoint.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.endpoint.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.endpoint.lb_virtual_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.endpoint.cluster_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.endpoint.gateway",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.endpoint.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.business_service.service_offering",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.service_offering"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.business_service.application_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.business_service.technical_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.service_offering.application_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.service_offering"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.service_offering.technical_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.service_offering"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.cluster_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.lb_virtual_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.application_service.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.technical_service.compute_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.compute_cluster"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.technical_service.container_cluster",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_cluster"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.technical_service.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.technical_service.fabric",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.technical_service.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.peers_via",
+    "link_type_no": 22,
+    "name": "PEERS_VIA",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.peers_via.routing_session.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.routing_session"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.peers_via.routing_session.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.routing_session"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.tunnels_via",
+    "link_type_no": 23,
+    "name": "TUNNELS_VIA",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.tunnels_via.tunnel.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.tunnel"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.tunnels_via.tunnel.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.tunnel"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.next_hop_via",
+    "link_type_no": 24,
+    "name": "NEXT_HOP_VIA",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.next_hop_via.static_route.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.static_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.next_hop_via.static_route.interface",
+        "from": {
+          "kind": "type",
+          "ref": "ot.static_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.interface"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.advertises",
+    "link_type_no": 25,
+    "name": "ADVERTISES",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.advertises.routing_session.prefix",
+        "from": {
+          "kind": "type",
+          "ref": "ot.routing_session"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.prefix"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.advertises.network_device.prefix",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.prefix"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.routed_by",
+    "link_type_no": 26,
+    "name": "ROUTED_BY",
+    "meaning": "supplied_by",
+    "meaning_params": {
+      "resource": "network"
+    },
+    "bindings": [
+      {
+        "id": "bd.routed_by.prefix.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.prefix"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.owned_by",
+    "link_type_no": 27,
+    "name": "OWNED_BY",
+    "meaning": "owned_by",
+    "bindings": [
+      {
+        "id": "bd.owned_by.circuit.organization",
+        "from": {
+          "kind": "type",
+          "ref": "ot.circuit"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.organization"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.owned_by.any.team",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.owned_by.any.person",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.person"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.owned_by.any.organization",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.organization"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.owned_by.any.tenant",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.tenant"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.owned_by.on_call_schedule.team",
+        "from": {
+          "kind": "type",
+          "ref": "ot.on_call_schedule"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.owned_by.contract.organization",
+        "from": {
+          "kind": "type",
+          "ref": "ot.contract"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.organization"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.owned_by.tenant.team",
+        "from": {
+          "kind": "type",
+          "ref": "ot.tenant"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.team"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.backed_by",
+    "link_type_no": 28,
+    "name": "BACKED_BY",
+    "meaning": "supplied_by",
+    "meaning_params": {
+      "resource": "storage"
+    },
+    "bindings": [
+      {
+        "id": "bd.backed_by.storage_pool.raid_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.raid_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.storage_pool.drive",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.storage_volume.storage_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.file_system.storage_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.file_system.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.object_store.storage_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_store"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.object_store.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_store"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.datastore.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.datastore.file_share",
+        "from": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.virtual_disk.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.persistent_volume.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.persistent_volume.file_share",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.persistent_volume.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.persistent_volume.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.backed_by.datastore.storage_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_pool"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.exported_to",
+    "link_type_no": 29,
+    "name": "EXPORTED_TO",
+    "meaning": "connected_to",
+    "properties": [
+      {
+        "id": "pr.exported_to.lun_id",
+        "attr_no": 689,
+        "name": "lun_id",
+        "value_type": "vt.integer",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.exported_to.protocol",
+        "attr_no": 690,
+        "name": "protocol",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["fc", "iscsi", "nvme_of", "nfs", "smb"]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.exported_to.storage_volume.initiator_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.initiator_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.storage_volume.hypervisor_host",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.storage_volume.physical_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.storage_volume.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.storage_volume.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.file_share.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.file_share.hypervisor_host",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.exported_to.file_share.cluster_node",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.replicates_to",
+    "link_type_no": 30,
+    "name": "REPLICATES_TO",
+    "meaning": "connected_to",
+    "properties": [
+      {
+        "id": "pr.replicates_to.mode",
+        "attr_no": 691,
+        "name": "mode",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["sync", "async"]
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.replicates_to.storage_volume.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.replicates_to.file_system.file_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.replicates_to.object_bucket.object_bucket",
+        "from": {
+          "kind": "type",
+          "ref": "ot.object_bucket"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.object_bucket"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.snapshot_of",
+    "link_type_no": 31,
+    "name": "SNAPSHOT_OF",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.snapshot_of.storage_snapshot.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_snapshot"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.snapshot_of.storage_snapshot.file_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_snapshot"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.snapshot_of.vm_snapshot.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.vm_snapshot"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.snapshot_of.vm_snapshot.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.vm_snapshot"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.cloned_from",
+    "link_type_no": 32,
+    "name": "CLONED_FROM",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.cloned_from.storage_volume.storage_snapshot",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_snapshot"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.cloned_from.storage_volume.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.cloned_from.virtual_machine.vm_template",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.vm_template"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.cloned_from.virtual_machine.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.cloned_from.virtual_machine.vm_snapshot",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.vm_snapshot"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.homed_on",
+    "link_type_no": 33,
+    "name": "HOMED_ON",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.homed_on.virtual_machine.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.mounts",
+    "link_type_no": 34,
+    "name": "MOUNTS",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.mounts.hypervisor_host.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      },
+      {
+        "id": "bd.mounts.pod.persistent_volume_claim",
+        "from": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.mounts.operating_system.file_share",
+        "from": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.mounts.operating_system.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.connected_to",
+    "link_type_no": 35,
+    "name": "CONNECTED_TO",
+    "meaning": "connected_to",
+    "bindings": [
+      {
+        "id": "bd.connected_to.virtual_nic.virtual_network",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_nic"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_network"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.boots_from",
+    "link_type_no": 36,
+    "name": "BOOTS_FROM",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.boots_from.virtual_machine.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.boots_from.virtual_machine.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.boots_from.virtual_machine.drive",
+        "from": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.boots_from.physical_server.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.boots_from.physical_server.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.boots_from.physical_server.drive",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.drive"
+        },
+        "cardinality": "N:1",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.forwards_to",
+    "link_type_no": 37,
+    "name": "FORWARDS_TO",
+    "meaning": "requires",
+    "properties": [
+      {
+        "id": "pr.forwards_to.port",
+        "attr_no": 692,
+        "name": "port",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      }
+    ],
+    "bindings": [
+      {
+        "id": "bd.forwards_to.cluster_service.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.cluster_service.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.gateway_route.cluster_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.gateway.gateway_route",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.gateway_route"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_virtual_server.lb_pool",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_pool"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.virtual_machine",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_machine"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.operating_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.operating_system"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.cluster_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cluster_service"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.forwards_to.lb_pool_member.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_pool_member"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.attaches_to",
+    "link_type_no": 38,
+    "name": "ATTACHES_TO",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.attaches_to.gateway_route.gateway",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway_route"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.bound_to",
+    "link_type_no": 39,
+    "name": "BOUND_TO",
+    "meaning": "realized_by",
+    "bindings": [
+      {
+        "id": "bd.bound_to.persistent_volume_claim.persistent_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "cardinality": "1:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.uses_class",
+    "link_type_no": 40,
+    "name": "USES_CLASS",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.uses_class.persistent_volume_claim.storage_class",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_class"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.uses_class.persistent_volume.storage_class",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_class"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.controlled_by",
+    "link_type_no": 41,
+    "name": "CONTROLLED_BY",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.controlled_by.workload.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.controlled_by.persistent_volume_claim.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.protects",
+    "link_type_no": 42,
+    "name": "PROTECTS",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.protects.disruption_budget.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.disruption_budget"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.protects.disruption_budget.pod",
+        "from": {
+          "kind": "type",
+          "ref": "ot.disruption_budget"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.pod"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.instance_of",
+    "link_type_no": 43,
+    "name": "INSTANCE_OF",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.instance_of.container.container_image",
+        "from": {
+          "kind": "type",
+          "ref": "ot.container"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.container_image"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.instance_of.application_service.application",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.instance_of.software_instance.application",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.secured_by",
+    "link_type_no": 44,
+    "name": "SECURED_BY",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.secured_by.gateway.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.gateway"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.secured_by.endpoint.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.secured_by.lb_virtual_server.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.secured_by.software_instance.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.in_failure_domain",
+    "link_type_no": 45,
+    "name": "IN_FAILURE_DOMAIN",
+    "meaning": "contained_in",
+    "bindings": [
+      {
+        "id": "bd.in_failure_domain.cluster_node.failure_domain",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cluster_node"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.failure_domain"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.in_failure_domain.any.failure_domain",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.failure_domain"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.resolves_to",
+    "link_type_no": 46,
+    "name": "RESOLVES_TO",
+    "meaning": "realized_by",
+    "bindings": [
+      {
+        "id": "bd.resolves_to.dns_record.ip_address",
+        "from": {
+          "kind": "type",
+          "ref": "ot.dns_record"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ip_address"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.resolves_to.dns_record.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.dns_record"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.resolves_to.dns_record.lb_virtual_server",
+        "from": {
+          "kind": "type",
+          "ref": "ot.dns_record"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.lb_virtual_server"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.resolves_to.dns_record.dns_record",
+        "from": {
+          "kind": "type",
+          "ref": "ot.dns_record"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_record"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.issued_by",
+    "link_type_no": 47,
+    "name": "ISSUED_BY",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.issued_by.certificate.certificate_authority",
+        "from": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate_authority"
+        },
+        "cardinality": "N:1"
+      }
+    ]
+  },
+  {
+    "id": "lt.depends_on",
+    "link_type_no": 48,
+    "name": "DEPENDS_ON",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.depends_on.software_instance.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.software_instance.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.software_instance.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.software_instance.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.software_instance.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.database_instance.software_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.database_instance.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.database_instance.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.database_instance.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.database_instance.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.business_service.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.business_service.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.business_service.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.business_service.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.business_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application_service.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application_service.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application_service.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application_service.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.technical_service.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.technical_service.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.technical_service.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.technical_service.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application.certificate",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.certificate"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application.dns_zone",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.stores_data_on",
+    "link_type_no": 49,
+    "name": "STORES_DATA_ON",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.stores_data_on.database_instance.file_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database_instance.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database_instance.persistent_volume_claim",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database_instance.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database_instance.file_share",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database_instance.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database.file_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database.persistent_volume_claim",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database.file_share",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.database.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.database"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.software_instance.file_system",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_system"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.software_instance.storage_volume",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_volume"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.software_instance.persistent_volume_claim",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.persistent_volume_claim"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.software_instance.virtual_disk",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtual_disk"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.software_instance.file_share",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.file_share"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      },
+      {
+        "id": "bd.stores_data_on.software_instance.datastore",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.datastore"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["hard"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.calls",
+    "link_type_no": 50,
+    "name": "CALLS",
+    "meaning": "requires",
+    "bindings": [
+      {
+        "id": "bd.calls.software_instance.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      },
+      {
+        "id": "bd.calls.software_instance.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.software_instance"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      },
+      {
+        "id": "bd.calls.application_service.application_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      },
+      {
+        "id": "bd.calls.application_service.endpoint",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.endpoint"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      },
+      {
+        "id": "bd.calls.application_service.database_instance",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.database_instance"
+        },
+        "cardinality": "N:M",
+        "param_constraints": {
+          "strength": ["soft"]
+        }
+      }
+    ]
+  },
+  {
+    "id": "lt.covered_by",
+    "link_type_no": 51,
+    "name": "COVERED_BY",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.covered_by.trait_serialized.contract",
+        "from": {
+          "kind": "trait",
+          "ref": "tr.serialized"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.contract"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.escalates_via",
+    "link_type_no": 52,
+    "name": "ESCALATES_VIA",
+    "meaning": "owned_by",
+    "bindings": [
+      {
+        "id": "bd.escalates_via.any.on_call_schedule",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.on_call_schedule"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.applies_to",
+    "link_type_no": 53,
+    "name": "APPLIES_TO",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.applies_to.maintenance_window.trait_schedulable",
+        "from": {
+          "kind": "type",
+          "ref": "ot.maintenance_window"
+        },
+        "to": {
+          "kind": "trait",
+          "ref": "tr.schedulable"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.observes",
+    "link_type_no": 54,
+    "name": "OBSERVES",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.observes.metric_source.any",
+        "from": {
+          "kind": "type",
+          "ref": "ot.metric_source"
+        },
+        "to": {
+          "kind": "any"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  },
+  {
+    "id": "lt.possibly_same_as",
+    "link_type_no": 55,
+    "name": "POSSIBLY_SAME_AS",
+    "meaning": "record_only",
+    "bindings": [
+      {
+        "id": "bd.possibly_same_as.any.any",
+        "from": {
+          "kind": "any"
+        },
+        "to": {
+          "kind": "any"
+        },
+        "cardinality": "N:M"
+      }
+    ]
+  }
+]

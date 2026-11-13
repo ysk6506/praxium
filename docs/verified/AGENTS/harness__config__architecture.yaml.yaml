@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "a8442eff1c95d71e"
+hash: "3da5961f239ec621"
 date: "2026-11-13"
-note: "Go 단위와 Go 검사 코드(GOARCH, GODEP, GODEBT, GOIGN, GOTEST, GOCOV, GOTOOL)를 하네스 소스와 대조, pnpm 명령과 규칙 코드가 실제로 있음"
-text_changed: true
+note: "core.model 단위 등록(ADR-0020)과 plan 상태 갱신을 읽고 맞는지 확인했다"
+text_changed: false
 doc_hash: "5e4e3279fb8b859e"

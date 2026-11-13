@@ -1,0 +1,408 @@
+[
+  {
+    "id": "tr.common",
+    "name": "Common",
+    "description": "모든 타입이 가지는 공통 속성",
+    "properties": [
+      {
+        "id": "pr.common.name",
+        "attr_no": 1,
+        "name": "name",
+        "value_type": "vt.string",
+        "change_class": "slow",
+        "required": true
+      },
+      {
+        "id": "pr.common.display_name",
+        "attr_no": 2,
+        "name": "display_name",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.common.description",
+        "attr_no": 3,
+        "name": "description",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.common.lifecycle_state",
+        "attr_no": 4,
+        "name": "lifecycle_state",
+        "value_type": "vt.enum",
+        "change_class": "dynamic",
+        "enum_values": [
+          "planned",
+          "ordered",
+          "staged",
+          "active",
+          "maintenance",
+          "decommissioning",
+          "retired"
+        ],
+        "required": true
+      },
+      {
+        "id": "pr.common.labels",
+        "attr_no": 5,
+        "name": "labels",
+        "value_type": "vt.map",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.common.tags",
+        "attr_no": 6,
+        "name": "tags",
+        "value_type": "vt.list",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.common.oper_state",
+        "attr_no": 7,
+        "name": "oper_state",
+        "value_type": "vt.enum",
+        "change_class": "dynamic",
+        "enum_values": ["up", "degraded", "down", "unknown"]
+      }
+    ]
+  },
+  {
+    "id": "tr.serialized",
+    "name": "Serialized",
+    "properties": [
+      {
+        "id": "pr.serialized.manufacturer",
+        "attr_no": 8,
+        "name": "manufacturer",
+        "value_type": "vt.string",
+        "change_class": "static"
+      },
+      {
+        "id": "pr.serialized.model",
+        "attr_no": 9,
+        "name": "model",
+        "value_type": "vt.string",
+        "change_class": "static"
+      },
+      {
+        "id": "pr.serialized.part_number",
+        "attr_no": 10,
+        "name": "part_number",
+        "value_type": "vt.string",
+        "change_class": "static"
+      },
+      {
+        "id": "pr.serialized.serial_number",
+        "attr_no": 11,
+        "name": "serial_number",
+        "value_type": "vt.serial_number",
+        "change_class": "static"
+      },
+      {
+        "id": "pr.serialized.asset_tag",
+        "attr_no": 12,
+        "name": "asset_tag",
+        "value_type": "vt.string",
+        "change_class": "static"
+      },
+      {
+        "id": "pr.serialized.production_date",
+        "attr_no": 13,
+        "name": "production_date",
+        "value_type": "vt.time",
+        "change_class": "static"
+      }
+    ]
+  },
+  {
+    "id": "tr.locatable",
+    "name": "Locatable"
+  },
+  {
+    "id": "tr.rack_mountable",
+    "name": "RackMountable",
+    "properties": [
+      {
+        "id": "pr.rack_mountable.height_u",
+        "attr_no": 14,
+        "name": "height_u",
+        "value_type": "vt.integer",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.rack_mountable.depth_mm",
+        "attr_no": 15,
+        "name": "depth_mm",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "mm"
+      },
+      {
+        "id": "pr.rack_mountable.weight_kg",
+        "attr_no": 16,
+        "name": "weight_kg",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "kg"
+      },
+      {
+        "id": "pr.rack_mountable.mounting",
+        "attr_no": 17,
+        "name": "mounting",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["front", "rear", "both"]
+      }
+    ]
+  },
+  {
+    "id": "tr.powered",
+    "name": "Powered",
+    "needs": [
+      {
+        "channel": "power",
+        "strength": "hard"
+      }
+    ],
+    "properties": [
+      {
+        "id": "pr.powered.rated_power_w",
+        "attr_no": 18,
+        "name": "rated_power_w",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "W"
+      },
+      {
+        "id": "pr.powered.power_redundancy_expected",
+        "attr_no": 19,
+        "name": "power_redundancy_expected",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["none", "n_plus_1", "two_n", "n_plus_k"]
+      },
+      {
+        "id": "pr.powered.typical_power_w",
+        "attr_no": 20,
+        "name": "typical_power_w",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "W"
+      }
+    ]
+  },
+  {
+    "id": "tr.power_source",
+    "name": "PowerSource",
+    "properties": [
+      {
+        "id": "pr.power_source.rated_va",
+        "attr_no": 21,
+        "name": "rated_va",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "VA"
+      },
+      {
+        "id": "pr.power_source.voltage_v",
+        "attr_no": 22,
+        "name": "voltage_v",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "V"
+      },
+      {
+        "id": "pr.power_source.phases",
+        "attr_no": 23,
+        "name": "phases",
+        "value_type": "vt.integer",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.cooled",
+    "name": "Cooled",
+    "needs": [
+      {
+        "channel": "cooling",
+        "strength": "hard"
+      }
+    ],
+    "properties": [
+      {
+        "id": "pr.cooled.heat_load_w",
+        "attr_no": 24,
+        "name": "heat_load_w",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "W"
+      },
+      {
+        "id": "pr.cooled.max_inlet_temp_c",
+        "attr_no": 25,
+        "name": "max_inlet_temp_c",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "°C"
+      }
+    ]
+  },
+  {
+    "id": "tr.cooling_source",
+    "name": "CoolingSource",
+    "properties": [
+      {
+        "id": "pr.cooling_source.cooling_capacity_kw",
+        "attr_no": 26,
+        "name": "cooling_capacity_kw",
+        "value_type": "vt.quantity",
+        "change_class": "slow",
+        "unit": "kW"
+      },
+      {
+        "id": "pr.cooling_source.medium",
+        "attr_no": 27,
+        "name": "medium",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.network_attached",
+    "name": "NetworkAttached",
+    "needs": [
+      {
+        "channel": "network",
+        "strength": "hard"
+      }
+    ],
+    "properties": [
+      {
+        "id": "pr.network_attached.uplink_direction",
+        "attr_no": 28,
+        "name": "uplink_direction",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.interface_like",
+    "name": "InterfaceLike"
+  },
+  {
+    "id": "tr.addressable",
+    "name": "Addressable",
+    "properties": [
+      {
+        "id": "pr.addressable.primary_address",
+        "attr_no": 29,
+        "name": "primary_address",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.addressable.hostnames",
+        "attr_no": 30,
+        "name": "hostnames",
+        "value_type": "vt.list",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.manageable",
+    "name": "Manageable",
+    "needs": [
+      {
+        "channel": "management"
+      }
+    ],
+    "properties": [
+      {
+        "id": "pr.manageable.managed_via",
+        "attr_no": 31,
+        "name": "managed_via",
+        "value_type": "vt.enum",
+        "change_class": "slow",
+        "enum_values": ["redfish", "ipmi", "ssh", "snmp", "api", "agent", "none"]
+      }
+    ]
+  },
+  {
+    "id": "tr.schedulable",
+    "name": "Schedulable",
+    "properties": [
+      {
+        "id": "pr.schedulable.maintenance_state",
+        "attr_no": 32,
+        "name": "maintenance_state",
+        "value_type": "vt.enum",
+        "change_class": "dynamic",
+        "enum_values": ["normal", "planned", "in_maintenance"]
+      }
+    ]
+  },
+  {
+    "id": "tr.hosts",
+    "name": "Hosts",
+    "properties": [
+      {
+        "id": "pr.hosts.capacity_summary",
+        "attr_no": 33,
+        "name": "capacity_summary",
+        "value_type": "vt.map",
+        "change_class": "slow"
+      },
+      {
+        "id": "pr.hosts.allocatable",
+        "attr_no": 34,
+        "name": "allocatable",
+        "value_type": "vt.map",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.is_failure_domain",
+    "name": "IsFailureDomain",
+    "properties": [
+      {
+        "id": "pr.is_failure_domain.domain_scope_label",
+        "attr_no": 35,
+        "name": "domain_scope_label",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.sensed",
+    "name": "Sensed"
+  },
+  {
+    "id": "tr.has_firmware",
+    "name": "HasFirmware",
+    "properties": [
+      {
+        "id": "pr.has_firmware.firmware_version",
+        "attr_no": 36,
+        "name": "firmware_version",
+        "value_type": "vt.string",
+        "change_class": "slow"
+      }
+    ]
+  },
+  {
+    "id": "tr.hardware_assembly",
+    "name": "HardwareAssembly"
+  },
+  {
+    "id": "tr.network_anchor",
+    "name": "NetworkAnchor",
+    "description": "망의 바깥이나 중심으로 선언한 객체. 길이 닿아야 하는 곳"
+  }
+]

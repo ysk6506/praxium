@@ -1,0 +1,2364 @@
+[
+  {
+    "id": "ac.set_cooling_setpoint",
+    "name": "set_cooling_setpoint",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.crah"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.crac"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.in_row_cooler"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chiller"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.cdu"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["supply_setpoint_c 변경, 용량 불변"]
+  },
+  {
+    "id": "ac.start_cooling_unit",
+    "name": "start_cooling_unit",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cooling_tower"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.dry_cooler"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["장치 oper_state→up, 소속 CoolingRedundancyGroup alive 멤버 +1"],
+    "inverse": "ac.stop_cooling_unit"
+  },
+  {
+    "id": "ac.stop_cooling_unit",
+    "name": "stop_cooling_unit",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cooling_tower"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.dry_cooler"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["oper_state→down, 그룹 alive 멤버 −1(여유 소진 가능)"],
+    "inverse": "ac.start_cooling_unit"
+  },
+  {
+    "id": "ac.replace_filter",
+    "name": "replace_filter",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.crah"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.crac"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.cdu"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.in_row_cooler"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["필터 상태 갱신, 일시 정지 가능"]
+  },
+  {
+    "id": "ac.transfer_power_source",
+    "name": "transfer_power_source",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.transfer_switch"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["활성 입력(path_role) 전환, 하류 순간 단절 가능"]
+  },
+  {
+    "id": "ac.start_generator",
+    "name": "start_generator",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.generator"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["oper_state→up(무부하 가동)"],
+    "inverse": "ac.stop_generator"
+  },
+  {
+    "id": "ac.stop_generator",
+    "name": "stop_generator",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.generator"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["부하 중이면 하류 `POWERED_BY` 경로 dead"],
+    "inverse": "ac.start_generator"
+  },
+  {
+    "id": "ac.run_ups_self_test",
+    "name": "run_ups_self_test",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.ups"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["배터리 일시 방전, 결과 claim"]
+  },
+  {
+    "id": "ac.bypass_ups",
+    "name": "bypass_ups",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.ups"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["bypass_state→on_bypass, 보호 부하가 무보호(ride-through 소실)"],
+    "inverse": "ac.exit_ups_bypass"
+  },
+  {
+    "id": "ac.exit_ups_bypass",
+    "name": "exit_ups_bypass",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.ups"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["bypass_state→normal"],
+    "inverse": "ac.bypass_ups"
+  },
+  {
+    "id": "ac.open_breaker",
+    "name": "open_breaker",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.circuit_breaker"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_circuit"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["state→open, 하류 `POWERED_BY` 경로 dead"],
+    "inverse": "ac.close_breaker"
+  },
+  {
+    "id": "ac.close_breaker",
+    "name": "close_breaker",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.circuit_breaker"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_circuit"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["state→closed"],
+    "inverse": "ac.open_breaker"
+  },
+  {
+    "id": "ac.turn_on_outlet",
+    "name": "turn_on_outlet",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.pdu_outlet"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["power_state→on"],
+    "inverse": "ac.turn_off_outlet"
+  },
+  {
+    "id": "ac.turn_off_outlet",
+    "name": "turn_off_outlet",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.pdu_outlet"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["power_state→off, 해당 경로의 소비자 경로 dead"],
+    "inverse": "ac.turn_on_outlet"
+  },
+  {
+    "id": "ac.cycle_outlet",
+    "name": "cycle_outlet",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.pdu_outlet"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["off→on, 일시 dead"]
+  },
+  {
+    "id": "ac.install_device",
+    "name": "install_device",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack_pdu"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.patch_panel"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_shelf"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["신규 `MOUNTED_IN`(Rack, position), lifecycle→installed"],
+    "inverse": "ac.remove_device"
+  },
+  {
+    "id": "ac.remove_device",
+    "name": "remove_device",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack_pdu"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.patch_panel"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_shelf"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["`MOUNTED_IN` 종료, 대상 oper_state→unknown"],
+    "inverse": "ac.install_device"
+  },
+  {
+    "id": "ac.decommission_device",
+    "name": "decommission_device",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack_pdu"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.patch_panel"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_shelf"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["lifecycle→retired, 모든 입력 링크 종료(이력 보존), 식별자 valid_to 종료"]
+  },
+  {
+    "id": "ac.replace_component",
+    "name": "replace_component",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cpu"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.memory_module"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.drive"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_controller"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_adapter"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.accelerator"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.pcie_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_supply"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.fan"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.baseboard"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.bmc"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.transceiver"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.line_card"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.battery_bank"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["구 객체 retired + 신 객체 생성(`REPLACES`), 그룹 멤버 일시 −1"]
+  },
+  {
+    "id": "ac.reseat_component",
+    "name": "reseat_component",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cpu"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.memory_module"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.drive"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_controller"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_adapter"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.accelerator"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.pcie_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_supply"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.fan"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.baseboard"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.bmc"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.transceiver"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.line_card"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.battery_bank"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["일시 dead 후 alive 복귀"]
+  },
+  {
+    "id": "ac.connect_cable",
+    "name": "connect_cable",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cable"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["`TERMINATES_AT` 생성"],
+    "inverse": "ac.disconnect_cable"
+  },
+  {
+    "id": "ac.disconnect_cable",
+    "name": "disconnect_cable",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cable"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["`TERMINATES_AT` 종료 → 해당 링크 down"],
+    "inverse": "ac.connect_cable"
+  },
+  {
+    "id": "ac.update_firmware",
+    "name": "update_firmware",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.bmc"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_adapter"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.drive"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_controller"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.ups"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_supply"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`Firmware.version` 변경, 재시작 동반 가능(대상 일시 dead/degraded)"],
+    "inverse": "ac.rollback_firmware"
+  },
+  {
+    "id": "ac.rollback_firmware",
+    "name": "rollback_firmware",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.bmc"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_adapter"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.drive"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_controller"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.ups"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.power_supply"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`Firmware.version` 이전 값"],
+    "inverse": "ac.update_firmware"
+  },
+  {
+    "id": "ac.set_locator_led",
+    "name": "set_locator_led",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.drive"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack_pdu"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["indicator_led 변경(현장 작업 보조)"]
+  },
+  {
+    "id": "ac.set_power_cap",
+    "name": "set_power_cap",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["power_limit_w 설정(성능 저하 가능)"],
+    "inverse": "ac.clear_power_cap"
+  },
+  {
+    "id": "ac.clear_power_cap",
+    "name": "clear_power_cap",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["power_limit_w 해제"],
+    "inverse": "ac.set_power_cap"
+  },
+  {
+    "id": "ac.set_fan_mode",
+    "name": "set_fan_mode",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["팬 정책 변경"]
+  },
+  {
+    "id": "ac.disable_interface",
+    "name": "disable_interface",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": [
+      "admin_state→down, 해당 엔드의 `CABLED_TO` 간선 제거, 소속 `Lag` alive 멤버 −1"
+    ],
+    "inverse": "ac.enable_interface"
+  },
+  {
+    "id": "ac.enable_interface",
+    "name": "enable_interface",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["admin_state→up"],
+    "inverse": "ac.disable_interface"
+  },
+  {
+    "id": "ac.set_lag_min_links",
+    "name": "set_lag_min_links",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.lag"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`min_alive` 변경(임계 하회 시 Lag dead)"]
+  },
+  {
+    "id": "ac.add_lag_member",
+    "name": "add_lag_member",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.lag"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`MEMBER_OF` 추가"],
+    "inverse": "ac.remove_lag_member"
+  },
+  {
+    "id": "ac.remove_lag_member",
+    "name": "remove_lag_member",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.lag"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`MEMBER_OF` 종료, 용량 감소"],
+    "inverse": "ac.add_lag_member"
+  },
+  {
+    "id": "ac.add_vlan_to_interface",
+    "name": "add_vlan_to_interface",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.lag"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`ALLOWS_VLAN` 추가"],
+    "inverse": "ac.remove_vlan_from_interface"
+  },
+  {
+    "id": "ac.remove_vlan_from_interface",
+    "name": "remove_vlan_from_interface",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.lag"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`ALLOWS_VLAN` 종료, 해당 VLAN 경로 제거"],
+    "inverse": "ac.add_vlan_to_interface"
+  },
+  {
+    "id": "ac.clear_routing_session",
+    "name": "clear_routing_session",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.routing_session"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["session_state 일시 down→재수립, 경로 재수렴"]
+  },
+  {
+    "id": "ac.isolate_device",
+    "name": "isolate_device",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["장치를 경로 계산에서 제외(트래픽 드레인), oper_state 유지"],
+    "inverse": "ac.rejoin_device"
+  },
+  {
+    "id": "ac.rejoin_device",
+    "name": "rejoin_device",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["경로 계산에 복귀"],
+    "inverse": "ac.isolate_device"
+  },
+  {
+    "id": "ac.failover_ha_pair",
+    "name": "failover_ha_pair",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.ha_pair"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.mlag_domain"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.firewall"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.load_balancer_appliance"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["active/standby 역할 교체(`MEMBER_OF` role), 일시 단절"],
+    "inverse": "ac.failback_ha_pair"
+  },
+  {
+    "id": "ac.failback_ha_pair",
+    "name": "failback_ha_pair",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.ha_pair"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.mlag_domain"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.firewall"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.load_balancer_appliance"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["원 역할 복귀"],
+    "inverse": "ac.failover_ha_pair"
+  },
+  {
+    "id": "ac.create_volume",
+    "name": "create_volume",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_pool"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`StorageVolume` 생성 + `BACKED_BY`"],
+    "inverse": "ac.delete_volume"
+  },
+  {
+    "id": "ac.delete_volume",
+    "name": "delete_volume",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_volume"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["객체 retired, 의존 `Datastore`/`PersistentVolume`/`VirtualDisk` dead"]
+  },
+  {
+    "id": "ac.extend_volume",
+    "name": "extend_volume",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_volume"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.file_system"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_disk"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["capacity 증가"]
+  },
+  {
+    "id": "ac.map_volume",
+    "name": "map_volume",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_volume"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.initiator_group"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`EXPORTED_TO` 생성"],
+    "inverse": "ac.unmap_volume"
+  },
+  {
+    "id": "ac.unmap_volume",
+    "name": "unmap_volume",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_volume"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`EXPORTED_TO` 종료, 소비자 경로 dead"],
+    "inverse": "ac.map_volume"
+  },
+  {
+    "id": "ac.create_snapshot",
+    "name": "create_snapshot",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_volume"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.file_system"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`StorageSnapshot` 생성"],
+    "inverse": "ac.delete_snapshot"
+  },
+  {
+    "id": "ac.delete_snapshot",
+    "name": "delete_snapshot",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_snapshot"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["스냅샷 retired"]
+  },
+  {
+    "id": "ac.restore_snapshot",
+    "name": "restore_snapshot",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.storage_snapshot"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["원본 현재 데이터 덮어씀, 일시 offline"]
+  },
+  {
+    "id": "ac.fail_over_replication",
+    "name": "fail_over_replication",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.replication_group"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["소스/대상 역할 교체"],
+    "inverse": "ac.fail_back_replication"
+  },
+  {
+    "id": "ac.fail_back_replication",
+    "name": "fail_back_replication",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.replication_group"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["원 역할 복귀"],
+    "inverse": "ac.fail_over_replication"
+  },
+  {
+    "id": "ac.create_virtual_machine",
+    "name": "create_virtual_machine",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.compute_cluster"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.hypervisor_host"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.resource_pool"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.vm_template"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`VirtualMachine`+`VirtualDisk`+`VirtualNic` 생성, `RUNS_ON`"],
+    "inverse": "ac.delete_virtual_machine"
+  },
+  {
+    "id": "ac.delete_virtual_machine",
+    "name": "delete_virtual_machine",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["VM과 소유 Disk/Nic/Snapshot retired, 의존 서비스 dead"]
+  },
+  {
+    "id": "ac.clone_virtual_machine",
+    "name": "clone_virtual_machine",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.vm_template"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["새 VM 생성 + `CLONED_FROM`"],
+    "inverse": "ac.delete_virtual_machine"
+  },
+  {
+    "id": "ac.migrate_virtual_machine",
+    "name": "migrate_virtual_machine",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": [
+      "`RUNS_ON` 대상 교체(라이브이면 무중단, 아니면 일시 down), Datastore 이동 시 `BACKED_BY` 변경"
+    ]
+  },
+  {
+    "id": "ac.resize_virtual_machine",
+    "name": "resize_virtual_machine",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["vcpu/memory 변경(재부팅 필요 가능)"]
+  },
+  {
+    "id": "ac.create_vm_snapshot",
+    "name": "create_vm_snapshot",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`VmSnapshot` 생성"],
+    "inverse": "ac.delete_vm_snapshot"
+  },
+  {
+    "id": "ac.delete_vm_snapshot",
+    "name": "delete_vm_snapshot",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.vm_snapshot"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["스냅샷 retired"]
+  },
+  {
+    "id": "ac.revert_vm_snapshot",
+    "name": "revert_vm_snapshot",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.vm_snapshot"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["현재 상태 폐기, VM 재시작"]
+  },
+  {
+    "id": "ac.attach_virtual_disk",
+    "name": "attach_virtual_disk",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`VirtualDisk` 추가"],
+    "inverse": "ac.detach_virtual_disk"
+  },
+  {
+    "id": "ac.detach_virtual_disk",
+    "name": "detach_virtual_disk",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_disk"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`VirtualDisk` 분리, 사용 중이면 VM degraded/dead"],
+    "inverse": "ac.attach_virtual_disk"
+  },
+  {
+    "id": "ac.evacuate_host",
+    "name": "evacuate_host",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.hypervisor_host"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": [
+      "호스트 상 VM의 `RUNS_ON` 이동(HA 용량 소비), host maintenance_state→in_maintenance"
+    ],
+    "inverse": "ac.exit_maintenance_mode"
+  },
+  {
+    "id": "ac.scale_workload",
+    "name": "scale_workload",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.workload"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["desired_replicas 변경, `Pod` 생성/삭제, 그룹 `n` 변화"]
+  },
+  {
+    "id": "ac.restart_workload",
+    "name": "restart_workload",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.workload"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["순차 재시작(롤링): 파드 일시 dead, 그룹 alive 감소"]
+  },
+  {
+    "id": "ac.rollback_workload",
+    "name": "rollback_workload",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.workload"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["이전 리비전으로 교체"]
+  },
+  {
+    "id": "ac.delete_pod",
+    "name": "delete_pod",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.pod"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["파드 retired, 컨트롤러가 새 파드 생성(새 uid)"]
+  },
+  {
+    "id": "ac.evict_pod",
+    "name": "evict_pod",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.pod"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`DisruptionBudget` 준수하며 제거 후 재스케줄(`RUNS_ON` 변경)"]
+  },
+  {
+    "id": "ac.cordon_node",
+    "name": "cordon_node",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cluster_node"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["schedulable→false (기존 파드 유지)"],
+    "inverse": "ac.uncordon_node"
+  },
+  {
+    "id": "ac.uncordon_node",
+    "name": "uncordon_node",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cluster_node"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["schedulable→true"],
+    "inverse": "ac.cordon_node"
+  },
+  {
+    "id": "ac.drain_node",
+    "name": "drain_node",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.cluster_node"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": [
+      "cordon + 노드 위 모든 파드 evict(`RUNS_ON` 이동), `DisruptionBudget` 위반 시 차단"
+    ],
+    "inverse": "ac.uncordon_node"
+  },
+  {
+    "id": "ac.start_service",
+    "name": "start_service",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.os_service"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.software_instance"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.database_instance"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["state→active"],
+    "inverse": "ac.stop_service"
+  },
+  {
+    "id": "ac.stop_service",
+    "name": "stop_service",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.os_service"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.software_instance"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.database_instance"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["state→inactive, 의존 `DEPENDS_ON`/`REALIZED_BY` 역방향 dead"],
+    "inverse": "ac.start_service"
+  },
+  {
+    "id": "ac.restart_service",
+    "name": "restart_service",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.os_service"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.software_instance"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.database_instance"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["일시 inactive→active"]
+  },
+  {
+    "id": "ac.renew_certificate",
+    "name": "renew_certificate",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.certificate"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["신규 `Certificate`+`SECURED_BY` 교체(재로드 순간 영향 가능)"]
+  },
+  {
+    "id": "ac.add_dns_record",
+    "name": "add_dns_record",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.dns_zone"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`DnsRecord` 생성"],
+    "inverse": "ac.remove_dns_record"
+  },
+  {
+    "id": "ac.remove_dns_record",
+    "name": "remove_dns_record",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.dns_record"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["레코드 retired, 해당 이름 의존 경로 dead"],
+    "inverse": "ac.add_dns_record"
+  },
+  {
+    "id": "ac.update_dns_record",
+    "name": "update_dns_record",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.dns_record"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["`RESOLVES_TO` 변경"]
+  },
+  {
+    "id": "ac.enable_pool_member",
+    "name": "enable_pool_member",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.lb_pool_member"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["member_state→enabled, 풀 alive 멤버 +1"],
+    "inverse": "ac.disable_pool_member"
+  },
+  {
+    "id": "ac.disable_pool_member",
+    "name": "disable_pool_member",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.lb_pool_member"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["member_state→disabled(draining), 풀 alive 멤버 −1"],
+    "inverse": "ac.enable_pool_member"
+  },
+  {
+    "id": "ac.promote_database_replica",
+    "name": "promote_database_replica",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.database_instance"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.database_cluster"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["instance_role 교체, 일시 쓰기 단절"]
+  },
+  {
+    "id": "ac.backup_database",
+    "name": "backup_database",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.database_instance"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.database"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["백업 부하, 결과 claim"]
+  },
+  {
+    "id": "ac.restore_database",
+    "name": "restore_database",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.database"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "data_loss",
+    "physical": false,
+    "declared_effects": ["데이터 덮어씀"]
+  },
+  {
+    "id": "ac.schedule_maintenance",
+    "name": "schedule_maintenance",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.schedulable"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`MaintenanceWindow` 생성 + `APPLIES_TO`"],
+    "inverse": "ac.cancel_maintenance"
+  },
+  {
+    "id": "ac.cancel_maintenance",
+    "name": "cancel_maintenance",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.maintenance_window"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["approval_state→cancelled"],
+    "inverse": "ac.schedule_maintenance"
+  },
+  {
+    "id": "ac.set_maintenance_mode",
+    "name": "set_maintenance_mode",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.schedulable"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["maintenance_state→in_maintenance, 알림 억제"],
+    "inverse": "ac.exit_maintenance_mode"
+  },
+  {
+    "id": "ac.exit_maintenance_mode",
+    "name": "exit_maintenance_mode",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.schedulable"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["maintenance_state→normal"],
+    "inverse": "ac.set_maintenance_mode"
+  },
+  {
+    "id": "ac.acknowledge_alarm",
+    "name": "acknowledge_alarm",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["경보 ack 표시"]
+  },
+  {
+    "id": "ac.set_label",
+    "name": "set_label",
+    "applies_to": [
+      {
+        "kind": "any"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["labels 변경"]
+  },
+  {
+    "id": "ac.register_unknown_resolution",
+    "name": "register_unknown_resolution",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.unknown_object"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`UnknownObject`를 실제 객체로 병합(`entity_event`)"]
+  },
+  {
+    "id": "ac.get_status",
+    "name": "get_status",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["없음(관측 claim 생성)"]
+  },
+  {
+    "id": "ac.get_configuration",
+    "name": "get_configuration",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false
+  },
+  {
+    "id": "ac.get_inventory",
+    "name": "get_inventory",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.hypervisor_host"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.container_cluster"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtualization_manager"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["구성요소·링크 관측 claim"]
+  },
+  {
+    "id": "ac.get_metrics",
+    "name": "get_metrics",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false
+  },
+  {
+    "id": "ac.get_logs",
+    "name": "get_logs",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.os_service"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.pod"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.container"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false
+  },
+  {
+    "id": "ac.get_alarms",
+    "name": "get_alarms",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["경보 claim"]
+  },
+  {
+    "id": "ac.get_sensor_readings",
+    "name": "get_sensor_readings",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.sensor"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.rack"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.room"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.aisle"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`last_value` 갱신"]
+  },
+  {
+    "id": "ac.get_firmware_inventory",
+    "name": "get_firmware_inventory",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.bmc"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`Firmware` claim"]
+  },
+  {
+    "id": "ac.get_topology_neighbors",
+    "name": "get_topology_neighbors",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`ADJACENT_TO` claim(lldp)"]
+  },
+  {
+    "id": "ac.trace_path",
+    "name": "trace_path",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.ip_address"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.endpoint"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["없음(경로 계산 결과)"]
+  },
+  {
+    "id": "ac.test_connectivity",
+    "name": "test_connectivity",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.interface"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.ip_address"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.endpoint"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.routing_session"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false
+  },
+  {
+    "id": "ac.run_health_check",
+    "name": "run_health_check",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.manageable"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false
+  },
+  {
+    "id": "ac.run_diagnostics",
+    "name": "run_diagnostics",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.drive"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.memory_module"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["하드웨어 자가진단 결과 claim"]
+  },
+  {
+    "id": "ac.inspect_certificate",
+    "name": "inspect_certificate",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.certificate"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.endpoint"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`not_after` 등 claim"]
+  },
+  {
+    "id": "ac.rescan_storage",
+    "name": "rescan_storage",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.hypervisor_host"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.operating_system"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["`EXPORTED_TO`/장치 관측 갱신"]
+  },
+  {
+    "id": "ac.preview_impact",
+    "name": "preview_impact",
+    "applies_to": [
+      {
+        "kind": "any"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": [
+      "없음 — 대상이 dead/제거되면 무엇이 영향받는지 what-if 산출(다른 액션의 `declared effect`를 입력으로 사용)"
+    ]
+  },
+  {
+    "id": "ac.verify_redundancy",
+    "name": "verify_redundancy",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.redundancy_group"
+      }
+    ],
+    "mutates": false,
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["없음 — alive/spare/공통 원인 보고"]
+  },
+  {
+    "id": "ac.power_on",
+    "name": "power_on",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "none",
+    "physical": false,
+    "declared_effects": ["power_state→on"],
+    "inverse": "ac.power_off"
+  },
+  {
+    "id": "ac.power_off",
+    "name": "power_off",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.storage_array"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["power_state→off, 의존 대상 dead(그룹 규칙 적용)"],
+    "inverse": "ac.power_on"
+  },
+  {
+    "id": "ac.graceful_shutdown",
+    "name": "graceful_shutdown",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.operating_system"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "reversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["OS 정지 후 off"],
+    "inverse": "ac.power_on"
+  },
+  {
+    "id": "ac.restart",
+    "name": "restart",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.operating_system"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.bmc"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.hypervisor_host"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.software_instance"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.database_instance"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["일시 dead 후 alive(대상에 따라 하위 `RUNS_ON` 전부 일시 dead)"]
+  },
+  {
+    "id": "ac.power_cycle",
+    "name": "power_cycle",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.chassis"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["하드 off→on"]
+  },
+  {
+    "id": "ac.force_reset",
+    "name": "force_reset",
+    "applies_to": [
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.virtual_machine"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "service_affecting",
+    "physical": false,
+    "declared_effects": ["OS 정리 없이 리셋"]
+  },
+  {
+    "id": "ac.inspect_on_site",
+    "name": "inspect_on_site",
+    "applies_to": [
+      {
+        "kind": "trait",
+        "ref": "tr.locatable"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.physical_server"
+      },
+      {
+        "kind": "type",
+        "ref": "ot.network_device"
+      }
+    ],
+    "mutates": true,
+    "reversibility": "irreversible",
+    "disruption": "none",
+    "physical": true,
+    "declared_effects": ["없음(현장 관찰 → fact claim 승격 근거)"]
+  }
+]

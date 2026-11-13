@@ -2,6 +2,6 @@ doc: "README.md"
 target: "package.json"
 hash: "26b41f6091bdbba8"
 date: "2026-11-13"
-note: "계획 변경 반영"
-text_changed: false
-doc_hash: "5f43a736e2379c57"
+note: "core.model 추가 반영"
+text_changed: true
+doc_hash: "fa2a4202fe8922ff"

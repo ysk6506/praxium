@@ -1,0 +1,1066 @@
+{
+  "layer": "hardware",
+  "types": [
+    {
+      "id": "ot.chassis",
+      "type_no": 42,
+      "name": "Chassis",
+      "traits": [
+        "tr.common",
+        "tr.serialized",
+        "tr.locatable",
+        "tr.rack_mountable",
+        "tr.powered",
+        "tr.cooled",
+        "tr.manageable",
+        "tr.sensed"
+      ],
+      "description": "물리 섀시(랙마운트 1U 박스도 포함, 선택)",
+      "standard_ref": "Redfish Chassis",
+      "properties": [
+        {
+          "id": "pr.chassis.chassis_type",
+          "attr_no": 194,
+          "name": "chassis_type",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": [
+            "rack_mount",
+            "blade",
+            "enclosure",
+            "stand_alone",
+            "sled",
+            "shelf",
+            "drawer",
+            "module",
+            "storage_enclosure",
+            "power_strip",
+            "immersion_tank",
+            "other"
+          ]
+        },
+        {
+          "id": "pr.chassis.power_state",
+          "attr_no": 195,
+          "name": "power_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["on", "off", "unknown"]
+        },
+        {
+          "id": "pr.chassis.indicator_led",
+          "attr_no": 196,
+          "name": "indicator_led",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["off", "lit", "blinking", "unknown"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.redfish_chassis_uuid"
+        }
+      ]
+    },
+    {
+      "id": "ot.blade_enclosure",
+      "type_no": 43,
+      "name": "BladeEnclosure",
+      "parent": "ot.chassis",
+      "traits": [],
+      "description": "블레이드·슬레드 수용 섀시",
+      "standard_ref": "Redfish ChassisType Enclosure/Blade",
+      "properties": [
+        {
+          "id": "pr.blade_enclosure.bay_count",
+          "attr_no": 197,
+          "name": "bay_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.blade_enclosure.interconnect_count",
+          "attr_no": 198,
+          "name": "interconnect_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.chassis_bay",
+      "type_no": 44,
+      "name": "ChassisBay",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "섀시 내 베이(블레이드/슬롯)",
+      "standard_ref": "NetBox Device Bay",
+      "properties": [
+        {
+          "id": "pr.chassis_bay.bay_index",
+          "attr_no": 199,
+          "name": "bay_index",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.chassis_bay.bay_kind",
+          "attr_no": 200,
+          "name": "bay_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["blade", "sled", "io_module", "psu", "fan", "drive"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.chassis_bay.bay_index"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.physical_server",
+      "type_no": 45,
+      "name": "PhysicalServer",
+      "traits": [
+        "tr.common",
+        "tr.serialized",
+        "tr.hosts",
+        "tr.powered",
+        "tr.cooled",
+        "tr.manageable",
+        "tr.schedulable",
+        "tr.has_firmware",
+        "tr.network_attached",
+        "tr.addressable",
+        "tr.rack_mountable",
+        "tr.hardware_assembly"
+      ],
+      "description": "물리 컴퓨트 시스템(OS가 올라가는 하드웨어 논리 단위)",
+      "standard_ref": "Redfish ComputerSystem; OTel host; NetBox Device",
+      "properties": [
+        {
+          "id": "pr.physical_server.system_uuid",
+          "attr_no": 201,
+          "name": "system_uuid",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.physical_server.hostname",
+          "attr_no": 202,
+          "name": "hostname",
+          "value_type": "vt.fqdn",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.physical_server.power_state",
+          "attr_no": 203,
+          "name": "power_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["on", "off", "powering_on", "powering_off", "unknown"],
+          "required": true
+        },
+        {
+          "id": "pr.physical_server.form_factor",
+          "attr_no": 204,
+          "name": "form_factor",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": ["rack", "blade", "sled", "tower", "other"]
+        },
+        {
+          "id": "pr.physical_server.cpu_sockets",
+          "attr_no": 205,
+          "name": "cpu_sockets",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.physical_server.total_cores",
+          "attr_no": 206,
+          "name": "total_cores",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.physical_server.total_memory_gib",
+          "attr_no": 207,
+          "name": "total_memory_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.physical_server.boot_mode",
+          "attr_no": 208,
+          "name": "boot_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["uefi", "legacy", "unknown"]
+        },
+        {
+          "id": "pr.physical_server.role",
+          "attr_no": 209,
+          "name": "role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["compute", "storage", "network_function", "management", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.physical_server.system_uuid"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.bmc_mac"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.redfish_system_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.baseboard",
+      "type_no": 46,
+      "name": "Baseboard",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.serialized"],
+      "description": "메인보드/FRU 보드",
+      "standard_ref": "OpenConfig FRU/BACKPLANE/MIDPLANE",
+      "properties": [
+        {
+          "id": "pr.baseboard.board_kind",
+          "attr_no": 210,
+          "name": "board_kind",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": ["motherboard", "backplane", "midplane", "riser"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.cpu",
+      "type_no": 47,
+      "name": "Cpu",
+      "traits": ["tr.common", "tr.serialized"],
+      "description": "프로세서(소켓 단위)",
+      "standard_ref": "Redfish Processor; OpenConfig CPU; OTel host.cpu",
+      "properties": [
+        {
+          "id": "pr.cpu.socket_id",
+          "attr_no": 211,
+          "name": "socket_id",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.cpu.vendor",
+          "attr_no": 212,
+          "name": "vendor",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.cpu.model_name",
+          "attr_no": 213,
+          "name": "model_name",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.cpu.architecture",
+          "attr_no": 214,
+          "name": "architecture",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": ["x86_64", "aarch64", "ppc64le", "other"]
+        },
+        {
+          "id": "pr.cpu.cores",
+          "attr_no": 215,
+          "name": "cores",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cpu.threads",
+          "attr_no": 216,
+          "name": "threads",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cpu.max_speed_mhz",
+          "attr_no": 217,
+          "name": "max_speed_mhz",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "MHz"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.cpu.socket_id"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.memory_module",
+      "type_no": 48,
+      "name": "MemoryModule",
+      "traits": ["tr.common", "tr.serialized"],
+      "description": "메모리 모듈(DIMM)",
+      "properties": [
+        {
+          "id": "pr.memory_module.slot_name",
+          "attr_no": 218,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.memory_module.capacity_gib",
+          "attr_no": 219,
+          "name": "capacity_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.memory_module.memory_type",
+          "attr_no": 220,
+          "name": "memory_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ddr4", "ddr5", "hbm", "pmem", "other"]
+        },
+        {
+          "id": "pr.memory_module.speed_mts",
+          "attr_no": 221,
+          "name": "speed_mts",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "MT/s"
+        },
+        {
+          "id": "pr.memory_module.ecc",
+          "attr_no": 222,
+          "name": "ecc",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.memory_module.slot_name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.drive",
+      "type_no": 49,
+      "name": "Drive",
+      "traits": ["tr.common", "tr.serialized", "tr.sensed", "tr.has_firmware"],
+      "description": "디스크/SSD/NVMe",
+      "standard_ref": "OpenConfig STORAGE",
+      "properties": [
+        {
+          "id": "pr.drive.slot_name",
+          "attr_no": 223,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.drive.media_type",
+          "attr_no": 224,
+          "name": "media_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["hdd", "ssd", "nvme", "other"]
+        },
+        {
+          "id": "pr.drive.protocol",
+          "attr_no": 225,
+          "name": "protocol",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["sata", "sas", "nvme", "other"]
+        },
+        {
+          "id": "pr.drive.capacity_gb",
+          "attr_no": 226,
+          "name": "capacity_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.drive.life_remaining_pct",
+          "attr_no": 227,
+          "name": "life_remaining_pct",
+          "value_type": "vt.number",
+          "change_class": "dynamic"
+        },
+        {
+          "id": "pr.drive.rotational_speed_rpm",
+          "attr_no": 228,
+          "name": "rotational_speed_rpm",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "rpm"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.drive.slot_name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.storage_controller",
+      "type_no": 50,
+      "name": "StorageController",
+      "traits": ["tr.common", "tr.serialized", "tr.has_firmware"],
+      "description": "서버 내 RAID/HBA/NVMe 컨트롤러",
+      "properties": [
+        {
+          "id": "pr.storage_controller.slot_name",
+          "attr_no": 229,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.storage_controller.controller_kind",
+          "attr_no": 230,
+          "name": "controller_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["raid", "hba", "nvme", "other"]
+        },
+        {
+          "id": "pr.storage_controller.supported_raid_levels",
+          "attr_no": 231,
+          "name": "supported_raid_levels",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.storage_controller.cache_mib",
+          "attr_no": 232,
+          "name": "cache_mib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "MiB"
+        },
+        {
+          "id": "pr.storage_controller.battery_state",
+          "attr_no": 233,
+          "name": "battery_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["ok", "degraded", "absent", "unknown"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.storage_controller.slot_name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.network_adapter",
+      "type_no": 51,
+      "name": "NetworkAdapter",
+      "traits": ["tr.common", "tr.serialized", "tr.has_firmware"],
+      "description": "NIC/HBA/DPU 카드",
+      "standard_ref": "Redfish NetworkAdapter",
+      "properties": [
+        {
+          "id": "pr.network_adapter.slot_name",
+          "attr_no": 234,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.network_adapter.adapter_kind",
+          "attr_no": 235,
+          "name": "adapter_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["nic", "hba_fc", "converged", "dpu", "hca_ib"]
+        },
+        {
+          "id": "pr.network_adapter.port_count",
+          "attr_no": 236,
+          "name": "port_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.network_adapter.speed_mbps",
+          "attr_no": 237,
+          "name": "speed_mbps",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "Mbps"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.network_adapter.slot_name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.accelerator",
+      "type_no": 52,
+      "name": "Accelerator",
+      "traits": ["tr.common", "tr.serialized", "tr.sensed", "tr.has_firmware"],
+      "description": "GPU/FPGA/NPU 등 가속기",
+      "properties": [
+        {
+          "id": "pr.accelerator.accelerator_kind",
+          "attr_no": 238,
+          "name": "accelerator_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["gpu", "fpga", "npu", "dpu", "other"]
+        },
+        {
+          "id": "pr.accelerator.memory_gib",
+          "attr_no": 239,
+          "name": "memory_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.accelerator.interconnect",
+          "attr_no": 240,
+          "name": "interconnect",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["pcie", "nvlink", "infinity_fabric", "none", "other"]
+        },
+        {
+          "id": "pr.accelerator.power_limit_w",
+          "attr_no": 241,
+          "name": "power_limit_w",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "W"
+        },
+        {
+          "id": "pr.accelerator.pcie_slot",
+          "attr_no": 242,
+          "name": "pcie_slot",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.accelerator.pcie_slot"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.pcie_device",
+      "type_no": 53,
+      "name": "PcieDevice",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.serialized"],
+      "description": "기타 PCIe 카드",
+      "properties": [
+        {
+          "id": "pr.pcie_device.slot_name",
+          "attr_no": 243,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.pcie_device.device_class",
+          "attr_no": 244,
+          "name": "device_class",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.pcie_device.link_width",
+          "attr_no": 245,
+          "name": "link_width",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.pcie_device.slot_name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.power_supply",
+      "type_no": 54,
+      "name": "PowerSupply",
+      "traits": ["tr.common", "tr.serialized", "tr.powered", "tr.sensed", "tr.has_firmware"],
+      "description": "장비 전원 모듈",
+      "standard_ref": "OpenConfig POWER_SUPPLY",
+      "properties": [
+        {
+          "id": "pr.power_supply.slot_name",
+          "attr_no": 246,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.power_supply.rated_w",
+          "attr_no": 247,
+          "name": "rated_w",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "W"
+        },
+        {
+          "id": "pr.power_supply.input_type",
+          "attr_no": 248,
+          "name": "input_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ac", "dc"]
+        },
+        {
+          "id": "pr.power_supply.input_voltage_v",
+          "attr_no": 249,
+          "name": "input_voltage_v",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "V"
+        },
+        {
+          "id": "pr.power_supply.efficiency_class",
+          "attr_no": 250,
+          "name": "efficiency_class",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.power_supply.output_w",
+          "attr_no": 251,
+          "name": "output_w",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "W"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.power_supply.slot_name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.fan",
+      "type_no": 55,
+      "name": "Fan",
+      "traits": ["tr.common", "tr.sensed"],
+      "description": "팬/팬 트레이",
+      "standard_ref": "Redfish Fans; OpenConfig FAN",
+      "properties": [
+        {
+          "id": "pr.fan.slot_name",
+          "attr_no": 252,
+          "name": "slot_name",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.fan.speed_rpm",
+          "attr_no": 253,
+          "name": "speed_rpm",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "rpm"
+        },
+        {
+          "id": "pr.fan.fan_kind",
+          "attr_no": 254,
+          "name": "fan_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["fan", "fan_tray"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.fan.slot_name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.bmc",
+      "type_no": 56,
+      "name": "Bmc",
+      "traits": ["tr.common", "tr.serialized", "tr.addressable", "tr.has_firmware"],
+      "description": "대역외 관리 컨트롤러/섀시 매니저",
+      "properties": [
+        {
+          "id": "pr.bmc.manager_type",
+          "attr_no": 255,
+          "name": "manager_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["bmc", "enclosure_manager", "rack_manager", "service_processor"]
+        },
+        {
+          "id": "pr.bmc.management_protocols",
+          "attr_no": 256,
+          "name": "management_protocols",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.bmc.mac_address",
+          "attr_no": 257,
+          "name": "mac_address",
+          "value_type": "vt.mac_address",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.bmc.mac_address"
+            }
+          ],
+          "strength": "strong",
+          "scheme": "is.bmc_mac"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.redfish_manager_uuid"
+        }
+      ]
+    },
+    {
+      "id": "ot.firmware",
+      "type_no": 57,
+      "name": "Firmware",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "구성요소에 설치된 펌웨어/마이크로코드 버전",
+      "properties": [
+        {
+          "id": "pr.firmware.firmware_kind",
+          "attr_no": 258,
+          "name": "firmware_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["bios", "bmc", "nic", "drive", "cpld", "psu", "hba", "other"],
+          "required": true
+        },
+        {
+          "id": "pr.firmware.version",
+          "attr_no": 259,
+          "name": "version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.firmware.release_date",
+          "attr_no": 260,
+          "name": "release_date",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.firmware.updateable",
+          "attr_no": 261,
+          "name": "updateable",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.firmware.target_component",
+          "attr_no": 262,
+          "name": "target_component",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.firmware.target_component"
+            },
+            {
+              "property": "pr.firmware.firmware_kind"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}
