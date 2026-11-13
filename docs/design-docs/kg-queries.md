@@ -7,7 +7,7 @@ follows:
 ---
 # KG에 묻기
 
-KG에 묻는 길 전체의 설계예요. 닫힌 질의 열둘, 모든 답에 붙는 봉투, 영향 범위의 뜻, 그것을 만드는 투영과 질의 엔진, 바깥으로 내는 면 셋을 정해요. 코드는 아직 없어요(백엔드는 Go로 정해졌어요. ADR-0006). 타입 이름은 영어이고, 표준 모델의 최종 이름은 ADR-0007의 표준 모델을 따라요. 이 문서의 이름은 예시예요.
+KG에 묻는 길 전체의 설계예요. 닫힌 질의 열셋, 모든 답에 붙는 봉투, 영향 범위의 뜻, 그것을 만드는 투영과 질의 엔진, 바깥으로 내는 면 셋을 정해요. 코드는 아직 없어요(백엔드는 Go로 정해졌어요. ADR-0006). 타입 이름은 영어이고, 표준 모델의 최종 이름은 ADR-0007의 표준 모델을 따라요. 이 문서의 이름은 예시예요.
 
 ## 1. 무엇에 답하나
 
@@ -18,23 +18,23 @@ KG에 묻는 길 전체의 설계예요. 닫힌 질의 열둘, 모든 답에 붙
 
 ```
  사람·시스템 ─┐                       ┌ SQL: find get neighbors(얕게) containment changes
- 에이전트(MCP) ┼ API ─ 닫힌 질의 열둘 ─┤      versions quality health scopes
+ 에이전트(MCP) ┼ API ─ 닫힌 질의 열셋 ─┤      versions quality health scopes competency
  다른 시스템 ──┘   + 봉투 + 읽기 권한 거르기 └ 엔진: impact exposure paths
  변경의 이어짐 ─▶ 질의 엔진(여러 벌): 메모리의 투영을 늘어난 만큼만 고친다
  (부르는 쪽은 엔진을 직접 부르지 않는다. 저장소가 멈춰도 올려 둔 투영으로 답한다)
 ```
 
-## 3. 닫힌 질의 열둘
+## 3. 닫힌 질의 열셋
 
-HTTP 길은 아직 없으므로 질의의 이름으로만 적어요. 칸 이름은 계약 단위(`core.contract`)가 그대로 쓸 이름이에요.
+HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/questions/<질의 이름>`), 여기서는 질의의 이름과 칸으로 적어요. 칸 이름은 계약 단위(`core.contract`)가 그대로 쓸 이름이에요.
 
 ### 공통 입력
 
 | 칸 | 뜻 |
 |---|---|
-| `graph_version` | 물을 KG 버전의 ID("그 버전 때"). 없으면 "지금"(변경의 맨 끝). 어느 자리까지 반영했는지가 봉투에 적힌다 |
+| `kg_version_id` | 물을 KG 버전의 ID("그 버전 때"). 없으면 "지금"(변경의 맨 끝). 어느 자리까지 반영했는지가 봉투에 적힌다 |
 | `view` | 보는 기준. `as_designed`(`configured`와 `declared`만) 또는 `as_observed`(관측이 있으면 관측, 없으면 설계. 기본) |
-| `max_staleness` | 이보다 오래된 속성 값은 쓰지 말라는 한도. 넘은 것은 답에 표시된다 |
+| `max_staleness` | 이보다 오래된 속성 값과 관측은 쓰지 말라는 한도. 영향 범위는 넘은 관측을 **모름으로 읽고** 설계 기준(`as_designed`)으로 물러나며, 그렇게 했다고 답에 표시한다(5.7절) |
 | `limit`, `cursor` | 쪽 넘김. `limit`의 기본 50, 상한 500은 가정이다. `cursor`는 `change_seq`와 정렬 키를 품어서, 쪽 도중에 변경이 들어와도 같은 자리로 이어진다 |
 | `shape` | `summary`(수와 묶음 먼저, 기본) 또는 `items`. MCP에서는 `detail`로 `brief`와 `full`을 고른다 |
 
@@ -50,12 +50,13 @@ HTTP 길은 아직 없으므로 질의의 이름으로만 적어요. 칸 이름�
 | `impact` | `dead`, `dead_links`, `site_failure`, `dead_scope_id`, `mode`(`both`, `facts_only`, `with_assumptions`), `shape` | 5.7절 | 시드 수 상한 1,000은 가정. 결과는 요약을 먼저 주고 `items`는 쪽 넘김 |
 | `exposure` | `dead`(없어도 된다), `scope_id`, `target_object_id`, `cut_order_max` | `tight_groups`, `cut_sets` | 차수 기본 2, 상한 3은 가정. `target_object_id`가 있을 때만 `cut_sets`를 센다 |
 | `changes` | `from_version`/`to_version`(버전 ID) 또는 `from_change_seq`/`to_change_seq`, `object_types`, `source_id`, `scope_id`, `change_kinds`(`added`, `changed`, `retired`) | 타입별·종류별 수, 그다음 `items`(`object_id`나 `link_id`, `change_kind`, `changed_fields`, `change_seq`) | 변경의 기록에서 바로 읽는다. 쪽 넘김 |
-| `versions` | `since_version`(버전 ID), `limit` | 봉한 버전들(`graph_version`, `change_seq`, `created_at`, `definition_version`, `raw_record_set_id`, `change_counts`, `is_head`, `projection_state`: `ready`, `building`, `none`) | 쪽 넘김 |
-| `quality` | `scope_id`, `source_id`, `metric`, `graph_version` | 지표와 목표. 자세한 칸은 ADR-0013이 정한다([데이터 관측성](data-observability.md)) | 지표 수가 적다 |
+| `versions` | `since_version`(버전 ID), `limit` | 봉한 버전들(`kg_version_id`, `change_seq`, `created_at`, `definition_version`, `raw_record_set_id`, `change_counts`, `is_head`, `projection_state`: `ready`, `building`, `none`) | 쪽 넘김 |
+| `quality` | `scope_id`, `source_id`, `metric`, `kg_version_id` | 지표와 목표. 자세한 칸은 ADR-0013이 정한다([데이터 관측성](data-observability.md)) | 지표 수가 적다 |
 | `health` | `resource`(소스, 데이터셋, 공급, 타입, 속성, 링크 타입, 파이프라인), `scope_id` | 자원의 건강과 까닭. 자세한 칸은 ADR-0013이 정한다 | 낮은 비용 |
 | `scopes` | `scope_id`(없으면 목록) | 저장해 둔 범위(타입, 포함 뿌리, 거름), 만든 무리, 이 버전에서의 `count` | 쪽 넘김. 읽기만 한다. 만드는 길은 10절 |
+| `competency` | `question_ids`, `object_ids`, `filter`, `group_by`, `mode`, `breakdown`, `history`, `include` | 충족률, 못 채운 객체, 빈 곳. 자세한 칸은 ADR-0015([역량 질문](competency-questions.md)) | 객체마다의 표시를 세어 답한다. `scope_id` 대신 `filter` |
 
-`impact`와 `exposure`와 `paths`는 비용이 큰 질의예요. 질의마다 **비용 등급**(낮음: `get`, `find`, `versions`, `quality`, `health`, `scopes` / 중간: `neighbors`, `containment`, `changes`, `paths` / 높음: `impact`, `exposure`)과 시간 예산을 선언하고, 넘기면 잘라서 `truncated`로 알려요. 숫자는 재서 정해요.
+`impact`와 `exposure`와 `paths`는 비용이 큰 질의예요. 질의마다 **비용 등급**(낮음: `get`, `find`, `versions`, `quality`, `health`, `scopes` / 중간: `neighbors`, `containment`, `changes`, `paths`, `competency` / 높음: `impact`, `exposure`)과 시간 예산을 선언하고, 넘기면 잘라서 `truncated`로 알려요. 숫자는 재서 정해요.
 
 ## 4. 모든 답에 붙는 봉투
 
@@ -66,13 +67,13 @@ HTTP 길은 아직 없으므로 질의의 이름으로만 적어요. 칸 이름�
 | `freshness` | 그 답에 쓰인 소스 중 **가장 나쁜 값**: `worst_source_id`, `oldest_age_seconds`, `state`(`fresh`, `stale`, `no_expected_period`). `stale`은 기대 주기의 두 배를 넘긴 것(ADR-0011, 가정) |
 | `evidence` | `min_grade`(쓰인 입력 중 가장 낮은 등급), `counts`(`fact`, `assumed`, `unknown`), `kinds`(쓰인 근거의 종류: `configured`, `observed`, `declared`, `derived`), `observation_age_seconds` |
 | `completeness` | `total`, `returned`, `truncated`, `reason`(`limit`, `time_budget`, `size_budget`), `next_cursor` |
-| `hidden` | `hidden_passed_count`: 답이 지난 가려진 객체의 수. 내용은 없다 |
+| `hidden` | `hidden_passed_count`(답이 지난 가려진 객체의 수)와 `hidden_reached_count`(답이 닿은 끝에 있는 가려진 객체의 수). 내용은 없다 |
 | `health_hint` | 이 답에 쓰인 것 가운데 건강이 나쁜 것의 수와 목록(ADR-0013) |
 | `model_limits` | 이 답이 모르는 것의 문구(14절) |
 | `warnings` | 예: `capacity_group_unknown`(용량 묶음을 아직 따지지 않아 모름으로 줬다) |
 | `data` | 질의마다의 본문 |
 
-**고정.** 나쁜 데이터가 들어왔을 때 운영 역할이 "물음은 버전 V로 답하라"고 고정할 수 있어요(ADR-0014). 데이터를 되감지 않고 읽는 쪽만 고정하고, 답의 `as_of.pinned`에 표시돼요.
+**고정.** 나쁜 데이터가 들어왔을 때 `operator`(전체 범위)나 `admin`이 "물음은 버전 V로 답하라"고 고정할 수 있어요(`serving_pin`, ADR-0014). 데이터를 되감지 않고 읽는 쪽만 고정하고, 답의 `as_of.pinned`에 표시돼요.
 
 지어낸 예시예요. 6.1절의 `impact` 봉투예요.
 
@@ -82,7 +83,7 @@ served_by: {role: engine, built_at: "2031-03-04T02:14:30Z"}
 freshness: {worst_source_id: "src-facility-sheet", oldest_age_seconds: 5400, state: fresh}
 evidence: {min_grade: assumed, counts: {fact: 41, assumed: 1, unknown: 0}, kinds: [configured, declared], observation_age_seconds: null}
 completeness: {total: 3, returned: 3, truncated: false, reason: null, next_cursor: null}
-hidden: {hidden_passed_count: 0}
+hidden: {hidden_passed_count: 0, hidden_reached_count: 0}
 health_hint: {unhealthy_inputs: 0}
 model_limits: ["전원이 끊긴 뒤 UPS 배터리가 버티는 시간은 따지지 않는다"]
 warnings: []
@@ -188,7 +189,7 @@ data:
 | `groups_touched` | 영향을 받은 묶음(`group_id`, `mode`, `value`, `alive`, `unknown`, `n`, `min_alive`, `slack`) |
 | `reachability` | 범위 안의 닻 수, 닿지 못하게 된 객체 요약. 닻이 없으면 `network`는 `unknown` |
 
-`exposed`와 `degraded`는 **시드 때문에 달라진 객체**에만 나와요. 원래 여유가 0인 묶음은 `exposure`가 맡아요. `max_staleness`를 넘은 관측을 쓴 입력은 `stale_inputs`로 표시돼요. 영향 범위가 아픈 데이터(소스가 멈춤 등)에 기대면 `data_health`로 알려요(ADR-0013).
+`exposed`와 `degraded`는 **시드 때문에 달라진 객체**에만 나와요. 원래 여유가 0인 묶음은 `exposure`가 맡아요. `max_staleness`를 넘은 관측은 **쓰지 않고** 그 입력을 모름으로 읽어요. 설계 기준(`as_designed`)에 입력이 있으면 그것으로 물러나요. 답의 `stale_inputs`와 `warnings`(`stale_observation_not_used`)가 그렇게 했다고 알려요. 영향 범위가 아픈 데이터(소스가 멈춤 등)에 기대면 `data_health`로 알려요(ADR-0013).
 
 ## 6. 손으로 따라가기
 
@@ -307,26 +308,27 @@ ADR-0006의 역할 넷(API, 일꾼, 질의 엔진, 수집기) 중 하나예요. 
 
 | 방향 | 칸 |
 |---|---|
-| API → 엔진 | 질의 이름, 인자(`view`, `max_staleness` 포함), `graph_version`(없으면 지금), 시간·크기 예산, 요청 ID |
+| API → 엔진 | 질의 이름, 인자(`view`, `max_staleness` 포함), `kg_version_id`(없으면 지금), 시간·크기 예산, 요청 ID |
 | 엔진 → API | 봉투와 본문(객체 ID, 타입, 등급을 담아서 API가 읽기 권한으로 거를 수 있게), 또는 오류(`version_not_loaded`+들고 있는 범위, `budget_exceeded`+좁히는 법, `too_many_seeds`) |
 | 엔진 → 조율 | 반영한 `change_seq`, 준비 상태, 투영의 `built_at` |
 
-- **무엇이 SQL로 가고 무엇이 엔진으로 가나.** 기본 갈래는 이래요. `find`, `get`, `changes`, `versions`, `quality`, `health`, `scopes`, `containment`는 SQL, `neighbors`는 1~3걸음까지 SQL, `paths`, `impact`, `exposure`는 엔진이에요. 어디까지가 SQL로 되는지는 지어낸 규모에서 SQL(재귀)로도 구현해 재서 가려요. SQL이 목표를 맞추면 엔진의 범위가 줄 수 있어요. 개발 환경에서는 한 프로세스에 역할을 함께 띄워도 포트를 거쳐요.
+- **엔진이 올려 두는 버전.** 지금 것과 고정된(`serving_pin`) 버전만이에요. 그 밖의 옛 버전의 `impact`는 요청하면 따로 올려 답하고, 올리는 동안은 `version_not_loaded`(들고 있는 범위 포함)로 답해요. `find`, `get`, `changes` 같은 SQL 질의는 옛 버전도 바로 읽어요.
+- **무엇이 SQL로 가고 무엇이 엔진으로 가나.** 기본 갈래는 이래요. `find`, `get`, `changes`, `versions`, `quality`, `health`, `scopes`, `containment`, `competency`(표시를 세는 것)는 SQL, `neighbors`는 1~3걸음까지 SQL, `paths`, `impact`, `exposure`는 엔진이에요. 어디까지가 SQL로 되는지는 지어낸 규모에서 SQL(재귀)로도 구현해 재서 가려요. SQL이 목표를 맞추면 엔진의 범위가 줄 수 있어요. 개발 환경에서는 한 프로세스에 역할을 함께 띄워도 포트를 거쳐요.
 
 ## 10. 면 셋
 
 ### HTTP API
 
-- **버전이 있는 계약.** 깨는 변경은 새 버전으로 내요. 계약은 `core.contract`가 쥐고, 길은 구현하는 변경에서 등록해요.
+- **버전이 있는 계약.** 깨는 변경은 새 버전으로 내요. 계약은 `core.contract`가 쥐고, 길의 규칙과 목록은 [REST API 설계](rest-api.md)(ADR-0016)가 정해요.
 - **시스템 계정.** 사람이 아닌 시스템이 쓰는 계정이 같은 역할(ADR-0012)을 받아요.
 - **부르는 쪽마다 한도.** 초당 요청 수, 동시 요청 수, 계산 예산(비용 등급별)을 계정마다 정해요. 기본값은 재서 정해요. 넘으면 오류가 기다릴 시간이나 좁히는 법을 알려요.
-- **대량으로 읽기(`bulk_read`).** 범위 하나(`scope_id`)를 한 버전에서 통째로 읽는 길이에요. 낱개 질의를 수만 번 부르게 두지 않으려는 것이에요. 쪽 단위 흐름으로 내려받고, 같은 봉투가 붙고, 가림이 적용되고, 쓴 사람이 감사에 남아요(ADR-0012). 열한 질의가 아니라 따로 둔 길이에요.
+- **대량으로 읽기(`bulk_read`).** 범위 하나(`scope_id`)를 한 버전에서 통째로 읽는 길이에요. 낱개 질의를 수만 번 부르게 두지 않으려는 것이에요. 쪽 단위 흐름으로 내려받고, 같은 봉투가 붙고, 가림이 적용되고, 쓴 사람이 감사에 남아요(ADR-0012). 열셋 질의가 아니라 따로 둔 길이에요.
 - **쓰임 기록.** 누가 어느 타입과 속성을 읽었는지를 시스템 계정마다 API가 남겨요(보통의 읽기는 감사 기록이 아니라 쓰임의 통계예요. 민감한 속성과 대량으로 읽기는 감사에 남아요. ADR-0012, ADR-0013). 정의의 계보가 "누가 쓰나"를 답하는 데 써요.
 - **쓰는 길 둘.** 저장해 둔 범위는 정의가 아니에요. 보기 역할이 API로 만들고, 만든 무리의 것이에요. KG가 틀렸다는 **문제를 알리는 길**도 API에 있고 문제 목록으로 들어가요(ADR-0011). 둘 다 KG를 바꾸지 않아요.
 
 ### 읽기 전용 MCP
 
-- 툴 목록은 닫힌 질의와 같은 이름이에요(`find` ... `scopes`, `health`). `bulk_read`는 에이전트에게 주지 않아요. MCP는 **읽기만** 해요. 범위를 만들거나 문제를 알리는 길은 없고, 서버에는 쓰는 길이 없어요. 툴 설명에 읽기 전용임을 밝혀요.
+- 툴 목록은 닫힌 질의 열셋과 같은 이름이에요(`find` ... `scopes`, `health`, `competency`). `bulk_read`는 에이전트에게 주지 않아요. MCP는 **읽기만** 해요. 범위를 만들거나 문제를 알리는 길은 없고, 서버에는 쓰는 길이 없어요. 툴 설명에 읽기 전용임을 밝혀요.
 - 답의 크기에 **상한**이 있고 넘으면 잘라서 더 좁게 묻는 법을 안내해요. 상한의 숫자는 가정이고 재서 정해요.
 - **간단히와 자세히**(`detail`: `brief`, `full`). 기본은 간단히예요. 사람이 읽는 이름과 짧은 ID를 함께 줘요.
 - **오류가 다음에 할 일을 말한다.** 예:
@@ -345,10 +347,11 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 ## 11. 읽기 권한과 가려진 것
 
-권한의 규칙은 [읽기 권한과 역할](access-control.md)과 ADR-0012가 정해요. 도메인이라는 단위는 없고, 읽기는 권한 부여의 범위(객체 타입, 민감 등급의 한도)예요. 여기서는 영향 범위에만 닿는 것만 적어요.
+권한의 규칙은 [읽기 권한과 역할](access-control.md)과 ADR-0012가 정해요. 읽기는 권한 부여의 범위(객체 타입, 민감 등급의 한도)예요. 여기서는 영향 범위에만 닿는 것만 적어요.
 
 - **계산은 전체 그래프에서 한다.** 부르는 쪽에 따라 계산이 달라지면 결과가 틀려요. **엔진의 답을 API가 거르는 것**이 읽기 권한이에요(투영의 읽기 권한용 표를 써서요).
-- 영향 범위가 읽을 수 없는 객체를 지나면, 그 객체는 결과 목록에 나오지 않고 `hidden.hidden_passed_count`에 **수로만** 잡혀요. 내용도 타입도 주지 않아요. `via`는 "가려진 객체"로 적혀요.
+- 영향 범위가 읽을 수 없는 객체를 지나면 `hidden.hidden_passed_count`에, 영향받는 끝에 닿으면 `hidden.hidden_reached_count`에 **수로만** 잡혀요. 그 객체는 결과 목록에 나오지 않고 내용도 타입도 주지 않아요. `via`는 "가려진 객체"로 적혀요.
+- **거른 뒤의 쪽은 거른 수로 채워요.** API가 엔진의 쪽을 거르고 남은 것이 `limit`보다 적으면 엔진에 더 물어 `limit`까지 채워 돌려줘요(`completeness.total`은 거른 뒤의 값).
 - `paths`가 가려진 객체를 지나면 그 걸음은 "가려진 객체 하나"로 보여요.
 - 가려진 속성은 "가려짐"으로 보이고, 그것을 찾는 조건으로 쓰면 거절해요. 읽을 수 없는 객체의 ID를 `dead`에 넣으면 "찾을 수 없음"과 같은 모양으로 답해요.
 
@@ -373,27 +376,24 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 **작은 시제품에서 잰 것**이 있어요(조건과 한계가 붙어요). 코어 둘, 메모리 8GB의 기계에서 지어낸 그래프(객체 약 5백만, 링크 약 2천만, 이중화 묶음 약 50만)를 단일 스레드로 돌렸더니, 문턱 세기만 하는 영향 범위의 응답이 가벼운 연쇄는 p50 수 마이크로초, p95 백 마이크로초 안팎, 무거운 연쇄(결과 수만 객체)는 p95 몇 밀리초였어요. 덧붙임 겹을 얹으면 p95가 12~50% 늘고 다진 뒤 원래로 돌아왔어요(다짐은 2천만 링크에서 0.2~0.3초). **한계:** 합성 데이터, 저장소 입출력 없음, 동시 질의 안 쟀음, 그리고 ECMP·BGP·LACP가 든 이어짐 계산이 없는 모양이에요. 그래서 **제품 책임자의 숫자(1초, 수 초)를 채웠다고 말하지 않아요.** 그 모양으로는 재지 않았어요. 안 되면 먼저 파라미터, 색인, 나눔을 고쳐 보고, 그래도 안 되면 제품 책임자에게 **잰 숫자와 함께** 말해요. 숫자를 슬그머니 바꾸지 않아요.
 
-## 13. 큰 KG를 화면에 보이는 일
+## 13. 큰 KG를 보이는 일
 
-화면의 설계(그림, 레이아웃, 드릴다운)는 클로즈 베타의 일이에요. 여기서는 서버가 **묶음과 수를 먼저 주는 것**만 정해요. `neighbors`의 `groups`, `containment`의 `children_summary`와 `subtree_size`, `impact`의 `counts_by_result`, `counts_by_type`, `counts_by_parent`가 그것이에요. 알파의 화면은 이 답을 표와 트리로 보이는 만큼만 만들어요.
+화면은 다른 저장소의 일이에요(ADR-0016). 여기서는 API가 **묶음과 수를 먼저 주는 것**만 정해요. `neighbors`의 `groups`, `containment`의 `children_summary`와 `subtree_size`, `impact`의 `counts_by_result`, `counts_by_type`, `counts_by_parent`가 그것이에요.
 
 ## 14. 알고 가는 한계와 가정
 
 - 시간은 따지지 않아요(UPS와 냉방이 버티는 시간, 넘겨받는 시간, 수렴 시간). `delay_class` 표시만 해요. 부하가 옮겨 가는 연쇄 과부하, 부분 성능 저하, 해시로 나뉘는 ECMP의 쏠림도 따지지 않아요. 봉투의 `model_limits`에 문구가 붙어요.
 - 구조와 상태는 KG에 있고 관측의 나이가 답에 붙어요. 수치의 시계열은 KG에 쌓지 않아요. 소프트웨어 버그나 설정 오류는 모델링하지 않아요.
-- 엔진은 저장소가 멈추면 새 소스의 신선도를 모르고 마지막으로 받은 값으로 계산해요. 실제보다 최신으로 보일 수 있어요.
-- 고리에서 문턱 세기가 낙관적으로 틀린다는 말은 추론이에요. 기준 구현과의 대조가 이를 확인하는 방법이에요.
+- 엔진은 저장소가 멈추면 새 소스의 신선도를 모르고 마지막으로 받은 값으로 계산해요. 실제보다 최신으로 보일 수 있어요. 고리에서 문턱 세기가 낙관적으로 틀린다는 말은 추론이고, 기준 구현과의 대조가 이를 확인하는 방법이에요.
 - 숫자(한도, 차수, 시드 수, 걸음 수, 합격선, 메모리 배수)는 모두 재지 않은 가정이에요.
 
 ## 15. 아직 정하지 않은 것
 
-- 엔진이 "그 버전 때"와 고정된 옛 버전의 `impact`를 어디까지 들고 있나(바탕 판과 겹이 아는 범위 밖은 `version_not_loaded`).
-- `max_staleness`를 넘은 관측 입력을 영향 범위가 쓰지 않는지(모름으로 읽는지), 표시만 하는지. 지금은 표시만 해요.
-- API가 엔진의 답을 거른 뒤의 쪽 넘김(거른 수로 채울지).
+- 옛 버전의 `impact`를 따로 올리는 데 걸리는 시간과, 한 번에 올려 둘 수 있는 옛 버전의 수.
 - 투영 파일의 열 형식. 부르는 쪽마다 한도의 숫자, MCP 답의 크기 상한. 밀어 주기의 형식과 거름. 질의 언어를 열지는 닫힌 질의가 못 덮는 물음이 쌓인 뒤에 다시 봐요.
 
 ## 16. 관련 결정과 요구사항
 
-- ADR-0010(이 문서의 결정), ADR-0006(역할 넷, 정규 인코딩 해시), ADR-0007(채널, 링크의 뜻, 이중화 묶음, 근거 등급), ADR-0009(변경의 이어짐, 봉한 버전, 저장소), ADR-0011(가용성의 등급), ADR-0012(읽기 권한, 감사), ADR-0013(건강, `quality`, `health`), ADR-0014(정의의 계보).
+- ADR-0010(이 문서의 결정), ADR-0015(`competency`), ADR-0016(REST API), ADR-0006(역할 넷, 정규 인코딩 해시), ADR-0007(채널, 링크의 뜻, 이중화 묶음, 근거 등급), ADR-0009(변경의 이어짐, 봉한 버전, 저장소), ADR-0011(가용성의 등급), ADR-0012(읽기 권한, 감사), ADR-0013(건강, `quality`, `health`), ADR-0014(정의의 계보).
 - REQ-140, REQ-141, REQ-142, REQ-143, REQ-144, REQ-145, REQ-146.
-- 이웃 문서: [KG 모델](kg-model.md), [KG 저장과 버전](kg-storage.md), [KG 운영](kg-operations.md), [데이터 관측성](data-observability.md), [읽기 권한과 역할](access-control.md).
+- 이웃 문서: [REST API 설계](rest-api.md), [역량 질문](competency-questions.md), [KG 모델](kg-model.md), [KG 저장과 버전](kg-storage.md), [KG 운영](kg-operations.md), [데이터 관측성](data-observability.md), [읽기 권한과 역할](access-control.md).

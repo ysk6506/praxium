@@ -78,7 +78,7 @@ follows:
 | 쓰임 | `query_count`, `query_errors`, `query_latency_ms`, `answer_staleness` | 질의 종류(`detail_key`)마다 수, 오류, 응답 시간(분포), 답에 붙은 신선도(분포) | 건, ms, 초 | KG, 시스템 계정 | 같음 |
 | 쓰임 | `rate_limited_calls`, `bulk_reads` | 한도에 걸린 호출, 대량으로 읽기 | 번 | 시스템 계정 | 같음 |
 | 쓰임 | `unread_days` | **아무도 안 읽는 것**: 마지막으로 읽힌 뒤 지난 날 | 일 | 타입, 속성, 공급 | 같음 |
-| 충족 | `competency_fill_rate`, `competency_not_evaluated` | 역량 질문의 충족률(필요한 것을 다 채운 대상 객체 ÷ 대상 객체, `detail_key`가 필요의 걸음), 한도 때문에 따지지 못한 객체 수. 자세한 것은 ADR-0015 | 비율, 개 | 역량 질문 | 늘어난 만큼 고쳐서 배치든 흐름이든 같음. 속성으로 거른 값은 지표로 쌓지 않고 물을 때 계산 |
+| 충족 | `competency_fill_rate`, `competency_not_evaluated` | 역량 질문의 충족률(필요한 것을 다 채운 대상 객체 ÷ 대상 객체. 칸 `reading`이 `fact_only`와 `with_assumed`로 두 값을 가르고, `step_key`가 필요의 걸음, `group_key`가 `tracked_groupings`의 묶음), 한도 때문에 따지지 못한 객체 수. 자세한 것은 ADR-0015 | 비율, 개 | 역량 질문 | 늘어난 만큼 고쳐서 배치든 흐름이든 같음. 속성으로 거른 값은 지표로 쌓지 않고 물을 때 계산 |
 
 - 액션은 지금 타입의 목록뿐이라 정의의 바뀜(`definition_merges`와 타입의 상태 바뀜)으로 재요. 액션을 실행하는 자리는 E2E 프로세스를 구체화할 때 같은 틀에 채워요.
 - 이중화의 자세는 `exposure` 질의와 같은 계산이에요(ADR-0010). 질의 엔진이 자기 투영에서 세어 지표 주소로 내고, 일꾼이 거둬 지표 표에 쌓아요(엔진은 저장소에 쓰지 않아요). 가장 많이 바뀌는 객체는 지표가 아니라 `churn_top` 표(4.3절)에 값으로 남아요.
@@ -87,7 +87,7 @@ follows:
 
 ### 4.1 `metric_point`
 
-데이터의 지표는 제품 안에 저장해요. 화면과 API가 지난 흐름을 보여야 하고, KG 버전마다의 값이 남아야 해서예요. ADR-0011의 `quality_metric` 표는 이 표가 이어받아요.
+데이터의 지표는 제품 안에 저장해요. API가 지난 흐름을 보여야 하고, KG 버전마다의 값이 남아야 해서예요. ADR-0011의 `quality_metric` 표는 이 표가 이어받아요.
 
 | 칸 | 뜻 |
 |---|---|
@@ -95,13 +95,15 @@ follows:
 | `resource_kind` | `source` / `dataset` / `feed` / `pipeline` / `object_type` / `attribute` / `link_type` / `competency_question` / `kg` / `system_account` / `component`(제품 부품, 13절) |
 | `resource_id` | 정의 항목의 바뀌지 않는 `id`(이름이 아니에요. 이름을 바꿔도 이어져요) |
 | `detail_key` | 갈래. 닫힌 목록이나 정의 항목의 `id`예요(컬럼, 단계, 질의 이름, 기대 조건, 오류 코드, 이유). 행의 값은 안 돼요 |
+| `step_key`, `group_key` | 역량 질문의 지표만 써요. 몇째 걸음(`need_id`)과 미리 적어 둔 묶음의 값(`grouping_id`와 묶는 키). `detail_key`와 따로 있어서 걸음과 묶음을 함께 가를 수 있어요. 나머지 지표에는 비어 있어요 |
+| `reading` | `competency_fill_rate`만 써요. `fact_only`(사실만으로 채움)와 `with_assumed`(가정을 넣어 채움)로 두 값을 가르고, 나머지 지표에는 비어 있어요 |
 | `metric`, `window`, `window_start` | 3절의 이름, 구간의 길이(`run`, `1m`, `1h`, `1d`)와 시작 |
 | `value`, `numerator`, `denominator` | 값. 비율은 분자와 분모도 남겨요(분모가 바뀐 것을 알 수 있게) |
 | `buckets` | 분포 지표의 칸별 수(정해진 경계) |
 | `definition_set` | 이 값을 낸 정의 묶음(`D-142` 같은 번호) |
 | `kg_version`, `change_seq` | 봉한 버전의 ID와 이 구간이 닿은 끝 `change_seq`. 없을 수 있어요 |
 
-키는 (`kg_id`, `resource_kind`, `resource_id`, `detail_key`, `metric`, `window`, `window_start`)예요. 지표마다의 종류와 단위와 붙는 자원은 지표 목록(`metric_def`)에 제품이 실어요.
+키는 (`kg_id`, `resource_kind`, `resource_id`, `detail_key`, `step_key`, `group_key`, `reading`, `metric`, `window`, `window_start`)예요. 지표마다의 종류와 단위와 붙는 자원은 지표 목록(`metric_def`)에 제품이 실어요.
 
 진실은 PostgreSQL에 둬요. 지표, 쓰임 기록, 컬럼 통계가 PostgreSQL로 감당되지 않으면 분석용 저장소(열 단위)를 포트 뒤에 둬요. 그것은 끌어낸 것이고, 오래된 값은 오래된 것의 자리로 내려 둘 수 있어요(ADR-0009). 어느 제품인지는 구현하는 변경에서 재서 정해요.
 
@@ -170,7 +172,7 @@ follows:
 
 ### 5.4 계보를 따른 번짐과 뿌리 까닭
 
-번지는 길은 정의의 계보예요(ADR-0008): 소스 → 데이터셋 → 정제 → 공급 → 타입·속성 → 링크 정의 → 끌어낸 묶음 → 읽는 시스템 계정. 컬럼과 속성 단위까지 따라가므로, 컬럼 하나의 모양이 바뀌면 그 컬럼이 닿는 속성만 아파요.
+번지는 길은 정의의 계보예요(ADR-0014): 소스 → 데이터셋 → 정제 → 공급 → 타입·속성 → 링크 정의 → 끌어낸 묶음 → 읽는 시스템 계정. 컬럼과 속성 단위까지 따라가므로, 컬럼 하나의 모양이 바뀌면 그 컬럼이 닿는 속성만 아파요.
 
 - **아래로 번져요.** 자기 검사가 어긋난 자원에서 출발해 후손에게 `affected_upstream`과 `cause_refs`를 붙여요.
 - **거꾸로 올라가요(뿌리 까닭).** 어긋난 자원이 기대는 위쪽에도 어긋난 자원이 있으면, 더 위가 없는 어긋난 자원까지 올라가 그것을 뿌리로 적어요. 뿌리가 여럿이면 다 적어요.
@@ -190,7 +192,7 @@ follows:
 
 ## 6. 목표
 
-목표는 정의의 항목이에요(버전이 있고 제안과 승인을 거쳐요). 칸: `objective_id`(바뀌지 않는 `id`), `target`(붙는 자원: 공급, 타입, 속성, 역량 질문), `kind`(`freshness` 얼마 안에 / `completeness` 채워진 비율 이상 / `validity` 어김 비율 이하 / `volume` 받는 양이 최소~최대 안 / `competency_fill` 충족률 이상), `threshold`(종류에 맞는 값), `period`(못 지킨 비율을 세는 기간, 기본 28일), `allowed_miss`(기간 중 못 지켜도 되는 비율), `severity`.
+목표는 정의의 항목이에요(버전이 있고 제안과 승인을 거쳐요). 칸: `objective_id`(바뀌지 않는 `id`), `target`(붙는 자원: 공급, 타입, 속성, 역량 질문), `kind`(`freshness` 얼마 안에 / `fill_rate` 채워진 비율 이상 / `validity` 어김 비율 이하 / `volume` 받는 양이 최소~최대 안 / `competency_fill` 충족률 이상), `threshold`(종류에 맞는 값), `period`(못 지킨 비율을 세는 기간, 기본 28일), `allowed_miss`(기간 중 못 지켜도 되는 비율), `severity`.
 
 **못 지킨 비율의 계산.** 판정 간격마다(배치는 실행마다, 흐름과 신선도는 기본 5분, 가정) 목표를 "지킴 / 못 지킴 / 모름"으로 판정해요. 못 지킨 비율 = 못 지킨 수 ÷ (지킨 수 + 못 지킨 수). 모름은 분모에서 빼고 `unknown_share`로 따로 보여요(모름이 많으면 목표는 `unknown`). 남은 허용 = `allowed_miss` − 못 지킨 비율.
 
@@ -212,7 +214,7 @@ follows:
 - **평소**: 같은 요일, 같은 시간대의 지난 값 여럿(기본 4주, 가정)의 가운데 값(중앙값)과 흩어짐(중앙값에서의 절대 편차의 가운데 값).
 - **점수** = |지금 − 가운데 값| ÷ max(흩어짐 × 1.4826, 바닥). 바닥은 0으로 나누지 않게 하는 최소 폭(가운데 값의 5%와 1건 중 큰 것, 가정)이에요.
 - **판정**: 점수가 문턱(경고 4, 심각 6, 가정) 이상이고 차이가 최소 크기 이상일 때만 "평소와 다름"이에요(작은 수의 오탐을 막으려는 거예요). 지금 값, 가운데 값, 흩어짐, 점수, 바탕의 개수를 함께 남겨서 "왜"를 말해요.
-- **처음이라 지난 값이 없을 때**: 바탕이 최소 개수(기본 3, 가정)보다 적으면 판정은 `insufficient_history`이고 건강에 영향이 없어요. 화면과 답에는 "바탕을 쌓는 중"으로 보여요.
+- **처음이라 지난 값이 없을 때**: 바탕이 최소 개수(기본 3, 가정)보다 적으면 판정은 `insufficient_history`이고 건강에 영향이 없어요. 답에는 `insufficient_history`로 나오고 화면이 "바탕을 쌓는 중"이라고 써요.
 - **정의나 일정이 바뀐 직후**의 구간은 바탕을 끊지 않고 판정에 `definition_changed`를 붙여요. 알림 글에 "`D-142` 병합 뒤"가 함께 나와요.
 - **문턱의 기본값은 가정이에요.** 규칙마다 고칠 수 있고, 알파에서 거짓 알림과 놓친 것을 세어 고쳐요.
 
@@ -277,13 +279,13 @@ open ──확인함──▶ acknowledged ──잠시 끔(시간)──▶ sno
 
 - 실행: `sync_succeeded`, `sync_failed`, `sync_waiting_confirmation`, `stream_held`, `stream_released`, `schedule_paused`, `schedule_resumed`, `schema_changed`, `guard_blocked`, `guard_confirmed`
 - 건강과 알림: `health_changed`, `alert_opened`, `alert_acknowledged`, `alert_snoozed`, `alert_escalated`, `alert_resolved`
-- 정의와 KG: `proposal_opened`, `definition_merged`, `definition_reverted`, `emergency_revert`, `type_status_changed`, `kg_version_sealed`, `read_pinned`, `read_unpinned`
+- 정의와 KG: `proposal_opened`, `definition_merged`, `definition_reverted`, `emergency_revert`, `type_status_changed`, `kg_version_sealed`, `serving_pinned`, `serving_unpinned`
 
 자원의 시간줄은 그 자원의 사건에 계보 위아래 자원의 사건을 고를 수 있게 합쳐요. 지표 선을 겹쳐 놓으면 "`D-142`가 들어간 뒤 `Interface`의 객체 수가 줄었다"를 눈으로 봐요.
 
 ## 10. 데이터 사고의 영향
 
-공급이나 소스가 아프면 무엇이 걸리는지를 둘로 답해요. (1) **정의의 계보**에서 후손을 모아요: 데이터셋, 공급, 컬럼 단위로 닿는 타입과 속성, 링크 정의, 끌어낸 묶음, 저장해 둔 범위. (2) **쓰임 기록**(`usage_record`)에서 그 타입·속성을 최근 N일(기본 30일, 가정) 안에 읽은 시스템 계정을 쓰임이 많은 순으로 모아요. 같은 계산이 고치기 전의 "무엇이 걸리나"(ADR-0008의 정의의 계보)와 한 길이에요. 화면에는 "이 소스가 아파서 타입 2개, 속성 11개, 끌어낸 묶음 1개, 계정 2개가 걸려요"로 보이고, 열면 목록이에요.
+공급이나 소스가 아프면 무엇이 걸리는지를 둘로 답해요. (1) **정의의 계보**에서 후손을 모아요: 데이터셋, 공급, 컬럼 단위로 닿는 타입과 속성, 링크 정의, 끌어낸 묶음, 저장해 둔 범위. (2) **쓰임 기록**(`usage_record`)에서 그 타입·속성을 최근 N일(기본 30일, 가정) 안에 읽은 시스템 계정을 쓰임이 많은 순으로 모아요. 같은 계산이 고치기 전의 "무엇이 걸리나"(ADR-0014의 정의의 계보)와 한 길이에요. 답은 "이 소스가 아파서 타입 2개, 속성 11개, 끌어낸 묶음 1개, 계정 2개가 걸려요"처럼 종류별 수를 먼저 주고, 열면 목록이에요.
 
 **영향 범위 질의의 답에 붙는 표시.** `impact`, `exposure`, `paths`의 답이 쓴 객체 타입, 링크 타입, 속성(채널의 입력)의 공급 중에 `failing`·`degraded`·`stale`이 있으면 답에 `data_health_notes`가 붙어요. 예: "이 답이 쓴 링크 타입 `MEMBER_OF`의 공급 `feed_lag_links`가 소스 `switch_inventory`의 인증 실패로 27시간 묵었어요". 표시는 타입·링크 타입 단위예요. 어느 객체가 묵었는지까지는 몰라요(값마다 출처를 저장하지 않아서예요, 17절). 관측을 쓴 답(`as_observed`)에는 관측의 나이도 함께 붙어요.
 
@@ -329,13 +331,13 @@ health(resource={kind: "object_type", id: "Interface"}, include=["cause", "reade
 - `reverts`, `emergency_reverts`, `post_review_overdue`: 되돌리기, 급할 때 되돌리기, 사후 검토 기한을 넘긴 수. `breaking_changes`: 깨는 변경의 수(KG).
 - `retired_type_in_use`: 물러났는데 매핑이나 객체가 아직 쓰는 타입(타입). `experimental_type_age_days`: `experimental`로 오래 머문 타입의 나이(타입).
 - `similar_type_pairs`: 이름·속성·식별 키가 겹쳐 비슷해 보이는 타입의 짝의 수. 비슷한 타입 찾기(ADR-0007)와 같은 계산이에요(KG).
-- `read_pin_age_s`: 묻는 쪽을 옛 버전에 고정해 둔 시간(KG).
+- `serving_pin_age_s`: 묻는 쪽을 옛 버전에 고정(`serving_pin`)해 둔 시간(KG).
 
 `unread_days`(3절)와 함께 모델 관리 역할(`model_steward`)에게 주기로 보여요. 병합 직전·직후의 지표를 `definition_set`으로 견줘 "정의 변경의 효과"를 봐요.
 
-## 15. 알파의 화면 범위
+## 15. 알파의 범위
 
-백엔드는 다 만들고 화면은 기능을 시험할 만큼만 둬요(ADR-0006). 자원의 건강 목록(상태, 자원 종류, 담당자로 거름) / 자원 하나의 건강(검사, 뿌리 까닭, 아래로 번진 것, 시간줄 목록) / 실행 목록과 상세(단계별 수, 견본) / 타입의 공급 표(ADR-0008의 표에 건강 칸이 들어 있어요) / 문제 목록(알림 포함, 확인함·잠시 끔). 알림 규칙과 목표의 편집은 API로만 하고(정의의 변경이라 제안을 타요), 충족률은 역량 질문 화면(ADR-0015)이 보이고, 계보 그림과 지표 차트는 클로즈 베타 때 설계해요.
+화면은 다른 저장소의 일이고(ADR-0016), 이 저장소의 알파는 모든 것이 API와 명령줄 클라이언트로 되는 거예요. API가 주는 보기: 자원의 건강 목록(상태, 자원 종류, 담당자로 거름) / 자원 하나의 건강(검사, 뿌리 까닭, 아래로 번진 것, 시간줄) / 실행 목록과 상세(단계별 수, 견본) / 타입의 공급 표(건강 칸이 들어 있어요) / 문제 목록(알림 포함, 확인함·잠시 끔). 알림 규칙과 목표의 편집은 정의의 변경이라 제안을 타요. 충족률은 `competency` 질의(ADR-0015)가 줘요. 계보 그림과 지표 차트는 화면 저장소가 클로즈 베타 때 설계해요.
 
 ## 16. 숫자는 가정이에요
 
@@ -367,6 +369,6 @@ health(resource={kind: "object_type", id: "Interface"}, include=["cause", "reade
 
 ## 19. 관련 결정과 요구사항
 
-- 결정: [ADR-0013](adr/0013-data-observability.md). 이어진 것은 ADR-0006(역할 셋, 알파), ADR-0007(근거 등급, 타입의 관리), ADR-0008(수 맞춤, 안전장치, 기대 조건, 정의의 계보), ADR-0009(변경의 이어짐, 신선도), ADR-0010(닫힌 질의, 답의 봉투, 변경 알림), ADR-0011(문제 목록, 신선도, 가용성), ADR-0012(역할, 담당자, 민감 등급), ADR-0014(알림 규칙과 목표를 정의로), ADR-0015(역량 질문과 충족률).
+- 결정: [ADR-0013](adr/0013-data-observability.md). 이어진 것은 ADR-0006(역할 넷, 언어), ADR-0007(근거 등급, 타입의 관리), ADR-0008(수 맞춤, 안전장치, 기대 조건), ADR-0009(변경의 이어짐, 신선도), ADR-0010(닫힌 질의, 답의 봉투, 변경 알림), ADR-0011(문제 목록, 신선도, 가용성), ADR-0012(역할, 담당자, 민감 등급), ADR-0014(정의의 계보, 알림 규칙과 목표를 정의로), ADR-0015(역량 질문과 충족률), ADR-0016(REST API).
 - 요구사항: REQ-180(여덟 자리의 신호), REQ-181(건강과 번짐, 뿌리 까닭), REQ-182(목표), REQ-183(평소와 다름), REQ-184(알림), REQ-185(실행 들여다보기와 시간줄), REQ-186(데이터 사고의 영향), REQ-187(`health`·`quality`와 건강 귀띔), REQ-188(지표의 저장과 내보내기), REQ-189(이중화의 자세, 출렁임, 안 읽히는 것). 넓혀진 것은 REQ-150~152.
-- 같이 읽을 문서: [KG 운영](kg-operations.md), [현실 데이터 받기](ingestion.md), [KG에 묻기](kg-queries.md), [KG의 저장과 버전](kg-storage.md), [KG의 모델](kg-model.md), [표준 모델](standard-model.md), [접근 제어](access-control.md).
+- 같이 읽을 문서: [KG 운영](kg-operations.md), [현실 데이터 받기](ingestion.md), [KG에 묻기](kg-queries.md), [KG의 저장과 버전](kg-storage.md), [KG의 모델](kg-model.md), [표준 모델](standard-model.md), [접근 제어](access-control.md), [REST API 설계](rest-api.md).

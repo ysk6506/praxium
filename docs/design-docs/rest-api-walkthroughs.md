@@ -12,14 +12,14 @@ follows:
 > **길과 칸은 다음 변경의 OpenAPI 문서에서 굳어요. 그때 바뀔 수 있어요.**
 
 ## 1. 영향 범위를 묻고 믿어도 되는지 확인하기 (읽기)
-화면의 운영자 `kim`(역할 `viewer`)이 "스위치 `sw-0417`이 죽으면 어디까지 번지나"를 알고 싶어요.
+화면의 운영자 `user_a`(역할 `viewer`)이 "스위치 `sw-0417`이 죽으면 어디까지 번지나"를 알고 싶어요.
 
 **1) 로그인과 "나".** 화면은 SSO에서 인증 코드 흐름과 PKCE로 증표를 받았어요. 요청마다 싣고, 먼저 "나"를 불러요.
 
 ```
 GET /v1/me          Authorization: Bearer <증표>
 → 200 {"data": {"subject": {"kind": "person", "subject_id": "sub_21"},
-                "grants": [{"role": "viewer", "scope": {"object_types": ["Server", "Switch", "Service"]}}], "bulk_read": false,
+                "grants": [{"role": "viewer", "scope": {"object_types": ["Server", "Switch", "Service"]}}], "bulk_read": false, "allowed_actions": ["read"],
                 "capabilities": {"api_version": "v1", "features": ["competency", "events_stream"]}}}
 ```
 
@@ -40,7 +40,7 @@ POST /v1/questions/impact
           "freshness": {"worst_source_id": "src_switch_inventory", "oldest_age_seconds": 97200, "state": "stale"},
           "evidence": {"min_grade": "assumed", "counts": {"fact": 5, "assumed": 7, "unknown": 0}},
           "completeness": {"total": 12, "returned": 2, "truncated": true, "reason": "limit", "next_cursor": "c_71Kd"},
-          "hidden": {"hidden_passed_count": 2},
+          "hidden": {"hidden_passed_count": 2, "hidden_reached_count": 0},
           "health_hint": {"has_unhealthy_inputs": true, "worst_state": "affected_upstream", "total": 1},
           "trace_id": "tr_0a9"}}
 ```
@@ -48,7 +48,7 @@ POST /v1/questions/impact
 화면이 봉투에서 읽는 것:
 - `freshness.state: stale`: 스위치 소스의 마지막 수신이 27시간 전이에요. 화면은 "묵은 구성 기준"이라고 쓰고, 이 문구는 화면의 말이에요.
 - `evidence.counts`: 사실 5, 가정 7이에요. 사실만으로는 하나만 죽고, 가정을 넣으면 셋이 죽어요.
-- `hidden.hidden_passed_count: 2`: 번지는 길에 `kim`이 못 읽는 객체 둘이 있어요. 내용은 안 줘요.
+- `hidden.hidden_passed_count: 2`(`hidden_reached_count`는 닿은 수예요): 번지는 길에 `user_a`이 못 읽는 객체 둘이 있어요. 내용은 안 줘요.
 - `completeness.truncated: true`: 12개 중 2개만 왔어요. `next_cursor`로 이어 받아요.
 
 **3) 다음 쪽.** 같은 입력에 `cursor`를 더해요.
@@ -71,7 +71,7 @@ GET /v1/health/source/src_switch_inventory?include=cause,readers
 **5) 알림을 받아요.** 화면은 건강의 바뀜을 기다려요.
 
 ```
-GET /v1/events/stream?kinds=health_changed&resource=source:src_switch_inventory
+GET /v1/events/stream?kinds=health_changed&resource=source:src_switch_inventory   Authorization: Bearer <증표>
 id: ev_000812
 event: health_changed
 data: {"resource": {"kind": "source", "id": "src_switch_inventory"}, "from": "failing", "to": "healthy"}
@@ -90,7 +90,7 @@ data: {"resource": {"kind": "source", "id": "src_switch_inventory"}, "from": "fa
 화면은 `code`와 `params`로 자기 글("30초 뒤에 다시 해 주세요")을 만들어요. `RateLimit` 머리의 모양은 초안을 따라요.
 
 ## 2. 일정을 고쳐 병합하기 (쓰기, 겹침 방지, 동시 수정, 작업, 승인)
-`kim`과 다른 사람 `lee`는 둘 다 `editor`이고 소스 `src_inventory`를 범위에 가져요. `park`은 그 소스를 범위에 가진 `approver`예요. 목표: 소스의 일정을 6시간마다로 바꿔요.
+`user_a`과 다른 사람 `user_b`는 둘 다 `editor`이고 소스 `src_inventory`를 범위에 가져요. `user_c`은 그 소스를 범위에 가진 `approver`예요. 목표: 소스의 일정을 6시간마다로 바꿔요.
 
 **1) 브랜치를 열어요.**
 
@@ -112,7 +112,7 @@ Content-Type: application/merge-patch+json
 → 200 ETag: "rev-18"
 ```
 
-**3) 동시에 고친 사람이 있을 때.** `lee`가 같은 항목을 `rev-17`에서 `PT4H`로 고쳐 보내요. 이미 `rev-18`이라 거절돼요.
+**3) 동시에 고친 사람이 있을 때.** `user_b`가 같은 항목을 `rev-17`에서 `PT4H`로 고쳐 보내요. 이미 `rev-18`이라 거절돼요.
 
 ```
 PATCH /v1/branches/br_12/items/itm_88        If-Match: "rev-17"
@@ -120,7 +120,7 @@ PATCH /v1/branches/br_12/items/itm_88        If-Match: "rev-17"
 → 412 {"code": "conflict.version_mismatch", "status": 412, "current_etag": "rev-18", "params": {"changed_fields": ["body.every"]}, "trace_id": "tr_1c"}
 ```
 
-`lee`의 화면은 다시 읽고 두 값을 나란히 보여 줘서 `lee`가 고르게 해요. `If-Match` 없이 보냈다면 428 `invalid_input.precondition_required`예요.
+`user_b`의 화면은 다시 읽고 두 값을 나란히 보여 줘서 `user_b`가 고르게 해요. `If-Match` 없이 보냈다면 428 `invalid_input.precondition_required`예요.
 
 **4) 제안을 만들고 검사해요.**
 
@@ -154,16 +154,16 @@ GET /v1/proposals/prop_31
 → {"data": {"status": "in_review", "blockers": [{"blocker": "approvals_missing", "params": {"item_id": "itm_88", "scope": "source:src_inventory"}}]}}
 ```
 
-**7) 승인.** `kim`이 자기가 고친 제안을 승인하려고 하면 거절돼요.
+**7) 승인.** `user_a`이 자기가 고친 제안을 승인하려고 하면 거절돼요.
 
 ```
-POST /v1/proposals/prop_31/approve   (kim, editor)       → 403 {"code": "permission.role_missing", ...}
-(`kim`이 `approver` 부여도 함께 가졌어도 자기가 고친 제안이라)  → 403 {"code": "permission.self_approval", ...}
-POST /v1/proposals/prop_31/approve   (park, approver)   Idempotency-Key: 5b2d-...
+POST /v1/proposals/prop_31/approve   (user_a, editor)       → 403 {"code": "permission.role_missing", ...}
+(`user_a`이 `approver` 부여도 함께 가졌어도 자기가 고친 제안이라)  → 403 {"code": "permission.self_approval", ...}
+POST /v1/proposals/prop_31/approve   (user_c, approver)   Idempotency-Key: 5b2d-...
 → 200 {"data": {"status": "approved", "approvals": [{"item_id": "itm_88", "by": "sub_44"}]}}
 ```
 
-`kim`은 제안이 보이는 사람이라 403(`permission.*`)을 받아요. 제안이 보이지 않는 사람이 같은 길을 부르면 404예요.
+`user_a`은 제안이 보이는 사람이라 403(`permission.*`)을 받아요. 제안이 보이지 않는 사람이 같은 길을 부르면 404예요.
 
 **8) 줄에 세우고 병합.**
 
@@ -183,10 +183,10 @@ POST /v1/proposals/prop_31/reverts   Idempotency-Key: aa01-...   {"emergency": f
 → 201 {"data": {"proposal_id": "prop_35", "origin": "revert", "reverts_proposal_id": "prop_31"}}
 ```
 
-그다음은 같은 검토, 승인, 줄이에요. 급한 되돌리기(`emergency: true`)는 `admin`이나 그 자리의 `approver`가 하고, 감사 기록에 `admin_override`가 남아요.
+그다음은 같은 검토, 승인, 줄이에요. 급한 되돌리기(`emergency: true`)는 `admin`이나, 그 제안이 고친 자리 전부를 범위에 가진 `approver`가 하고(`operator`는 못 해요), 감사 기록에 `admin_override`가 남아요.
 
 ## 3. 붙잡힌 흐름을 풀기 (사건, 운영, 작업)
-소스 `src_billing_stream`의 데이터셋 `ds_usage`는 `stream`으로 받아요. 받은 모양이 바뀌어 흐름이 붙잡혔어요. 운영자 `choi`(`operator`)가 일해요.
+소스 `src_billing_stream`의 데이터셋 `ds_usage`는 `stream`으로 받아요. 받은 모양이 바뀌어 흐름이 붙잡혔어요. 운영자 `user_d`(`operator`)가 일해요.
 
 **1) 알림이 와요.** 사건의 길에서:
 
@@ -202,13 +202,13 @@ data: {"alert_id": "alt_72", "resource": {"kind": "source", "id": "src_billing_s
 ```
 GET /v1/feed-flows?filter[flow_state][equals]=held
 → {"data": [{"flow_id": "flow_3", "source_id": "src_billing_stream", "dataset_id": "ds_usage", "flow_state": "held",
-             "held_reason": "schema_changed", "held_since_seq": 5120, "queued_changes": 842, "read_position": "p-5962"}], "meta": {...}}
+             "held_reason": "schema_changed", "held_since_seq": 5120, "queued_changes": 842, "source_cursor": "p-5962"}], "meta": {...}}
 POST /v1/alerts/alt_72/acknowledge   Idempotency-Key: 31b0-...   → 200 {"data": {"state": "acknowledged"}}
 ```
 
 받는 것은 멈추지 않아서 `queued_changes`가 늘어요(원본 기록에 쌓여요). 다른 소스의 적용은 그대로예요.
 
-**3) 까닭이 정의 탓이에요.** 받은 모양(컬럼 `usage_kwh`가 `usage`로)이 바뀌어 매핑이 안 맞아요. 풀기 전에 정의를 고쳐야 해요. `choi`는 `operator`라서 정의를 못 고치므로 `editor`에게 알려요. 문제의 `open-proposal` 길로 브랜치와 제안을 열 수 있어요(`editor`가 해요).
+**3) 까닭이 정의 탓이에요.** 받은 모양(컬럼 `usage_kwh`가 `usage`로)이 바뀌어 매핑이 안 맞아요. 풀기 전에 정의를 고쳐야 해요. `user_d`는 `operator`라서 정의를 못 고치므로 `editor`에게 알려요. 문제의 `open-proposal` 길로 브랜치와 제안을 열 수 있어요(`editor`가 해요).
 
 ```
 POST /v1/issues/iss_204/open-proposal   (editor)   Idempotency-Key: d7e0-...
@@ -217,7 +217,7 @@ POST /v1/issues/iss_204/open-proposal   (editor)   Idempotency-Key: d7e0-...
 
 브랜치에서 매핑을 고치고(2의 흐름), 병합돼요. 병합이 확정된 자리부터 새 정의로 흘러요.
 
-**4) 시험해 봐요: 다시 돌리기.** `choi`는 쌓인 842건이 새 정의에서 어떻게 되는지 소스에 다시 가지 않고 봐요.
+**4) 시험해 봐요: 다시 돌리기.** `user_d`는 쌓인 842건이 새 정의에서 어떻게 되는지 소스에 다시 가지 않고 봐요.
 
 ```
 POST /v1/sync-runs/run_88/replays   Idempotency-Key: 4f4f-...   {"branch_id": "br_20"}
@@ -237,7 +237,7 @@ POST /v1/feed-flows/flow_3/release    Idempotency-Key: 90c2-...
 (사건) job_finished, health_changed: failing → healthy
 ```
 
-풀기는 쌓인 변경을 받은 순서대로 적용해요. 흐름이 `held`가 아니면 409 `conflict.state_not_allowed`예요. 쌓인 것을 적용하지 않고 지나가려면 `discard`예요(원본 기록은 안 지워요. 어긋난 것은 다음 맞추기가 바로잡아요).
+풀기는 쌓인 변경을 받은 순서대로 적용해요. 흐름이 `held`가 아니면 409 `conflict.state_not_allowed`예요. 쌓인 것을 적용하지 않고 지나가려면 `discard`예요(맞추기를 할 수 있는 소스에서만 돼요. 원본 기록은 안 지워요. 어긋난 것은 다음 맞추기가 바로잡아요).
 
 **6) 같은 일을 명령줄로.** 화면 없이도 같은 일이 돼요. 명령줄 클라이언트는 같은 길을 불러요(도구의 이름은 정하지 않아서 `px`라고 적어요).
 

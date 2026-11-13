@@ -22,7 +22,7 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 
 ## 2. 한눈에
 
-**진실은 PostgreSQL에 두고, 나머지는 자리에 맞게 둬요.** 진실의 자리는 하나예요(같은 사실이 두 저장소에서 따로 고쳐지지 않아요). 일곱 가지가 저장돼요.
+**진실은 PostgreSQL에 두고, 나머지는 자리에 맞게 둬요.** 진실의 자리는 하나예요(같은 사실이 두 저장소에서 따로 고쳐지지 않아요). 아홉 묶음이 있고 마지막 하나만 끌어낸 것이에요.
 
 | 묶음 | 무엇 | 바뀌는 방식 | 잃으면 |
 |---|---|---|---|
@@ -52,23 +52,23 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 
 ## 3. 표의 스케치
 
-**KG에 딸린 모든 표에 `graph_id`(어느 KG인지)가 있어요.** 감사처럼 KG에 딸리지 않은 기록은 비어 있을 수 있어요. 권한 부여와 담당자는 ADR-0012가 정해서 이 표들에는 없어요. 칸의 이름은 영어 snake_case예요. 칸, 열쇠, 색인, 나눔의 열쇠는 구현하는 변경에서 재서 굳혀요.
+**KG에 딸린 모든 표에 `kg_id`(어느 KG인지)가 있어요.** 감사처럼 KG에 딸리지 않은 기록은 비어 있을 수 있어요. 권한 부여와 담당자는 ADR-0012가 정해서 이 표들에는 없어요. 칸의 이름은 영어 snake_case예요. 칸, 열쇠, 색인, 나눔의 열쇠는 구현하는 변경에서 재서 굳혀요.
 
 ### 3.1 KG의 머리
 
 | 표 | 칸 | 열쇠 | 색인과 나눔 |
 |---|---|---|---|
-| `kg` | `graph_id`, `name`, `role`(`production`, `candidate`, `test`), `base_graph_id`, `min_readable_seq`, `created_at` | `graph_id` | 작은 표 |
-| `kg_head` | `graph_id`, `applied_seq`(적용된 마지막 `change_seq`), `applied_through`(받은 변경의 기록에서 어디까지 적용했나), `sealed_version_no`, `running_graph_hash` | `graph_id` | 작은 표. 적용이 이 행을 잠근다 |
+| `kg` | `kg_id`, `name`, `role`(`production`, `candidate`, `test`), `base_kg_id`, `min_readable_seq`, `created_at` | `kg_id` | 작은 표 |
+| `kg_head` | `kg_id`, `applied_seq`(적용된 마지막 `change_seq`), `applied_through`(받은 변경의 기록에서 어디까지 적용했나), `sealed_version_no`, `running_graph_hash` | `kg_id` | 작은 표. 적용이 이 행을 잠근다 |
 
 ### 3.2 원본 기록과 읽은 자리
 
 | 표 | 칸 | 열쇠 | 색인과 나눔 |
 |---|---|---|---|
-| `source_run` | `graph_id`, `source_id`, `run_no`, `method`(`snapshot`, `incremental`, `stream`), `started_at`, `finished_at`, `completeness`, `expected_count`, `received_count`, `ingest_seq_from`, `ingest_seq_to` | `(graph_id, source_id, run_no)` | `source_id`로 나눌 수 있다 |
-| `raw_record` | `graph_id`, `source_id`, `record_key`, `content_hash`, `body`(JSONB), `from_ingest_seq`, `to_ingest_seq` | `(graph_id, source_id, record_key, content_hash)` | `source_id`로 나눈다. 구간이 열린 행 색인 |
-| `source_cursor` | `graph_id`, `source_id`, `position`(소스가 준 표지), `updated_at` | `(graph_id, source_id)` | 작은 표. 소스에서 어디까지 읽었나 |
-| `ingest_order` | `graph_id`, `order_no`, `log_id`, `log_position_from`, `log_position_to`, `ingest_seq_from`, `ingest_seq_to` | `(graph_id, order_no)` | 작은 표. 묶음의 목록 |
+| `source_run` | `kg_id`, `source_id`, `run_no`, `method`(`snapshot`, `incremental`, `stream`), `started_at`, `finished_at`, `capture_complete`, `expected_count`, `received_count`, `ingest_seq_from`, `ingest_seq_to` | `(kg_id, source_id, run_no)` | `source_id`로 나눌 수 있다 |
+| `raw_record` | `kg_id`, `source_id`, `dataset_id`, `natural_key`, `content_hash`, `source_time`(소스가 말한 때. 다시 돌릴 때 같은 결과를 위해), `body`(JSONB), `from_ingest_seq`, `to_ingest_seq`, `branch_id`(브랜치의 시험 수집만. 운영의 기록은 비어 있다) | `(kg_id, source_id, dataset_id, natural_key, content_hash)` | `source_id`로 나눈다. 구간이 열린 행 색인 |
+| `source_cursor` | `kg_id`, `source_id`, `position`(소스가 준 표지), `updated_at` | `(kg_id, source_id)` | 작은 표. 소스에서 어디까지 읽었나 |
+| `ingest_order` | `kg_id`, `order_no`, `log_id`, `log_position_from`, `log_position_to`, `ingest_seq_from`, `ingest_seq_to` | `(kg_id, order_no)` | 작은 표. 묶음의 목록 |
 
 - **읽은 자리가 둘이에요.** `source_cursor`(소스에서 어디까지 읽었나)는 받은 변경의 기록에 쓰는 것과 함께 나아가요. 기록이 PostgreSQL이면 한 트랜잭션이고, 메시지 기록 저장소면 쓴 뒤에 나아가서 겹쳐 받은 것을 `(소스, 자리)` 열쇠로 걸러 내요. `applied_through`(받은 변경의 기록에서 어디까지 적용했나)는 KG에 적용하는 트랜잭션에 묶여요(5절).
 - **차례는 굳히는 걸음에서 정해져요.** KG마다 하나뿐인 적용기가 받은 변경의 기록에서 묶음을 읽을 때, 어느 기록의 어느 자리를 어떤 순서로 읽었는지를 `ingest_order`에 적고 `ingest_seq`를 매겨요. 다시 돌릴 때는 이 목록을 따라서, 받은 변경의 기록이 어느 어댑터든 나뉘어 있든 차례가 같아요. 여러 소스의 변경이 섞이는 순서도 이 번호로 고정돼요.
@@ -78,45 +78,45 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 
 | 표 | 칸 | 열쇠 | 색인과 나눔 |
 |---|---|---|---|
-| `object_live` | `graph_id`, `object_id`(16바이트), `type_name`, `name`, `min_grade`, `attrs`(JSONB, `versioned` 속성만), `source_refs`(JSONB), `content_hash`, `seq_from` | `(graph_id, object_id)` | `(graph_id, type_name, object_id)`. `type_name`으로 나눈다 |
-| `object_hist` | `object_live`의 칸 + `seq_to` | `(graph_id, object_id, seq_from)` | `seq_to` 구간으로 나눈다 |
-| `link_live` | `graph_id`, `link_id`(16바이트), `link_type`, `src_object_id`, `dst_object_id`, `discriminator`, `attrs`, `source_refs`, `content_hash`, `seq_from` | `(graph_id, link_id)` | `(graph_id, src_object_id, link_type)`, `(graph_id, dst_object_id, link_type)`. `link_type`으로 나눈다 |
-| `link_hist` | `link_live`의 칸 + `seq_to` | `(graph_id, link_id, seq_from)` | `seq_to` 구간으로 나눈다 |
-| `attr_volatile` | `graph_id`, `object_id`, `attr_name`, `value`, `grade`, `basis`, `seen_at`, `feed_id` | `(graph_id, object_id, attr_name)` | **보조 색인 없음**(8절). 링크의 `volatile`도 같은 모양의 표 |
-| `pending_value` | `graph_id`, `feed_id`, `target_key`, `attr_name`, `value`, `received_ingest_seq`, `expires_at` | `(graph_id, feed_id, target_key, attr_name)` | 작은 표. 붙을 객체를 기다리는 값 |
-| `object_identifier` | `graph_id`, `object_id`, `id_kind`, `id_value`, `scope`, `seq_from`, `seq_to` | `(graph_id, object_id, id_kind, id_value, seq_from)` | `(graph_id, id_kind, id_value)`로 찾는다 |
-| `identity_event` | `graph_id`, `change_seq`, `event_kind`(`merge`, `split`), `retired_object_id`, `into_object_id` | `(graph_id, change_seq, retired_object_id)` | `change_seq`로 나눌 수 있다 |
-| `unseen_object` | `graph_id`, `object_id`, `source_id`, `unseen_runs` | `(graph_id, object_id, source_id)` | 작은 표. 안 보이는 것만 든다 |
+| `object_live` | `kg_id`, `object_id`(16바이트), `type_name`, `name`, `min_grade`, `attrs`(JSONB, `versioned` 속성만), `source_refs`(JSONB), `content_hash`, `seq_from` | `(kg_id, object_id)` | `(kg_id, type_name, object_id)`. `type_name`으로 나눈다 |
+| `object_hist` | `object_live`의 칸 + `seq_to` | `(kg_id, object_id, seq_from)` | `seq_to` 구간으로 나눈다 |
+| `link_live` | `kg_id`, `link_id`(16바이트), `link_type`, `src_object_id`, `dst_object_id`, `discriminator`, `attrs`, `source_refs`, `content_hash`, `seq_from` | `(kg_id, link_id)` | `(kg_id, src_object_id, link_type)`, `(kg_id, dst_object_id, link_type)`. `link_type`으로 나눈다 |
+| `link_hist` | `link_live`의 칸 + `seq_to` | `(kg_id, link_id, seq_from)` | `seq_to` 구간으로 나눈다 |
+| `attr_volatile` | `kg_id`, `object_id`, `attr_name`, `value`, `grade`, `basis`, `seen_at`, `feed_id` | `(kg_id, object_id, attr_name)` | **보조 색인 없음**(8절). 링크의 `volatile`도 같은 모양의 표 |
+| `pending_value` | `kg_id`, `feed_id`, `target_key`, `attr_name`, `value`, `received_ingest_seq`, `expires_tick`(기한. `tick`으로 센다) | `(kg_id, feed_id, target_key, attr_name)` | 작은 표. 붙을 객체를 기다리는 값 |
+| `object_identifier` | `kg_id`, `object_id`, `id_kind`, `id_value`, `scope`, `seq_from`, `seq_to` | `(kg_id, object_id, id_kind, id_value, seq_from)` | `(kg_id, id_kind, id_value)`로 찾는다 |
+| `identity_event` | `kg_id`, `change_seq`, `event_kind`(`merge`, `split`), `retired_object_id`, `into_object_id` | `(kg_id, change_seq, retired_object_id)` | `change_seq`로 나눌 수 있다 |
+| `unseen_object` | `kg_id`, `object_id`, `feed_id`, `unseen_runs`, `first_unseen_tick` | `(kg_id, object_id, feed_id)` | 작은 표. 안 보이는 것만 든다. 안 보인 번수를 세는 **유일한 자리** |
 
 - `live`에는 지금 유효한 행만 있어서 `seq_to`가 없어요. 구간은 `seq_from <= S < seq_to`예요(왼쪽은 닫히고 오른쪽은 열려요). 구간을 버전이 아니라 `change_seq`로 적어서, 봉하기와 무관하게 어느 변경 사이의 모습이든 읽혀요.
 - 끌어낸 링크와 묶음(`basis`가 `derived`)도 받을 때 만들어 이 표들에 보통의 행으로 저장해요. 질의 때 계산하지 않아요(ADR-0007).
 - 링크 타입의 바인딩, 값 타입, 특성은 타입 등록부의 일이에요(ADR-0007). 링크 행은 `link_type` 이름만 가져요.
-- `source_refs`는 만든 원본 기록을 `(source_id, record_key)`로 가리켜요. 어느 규칙 버전이 만들었는지는 그 변경이 속한 봉한 버전이 알아요. 값 하나의 근거는 같은 규칙을 다시 돌려 그때 보여 줘요(ADR-0008).
-- `unseen_object`는 `snapshot` 소스에서 "온전한 수집에 안 보인 번수"를 세요. 기본값 가정 3번을 넘으면 물러난 것으로 표시해요. 흐름에서는 안 보인다고 물러나게 하지 않고 지움 사건과 맞추기만 물러나게 해요(ADR-0008).
+- `source_refs`는 만든 원본 기록을 `(source_id, dataset_id, natural_key)`로 가리켜요. 어느 규칙 버전이 만들었는지는 그 변경이 속한 봉한 버전이 알아요. 값 하나의 근거는 같은 규칙을 다시 돌려 그때 보여 줘요(ADR-0008).
+- `unseen_object`는 (공급, 객체)마다 "온전한 수집에 안 보인 번수"를 세요(원본 기록 쪽에는 번수가 없어요). 번수(기본값 가정 3번)와 최소 기간을 함께 넘으면 그 공급의 "보고 있음"을 거두고, 보고 있는 공급이 없으면 물러난 것으로 표시해요. 흐름에서는 안 보인다고 물러나게 하지 않고 지움 사건과 맞추기만 물러나게 해요(ADR-0008).
 
 ### 3.4 변경의 기록과 버전
 
 | 표 | 칸 | 열쇠 | 색인과 나눔 |
 |---|---|---|---|
-| `change_batch` | `graph_id`, `change_seq`, `kind`(`sync`, `stream`, `merge`), `source_id`, `ingest_seq_from`, `ingest_seq_to`, `definition_set_hash`, `applied_at`, `attempt`, `row_counts` | `(graph_id, change_seq)` | `change_seq` 구간으로 나눈다 |
-| `change_entry` | `graph_id`, `change_seq`, `entity_kind`(`object`, `link`), `entity_id`, `change_kind`(`added`, `changed`, `retired`), `old_hash`, `new_hash` | `(graph_id, change_seq, entity_kind, entity_id)` | `change_seq` 구간으로 나눈다 |
-| `kg_version` | `graph_id`, `version_no`, `version_id`, `sealed_seq`, `prev_version_id`, `definition_set_hash`, `engine_semantic_version`, `input_digest`, `graph_hash`, `sealed_at`, `seal_kind`(`sync`, `merge`, `periodic`) | `(graph_id, version_no)` | `(graph_id, version_id)`는 유일해야 한다 |
-| `kg_version_hash_part` | `graph_id`, `version_no`, `entity_kind`, `type_name`, `partial_sum`, `row_count` | `(graph_id, version_no, entity_kind, type_name)` | 작은 표 |
+| `change_batch` | `kg_id`, `change_seq`, `kind`(`sync`, `stream`, `merge`), `source_id`, `ingest_seq_from`, `ingest_seq_to`, `definition_set_hash`, `applied_at`, `attempt`, `row_counts` | `(kg_id, change_seq)` | `change_seq` 구간으로 나눈다 |
+| `change_entry` | `kg_id`, `change_seq`, `entity_kind`(`object`, `link`), `entity_id`, `change_kind`(`added`, `changed`, `retired`), `old_hash`, `new_hash` | `(kg_id, change_seq, entity_kind, entity_id)` | `change_seq` 구간으로 나눈다 |
+| `kg_version` | `kg_id`, `version_no`, `kg_version_id`, `sealed_seq`, `prev_kg_version_id`, `definition_set_hash`, `engine_semantic_version`, `input_digest`, `graph_hash`, `sealed_at`, `seal_kind`(`sync`, `merge`, `periodic`) | `(kg_id, version_no)` | `(kg_id, kg_version_id)`는 유일해야 한다 |
+| `kg_version_hash_part` | `kg_id`, `version_no`, `entity_kind`, `type_name`, `partial_sum`, `row_count` | `(kg_id, version_no, entity_kind, type_name)` | 작은 표 |
 
-적용된 변경의 기록(`change_batch`, `change_entry`)은 **언제나 PostgreSQL**에 있어요. `live`·`hist`와 한 트랜잭션으로 쓰이는 KG의 진실이기 때문이에요(오래된 것은 내려 둘 수 있어요). `version_no`는 정렬용 숫자, `version_id`는 같은 입력이면 같은 값이 나오는 이름이에요. `definition_set_hash`는 정의 묶음의 해시(ADR-0014)예요. `change_entry`의 `change_seq`는 `change_batch`의 번호예요.
+적용된 변경의 기록(`change_batch`, `change_entry`)은 **언제나 PostgreSQL**에 있어요. `live`·`hist`와 한 트랜잭션으로 쓰이는 KG의 진실이기 때문이에요(오래된 것은 내려 둘 수 있어요). `version_no`는 정렬용 숫자, `kg_version_id`는 같은 입력이면 같은 값이 나오는 이름이에요. `definition_set_hash`는 정의 묶음의 해시(ADR-0014)예요. `change_entry`의 `change_seq`는 `change_batch`의 번호예요.
 
 ### 3.5 실행 기록과 임시 자리
 
 | 표 | 칸 | 열쇠 | 색인과 나눔 |
 |---|---|---|---|
-| `sync_run` | `graph_id`, `sync_id`, `source_id`, `trigger`, `state`, `lease_owner`, `lease_until`, `attempt`, `started_at`, `finished_at`, `result_change_seq` | `(graph_id, sync_id)` | `(graph_id, source_id, state)` |
-| `sync_step_result` | `graph_id`, `sync_id`, `step`, `rows_in`, `rows_out`, `rows_dropped`, `drop_reasons`, `duration_ms` | `(graph_id, sync_id, step)` | 작은 표 |
-| `operator_state` | `graph_id`, `operator_id`, `state_key`, `state_value` | `(graph_id, operator_id, state_key)` | 실행기의 열쇠 상태(조인 색인, 겹침 없애기, 내용 해시). 메모리에 캐시 |
-| `stage_object`, `stage_link` | `graph_id`, `apply_id`, `object_live`·`link_live`와 같은 칸 | `(graph_id, apply_id, id)` | 로그를 남기지 않는 표나 세션 임시 표. 적용마다 지운다 |
-| `plan_change` | `graph_id`, `apply_id`, `entity_kind`, `entity_id`, `change_kind`, `old_hash`, `new_hash` | `(graph_id, apply_id, entity_kind, entity_id)` | 적용마다 지운다 |
-| `audit_event` | `graph_id`(비어도 된다), `event_id`, `actor`, `action`, `target`, `at`, `detail`(JSONB) | `event_id` | 시각 구간으로 나눈다. 추가만 한다 |
+| `sync_run` | `kg_id`, `sync_id`, `source_id`, `trigger`, `state`, `lease_owner`, `lease_until`, `attempt`, `started_at`, `finished_at`, `result_change_seq` | `(kg_id, sync_id)` | `(kg_id, source_id, state)` |
+| `sync_step_result` | `kg_id`, `sync_id`, `step`, `rows_in`, `rows_out`, `rows_dropped`, `drop_reasons`, `duration_ms` | `(kg_id, sync_id, step)` | 작은 표 |
+| `operator_state` | `kg_id`, `operator_id`, `state_key`, `state_value` | `(kg_id, operator_id, state_key)` | 실행기의 열쇠 상태(조인 색인, 겹침 없애기, 내용 해시). 메모리에 캐시. 정의가 바뀐 연산의 상태는 후보 실행이 원본 기록으로 새로 짓고 적용 때 갈아 끼운다 |
+| `stage_object`, `stage_link` | `kg_id`, `apply_id`, `object_live`·`link_live`와 같은 칸 | `(kg_id, apply_id, id)` | 로그를 남기지 않는 표나 세션 임시 표. 적용마다 지운다 |
+| `plan_change` | `kg_id`, `apply_id`, `entity_kind`, `entity_id`, `change_kind`, `old_hash`, `new_hash` | `(kg_id, apply_id, entity_kind, entity_id)` | 적용마다 지운다 |
+| `audit_event` | `kg_id`(비어도 된다), `event_id`, `actor`, `action`, `target`, `at`, `detail`(JSONB) | `event_id` | 시각 구간으로 나눈다. 추가만 한다 |
 
-문제 목록의 표는 ADR-0011이 칸을 정해요. 그 표도 `graph_id`를 가져요.
+문제 목록의 표는 ADR-0011이 칸을 정해요. 그 표도 `kg_id`를 가져요.
 
 ## 4. 변경, 봉한 버전, 지금: 지어낸 예시
 
@@ -218,7 +218,7 @@ object_hist 에서   seq_from <= S AND S < seq_to
 | KG 버전 ID | 구별하는 글, 앞 버전의 ID, 정의 묶음의 해시, `input_digest`, 실행기의 의미 버전 | 이 넷이 같으면 같다(7.5) |
 | 그래프 해시 | 모든 행 해시의 합 | 7.4 |
 
-`input_digest`의 사슬은 `h(n) = SHA-256(h(n-1), ingest_seq, source_id, record_key, content_hash)`예요(스케치). 소스를 다시 받아 같은 내용이 오면 `content_hash`가 같아 새 변경이 되지 않아요. 서로 다른 입력이 같은 KG를 낳을 수 있어서 `version_id`와 `graph_hash`를 따로 두고, 봉할 때 그래프 해시가 앞 버전과 같으면 새 버전을 만들지 않아요.
+`input_digest`의 사슬은 `h(n) = SHA-256(h(n-1), ingest_seq, source_id, dataset_id, natural_key, content_hash)`예요(스케치). 소스를 다시 받아 같은 내용이 오면 `content_hash`가 같아 새 변경이 되지 않아요. 서로 다른 입력이 같은 KG를 낳을 수 있어서 `kg_version_id`와 `graph_hash`를 따로 두고, 봉할 때 그래프 해시가 앞 버전과 같으면 새 버전을 만들지 않아요.
 
 ### 7.2 정규 인코딩의 규칙
 
@@ -261,7 +261,7 @@ object_hist 에서   seq_from <= S AND S < seq_to
 구현하는 변경에서 이렇게 걸어요.
 
 - **같은 넷이면 같은 버전**: 지어낸 작은 세계의 골든 값(정규 바이트, 행 해시, 그래프 해시, 버전 ID). 입력 순서(받은 차례 안에서 섞이는 것 말고), 일꾼 수, 배치 크기, DB 로케일, 실행 환경, 병렬도를 흔들어도 같다.
-- **같은 순서로 다시 돌리면 같은 이어짐**: 빈 KG에서 같은 `ingest_order` 목록과 같은 정의로 되풀이하면 모든 `version_id`가 같다.
+- **같은 순서로 다시 돌리면 같은 이어짐**: 빈 KG에서 같은 `ingest_order` 목록과 같은 정의로 되풀이하면 모든 `kg_version_id`가 같다.
 - **내용의 같음**: 지금의 원본으로 처음부터 지은 KG와 운영 KG는 ID를 빼고 타입, 속성, 링크의 모양이 같다.
 - **배치와 흐름의 같음**: 같은 원본을 한 번에 넣은 결과와 잘게 나눠 흘린 결과의 그래프 해시가 같다. 봉한 자리는 달라서 버전의 이어짐은 같지 않아도 된다.
 - 고쳐 온 그래프 해시는 전체를 다시 계산한 값과 같고, 6절의 차이 성질이 선다.
@@ -316,9 +316,9 @@ object_hist 에서   seq_from <= S AND S < seq_to
 
 - **받은 변경의 기록**은 어댑터를 하나 고르면 진실이 그 어댑터에만 있어요(11.1). 적용된 변경의 기록은 언제나 PostgreSQL이에요. 그래프 전용 DB는 지금도 두지 않아요. 라이선스가 허용 목록에 들지 못하고 영향 범위의 뜻을 담지 못해서예요.
 - **복제는 백업이 아니에요.** 잘못 지운 것도 복제본에 번져요. 복제와 별도로 백업과 시점 복구가 있어야 해요. 백업은 저장소와 다른 장애 영역에 둬요. 복구 훈련을 정기적으로 해야 백업이 쓸 만한지 알아요.
-- 시점 복구로 `applied_seq`가 뒤로 가면 번호가 겹칠 수 있어요. 엔진이 복구 전의 버전 40을 올려 뒀는데 복구된 KG의 새 버전 40은 다른 내용일 수 있어요. 그래서 엔진은 번호가 아니라 **`version_id`**로 알아봐요. 변경을 따라가던 엔진은 자기 위치가 복구된 기록과 맞는지 `version_id`로 확인하고, 다르면 새로 올려요.
+- 시점 복구로 `applied_seq`가 뒤로 가면 번호가 겹칠 수 있어요. 엔진이 복구 전의 버전 40을 올려 뒀는데 복구된 KG의 새 버전 40은 다른 내용일 수 있어요. 그래서 엔진은 번호가 아니라 **`kg_version_id`**로 알아봐요. 변경을 따라가던 엔진은 자기 위치가 복구된 기록과 맞는지 `kg_version_id`로 확인하고, 다르면 새로 올려요.
 - **보관 기한**은 `hist`, `change_entry`(`change_seq` 구간으로 나뉘어 있다), 원본 기록, `volatile` 값, 임시 자리에 있어요. 기한을 넘긴 구간은 구간째 떼어 지워서 청소 비용이 들지 않아요. 오래된 원본 기록은 원본 기록의 보관 포트를 거쳐 PostgreSQL 밖으로 내릴 수 있어요(어댑터가 정해요). 기본값은 재서 정해요.
-- 지운 구간은 `kg.min_readable_seq`로 알려요. 그보다 이른 `S`를 읽으려 하면 이유를 말해요. 지워도 지금 그래프 해시는 안 바뀌어요. 버전 자체의 기록(`kg_version`)을 얼마나 두는지도 기한의 일부예요.
+- 지운 구간은 `kg.min_readable_seq`로 알려요. 그보다 이른 `S`를 읽으려 하면 이유를 말해요. 고정(`serving_pin`)된 버전의 이력은 기한이 지나도 지우지 않고 `min_readable_seq`가 그 구간을 건너뛰어요. 지워도 지금 그래프 해시는 안 바뀌어요. 버전 자체의 기록(`kg_version`)을 얼마나 두는지도 기한의 일부예요.
 
 ## 11. 저장소를 제품이 함께 내놓는다는 것
 
@@ -345,12 +345,12 @@ object_hist 에서   seq_from <= S AND S < seq_to
 - 소비자는 위치 뒤의 변경을 끌어가요. 번호는 적용기 하나가 매겨 커밋 순서와 어긋나지 않아요(5.1). 깨우기는 폴링이 기본이에요.
 - **어느 어댑터가 맞나(추정).** 지속되는 변경이 초당 2~3만 행 안쪽이면 PostgreSQL이면 돼요. 넘거나, 바깥 소비자가 수십이 되어 되감기로 같은 기록을 읽거나, 적용기 하나가 병목이면 받은 변경의 기록에 메시지 기록 저장소가 맞아요(또는 KG를 나눠요).
 - 흐름 처리 엔진을 들여 실행기를 대신하지 않아요. 뜻의 구현이 둘이 되고 받은 순서대로의 결정성을 잃기 때문이에요.
-- **잰 값**(시제품, 약속이 아니에요): 코어 둘을 공유하는 한 기계에서 지어낸 200만 행 표를 거의 다 바꾸는 최악의 병합으로 쟀어요. 묶음 1천 행에서 초당 약 7만, 1만 행에서 약 10만, 10만 행에서 약 13만 행이었어요. 바뀌는 열에 보조 색인을 두면 약 절반이었어요. 행당 쓰기 기록은 묶음이 1만 이상일 때 약 400바이트, 1천에서는 약 1.7KB였어요(작게 쪼갤수록 손해).
+- **잰 값**(시제품, 약속이 아니에요): 코어 둘의 한 기계에서 지어낸 200만 행 표(기본 키 색인만)를 거의 다 바꾸는 최악의 병합으로 쟀어요. 묶음 1천 행에서 초당 약 7.5만, 1만 행에서 약 10만, 10만 행에서 약 13만 행이었어요. 바뀌는 열에 보조 색인을 두면 약 절반이었어요. 행당 쓰기 기록은 묶음이 1만 이상일 때 약 400바이트, 1천에서는 약 1.7KB였어요(작게 쪼갤수록 손해).
 - 한계: 연결이 하나였고, 복제와 커밋 방식 변형이 없었고, 오래 도는 청소를 안 봤고, 합성 데이터예요. 그래서 13절에서 다시 재요. 내용 해시가 같은 변경(노옵)은 DB에 닿기 전에 `operator_state`의 해시로 거르는 것이 이득이에요(합성에서 절반쯤, 실제 비율은 모름).
 
 ## 12. 후보 KG는 어디에 두나
 
-후보 KG와 시험용 KG는 **같은 PostgreSQL의 같은 표**에 `graph_id`만 달리 두어요. 별도 표나 스키마를 만들지 않아요. KG마다 선형 이력이 하나씩이라 브랜치끼리 이력이 섞이지 않아요.
+후보 KG와 시험용 KG는 **같은 PostgreSQL의 같은 표**에 `kg_id`만 달리 두어요. 별도 표나 스키마를 만들지 않아요. KG마다 선형 이력이 하나씩이라 브랜치끼리 이력이 섞이지 않아요.
 
 | 모습 | 무엇 | 비용 |
 |---|---|---|
@@ -360,8 +360,8 @@ object_hist 에서   seq_from <= S AND S < seq_to
 운영과 섞이지 않게 하는 장치예요.
 
 - `kg.role`이 `candidate`나 `test`인 KG는 머리, 변경 알림, 운영의 투영, 운영용 API에 나타나지 않아요. 운영 길의 코드는 `role = production`인 KG만 받고, 후보를 읽는 길은 권한(ADR-0012)을 거쳐야 열려요.
-- 후보 실행은 `base_graph_id`의 **지금 상태와 식별 이력에서 출발**해요. 그래서 차이가 ID로 맞물려요. 원본 기록은 읽기만 해요.
-- 후보를 닫으면 그 `graph_id`의 행을 한꺼번에(큰 후보는 구간째) 지워요.
+- 후보 실행은 `base_kg_id`의 **지금 상태와 식별 이력에서 출발**해요. 그래서 차이가 ID로 맞물려요. 원본 기록은 읽기만 해요.
+- 후보를 닫으면 그 `kg_id`의 행을 한꺼번에(큰 후보는 구간째) 지워요.
 - 운영에 영향이 없다는 약속은 **같은 DB의 자원을 나눠 쓰는 한** 재서 확인할 일이에요. 후보의 부하가 운영을 느리게 하면 후보를 다른 DB로 옮기는 길이 열려 있고, 그때는 후보가 읽는 원본 기록과 식별 이력을 함께 옮겨야 해요.
 
 ## 13. 재는 계획

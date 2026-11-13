@@ -384,7 +384,7 @@ objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_gr
 
 ## 14. 아직 정하지 않은 것
 
-- **지표의 읽기**: `competency_fill_rate`가 사실만과 가정 포함 두 읽기를 어떻게 나눠 담는지.
+- **지표의 읽기는 정해졌어요**: `competency_fill_rate`는 `reading`(`fact_only`, `with_assumed`)으로 두 읽기를 나눠 담고, 단계와 묶음은 `step_key`, `group_key`가 가려요(data-observability.md).
 - 흐름에서 작은 변경 묶음마다 따질지, 모아서 따질지. 표시가 얼마나 늦어도 되는지.
 - 쓰임에서 제안하는 기준(되풀이 횟수, 기간), 표준 모델의 기본 물음을 조직이 끄거나 고치는 길.
 - 거르기 값을 SQL로 센 속도, 엔진으로 넘길 시점.

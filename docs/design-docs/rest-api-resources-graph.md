@@ -12,7 +12,7 @@ follows:
 > **길과 칸은 다음 변경의 OpenAPI 문서에서 굳어요. 그때 바뀔 수 있어요.** 길은 `/v1/...`이고 이름은 이 문서가 정한 가정이에요.
 
 ## 1. KG
-KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 길은 모두 3-2의 봉투(`as_of`, `freshness`, `evidence`, `completeness`, `hidden`, `health_hint`)를 달고, 읽을 수 없는 타입의 객체는 나오지 않고 `hidden.hidden_passed_count`에 수로만 잡혀요(ADR-0012).
+KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 길은 모두 3-2의 봉투(`as_of`, `freshness`, `evidence`, `completeness`, `hidden`(`hidden_passed_count`, `hidden_reached_count`), `health_hint`)를 달고, 읽을 수 없는 타입의 객체는 나오지 않고 `hidden.hidden_passed_count`에 수로만 잡혀요(ADR-0012).
 
 ### 1-1. 객체와 링크
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
@@ -23,7 +23,7 @@ KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 
 | `/v1/links/{link_id}` | GET | 링크 하나: 타입, 뜻, 양 끝, 근거 등급, 유효한 버전 구간 | 읽기 | - | kg-queries |
 | `/v1/objects/{object_id}/issue-reports` | POST | KG가 틀렸다고 알려요(`user_report`가 문제 목록으로 들어가요. KG를 직접 고치지 않아요) | 읽기를 가진 누구나 | - | kg-operations 2.6 |
 
-공통 입력: `graph_version`(없으면 지금), `view`(`as_designed`, `as_observed`), `max_staleness`, `limit`, `cursor`, `shape`.
+공통 입력: `kg_version_id`(없으면 지금), `view`(`as_designed`, `as_observed`), `max_staleness`, `limit`, `cursor`, `shape`.
 
 ### 1-2. 닫힌 질의 열셋
 모두 `POST /v1/questions/<이름>`이에요. 상태를 바꾸지 않아요(계약에 안전함 표시). 큰 입력(객체 목록, 거름)을 본문으로 받아요. 답은 바로 와요: 시간 예산을 넘기면 202가 아니라 `meta.completeness.truncated: true`와 `reason: time_budget`이에요(ADR-0010). 길게 걸릴 큰 읽기는 `bulk-reads`(1-4)를 써요. 모든 역할이 자기 범위의 읽기를 포함하므로 역할은 `읽기`예요. 입력과 출력의 칸은 [KG에 묻기](kg-queries.md)가 정해요.
@@ -38,8 +38,8 @@ KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 
 | `impact` | `/v1/questions/impact` | `dead`, `dead_links`, `site_failure`, `dead_scope_id`, `mode`(`both`, `facts_only`, `with_assumptions`), `shape` | 결과별 목록(`down`, `interrupted`, `degraded`, `exposed`, `unmanageable`, `unknown`), `counts_by_result`, `groups_touched`, `items` | |
 | `exposure` | `/v1/questions/exposure` | `dead`, `scope_id`, `target_object_id`, `cut_order_max` | `tight_groups`, `cut_sets` | |
 | `changes` | `/v1/questions/changes` | `from_version`/`to_version` 또는 `from_change_seq`/`to_change_seq`, `object_types`, `source_id`, `scope_id`, `change_kinds` | 타입별·종류별 수, `items`(`change_kind`, `changed_fields`, `change_seq`) | `GET /v1/changes` |
-| `versions` | `/v1/questions/versions` | `since_version`, `limit` | 봉한 버전들(`graph_version`, `change_seq`, `definition_version`, `is_head`, `projection_state`) | `GET /v1/graph-versions` |
-| `quality` | `/v1/questions/quality` | `scope_id`, `source_id`, `metric`, `graph_version` | 지표와 목표 | |
+| `versions` | `/v1/questions/versions` | `since_version`, `limit` | 봉한 버전들(`kg_version_id`, `change_seq`, `definition_version`, `is_head`, `projection_state`) | `GET /v1/graph-versions` |
+| `quality` | `/v1/questions/quality` | `scope_id`, `source_id`, `metric`, `kg_version_id` | 지표와 목표 | |
 | `health` | `/v1/questions/health` | `resource`, `scope_id` | 자원의 건강과 까닭 | `GET /v1/health` |
 | `scopes` | `/v1/questions/scopes` | `scope_id`(없으면 목록) | 저장해 둔 범위와 `count` | `GET /v1/scopes` |
 | `competency` | `/v1/questions/competency` | 3절 | 충족률 | |
@@ -58,16 +58,16 @@ POST /v1/questions/paths
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
 | `/v1/graph-versions` | GET | 봉한 버전의 목록(`versions`) | 읽기 | - | kg-queries, kg-storage |
-| `/v1/graph-versions/{graph_version}` | GET | 한 버전: `change_seq`, `created_at`, `definition_version`, `raw_record_set_id`, `change_counts`, `projection_state`, `seal_kind` | 읽기 | - | kg-storage |
+| `/v1/graph-versions/{kg_version_id}` | GET | 한 버전: `change_seq`, `created_at`, `definition_version`, `raw_record_set_id`, `change_counts`, `projection_state`, `seal_kind` | 읽기 | - | kg-storage |
 | `/v1/changes` | GET | 변경의 목록(`changes`의 짧은 모양): `from_change_seq`, `to_change_seq`, `filter[object_type]`, `filter[change_kind]` | 읽기 | - | kg-queries |
 | `/v1/scopes`, `/v1/scopes/{scope_id}` | GET, POST, DELETE | 저장해 둔 범위(타입, 포함 뿌리, 거름)를 읽고 만들고 지워요. 만든 사람의 무리의 것이고 정의가 아니에요. KG를 바꾸지 않아요 | 읽기, 만들기와 지우기는 `viewer`부터 | - | kg-queries 10 |
-| `/v1/serving-pins` | GET, POST | 묻는 쪽을 옛 KG 버전에 고정(`graph_version`, 까닭). 봉투의 `as_of.pinned`에 보여요 | `operator` | - | ADR-0010, data-observability |
-| `/v1/serving-pins/{pin_id}` | DELETE | 고정 풀기 | `operator` | - | ADR-0010 |
+| `/v1/serving-pins` | GET, POST | 묻는 쪽을 옛 KG 버전에 고정(`kg_version_id`, 까닭). 봉투의 `as_of.pinned`에 보여요 | 전체 범위의 `operator`나 `admin` | - | ADR-0010, data-observability |
+| `/v1/serving-pins/{pin_id}` | DELETE | 고정 풀기 | 전체 범위의 `operator`나 `admin` | - | ADR-0010 |
 
 ### 1-4. 대량 읽기
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
-| `/v1/scopes/{scope_id}/bulk-reads` | POST | 범위 하나를 한 버전에서 통째로 읽어요(`graph_version`). 쪽 단위 흐름으로 내려받아요 | `viewer` + `bulk_read` 허가 | 작업 | kg-queries 10 |
+| `/v1/scopes/{scope_id}/bulk-reads` | POST | 범위 하나를 한 버전에서 통째로 읽어요(`kg_version_id`). 쪽 단위 흐름으로 내려받아요 | `viewer` + `bulk_read` 허가 | 작업 | kg-queries 10 |
 | `/v1/jobs/{job_id}/result` | GET | 결과의 흐름(줄마다 JSON, 첫 줄이 봉투). `cursor`로 이어 받아요 | 작업을 만든 사람 | - | rest-api 3-13 |
 
 가림이 적용되고 쓴 사람이 감사 기록(`bulk_read`)에 남아요. 에이전트에게(MCP) 주지 않아요.
@@ -80,17 +80,17 @@ POST /v1/questions/paths
 | `/v1/health` | GET | 자원의 건강 목록(`filter[resource_kind]`, `filter[health_state]`, `filter[owner]`, `filter[source_id]`). 낮은 비용이에요 | 읽기 | - | data-observability 5, 11 |
 | `/v1/health/{resource_kind}/{resource_id}` | GET | **자원의 건강 요약**: `health_state`, `own_state`, `since`, `checks`, `cause`(뿌리 자원과 그 길), `affected`, `readers`. `include`로 `checks`, `cause`, `downstream`, `impact`, `timeline`. 안 보이는 자원은 `not_found.resource` | 읽기 | - | data-observability 11 |
 | `/v1/metrics` | GET | 지표의 이름 목록(자원 종류, 이름표) | 읽기 | - | data-observability 4 |
-| `/v1/metrics/query` | POST | 지표 선: `resource` 또는 `scope`, `metrics`, `from`, `to`나 `kg_versions`, `window`, `compare`, `include`(`objectives`, `anomalies`). 안전함. 답은 `{resource, metric, detail_key, points: [{at, value, numerator, denominator, kg_version}]}` | 읽기 | - | data-observability 11 |
+| `/v1/metrics/query` | POST | 지표 선: `resource` 또는 `scope`, `metrics`, `from`, `to`나 `kg_versions`, `window`, `compare`, `include`(`objectives`, `anomalies`). 안전함. 답은 `{resource, metric, detail_key, step_key, group_key, reading, points: [{at, value, numerator, denominator, kg_version}]}` | 읽기 | - | data-observability 11 |
 | `/v1/objectives`, `/v1/objectives/{objective_id}` | GET | 목표(`target`, `kind`)와 지금 상태(`miss_ratio`, `budget_left`, `state`) | 읽기 | - | data-observability 6 |
 | `/v1/alert-rules`, `/v1/alert-rules/{rule_id}` | GET | 알림의 규칙(닫힌 아홉 종류) | 읽기 | - | data-observability 8.1 |
 | `/v1/alerts`, `/v1/alerts/{alert_id}` | GET | 알림: `open`, `acknowledged`, `snoozed`, `escalated`, `resolved`. 알림은 문제 목록의 항목이에요 | 읽기 | - | data-observability 8.3 |
 | `/v1/alerts/{alert_id}/acknowledge`, `.../snooze`, `.../hand-over` | POST | 확인함 / 잠시 끔(`until`) / 넘기기(`to`). 자원의 범위를 가진 `operator` | `operator` | - | data-observability 8.3 |
-| `/v1/issues`, `/v1/issues/{issue_id}` | GET | **문제 목록**: `kind`(`dangling_link`, `attribute_conflict`, `invalid_value`, `identity_candidate`, `completeness_mismatch`, `unattached_value`, `intent_observation_mismatch`, `expectation_violation`, `retired_type_in_use`, `user_report`), `status`(`open`, `in_progress`, `resolved`), `subject_ref`, `rule_ref`, `source_ids`, `cause_key`, `first_seen_version`, `last_seen_version`, `proposal_ref`. 거르기와 `cause_key`로 묶기 | 읽기 | - | kg-operations 2 |
+| `/v1/issues`, `/v1/issues/{issue_id}` | GET | **문제 목록**: `kind`(`dangling_link`, `attribute_conflict`, `invalid_value`, `identity_candidate`, `completeness_mismatch`, `unattached_value`, `intent_observation_mismatch`, `expectation_violation`, `retired_type_in_use`, `user_report`, `data_alert`), `status`(`open`, `in_progress`, `resolved`), `subject_ref`, `rule_ref`, `source_ids`, `cause_key`, `first_seen_version`, `last_seen_version`, `proposal_ref`. 거르기와 `cause_key`로 묶기 | 읽기 | - | kg-operations 2 |
 | `/v1/issues/{issue_id}/open-proposal` | POST | 이 문제를 풀려고 브랜치와 제안을 열어요(`proposal_ref`가 붙어요) | `editor` | - | kg-operations 2.4 |
 | `/v1/resources/{resource_kind}/{resource_id}/timeline` | GET | **시간줄**(`timeline_event`): `at`, `kg_version`, `event_kind`, `severity`, `ref`, `summary`. `include_lineage=up\|down`로 계보 위아래 자원의 사건을 합쳐요 | 읽기 | - | data-observability 9.4 |
 | `/v1/usage-records` | GET | 시스템 계정마다 어느 타입과 속성을 읽었나(`usage_record`, 하루 집계) | `admin`, `auditor` | - | access-control 11 |
 
-시간줄의 사건 종류는 실행(`sync_succeeded`, `sync_failed`, `stream_held`, `guard_blocked` 등), 건강과 알림(`health_changed`, `alert_opened` 등), 정의와 KG(`proposal_opened`, `definition_merged`, `definition_reverted`, `emergency_revert`, `kg_version_sealed`, `read_pinned` 등)예요.
+시간줄의 사건 종류는 실행(`sync_succeeded`, `sync_failed`, `stream_held`, `guard_blocked` 등), 건강과 알림(`health_changed`, `alert_opened` 등), 정의와 KG(`proposal_opened`, `definition_merged`, `definition_reverted`, `emergency_revert`, `kg_version_sealed`, `serving_pinned`, `serving_unpinned` 등)예요.
 
 ```json
 GET /v1/health/object_type/Interface?include=cause,readers
@@ -123,7 +123,7 @@ POST /v1/questions/competency
 
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
-| `/v1/me` | GET | 나: `subject`, `grants`(역할과 범위), `bulk_read`, `capabilities`. 자원의 행위 귀띔은 각 응답의 `meta.allowed_actions` | 로그인한 누구나 | - | access-control |
+| `/v1/me` | GET | 나: `subject`, `grants`(역할과 범위), `bulk_read`, `allowed_actions`, `capabilities`. 자원의 행위 귀띔은 각 응답의 `meta.allowed_actions` | 로그인한 누구나 | - | access-control |
 | `/v1/directory/subjects` | GET | **사람과 무리 찾기**(SSO). 거르기: `filter[name][prefix]`, `filter[kind][equals]`(`person`, `group`). 담당자와 권한 부여를 고를 때 써요 | `admin`, `editor`(담당자 고르기) | - | access-control 3-2 |
 | `/v1/roles` | GET | 역할 일곱과 할 수 있는 일의 표 | 로그인한 누구나 | - | access-control 4 |
 | `/v1/grants`, `/v1/grants/{grant_id}` | GET, POST | 권한 부여(`subject`, `role`, `scope`, `expires_at`, `bulk_read`)를 읽고 줘요. `Idempotency-Key`가 필요해요 | 읽기 `auditor`, `admin` / 쓰기 `admin` | - | access-control 6 |

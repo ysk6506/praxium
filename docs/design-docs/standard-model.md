@@ -12,7 +12,8 @@ follows:
 - **타입 수는 조사 담당의 초안의 수예요.** 객체 타입 168개(핵심 122, 확장 46), 링크 타입 이름 58개와 바인딩 157개, 액션 타입 112개. 아래로 옮겨 적으면서 이름과 수가 조금 달라질 수 있고, 데이터 파일로 실을 때 굳어요.
 - **핵심**은 영향 범위의 계산에 필요한 타입이고 **확장**은 소스가 흔히 주거나 운영에 흔히 필요한 타입이에요. 표의 타입은 모두 핵심이고, 확장 타입은 표 아래에 이름만 적어요.
 - **빌린 표준**에는 조사로 확인한 것만 표준 이름을 적어요. 확인하지 못한 것은 "프락시움이 정함"이에요. 표준에서는 이름, 골격, 식별자, 고르기 값만 빌리고 링크의 뜻, 번짐, 근거, 시간은 프락시움이 정해요. 223P(건물 설비의 개념 모델)는 승인되지 않은 초안이라 개념만 참고해요.
-- 모든 항목의 이름 공간은 `std`예요. 링크의 뜻은 5절의 열하나, 액션의 축은 `mutates`·`reversibility`·`disruption`·`physical` 순이에요(kg-model의 12절).
+- 모든 항목의 이름 공간은 `std`예요. 링크의 뜻은 [KG의 모델](kg-model.md) 5절의 열하나, 액션의 축은 `mutates`·`reversibility`·`disruption`·`physical` 순이에요(kg-model의 12절).
+- **층.** 아래 2~10절이 객체 타입의 `layer` 칸의 값(아홉 층)이에요. `layer` 값의 이름은 데이터 파일로 실을 때 정해요. 속성마다 바뀌는 빠르기(`change_class`: `static` / `slow` / `dynamic`)도 데이터 파일에 적어요. 예를 들어 `Sensor`의 값과 `Pod`의 놓인 곳은 `dynamic`이고 `serial_number`는 `static`이에요.
 
 ## 1. 초안을 이 모델에 맞게 옮긴 규칙
 
@@ -21,8 +22,8 @@ follows:
 | 부품과 전체의 `INSTALLED_IN`과 `REQUIRES_PART`, 롤업 정책 | `PART_OF`(`part_of`) 하나. 전체가 부품을 필요로 하는지는 `whole_needs_part`. 이중화하는 부품은 `none`이고 묶음을 거쳐요 |
 | 자리의 `contained_in` | `LOCATED_IN`, `MOUNTED_IN`만. 부품에는 쓰지 않아요 |
 | 번지지 않는 논리 구획(`contained_in`, 번짐 없음) | `LogicalGroup`의 하위 타입과 `MEMBER_OF` (`VirtualDatacenter`, `Namespace`, `Environment`, `Team`, `PlacementRule` 등) |
-| 위험 등급 다섯 | 축 넷. 읽기는 `mutates`가 아니요, 되돌리는 액션이 있으면 `reversible`, 데이터를 덮거나 지우면 `data_loss`, 현장 작업이면 `physical` |
-| 구성에서만 끌어낸 묶음 | 묶음마다 설정·표·문서의 길을 받아요(8절) |
+| 위험 등급 하나(초안) | 축 넷. 읽기는 `mutates`가 아니요, 되돌리는 액션이 있으면 `reversible`, 데이터를 덮거나 지우면 `data_loss`, 현장 작업이면 `physical` |
+| 구성에서만 끌어낸 묶음 | 묶음마다 설정·표·문서의 길을 받아요([KG의 모델](kg-model.md) 8절) |
 | 신호 하나인 상태 | 채널 여섯. `POWERED_BY`는 `supplied_by(power)`, `COOLED_BY`는 `supplied_by(cooling)`, `UPLINKED_VIA`는 `supplied_by(network)`, `BACKED_BY`는 `supplied_by(storage)` |
 
 ## 2. 자리와 설비
@@ -341,7 +342,7 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 
 ## 12. 이중화 묶음의 하위 타입과 끌어내는 곳
 
-구성원과 문턱은 설정에서 끌어내고, 표나 문서에서도 받아요(8절의 길). 같은 묶음에 길이 여럿이면 종류별로 받아 두고 어긋남은 문제 목록에 올라요.
+구성원과 문턱은 설정에서 끌어내고, 표나 문서에서도 받아요([KG의 모델](kg-model.md) 8절의 길). 같은 묶음에 길이 여럿이면 종류별로 받아 두고 어긋남은 문제 목록에 올라요.
 
 | 하위 타입 | 구성원 | 방식과 문턱 | 끌어내는 곳 |
 |---|---|---|---|

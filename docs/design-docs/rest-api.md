@@ -65,7 +65,7 @@ follows:
 | `freshness` | 쓰인 소스 중 가장 나쁜 값: `worst_source_id`, `oldest_age_seconds`, `state` |
 | `evidence` | `min_grade`, `counts`(`fact`, `assumed`, `unknown`), `kinds`, `observation_age_seconds` |
 | `completeness` | `total`, `returned`, `truncated`, `reason`, `next_cursor` |
-| `hidden` | `hidden_passed_count`. 가려진 객체의 수만 있고 내용은 없어요 |
+| `hidden` | `hidden_passed_count`(지나간 수), `hidden_reached_count`(닿은 수). 가려진 객체의 수만 있고 내용은 없어요 |
 | `health_hint` | 쓰인 것 가운데 건강이 나쁜 것의 수와 목록(ADR-0013) |
 | `model_limits`, `warnings` | 이 답이 모르는 것, 경고 |
 | `trace_id` | 추적 번호(3-14). 헤더에도 실려요 |
@@ -77,7 +77,7 @@ follows:
           "freshness": {"worst_source_id": "src_inventory", "oldest_age_seconds": 5400, "state": "fresh"},
           "evidence": {"min_grade": "assumed", "counts": {"fact": 11, "assumed": 1, "unknown": 0}},
           "completeness": {"total": 12, "returned": 12, "truncated": false, "next_cursor": null},
-          "hidden": {"hidden_passed_count": 0}, "health_hint": {"has_unhealthy_inputs": false, "total": 0},
+          "hidden": {"hidden_passed_count": 0, "hidden_reached_count": 0}, "health_hint": {"has_unhealthy_inputs": false, "total": 0},
           "trace_id": "tr_5c1e"}}
 ```
 
@@ -130,7 +130,7 @@ Content-Type: application/merge-patch+json
 (옛 판으로 다시 보내면) → 412 {"code": "conflict.version_mismatch", "current_etag": "rev-18", ...}
 ```
 
-판의 표시가 안 맞을 때의 상태(412)는 이 문서의 가정이에요. 7절에서 물어요.
+판의 표시가 안 맞으면 412, 없으면 428로 정했어요(AIP는 409를 쓰지만 이 설계는 HTTP의 일반 규칙을 따라요).
 
 ### 3-7. 오래 걸리는 일: 202와 작업 자원
 **규칙.** 후보 실행, 시험 수집, 내보내기, 대량 읽기, 다시 돌리기는 받았다고 답하고(202, `Location: /v1/jobs/{job_id}`) 작업 자원을 줘요. 작업은 상태, 진행, 결과의 자리, 취소를 가져요.
@@ -171,7 +171,7 @@ GET /v1/jobs/job_4d2 → {"data": {"job_id": "job_4d2", "kind": "candidate_run",
 | 되돌리기 | `POST /v1/proposals/{id}/reverts`, `POST /v1/definition-sets/{set_no}/restores` | 새 브랜치와 제안을 만들어요 |
 | 흐름 풀기 / 버리기 | `POST /v1/feed-flows/{flow_id}/release`, `.../discard` | `held`인 흐름. `operator` |
 | 지금 한 번 | `POST /v1/schedules/{schedule_id}/run-now` | 작업을 만들어요 |
-| 고정 | `POST /v1/serving-pins`, `DELETE /v1/serving-pins/{pin_id}` | 묻는 쪽을 옛 KG 버전에 고정 |
+| 고정 | `POST /v1/serving-pins`, `DELETE /v1/serving-pins/{pin_id}` | 묻는 쪽을 옛 KG 버전에 고정(전체 범위의 `operator`나 `admin`) |
 
 ### 3-9. 오류
 **규칙.** 오류는 표준 모양(RFC 9457 문제의 세부, `application/problem+json`)이에요. 칸: `type`(오류 `code`의 설명 길), `title`(참고용 영어 한 줄), `status`, `code`(안정된 이름), `params`(화면이 글을 만들 때 쓰는 값), `trace_id`, `errors`(어느 칸이 틀렸나). **글은 화면이 `code`와 `params`로 만들어요.** `title`은 사람이 로그를 읽을 때만 써요. 권한이 없어 안 보이는 것과 없는 것을 가르지 않아요. 둘 다 404 `not_found.resource`예요.
@@ -228,6 +228,7 @@ GET /v1/jobs/job_4d2 → {"data": {"job_id": "job_4d2", "kind": "candidate_run",
 | `kg_changed` | KG | `change_seq`의 구간, 타입별 수. 내용은 없어요(내용은 `changes`로 읽어요) |
 | `health_changed`, `alert_opened`, `alert_resolved` | 관측 | 자원, 상태 |
 | `guard_blocked`, `stream_held` | 실행 | 소스, 데이터셋 |
+| `serving_pin_changed` | KG | `pin_id`, 고정됨 또는 풀림 |
 
 ```
 id: ev_000812
@@ -235,7 +236,7 @@ event: proposal_state_changed
 data: {"proposal_id": "prop_31", "from": "in_review", "to": "approved", "blocker_count": 0}
 ```
 
-서버는 주기적으로 빈 줄(연결 유지)을 보내요. 표준 `EventSource`는 요청 머리를 못 달아서 증표를 싣는 방법이 정해지지 않았어요(7절).
+서버는 주기적으로 빈 줄(연결 유지)을 보내요. 증표는 요청의 머리(`Authorization`)에 싣고 주소에는 싣지 않아요. 표준 `EventSource`는 요청 머리를 못 달아서, 클라이언트는 머리를 달 수 있는 읽기(예: fetch로 흐름을 읽기)를 써요.
 
 ### 3-11. 한도와 머리
 **규칙.** 부르는 쪽(계정)마다의 한도(초당 요청 수, 동시 요청 수, 계산 예산. ADR-0010)와 남은 양을 모든 응답에 실어요. `RateLimit-Policy`와 `RateLimit` 머리(IETF 초안의 모양)를 써요. 넘으면 429와 `Retry-After`(초)로 답하고 본문에 `rate_limited.*`와 `retry_after_seconds`, 좁히는 법을 줘요. 한도의 숫자는 재서 정해요.
@@ -248,7 +249,7 @@ data: {"proposal_id": "prop_31", "from": "in_review", "to": "approved", "blocker
 **규칙.** 범위 하나를 한 KG 버전에서 통째로 읽는 `bulk_read`와 정의 묶음의 내보내기는 작업(3-7)이에요. 성공하면 `result.href`에서 쪽 단위로 내려받아요. 줄마다 JSON인 흐름(`application/x-ndjson`)이고 첫 줄이 봉투(`meta`)예요. 중간에 끊겨도 `cursor`로 이어 받아요. 가림이 적용돼요. `bulk_read`는 `viewer`의 따로 된 허가가 있어야 하고 쓴 사람이 감사에 남아요(ADR-0012).
 
 ```
-POST /v1/scopes/scp_servers/bulk-reads   {"graph_version": "kv_0192"}   → 202 job_9a
+POST /v1/scopes/scp_servers/bulk-reads   {"kg_version_id": "kv_0192"}   → 202 job_9a
 GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}\n{"object_id": ...}\n
 ```
 
@@ -275,13 +276,15 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 
 - **증표 확인.** 서명(SSO가 공개한 열쇠), 발행자, 대상(이 API), 만료를 확인해요. 사람과 무리의 정보는 SSO가 알고 프락시움은 거기에 역할과 범위를 붙여요(ADR-0012). 만료는 `auth.token_expired`예요. 증표를 새로 받는 일은 화면과 SSO 사이의 일이에요.
 - **시스템 계정.** 프락시움이 낸 토큰을 `Authorization: Bearer`로 보내요. 토큰은 만들 때 한 번만 보이고 해시만 저장돼요(ADR-0012).
+- **명령줄의 사람 로그인.** 기기 인증 흐름(RFC 8628)을 써요. 사람은 다른 기기의 브라우저에서 SSO로 로그인하고 명령줄은 증표를 받아요. 시스템 계정은 위의 토큰을 써요.
 - **허용할 출처.** 화면이 다른 출처에서 뜨므로 허용할 출처의 목록을 설정으로 받아요. 기본은 빈 목록(막힘)이에요. 목록에 없는 출처에는 교차 출처 허용 머리를 주지 않아요.
 - **"나" 길.** `GET /v1/me`가 "나는 누구이고 무엇을 할 수 있나"를 줘요.
 
 ```json
-{"data": {"subject": {"kind": "person", "subject_id": "sub_21", "display_name": "Kim Dara"},
+{"data": {"subject": {"kind": "person", "subject_id": "sub_21", "display_name": "아무개"},
           "grants": [{"grant_id": "gr_5", "role": "editor", "scope": {"object_types": ["Server"], "sources": ["src_inventory"]}, "expires_at": null}],
           "bulk_read": false,
+          "allowed_actions": ["read", "propose"],
           "capabilities": {"api_version": "v1", "features": ["competency", "events_stream"]}}}
 ```
 
@@ -308,7 +311,7 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 - **모든 오류 `code`의 목록**이 계약에 있고 응답이 그 안의 것만 써요.
 - 쪽 넘김의 모양(`limit`, `cursor`, `meta.completeness`)과 오류의 모양(문제의 세부)이 모든 길에서 같아요.
 - 닫힌 질의에 "안전함" 표시가 있고 만들기와 행위의 POST에 `Idempotency-Key`가, 바꾸는 길에 `If-Match`가 있어요.
-- 모든 길에 필요한 역할(`x-required-role`, 가정)과 "오래 걸리나" 표시가 있어요.
+- 모든 길에 필요한 역할(`x-required-role`), 상태를 바꾸지 않는 길의 표시(`x-safe`)와 "오래 걸리나" 표시가 있어요.
 
 ### 5-4. 버전, 물러남, 화면이 계약을 쓰는 법
 - 큰 버전은 길의 맨 앞(`/v1`)이에요. 같은 큰 버전 안에서는 더하기만 해요: 새 길, 새 선택 칸, 새 응답 칸, 새 오류 `code`. 화면은 모르는 응답 칸을 무시해야 해요(받는 쪽의 규칙).
@@ -328,7 +331,7 @@ px source list --filter status=active --output table
 ```
 
 - 출력은 기본이 JSON이에요. `--output table`도 있어요. 끝나는 값(종료 코드)은 오류의 무리를 따라가요(0 성공, 오류 무리마다 다른 수). 오래 걸리는 일은 `--wait`이 작업을 기다려요.
-- 로그인은 시스템 계정의 토큰이 기본이에요. 사람이 쓰는 로그인 방법은 7절에서 물어요.
+- 로그인은 사람이면 기기 인증 흐름(4절), 시스템이면 계정의 토큰이에요.
 
 ### 5-6. MCP와의 대응
 MCP 서버는 같은 쓰임 위의 얇은 층이에요. 읽기만 하고 쓰는 길이 없어요. 툴 이름은 닫힌 질의의 이름과 같아요.
@@ -355,17 +358,17 @@ MCP 서버는 같은 쓰임 위의 얇은 층이에요. 읽기만 하고 쓰는 
 |---|---|---|
 | 오류의 모양 | RFC 9457(문제의 세부)이 RFC 7807을 대체한 표준이에요 | 따라요(3-9) |
 | 물러남의 머리 | `Deprecation`은 RFC 9745, `Sunset`은 RFC 8594 | 따라요(5-4) |
-| `Idempotency-Key` | IETF 초안이에요(표준이 아님). 재현의 규칙과 오류 상태가 초안에 있어요 | 초안의 뜻을 따라요. 이름이 바뀔 수 있어요 |
-| 한도의 머리 | `RateLimit`와 `RateLimit-Policy`도 IETF 초안이에요 | 초안을 따라요. 바뀔 수 있어요 |
+| `Idempotency-Key` | IETF 초안이에요(draft-ietf-httpapi-idempotency-key-header-08, 표준이 아님). 재현의 규칙과 오류 상태가 초안에 있어요 | 초안의 뜻을 따라요. 이름이 바뀔 수 있어요 |
+| 한도의 머리 | `RateLimit`와 `RateLimit-Policy`도 IETF 초안이에요(draft-ietf-httpapi-ratelimit-headers-11) | 초안을 따라요. 바뀔 수 있어요 |
 | 상태를 바꾸지 않는 큰 요청 | HTTP에 본문을 가진 안전한 메서드 `QUERY`(RFC 10008)가 생겼고 OpenAPI 3.2에 `query` 작업이 있어요 | 결정은 POST의 물음 자원이에요. `QUERY`가 퍼지면 같은 자원에 `QUERY`를 더하는 것은 더하기예요. 7절 |
-| 쪽 넘김과 오래 걸리는 일 | Google의 API 개선 제안(AIP)과 Microsoft, Zalando의 REST 지침이 열쇠 기반 쪽 넘김, 작업 자원, 표준 메서드를 권해요 | 따라요 |
+| 쪽 넘김과 오래 걸리는 일 | Google의 API 개선 제안(AIP-158은 불투명한 쪽 표, AIP-151은 오래 걸리는 일)과 Zalando 지침(#160은 열쇠 기반 쪽 넘김 권장)이 권해요. Microsoft의 지침은 확인하지 못함 | 따라요 |
 | 안 보이는 것 | AIP-193은 권한을 먼저 보고 있든 없든 403을 주라고 해요 | 결정은 안 보이는 것은 404(있음과 없음을 안 가름). 같은 목적이고 상태가 달라요. 7절 |
-| 길의 버전 | Zalando 지침은 길에 버전을 넣지 말라고 해요. Azure는 `api-version` 질의값을 써요 | 결정은 길의 큰 버전이에요 |
-| 브라우저 앱의 증표 | OAuth의 브라우저 앱 모범 사례(초안)는 민감한 앱에 BFF를 권해요. 코드 흐름과 PKCE는 RFC 7636 | 결정은 화면이 증표를 쥐고 BFF를 두지 않아요. 7절 |
-| 서버 전송 이벤트 | WHATWG 표준. `EventSource`는 요청 머리를 못 달아요 | 7절 |
-| OpenAPI | 3.1이 널리 쓰이고 3.2가 나왔어요 | 3.1로 시작해요(가정). 도구가 3.2를 따라오면 올려요 |
+| 길의 버전 | Zalando 지침(#115)은 길에 버전을 넣지 말라고 해요. Azure는 `api-version` 질의값을 써요 | 결정은 길의 큰 버전이에요 |
+| 브라우저 앱의 증표 | OAuth의 브라우저 앱 모범 사례는 RFC 10017(BCP 212)이고 업무용 앱에 BFF를 강하게 권해요. 코드 흐름과 PKCE는 RFC 7636, 기기 인증 흐름은 RFC 8628 | 결정은 화면이 증표를 쥐고 BFF를 두지 않아요. 7절 |
+| 서버 전송 이벤트 | WHATWG 표준. `EventSource`는 요청 머리를 못 달아요 | 머리를 달 수 있는 읽기를 써요(3-10) |
+| OpenAPI | 3.1이 널리 쓰이고 3.2(최신 3.2.1)가 나왔어요 | 3.1로 시작해요(가정). 도구가 3.2를 따라오면 올려요 |
 
-`If-Match` 실패의 상태는 HTTP의 일반 규칙으로는 412예요. AIP는 409를 써요. 이 문서는 412를 가정해요.
+`If-Match` 실패는 HTTP의 일반 규칙대로 412예요(AIP는 409). 결정이에요.
 
 ## 7. 알고 가는 한계와 아직 정하지 않은 것
 **한계(가정).**
@@ -374,11 +377,8 @@ MCP 서버는 같은 쓰임 위의 얇은 층이에요. 읽기만 하고 쓰는 
 - 같은 큰 버전 안에서 더하기만 하는 규칙은 서버가 지키는 것이 아니라 검사가 지켜요. 검사가 모든 깨는 변경을 잡는다는 보장은 없어요.
 
 **아직 정하지 않은 것.**
-- 사건의 흐름에 증표를 싣는 방법(표준 `EventSource`는 머리를 못 달아요. 화면이 흐름을 직접 읽는 방법인지, 짧은 수명의 일회용 표를 주는 길인지).
-- `If-Match` 실패의 상태(412인지 409인지).
 - 길에 큰 버전을 두는 것과 별개로 깨지 않는 선택 기능(켜진 기능)을 알리는 방법의 세부(`capabilities`의 칸).
-- 물러난 큰 버전을 함께 내는 기간.
-- 사람이 명령줄 클라이언트에서 로그인하는 방법.
+- 물러난 큰 버전을 함께 내는 기간은 설정이고 기본값은 가정이에요(재서 정해요).
 - 안 보이는 것과 없는 것을 404로 같게 하는 규칙과 쓰기 권한 부족(`permission.*`)이 존재를 알려 주는 정도. 읽을 수 있는 자원에만 `permission.*`를 주는 것으로 시작해요.
 - `QUERY` 메서드와 OpenAPI 3.2로 갈지.
 - 화면의 `BFF`가 필요한지. 필요하면 화면 저장소가 둬요(ADR-0016).

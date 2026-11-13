@@ -24,7 +24,7 @@ follows:
 
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
-| `/v1/object-types` | GET | 객체 타입 목록. 거르기: `layer`, `status`, `origin`(`std`, `org`, `ext`), `trait`, `name`(`prefix`) | 읽기 | - | kg-model |
+| `/v1/object-types` | GET | 객체 타입 목록. 거르기: `layer`, `status`, `namespace`(`std`, `org`, `ext`), `trait`, `name`(`prefix`) | 읽기 | - | kg-model |
 | `/v1/object-types/{type_id}` | GET | 한 타입: 속성(`name`, `value_type`, 단위), 식별 키, 바인딩, 특성, `status`, `superseded_by`, `display_names`, 담당자 | 읽기 | - | kg-model |
 | `/v1/link-types` | GET | 링크 타입 목록. 거르기: `meaning`(열하나), `from_type`, `to_type` | 읽기 | - | kg-model |
 | `/v1/link-types/{link_type_id}` | GET | 한 링크 타입: 뜻, 출발과 도착의 타입, 개수, 매개 값, 잇는 조건 | 읽기 | - | kg-model |
@@ -32,8 +32,10 @@ follows:
 | `/v1/action-types`, `/v1/action-types/{id}` | GET | 액션 타입 | 읽기 | - | kg-model |
 | `/v1/value-types` | GET | 값 타입(바탕, 검사, 다듬기) | 읽기 | - | kg-model |
 | `/v1/traits` | GET | 특성과 그 특성이 요구하는 속성 | 읽기 | - | kg-model |
-| `/v1/layers` | GET | 층(구성 층 등)과 층마다의 타입 수 | 읽기 | - | kg-model |
+| `/v1/layers` | GET | 표준 모델의 아홉 층(`site_facility`, `compute_hardware`, `network`, `storage`, `virtualization`, `container`, `platform`, `service_org`, `cross_cutting`)과 층마다의 타입 수 | 읽기 | - | kg-model |
 | `/v1/object-types/{type_id}/usage` | GET | 타입의 쓰임: 정의의 `what_depends`(12-4)와 같은 답을 이 타입에서 시작해 줘요 | 읽기(정의를 읽는 범위) | - | definitions |
+| `/v1/type-usage` | GET | 타입별 쓰임의 보고(몇 객체, 몇 공급, 마지막으로 쓰인 때). 올리기와 합치기를 가리는 근거 | `model_steward` | - | kg-model 13.3 |
+| `/v1/similar-type-pairs` | GET | 겹치는 타입의 짝(주기로 계산한 목록) | `model_steward` | - | kg-model 13.3 |
 | `/v1/type-similarity-checks` | POST | 만들려는 타입의 초안(이름, 속성, 식별 키, 매핑될 데이터셋)을 받아 비슷한 타입을 찾아 줘요. 상태를 바꾸지 않아요(안전함) | 읽기 | - | kg-model 13.3 |
 
 비슷한 타입 찾기의 답은 `similar[]`(`type_id`, `reasons`: `name`, `attribute_overlap`, `same_dataset`, `same_standard`)와 점수가 아니라 이유의 목록이에요.
@@ -53,19 +55,20 @@ POST /v1/type-similarity-checks
 |---|---|---|---|---|---|
 | `/v1/adapters` | GET | 어댑터 목록(범용 넷과 흐름 어댑터), 켜진 것 | 읽기 | - | ingestion |
 | `/v1/presets`, `/v1/presets/{preset_id}` | GET | 프리셋: `version`, `adapter`, `allowed_requests`, `pagination`, `default_feeds`, `default_sensitivity`, `tests` | 읽기 | - | ingestion |
-| `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `completeness`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 비밀 값은 `credential_ref`(참조)만 | 읽기 | - | ingestion |
-| `/v1/sources/{source_id}/introspections` | POST | 소스를 들여다봐요(어떤 표와 컬럼이 있나). 읽기 전용 요청만 나가요 | `operator` | 작업 | ingestion 8.1 |
-| `/v1/sources/{source_id}/checks` | POST | 점검(연결, 인증, 읽기 전용의 세 겹이 확인되나) | `operator` | 작업 | ingestion 8.1 |
+| `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 비밀 값은 `credential_ref`(참조)만 | 읽기 | - | ingestion |
+| `/v1/sources/{source_id}/introspections` | POST | 소스를 들여다봐요(어떤 표와 컬럼이 있나). 읽기 전용 요청만 나가요 | 그 소스를 범위에 가진 `editor`나 `operator` | 작업 | ingestion 8.1 |
+| `/v1/sources/{source_id}/checks` | POST | 점검(연결, 인증, 읽기 전용의 세 겹이 확인되나) | 그 소스를 범위에 가진 `editor`나 `operator` |
+| `/v1/sources/{source_id}/uploads`, `/v1/sources/{source_id}/upload-template` | POST, GET | 엑셀·CSV 소스의 파일 올리기와 칸 견본 내려받기. 원본 기록으로 쌓여요 | `operator`(가정) | 작업 | ingestion | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}/pause`, `.../resume` | POST | 일시 정지(`reason`을 받아요)와 다시 켜기. 건강에 보여요 | `operator` | - | ingestion 5 |
 | `/v1/datasets`, `/v1/datasets/{dataset_id}` | GET | 데이터셋: `kind`, `receive_mode`, `natural_key`, `event_time`, `marker`, `deletion`, `columns`(`sensitivity`), `redact`, `expectations` | 읽기 | - | ingestion |
-| `/v1/datasets/{dataset_id}/previews` | POST | 받아 둔 원본 기록에서 몇 행을 보여 줘요. 비밀 값은 지워지고 컬럼마다 민감 등급 한도를 따라 "가려짐"이 나와요. 안전함 | 읽기 | - | ingestion 7 |
+| `/v1/datasets/{dataset_id}/previews` | POST | 받아 둔 원본 기록에서 몇 행을 보여 줘요. 비밀 값은 지워지고 컬럼마다 민감 등급 한도를 따라 "가려짐"이 나와요. 안전함 | 그 소스를 범위에 가진 `editor`나 `operator` | - | ingestion 7 |
 | `/v1/refinements`, `/v1/refinements/{id}` | GET | 정제(닫힌 연산의 목록 `ops`, `inputs`) | 읽기 | - | ingestion |
 | `/v1/feeds`, `/v1/feeds/{feed_id}` | GET | 공급: 데이터셋 하나에서 객체 타입 하나로 가는 매핑 | 읽기 | - | ingestion |
 | `/v1/object-types/{type_id}/feed-table` | GET | **타입의 공급 표**: 그 타입의 속성마다 어느 소스의 어느 컬럼이 어떤 우선순위로 채우나, 근거의 종류, 받는 방식(배치와 흐름이 섞이면 둘 다) | 읽기 | - | ingestion, kg-model |
 | `/v1/expectations`, `/v1/expectations/{id}` | GET | 기대 조건(받은 것이 지켜야 할 것) | 읽기 | - | ingestion |
 | `/v1/schedules`, `/v1/schedules/{schedule_id}` | GET | 일정: `target`, `every`/`at`/`manual_only`, `windows`, `stream_enabled`, `reconcile_every`, `misfire_policy`, `expected_interval` | 읽기 | - | ingestion 5 |
 | `/v1/schedules/{schedule_id}/run-now` | POST | 지금 한 번(같은 길, 같은 소스 지키기, 같은 안전장치). 일정의 값은 안 바뀌어요 | `operator` | 작업 | ingestion 5 |
-| `/v1/ingest/envelopes` | POST | **수집 봉투를 받는 길.** 제품 밖의 수집기가 원본 기록을 보내요. 본문은 봉투(`envelope_version`, `capture_id`, `mode`, `completeness`, `redaction`, `body_hash`, `records`). `capture_id`가 겹침 방지 열쇠예요(같은 `capture_id`는 한 번만 받아요) | 시스템 계정(수집기용) | - | ingestion 6 |
+| `/v1/ingest/envelopes` | POST | **수집 봉투를 받는 길.** 제품 밖의 수집기가 원본 기록을 보내요. 본문은 봉투(`envelope_version`, `capture_id`, `mode`, `capture_complete`, `redaction`, `body_hash`, `records`). `capture_id`가 겹침 방지 열쇠예요(같은 `capture_id`는 한 번만 받아요) | 시스템 계정(수집기용) | - | ingestion 6 |
 | `/v1/collectors`, `/v1/collectors/{collector_id}` | GET | 수집기: 마지막으로 보낸 때, 봉투의 수, 빠진 `seq`, 버전 | 읽기 | - | ingestion 6.2 |
 
 - 수집 봉투를 받는 길은 `Idempotency-Key`가 아니라 봉투의 `capture_id`와 `seq`로 겹침을 막아요(ingestion 6.1). 응답은 받은 수와 거절한 수, 데이터셋의 `redact`대로 다시 지운 수를 줘요. 크기가 상한을 넘으면 `invalid_input.envelope_too_large`예요.
@@ -74,7 +77,7 @@ POST /v1/type-similarity-checks
 ```json
 POST /v1/ingest/envelopes   Authorization: Bearer <수집기용 시스템 계정 토큰>
 {"envelope_version": "1", "source_id": "src_inventory", "dataset_id": "ds_servers", "capture_id": "cap_0007", "mode": "delta",
- "completeness": {"complete": true, "expected_count": 2, "received_count": 2},
+ "capture_complete": true, "expected_count": 2, "received_count": 2,
  "records": [{"kind": "added", "natural_key": "srv-0417", "seq": 41, "body": {"hostname": "srv-0417", "rack": "r-12"}},
              {"kind": "modified", "natural_key": "srv-0418", "seq": 42, "body": {"hostname": "srv-0418", "rack": "r-13"}}]}
 → 202 {"data": {"capture_id": "cap_0007", "accepted": 2, "rejected": 0, "redacted_again": 0}}
@@ -90,10 +93,10 @@ POST /v1/ingest/envelopes   Authorization: Bearer <수집기용 시스템 계정
 | `/v1/sync-runs/{run_id}/stages` | GET | **단계별 수**(`run_stage`): `stage`, `in_count`, `out_count`, `dropped_count`, `dropped_by_reason`. 들어온 = 나간 + 떨어진 | 읽기 | - | data-observability 9.1 |
 | `/v1/sync-runs/{run_id}/samples` | GET | **떨어진·떼어 둔 기록의 견본.** 거르기: `stage`, `reason`. 내용은 읽을 때 원본 기록에서 가져와요. 지워졌으면 "지워짐". 컬럼마다 민감 등급 한도로 "가려짐" | `operator`, `editor`, `admin`(그 소스의 범위) | - | data-observability 9.2 |
 | `/v1/sync-runs/{run_id}/replays` | POST | **다시 돌리기.** 받아 둔 원본 기록의 그 구간을 같은 정의 묶음과 실행기로 뒤 단계만 다시 돌려 단계별 수와 떨어진 기록을 봐요. 소스에 안 가고 KG를 안 바꿔요. `body.branch_id`를 주면 브랜치의 정의로 돌려요 | `operator` | 작업 | data-observability 9.3 |
-| `/v1/feed-flows` | GET | 흐름 목록: `flow_state`(`running`, `held`, `paused`, `failed`), `held_reason`, `held_since_seq`, `queued_changes`, `read_position`. 거르기: `source_id`, `flow_state` | 읽기 | - | kg-operations 4.2 |
+| `/v1/feed-flows` | GET | 흐름 목록: `flow_state`(`running`, `held`, `paused`, `failed`), `held_reason`, `held_since_seq`, `queued_changes`, `source_cursor`. 거르기: `source_id`, `flow_state` | 읽기 | - | kg-operations 4.2 |
 | `/v1/feed-flows/{flow_id}` | GET | 흐름 하나 | 읽기 | - | kg-operations 4.2 |
 | `/v1/feed-flows/{flow_id}/release` | POST | **풀기**: 쌓인 변경을 받은 순서대로 적용. 안전장치가 걸린 이유를 확인한 것으로 기록해요. 본문에 `acknowledged_reason`을 받아요 | `operator` | 작업 | kg-operations 4.2 |
-| `/v1/feed-flows/{flow_id}/discard` | POST | **버리기**: 쌓인 변경을 적용하지 않고 지나가요(원본 기록은 안 지워요) | `operator` | - | kg-operations 4.2 |
+| `/v1/feed-flows/{flow_id}/discard` | POST | **버리기**: 쌓인 변경을 적용하지 않고 지나가요(원본 기록은 안 지워요). 맞추기를 할 수 있는 소스에서만 돼요. 아니면 `conflict.state_not_allowed` | `operator` | - | kg-operations 4.2 |
 | `/v1/guard-confirmations` | POST | 안전장치에 걸린 배치 적용의 확인(처음 적용, 규칙을 고친 뒤 첫 적용, 스키마의 바뀜) | `operator` | - | ingestion 9 |
 
 - 풀기 전에 후보 실행으로 차이를 봐요(위의 `replays`나 4무리의 후보 실행). 붙잡힌 까닭이 정의 탓이면 풀기 전에 정의를 고쳐 병합해요. 풀기는 `conflict.state_not_allowed`로 거절돼요(흐름이 `held`가 아닐 때).
@@ -157,7 +160,8 @@ POST /v1/branches/br_12/items    Idempotency-Key: 31c9...
 | `/v1/definition-sets/{set_no}/exports` | POST | 묶음을 글 파일로 내보내요(정규 JSON, 항목 하나가 파일 하나, 비밀 값은 참조만). 자기 범위만큼 | `editor` | 작업 | definitions 13 |
 | `/v1/definition-imports` | POST | 파일을 들여요. 언제나 새 브랜치와 제안(`origin: import`). 본줄기를 덮어쓰지 않아요 | `editor` | - | definitions 13 |
 
-- **되돌리기의 상태 흐름.** 되돌리기는 새 제안이에요. 이후는 `draft` 이후의 보통의 흐름(검토, 승인, 줄)이에요. 급한 되돌리기는 감사 기록에 `admin_override`가 남고 사후 검토가 붙어요(`post_review_state: pending`).
+- **되돌리기의 상태 흐름.** 되돌리기는 새 제안이에요. 이후는 `draft` 이후의 보통의 흐름(검토, 승인, 줄)이에요. 급한 되돌리기는 `admin`이나 그 제안이 고친 자리 전부를 범위에 가진 `approver`가 하고(`operator`는 못 해요), 감사 기록에 `admin_override`가 남고 사후 검토가 붙어요(`post_review_state: pending`).
+- **타입 합치기와 올리기**는 브랜치 안의 도우미예요: `POST /v1/branches/{branch_id}/type-merges`(A를 B로), `POST /v1/branches/{branch_id}/type-promotions`(`ext`를 `org`로, `keep_ids`). 새 제안의 항목을 만들어요(`editor`, 승인은 ADR-0012). definitions 11.
 - 묻는 쪽의 고정(`/v1/serving-pins`)은 KG 무리에 있어요([다음 문서](rest-api-resources-graph.md)).
 - 내보낸 파일은 작업의 `result.href`로 받고 감사 기록에 남아요.
 - 정의 항목마다의 정의의 시험(`item_tests`)은 항목의 본문에 든 견본이라 별도의 길이 없어요. 검사 길로 돌려요.
@@ -174,7 +178,8 @@ POST /v1/branches/br_12/items    Idempotency-Key: 31c9...
 ```
 
 ## 7. 알고 가는 한계와 물어 둘 것
-- 들여다보기, 점검, 시험 수집이 소스에 닿는 일이라 `operator`로 정했어요. 원천 문서가 역할을 이렇게 따로 말하지 않았어요(운영 역할이 시험 수집을 하는 것만 적혀 있어요). 설계 담당이 확인해야 해요.
+- 들여다보기·미리보기·점검은 그 소스를 범위에 가진 `editor`나 `operator`, 시험 수집은 `operator`로 정해졌어요.
+- 엑셀 올리기의 역할(`operator`), 타입 쓰임·겹침 보고의 역할(`model_steward`)은 원천이 따로 말하지 않아 가정이에요.
 - 제안 만들기(`POST /v1/proposals`)가 `editor`인 것은 브랜치를 열고 고치는 것이 `editor`여서예요.
 - 정의의 시험(견본)을 고치는 길, 수집기의 만들기와 토큰 교체(시스템 계정 무리)는 이 문서에 따로 적지 않았어요.
 - 이 문서의 모든 목록의 거르는 칸은 표에 적은 것이 처음 후보예요. OpenAPI 문서에서 닫아요.
