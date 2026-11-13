@@ -44,8 +44,8 @@ describe("audit queue [REQ-020]", () => {
 });
 
 describe("test rows [REQ-020]", () => {
-  const table = (rows: string[], head = "| 시험 | 내용 |\n|---|---|") =>
-    `${front()}# D\n\n## 시험\n\n${head}\n${rows.join("\n")}\n`;
+  const table = (rows: string[], head = "| 테스트 | 내용 |\n|---|---|") =>
+    `${front()}# D\n\n## 테스트\n\n${head}\n${rows.join("\n")}\n`;
 
   test("rows of a test section without an existing test path are counted; planned rows are not", () => {
     const root = docsRepo({
@@ -58,11 +58,11 @@ describe("test rows [REQ-020]", () => {
     expect(notes[0]).toContain("docs/guide.md (1/2)");
   });
 
-  test("a table with a 시험 파일 column is judged by that column, with brace paths expanded", () => {
+  test("a table with a 테스트 파일 column is judged by that column, with brace paths expanded", () => {
     const root = docsRepo({
       "apps/x/a-1.test.ts": "export {};\n",
       "apps/x/a-2.test.ts": "export {};\n",
-      "docs/guide.md": `${front()}# D\n\n| 종류 | 시험 파일 |\n|---|---|\n| a | \`apps/x/a-{1,2}.test.ts\` |\n| b | \`apps/x/a-{1,3}.test.ts\` |\n`,
+      "docs/guide.md": `${front()}# D\n\n| 종류 | 테스트 파일 |\n|---|---|\n| a | \`apps/x/a-{1,2}.test.ts\` |\n| b | \`apps/x/a-{1,3}.test.ts\` |\n`,
     });
     expect(testRowNotes(root, ["docs/guide.md"])[0]).toContain("(1/2)");
   });

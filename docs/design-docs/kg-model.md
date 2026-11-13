@@ -30,12 +30,12 @@ follows:
 ```
 
 ## 3. 타입 등록부의 칸
-타입은 데이터예요. 칸의 이름은 `snake_case`예요. 모든 정의(타입, 속성, 링크 타입, 바인딩, 액션)는 `name`과 따로 바뀌지 않는 `id`를 가져서 이름을 바꿔도 이어져요. 등록부는 타입, 링크 타입, 속성마다 바뀌지 않는 작은 정수(`type_no`, `link_type_no`, `attr_no`)도 내줘요. **저장하는 행과 `attrs`의 키, 표의 나눔, 투영은 이름이 아니라 이 번호를 써요.** 이름은 등록부에서 풀고, 번호는 다시 쓰지 않아요. 그래서 이름을 바꿔도 행은 그대로예요.
+타입은 데이터예요. 칸의 이름은 `snake_case`예요. 모든 정의(타입, 속성, 링크 타입, 바인딩, 액션)는 `name`과 따로 바뀌지 않는 `id`를 가져서 이름을 바꿔도 이어져요. 등록부는 타입, 링크 타입, 속성마다 바뀌지 않는 작은 정수(`type_no`, `link_type_no`, `attr_no`)도 내줘요. **저장하는 행과 `attrs`의 키, 표의 나눔, 프로젝션은 이름이 아니라 이 번호를 써요.** 이름은 등록부에서 풀고, 번호는 다시 쓰지 않아요. 그래서 이름을 바꿔도 행은 그대로예요.
 
 ### 3.1 객체 타입
 | 칸 | 뜻 |
 |---|---|
-| id, type_no, name, namespace | 바뀌지 않는 id, 행과 투영이 이름 대신 쓰는 `type_no`, 이름(4절), 이름 공간(`std`, `org`, `ext`와 예약된 `sys`. 3.7) |
+| id, type_no, name, namespace | 바뀌지 않는 id, 행과 프로젝션이 이름 대신 쓰는 `type_no`, 이름(4절), 이름 공간(`std`, `org`, `ext`와 예약된 `sys`. 3.7) |
 | layer | 표준 모델의 아홉 층과 열째 층 `system`(`sys` 타입이 놓이는 층) 가운데 하나(standard-model). 권한의 타입 범위를 층으로 줄 수 있는 것은 이 칸 때문이에요. 사용자가 더한 타입은 부모의 층을 따라요 |
 | scope_keys | 이 타입에서 `scope_key: true`로 선언한 속성(3.2)의 이름. 읽기 권한의 객체 조건에 쓰고(자리, 환경, 맡은 조직 같은 것), 타입 하나에 넷까지예요. 하위 타입은 물려받아요. `versioned`이고 식별 키처럼 다뤄 함부로 바뀌지 않아요(ADR-0012, REQ-165) |
 | parent | 부모 타입. 하나만 있어요 |
@@ -45,7 +45,7 @@ follows:
 | display_names, title_property | 언어별 표시 이름(비어 있어도 돼요. 이름과 식별에는 쓰지 않아요), 사람이 읽는 이름으로 쓸 속성 |
 | standard_ref | 어느 표준의 무엇에서 빌렸는지. 확인한 것만 적고, 아니면 "프락시움이 정함" |
 | status, superseded_by | `experimental` / `active` / `deprecated` (11절). 물러난 타입이 가리키는 후속 타입 |
-| contacts | 담당자(사람이나 무리의 목록). 연락처일 뿐 권한이 아니에요. 문제와 알림, 제안의 검토 요청이 그리로 가요([ADR-0012](adr/0012-access-control.md)) |
+| contacts | 담당자(사람이나 그룹의 목록). 연락처일 뿐 권한이 아니에요. 문제와 알림, 제안의 검토 요청이 그리로 가요([ADR-0012](adr/0012-access-control.md)) |
 
 ### 3.2 속성
 | 칸 | 뜻 |
@@ -60,7 +60,7 @@ follows:
 | history_kind | 이력의 종류 `versioned` / `volatile`. 비어 있으면 `change_class`가 정해요(`static`과 `slow`는 `versioned`, `dynamic`은 `volatile`) |
 | status, superseded_by | 속성도 물러나게 할 수 있어요 |
 
-이력의 종류는 이래요. `versioned`는 바뀔 때마다 이력에 남아요(구조와 구성). `volatile`은 지금 값과 본 때만 두고, 내용 해시와 버전의 차이에 들지 않아요(올라와 있나 내려가 있나 같은 상태). 바뀌면 이력 없는 경량 변경 레코드가 적혀서 투영과 충족 표시와 변경 알림이 따라와요. 영향 범위의 `as_observed`가 읽는 관측 상태는 `volatile`이어도 돼요. "그 버전 때"의 답에는 `volatile` 값이 없어요([KG에 묻기](kg-queries.md) 4절). **링크는 `volatile`이 될 수 없어요.** 자주 옮겨 다니는 `runs_on`도 보통의 변경이에요(그 쓰기의 양은 측정해서 봐요). 받는 방식과 변경 시퀀스는 [ADR-0008](adr/0008-ingestion.md)과 [ADR-0009](adr/0009-kg-storage-and-versions.md)가 정해요.
+이력의 종류는 이래요. `versioned`는 바뀔 때마다 이력에 남아요(구조와 구성). `volatile`은 지금 값과 본 때만 두고, 내용 해시와 버전의 차이에 들지 않아요(올라와 있나 내려가 있나 같은 상태). 바뀌면 이력 없는 경량 변경 레코드가 적혀서 프로젝션과 충족 표시와 변경 알림이 따라와요. 영향 범위의 `as_observed`가 읽는 관측 상태는 `volatile`이어도 돼요. "그 버전 때"의 답에는 `volatile` 값이 없어요([KG에 묻기](kg-queries.md) 4절). **링크는 `volatile`이 될 수 없어요.** 자주 옮겨 다니는 `runs_on`도 보통의 변경이에요(그 쓰기의 양은 측정해서 봐요). 받는 방식과 변경 시퀀스는 [ADR-0008](adr/0008-ingestion.md)과 [ADR-0009](adr/0009-kg-storage-and-versions.md)가 정해요.
 
 ### 3.3 값 타입
 속성의 자료형은 `string`, `integer`, `number`, `boolean`, `time`, `enum`, `quantity`(단위 있는 수), `ref`(다른 객체), `list`, `map` 중 하나이고, 그 위에 이름 붙은 **값 타입**을 얹어요.
@@ -178,7 +178,7 @@ follows:
 | `Manageable` | `management` (잃어도 `service`는 살아 있어요) | — |
 
 - 타입이 강도를 바꿀 수 있어요(예: 잠깐 냉방이 없어도 되는 장비를 `soft`로).
-- 채널을 어느 링크로 채우는지는 `supplied_by`(자원마다 하나)와 `managed_by`예요. 필요를 선언했는데 채우는 링크가 없으면 그 채널은 "알 수 없음"이 돼요. "공급이 없다"로 읽히지 않아요(9.3).
+- 채널을 어느 링크로 채우는지는 `supplied_by`(자원마다 하나)와 `managed_by`예요. 필요를 선언했는데 채우는 링크가 없으면 그 채널은 "알 수 없음"이 돼요. "피드가 없다"로 읽히지 않아요(9.3).
 - 망의 바깥이나 중심으로 선언한 객체는 특성 `NetworkAnchor`를 달아요. 길이 닿아야 하는 곳이에요. 어떻게 쓰이는지는 ADR-0010이에요.
 - 관리자가 더한 타입은 특성을 다는 것으로 필요를 선언해요. 새 특성은 결정 기록으로만 더해요.
 
@@ -215,7 +215,7 @@ follows:
 | 상황 | 등급 |
 |---|---|
 | 장비의 설정이 최소 링크 수를 말해요 | `fact` (`basis=configured`) |
-| 사람이나 문서가 적었어요 | `basis=declared`. 등급은 기본이 `fact`예요. 공급이 그 데이터셋을 "어림"이라고 표시하면 `assumed`예요 |
+| 사람이나 문서가 적었어요 | `basis=declared`. 등급은 기본이 `fact`예요. 피드가 그 데이터셋을 "어림"이라고 표시하면 `assumed`예요 |
 | 소스에 없고 기본값 규칙도 없어요 | `unknown` |
 | 관리자가 적은 기본값 규칙이 채웠어요 | `assumed` |
 
@@ -272,12 +272,12 @@ ECMP, LACP, BGP 세션, 전원 A·B, 클러스터 구성 어느 것도 한 가�
 | 칸 | 뜻 |
 |---|---|
 | feed, target, scope | 어느 피드(데이터셋에서 객체 타입으로 가는 매핑 하나)이 어느 객체 타입이나 링크 타입을, 선택으로 어느 범위(자리 등)에서 |
-| claim | "이 공급은 이 타입을 전부 준다" |
+| claim | "이 피드는 이 타입을 전부 준다" |
 | declared_by, declared_at | 누가 언제 선언했나 |
 
-선언은 공급마다, 객체 타입과 링크 타입 둘 다에 할 수 있고 범위를 붙일 수 있어요. 선언이 있어야 "링크가 없다"가 "없다"로 읽혀요. 선언이 없으면 "모른다"예요. 선언한 수와 받은 수가 다르면 문제 목록에 올라요([ADR-0011](adr/0011-kg-operations.md)).
+선언은 피드마다, 객체 타입과 링크 타입 둘 다에 할 수 있고 범위를 붙일 수 있어요. 선언이 있어야 "링크가 없다"가 "없다"로 읽혀요. 선언이 없으면 "모른다"예요. 선언한 수와 받은 수가 다르면 문제 목록에 올라요([ADR-0011](adr/0011-kg-operations.md)).
 
-예: 엑셀 `rack-sheet`의 공급이 `Rack`을 전부 준다고 선언했어요. 서버 `srv-02`의 `MOUNTED_IN` 링크가 없고 `PhysicalServer`나 `MOUNTED_IN`을 전부 준다는 선언이 없다면, `srv-02`의 자리는 "모른다"예요.
+예: 엑셀 `rack-sheet`의 피드가 `Rack`을 전부 준다고 선언했어요. 서버 `srv-02`의 `MOUNTED_IN` 링크가 없고 `PhysicalServer`나 `MOUNTED_IN`을 전부 준다는 선언이 없다면, `srv-02`의 자리는 "모른다"예요.
 
 ## 10. 식별
 바깥 식별자(일련번호, UUID, MAC, 관리 시스템의 ID)는 교체나 재생성 때 바뀌므로 KG의 키로 쓰지 않아요.
@@ -394,6 +394,6 @@ ECMP, LACP, BGP 세션, 전원 A·B, 클러스터 구성 어느 것도 한 가�
 2. 부품 교체처럼 식별자가 바뀌는 흔한 일을 소스가 알리는 길을 식별 키 규칙에 어떻게 더하는지.
 3. 근거의 종류 `configured`, `observed`, `declared`, `derived`가 같은 값에 여럿 있을 때 한 값으로 보이는 순서(보는 기준은 ADR-0010).
 ## 16. 관련 결정과 요구사항
-- [ADR-0007](adr/0007-kg-model.md): 이 문서의 결정. [ADR-0008](adr/0008-ingestion.md): 받기와 끌어내기. [ADR-0009](adr/0009-kg-storage-and-versions.md): 저장과 버전. [ADR-0010](adr/0010-kg-queries-and-impact.md): 영향 범위의 계산. [ADR-0011](adr/0011-kg-operations.md): 품질과 문제 목록. [ADR-0012](adr/0012-access-control.md): 역할, 범위, 민감 등급. [ADR-0014](adr/0014-definitions-branches-revert.md): 정의의 버전과 브랜치. [ADR-0015](adr/0015-competency-questions.md): 역량 질문.
+- [ADR-0007](adr/0007-kg-model.md): 이 문서의 결정. [ADR-0008](adr/0008-ingestion.md): 수집과 끌어내기. [ADR-0009](adr/0009-kg-storage-and-versions.md): 저장과 버전. [ADR-0010](adr/0010-kg-queries-and-impact.md): 영향 범위의 계산. [ADR-0011](adr/0011-kg-operations.md): 품질과 문제 목록. [ADR-0012](adr/0012-access-control.md): 역할, 범위, 민감 등급. [ADR-0014](adr/0014-definitions-branches-revert.md): 정의의 버전과 브랜치. [ADR-0015](adr/0015-competency-questions.md): 역량 질문.
 - 요구사항: REQ-100(타입 등록부와 이름 규칙), REQ-101(링크 의미와 채널), REQ-102(이중화 그룹과 세 값), REQ-103(근거 등급, 가정으로 메우지 않기, 완전성 선언), REQ-104(식별과 병합), REQ-105(표준 모델), REQ-106(근거의 종류 넷과 의도와 관측의 어긋남), REQ-107(타입의 층 셋과 승인, 비슷한 타입을 막는 장치), REQ-108(속성의 바뀌는 빠르기와 이력의 종류).
 - 이웃 문서: [표준 모델의 요약](standard-model.md), [KG에 묻기](kg-queries.md), [KG 저장과 버전](kg-storage.md), [KG 운영](kg-operations.md), [현실 데이터 수집](ingestion.md), [권한과 접근](access-control.md), [파이프라인](pipeline.md), [정의의 버전과 브랜치](definitions.md), [역량 질문](competency-questions.md).

@@ -35,7 +35,7 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 ```
 
 ## 3. 없애기 쉽게 만드는 규칙 여섯
-이 규칙이 설계예요. 규칙마다 "어긋나면 지우기가 어려워지는 이유"을 적었어요.
+이 규칙이 설계예요. 규칙마다 "어긋나면 삭제가 어려워지는 이유"을 적었어요.
 
 | # | 규칙 | 이유 |
 |---|---|---|
@@ -68,7 +68,7 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 |---|---|---|
 | 계약 탐색기 | 계약 문서(OpenAPI)에서 저절로 나오는 길의 목록과 칸. 길을 골라 보내 봐요. 보내는 것은 읽기와 `x-safe`로 표시된 물음뿐이에요 | `GET /v1/contract`, `GET /v1/capabilities`, `GET /v1/me`, `GET /v1/problems/{code}` |
 | 소스와 일정과 실행 | 소스 목록과 상세, 일정, 실행 목록과 단계별 수, 흐름과 수집기. 단추: 지금 한 번, 일시 정지와 다시 켜기 | `GET /v1/sources`, `GET /v1/sources/{source_id}`, `GET /v1/schedules`, `POST /v1/schedules/{schedule_id}:run-now`, `POST /v1/sources/{source_id}:pause`, `POST /v1/sources/{source_id}:resume`, `GET /v1/sync-runs`, `GET /v1/sync-runs/{run_id}`, `GET /v1/sync-runs/{run_id}/stages`, `GET /v1/feed-flows`, `GET /v1/collectors`, `GET /v1/jobs/{job_id}` |
-| 시크릿(메타 정보만) | 이름, 종류, 판의 상태, 만료, 마지막으로 쓴 때. 값을 넣는 칸이 없어요([비밀 값과 암호화](secrets-and-encryption.md)) | `GET /v1/secrets`, `GET /v1/secrets/{secret_id}` |
+| 시크릿(메타 정보만) | 이름, 종류, 판의 상태, 만료, 마지막으로 쓴 때. 값을 넣는 칸이 없어요([시크릿과 암호화](secrets-and-encryption.md)) | `GET /v1/secrets`, `GET /v1/secrets/{secret_id}` |
 | 브랜치와 제안과 드라이 런의 차이 | 열린 브랜치와 제안, 차단 사유, 검사, 정의의 차이와 KG의 차이, 병합 큐. 단추: 드라이 런 | `GET /v1/definitions-overview`, `GET /v1/branches`, `GET /v1/branches/{branch_id}/items`, `GET /v1/proposals`, `GET /v1/proposals/{proposal_id}`, `GET /v1/proposals/{proposal_id}/checks`, `POST /v1/proposals/{proposal_id}/candidate-runs`, `GET /v1/candidate-runs/{run_id}/diff`, `GET /v1/merge-queue` |
 | 객체 찾기와 이웃과 영향 범위 | 객체를 찾아 상세를 보고, 이웃과 영향 범위를 작은 그래프와 표로 | `POST /v1/kgs/{kg}/queries:find`, `GET /v1/kgs/{kg}/objects/{object_id}`, `POST /v1/kgs/{kg}/queries:neighbors`, `POST /v1/kgs/{kg}/questions/impact`, `GET /v1/kgs/{kg}/graph-versions` |
 | 헬스 상태와 문제 목록 | 자원의 헬스 상태와 이유, 문제 목록, 알림, 자원의 타임라인 | `GET /v1/kgs/{kg}/health`, `GET /v1/kgs/{kg}/health/{resource_kind}/{resource_id}`, `GET /v1/issues`, `GET /v1/issues/{issue_id}`, `GET /v1/alerts`, `GET /v1/resources/{resource_kind}/{resource_id}/timeline` |
@@ -97,7 +97,7 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 - 콘솔 전용 길, 묶음 길, 서버 쪽의 화면 처리를 만들지 않아요(규칙 2).
 - 묶는 도구, 화면 프레임워크, 패키지 설치를 쓰지 않아요(규칙 3).
 - 콘솔용 로그인이나 뒷문을 두지 않아요. 토큰을 손으로 붙여 넣는 칸도 두지 않아요(규칙 5).
-- **비밀 값을 입력받지 않아요.** 값을 넣고 바꾸는 것은 CLI나 API로 해요. 콘솔은 메타 정보만 보여요.
+- **시크릿을 입력받지 않아요.** 값을 넣고 바꾸는 것은 CLI나 API로 해요. 콘솔은 메타 정보만 보여요.
 - 정의의 항목을 고치는 편집기를 만들지 않아요. 브랜치에서 고치는 일은 CLI나 API로 해요.
 - 상태를 브라우저에 쌓지 않아요(토큰도, 화면의 설정도). 서버에 세션을 두지 않아요.
 - 프로덕션 배포에서 켜지 않아요(규칙 4).
@@ -143,6 +143,6 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 - 그래프를 그리는 라이브러리. 구현하는 변경에서 허용된 라이선스의 것을 골라요.
 
 ## 11. 관련 결정과 요구사항
-- ADR-0016(화면은 다른 저장소, 이 문서는 그 예외), ADR-0006(알파의 범위, 구조), ADR-0012(로그인과 권한), ADR-0017(프락시움 자신의 진단 화면, 설정), ADR-0018(비밀 값은 보이지 않아요).
+- ADR-0016(화면은 다른 저장소, 이 문서는 그 예외), ADR-0006(알파의 범위, 구조), ADR-0012(로그인과 권한), ADR-0017(프락시움 자신의 진단 화면, 설정), ADR-0018(시크릿은 보이지 않아요).
 - REQ-209 임시 콘솔: 공개된 API만 쓰고, 따로 된 폴더에 있고, 기본은 꺼져 있고, 지울 조건이 정해져 있어요. REQ-147 모든 기능이 API와 CLI로 돼요.
-- 함께 읽을 문서: [REST API 설계](rest-api.md), [자원과 경로: 모델·수집·실행·정의](rest-api-resources-data.md), [자원과 경로: KG·관측·역량 질문·권한·바탕](rest-api-resources-graph.md), [비밀 값과 암호화](secrets-and-encryption.md), [프락시움 자신의 관측성](self-observability.md).
+- 함께 읽을 문서: [REST API 설계](rest-api.md), [자원과 경로: 모델·수집·실행·정의](rest-api-resources-data.md), [자원과 경로: KG·관측·역량 질문·권한·바탕](rest-api-resources-graph.md), [시크릿과 암호화](secrets-and-encryption.md), [프락시움 자신의 관측성](self-observability.md).

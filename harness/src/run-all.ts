@@ -12,7 +12,7 @@ import { run as protectedPaths } from "./checks/protected";
 import { report as quality } from "./checks/quality";
 import { run as testguard } from "./checks/testguard";
 import { report as traceability } from "./checks/traceability";
-import { run as uiWords } from "./checks/ui-words";
+import { report as uiWords } from "./checks/ui-words";
 import { findRoot, finish, flag, isMain, parseArgs, today, type Violation } from "./common";
 
 export type Check = readonly [name: string, run: () => Violation[]];
@@ -64,7 +64,14 @@ export function checks(
         return violations;
       },
     ],
-    ["ui-words", () => uiWords(root)],
+    [
+      "ui-words",
+      () => {
+        const { violations, notes: terms } = uiWords(root);
+        notes.push(...terms);
+        return violations;
+      },
+    ],
     [
       "quality",
       () => {

@@ -27,7 +27,7 @@ follows:
        └─────────── 뒤의 확인: 선언한 효과가 신호에 나타났나 ◀────────────────────────────┘
  (밖의 에이전트가 MCP 게이트웨이를 거쳐 ②③을 불러요. 프락시움 안에는 스스로 고치는 루프가 없어요)
 ```
-**ADR-0013과의 나눔.** ADR-0013은 데이터(소스, 데이터셋, 피드, 타입, 속성의 헬스 상태와 정의의 계보를 따른 이유)를, 이 문서는 시스템(`component`: 역할의 벌, 기대는 것, 줄, 투영의 헬스 상태와 부품의 의존을 따른 이유)을 봐요. 지표 표 `metric_point`, 헬스 상태 여섯 상태, 알림, 문제 목록은 같은 틀이에요. 둘은 데이터 쪽의 증상(지연, 묵음)과 그 시스템 쪽의 이유(워커가 죽음, 연결이 참)에서 만나요.
+**ADR-0013과의 나눔.** ADR-0013은 데이터(소스, 데이터셋, 피드, 타입, 속성의 헬스 상태와 정의의 계보를 따른 이유)를, 이 문서는 시스템(`component`: 역할의 벌, 기대는 것, 줄, 프로젝션의 헬스 상태와 부품의 의존을 따른 이유)을 봐요. 지표 표 `metric_point`, 헬스 상태 여섯 상태, 알림, 문제 목록은 같은 틀이에요. 둘은 데이터 쪽의 증상(지연, 묵음)과 그 시스템 쪽의 이유(워커가 죽음, 연결이 참)에서 만나요.
 
 ## 3. 신호
 ### 3.1 틀
@@ -62,19 +62,19 @@ follows:
 |---|---|---|
 | `ingest_lag_s` | 수집의 지연. 소스가 끝을 알려 주면 그 끝과 기록에 쓴 자리의 차, 아니면 마지막으로 기록에 쓴 때의 나이(`detail_key`: `cursor_gap`, `last_write_age`) | 초 |
 | `apply_lag_seq`, `apply_lag_s` | 적용의 지연. 수집 변경 로그의 맨 끝과 `applied_through`의 차(`ingest_seq`의 수), 적용 못 한 가장 오래된 변경의 나이 | 건, 초 |
-| `projection_lag_seq`, `projection_lag_s` | 투영의 지연. KG의 `applied_seq`(큰 적용은 읽기 워터마크 `readable_through`)와 엔진이 반영한 `change_seq`의 차와 그 나이. 엔진은 `volatile` 값의 경량 변경 레코드도 함께 따르고 그 줄의 지연도 같은 지표로 내요 | 건, 초 |
+| `projection_lag_seq`, `projection_lag_s` | 프로젝션의 지연. KG의 `applied_seq`(큰 적용은 읽기 워터마크 `readable_through`)와 엔진이 반영한 `change_seq`의 차와 그 나이. 엔진은 `volatile` 값의 경량 변경 레코드도 함께 따르고 그 줄의 지연도 같은 지표로 내요 | 건, 초 |
 | `held_streams`, `held_oldest_age_s`, `held_backlog_ratio` | 보류된 스트림의 수, 가장 오래된 것의 나이, 쌓인 양 ÷ 보관의 한도(ADR-0011) | 개, 초, 비율 |
 | `merge_queue_depth`, `merge_oldest_wait_s` | 병합 큐의 길이와 가장 오래 기다린 제안 | 건, 초 |
 | `storage_bytes`, `storage_growth_bytes_per_day`, `storage_connections_in_use`, `storage_connections_max` | 저장소의 크기(`detail_key`: `live`, `hist`, `raw_record`, `change_log`, `metric`, `audit`, `other`), 늘어나는 빠르기, 저장소가 본 연결 수와 한도 | 바이트, 개 |
 | `version_skew_age_s`, `time_to_limit_s` | 역할 사이의 버전이 어긋난 채 지난 시간(한 가지면 0), 이대로면 한도에 닿기까지(12.3) | 초 |
-| `secret_master_key_reachable`, `secret_expires_in_s` | 시크릿(ADR-0018): 마스터 키에 닿나(시크릿을 복호화하는 워커의 수집 부분과 수집기만 내요. API와 엔진은 풀 수 없어 없는 게 정상이에요), 비밀 값의 만료까지(`detail_key`는 비밀 값의 `id`이고 값이 아니에요) | 0/1/알 수 없음, 초 |
-| `secret_unwrap_count`, `secret_scrubbed_fields`, `tls_verify_disabled_sources`, `at_rest_encryption_enabled` | 풀어 쓴 수(`detail_key`: 역할), 받을 때 지운 비밀 값의 수, 인증서 확인을 끈 소스의 수, 저장소의 저장 데이터 암호화가 켜져 있나(점검) | 건, 개, 0/1/알 수 없음 |
-| `storage_dead_tuple_ratio`, `storage_xid_age`, `storage_wal_bytes_per_s`, `storage_replication_lag_s`, `storage_long_txn_age_s`, `storage_slot_retained_bytes`, `storage_retention_lag_s`, `storage_migration_lock_wait_s` | 저장소의 신호(8-26): 죽은 행과 팽창, 트랜잭션 번호의 나이, WAL의 양, 복제 지연, 긴 트랜잭션, 슬롯이 붙잡은 양, 보관의 지연, 옮김의 잠금 대기. 이벤트 코드는 `storage.*`예요. 구현은 단계별(13절)이고 이름과 단위는 알파부터 계약이에요 | 비율, 번호, 바이트, 초 |
+| `secret_master_key_reachable`, `secret_expires_in_s` | 시크릿(ADR-0018): 마스터 키에 닿나(시크릿을 복호화하는 워커의 수집 부분과 수집기만 내요. API와 엔진은 풀 수 없어 없는 게 정상이에요), 시크릿의 만료까지(`detail_key`는 시크릿의 `id`이고 값이 아니에요) | 0/1/알 수 없음, 초 |
+| `secret_unwrap_count`, `secret_scrubbed_fields`, `tls_verify_disabled_sources`, `at_rest_encryption_enabled` | 풀어 쓴 수(`detail_key`: 역할), 받을 때 지운 시크릿의 수, 인증서 확인을 끈 소스의 수, 저장소의 저장 데이터 암호화가 켜져 있나(점검) | 건, 개, 0/1/알 수 없음 |
+| `storage_dead_tuple_ratio`, `storage_xid_age`, `storage_wal_bytes_per_s`, `storage_replication_lag_s`, `storage_long_txn_age_s`, `storage_slot_retained_bytes`, `storage_retention_lag_s`, `storage_migration_lock_wait_s` | 저장소의 신호(8-26): 죽은 행과 팽창, 트랜잭션 번호의 나이, WAL의 양, 복제 지연, 긴 트랜잭션, 슬롯이 붙잡은 양, 보관의 지연, 마이그레이션의 잠금 대기. 이벤트 코드는 `storage.*`예요. 구현은 단계별(13절)이고 이름과 단위는 알파부터 계약이에요 | 비율, 번호, 바이트, 초 |
 | `message_log_reachable`, `message_log_lag`, `message_log_write_errors`, `message_log_retention_margin_s` | 붙은 메시지 기록 저장소(클로즈드 베타. 제품이 띄우지 않아요): 닿음, 지연, 쓰기 실패, 보관까지 남은 여유 | 0/1/알 수 없음, 건, 초 |
 | `ops_action_runs`, `ops_action_verdicts` | 운영 액션의 실행(`detail_key`: 행위 이름과 결과)과 뒤의 확인의 판정 | 건 |
 
 ### 3.4 로그 한 줄과 추적
-한 줄은 JSON 한 개예요. 칸: `ts`(UTC), `severity`(`debug` / `info` / `warning` / `error` / `critical`), `event_code`(안정된 이벤트 코드. 6절 목록에 있어야 해요), `trace_id`와 `span_id`(오류 응답의 `trace_id`와 같아요), `role`과 `instance_id`, `resource_kind`와 `resource_id`(일의 자원. 객체나 행이 아니에요), `params`(매개 값. 키는 코드마다 목록에 닫혀 있고 값은 ID, 수, 고르기 값, 시간뿐이에요), `message`(참고용 영어 한 줄. 기계는 읽지 않아요). 같은 코드가 폭주하면 표본으로 줄이고 버린 수를 `log_dropped`로 세요. 비밀 값과 행의 내용은 어느 칸에도 없고, 테스트가 "찍는 모든 칸이 목록에 있나"를 걸어요.
+한 줄은 JSON 한 개예요. 칸: `ts`(UTC), `severity`(`debug` / `info` / `warning` / `error` / `critical`), `event_code`(안정된 이벤트 코드. 6절 목록에 있어야 해요), `trace_id`와 `span_id`(오류 응답의 `trace_id`와 같아요), `role`과 `instance_id`, `resource_kind`와 `resource_id`(일의 자원. 객체나 행이 아니에요), `params`(매개 값. 키는 코드마다 목록에 닫혀 있고 값은 ID, 수, 고르기 값, 시간뿐이에요), `message`(참고용 영어 한 줄. 기계는 읽지 않아요). 같은 코드가 폭주하면 표본으로 줄이고 버린 수를 `log_dropped`로 세요. 시크릿과 행의 내용은 어느 칸에도 없고, 테스트가 "찍는 모든 칸이 목록에 있나"를 걸어요.
 ```json
 {"ts":"2031-04-02T07:41:12.304Z","severity":"warning","event_code":"storage.connections_exhausted","trace_id":"tr_7c1e","span_id":"sp_02","role":"worker","instance_id":"wk-2","resource_kind":"component","resource_id":"storage","params":{"limit_at":"pool","pool":"worker","in_use":16,"max":16,"waiting":9},"message":"worker storage pool exhausted"}
 ```
@@ -90,7 +90,7 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 | 목표 | 대상 | 기본값(설정) |
 |---|---|---|
 | 물음의 응답 시간 | 엔진, API의 질의 길 | `impact`는 제품 책임자의 숫자(REQ-142), 그 밖의 사전 정의 질의는 p95 1초 |
-| 적용의 지연, 투영의 지연 | 워커, 엔진 | 흐름의 `apply_lag_s` 60초, `projection_lag_s` 30초 이내(배치는 다음 주기 전) |
+| 적용의 지연, 프로젝션의 지연 | 워커, 엔진 | 흐름의 `apply_lag_s` 60초, `projection_lag_s` 30초 이내(배치는 다음 주기 전) |
 | 일정의 제때 실행, 스스로 재기 | 워커, 합성 점검 | `tick_lag_s` 10초 이내 99%, `total` 60초 이내 99% |
 
 ## 4. 끝에서 끝까지 스스로 재기
@@ -100,14 +100,14 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 - **재는 것.** 같은 변경을 네 걸음에서 확인해요. 마지막 걸음은 서비스 계정(`acct_self_probe`, 그 KG만 `viewer`)이 보통의 HTTP 요청을 보내서 로그인, 한도, 엔벨로프, 엔진까지 한 번에 지나가요. 덧붙여 정해진 죽은 객체(전원 장치 하나)로 `impact`를 물어 기대한 답(서버 `exposed_direct`)과 견줘요.
 - **지표.** `e2e_probe_latency_s`(`detail_key`: `emit_to_ingested` 수집 변경 로그에 적힘, `ingested_to_applied` `applied_through`가 넘음, `applied_to_projected` 엔진이 `change_seq`를 반영, `projected_to_answered` API의 답에 나타남, `total`), `e2e_probe_success`(제한 시간 안에 나타났나), `e2e_probe_age_s`(마지막 성공의 나이), `e2e_probe_answer_correct`.
 
-**실패했을 때 무엇을 아나.** 막힌 걸음이 까닭의 첫 단서예요.
+**실패했을 때 무엇을 아나.** 막힌 걸음이 이유의 첫 단서예요.
 
 | 막힌 곳 | 의심 | 이어지는 진단 |
 |---|---|---|
 | 수집(첫째 걸음) | 수집기, 수집 변경 로그 | `ingest.*`, `change_log.*` |
 | 적용(둘째) | 워커, 저장소, 붙잡힘 | `apply.*`, `storage.*` |
-| 프로젝션(셋째) | 엔진, 투영으로 가는 변경의 길, 파일 보관 | `engine.projection_lagging`, `file_store.*` |
-| 답(넷째), 답이 틀림 | API, 권한 캐시, 엔진 호출 / 영향 범위의 계산이나 투영의 반영 | `api.*`, `auth.*` / `engine.answer_mismatch` |
+| 프로젝션(셋째) | 엔진, 프로젝션으로 가는 변경의 길, 파일 보관 | `engine.projection_lagging`, `file_store.*` |
+| 답(넷째), 답이 틀림 | API, 권한 캐시, 엔진 호출 / 영향 범위의 계산이나 프로젝션의 반영 | `api.*`, `auth.*` / `engine.answer_mismatch` |
 | 결과가 안 옴 | 점검을 돌리는 워커 자체 | `e2e_probe_age_s`를 밖에서 봐요(12절) |
 
 한계: 점검은 워커의 일정으로 돌아서 워커가 다 멎으면 같이 멎어요. 그래서 결과가 안 오는 것이 곧 실패 신호예요. 작은 그래프 하나만 재므로 큰 KG의 성능은 못 재고, 소스 어댑터는 지나지 않아요(소스 쪽 점검이 맡아요).
@@ -119,8 +119,8 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 | 역할 | 떠 있나(`live`) | 받을 수 있나(`ready`, 본업) | 다 올라왔나(`started`) |
 |---|---|---|---|
 | API | 프로세스가 답해요 | **묻기**를 받을 수 있나: 권한 캐시가 있고 엔진이나 SQL 길 중 하나가 돼요. 저장소가 멈춰도 참이에요(`can.write`만 거짓) | 설정 사본과 권한 캐시를 처음 읽었어요 |
-| 워커 | 프로세스가 답하고 점유를 연장하는 고리가 돌아요 | 저장소에 쓸 수 있고 일을 쥘 수 있어요 | 스키마 버전이 코드의 기대와 맞고 워커로 등록됐어요 |
-| 질의 엔진 | 프로세스가 답해요 | 투영이 하나라도 올라 있어요(저장소와 무관) | 처음 투영을 올렸어요 |
+| 워커 | 프로세스가 답하고 리스를 연장하는 고리가 돌아요 | 저장소에 쓸 수 있고 일을 쥘 수 있어요 | 스키마 버전이 코드의 기대와 맞고 워커로 등록됐어요 |
+| 질의 엔진 | 프로세스가 답해요 | 프로젝션이 하나라도 올라 있어요(저장소와 무관) | 처음 프로젝션을 올렸어요 |
 | 수집기 | 프로세스가 답해요 | 본체에 닿고 일을 받아 소스를 읽을 수 있어요 | 허용된 소스와 소스 커서를 받았어요 |
 
 기대는 것(저장소, 수집 변경 로그, 파일 보관, SSO, 알림의 길, 시크릿 제공자)은 역할이 호출한 결과(`dependency_up`)와 가벼운 점검으로 헬스 상태를 따로 내요. 부품도 ADR-0013 5절의 여섯 상태와 규칙을 써요. 의존은 제품에 실려 있어요: API는 엔진(묻기)에 hard, 엔진은 파일 보관(프로젝션 파일)과 변경 시퀀스에 hard, API는 저장소(쓰기와 사본 새로 읽기)와 SSO(토큰 확인)에 soft(묻기에는), 워커의 수집 부분은 마스터 키(`master_key`)에도 hard, 워커는 저장소, 수집 변경 로그, 파일 보관에 hard이고 시크릿 제공자, 알림의 길, 소스에 soft, 수집기는 본체에 hard예요.
@@ -143,7 +143,7 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 |---|---|
 | `diagnosis_id`, `evaluated_at`, `catalog_version` | 진단의 이름표, 때, 쓴 규칙 세트의 버전 |
 | `served_by`, `persisted` | 어느 벌이 답했나, 저장소에도 남겼나(못 남기면 그 벌의 메모리에 `ops.diagnosis_ttl_s` 동안만 있어요) |
-| `coverage` | 보고한 벌과 못 한 벌. **보고하지 못한 것은 건강한 것이 아니라 모름이에요** |
+| `coverage` | 보고한 벌과 못 한 벌. **보고하지 못한 것은 건강한 것이 아니라 알 수 없음이에요** |
 | `findings[]` | 이상 상태인 것 하나마다: `component`, `state`, `symptom`(무엇이 이상 상태인이) |
 | `findings[].suspected_causes[]` | 이유로 보이는 것: `code`, `component`, `via`(의존의 길), `root`, `rule_matched`(`rule_id`, `catalog_version`) |
 | `findings[].evidence[]` | 근거가 된 신호: `signal`, `resource`, `observed`, `threshold`, `window`, `at` |
@@ -163,13 +163,13 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 
 - **신호를 모으는 길.** 역할마다 자기 헬스 상태와 지표를 내는 길이 있고, API 역할이 다른 벌에 직접 물어 모아요(벌의 목록은 하트비트로 메모리에 쥐어요). 닿지 못한 벌은 답에 「알 수 없음」으로 적혀요.
 - **감사 로그를 못 쓸 때.** 바꾸는 운영 액션은 거절해요(기록 없이 한 행위는 없어요). 예외는 저장소 없이도 되는 급한 행위 셋(`pause_source`, `pause_sources_by_secret`, `enter_maintenance_mode`)이에요. 이것은 역할의 디스크에 먼저 적어 두었다가 저장소가 돌아오면 감사 로그로 옮겨요. 디스크에도 못 적으면 거절해요.
-- **엔진이 새로 뜰 때.** 올릴 투영이 파일 보관에 없으면 저장소에서 직접 지어 올려요. 파일 보관은 빨리 뜨기 위한 것이지 없으면 안 되는 것이 아니에요. 저장소도 없고 파일도 없으면 `started`가 거짓으로 남아요.
+- **엔진이 새로 뜰 때.** 올릴 프로젝션이 파일 보관에 없으면 저장소에서 직접 지어 올려요. 파일 보관은 빨리 뜨기 위한 것이지 없으면 안 되는 것이 아니에요. 저장소도 없고 파일도 없으면 `started`가 거짓으로 남아요.
 - **긴 장애에서 권한 캐시의 나이.** 저장소 없이 답하는 동안 권한 캐시가 나이 상한(15분)을 넘으면 기본 부여의 읽기만 답해요(`restricted` 이상은 거절). 그래서 장애가 길면 묻기가 줄어요. `grant_cache_age_s`가 상한에 다가가면 알려요.
 
 ## 6. 이벤트 코드와 오류 코드의 목록
 로그의 이벤트 코드, API의 오류 코드, 알림의 종류, 헬스 상태의 이유를 **하나의 목록**으로 실어요. 기계가 읽는 파일이고 버전이 있고 **계약의 일부**예요. 사람용 절차서의 글은 이 목록에서 만들고 손으로 따로 적지 않아요.
 
-**이름 규칙.** `<무리>.<세부>`, 소문자 snake_case예요. 요청 오류의 무리는 REST의 것(`invalid_input`, `not_found`, `permission`, `conflict`, `stale`, `rate_limited`, `blocked`)을 그대로 써요. 시스템의 무리는 `api`, `auth`, `worker`, `engine`, `collector`, `storage`, `change_log`, `file_store`, `sso`, `notify`, `ingest`, `apply`, `probe`, `config`, `rollout`, `secret`, `ops`예요. 비밀 값에 걸린 코드(`secret.master_key_unreachable`, `secret.expiring`, `secret.unwrap_failed`)도 같은 목록에 있어요(ADR-0018). 한번 낸 코드의 뜻은 바꾸지 않고, 더하기는 같은 메이저 버전 안에서 되고, 지울 때는 `deprecated`로 남겨요.
+**이름 규칙.** `<무리>.<세부>`, 소문자 snake_case예요. 요청 오류의 그룹은 REST의 것(`invalid_input`, `not_found`, `permission`, `conflict`, `stale`, `rate_limited`, `blocked`)을 그대로 써요. 시스템의 그룹은 `api`, `auth`, `worker`, `engine`, `collector`, `storage`, `change_log`, `file_store`, `sso`, `notify`, `ingest`, `apply`, `probe`, `config`, `rollout`, `secret`, `ops`예요. 시크릿에 걸린 코드(`secret.master_key_unreachable`, `secret.expiring`, `secret.unwrap_failed`)도 같은 목록에 있어요(ADR-0018). 한번 낸 코드의 뜻은 바꾸지 않고, 더하기는 같은 메이저 버전 안에서 되고, 지울 때는 `deprecated`로 남겨요.
 
 | 칸 | 뜻 |
 |---|---|
@@ -211,20 +211,20 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 | `discard_held_stream` | 쌓인 변경을 버리고 전부 받아 맞춰요(맞출 수 있는 소스만) | 예 · irreversible · data_loss | 쌓인 것이 사라지고 맞추기가 돌아요 | 없음 | `operator`(소스) | 예 |
 | `rerun_sync`, `cancel_sync` | 실행을 다시 하기, 도는 실행을 취소 | 예 · reversible · none | 새 실행이 서거나 멈춰요. 안전장치는 그대로 | 서로 | `operator`(소스) | 아니요 |
 | `drain_worker` | 워커 한 벌이 새 일을 안 쥐고 하던 일만 끝내요 | 예 · reversible · none | 그 벌이 `drained`가 되고 줄은 다른 벌이 가져가요 | `undrain_worker` | `operator`(전체). 전부 비우기는 `admin` | 아니요(넓으면 예) |
-| `rebuild_projection` | 투영을 워커가 다시 짓고 엔진이 갈아 끼워요 | 예 · reversible · none | 그동안 옛 투영으로 답해요. 메모리가 두 배 필요해요 | 필요 없음(파생물) | `operator`(전체) | 아니요 |
+| `rebuild_projection` | 프로젝션을 워커가 다시 짓고 엔진이 갈아 끼워요 | 예 · reversible · none | 그동안 옛 프로젝션으로 답해요. 메모리가 두 배 필요해요 | 필요 없음(파생물) | `operator`(전체) | 아니요 |
 | `roll_engine` | 엔진을 한 벌씩 내리고 올려요(다 올라온 뒤 다음 벌) | 예 · reversible · none | 벌마다 `started`를 거쳐요 | `roll_engine` | `operator`(전체) | 아니요 |
 | `pin_serving`, `unpin_serving` | 물음을 옛 KG 버전에 고정하고 풀어요(`pending` → `active`) | 예 · reversible · none | 답의 `as_of.pinned`가 보여요 | 서로 | `operator`(전체), `admin` | 아니요 |
 | `run_archive_now`, `run_purge_now` | 기한이 지난 것을 콜드 스토리지로 아카이브 이동 / 삭제 | 예 · reversible · none / irreversible · data_loss | 지금 자리의 크기가 줄어요(내린 것도 읽혀요) / 지운 만큼 줄어요 | 필요 없음 / 없음 | `operator`(전체) / `admin` | 아니요 / 예 |
 | 저장소 행위(줄이기, 붙잡기, 백필 멈추기, 긴 트랜잭션 끊기, 질의 꼴 막기, 표 청소) | 저장소의 신호가 가리킬 때 PostgreSQL을 돌봐요. 이름과 축은 구현하는 변경이 목록에 더해요 | 예 · 행위마다 | 신호(`storage.*`)에 나타나요 | 행위마다 | `operator`(전체), 넓으면 `admin` | 위험을 따라요 |
 | `run_connection_check_now` | 소스에 닿아 보고 결과만 기록(소스 보호를 거쳐요) | 아니요 · reversible · none | 소스의 연결 헬스 상태가 새로 나와요 | 필요 없음 | `operator`(소스) | 아니요 |
-| `pause_sources_by_secret` | 비밀 값이 샌 것으로 의심될 때 그 값을 쓰는 소스를 한 번에 멈추고 값에 `suspected`를 표시해요 | 예 · reversible · none(받기만 멈추고 묻기는 돼요. 사람 손은 필요 없어요) | 그 값을 쓰는 소스가 모두 `paused`가 되고 새 연결이 없어요 | `resume_source`(값의 판을 물린 뒤 소스마다) | `operator`(그 소스들을 모두 범위에 가진), 넓으면 `admin` | 아니요(되돌릴 수 있고 지키는 행위예요. 설정으로 켤 수 있어요) |
+| `pause_sources_by_secret` | 시크릿이 샌 것으로 의심될 때 그 값을 쓰는 소스를 한 번에 멈추고 값에 `suspected`를 표시해요 | 예 · reversible · none(수집만 멈추고 묻기는 돼요. 사람 손은 필요 없어요) | 그 값을 쓰는 소스가 모두 `paused`가 되고 새 연결이 없어요 | `resume_source`(값의 판을 물린 뒤 소스마다) | `operator`(그 소스들을 모두 범위에 가진), 넓으면 `admin` | 아니요(되돌릴 수 있고 지키는 행위예요. 설정으로 켤 수 있어요) |
 | `rotate_system_token` | 서비스 계정의 토큰을 갈아요 | 예 · irreversible · service_affecting | 옛 토큰은 겹침 뒤에 막혀 그것을 쓰던 시스템이 끊겨요. 저장소가 살아 있으면 거둠은 30초 안에 퍼져요 | 없음 | `admin` | 예 |
 | `rewrap_master_key` | 데이터 키를 새 마스터 키로 다시 감싸요(ADR-0018) | 예 · reversible · none | 옛 마스터 키를 물려도 되는 때가 와요. 값은 다시 암호화하지 않아요 | 옛 마스터 키로 다시 감싸요 | `admin` | 예 |
 | `redact_raw_record` | 원본 레코드의 내용을 걷어 내요(해시와 자리와 이유만 남겨요) | 예 · irreversible · data_loss | 그 기록을 다시 돌리면 값은 걷어 낸 것으로 다뤄요 | 없음 | `admin` | 예 |
 | `enter_maintenance_mode`, `exit_maintenance_mode` | 고치는 일(정의의 고치기, 제안, 병합)을 받지 않기 / 재수집. 묻기와 수집·적용은 그대로 | 예 · reversible · service_affecting / none | 고치는 요청이 `blocked.maintenance_mode`로 막혀요 / 풀려요 | 서로 | `admin` | 예 / 아니요 |
 | `update_setting`, `revert_setting` | 설정을 바꾸고 되돌려요(8절) | 예 · reversible · none | 새 판이 서고 역할이 다음에 읽을 때 써요 | 서로 | `admin` | 설정 항목의 위험을 따라요 |
 
-토큰 값과 비밀 값은 어느 행위의 결과에도 실리지 않아요. 저장소 행위는 알파에 이름과 위험의 축만 계약으로 두고 구현은 클로즈드 베타에서 오픈 베타예요(13절). `pause_sources_by_secret`은 판을 물리고 값을 바꾸는 일과 풀어 쓴 기록을 뽑는 일(ADR-0018)에 앞서 하는 첫 조치예요. 새 토큰은 계정을 다루는 `admin`의 길이 줘요(access-control 11절).
+토큰 값과 시크릿은 어느 행위의 결과에도 실리지 않아요. 저장소 행위는 알파에 이름과 위험의 축만 계약으로 두고 구현은 클로즈드 베타에서 오픈 베타예요(13절). `pause_sources_by_secret`은 판을 물리고 값을 바꾸는 일과 풀어 쓴 기록을 뽑는 일(ADR-0018)에 앞서 하는 첫 조치예요. 새 토큰은 계정을 다루는 `admin`의 길이 줘요(access-control 11절).
 
 ### 7.2 미리 실행
 바꾸는 행위는 실제로 하지 않고 무엇이 일어날지만 답해요(`POST /v1/ops/actions/{action}:dry-run`, 안전함). 답은 계산한 영향을 선언한 효과와 나란히 적고, 선언한 축보다 무거운 영향이 계산되면 무거운 쪽이 이겨요(`raised_by`에 이유). 마지막 한 벌을 비우거나 소스가 소스 커서부터 다시 줄 수 없는 흐름을 멈추면 축이 올라 승인이 필요해져요. 칸: `dry_run_id`와 `expires_at`(`ops.dry_run_ttl_s`. 실행을 만들 때까지의 시간이에요. 그 사이 대상이 바뀌면 `stale.dry_run_outdated`로 거절하고, 승인을 기다리는 동안은 대상이 바뀌었는지만 다시 봐요), `would_do`(할 일의 단계), `effects`(`declared` 선언한 효과, `computed` 무엇이 멈추나와 무엇이 영향받나를 센 것), `risk`와 `raised_by`, `blocked_by`(겹침, 점검 모드, 권한, 너무 넓음), `requires`(필요한 역할, 승인 필요와 이유), `reverse_action`, `verification_plan`(뒤의 확인에서 볼 신호와 기대).
@@ -270,14 +270,14 @@ ADR-0012의 역할과 범위를 그대로 써요. 읽기에도 새 역할이 없
 - `delegation`: 서비스 계정이 그 행위를 어디까지 하나. `none`(못 해요, 기본) / `with_approval`(요청하고 사람이 승인해요) / `autonomous`(승인 없이 해요). `autonomous`는 되돌릴 수 있고 서비스가 끊기지 않는 행위에만 설정돼요. 아니면 `invalid_input.autonomy_exceeds_risk`로 거절해요.
 
 ### 9.3 감사 로그
-운영 액션은 모두 감사 로그(ADR-0012)에 남아요. 읽기(신호, `diagnose`)는 보통의 읽기라 남기지 않아요. `action`은 `ops_action_requested`, `ops_action_approved`, `ops_action_rejected`, `ops_action_finished`, `setting_changed`이고, 기존 칸(`actor_kind`, `actor_id`, `target_*`, `outcome`, `request_id`)에 이 칸을 더해요: `ops_run_id`, `diagnosis_id`와 `diagnosis_rule_ids`(어떤 진단을, 어느 규칙이 맞아서 근거로 했나. 사람이 근거 없이 한 것은 비어 있고, 서비스 계정의 요청이 비면 `invalid_input.diagnosis_required`), `dry_run_id`, `verification_verdict`. 비밀 값을 언제 어느 역할의 어느 실행이 풀어 썼는지(풀어 쓴 기록)는 ADR-0018의 감사 칸이고, `secret_unwrap_count`가 그 수를 세요.
+운영 액션은 모두 감사 로그(ADR-0012)에 남아요. 읽기(신호, `diagnose`)는 보통의 읽기라 남기지 않아요. `action`은 `ops_action_requested`, `ops_action_approved`, `ops_action_rejected`, `ops_action_finished`, `setting_changed`이고, 기존 칸(`actor_kind`, `actor_id`, `target_*`, `outcome`, `request_id`)에 이 칸을 더해요: `ops_run_id`, `diagnosis_id`와 `diagnosis_rule_ids`(어떤 진단을, 어느 규칙이 맞아서 근거로 했나. 사람이 근거 없이 한 것은 비어 있고, 서비스 계정의 요청이 비면 `invalid_input.diagnosis_required`), `dry_run_id`, `verification_verdict`. 시크릿을 언제 어느 역할의 어느 실행이 풀어 썼는지(풀어 쓴 기록)는 ADR-0018의 감사 칸이고, `secret_unwrap_count`가 그 수를 세요.
 ```json
 {"audit_id":"au_9d1","occurred_at":"2031-04-02T07:59:30Z","actor_kind":"system_account","actor_id":"acct_ops_agent","action":"ops_action_finished","target_kind":"setting","target_id":"worker.candidate_run_concurrency","outcome":"allowed","ops_run_id":"ar_204","diagnosis_id":"dg_5521","diagnosis_rule_ids":["r_storage_conn_01"],"verification_verdict":"confirmed"}
 ```
 
 ## 10. 에이전트가 쓰는 면
 ### 10.1 운영의 MCP 인터페이스
-KG를 읽는 MCP(사전 정의 질의 13종 등)와 **따로** 낸 면이에요. 둘은 같은 쓰임 위의 어댑터라는 규칙(ADR-0016)을 따르고 권한의 판단과 오류 코드가 같아요. KG의 MCP는 읽기만 하고 이쪽에는 행위 툴이 있어요. 모두 MCP 게이트웨이에 등록되는 툴이에요. **프락시움 안에는 진단을 보고 행위를 골라 하는 루프를 두지 않아요.** 돌보는 것은 밖의 에이전트예요. 이미 든 정해진 안전장치(점유를 이어받기, 잇달아 실패하면 일정 멈추기)는 남아요.
+KG를 읽는 MCP(사전 정의 질의 13종 등)와 **따로** 낸 면이에요. 둘은 같은 쓰임 위의 어댑터라는 규칙(ADR-0016)을 따르고 권한의 판단과 오류 코드가 같아요. KG의 MCP는 읽기만 하고 이쪽에는 행위 툴이 있어요. 모두 MCP 게이트웨이에 등록되는 툴이에요. **프락시움 안에는 진단을 보고 행위를 골라 하는 루프를 두지 않아요.** 돌보는 것은 밖의 에이전트예요. 이미 든 정해진 안전장치(리스를 이어받기, 잇달아 실패하면 일정 멈추기)는 남아요.
 
 **운영 액션 하나가 MCP 툴 하나예요.** 행위의 이름을 인자로 받는 툴 하나로 뭉치지 않아요. 툴의 허용 목록만 할 수 있는 게이트웨이가 행위마다 막고 열 수 있게 하려는 거예요. 툴 이름은 `ops_` 뒤에 7.1절의 행위 이름을 붙여요(예: `ops_drain_worker`, `ops_update_setting`, `ops_pause_sources_by_secret`). 인자는 `params`, `dry_run_id`, `diagnosis_id`이고 승인이 필요하면 `awaiting_approval`로 돌아와요.
 
@@ -309,7 +309,7 @@ findings:
     evidence: [{signal: projection_lag_s, resource: en-1, observed: 720, threshold: 30, window: 10m}, {signal: apply_lag_seq, resource: worker, observed: 41200}, {signal: db_pool_in_use, resource: wk-2, observed: 16, threshold: 16}, {signal: db_pool_waiting, resource: wk-2, observed: 9}]
     actions: [{action: update_setting, params: {key: worker.candidate_run_concurrency, value: 1}, reason_rule: r_storage_conn_01, requires_approval: true}, {action: drain_worker, params: {instance_id: wk-2}, reason_rule: r_storage_conn_01, requires_approval: false}]
 ```
-에이전트가 읽어요: 물음이 느린 것은 엔진의 투영이 12분 뒤처졌기 때문이고, 워커가 저장소의 연결이 차서(풀 16 중 16, 드라이 런 둘이 쥐고 있어요) 적용을 못 해요.
+에이전트가 읽어요: 물음이 느린 것은 엔진의 프로젝션이 12분 뒤처졌기 때문이고, 워커가 저장소의 연결이 차서(풀 16 중 16, 드라이 런 둘이 쥐고 있어요) 적용을 못 해요.
 
 **3. 미리 실행.** `ops_dry_run_action(update_setting, {key: worker.candidate_run_concurrency, value: 1}, diagnosis_id: dg_5521)`
 ```yaml
@@ -342,7 +342,7 @@ verification_plan: [{signal: db_pool_in_use, resource: wk-2, want: "< 13", withi
 신호를 밖으로 내는 길과 알림을 보내는 경로가 죽으면 아무도 모르고 평안한 것처럼 보여요. 그래서 정해진 간격(`ops.heartbeat_interval_s`, 기본 60초)으로 늘 있는 하트비트를 두 길 끝까지 보내요. 지표는 `export_last_success_age_s`, `export_queue_depth`, `export_dropped`(보내지 못해 버린 수), `alert_heartbeat_age_s`와 `health_evaluator_age_s`(13절), `e2e_probe_age_s`예요. 내보내기는 서비스를 막지 않아요. 크기가 정해진 버퍼가 차면 오래된 것부터 버리고 `export_dropped`로 세요. **밖에서 할 일:** 오지 않으면 밖에서 안다는 것이 요점이라, 조직의 관측 도구가 위 나이가 간격의 3배(기본값)를 넘거나 하트비트가 끊긴 것을 보고 제품과 따로 알려야 해요.
 
 ### 12.2 올리는 중의 상태
-`GET /v1/ops/rollout`이 줘요. 이웃한 두 버전의 역할은 함께 돌 수 있어야 해요. 스키마의 옮김은 넓히고(새 것을 더함) 옮기고 좁히는(옛 것을 삭제) 차례로 하고 좁히기는 다음 버전에서 해요. 표를 다시 쓰는 변경은 하지 않고 잠금 대기 한도를 첫 옮김부터 걸어요. 표준 모델과 `sys` 타입도 옮김의 한 걸음으로 저장소에 실려서 벌마다 메인 브랜치의 해시가 달라지지 않아요. 적용의 점유에는 실행기의 의미 버전이 들어서 낮은 버전의 워커가 적용을 쥐지 못해요. 시점 복구를 하면 KG의 세대 번호가 올라가고 `as_of`, 커서, 이벤트 ID, `min_seq`에 실려요(다르면 `conflict.generation_changed`). 역할 사이의 버전이 `ops.version_skew_alert_s`(기본 3600초) 넘게 어긋나면 `rollout.version_skew_long`으로 알려요. 켜진 기능은 `/v1/capabilities`의 `features`와 같은 것이에요.
+`GET /v1/ops/rollout`이 줘요. 이웃한 두 버전의 역할은 함께 돌 수 있어야 해요. 스키마의 마이그레이션은 넓히고(새 것을 더함) 옮기고 좁히는(옛 것을 삭제) 차례로 하고 좁히기는 다음 버전에서 해요. 표를 다시 쓰는 변경은 하지 않고 잠금 대기 한도를 첫 마이그레이션부터 걸어요. 표준 모델과 `sys` 타입도 마이그레이션의 한 걸음으로 저장소에 실려서 벌마다 메인 브랜치의 해시가 달라지지 않아요. 적용의 리스에는 실행기의 의미 버전이 들어서 낮은 버전의 워커가 적용을 쥐지 못해요. 시점 복구를 하면 KG의 세대 번호가 올라가고 `as_of`, 커서, 이벤트 ID, `min_seq`에 실려요(다르면 `conflict.generation_changed`). 역할 사이의 버전이 `ops.version_skew_alert_s`(기본 3600초) 넘게 어긋나면 `rollout.version_skew_long`으로 알려요. 켜진 기능은 `/v1/capabilities`의 `features`와 같은 것이에요.
 ```yaml
 schema: {current: 41, target: 42, state: migrating, step: "3/5"}
 roles: [{role: api, instance_id: api-1, version: "0.9.2", catalog_version: "1.4.0", api_version: v1, state: ready}, {role: worker, instance_id: wk-1, version: "0.9.1", state: draining}]
@@ -354,7 +354,7 @@ features: [{feature: self_kg, enabled: false}]   settings_pending_restart: [{key
 저장소의 크기, 줄의 길이, 메모리는 정해진 방법으로 내다봐요: 지난 창(기본 14일)의 일별 최댓값에 최소제곱 직선을 맞추고, 기울기가 양수이면 `time_to_limit_s` = (한도 − 지금) ÷ 기울기예요. 같은 입력이면 같은 값이에요. 한도는 배포가 알려 주는 설정이고 모르면 내다보지 않아요(`unknown`). 예: 저장소가 하루 12GB씩 늘고 한도 600GB에 480GB이면 10일이고 `storage.growth_limit_near`를 알려요(임계값은 14절). 한계: 계단식으로 느는 것과 요일 무늬는 따라가지 못해요.
 
 ## 13. 단계
-맡김의 단계는 셋이고, 제품의 단계는 넷(알파, 클로즈드 베타, 오픈 베타, 정식)이에요. 알파는 둘로 나뉘어요. 알파 1(뼈대와 한 줄)에는 이 문서의 것이 없고 임시 콘솔만 있어요. 알파 2에서 신호, 핵심 진단, 행위, 설정, 감사가 API와 명령줄로 돼요. 임시 콘솔도 프락시움 자신의 진단을 보여요(공개된 API만 써서요).
+위임의 단계는 셋이고, 제품의 단계는 넷(알파, 클로즈드 베타, 오픈 베타, 정식)이에요. 알파는 둘로 나뉘어요. 알파 1(뼈대와 한 줄)에는 이 문서의 것이 없고 임시 콘솔만 있어요. 알파 2에서 신호, 핵심 진단, 행위, 설정, 감사가 API와 명령줄로 돼요. 임시 콘솔도 프락시움 자신의 진단을 보여요(공개된 API만 써서요).
 
 **계약의 자리만 알파에 두고 구현은 클로즈드 베타로 내리는 것**: 목표의 소진율과 「빠르게 나빠짐」, 운영의 MCP 인터페이스와 `diagnose`의 규칙 세트 전부(알파는 핵심 규칙만), 시스템 KG를 운영 KG에 내보내기. 칸, 길, 코드의 목록은 알파부터 있어요. 저장소의 신호는 이름과 단위가 알파부터 계약이고 구현은 단계별이에요. 저장소 행위는 클로즈드 베타에서 오픈 베타예요. 한도까지 남은 시간의 내다봄(12.3)은 오픈 베타예요. 시크릿 쪽은 풀어 쓴 기록과 만료 알림이 클로즈드 베타, 마스터 키의 헬스 상태, 칸 암호화의 점검, 급할 때의 행위가 오픈 베타예요(ADR-0018).
 | 단계 | 에이전트가 하는 일 | 설정 | 사람이 하는 일 |
@@ -363,7 +363,7 @@ features: [{feature: self_kg, enabled: false}]   settings_pending_restart: [{key
 | 2. 제안과 승인 | 미리 실행을 하고 행위를 요청해요 | 고른 행위를 `with_approval` | 승인하고 뒤의 확인을 봐요 |
 | 3. 낮은 위험은 스스로 | 되돌릴 수 있고 서비스가 안 끊기는 행위를 스스로 해요 | 그 행위만 `autonomous` | 뒤의 확인과 감사를 보고, 안 맞으면 `none`으로 내려요 |
 
-옮기는 것은 설정이고 자동으로 오르지 않아요. **지금 만드는 자리**는 행위의 목록, 위험의 축, 승인 필요, 맡김의 설정, 감사 로그의 칸이에요. **E2E 프로세스 때 얹힐 것**은 맡김의 틀 자체(실적이 쌓이면 올리고 무효가 되면 내리는 규칙, 업무 단위의 적용 단계)예요. 방향은 [방향 메모](process-direction.md)에 있고 아직 결정이 아니에요.
+옮기는 것은 설정이고 자동으로 오르지 않아요. **지금 만드는 자리**는 행위의 목록, 위험의 축, 승인 필요, 위임의 설정, 감사 로그의 칸이에요. **E2E 프로세스 때 얹힐 것**은 위임의 틀 자체(실적이 쌓이면 올리고 무효가 되면 내리는 규칙, 업무 단위의 적용 단계)예요. 방향은 [방향 메모](process-direction.md)에 있고 아직 결정이 아니에요.
 
 ## 14. 기본값(설정)과 재는 일
 이 문서의 숫자는 제품이 싣는 기본값(설정)이에요. [기본값 표](defaults.md)에 있는 것(보관, 권한 캐시의 나이 등)은 그 표를 따르고, 아래는 그 표에 없는 이 문서의 값이에요. 알파는 객체와 링크 100만 개 수준의 합성 세계로 기능을 테스트하고, 측정해서 고치는 일은 클로즈드 베타에서 해요.
@@ -379,7 +379,7 @@ features: [{feature: self_kg, enabled: false}]   settings_pending_restart: [{key
 **알려진 한계**
 - 진단은 닫힌 규칙이라 규칙에 없는 새 고장의 이유는 `unknown_cause`예요. 그때 에이전트는 신호를 직접 읽어요. 규칙은 사고마다 더해져요(목록의 버전이 올라요).
 - 스스로 재기는 작은 그래프 하나의 길만 재요. 큰 KG의 느림은 부품의 신호로 봐요. 5.2의 인과처럼 몇 가지는 가정이라, 합성 세계에서 고장을 일으켜(연결 풀 고갈, 워커 정지, 프로젝션 지연) 규칙이 맞는지 재요.
-- 워커와 엔진이 모두 멈추면 신호의 일부가 비어요. 비어 있음은 모름이고 정상이 아니에요.
+- 워커와 엔진이 모두 멈추면 신호의 일부가 비어요. 비어 있음은 알 수 없음이고 정상이 아니에요.
 - 저장소 없이 답하는 동안 권한 캐시가 15분을 넘으면 기본 부여의 읽기만 돼요(5.4).
 
 **미결 사항**

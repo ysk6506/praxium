@@ -55,7 +55,7 @@ follows:
 | 대량 읽기 | `POST /v1/kgs/{kg}/scopes/{scope_id}/bulk-reads`, `GET /v1/jobs/{job_id}/result` |
 | 저장해 둔 범위 | `GET, POST /v1/kgs/{kg}/scopes`, `DELETE /v1/kgs/{kg}/scopes/{scope_id}` |
 
-## 3. 받기와 매핑 (ADR-0008, 8-21, 8-29, 8-30, 8-31)
+## 3. 수집과 매핑 (ADR-0008, 8-21, 8-29, 8-30, 8-31)
 | 기능 | 길 |
 |---|---|
 | 어댑터, 프리셋, 소스, 데이터셋, 정제, 피드, 기대 조건, 일정 읽기 | `GET /v1/adapters`, `GET /v1/presets`, `GET /v1/sources`, `GET /v1/datasets`, `GET /v1/refinements`, `GET /v1/feeds`, `GET /v1/expectations`, `GET /v1/schedules` |
@@ -88,7 +88,7 @@ follows:
 | 메인 브랜치 최신화, 충돌 풀기 | `POST /v1/branches/{branch_id}:align`, `GET /v1/branches/{branch_id}/conflicts`, `POST /v1/branches/{branch_id}/conflicts/{conflict_id}:resolve` |
 | 제안, 검사, 드라이 런, 미리 돌리기 | `GET, POST /v1/proposals`, `GET /v1/proposals/{proposal_id}`, `GET /v1/proposals/{proposal_id}/checks`, `POST /v1/proposals/{proposal_id}/candidate-runs`, `GET /v1/candidate-runs/{run_id}` |
 | 검토, 승인, 줄, 닫기 | `POST /v1/proposals/{proposal_id}:request-review`, `POST /v1/proposals/{proposal_id}:approve`, `POST /v1/proposals/{proposal_id}:reject`, `POST /v1/proposals/{proposal_id}:enqueue`, `POST /v1/proposals/{proposal_id}:close`, `GET /v1/merge-queue` |
-| 위험의 등급, 자동 병합의 정책 | `GET /v1/merge-policies`, 고치기는 브랜치의 항목 |
+| 위험 등급, 자동 병합의 정책 | `GET /v1/merge-policies`, 고치기는 브랜치의 항목 |
 | 묶어서 병합(클로즈드 베타 설계) | 해당 없음(서버의 줄 처리). 묶음의 상태는 `merge-queue`에 보여요 |
 | 리버트, 판으로 돌리기, 긴급 리버트 | `POST /v1/proposals/{proposal_id}/reverts`, `GET /v1/proposals/{proposal_id}/revert-preview`, `POST /v1/definition-sets/{set_no}/restores` |
 | 에이전트 실행 하나가 만든 병합을 크게 리버트 | `POST /v1/agent-runs/{agent_run_id}/reverts` |
@@ -133,11 +133,11 @@ follows:
 | 설정을 바꾸고 리버트 | `GET, PATCH /v1/settings`, `GET /v1/settings/{name}/revisions` |
 | 부품의 헬스 상태와 신호 | `GET /v1/kgs/{kg}/health`(시스템 KG), `POST /v1/metrics/query` |
 | 프락시움 부품을 운영 KG에 내보내기(기본 꺼짐) | 없음. 설정으로 낼지 정하지 않았어요 |
-| 비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제 | `GET, POST /v1/secrets`, `DELETE /v1/secrets/{secret_id}`, `GET, POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:check`, `POST /v1/secrets/{secret_id}/versions/{version}:retire` |
+| 시크릿을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제 | `GET, POST /v1/secrets`, `DELETE /v1/secrets/{secret_id}`, `GET, POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:check`, `POST /v1/secrets/{secret_id}/versions/{version}:retire` |
 | `allowed_hosts` 바꾸기 | `PATCH /v1/secrets/{secret_id}` |
 | 마스터 키의 목록, 다시 감싸기, 물리기 | `GET /v1/master-keys`, `POST /v1/master-keys/{key_id}:rewrap`, `POST /v1/master-keys/{key_id}:rewrap:retire` |
 | 풀어 쓴 기록 보기 | `GET /v1/audit-records`(`action`과 `target_id`) |
-| 비밀 값으로 소스를 한 번에 멈추기 | 운영 액션(`POST /v1/ops/actions/pause_sources_by_secret/runs`) |
+| 시크릿으로 소스를 한 번에 멈추기 | 운영 액션(`POST /v1/ops/actions/pause_sources_by_secret/runs`) |
 | 확인을 끈 연결의 승인과 기한 | 없음. 소스 항목의 칸과 `admin` 승인의 길을 정하지 않았어요 |
 | 임시 콘솔을 내주기 | 해당 없음. 콘솔은 정적 파일이고 공개된 API만 불러요. 켜졌는지는 `GET /v1/capabilities`에 보여요 |
 

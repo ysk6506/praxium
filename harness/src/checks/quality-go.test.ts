@@ -62,7 +62,7 @@ describe("Go units in the quality table [REQ-024]", () => {
     expect(row.percent).toBeUndefined();
     expect(row.floor).toBe(90);
     expect(gradeOf(row).grade).toBe("B");
-    expect(render(repo())).toContain("모름");
+    expect(render(repo())).toContain("알 수 없음");
   });
 
   test("a recorded Go coverage below the floor is D, at or above it is A", () => {

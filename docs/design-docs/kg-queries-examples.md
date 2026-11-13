@@ -24,7 +24,7 @@ follows:
 
 ## 2. LAG의 구성원 하나가 죽음
 
-`lag-7`(`Lag`, 방식 `count`)은 포트 `port-1`~`port-4`가 구성원이고 `min_alive = 2`(장비 설정의 최소 링크 수, 설정에서 받을 때 만든 `configured` 묶음이고 `fact`)예요. `srv-9`가 `lag-7`에 `supplied_by`(network)로 기대요. 범위에 앵커 `core-1`(`NetworkAnchor`)이 있고 `srv-9`는 살아 있는 간선으로 닿아요(닻이 없으면 `unknown`). 포트를 스위치에 어떤 뜻으로 잇는지는 ADR-0007이 정해요. 여기서는 포트 자체가 죽는 경우만 보고, `view`는 기본인 `as_observed`예요. 이웃 표 같은 관측 묶음이 따로 있으면 그것을 쓰고 엔벨로프의 `evidence.kinds`에 `observed`가 적혀요.
+`lag-7`(`Lag`, 방식 `count`)은 포트 `port-1`~`port-4`가 구성원이고 `min_alive = 2`(장비 설정의 최소 링크 수, 설정에서 받을 때 만든 `configured` 묶음이고 `fact`)예요. `srv-9`가 `lag-7`에 `supplied_by`(network)로 기대요. 범위에 앵커 `core-1`(`NetworkAnchor`)이 있고 `srv-9`는 살아 있는 간선으로 닿아요(앵커가 없으면 `unknown`). 포트를 스위치에 어떤 뜻으로 잇는지는 ADR-0007이 정해요. 여기서는 포트 자체가 죽는 경우만 보고, `view`는 기본인 `as_observed`예요. 이웃 표 같은 관측 묶음이 따로 있으면 그것을 쓰고 엔벨로프의 `evidence.kinds`에 `observed`가 적혀요.
 
 | `dead` | `a` | `lag-7` | `srv-9` |
 |---|---|---|---|
@@ -48,7 +48,7 @@ follows:
 
 ## 4. MLAG 짝의 스위치 하나가 죽음
 
-`sw-a`, `sw-b`는 `mlag-1`(`min_alive = 1`)의 구성원이에요. `vsw-1`(논리 스위치)은 `mlag-1`에 `realized_by`로, `srv-1`은 `mlag-1`에 `supplied_by`(network)로 기대요. `core-1`은 닻이에요. 이어짐 간선: `core-1`-`sw-a`, `core-1`-`sw-b`, `sw-a`-`sw-b`, `srv-1`-`sw-a`, `srv-1`-`sw-b`.
+`sw-a`, `sw-b`는 `mlag-1`(`min_alive = 1`)의 구성원이에요. `vsw-1`(논리 스위치)은 `mlag-1`에 `realized_by`로, `srv-1`은 `mlag-1`에 `supplied_by`(network)로 기대요. `core-1`은 앵커예요. 이어짐 간선: `core-1`-`sw-a`, `core-1`-`sw-b`, `sw-a`-`sw-b`, `srv-1`-`sw-a`, `srv-1`-`sw-b`.
 
 **(가) `dead = [sw-a]`.** 의존: `mlag-1`의 `a=1 >= 1`이라 A, `slack=0`. 이어짐: 살아 있는 간선은 `core-1`-`sw-b`, `sw-b`-`srv-1`이고 `sw-b`, `srv-1`에 닿아요. 결과: `vsw-1`과 `srv-1`은 `exposed_direct`, 잃은 채널은 없어요. `exposure`는 `sw-b`를 후보로 내요.
 
@@ -72,4 +72,4 @@ follows:
 | `crah-2` | 2 | A, `slack=0` (`exposure` 후보 `crah-1`, `crah-3`) | `exposed_direct` | `exposed_inherited` |
 | `crah-2`, `crah-3` | 1 | D | `down`, `lost_channels: [cooling]`, `delay_class: delayed`(늦게 나타남) | `down` |
 
-`exposure`는 후보마다 `would_die_count = 3`을 내요. 이제 `min_alive = 2`가 **`assumed`**(냉방 용량을 소스가 주지 않아 관리자가 적은 값)라고 해 봐요. 사실만 쓴 답에서 `min_alive`는 모름이라 1, 2, 3을 다 따져요. `dead = [crah-2]`에서는 `a=2`, `n=3`이에요. `min_alive`가 1이나 2면 A, 3이면 `a+u < 3`이라 D이므로 답이 갈려서 **알 수 없음**이에요. 가정 포함 응답은 A(`slack=0`)라 서버는 `exposed_direct`, VM은 `exposed_inherited`예요. 그래서 서버 셋은 사실만 쓴 답에서 `unknown`, 가정 포함 응답에서 `exposed_direct`예요.
+`exposure`는 후보마다 `would_die_count = 3`을 내요. 이제 `min_alive = 2`가 **`assumed`**(냉방 용량을 소스가 주지 않아 관리자가 적은 값)라고 해 봐요. 사실만 쓴 답에서 `min_alive`는 알 수 없음이라 1, 2, 3을 다 따져요. `dead = [crah-2]`에서는 `a=2`, `n=3`이에요. `min_alive`가 1이나 2면 A, 3이면 `a+u < 3`이라 D이므로 답이 갈려서 **알 수 없음**이에요. 가정 포함 응답은 A(`slack=0`)라 서버는 `exposed_direct`, VM은 `exposed_inherited`예요. 그래서 서버 셋은 사실만 쓴 답에서 `unknown`, 가정 포함 응답에서 `exposed_direct`예요.

@@ -29,7 +29,7 @@ describe("the decisions table is made from ADR front matter [REQ-020]", () => {
     expect(lines).toHaveLength(3);
     expect(lines[0]).toContain("대체됨");
     expect(lines[0]).toContain("대체: [0003]");
-    expect(lines[0]).toContain("일부 고침: [0002]");
+    expect(lines[0]).toContain("일부 수정: [0002]");
     expect(lines[1]).toContain("중간 \\| 결정");
     expect(lines[2]).toContain("ADR-0003 새 결정");
   });

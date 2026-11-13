@@ -15,7 +15,7 @@ follows:
 - **칸 이름은 원천 문서의 이름을 그대로 써요.** 새로 지어내지 않았어요. 칸의 뜻은 원천 문서에 있어요.
 - **역할 필드.** 읽기는 `읽기`라고 적어요. 모든 역할이 자기 범위의 읽기를 포함해서(권한 설계 4절) 범위 안이면 읽을 수 있어요. 그 밖의 일은 여덟 역할의 이름으로 적어요. 범위가 있는 일은 부여의 범위 안에서만이에요.
 - **작업 필드.** `작업`이면 202와 작업 자원(rest-api.md 3-7)이에요. `-`는 바로 답해요.
-- **쓰기의 길.** 정의를 고치는 모든 일은 브랜치 안의 항목(4그룹)으로 해요. 모델과 받기의 자원에 `POST`/`PATCH`/`DELETE`는 없어요. 읽기는 `?definition_set=<set_no>`로 옛 묶음을, 기본은 메인 브랜치의 끝을 읽어요. 브랜치의 모습은 `?branch_id=<id>`(그 브랜치의 오버레이를 얹은 모습)로 읽어요.
+- **쓰기의 길.** 정의를 고치는 모든 일은 브랜치 안의 항목(4그룹)으로 해요. 모델과 수집의 자원에 `POST`/`PATCH`/`DELETE`는 없어요. 읽기는 `?definition_set=<set_no>`로 옛 묶음을, 기본은 메인 브랜치의 끝을 읽어요. 브랜치의 모습은 `?branch_id=<id>`(그 브랜치의 오버레이를 얹은 모습)로 읽어요.
 - **항목의 `kind`**와 자리는 [정의](definitions.md) 3-1이 정해요. 이 문서의 읽기 자원은 그 항목을 사람이 읽는 모양으로 낸 거예요.
 - **모든 목록**은 `limit`, `cursor`, `filter[..][..]`, `sort`, `fields`를 받아요. 거르는 칸은 표에 적은 것이 전부예요(고정 목록).
 
@@ -28,7 +28,7 @@ follows:
 | `/v1/object-types/{type_id}` | GET | 한 타입: 속성(`name`, `value_type`, 단위), 식별 키, 바인딩, 특성, `status`, `superseded_by`, `display_names`, 담당자 | 읽기 | - | kg-model |
 | `/v1/link-types` | GET | 링크 타입 목록. 필터링: `meaning`(열하나), `from_type`, `to_type` | 읽기 | - | kg-model |
 | `/v1/link-types/{link_type_id}` | GET | 한 링크 타입: 뜻, 출발과 도착의 타입, 개수, 매개 값, 잇는 조건 | 읽기 | - | kg-model |
-| `/v1/link-types/{link_type_id}/bindings` | GET | 그 링크 타입의 바인딩(어느 공급과 링크 정의가 이으나) | 읽기 | - | kg-model |
+| `/v1/link-types/{link_type_id}/bindings` | GET | 그 링크 타입의 바인딩(어느 피드와 링크 정의가 이으나) | 읽기 | - | kg-model |
 | `/v1/action-types`, `/v1/action-types/{id}` | GET | 액션 타입 | 읽기 | - | kg-model |
 | `/v1/value-types` | GET | 값 타입(바탕, 검사, 다듬기) | 읽기 | - | kg-model |
 | `/v1/traits` | GET | 특성과 그 특성이 요구하는 속성 | 읽기 | - | kg-model |
@@ -55,14 +55,14 @@ POST /v1/type-similarity-checks
 |---|---|---|---|---|---|
 | `/v1/adapters` | GET | 어댑터 목록(범용 넷과 흐름 어댑터), 켜진 것 | 읽기 | - | ingestion |
 | `/v1/presets`, `/v1/presets/{preset_id}` | GET | 프리셋: `version`, `adapter`, `allowed_requests`, `pagination`, `default_feeds`, `default_sensitivity`, `tests` | 읽기 | - | ingestion |
-| `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 비밀 값은 `credential_ref`(참조)만 | 읽기 | - | ingestion |
+| `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 시크릿은 `credential_ref`(참조)만 | 읽기 | - | ingestion |
 | `/v1/sources/{source_id}:introspect` | POST | 소스를 들여다봐요(어떤 표와 컬럼이 있나). 읽기 전용 요청만 나가요. `branch_id`를 받아요 | 아래 시크릿 규칙 | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}:check` | POST | 점검(연결, 인증, 읽기 전용의 세 겹이 확인되나). `branch_id`를 받아요 | 아래 시크릿 규칙 | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}/uploads`, `/v1/sources/{source_id}/upload-template` | POST, GET | 엑셀·CSV 소스의 파일 올리기와 칸 샘플 내려받기. 원본 레코드로 쌓여요. `branch_id`를 받아요 | 그 소스를 범위에 가진 `operator`나 `editor` | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}:pause`, `:resume` | POST | 일시 정지(`reason`을 받아요)와 다시 켜기. 헬스 상태에 보여요 | `operator` | - | ingestion 5 |
 | `/v1/sources/{source_id}:push` | POST | 푸시 수집(사건의 길). [더한 기능의 경로](rest-api-resources-additions.md) 3절 | `ingester` | - | ingestion-extensions |
 | `/v1/datasets`, `/v1/datasets/{dataset_id}` | GET | 데이터셋: `kind`, `receive_mode`, `natural_key`, `event_time`, `marker`, `deletion`, `columns`(`sensitivity`), `redact`, `expectations` | 읽기 | - | ingestion |
-| `/v1/datasets/{dataset_id}:preview` | POST | 받아 둔 원본 레코드에서 샘플 줄과 컬럼마다의 통계(빈 값의 비율, 서로 다른 값의 수, 흔한 값, 값의 꼴)를 보여 줘요. 비밀 값은 지워지고 컬럼마다 민감 등급 한도를 따라 "가려짐"이 나오며, `open`이 아닌 컬럼의 흔한 값은 주지 않아요. `branch_id`를 받아요. 안전함. 샘플과 통계의 길은 이것 하나예요 | 그 소스를 범위에 가진 `editor`나 `operator`. 그 데이터셋이 대는 타입의 읽기 권한도 있어야 하고 감사에 남아요 | - | ingestion 7 |
+| `/v1/datasets/{dataset_id}:preview` | POST | 받아 둔 원본 레코드에서 샘플 줄과 컬럼마다의 통계(빈 값의 비율, 서로 다른 값의 수, 흔한 값, 값의 꼴)를 보여 줘요. 시크릿은 지워지고 컬럼마다 민감 등급 한도를 따라 "가려짐"이 나오며, `open`이 아닌 컬럼의 흔한 값은 주지 않아요. `branch_id`를 받아요. 안전함. 샘플과 통계의 길은 이것 하나예요 | 그 소스를 범위에 가진 `editor`나 `operator`. 그 데이터셋이 대는 타입의 읽기 권한도 있어야 하고 감사에 남아요 | - | ingestion 7 |
 | `/v1/refinements`, `/v1/refinements/{id}` | GET | 정제(닫힌 연산의 목록 `ops`, `inputs`) | 읽기 | - | ingestion |
 | `/v1/feeds`, `/v1/feeds/{feed_id}` | GET | 피드: 데이터셋 하나에서 객체 타입 하나로 가는 매핑과 그 완전성 선언(`completeness_declaration`). 선언의 지금 상태는 `/v1/kgs/{kg}/completeness-declarations` | 읽기 | - | ingestion |
 | `/v1/object-types/{type_id}/feed-table` | GET | **타입의 피드 표**: 그 타입의 속성마다 어느 소스의 어느 컬럼이 어떤 우선순위로 채우나, 근거의 종류, 받는 방식(배치와 흐름이 섞이면 둘 다) | 읽기 | - | ingestion, kg-model |
@@ -117,8 +117,8 @@ POST /v1/ingest/envelopes   Authorization: Bearer <`ingester` 시스템 계정 �
 | `/v1/branches` | GET, POST | 브랜치 목록 / 열기(`base_set_no`가 바탕, 없으면 메인 브랜치의 끝) | `editor` | - | definitions |
 | `/v1/branches/{branch_id}` | GET, DELETE | 브랜치(오버레이의 항목, 바탕, `content_hash`) / 닫기 | `editor` | - | definitions |
 | `/v1/branches/{branch_id}/items` | GET, POST | 브랜치가 바꾼 항목 / 항목을 더하기(`kind`와 `body`) | `editor`(항목의 자리를 범위에 가진) | - | definitions 3 |
-| `/v1/branches/{branch_id}/items/{item_id}` | GET, PATCH, DELETE | 항목을 읽고 고치고 삭제. 지우기는 "지움의 오버레이"이에요. `If-Match` 필요 | `editor` | - | definitions 3 |
-| `/v1/branches/{branch_id}/items:batch` | POST | 여러 항목을 한 번에 쓰기(만들기, 고치기, 지우기의 목록. 항목마다 `If-Match`) | `editor`(항목의 자리를 범위에 가진) | - | definitions 3 |
+| `/v1/branches/{branch_id}/items/{item_id}` | GET, PATCH, DELETE | 항목을 읽고 고치고 삭제. 삭제는 "삭제의 오버레이"이에요. `If-Match` 필요 | `editor` | - | definitions 3 |
+| `/v1/branches/{branch_id}/items:batch` | POST | 여러 항목을 한 번에 쓰기(만들기, 고치기, 삭제의 목록. 항목마다 `If-Match`) | `editor`(항목의 자리를 범위에 가진) | - | definitions 3 |
 | `/v1/branches/{branch_id}:align` | POST | 메인 브랜치 최신화(3-way 비교로 저절로 합치고 충돌은 남겨요). 맞추기의 길은 이것 하나예요 | `editor` | - | definitions 7 |
 | `/v1/branches/{branch_id}/conflicts` | GET | 충돌의 목록(항목, 종류) | `editor` | - | definitions 7 |
 | `/v1/branches/{branch_id}/conflicts/{conflict_id}:resolve` | POST | 충돌 풀기(내 것 / 메인 브랜치 / 손으로 고친 모습) | `editor` | - | definitions 7 |
@@ -162,12 +162,12 @@ POST /v1/branches/br_12/items    Idempotency-Key: 31c9...
 | `/v1/definition-sets/{set_no}/restores` | POST | 묶음 `D-N`의 판으로 돌리는 새 제안(`origin: restore`). `scope`(소스, 객체 타입, 항목의 목록)를 받아요 | `editor` | - | definitions 8 |
 | `/v1/definitions-lineage` | GET | 정의의 계보 그래프(항목에서 항목으로, 컬럼과 속성 단위). 입력은 시작 항목 | 읽기(정의의 자리) | - | definitions 12 |
 | `/v1/definitions-lineage/what-depends` | POST | **누가 쓰나**: 대상(항목, 컬럼, 속성, 타입)과 하려는 일(고침, 물러남, 삭제)을 받아 `depends`, `readers`, `open_proposals`, `object_count`, `unreadable`을 줘요. 안전함 | 읽기 | - | definitions 12-4 |
-| `/v1/definition-sets/{set_no}/exports` | POST | 묶음을 글 파일로 내보내요(정규 JSON, 항목 하나가 파일 하나, 비밀 값은 참조만). 자기 범위만큼 | `editor` | 작업 | definitions 13 |
+| `/v1/definition-sets/{set_no}/exports` | POST | 묶음을 글 파일로 내보내요(정규 JSON, 항목 하나가 파일 하나, 시크릿은 참조만). 자기 범위만큼 | `editor` | 작업 | definitions 13 |
 | `/v1/definition-imports` | POST | 파일을 들여요. 언제나 새 브랜치와 제안(`origin: import`). 메인 브랜치를 덮어쓰지 않아요 | `editor` | - | definitions 13 |
 
 - **리버트의 상태 전이.** 리버트는 새 제안이에요. 이후는 `draft` 이후의 보통의 흐름(검토, 승인, 줄)이에요. 긴급 리버트는 `admin`이나 그 제안이 고친 자리 전부를 범위에 가진 `approver`가 하고(`operator`는 못 해요), 감사 로그에 `admin_override`가 남고 사후 검토가 붙어요(`post_review_state: pending`).
 - **타입 합치기와 올리기**는 브랜치 안의 도우미예요: `POST /v1/branches/{branch_id}/type-merges`(A를 B로), `POST /v1/branches/{branch_id}/type-promotions`(`ext`를 `org`로, `keep_ids`). 새 제안의 항목을 만들어요. `editor`가 제안하고 `model_steward`가 승인해요(ADR-0012). definitions 11.
-- 묻는 쪽의 고정(`/v1/kgs/{kg}/serving-pins`)은 KG 무리에 있어요([다음 문서](rest-api-resources-graph.md)). 드라이 런이 만든 후보 KG는 `kg` 칸에 ID가 실리고 `/v1/kgs/{kg}/...`로 물어요.
+- 묻는 쪽의 고정(`/v1/kgs/{kg}/serving-pins`)은 KG 그룹에 있어요([다음 문서](rest-api-resources-graph.md)). 드라이 런이 만든 후보 KG는 `kg` 칸에 ID가 실리고 `/v1/kgs/{kg}/...`로 물어요.
 - 내보낸 파일은 작업의 `result.href`로 받고 감사 로그에 남아요.
 - 정의 항목마다의 정의의 테스트(`item_tests`)은 항목의 본문에 든 샘플이라 별도의 길이 없어요. 검사 길로 돌려요.
 

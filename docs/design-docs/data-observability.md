@@ -63,14 +63,14 @@ follows:
 | 파이프라인 | `stage_duration_s`, `stage_backlog`, `retry_count`, `error_count` | 단계의 시간(분포), 밀린 양, 다시 한 횟수, 오류(`detail_key`가 오류 코드) | 초, 건, 번 | 파이프라인 | 밀린 양은 배치는 줄에 선 실행 수, 흐름은 못 처리한 사건 수(`detail_key`가 `runs`/`events`) |
 | 파이프라인 | `apply_held`, `held_age_s` | 적용을 붙잡았나, 붙잡힌 지 얼마 | 0/1, 초 | 파이프라인 | 배치는 확인을 기다림. 흐름은 `held`이고 받는 것은 계속 |
 | 객체 | `objects_total`, `objects_created`, `objects_updated`, `objects_retired` | 타입마다 총수, 만든·고친·물러난 수 | 개 | 타입 | 배치는 적용마다, 흐름은 구간마다 |
-| 객체 | `attribute_fill`, `attribute_age` | 채워진 비율(`required`가 분모), 속성 값을 본 때로부터의 나이(분포. 속성마다의 신선도) | 비율, 초 | 속성 | `volatile`은 본 때, `versioned`는 쥔 공급이 온전히 준 때 |
-| 객체 | `feed_contribution`, `unattached_values`, `unattached_expired` | 공급이 만들거나 고친 속성 값 수, 붙을 곳을 기다리는 값, 기한이 지나 문제가 된 값 | 개, 건 | 피드 | 붙을 곳 기다림은 살만 붙이는 흐름 공급에서 주로 |
+| 객체 | `attribute_fill`, `attribute_age` | 채워진 비율(`required`가 분모), 속성 값을 본 때로부터의 나이(분포. 속성마다의 신선도) | 비율, 초 | 속성 | `volatile`은 본 때, `versioned`는 쥔 피드가 온전히 준 때 |
+| 객체 | `feed_contribution`, `unattached_values`, `unattached_expired` | 피드가 만들거나 고친 속성 값 수, 붙을 곳을 기다리는 값, 기한이 지나 문제가 된 값 | 개, 건 | 피드 | 붙을 곳 기다림은 살만 붙이는 흐름 피드에서 주로 |
 | 객체 | `identity_merges`, `identity_splits`, `identity_candidates` | 합침, 가름, 식별 후보 | 건 | 타입 | 같음 |
 | 객체 | `source_conflicts`, `intent_observation_gaps` | 피드 사이의 어긋남, 의도(`configured`)와 관측(`observed`)의 어긋남 | 건 | 타입, 속성 | 같음 |
 | 객체 | `orphan_objects`, `completeness_mismatches`, `grade_fact`, `grade_assumed`, `grade_unknown` | 이어지지 않은 객체, 완전성 선언과 어긋남, 근거 등급의 비율(ADR-0011) | 비율, 건 | 타입, 속성(등급은 링크도) | 같음 |
 | 링크와 묶음 | `links_total`, `links_created`, `links_removed`, `dangling_links`, `binding_violations` | 링크 타입마다 총수, 만든·없앤 수, 가리키는 키가 없어 못 이은 링크, 바인딩의 개수 어김 | 개, 건 | 링크 타입, 피드 | 같음 |
 | 링크와 묶음 | `derived_groups_total`, `derived_groups_changed` | 끌어낸 묶음의 수, 바뀐 수 | 개 | 링크 타입, 타입 | 입력이 배치든 흐름이든 늘어난 만큼 다시 따짐 |
-| 링크와 묶음 | `zero_slack_groups`, `exposed_objects` | **이중화의 자세**: 여유가 0인 묶음 수, 하나만 더 죽으면 죽는 객체 수 | 개 | 타입, KG | 배치는 KG 버전을 봉할 때, 흐름은 투영을 고칠 때. `exposed_objects`는 `detail_key`로 직접 노출(`exposed_direct`)과 상속된 노출(`exposed_inherited`)을 가려요(노출됨은 아래로 끝까지 번져요) |
+| 링크와 묶음 | `zero_slack_groups`, `exposed_objects` | **이중화의 자세**: 여유가 0인 묶음 수, 하나만 더 죽으면 죽는 객체 수 | 개 | 타입, KG | 배치는 KG 버전을 봉할 때, 흐름은 프로젝션을 고칠 때. `exposed_objects`는 `detail_key`로 직접 노출(`exposed_direct`)과 상속된 노출(`exposed_inherited`)을 가려요(노출됨은 아래로 끝까지 번져요) |
 | 바뀜 | `change_rate`, `version_diff_size` | 변경의 속도(바뀐 객체·링크 수), 확정 버전 사이의 차이의 크기 | 건/분, 건 | KG, 타입 | 배치는 큰 묶음이 드문드문, 흐름은 작은 묶음이 잦음 |
 | 바뀜 | `type_churn`, `attribute_churn` | 구간 안에 바뀐 객체의 비율, 속성 값이 바뀐 횟수(값은 안 남기고 수만) | 비율, 번 | 타입, 속성 | `volatile` 속성은 경량 변경 레코드에서 횟수를 세요(값이 같아 쓰지 않은 것은 줄이 없어 세지 않아요). 링크는 `volatile`이 될 수 없어요 |
 | 바뀜 | `flapping_count` | **출렁임**: 창 안에서 값이 되풀이해 뒤집힌(A→B→A) 객체·속성·링크의 수 | 개 | 타입, 속성, 링크 타입 | 흐름에서 두드러지고, 배치는 동기화마다 뒤집히는 것 |
@@ -81,7 +81,7 @@ follows:
 | 충족 | `competency_fill_rate`, `competency_not_evaluated` | 역량 질문의 충족률(필요한 것을 다 채운 대상 객체 ÷ 대상 객체. 칸 `reading`이 `fact_only`와 `with_assumed`로 두 값을 가르고, `step_key`가 필요의 걸음, `group_key`가 `tracked_groupings`의 묶음), 한도 때문에 따지지 못한 객체 수. 자세한 것은 ADR-0015 | 비율, 개 | 역량 질문 | 늘어난 만큼 고쳐서 배치든 흐름이든 같음. 속성으로 거른 값은 지표로 쌓지 않고 물을 때 계산 |
 
 - 액션은 지금 타입의 목록뿐이라 정의의 바뀜(`definition_merges`와 타입의 상태 바뀜)으로 재요. 액션을 실행하는 자리는 E2E 프로세스를 구체화할 때 같은 틀에 채워요.
-- 이중화의 자세는 `exposure` 질의와 같은 계산이에요(ADR-0010). 질의 엔진이 자기 투영에서 세어 지표 주소로 내고, 워커가 거둬 지표 표에 쌓아요(엔진은 저장소에 쓰지 않아요). 가장 많이 바뀌는 객체는 지표가 아니라 `churn_top` 표(4.3절)에 값으로 남아요.
+- 이중화의 자세는 `exposure` 질의와 같은 계산이에요(ADR-0010). 질의 엔진이 자기 프로젝션에서 세어 지표 주소로 내고, 워커가 거둬 지표 표에 쌓아요(엔진은 저장소에 쓰지 않아요). 가장 많이 바뀌는 객체는 지표가 아니라 `churn_top` 표(4.3절)에 값으로 남아요.
 
 ## 4. 지표의 저장
 
@@ -140,7 +140,7 @@ follows:
 | `unknown` | 잴 신호가 없어요(처음 수집 전, 검사가 못 돌았어요). `healthy`로 읽지 않아요 |
 | `affected_upstream` | 자기 검사는 다 통과했는데 위쪽 자원이 `degraded`나 `failing`이에요 |
 
-헬스 상태 행(`health_state` 표)의 칸: `resource_kind`, `resource_id`, `health_state`, `own_state`(자기 검사만으로 정한 다섯), `cause_refs`(근본 원인의 목록), `since`, `evaluated_at`, `definition_set`, `kg_version`. 헬스 상태를 계산하는 자원은 소스, 데이터셋, 피드, 파이프라인, 타입, 속성, 링크 타입, 역량 질문, KG예요. 역량 질문의 헬스 상태는 충족률 목표에서 오고, 못 채우는 이유가 소스나 공급이면 계보를 따라 근본 원인이 거기로 올라가요. 서비스 계정은 헬스 상태가 아니라 영향을 받는 쪽으로만 나와요.
+헬스 상태 행(`health_state` 표)의 칸: `resource_kind`, `resource_id`, `health_state`, `own_state`(자기 검사만으로 정한 다섯), `cause_refs`(근본 원인의 목록), `since`, `evaluated_at`, `definition_set`, `kg_version`. 헬스 상태를 계산하는 자원은 소스, 데이터셋, 피드, 파이프라인, 타입, 속성, 링크 타입, 역량 질문, KG예요. 역량 질문의 헬스 상태는 충족률 목표에서 오고, 못 채우는 이유가 소스나 피드이면 계보를 따라 근본 원인이 거기로 올라가요. 서비스 계정은 헬스 상태가 아니라 영향을 받는 쪽으로만 나와요.
 
 ### 5.2 검사의 종류
 
@@ -168,7 +168,7 @@ follows:
 5. 자기 검사는 다 통과했는데 계보의 위쪽에 `failing`이나 `degraded`가 있으면 `affected_upstream`.
 6. 그 밖에는 `healthy`.
 
-묶음 자원은 아래에서도 받아요. **타입**은 객체를 만드는 피드(`creates_objects`)의 헬스 상태를, **속성**은 그것을 쥔 공급의 헬스 상태를 받아요. 속성을 피드 둘이 주는데 이기는 순서 첫째가 아파도 다음 공급이 값을 대신 주니 `degraded`예요(둘 다 이상 상태면 `failing`). **KG**는 자기 검사와 소스 수를 세어(`failing` 몇, `degraded` 몇) 보여요. 한 소스가 아프다고 KG 전체가 `failing`이 되지는 않아요.
+묶음 자원은 아래에서도 받아요. **타입**은 객체를 만드는 피드(`creates_objects`)의 헬스 상태를, **속성**은 그것을 쥔 피드의 헬스 상태를 받아요. 속성을 피드 둘이 주는데 이기는 순서 첫째가 아파도 다음 피드가 값을 대신 주니 `degraded`예요(둘 다 이상 상태면 `failing`). **KG**는 자기 검사와 소스 수를 세어(`failing` 몇, `degraded` 몇) 보여요. 한 소스가 아프다고 KG 전체가 `failing`이 되지는 않아요.
 
 ### 5.4 계보를 따른 전파와 근본 원인
 
@@ -176,7 +176,7 @@ follows:
 
 - **아래로 번져요.** 자기 검사가 어긋난 자원에서 출발해 후손에게 `affected_upstream`과 `cause_refs`를 붙여요.
 - **거꾸로 올라가요(근본 원인).** 어긋난 자원이 기대는 위쪽에도 어긋난 자원이 있으면, 더 위가 없는 어긋난 자원까지 올라가 그것을 뿌리로 적어요. 뿌리가 여럿이면 다 적어요.
-- **이유가 위에 있는 어긋남은 자기 알림을 만들지 않고 뿌리에 묶여요.** 신선도·채움·받는 양 목표를 어긴 속성의 공급이 이상 상태인 소스에 기댄 경우가 그래요.
+- **이유가 위에 있는 어긋남은 자기 알림을 만들지 않고 뿌리에 묶여요.** 신선도·채움·받는 양 목표를 어긴 속성의 피드가 이상 상태인 소스에 기댄 경우가 그래요.
 
 가상의 예시예요. 스위치 재고 소스 `switch_inventory`의 인증이 만료돼요.
 
@@ -194,7 +194,7 @@ follows:
 
 목표는 정의의 항목이에요(버전이 있고 제안과 승인을 거쳐요). 칸: `objective_id`(바뀌지 않는 `id`), `target`(붙는 자원: 피드, 타입, 속성, 역량 질문), `kind`(`freshness` 얼마 안에 / `fill_rate` 채워진 비율 이상 / `validity` 어김 비율 이하 / `volume` 받는 양이 최소~최대 안 / `competency_fill` 충족률 이상. 프락시움 자신의 목표를 위해 `latency` 응답 시간, `lag` 지연, `on_time_ratio` 제때 실행의 비율, `error_ratio` 오류의 비율을 더해요. ADR-0013, ADR-0017), `threshold`(종류에 맞는 값), `period`(못 지킨 비율을 세는 기간, 기본 28일), `allowed_miss`(기간 중 못 지켜도 되는 비율), `severity`.
 
-**못 지킨 비율의 계산.** 판정 간격마다(배치는 실행마다, 흐름과 신선도는 기본 5분, 가정) 목표를 "지킴 / 못 지킴 / 알 수 없음"으로 판정해요. 못 지킨 비율 = 못 지킨 수 ÷ (지킨 수 + 못 지킨 수). 모름은 분모에서 빼고 `unknown_share`로 따로 보여요(모름이 많으면 목표는 `unknown`). 남은 허용 = `allowed_miss` − 못 지킨 비율.
+**못 지킨 비율의 계산.** 판정 간격마다(배치는 실행마다, 흐름과 신선도는 기본 5분, 가정) 목표를 "지킴 / 못 지킴 / 알 수 없음"으로 판정해요. 못 지킨 비율 = 못 지킨 수 ÷ (지킨 수 + 못 지킨 수). 알 수 없음은 분모에서 빼고 `unknown_share`로 따로 보여요(알 수 없음이 많으면 목표는 `unknown`). 남은 허용 = `allowed_miss` − 못 지킨 비율.
 
 **빠르게 나빠짐의 판정.** 소진율 = (짧은 창의 못 지킨 비율) ÷ `allowed_miss`예요. 짧은 창(기본 1시간)과 긴 창(기본 6시간)의 소진율이 둘 다 기준(기본 6, 가정)을 넘을 때만 "빠르게 나빠짐"이에요. 잠깐의 튐과 느린 악화를 둘 다 거르려는 거예요. 이때 헬스 상태는 `failing`이고, 못 지킨 비율만 넘었으면 `degraded`예요. 소진율과 「빠르게 나빠짐」의 구현은 클로즈드 베타예요(15절).
 
@@ -244,7 +244,7 @@ open ──확인함──▶ acknowledged ──잠시 끔(시간)──▶ sno
 
 ### 8.5 보내는 경로
 
-보내는 경로는 포트 뒤의 어댑터예요(메신저, 메일, 변경 알림의 길). 포트의 입력은 알림 엔벨로프(`alert_id`, 심각도, 제목, 근본 원인, 영향의 수, 받는 사람, 열어 볼 길)이고 출력은 전달됨 / 실패 / 다시 시도예요. 글은 틀에서 만들어서 행의 내용과 비밀 값이 없어요. 전달에 실패하면 다음 길로 돌리고 `notify_delivery_failures`로 세요(13절).
+보내는 경로는 포트 뒤의 어댑터예요(메신저, 메일, 변경 알림의 길). 포트의 입력은 알림 엔벨로프(`alert_id`, 심각도, 제목, 근본 원인, 영향의 수, 받는 사람, 열어 볼 길)이고 출력은 전달됨 / 실패 / 다시 시도예요. 글은 틀에서 만들어서 행의 내용과 시크릿이 없어요. 전달에 실패하면 다음 길로 돌리고 `notify_delivery_failures`로 세요(13절).
 
 ## 9. 실행 소스 탐색과 타임라인
 
@@ -316,7 +316,7 @@ health(resource={kind: "object_type", id: "Interface"}, include=["cause", "reade
 
 - **열린 형식으로 지표·로그·추적을 내요.** 조직이 이미 가진 관측 도구가 가져가요. 열린 관측 형식(OpenTelemetry가 정한 지표·로그·추적의 세 신호와 전송 규약)을 쓰고 특정 도구에 묶이지 않아요. 지표는 제품 안과 같은 이름과 이름표(자원 종류, `resource_id`, `detail_key`)를 써요. 컬럼과 속성 단위의 지표는 카디널리티 때문에 기본으로 꺼 두고 켠 것만 내요. 추적은 동기화 한 번이 하나이고 단계가 구간이에요.
 - **데이터 헬스 상태의 사건은 변경 알림의 길(ADR-0010)로도 나가요.** 같은 길에서 사건의 `kind`로 KG의 변경과 가려요: `health_changed`, `alert_opened`, `alert_resolved`, `guard_blocked`, `stream_held`. 먼저 가져가기 방식이 기본이고 밀어 주기는 뒤에 와요.
-- **내용과 비밀 값이 없어요.** 내보내는 것은 지표 목록과 사건 목록에 든 칸뿐이고 자유로운 글 칸이 없어요. 로그에는 이름표와 수만 찍고(ADR-0008) 샘플은 9.2절의 길로만 나가요. 이 성질은 테스트가 건다(내보내는 모든 칸이 목록에 있는지).
+- **내용과 시크릿이 없어요.** 내보내는 것은 지표 목록과 사건 목록에 든 칸뿐이고 자유로운 글 칸이 없어요. 로그에는 이름표와 수만 찍고(ADR-0008) 샘플은 9.2절의 길로만 나가요. 이 성질은 테스트가 건다(내보내는 모든 칸이 목록에 있는지).
 
 ## 13. 제품 자신의 헬스 상태와 하트비트
 
@@ -328,7 +328,7 @@ health(resource={kind: "object_type", id: "Interface"}, include=["cause", "reade
 
 - `proposals_open`, `proposal_oldest_open_age_s`: 열린 제안의 수와 가장 오래된 것의 나이(KG).
 - `merge_check_failures`: 병합 검사의 실패 수. `detail_key`가 검사(유효성, 정의의 테스트, 드라이 런, 안전장치)예요(KG).
-- `reverts`, `emergency_reverts`, `post_review_overdue`: 리버트, 급할 때 리버트, 사후 검토 기한을 넘긴 수. `breaking_changes`: 호환성을 깨는 변경의 수(KG).
+- `reverts`, `emergency_reverts`, `post_review_overdue`: 리버트, 급할 때 리버트, 사후 검토 기한을 넘긴 수. `breaking_changes`: 호환성을 호환성을 깨는 변경의 수(KG).
 - `retired_type_in_use`: 물러났는데 매핑이나 객체가 아직 쓰는 타입(타입). `experimental_type_age_days`: `experimental`로 오래 머문 타입의 나이(타입).
 - `similar_type_pairs`: 이름·속성·식별 키가 겹쳐 비슷해 보이는 타입의 짝의 수. 비슷한 타입 찾기(ADR-0007)와 같은 계산이에요(KG).
 - `serving_pin_age_s`: 묻는 쪽을 옛 버전에 고정(`serving_pin`)해 둔 시간(KG).
@@ -349,7 +349,7 @@ health(resource={kind: "object_type", id: "Interface"}, include=["cause", "reade
 | 흐름의 구간 길이, 판정 간격 | 1분, 5분 | 헬스 상태 계산의 부하와 알림의 지연 |
 | 평소의 바탕과 최소 개수, 임계값 | 4주, 3개, 경고 4·심각 6·바닥 5%(가정) | 클로즈드 베타에서 합성 세계에 요일 무늬를 넣어 거짓 알림 수와 놓친 수 |
 | 목표의 기간, 소진율 창과 기준, 기본값(6절 표) | 28일, 1시간·6시간·6, 표의 값 | 클로즈드 베타에서 알림 피로와 늦은 알림의 균형, 소스의 실제 주기와 지연 |
-| 출렁임의 기준 | 창 안에서 3번 뒤집힘 | 흐름 공급의 실제 뒤집힘 |
+| 출렁임의 기준 | 창 안에서 3번 뒤집힘 | 흐름 피드의 실제 뒤집힘 |
 | 알림의 해소 조건, 넘기기 기한 | 연속 3번, 정하지 않음 | 클로즈드 베타의 처리 시간 |
 | 샘플의 수, 쓰임의 창 | 이유마다 20건, 30일 | 클로즈드 베타의 사용 |
 | 헬스 상태 계산의 시간 | 정하지 않음 | 지어낸 정의 항목 수만 개로 |

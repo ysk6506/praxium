@@ -49,3 +49,5 @@ documents:
   dictionary: [docs/design-docs/glossary.md, docs/design-docs/glossary-general.md]
   # Everyday words with many meanings. They are never dictionary entries; only their compounds are.
   ambiguous_words: [길, 묶음, 자리, 칸, 쪽, 뜻, 줄, 판, 흐름, 걸음, 차례, 짝, 갈래, 모양, 기록, 단위, 저장소, 일, 답, 표, 벌, 몫, 닿다, 물러나다, 풀기, 맡기, 가려진]
+  # Standard words that contain an old spelling. They are hidden before the search.
+  keep: [단일 진실 공급원, 공급망, 호환성을 깨는 변경]

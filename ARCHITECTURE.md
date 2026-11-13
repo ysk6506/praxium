@@ -20,7 +20,7 @@ covers:
 | `core.kernel` | Go | `backend/internal/kernel` | 타입 있는 ID, 안정된 코드를 가진 오류, 시계·난수·ID 발급의 포트와 구현, 정규 인코딩 위의 SHA-256. 시계와 난수를 읽는 곳은 `entropy.go` 한 파일뿐이다 | 없음 |
 | `core.model` | Go | `backend/internal/model` | 타입 등록부(객체·링크·액션 타입, 속성, 특성, 값 타입)의 도메인 타입과 검증, 표준 모델의 JSON 데이터 파일(`go:embed`), 번호를 매기고 내용 해시를 내는 불변 등록부. 오류 코드는 `model_`로 시작하는 자기 목록을 가진다 | `core.kernel` |
 | `core.access` | Go | `backend/internal/access` | 역할, 능력(ability), 주체(`Subject`), 인증기(`Authenticator`)와 권한 판정기(`Authorizer`)의 포트, 역할표. 어느 역할이 무엇을 할 수 있는지의 한 곳 | `core.kernel` |
-| `core.graph` | Go | `backend/internal/graph` | KG의 중심. 객체와 링크의 행(번호로 가리키고 해시에는 바뀌지 않는 ID), 변경 배치, 등록부에 대한 검증, 변경 번호를 매기며 쪽으로 나눠 적용하는 적용기, 이어서 고치는 그래프 해시, 확정 버전, 식별 이력, 점유와 세대. 저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)와 합성 세계의 도구(`Fixture`), 최신만 쥔 구현 `ScratchStore`(테스트 더블)를 함께 가진다. 차수(`1:1`, `N:1`)는 링크가 놓인 바인딩마다 센다(ADR-0027) | `core.kernel`, `core.model` |
+| `core.graph` | Go | `backend/internal/graph` | KG의 중심. 객체와 링크의 행(번호로 가리키고 해시에는 바뀌지 않는 ID), 변경 배치, 등록부에 대한 검증, 변경 번호를 매기며 쪽으로 나눠 적용하는 적용기, 이어서 고치는 그래프 해시, 확정 버전, 식별 이력, 리스와 세대. 저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)와 합성 세계의 도구(`Fixture`), 최신만 쥔 구현 `ScratchStore`(테스트 더블)를 함께 가진다. 차수(`1:1`, `N:1`)는 링크가 놓인 바인딩마다 센다(ADR-0027) | `core.kernel`, `core.model` |
 | `core.query` | Go | `backend/internal/query` | 사전 정의 질의의 첫 셋(`find`, `get`, `neighbors`)의 기준 구현. 저장소 포트의 스냅숏 하나를 읽어 모든 답에 엔벨로프(`as_of`, `volatile_as_of`, 신선도, 근거, `result_complete`, `hidden`)를 달고, 읽기 권한 포트(`ReadFilter`)로 거른다. 어댑터를 읽지 않는다. 테스트는 `graph.ScratchStore`에 세계를 짓는다(ADR-0027) | `core.kernel`, `core.model`, `core.graph` |
 | `adapter.memstore` | Go | `backend/internal/memstore` | 저장소 포트의 메모리 구현. 적합성 테스트(`adapter.graphcheck`)을 모두 통과하는 기준 구현이고 테스트와 개발 모드의 저장소다. 운영용이 아니다. 뒤에 올 PostgreSQL 어댑터가 이것을 본보기로 삼는다(ADR-0025) | `core.kernel`, `core.graph` |
 | `adapter.graphcheck` | Go | `backend/internal/graphcheck` | 저장소 포트의 적합성 테스트(`Cases()`, 31사례. 사례 이름과 차례는 테스트가 고정하고, 사례의 내용은 테스트 잠금이 지문에 넣는다, ADR-0028). 어댑터가 통과해야 하는 일을 `TB` 인터페이스 위에 적고, 어댑터의 테스트가 `t.Run`으로 돌린다(ADR-0025) | `core.kernel`, `core.model`, `core.graph`. 테스트 파일만 `adapter.memstore`도 (`test_may_import`) |
@@ -95,7 +95,7 @@ core.contract   밖으로 내는 모양: HTTP 길과 스키마, MCP 툴의 모�
 ### 화면은 다른 저장소다 (ADR-0016)
 
 - 이 저장소에 화면 단위는 없다. 화면은 다른 저장소에서 계약(OpenAPI)으로만 대화하고, 계약에서 클라이언트를 만들어 쓴다. 백엔드의 코드를 import하지 않는다.
-- 계약은 이 저장소가 쥐고 열린 형식(OpenAPI, JSON Schema)으로 낸다. 서버가 계약에 맞는지, 호환성을 깨는 변경이 없는지를 이 저장소의 검사가 본다.
+- 계약은 이 저장소가 쥐고 열린 형식(OpenAPI, JSON Schema)으로 낸다. 서버가 계약에 맞는지, 호환성을 호환성을 깨는 변경이 없는지를 이 저장소의 검사가 본다.
 - 이 저장소가 내는 것: 실행 파일(역할 넷), REST API의 계약, MCP 서버, 수집 엔벨로프의 클라이언트 라이브러리, CLI. CLI는 API를 그대로 불러서 화면 없이도 모든 기능을 테스트하고 운영하게 한다.
 - 예외 하나: 클로즈드 베타까지 지울 수 있는 임시 콘솔을 이 저장소의 따로 된 폴더에 둔다(제품의 단위가 아니고 공개된 `/v1`만 부른다. ADR-0016, TD-0007). 제품의 화면과 UX·UI 설계는 프런트엔드 저장소(아직 없다)의 일이다. 이 저장소의 알파 기준은 "모든 기능이 API와 CLI로 된다"이다.
 
@@ -118,7 +118,7 @@ core.contract   밖으로 내는 모양: HTTP 길과 스키마, MCP 툴의 모�
 |---|---|---|
 | API | 계약의 길과 MCP. 상태를 쥐지 않는다 | 뜬다 |
 | 워커 | 수집부터 적용까지와 일정. 소스마다의 동시 상한을 지킨다 | 뜬다 |
-| 질의 엔진 | 투영을 메모리에 올려 영향 범위와 길을 답한다. 프로젝션 파일과 변경 시퀀스만 읽는다 | 뜬다 |
+| 질의 엔진 | 프로젝션을 메모리에 올려 영향 범위와 길을 답한다. 프로젝션 파일과 변경 시퀀스만 읽는다 | 뜬다 |
 | 수집기 | 워커의 수집 역할을 소스가 있는 망에 따로 띄운 것 | 망마다 |
 
 질의 엔진은 Go로 직접 만들고, 프로젝션 파일과 변경 시퀀스가 엔진의 경계다.

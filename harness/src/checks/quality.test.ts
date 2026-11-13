@@ -68,11 +68,11 @@ describe("quality grades follow from measured values [REQ-024]", () => {
     expect(gradeOf(facts({ debtOpen: 3, near: 6, ignores: 12 })).why).toEqual([
       "열린 부채 3",
       "한도 90% 넘음 6",
-      "끄기 12",
+      "무시 주석 12",
     ]);
     expect(gradeOf(facts({ percent: undefined, ignores: 1 })).why).toEqual([
-      "끄기 1",
-      "커버리지 모름",
+      "무시 주석 1",
+      "커버리지 알 수 없음",
     ]);
     expect(gradeOf(CLEAN).why).toEqual([]);
   });
@@ -88,15 +88,15 @@ describe("quality grades follow from measured values [REQ-024]", () => {
     expect(sorted(rows).map((f) => f.unit)).toEqual(["c", "d", "b", "e", "a"]);
   });
 
-  test("the table prints the rule above the rows, and `모름` for a unit without a record", () => {
+  test("the table prints the rule above the rows, and `알 수 없음` for a unit without a record", () => {
     const text = renderTable(
       [facts({ unit: "core.world", percent: undefined })],
       { "biome-ignore": 3 },
       undefined,
     );
     expect(text.indexOf("## 등급 규칙")).toBeLessThan(text.indexOf("| core.world |"));
-    expect(text).toContain("| core.world | B | 모름 / 98.0 |");
-    expect(text).toContain('커버리지 기록: 없음 (모든 단위가 "모름")');
+    expect(text).toContain("| core.world | B | 알 수 없음 / 98.0 |");
+    expect(text).toContain('커버리지 기록: 없음 (모든 단위가 "알 수 없음")');
     expect(text).toContain("biome-ignore 3, eslint-disable 0");
     const known = renderTable(
       [
@@ -176,7 +176,7 @@ describe("the quality table is generated and kept fresh [REQ-024]", () => {
     delete process.env.PRAXIUM_TODAY;
   });
 
-  const STALE = "NOTE quality [QUAL001] 낡음: pnpm quality write";
+  const STALE = "NOTE quality [QUAL001] 오래됨: pnpm quality write";
 
   test("a fresh table is silent; a missing one is a note, not a failure (QUAL001)", () => {
     const root = repo();
@@ -367,7 +367,7 @@ describe("recorded coverage feeds the table, nothing is invented [REQ-024]", () 
 
   test("without a record every measured unit is unknown, units without a floor show a dash", () => {
     const text = render(repo());
-    expect(text).toContain("| core.world | B | 모름 / 98.0 |");
+    expect(text).toContain("| core.world | B | 알 수 없음 / 98.0 |");
     expect(text).toContain("| core.kernel | A | — |");
   });
 
@@ -423,7 +423,7 @@ describe("recorded coverage feeds the table, nothing is invented [REQ-024]", () 
     });
     const lines: string[] = [];
     expect(main(["--root", root], (l) => lines.push(l))).toBe(0);
-    expect(lines.at(-1)).toBe("NOTE quality [QUAL001] 낡음: pnpm quality write");
+    expect(lines.at(-1)).toBe("NOTE quality [QUAL001] 오래됨: pnpm quality write");
     expect(main(["print", "--root", root], (l) => lines.push(l))).toBe(0);
     expect(lines.at(-1)).toBe(render(root));
     expect(existsSync(path.join(root, TABLE))).toBe(false);

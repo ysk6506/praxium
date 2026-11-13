@@ -55,7 +55,7 @@ POST /v1/kgs/main/queries:paths
    "meta": {"as_of": {"kg": "kg_main_01", "generation": 1, "change_seq": 88231}, "served_by": {"role": "engine"}, "result_complete": {"truncated": false}}}
 ```
 
-- `impact`, `paths`, `exposure`은 질의 엔진이 답할 수 있어요. 투영이 아직 안 만들어졌으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 답했는지 보여 줘요.
+- `impact`, `paths`, `exposure`은 질의 엔진이 답할 수 있어요. 프로젝션이 아직 안 만들어졌으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 답했는지 보여 줘요.
 - 계산은 전체 그래프에서 하고, 가려진 객체는 결과에 안 나와요. `paths`의 가려진 걸음은 "가려진 객체 하나"로 보여요.
 
 **첫 셋이 선 모양**(ADR-0027, 계약의 `kg` 태그). 길 여덟이 계약에 있다: `GET /v1/kgs`, `/v1/kgs/{kg}`, `/objects`, `/objects/{object_id}`, `/objects/{object_id}/links`와 `POST /v1/kgs/{kg}/queries:find`, `queries:get`, `queries:neighbors`. 짝의 GET은 같은 질의를 부르고 목록 길은 `shape` 기본이 `items`다. POST의 몸은 질의의 칸을 평평하게 받고(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`(ISO 8601 기간), `max_staleness`, `limit`, `cursor`, `shape`), 모르는 칸은 필드별 `422`, JSON이 아닌 몸은 `415`다. 응답 엔벨로프는 `meta`로 간다(`as_of`는 `kg`와 `volatile_as_of`를 품고, `hidden`은 `has_hidden`을 달고, `freshness`, `evidence`, `result_complete`가 함께 간다). 저장소가 없는 서버는 `503 server.unavailable`(`reason: no_store`)로 답한다. 아직 없는 것: `objects:batch-get`, `issue-reports`, 나머지 일곱 질의, `/questions/{question_name}`의 일반 길.
@@ -66,7 +66,7 @@ POST /v1/kgs/main/queries:paths
 | `/kgs/{kg}/graph-versions` | GET | 확정 버전의 목록 | 읽기 | - | kg-queries, kg-storage |
 | `/kgs/{kg}/graph-versions/{kg_version_id}` | GET | 한 버전: `change_seq`, `created_at`, `definition_version`, `input_digest`, `change_counts`, `projection_state`, `seal_kind`, `executor_version`, `hash_rule_version` | 읽기 | - | kg-storage |
 | `/kgs/{kg}/changes` | GET | 변경의 목록(`changes`의 짧은 모양): `from_change_seq`, `to_change_seq`, `filter[object_type]`, `filter[change_kind]`. 페이지네이션의 `cursor`는 세대를 품어요 | 읽기 | - | kg-queries |
-| `/kgs/{kg}/scopes`, `/kgs/{kg}/scopes/{scope_id}` | GET, POST, DELETE | 저장해 둔 범위(타입, 포함 뿌리, 필터링)를 읽고 만들고 지워요. 만든 사람의 무리의 것이고 정의가 아니에요 | 읽기, 만들기와 지우기는 `viewer`부터 | - | kg-queries 10 |
+| `/kgs/{kg}/scopes`, `/kgs/{kg}/scopes/{scope_id}` | GET, POST, DELETE | 저장해 둔 범위(타입, 포함 뿌리, 필터링)를 읽고 만들고 지워요. 만든 사람의 그룹의 것이고 정의가 아니에요 | 읽기, 만들기와 삭제는 `viewer`부터 | - | kg-queries 10 |
 | `/kgs/{kg}/serving-pins` | GET, POST | 묻는 쪽을 옛 KG 버전에 고정(`kg_version_id`, 이유). 엔벨로프의 `as_of.pinned`에 보여요. 상태는 `pending`에서 `active`로 가요 | 전체 범위의 `operator`나 `admin` | - | ADR-0010 |
 | `/kgs/{kg}/serving-pins/{pin_id}` | DELETE | 고정 풀기 | 전체 범위의 `operator`나 `admin` | - | ADR-0010 |
 
@@ -81,15 +81,15 @@ POST /v1/kgs/main/queries:paths
 ### 1-5. 재수집, 견주기, 식별 이벤트, 대기 중인 값, 완전성 선언
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
-| `/kgs/{kg}/refreshes` | POST | **지정 재수집**: `object_ids`를 주면 그 객체에 값을 대는 공급의 소스에서 그 객체의 것만 지금 다시 읽어 같은 길로 적용해요. 소스를 읽기만 해요 | `operator`, `viewer`(그 객체를 읽는 범위. 소스 보호의 한도 안에서) | 작업 | ADR-0008 |
+| `/kgs/{kg}/refreshes` | POST | **지정 재수집**: `object_ids`를 주면 그 객체에 값을 대는 피드의 소스에서 그 객체의 것만 지금 다시 읽어 같은 길로 적용해요. 소스를 읽기만 해요 | `operator`, `viewer`(그 객체를 읽는 범위. 소스 보호의 한도 안에서) | 작업 | ADR-0008 |
 | `/kgs/{kg}/refreshes/{refresh_id}` | GET | 결과: 속성마다 바뀐 것, `source_time`, 적용된 `change_seq`, 어느 소스가 다시 읽혔고 어느 것이 못 읽혔나, "없음을 봄". 작업의 `result.href`가 이 길이에요 | 작업을 읽는 사람과 객체의 읽기 | - | ADR-0008 |
 | `/kgs/{kg}/value-checks` | POST | **기대와 대조**: 객체의 속성이 이 값이어야 한다는 기대와 기준 시각을 주면 속성마다 `confirmed`, `not_yet`, `contradicted`, `unverifiable`을 줘요. 근거는 `observed`만 쳐요. 안전함 | 읽기 | - | ADR-0010 |
 | `/kgs/{kg}/identity-events`, `/kgs/{kg}/identity-events/{id}` | GET | 식별 이력(합침, 가름, 되살림). 합침 때 옛 링크 ID와 새 링크 ID의 이음이 실려요 | 읽기 | - | kg-model 10 |
 | `/kgs/{kg}/identity-events/{id}:revert` | POST | **이 합침을 리버트**: 둘을 가르는 예외를 담은 제안을 만들어요(드라이 런과 승인을 거쳐요) | `editor` | - | ADR-0014 |
-| `/kgs/{kg}/pending-values` | GET | 붙을 곳이 없어 기한 안에 기다리는 값(`feed_id`, `natural_key`, `attribute`, `received_at`, `expires_at`). 필터링: `feed_id`, `object_type` | 읽기(공급의 자리) | - | pipeline 3 |
-| `/kgs/{kg}/completeness-declarations` | GET | 공급의 완전성 선언과 지금 상태(`declared_scope`, `expected_count`, `received_count`, `state`: `active`, `suspended`, `suspended_reason`). 어긋남이 임계값을 넘으면 저절로 멈춰요. 선언을 고치는 경로는 공급의 정의 항목이에요 | 읽기 | - | pipeline 3 |
+| `/kgs/{kg}/pending-values` | GET | 붙을 곳이 없어 기한 안에 기다리는 값(`feed_id`, `natural_key`, `attribute`, `received_at`, `expires_at`). 필터링: `feed_id`, `object_type` | 읽기(피드의 자리) | - | pipeline 3 |
+| `/kgs/{kg}/completeness-declarations` | GET | 피드의 완전성 선언과 지금 상태(`declared_scope`, `expected_count`, `received_count`, `state`: `active`, `suspended`, `suspended_reason`). 어긋남이 임계값을 넘으면 저절로 멈춰요. 선언을 고치는 경로는 피드의 정의 항목이에요 | 읽기 | - | pipeline 3 |
 
-재수집은 지움을 만들지 않아요. 기대와 대조는 기대 조건(`/v1/expectations`, 정의의 항목)과 다른 자원이에요. 영향 범위처럼 이웃에 번지는 것의 확인은 같은 변경 번호를 `min_seq`로 주고 물어요.
+재수집은 삭제를 만들지 않아요. 기대와 대조는 기대 조건(`/v1/expectations`, 정의의 항목)과 다른 자원이에요. 영향 범위처럼 이웃에 번지는 것의 확인은 같은 변경 번호를 `min_seq`로 주고 물어요.
 
 ## 2. 관측
 헬스 상태, 지표, 목표, 알림, 문제 목록, 타임라인이에요(ADR-0011, ADR-0013). 목표, 알림의 규칙, 안전장치의 값은 정의의 항목이라 고치는 경로는 앞 문서 5그룹(정의)의 브랜치 항목이고, 여기서는 읽어요. 헬스 상태 상태는 `healthy`, `degraded`, `failing`, `paused`, `unknown`, `affected_upstream` 여섯이에요. 문제 목록과 헬스 상태는 KG에 든 것이라 `/kgs/{kg}/...`이고, 지표와 목표와 알림은 배포의 자원(소스, 데이터셋, 정의)을 측정해서 `/v1/...`이며 KG를 고르는 칸(`kg`)을 받아요.
@@ -129,7 +129,7 @@ GET /v1/kgs/main/health/object_type/Interface?include=cause,readers
 - `include: unmet_objects`는 `items`를 페이지네이션으로, `include: gaps`는 필요마다 `blocking_alone`과 갈래를 줘요.
 
 ## 4. 권한
-사람과 무리는 사내 SSO가 알고, 프락시움은 역할과 범위를 붙여요(ADR-0012). 역할은 여덟이에요: `viewer`, `editor`, `approver`, `operator`, `model_steward`, `auditor`, `admin`, `ingester`(범위에 든 소스에 밀어 넣고 수집 엔벨로프를 보내요. 그 밖은 아무것도 못 해요).
+사람과 그룹은 사내 SSO가 알고, 프락시움은 역할과 범위를 붙여요(ADR-0012). 역할은 여덟이에요: `viewer`, `editor`, `approver`, `operator`, `model_steward`, `auditor`, `admin`, `ingester`(범위에 든 소스에 밀어 넣고 수집 엔벨로프를 보내요. 그 밖은 아무것도 못 해요).
 
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
@@ -158,7 +158,7 @@ GET /v1/kgs/main/health/object_type/Interface?include=cause,readers
 | `/v1/jobs/{job_id}/result` | GET | 결과(1-4) | 결과 자원의 읽기 권한 | - | rest-api 3-13 |
 | `/v1/events/stream` | GET | 사건의 흐름(서버 전송 이벤트). `kinds`, `resource`, `kg`로 거르고 `Last-Event-ID`로 이어 받아요. 세대가 다르면 `conflict.generation_changed` | 읽기(사건마다 읽기 권한을 따라요) | - | rest-api 3-10 |
 | `/v1/events` | GET | 같은 사건을 번호로: `since=<event_id>`, `kinds`, `resource`, `kg`, `limit`. 너무 옛것이면 `stale.since_too_old` | 읽기 | - | rest-api 3-10 |
-| `/v1/settings` | GET, PATCH | 제품의 설정(SSO 연결, 허용할 출처, 한도의 기본값, `solo_approval`). 비밀 값은 참조만. `If-Match` 필요 | `admin` | - | access-control, ADR-0017 |
+| `/v1/settings` | GET, PATCH | 제품의 설정(SSO 연결, 허용할 출처, 한도의 기본값, `solo_approval`). 시크릿은 참조만. `If-Match` 필요 | `admin` | - | access-control, ADR-0017 |
 | `/v1/settings/{setting_name}/revisions` | GET, POST | 운영의 설정의 바뀜의 이력과 리버트. 값의 범위를 검사하고 다시 띄워야 먹는 설정은 표시돼요 | `admin` | - | ADR-0017 |
 | `/v1/contract`, `/v1/capabilities` | GET | 계약 문서(OpenAPI)와 서버의 버전과 켜진 기능(`api_version`, `features`) | 로그인한 누구나(`/v1/contract`을 로그인 없이 읽을지는 정하지 않았어요) | - | rest-api 5-4 |
 | `/v1/problems/{code}` | GET | 오류 `code`의 설명(`type`이 가리키는 길). 목록은 `/v1/catalog/error-codes` | 로그인 없이 | - | rest-api 3-9 |

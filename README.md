@@ -45,7 +45,7 @@ Go 1.24 이상이 있어야 해요. `pnpm check`가 Go의 `gofmt`, `go vet`, `go
 
 코드를 쓰는 것은 코딩 에이전트이고, 저장소는 에이전트가 길을 잃지 않게 만들어져 있어요. 규칙은 말이 아니라 검사가 지켜요: 의존 방향, 문서가 낡았는지, 테스트를 고쳐서 통과시키지 못하게 하는 잠금, 부채의 기한. 구조는 테라리움에서 가져왔어요([ADR-0002](docs/design-docs/adr/0002-harness-and-working-rules-from-terrarium.md)).
 
-저장소에는 공개된 사실만 둬요. 내부에서 들은 사실, 실제 데이터, 비밀 값은 넣지 않아요([ADR-0003](docs/design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md)).
+저장소에는 공개된 사실만 둬요. 내부에서 들은 사실, 실제 데이터, 시크릿은 넣지 않아요([ADR-0003](docs/design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md)).
 
 ## 라이선스
 

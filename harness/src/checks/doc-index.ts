@@ -95,5 +95,5 @@ export function indexStale(root: string, config: DocsConfig): string | null {
   const fresh = freshIndex(root, config, text);
   return fresh === null || fresh === text
     ? null
-    : `NOTE docs [${INDEX_STALE_CODE}] 색인의 문서 목록이 낡음: pnpm tsx harness/src/checks/docs.ts generate`;
+    : `NOTE docs [${INDEX_STALE_CODE}] 색인의 문서 목록이 오래됨: pnpm tsx harness/src/checks/docs.ts generate`;
 }

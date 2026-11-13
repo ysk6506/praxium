@@ -71,7 +71,7 @@ describe("link-amends copies the phrase to the amended ADR [REQ-020]", () => {
     const line = decisionsTable(root, loadDocsConfig(root))
       .split("\n")
       .find((l) => l.includes("0001-old.md"));
-    expect(line).toContain(`일부 고침: [0002](`);
+    expect(line).toContain(`일부 수정: [0002](`);
     expect(line).toContain(`(${WHAT})`);
   });
 });

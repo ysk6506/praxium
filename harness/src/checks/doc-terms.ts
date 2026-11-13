@@ -31,6 +31,8 @@ export interface DocumentsConfig {
   readonly skip: readonly string[];
   readonly dictionary: readonly string[];
   readonly ambiguous_words: readonly string[];
+  /** Standard words that contain an old spelling (공급원 holds 공급). They are hidden before the search. */
+  readonly keep?: readonly string[];
 }
 
 export interface Term {
@@ -192,7 +194,6 @@ export function dictionaryProblems(terms: readonly Term[], config: DocumentsConf
   for (const t of terms) {
     if (config.ambiguous_words.includes(t.old))
       bad(t.source, `"${t.old}" is an everyday word with many meanings: list only its compounds`);
-    else if ([...t.old.replace(/\s/g, "")].length < 2) bad(t.source, `"${t.old}" is too short to be an entry`);
     if (standards.has(t.old)) bad(t.source, `"${t.old}" is an old spelling here and a standard term elsewhere`);
     const before = seen.get(t.old);
     if (before && before.standard !== t.standard)
@@ -214,10 +215,18 @@ export function loadDictionary(root: string, config: DocumentsConfig): { terms: 
 }
 
 /** Every old spelling in the prose of one document. */
-export function findOld(file: string, text: string, terms: readonly Term[], isDictionary = false): Hit[] {
+export function findOld(
+  file: string,
+  text: string,
+  terms: readonly Term[],
+  isDictionary = false,
+  keep: readonly string[] = [],
+): Hit[] {
   const hits: Hit[] = [];
   const sorted = [...terms].sort((a, b) => b.old.length - a.old.length);
-  proseLines(text, isDictionary).forEach((masked, index) => {
+  proseLines(text, isDictionary).forEach((line, index) => {
+    let masked = line;
+    for (const word of keep) masked = masked.split(word).join(HOLE.repeat(word.length));
     const taken = new Array<boolean>(masked.length).fill(false);
     for (const term of sorted) {
       for (let at = masked.indexOf(term.old); at >= 0; at = masked.indexOf(term.old, at + 1)) {
@@ -246,7 +255,9 @@ export function scanDocuments(root: string, config: DocumentsConfig): DocumentsR
   if (problems.length > 0) return { hits: [], problems };
   const hits: Hit[] = [];
   for (const file of documentFiles(root, config))
-    hits.push(...findOld(file, readText(path.join(root, file)), terms, config.dictionary.includes(file)));
+    hits.push(
+      ...findOld(file, readText(path.join(root, file)), terms, config.dictionary.includes(file), config.keep),
+    );
   return { hits, problems: [] };
 }
 

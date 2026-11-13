@@ -1,5 +1,5 @@
 ---
-title: REST API의 자원과 경로 (3) — 목록과 해 보기, 에이전트 시대의 정의, 푸시 수집, 비밀 값과 운영
+title: REST API의 자원과 경로 (3) — 목록과 해 보기, 에이전트 시대의 정의, 푸시 수집, 시크릿과 운영
 kind: guide
 status: active
 follows:
@@ -28,7 +28,7 @@ follows:
 | 역할 | `/v1/roles` | 역할 여덟(그래프 문서 4절. 같은 목록) |
 | 오류 코드 | `/v1/catalog/error-codes` | `code`와 뜻(`/v1/problems/{code}`가 한 건의 설명) |
 | 이벤트 코드 | `/v1/catalog/event-codes`, `/v1/catalog/event-codes/{code}` | 뜻, 심각도, 살펴볼 것, 할 수 있는 운영 액션. `catalog_version`이 있어요 |
-| 막힌 까닭의 코드 | `/v1/catalog/reason-codes` | `allowed_actions`의 `reason_code` |
+| 막힌 이유의 코드 | `/v1/catalog/reason-codes` | `allowed_actions`의 `reason_code` |
 | 기본값 | `/v1/catalog/defaults` | 기본값(설정)의 목록 |
 
 ### 1-2. 저장하지 않고 해 보기
@@ -37,7 +37,7 @@ follows:
 | `/v1/definition-items:validate` | POST | 항목(`kind`와 `body`, 없던 것이면 `item_id`는 비워요)을 저장하지 않고 검사해요. 필드마다의 오류와 고칠 길의 귀띔을 줘요. `branch_id`를 받아요 | 그 항목을 읽는 권한 |
 | `/v1/definition-items:preview` | POST | 저장하지 않고 미리 봐요. `kind: feed`이면 샘플 줄 몇 개가 어떤 객체와 링크가 되는지(식별이 기존 객체에 붙나 새로 만드나, 타입이 안 맞아 떨어지는 값) | 같음. 남의 소스를 읽는 정의이면 읽는 소스의 범위도 있어야 해요 |
 | `/v1/definition-items:suggest` | POST | 정해진 규칙으로 초안을 내요(같은 입력이면 같은 답). `kind: feed`이면 컬럼과 속성의 짝과 식별 후보를 이유와 함께. 저절로 적용하지 않아요 | `editor` |
-| 모든 자원의 `meta.allowed_actions` | 답의 칸 | 지금 이 주체가 할 수 있는 것과 막힌 까닭의 코드(rest-api.md 4절) | |
+| 모든 자원의 `meta.allowed_actions` | 답의 칸 | 지금 이 주체가 할 수 있는 것과 막힌 이유의 코드(rest-api.md 4절) | |
 
 ### 1-3. 고르게 받는 목록, 여러 건, 그리기 좋은 꼴
 - 목록은 필터링, 차례, 칸 고르기(`fields`), 함께 적재(`include`), 커서 넘김을 고르게 받고 전체 수는 청하면 줘요.
@@ -52,14 +52,14 @@ follows:
 | 브랜치와 제안의 칸 | | `authored_by`, `on_behalf_of`, `agent_run_id`, `agent_build`, `trigger_ref`, `evidence`, `intent`, `decision_log_hash`, `risk_grade`, `after` | 쓰는 쪽 |
 | `/v1/proposals/{id}/checks`, `/v1/proposals/{id}/candidate-runs` | POST | 큐가 돌릴 검사와 드라이 런을 미리 돌려요(초안 제안에서도 돼요). 주체마다 계산 예산이 걸려요. 미리 돌리는 길은 이것 하나예요 | `editor` |
 | `/v1/branches/{branch_id}:align` | POST | 메인 브랜치 최신화. 충돌이 없으면 저절로 돼요. 맞추기의 길은 이것 하나예요 | `editor` |
-| `/v1/merge-policies` | GET | 위험의 등급표와 자동 병합의 정책(정의의 항목). 고치는 경로는 브랜치의 항목(`kind: merge_policy`)이고 느슨하게 하는 것은 `admin`의 승인이 들어요 | 읽기 |
+| `/v1/merge-policies` | GET | 위험 등급표와 자동 병합의 정책(정의의 항목). 고치는 경로는 브랜치의 항목(`kind: merge_policy`)이고 느슨하게 하는 것은 `admin`의 승인이 들어요 | 읽기 |
 | `/v1/agent-runs/{agent_run_id}/reverts` | POST | 에이전트 실행 하나가 만든 병합 전부를 한 묶음의 리버트 제안으로 만들어요(미리 보기와 승인을 거쳐요) | `editor` |
 
 - 승인과 거절은 사람만 해요. MCP의 정의 면은 읽기만이에요. 서비스 계정의 `on_behalf_of`는 관리자가 그 계정에 묶어 둔 사람 가운데서만 고를 수 있어요.
-- 위험의 등급은 후보 차이에서 계산하고 항목 종류마다 바닥이 있어요(소스의 `endpoints`, 가리기 규칙, 알림과 목표를 느슨하게, 담당자, 기대 조건의 강도, 비밀 값의 닿는 주소는 R3). 첫 적용의 사람 확인은 R2부터예요.
+- 위험 등급은 후보 차이에서 계산하고 항목 종류마다 바닥이 있어요(소스의 `endpoints`, 가리기 규칙, 알림과 목표를 느슨하게, 담당자, 기대 조건의 강도, 시크릿의 닿는 주소는 R3). 첫 적용의 사람 확인은 R2부터예요.
 - 처음 세우기와 혼자 쓰는 테스트 배포를 위해 설정 `solo_approval`(`/v1/settings`)을 켜면 자기가 고친 것을 자기가 승인할 수 있고, 모든 승인의 감사에 표시가 남고 헬스 상태에 경고가 떠요. 기본은 꺼짐이에요.
 
-## 3. 받기를 넓히는 길(ADR-0008, ingestion-extensions.md)
+## 3. 수집을 넓히는 길(ADR-0008, ingestion-extensions.md)
 | 길 | 방식 | 뜻 | 역할 |
 |---|---|---|---|
 | `/v1/sources/{source_id}:push` | POST | **푸시 수집.** 소스마다 정의로 열어야 해요(기본은 닫힘). 보낸 쪽의 이벤트 ID로 겹침을 막고(기간 안에서만, 기본 7일, 소스마다 설정) 차례는 `source_time`으로 가려요. 같은 실행기와 안전장치와 행 셈을 지나요 | `ingester`(범위에 든 소스) |
@@ -67,14 +67,14 @@ follows:
 | `/v1/kgs/{kg}/refreshes`, `.../{refresh_id}` | POST, GET | 지정 재수집과 그 결과(그래프 문서 1-5). 주체마다 한도가 있고 일정에 몫을 남겨요 | `operator`, `viewer` |
 | `/v1/kgs/{kg}/value-checks` | POST | 기대와 대조(그래프 문서 1-5) | 읽기 |
 | `/v1/datasets/{dataset_id}:preview` | POST | 샘플 줄과 컬럼 통계(자원 (1) 3절) | `editor`, `operator` |
-| `/v1/object-types/{type_id}/feed-table` | GET | 타입 쪽에서 보기: 속성마다 어느 공급이 대나, 비어 있나, 얼마나 채워졌나, 배치인가 실시간인가 | 읽기 |
+| `/v1/object-types/{type_id}/feed-table` | GET | 타입 쪽에서 보기: 속성마다 어느 피드가 대나, 비어 있나, 얼마나 채워졌나, 배치인가 실시간인가 | 읽기 |
 | `/v1/object-types/{type_id}/feed-candidates` | GET | 비어 있는 속성(`attribute`)에서 시작해 댈 수 있는 데이터셋의 후보 | `editor` |
 | `/v1/parsers:probe` | POST | 샘플 문서를 올려 파서의 후보와 트리를 봐요. 라인 템플릿은 샘플 줄에서 잡을 곳을 골라 초안을 얻어요 | `editor` |
 
 푸시 수집만 하는 소스는 빠진 것을 알 수 없어서 전체 스냅샷 대조(스냅샷)를 함께 두기를 권하고, 없으면 완전함을 선언하지 못해요. 밀어 넣은 값의 근거는 `declared`예요. 푸시 수집과 수집 엔벨로프는 둘 다 `ingester`만 하고 그 계정은 읽기가 없어요.
 
-## 4. 비밀 값과 운영
-### 4-1. 시크릿([비밀 값과 암호화](secrets-and-encryption.md))
+## 4. 시크릿과 운영
+### 4-1. 시크릿([시크릿과 암호화](secrets-and-encryption.md))
 값을 읽는 경로는 없어요. 응답에는 메타 정보(이름, 판, 만든 때, 마지막으로 쓴 때, 만료, 지문의 앞자리, `allowed_hosts`)만 나와요. 읽는 역할과 쓰는 역할은 그 문서 9절이 정해요.
 
 | 길 | 메서드 | 하는 일 | 작업 |
@@ -99,7 +99,7 @@ follows:
 | `/v1/ops/action-runs`, `/v1/ops/action-runs/{run_id}` | GET | 실행의 목록과 한 건(상태, 승인, 뒤의 확인) | `operator`, `admin`, `auditor` |
 | `/v1/ops/action-runs/{run_id}:approve`, `:reject` | POST | 승인 / 거절. **사람만** 해요: 요청한 쪽이 아닌 `admin`이나 범위를 가진 `operator`. 서비스 계정은 못 해요 | `admin`, `operator` |
 | `/v1/ops/action-runs/{run_id}:cancel` | POST | 시작 전이거나 도는 실행을 취소 | 요청한 쪽, `admin` |
-| `/v1/ops/rollout` | GET | 올리는 중의 상태(스키마의 옮김과 역할마다의 버전, 어긋남) | `operator`, `admin`, `auditor` |
+| `/v1/ops/rollout` | GET | 올리는 중의 상태(스키마의 마이그레이션과 역할마다의 버전, 어긋남) | `operator`, `admin`, `auditor` |
 
 떠 있나·받을 수 있나·떴나의 길(`/v1/health/live`, `/v1/health/ready`, `/v1/health/started`)은 그래프 문서 5절에 있어요. 설정을 바꾸는 경로는 `PATCH /v1/settings`(`update_setting` 행위의 얇은 모양)와 `/v1/settings/{name}/revisions`예요. 같은 미리 실행, 승인, 감사를 거쳐요.
 

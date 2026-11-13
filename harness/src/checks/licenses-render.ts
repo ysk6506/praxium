@@ -66,7 +66,7 @@ export function fromPackage(pkg: Pkg, licenses: readonly string[], declared: str
     declared,
     source: pkg.sourceUrl,
     where: pkg.via
-      .map((v) => (v === "web" ? "web 묶음" : v === "runtime" ? "서버 실행" : `${v} 코드`))
+      .map((v) => (v === "web" ? "web 번들" : v === "runtime" ? "서버 실행" : `${v} 코드`))
       .join(", "),
     texts: pkg.licenseFiles.map((f) => f.text),
     notices: pkg.noticeFiles.map((f) => f.text.trim()),
@@ -158,9 +158,9 @@ export function renderNotices(
     "# Third-Party Notices",
     "",
     "Praxium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Praxium과 함께 나가는 제3자 구성요소와 그 라이선스 고지예요.",
-    "`pnpm tsx harness/src/checks/licenses.ts write`가 만들어요. 손으로 고치지 않아요. npm 의존성은 설치된 패키지에서, 그 밖의 자료는 `harness/config/third-party-assets.yaml`에서 와요.",
+    "`pnpm tsx harness/src/checks/licenses.ts write`가 만들어요. 손으로 수정하지 않아요. npm 의존성은 설치된 패키지에서, 그 밖의 자료는 `harness/config/third-party-assets.yaml`에서 와요.",
     "",
-    "- 이 목록은 웹·서버에서 닿을 수 있는 모든 패키지를 담아 실제 묶음보다 넓어요.",
+    "- 이 목록은 웹·서버에서 도달할 수 있는 모든 패키지를 담아 실제 번들보다 넓어요.",
     "- 소스 zip과 컨테이너 이미지에 이 파일이 들어 있어요.",
     "",
     `<!-- licenses-fingerprint: ${fingerprint} -->`,
