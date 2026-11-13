@@ -386,6 +386,14 @@
             }
           ],
           "strength": "strong"
+        },
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            }
+          ]
         }
       ]
     },
@@ -806,6 +814,19 @@
           "change_class": "dynamic",
           "enum_values": ["up", "down", "unknown"]
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.member_of",
+              "set": true,
+              "incoming": true,
+              "size": 2
+            }
+          ]
+        }
       ]
     },
     {
@@ -1018,6 +1039,19 @@
           "value_type": "vt.fqdn",
           "change_class": "slow"
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.ip_address.address"
+            }
+          ]
+        }
       ]
     },
     {
@@ -1133,6 +1167,22 @@
           "value_type": "vt.string",
           "change_class": "slow",
           "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.routing_session.local_address"
+            },
+            {
+              "property": "pr.routing_session.remote_address"
+            }
+          ]
         }
       ]
     },
@@ -1307,6 +1357,19 @@
           "value_type": "vt.string",
           "change_class": "slow"
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
+        }
       ]
     },
     {
@@ -1331,6 +1394,20 @@
           "name": "encapsulation",
           "value_type": "vt.string",
           "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.tunnels_via",
+              "set": true
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
         }
       ]
     },
@@ -1365,6 +1442,20 @@
           "name": "mapped_vlan_id",
           "value_type": "vt.integer",
           "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.realized_by",
+              "set": true
+            },
+            {
+              "property": "pr.overlay_segment.vni"
+            }
+          ]
         }
       ]
     },
@@ -1480,6 +1571,19 @@
           "name": "z_side_site",
           "value_type": "vt.ref",
           "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.owned_by"
+            },
+            {
+              "property": "pr.circuit.circuit_id"
+            }
+          ]
         }
       ]
     },

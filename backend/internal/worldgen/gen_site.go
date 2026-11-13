@@ -8,6 +8,8 @@ type siteCtx struct {
 	site     ref
 	building ref
 	ups      [2][]ref
+	upsGroup [2]ref
+	chillerG ref
 	chillers []ref
 	spines   []ref
 	routers  []ref
@@ -71,6 +73,21 @@ func (g *gen) sitePower(c *siteCtx) {
 			g.link(lPoweredBy, ups, gear, kS("feed_side", feedSide[side]), kS("path_role", "primary"))
 			c.ups[side] = append(c.ups[side], ups)
 		}
+		g.upsBank(c, side)
+	}
+}
+
+// upsBank groups the UPS of one side: with more than one, one may fail (N+1).
+// The power panels of the side depend on the bank, not on a single UPS.
+func (g *gen) upsBank(c *siteCtx, side int) {
+	mode := "load_shared"
+	if len(c.ups[side]) > 1 {
+		mode = "n_plus_1"
+	}
+	c.upsGroup[side] = g.obj(tPowerGroup, mkid("pgrp", c.s, side)).set(kS("name", "ups-bank-"+itoa(c.s)+sideName(side)),
+		kI("min_alive", max(1, len(c.ups[side])-1)), kS("mode", mode), kS("threshold_kind", "count")).in(lPartOf, c.building).emit()
+	for _, ups := range c.ups[side] {
+		g.link(lMemberOf, ups, c.upsGroup[side])
 	}
 }
 
@@ -83,6 +100,11 @@ func (g *gen) siteCooling(c *siteCtx) {
 		gear := refOf(tSwitchgear, mkid("swgr", c.s, i%2))
 		g.link(lPoweredBy, ch, gear, kS("feed_side", feedSide[i%2]), kS("path_role", "primary"))
 		c.chillers = append(c.chillers, ch)
+	}
+	c.chillerG = g.obj(tCoolGroup, mkid("cgrp", c.s)).set(kS("name", "chillers-"+itoa(c.s)), kI("min_alive", 2), kS("mode", "n_plus_1"),
+		kS("threshold_kind", "count")).in(lPartOf, c.building).emit()
+	for _, ch := range c.chillers {
+		g.link(lMemberOf, ch, c.chillerG)
 	}
 }
 
@@ -101,6 +123,9 @@ func (g *gen) siteNetwork(c *siteCtx) {
 		kI("min_alive", 1), kS("mode", "active_active")).in(lPartOf, c.routers[0]).emit()
 	for _, rt := range c.routers {
 		g.link(lMemberOf, rt, pair)
+	}
+	for _, sp := range c.spines {
+		g.link(lUplinkedVia, sp, pair, kS("network_role", "data"))
 	}
 	c.vrf = g.obj(tNetInstance, mkid("vrf", c.s, 0)).set(kS("name", "vrf-"+itoa(c.s)), kS("instance_type", "l3_vrf"),
 		kS("route_distinguisher", "65000:"+itoa(c.s))).emit()

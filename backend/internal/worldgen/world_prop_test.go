@@ -76,7 +76,7 @@ func TestEveryLayerAndStructure(t *testing.T) {
 	}
 	for _, typ := range []string{"Region", "Site", "Room", "Rack", "UtilityFeed", "Ups", "Crah", "PhysicalServer", "Switch", "Lag", "EcmpGroup",
 		"StorageArray", "StorageVolume", "ComputeCluster", "VirtualMachine", "Pod", "Workload", "ApplicationService", "BusinessService",
-		"PowerRedundancyGroup", "LbPool", "SoftwareInstance", "DatabaseCluster", "CoolingLoop"} {
+		"PowerRedundancyGroup", "CoolingRedundancyGroup", "MlagDomain", "LbPool", "SoftwareInstance", "DatabaseCluster", "CoolingLoop"} {
 		if m.Counts.ObjectsByType[typ] == 0 {
 			t.Errorf("no %s", typ)
 		}
@@ -86,8 +86,8 @@ func TestEveryLayerAndStructure(t *testing.T) {
 			t.Errorf("no %s links", l)
 		}
 	}
-	if m.Counts.ObjectsNotIngestible == 0 || m.Counts.LinksNotIngestible == 0 {
-		t.Error("the keyless CoolingLoop should be generated and flagged")
+	if m.Counts.ObjectsNotIngestible != 0 || m.Counts.LinksNotIngestible != 0 {
+		t.Errorf("%d objects and %d links are not ingestible, want none: every standard type has an identity key", m.Counts.ObjectsNotIngestible, m.Counts.LinksNotIngestible)
 	}
 	cs := m.Shape.CrossSite
 	if cs.CallCross == 0 {

@@ -10,10 +10,10 @@ import (
 // be deliberate. If it is, the numbers below are updated with the change and
 // docs/design-docs/worldgen.md says why.
 const (
-	goldenObjects      = 1385
-	goldenLinks        = 2437
-	goldenHash         = "1ea25c49425d67c13b323e51fcbd3a10a7bf1a1399b3a5b8ebea284dd4ac3626"
-	goldenManifestHash = "93f73e124853204c8689c09a352d6b6526ab6b05428ed4fdd028069bc734bdef"
+	goldenObjects      = 1391
+	goldenLinks        = 2505
+	goldenHash         = "8d648b7bfd6e370de5163d17a9c1a9a8d196cac2fe8c19a2df518621c60b4085"
+	goldenManifestHash = "cd5f56fb86006bf1bd59b5ec13c44f1806b42347000d1ef79e5e20623994017a"
 )
 
 func TestGoldenTinyWorld(t *testing.T) {

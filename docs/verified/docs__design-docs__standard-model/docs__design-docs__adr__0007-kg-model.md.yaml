@@ -2,6 +2,6 @@ doc: "docs/design-docs/standard-model.md"
 target: "docs/design-docs/adr/0007-kg-model.md"
 hash: "122bc214a8c4df0a"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "ADR-0022: keys with sets and 1:1 context, redundancy groups as objects, DEPENDS_ON between application services; counts and golden values updated"
 text_changed: true
-doc_hash: "4851dd28c46fa715"
+doc_hash: "6422be740f3df6cd"

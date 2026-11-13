@@ -788,6 +788,19 @@
           "change_class": "slow",
           "enum_values": ["must", "should"]
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
+        }
       ]
     },
     {
@@ -806,6 +819,19 @@
           "name": "metadata",
           "value_type": "vt.map",
           "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
         }
       ]
     }

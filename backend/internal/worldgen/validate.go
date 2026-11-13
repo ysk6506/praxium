@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"io"
+	"slices"
 	"strconv"
 	"strings"
 
@@ -84,6 +85,12 @@ type objInfo struct {
 	parents map[int]string
 	ni      bool
 	members int
+	// sets holds, per set key link (twice the link type, plus one for the
+	// links that arrive), the ids of the objects at the other end.
+	sets map[int][]string
+	// consumers counts the links of other meanings that arrive at a group.
+	consumers int
+	member    bool
 }
 
 type validator struct {
@@ -239,10 +246,18 @@ func (v *validator) finish() {
 			v.rep.problem("link %s %s -> %s: the standard model has no binding for %s to %s", linkNames[l.lt], l.from, l.to, from.t.name, to.t.name)
 		}
 		from.parents[l.lt] = l.to
-		if l.lt == lMemberOf {
+		from.addSet(l.lt, false, from.t.setOut, l.to)
+		to.addSet(l.lt, true, to.t.setIn, l.from)
+		switch l.lt {
+		case lMemberOf:
 			to.members++
+			from.member = true
+		case lPartOf:
+		default:
+			to.consumers++
 		}
 	}
+	v.supply()
 	seen := map[string]string{}
 	for id, o := range v.objs {
 		v.keys(id, o, seen)
@@ -250,6 +265,37 @@ func (v *validator) finish() {
 			continue
 		}
 		v.group(id, o)
+	}
+}
+
+func (o *objInfo) addSet(lt int, incoming bool, mask uint32, other string) {
+	if mask&(1<<uint(lt)) == 0 {
+		return
+	}
+	if o.sets == nil {
+		o.sets = map[int][]string{}
+	}
+	k := setKey(lt, incoming)
+	o.sets[k] = append(o.sets[k], other)
+}
+
+func setKey(lt int, incoming bool) int {
+	if incoming {
+		return lt*2 + 1
+	}
+	return lt * 2
+}
+
+// supply checks that nothing is supplied by a single member of a group: a
+// consumer depends on the group (power, cooling and network supply).
+func (v *validator) supply() {
+	for _, l := range v.lnks {
+		if l.lt != lPoweredBy && l.lt != lCooledBy && l.lt != lUplinkedVia {
+			continue
+		}
+		if to := v.objs[l.to]; to != nil && to.member && !to.ni {
+			v.rep.problem("link %s %s -> %s: the end is a member of a group, so the link should go to the group", linkNames[l.lt], l.from, l.to)
+		}
 	}
 }
 
@@ -279,6 +325,14 @@ func (v *validator) keyText(o *objInfo, k keySpec) (string, bool) {
 		return x, ok
 	}
 	for _, c := range k.comps {
+		if c.set {
+			x, ok := o.setText(c)
+			if !ok {
+				return "", false
+			}
+			parts = append(parts, x)
+			continue
+		}
 		if c.prop >= 0 {
 			x, ok := o.props[o.t.props[c.prop].name]
 			if !ok {
@@ -296,6 +350,17 @@ func (v *validator) keyText(o *objInfo, k keySpec) (string, bool) {
 	return strings.Join(parts, "|"), true
 }
 
+// setText is the key text of a set component: the sorted ids joined, or not
+// formed when there are none or not the exact number the key demands.
+func (o *objInfo) setText(c keyComp) (string, bool) {
+	ids := slices.Clone(o.sets[setKey(c.ctx, c.incoming)])
+	if len(ids) == 0 || (c.size > 0 && len(ids) != c.size) {
+		return "", false
+	}
+	slices.Sort(ids)
+	return strings.Join(ids, ","), true
+}
+
 // group checks the groups: min_alive is at least 1 and no more than the members.
 func (v *validator) group(id string, o *objInfo) {
 	s, ok := o.props["min_alive"]
@@ -305,5 +370,8 @@ func (v *validator) group(id string, o *objInfo) {
 	n, err := strconv.Atoi(s)
 	if err != nil || n < 1 || n > o.members {
 		v.rep.problem("group %s (%s): min_alive %s with %d members", id, o.t.name, s, o.members)
+	}
+	if o.consumers == 0 {
+		v.rep.problem("group %s (%s): nothing depends on the group", id, o.t.name)
 	}
 }

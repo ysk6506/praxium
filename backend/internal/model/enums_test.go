@@ -184,7 +184,7 @@ func TestCodeCatalogueIsStable(t *testing.T) {
 	// [REQ-100] The codes of this unit are a contract: a code is never renamed or removed, and a new one is added here on purpose.
 	want := []kernel.Code{
 		"model_action_ref", "model_action_risk", "model_binding_constraint", "model_binding_duplicate", "model_binding_endpoint",
-		"model_data_invalid", "model_duplicate_id", "model_enum_values", "model_identity_context", "model_identity_key", "model_identity_key_changed", "model_identity_key_volatile",
+		"model_data_invalid", "model_duplicate_id", "model_enum_values", "model_identity_context", "model_identity_key", "model_identity_key_changed", "model_identity_key_volatile", "model_identity_set",
 		"model_layer_namespace", "model_layer_not_inherited", "model_link_meaning", "model_link_volatile", "model_name_duplicate",
 		"model_name_invalid", "model_name_reserved", "model_need", "model_not_in_closed_list", "model_not_standard", "model_number",
 		"model_parent_cycle", "model_parent_namespace", "model_parent_unknown", "model_property_duplicate", "model_required_field",

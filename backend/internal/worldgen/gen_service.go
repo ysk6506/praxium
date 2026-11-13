@@ -93,7 +93,7 @@ func (g *gen) service(c *siteCtx, i int) {
 // group the standard model can key) and, for every third service, a virtual server.
 func (g *gen) balancer(c *siteCtx, i int, app ref, k int) {
 	pool := g.obj(tLbPool, mkid("lbp", c.s, i)).set(kS("name", "pool-"+app.id), kI("min_alive", min(k, len(g.members))),
-		kS("mode", "n_plus_k"), kS("threshold_kind", "count")).in(lPartOf, g.members[0]).emit()
+		kS("mode", "n_plus_k"), kS("threshold_kind", "count")).in(lPartOf, app).emit()
 	g.link(lRealizedBy, app, pool)
 	if i%3 == 0 {
 		vs := g.obj(tLbServer, mkid("lbv", c.s, i)).set(kS("name", "vip-"+app.id)).in(lRunsOn, g.members[0]).emit()
@@ -109,7 +109,8 @@ func (g *gen) balancer(c *siteCtx, i int, app ref, k int) {
 // database makes a two-instance database cluster behind a service.
 func (g *gen) database(c *siteCtx, i int, app ref, at vmAt, d *draw) {
 	cl := g.obj(tDbCluster, mkid("dbc", c.s, i)).set(kS("name", "dbc-"+app.id), kI("min_alive", 1), kS("mode", "active_standby"),
-		kS("threshold_kind", "count")).emit()
+		kS("threshold_kind", "count")).in(lPartOf, app).emit()
+	g.link(lDependsOn, app, cl)
 	for m := 0; m < 2; m++ {
 		w := at
 		if m == 1 {
@@ -120,7 +121,6 @@ func (g *gen) database(c *siteCtx, i int, app ref, at vmAt, d *draw) {
 		db := g.obj(tDbInstance, mkid("dbi", c.s, i, m)).set(kS("name", "dbi"+itoa(m))).in(lRunsOn, refOf(tOS, osID(vmID(w.a, w.srv, w.v)))).emit()
 		g.link(lMemberOf, db, cl)
 		g.link(lStoresDataOn, db, refOf(tDatastore, datastoreID(w.a.s, w.a.hall, g.lay.clusterOf(w.a.rk))))
-		g.link(lDependsOn, app, db)
 	}
 }
 
@@ -143,6 +143,9 @@ func (g *gen) dependencies(c *siteCtx, i int, app ref, d *draw) {
 		}
 		done[k] = to.id
 		g.link(lCalls, app, to)
+		if k == 0 {
+			g.link(lDependsOn, app, to)
+		}
 		if d.chance(g.p.CycleRatio) {
 			g.link(lCalls, to, app)
 		}

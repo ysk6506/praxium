@@ -79,6 +79,13 @@ func (b *builder) in(lt int, parent ref) *builder {
 	return b
 }
 
+// members promises the links a set key reads: the recipe makes the links
+// of the link type that name this object, so the key can be formed.
+func (b *builder) members(lt int) *builder {
+	b.ctx |= 1 << uint(lt)
+	return b
+}
+
 // satisfied reports whether some identity key of the type can be formed.
 func (b *builder) satisfied() bool {
 	for _, k := range b.t.keys {

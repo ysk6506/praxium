@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "c73f6496e74e9798"
+hash: "f806a90408798bf3"
 date: "2026-11-13"
-note: "5단계 상태에 생성기 완료(ADR-0021)를 적고 읽어 맞춤"
-text_changed: true
+note: "plan.md row 5 mentions the ADR-0022 correction; README claims unchanged"
+text_changed: false
 doc_hash: "129d40a3a854fd63"

@@ -59,6 +59,8 @@ const (
 	CodeIdentityKeyVolatile kernel.Code = "model_identity_key_volatile"
 	// CodeIdentityContext is a context component whose link type has no binding from the type that is N:1 or 1:1.
 	CodeIdentityContext kernel.Code = "model_identity_context"
+	// CodeIdentitySet is a set component that breaks a rule: no binding at the right end, or a flag or size without a set.
+	CodeIdentitySet kernel.Code = "model_identity_set"
 	// CodeSchemeUnknown is an identifier scheme that does not exist.
 	CodeSchemeUnknown kernel.Code = "model_scheme_unknown"
 	// CodeIdentityKeyChanged is an org or ext type that changes the identity keys of its parent.
@@ -114,6 +116,7 @@ var catalogue = map[kernel.Code]string{
 	CodeIdentityKey:         "An identity key breaks a rule.",
 	CodeIdentityKeyVolatile: "An identity key may not use a property that is volatile.",
 	CodeIdentityContext:     "A context component needs a link type with a many-to-one binding from the type.",
+	CodeIdentitySet:         "A set component needs a link type with a binding at the right end of the type, and incoming or size only with a set.",
 	CodeSchemeUnknown:       "An identity key or scheme names an identifier scheme or normaliser that does not exist.",
 	CodeIdentityKeyChanged:  "An org or ext type may not change the identity keys of its parent.",
 	CodeTitleProperty:       "The title property is not a property of the type.",

@@ -2,7 +2,6 @@ package model_test
 
 import (
 	"reflect"
-	"sort"
 	"testing"
 	"testing/fstest"
 
@@ -53,7 +52,7 @@ func TestStandardCounts(t *testing.T) {
 		"object types": len(r.ObjectTypes()), "link types": len(r.LinkTypes()), "bindings": bindings,
 		"action types": len(r.ActionTypes()), "traits": len(r.Traits()), "properties": props, "named value types": len(r.ValueTypes()) - len(model.BaseKinds()),
 	}
-	want := map[string]int{"object types": 168, "link types": 55, "bindings": 528, "action types": 112, "traits": 19, "properties": 671, "named value types": 4}
+	want := map[string]int{"object types": 168, "link types": 55, "bindings": 551, "action types": 112, "traits": 19, "properties": 671, "named value types": 4}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("counts = %v, want %v", got, want)
 	}
@@ -162,7 +161,7 @@ func TestStandardIsDeterministic(t *testing.T) {
 	if na != nb {
 		t.Fatalf("two loads give different numbering hashes")
 	}
-	const wantModel = "b8a998d4b4c7ac9013ec7e4a89ce47cbfcfbdf87a57fac96370ecfb4ddd47fe8"
+	const wantModel = "712b5ae602cd347af9b4eecaa975b3637b5e96ccaa9d8682064d31749a07f98a"
 	const wantNumbering = "3b9b3505c4efd21ef3d90bce9ec8be956c87776868e622c9149f046342eb6f1e"
 	if got := a.Hash().String(); got != wantModel {
 		t.Errorf("model hash = %s, want %s: change it only with a decision record", got, wantModel)
@@ -299,8 +298,8 @@ func TestStandardIdentityAndRules(t *testing.T) {
 func TestStandardIdentityKeysResolve(t *testing.T) {
 	// [REQ-104] Every key of the standard model names things that exist, and every scheme loads.
 	r := loadStd(t)
-	if len(r.IdentifierSchemes()) != 36 {
-		t.Errorf("%d identifier schemes, want 36", len(r.IdentifierSchemes()))
+	if len(r.IdentifierSchemes()) != 37 {
+		t.Errorf("%d identifier schemes, want 37", len(r.IdentifierSchemes()))
 	}
 	for _, sch := range r.IdentifierSchemes() {
 		if got, ok := r.IdentifierSchemeByName(sch.Name); !ok || got.ID != sch.ID {
@@ -310,7 +309,7 @@ func TestStandardIdentityKeysResolve(t *testing.T) {
 			t.Fatalf("scheme %s is not found by id", sch.Name)
 		}
 	}
-	keys, contexts := 0, 0
+	keys, contexts, sets := 0, 0, 0
 	for _, ot := range r.ObjectTypes() {
 		for _, k := range r.IdentityKeys(ot.ID) {
 			keys++
@@ -327,19 +326,22 @@ func TestStandardIdentityKeysResolve(t *testing.T) {
 					continue
 				}
 				contexts++
+				if c.Set {
+					sets++
+				}
 				if _, ok := r.LinkType(c.Context); !ok {
 					t.Errorf("%s has a key in an unknown context", ot.Name)
 				}
 			}
 		}
 	}
-	if keys != 215 || contexts != 99 {
-		t.Errorf("%d keys and %d context components, want 215 and 99", keys, contexts)
+	if keys != 235 || contexts != 116 || sets != 5 {
+		t.Errorf("%d keys, %d context components of which %d sets, want 235, 116 and 5", keys, contexts, sets)
 	}
 }
 
-func TestStandardKeylessTypesAreLocked(t *testing.T) {
-	// [REQ-104] Types without an identity key are tracked debt (TD-0009): the list only shrinks on purpose.
+func TestStandardEveryTypeHasAKey(t *testing.T) {
+	// [REQ-104] Every standard type has an identity key of its own (TD-0009 is closed): a type without one is a regression.
 	r := loadStd(t)
 	var got []string
 	for _, ot := range r.Definitions().ObjectTypes {
@@ -347,10 +349,69 @@ func TestStandardKeylessTypesAreLocked(t *testing.T) {
 			got = append(got, ot.Name)
 		}
 	}
-	sort.Strings(got)
-	want := []string{"CoolingLoop", "Circuit", "Contract", "EcmpGroup", "Endpoint", "HostAggregate", "InitiatorGroup", "IpAddress", "LogicalGroup", "MlagDomain", "OnCallSchedule", "OverlaySegment", "PlacementRule", "PowerCircuit", "PowerFeed", "RackUnit", "RoutingSession", "SanZone", "Tunnel", "UnknownObject"}
-	sort.Strings(want)
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("types without an identity key = %v, want %v", got, want)
+	if len(got) != 0 {
+		t.Errorf("types without an identity key = %v, want none", got)
+	}
+}
+
+func TestStandardGroupsCanHaveMembersAndConsumers(t *testing.T) {
+	// [REQ-104] Redundancy groups are real structure: each group type of a domain has a member type that can join it
+	// (MEMBER_OF) and a consumer type that can depend on the group (supplied_by, requires or realized_by), so that
+	// no consumer has to point at one member.
+	r := loadStd(t)
+	types := map[string]model.ObjectType{}
+	for _, ot := range r.Definitions().ObjectTypes {
+		types[ot.ID.String()] = ot
+	}
+	covers := func(e model.Endpoint, id string) bool {
+		for cur, ok := types[id], true; ok; cur, ok = types[cur.Parent.String()] {
+			if e.Kind == model.EndpointType && e.Ref == cur.ID.String() {
+				return true
+			}
+			for _, tr := range cur.Traits {
+				if e.Kind == model.EndpointTrait && e.Ref == tr.String() {
+					return true
+				}
+			}
+		}
+		return false
+	}
+	consumer := map[model.Meaning]bool{model.MeaningSuppliedBy: true, model.MeaningRequires: true, model.MeaningRealizedBy: true, model.MeaningRunsOn: true}
+	for _, id := range []string{"ot.power_redundancy_group", "ot.cooling_redundancy_group", "ot.mlag_domain", "ot.lag", "ot.ecmp_group",
+		"ot.ha_pair", "ot.compute_cluster", "ot.lb_pool", "ot.database_cluster", "ot.control_plane"} {
+		member, user := false, false
+		for _, lt := range r.LinkTypes() {
+			for _, b := range lt.Bindings {
+				member = member || (lt.Meaning == model.MeaningMemberOf && covers(b.To, id))
+				user = user || (consumer[lt.Meaning] && covers(b.To, id))
+			}
+		}
+		if !member || !user {
+			t.Errorf("%s: a member can join = %v, a consumer can depend on it = %v", id, member, user)
+		}
+	}
+}
+
+func TestStandardMountingAndServiceDependencies(t *testing.T) {
+	// [REQ-101] Mounting in a rack is containment (MOUNTED_IN has the meaning contained_in, with no second location link
+	// for the same fact), and an application service can depend on another one (DEPENDS_ON).
+	r := loadStd(t)
+	mounted, ok := r.LinkTypeByName("MOUNTED_IN")
+	if !ok || mounted.Meaning != model.MeaningContainedIn {
+		t.Fatalf("MOUNTED_IN = %+v, want the meaning contained_in", mounted)
+	}
+	located, _ := r.LinkTypeByName("LOCATED_IN")
+	for _, b := range located.Bindings {
+		if b.To.Ref == "ot.rack" && b.From.Kind == model.EndpointTrait {
+			t.Errorf("%s says where rack-mounted equipment is, but MOUNTED_IN does", b.ID)
+		}
+	}
+	depends, _ := r.LinkTypeByName("DEPENDS_ON")
+	found := false
+	for _, b := range depends.Bindings {
+		found = found || (b.From.Ref == "ot.application_service" && b.To.Ref == "ot.application_service")
+	}
+	if !found {
+		t.Error("DEPENDS_ON has no binding between application services")
 	}
 }

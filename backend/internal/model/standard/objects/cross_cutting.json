@@ -107,6 +107,16 @@
           "value_type": "vt.string",
           "change_class": "slow"
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "weak",
+          "components": [
+            {
+              "property": "pr.common.name"
+            }
+          ]
+        }
       ]
     },
     {
@@ -437,6 +447,12 @@
           "name": "first_seen",
           "value_type": "vt.time",
           "change_class": "dynamic"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "weak",
+          "scheme": "is.hint_hash"
         }
       ]
     }

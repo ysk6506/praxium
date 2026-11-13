@@ -476,6 +476,22 @@
           "enum_values": ["front", "rear"],
           "required": true
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.rack_unit.u_index"
+            },
+            {
+              "property": "pr.rack_unit.face"
+            }
+          ]
+        }
       ]
     },
     {
@@ -1390,6 +1406,19 @@
           "change_class": "slow",
           "enum_values": ["single", "three"]
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.power_circuit.circuit_id"
+            }
+          ]
+        }
       ]
     },
     {
@@ -1494,6 +1523,19 @@
           "name": "max_utilization_pct",
           "value_type": "vt.number",
           "change_class": "dynamic"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
         }
       ]
     },
@@ -2233,6 +2275,19 @@
           "value_type": "vt.quantity",
           "change_class": "dynamic",
           "unit": "L/min"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
         }
       ]
     },
