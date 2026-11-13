@@ -1,0 +1,675 @@
+{
+  "paths": {
+    "/v1/catalog": {
+      "get": {
+        "operationId": "listCatalog",
+        "summary": "List the catalogues",
+        "description": "The index of the catalogues the server serves.",
+        "tags": ["catalog"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: description, href, name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogAnswer"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "description": "The six channels of state an object has.",
+                      "href": "/v1/catalog/channels",
+                      "name": "channels"
+                    },
+                    {
+                      "description": "The closed catalogue of error codes.",
+                      "href": "/v1/catalog/error-codes",
+                      "name": "error-codes"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 6,
+                      "total": 6,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/catalog/link-meanings": {
+      "get": {
+        "operationId": "listLinkMeanings",
+        "summary": "The link meanings",
+        "description": "The closed meanings of a link and how each spreads state.",
+        "tags": ["catalog"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: from_channel, from_param, meaning, params, spreads, to_channel.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkMeaningList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "from_channel": "network",
+                      "from_param": null,
+                      "meaning": "connected_to",
+                      "params": [],
+                      "spreads": true,
+                      "to_channel": "network"
+                    },
+                    {
+                      "from_channel": null,
+                      "from_param": null,
+                      "meaning": "contained_in",
+                      "params": [],
+                      "spreads": false,
+                      "to_channel": null
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 11,
+                      "total": 11,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/catalog/channels": {
+      "get": {
+        "operationId": "listChannels",
+        "summary": "The channels",
+        "description": "The channels of state an object has.",
+        "tags": ["catalog"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: channel, states.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "channel": "cooling",
+                      "states": ["up", "down"]
+                    },
+                    {
+                      "channel": "management",
+                      "states": ["up", "down"]
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 6,
+                      "total": 6,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/catalog/error-codes": {
+      "get": {
+        "operationId": "listErrorCodes",
+        "summary": "The error codes",
+        "description": "The closed catalogue of error codes. Every problem the server sends uses one of these.",
+        "tags": ["catalog"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "group": {
+                  "type": "object",
+                  "description": "Filter on group.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "status": {
+                  "type": "object",
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    },
+                    "range": {
+                      "type": "string",
+                      "description": "A number range from..to; either side may be empty."
+                    }
+                  }
+                },
+                "code": {
+                  "type": "object",
+                  "description": "Filter on code.",
+                  "properties": {
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: code, group, meaning, status.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorCodeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "code": "auth.token_expired",
+                      "group": "auth",
+                      "meaning": "The bearer token has expired; get a new one.",
+                      "status": 401
+                    },
+                    {
+                      "code": "auth.token_invalid",
+                      "group": "auth",
+                      "meaning": "The bearer token is not accepted.",
+                      "status": 401
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 43,
+                      "total": 43,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/catalog/reason-codes": {
+      "get": {
+        "operationId": "listReasonCodes",
+        "summary": "The reason codes",
+        "description": "The reasons an action in meta.allowed_actions is refused.",
+        "tags": ["catalog"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: code, meaning.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReasonCodeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "code": "blocked.approval_required",
+                      "meaning": "An approval is needed first."
+                    },
+                    {
+                      "code": "blocked.limit",
+                      "meaning": "A limit (open items or budget of the subject) is reached."
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 6,
+                      "total": 6,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/roles": {
+      "get": {
+        "operationId": "listRoles",
+        "summary": "The roles",
+        "description": "The eight roles and the abilities of each.",
+        "tags": ["type-registry"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: abilities, includes_read, role.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RoleList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "abilities": ["read", "read_definitions"],
+                      "includes_read": true,
+                      "role": "admin"
+                    },
+                    {
+                      "abilities": ["read", "read_definitions"],
+                      "includes_read": true,
+                      "role": "approver"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 8,
+                      "total": 8,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  }
+}

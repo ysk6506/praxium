@@ -1,0 +1,2266 @@
+{
+  "paths": {
+    "/v1/value-types": {
+      "get": {
+        "operationId": "listValueTypes",
+        "summary": "The value types",
+        "description": "The value types a property can have.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "base": {
+                  "type": "object",
+                  "description": "Filter on base.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                },
+                "builtin": {
+                  "type": "object",
+                  "description": "Filter on builtin.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: base, builtin, description, id, name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValueTypeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "base": "boolean",
+                      "builtin": true,
+                      "description": "",
+                      "id": "vt.boolean",
+                      "name": "boolean"
+                    },
+                    {
+                      "base": "enum",
+                      "builtin": true,
+                      "description": "",
+                      "id": "vt.enum",
+                      "name": "enum"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 14,
+                      "total": 14,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/layers": {
+      "get": {
+        "operationId": "listLayers",
+        "summary": "The layers",
+        "description": "The layers of the model and how many object types each holds.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: layer, type_count.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LayerList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "layer": "container",
+                      "type_count": 16
+                    },
+                    {
+                      "layer": "cross_cutting",
+                      "type_count": 10
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 10,
+                      "total": 10,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/object-types": {
+      "get": {
+        "operationId": "listObjectTypes",
+        "summary": "List object types",
+        "description": "The object types of the model. subtype_of is reflexive and includes the type itself; trait counts inherited traits.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "layer": {
+                  "type": "object",
+                  "description": "Filter on layer.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "namespace": {
+                  "type": "object",
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "status": {
+                  "type": "object",
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "tier": {
+                  "type": "object",
+                  "description": "Filter on tier.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                },
+                "trait": {
+                  "type": "object",
+                  "description": "Filter on trait.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "parent": {
+                  "type": "object",
+                  "description": "Filter on parent.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "subtype_of": {
+                  "type": "object",
+                  "description": "Filter on subtype_of.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    }
+                  }
+                },
+                "type_no": {
+                  "type": "object",
+                  "description": "Filter on type_no.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    },
+                    "range": {
+                      "type": "string",
+                      "description": "A number range from..to; either side may be empty."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: type_no, name, layer.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, description, display_names, id, layer, name, namespace, parent, standard_ref, status, superseded_by, tier, traits, type_no.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectTypeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "description": "지리 권역(재해복구 단위)",
+                      "display_names": {},
+                      "id": "ot.region",
+                      "layer": "facility",
+                      "name": "Region",
+                      "namespace": "std",
+                      "parent": null,
+                      "standard_ref": "",
+                      "status": "active",
+                      "superseded_by": null,
+                      "tier": "extension",
+                      "traits": ["tr.common", "tr.is_failure_domain"],
+                      "type_no": 1
+                    },
+                    {
+                      "aliases": [],
+                      "description": "부지/캠퍼스",
+                      "display_names": {},
+                      "id": "ot.site",
+                      "layer": "facility",
+                      "name": "Site",
+                      "namespace": "std",
+                      "parent": null,
+                      "standard_ref": "Redfish Facility(Site)",
+                      "status": "active",
+                      "superseded_by": null,
+                      "tier": "core",
+                      "traits": ["tr.common", "tr.is_failure_domain"],
+                      "type_no": 2
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI0YjM1MjA5NGQ4MmE1ZmM2IiwiayI6WyIyIl0sImkiOiJvdC5zaXRlIn0",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 41,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/object-types/{type_id}": {
+      "get": {
+        "operationId": "getObjectType",
+        "summary": "Get an object type",
+        "description": "One object type by id, name or an old name (the answer then carries Content-Location). include adds inherited properties, ancestors, subtypes, bindings and effective needs.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "type_id",
+            "in": "path",
+            "required": true,
+            "description": "An object type id, name or old name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "include",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated parts to add. Allowed: effective_properties, ancestors, subtypes, bindings, effective_needs.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectTypeAnswer"
+                },
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "ancestors": [],
+                    "bindings": [
+                      {
+                        "binding": {
+                          "cardinality": "N:1",
+                          "from": {
+                            "kind": "type",
+                            "ref": "ot.site"
+                          },
+                          "id": "bd.located_in.site.region",
+                          "param_constraints": {},
+                          "to": {
+                            "kind": "type",
+                            "ref": "ot.region"
+                          }
+                        },
+                        "link_type": "lt.located_in"
+                      },
+                      {
+                        "binding": {
+                          "cardinality": "N:1",
+                          "from": {
+                            "kind": "type",
+                            "ref": "ot.building"
+                          },
+                          "id": "bd.located_in.building.site",
+                          "param_constraints": {},
+                          "to": {
+                            "kind": "type",
+                            "ref": "ot.site"
+                          }
+                        },
+                        "link_type": "lt.located_in"
+                      }
+                    ],
+                    "contacts": [],
+                    "description": "부지/캠퍼스",
+                    "display_names": {},
+                    "effective_needs": [],
+                    "effective_properties": [
+                      {
+                        "aliases": [],
+                        "attr_no": 1,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.name",
+                        "name": "name",
+                        "required": true,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      },
+                      {
+                        "aliases": [],
+                        "attr_no": 2,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.display_name",
+                        "name": "display_name",
+                        "required": false,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      }
+                    ],
+                    "id": "ot.site",
+                    "identity_keys": [
+                      {
+                        "components": [
+                          {
+                            "incoming": false,
+                            "kind": "property",
+                            "ref": "pr.site.site_code",
+                            "size": 0
+                          }
+                        ],
+                        "scheme": null,
+                        "strength": "strong"
+                      }
+                    ],
+                    "layer": "facility",
+                    "name": "Site",
+                    "namespace": "std",
+                    "needs": [],
+                    "parent": null,
+                    "properties": [
+                      {
+                        "aliases": [],
+                        "attr_no": 39,
+                        "change_class": "static",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.site.site_code",
+                        "name": "site_code",
+                        "required": true,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      },
+                      {
+                        "aliases": [],
+                        "attr_no": 40,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.site.address",
+                        "name": "address",
+                        "required": false,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      }
+                    ],
+                    "standard_ref": "Redfish Facility(Site)",
+                    "status": "active",
+                    "subtypes": [],
+                    "superseded_by": null,
+                    "tier": "core",
+                    "title_property": null,
+                    "traits": ["tr.common", "tr.is_failure_domain"],
+                    "type_no": 2
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/link-types": {
+      "get": {
+        "operationId": "listLinkTypes",
+        "summary": "List link types",
+        "description": "The link types. from_type and to_type match the bindings, with subtypes and traits expanded.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "meaning": {
+                  "type": "object",
+                  "description": "Filter on meaning.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "namespace": {
+                  "type": "object",
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "status": {
+                  "type": "object",
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "delay_class": {
+                  "type": "object",
+                  "description": "Filter on delay_class.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                },
+                "from_type": {
+                  "type": "object",
+                  "description": "Filter on from_type.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    }
+                  }
+                },
+                "to_type": {
+                  "type": "object",
+                  "description": "Filter on to_type.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    }
+                  }
+                },
+                "link_type_no": {
+                  "type": "object",
+                  "description": "Filter on link_type_no.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    },
+                    "range": {
+                      "type": "string",
+                      "description": "A number range from..to; either side may be empty."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: link_type_no, name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, binding_count, delay_class, description, id, link_type_no, meaning, meaning_params, name, namespace, status, superseded_by.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkTypeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "binding_count": 22,
+                      "delay_class": "immediate",
+                      "description": "",
+                      "id": "lt.located_in",
+                      "link_type_no": 1,
+                      "meaning": "contained_in",
+                      "meaning_params": {},
+                      "name": "LOCATED_IN",
+                      "namespace": "std",
+                      "status": "active",
+                      "superseded_by": null
+                    },
+                    {
+                      "aliases": [],
+                      "binding_count": 1,
+                      "delay_class": "immediate",
+                      "description": "",
+                      "id": "lt.mounted_in",
+                      "link_type_no": 2,
+                      "meaning": "contained_in",
+                      "meaning_params": {},
+                      "name": "MOUNTED_IN",
+                      "namespace": "std",
+                      "status": "active",
+                      "superseded_by": null
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyIyIl0sImkiOiJsdC5tb3VudGVkX2luIn0",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 55,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/link-types/{link_type_id}": {
+      "get": {
+        "operationId": "getLinkType",
+        "summary": "Get a link type",
+        "description": "One link type with its properties and bindings, by id, name or an old name.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "link_type_id",
+            "in": "path",
+            "required": true,
+            "description": "A link type id, name or old name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LinkTypeAnswer"
+                },
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "binding_count": 22,
+                    "bindings": [
+                      {
+                        "cardinality": "N:1",
+                        "from": {
+                          "kind": "type",
+                          "ref": "ot.site"
+                        },
+                        "id": "bd.located_in.site.region",
+                        "param_constraints": {},
+                        "to": {
+                          "kind": "type",
+                          "ref": "ot.region"
+                        }
+                      },
+                      {
+                        "cardinality": "N:1",
+                        "from": {
+                          "kind": "type",
+                          "ref": "ot.building"
+                        },
+                        "id": "bd.located_in.building.site",
+                        "param_constraints": {},
+                        "to": {
+                          "kind": "type",
+                          "ref": "ot.site"
+                        }
+                      }
+                    ],
+                    "delay_class": "immediate",
+                    "description": "",
+                    "id": "lt.located_in",
+                    "link_type_no": 1,
+                    "meaning": "contained_in",
+                    "meaning_params": {},
+                    "name": "LOCATED_IN",
+                    "namespace": "std",
+                    "properties": [],
+                    "status": "active",
+                    "superseded_by": null
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/link-types/{link_type_id}/bindings": {
+      "get": {
+        "operationId": "listLinkTypeBindings",
+        "summary": "List the bindings of a link type",
+        "description": "The pairs of ends one link type may join.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: cardinality, from, id, param_constraints, to.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "link_type_id",
+            "in": "path",
+            "required": true,
+            "description": "A link type id, name or old name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BindingList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "cardinality": "N:1",
+                      "from": {
+                        "kind": "type",
+                        "ref": "ot.aisle"
+                      },
+                      "id": "bd.located_in.aisle.room",
+                      "param_constraints": {},
+                      "to": {
+                        "kind": "type",
+                        "ref": "ot.room"
+                      }
+                    },
+                    {
+                      "cardinality": "N:1",
+                      "from": {
+                        "kind": "type",
+                        "ref": "ot.aisle"
+                      },
+                      "id": "bd.located_in.aisle.row",
+                      "param_constraints": {},
+                      "to": {
+                        "kind": "type",
+                        "ref": "ot.row"
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 22,
+                      "total": 22,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          }
+        }
+      }
+    },
+    "/v1/action-types": {
+      "get": {
+        "operationId": "listActionTypes",
+        "summary": "List action types",
+        "description": "The action types and their four risk axes. applies_to matches the types an action covers, with subtypes and traits expanded.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "object",
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "status": {
+                  "type": "object",
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "disruption": {
+                  "type": "object",
+                  "description": "Filter on disruption.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                },
+                "applies_to": {
+                  "type": "object",
+                  "description": "Filter on applies_to.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, applies_to, declared_effects, description, disruption, id, inverse, mutates, name, namespace, physical, reversibility, status, superseded_by.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionTypeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "applies_to": [
+                        {
+                          "kind": "trait",
+                          "ref": "tr.manageable"
+                        }
+                      ],
+                      "declared_effects": ["경보 ack 표시"],
+                      "description": "",
+                      "disruption": "none",
+                      "id": "ac.acknowledge_alarm",
+                      "inverse": null,
+                      "mutates": true,
+                      "name": "acknowledge_alarm",
+                      "namespace": "std",
+                      "physical": false,
+                      "reversibility": "reversible",
+                      "status": "active",
+                      "superseded_by": null
+                    },
+                    {
+                      "aliases": [],
+                      "applies_to": [
+                        {
+                          "kind": "type",
+                          "ref": "ot.dns_zone"
+                        }
+                      ],
+                      "declared_effects": ["`DnsRecord` 생성"],
+                      "description": "",
+                      "disruption": "none",
+                      "id": "ac.add_dns_record",
+                      "inverse": "ac.remove_dns_record",
+                      "mutates": true,
+                      "name": "add_dns_record",
+                      "namespace": "std",
+                      "physical": false,
+                      "reversibility": "reversible",
+                      "status": "active",
+                      "superseded_by": null
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyJhZGRfZG5zX3JlY29yZCJdLCJpIjoiYWMuYWRkX2Ruc19yZWNvcmQifQ",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 112,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/action-types/{action_type_id}": {
+      "get": {
+        "operationId": "getActionType",
+        "summary": "Get an action type",
+        "description": "One action type by id, name or an old name.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "action_type_id",
+            "in": "path",
+            "required": true,
+            "description": "An action type id, name or old name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActionTypeAnswer"
+                },
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "applies_to": [
+                      {
+                        "kind": "trait",
+                        "ref": "tr.manageable"
+                      }
+                    ],
+                    "declared_effects": ["경보 ack 표시"],
+                    "description": "",
+                    "disruption": "none",
+                    "id": "ac.acknowledge_alarm",
+                    "inverse": null,
+                    "mutates": true,
+                    "name": "acknowledge_alarm",
+                    "namespace": "std",
+                    "physical": false,
+                    "reversibility": "reversible",
+                    "status": "active",
+                    "superseded_by": null
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/traits": {
+      "get": {
+        "operationId": "listTraits",
+        "summary": "List traits",
+        "description": "The traits, their properties and needs.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, description, id, name, needs, properties.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraitList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "description": "",
+                      "id": "tr.addressable",
+                      "name": "Addressable",
+                      "needs": [],
+                      "properties": [
+                        {
+                          "aliases": [],
+                          "attr_no": 29,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.addressable.primary_address",
+                          "name": "primary_address",
+                          "required": false,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.string"
+                        },
+                        {
+                          "aliases": [],
+                          "attr_no": 30,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.addressable.hostnames",
+                          "name": "hostnames",
+                          "required": false,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.list"
+                        }
+                      ]
+                    },
+                    {
+                      "aliases": [],
+                      "description": "모든 타입이 가지는 공통 속성",
+                      "id": "tr.common",
+                      "name": "Common",
+                      "needs": [],
+                      "properties": [
+                        {
+                          "aliases": [],
+                          "attr_no": 1,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.common.name",
+                          "name": "name",
+                          "required": true,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.string"
+                        },
+                        {
+                          "aliases": [],
+                          "attr_no": 2,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.common.display_name",
+                          "name": "display_name",
+                          "required": false,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.string"
+                        }
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyJDb21tb24iXSwiaSI6InRyLmNvbW1vbiJ9",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 19,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/traits/{trait_id}": {
+      "get": {
+        "operationId": "getTrait",
+        "summary": "Get a trait",
+        "description": "One trait with the types that carry it, by id, name or an old name.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "trait_id",
+            "in": "path",
+            "required": true,
+            "description": "A trait id, name or old name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TraitAnswer"
+                },
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "carriers": [
+                      {
+                        "id": "ot.region",
+                        "name": "Region"
+                      },
+                      {
+                        "id": "ot.site",
+                        "name": "Site"
+                      }
+                    ],
+                    "description": "모든 타입이 가지는 공통 속성",
+                    "id": "tr.common",
+                    "name": "Common",
+                    "needs": [],
+                    "properties": [
+                      {
+                        "aliases": [],
+                        "attr_no": 1,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.name",
+                        "name": "name",
+                        "required": true,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      },
+                      {
+                        "aliases": [],
+                        "attr_no": 2,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.display_name",
+                        "name": "display_name",
+                        "required": false,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      }
+                    ]
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/identifier-schemes": {
+      "get": {
+        "operationId": "listIdentifierSchemes",
+        "summary": "List identifier schemes",
+        "description": "The kinds of external identifier.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "namespace": {
+                  "type": "object",
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, description, id, name, namespace, normalizer.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemeList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "description": "외부 식별자의 방식. 초안의 이름은 ext:array.system_id. 유효한 테두리: mgmt",
+                      "id": "is.array_system_id",
+                      "name": "array_system_id",
+                      "namespace": "std",
+                      "normalizer": "vt.string"
+                    },
+                    {
+                      "aliases": [],
+                      "description": "외부 식별자의 방식. 초안의 이름은 ext:bmc.mac",
+                      "id": "is.bmc_mac",
+                      "name": "bmc_mac",
+                      "namespace": "std",
+                      "normalizer": "vt.mac_address"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyJibWNfbWFjIl0sImkiOiJpcy5ibWNfbWFjIn0",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 37,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/identifier-schemes/{scheme_id}": {
+      "get": {
+        "operationId": "getIdentifierScheme",
+        "summary": "Get an identifier scheme",
+        "description": "One identifier scheme by id, name or an old name.",
+        "tags": ["type-registry"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "scheme_id",
+            "in": "path",
+            "required": true,
+            "description": "An identifier scheme id, name or old name.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The resource.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SchemeAnswer"
+                },
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "description": "외부 식별자의 방식. 초안의 이름은 ext:array.system_id. 유효한 테두리: mgmt",
+                    "id": "is.array_system_id",
+                    "name": "array_system_id",
+                    "namespace": "std",
+                    "normalizer": "vt.string"
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  }
+}

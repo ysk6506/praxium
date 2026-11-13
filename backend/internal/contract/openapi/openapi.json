@@ -1,0 +1,6043 @@
+{
+  "components": {
+    "headers": {
+      "Allow": {
+        "description": "The methods the path has.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ContentLocation": {
+        "description": "The canonical address of the resource, sent when the request used a name or an old name.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ETag": {
+        "description": "The tag of this answer. For the type registry it is made from the model hash and the query.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "TraceId": {
+        "description": "The trace id of the request; the same as meta.trace_id or trace_id in the body.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "WWWAuthenticate": {
+        "description": "How to authenticate: Bearer.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "parameters": {
+      "Cursor": {
+        "description": "The next_cursor of the previous page. Send the same filter and sort again.",
+        "in": "query",
+        "name": "cursor",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IdempotencyKey": {
+        "description": "A unique string made by the client; required on creating POSTs and actions. The same key and body replay the first answer.",
+        "in": "header",
+        "name": "Idempotency-Key",
+        "required": false,
+        "schema": {
+          "maxLength": 128,
+          "minLength": 8,
+          "type": "string"
+        }
+      },
+      "IfMatch": {
+        "description": "The ETag of the version you read; required on PATCH, DELETE and actions that change an item (412 when it no longer matches, 428 when missing).",
+        "in": "header",
+        "name": "If-Match",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IfNoneMatch": {
+        "description": "The ETag of a copy you hold; the server answers 304 when it is still current.",
+        "in": "header",
+        "name": "If-None-Match",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Limit": {
+        "description": "The page size; default 100, at most 1000.",
+        "in": "query",
+        "name": "limit",
+        "required": false,
+        "schema": {
+          "default": 100,
+          "maximum": 1000,
+          "minimum": 1,
+          "type": "integer"
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.limit_invalid",
+              "params": {
+                "max": 1000,
+                "min": 1
+              },
+              "status": 400,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.limit_invalid"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The request is wrong: an unknown or invalid query parameter, filter, sort, fields, include or cursor.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "Conflict": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "conflict.generation_changed",
+              "status": 409,
+              "title": "Conflict",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/conflict.generation_changed"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The cursor belongs to another generation of the model; read the list again from the start.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "Forbidden": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "permission.role_missing",
+              "params": {
+                "required": [
+                  "read"
+                ]
+              },
+              "status": 403,
+              "title": "Forbidden",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/permission.role_missing"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The caller is logged in but holds no role that may do this.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "MethodNotAllowed": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.method_not_allowed",
+              "params": {
+                "allowed": [
+                  "GET"
+                ],
+                "method": "POST"
+              },
+              "status": 405,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.method_not_allowed"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The path has no such method.",
+        "headers": {
+          "Allow": {
+            "$ref": "#/components/headers/Allow"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "NotAcceptable": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.not_acceptable",
+              "params": {
+                "accept": "text/html"
+              },
+              "status": 406,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.not_acceptable"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The server answers only application/json.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "NotFound": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "not_found.resource",
+              "params": {
+                "resource": "object_type"
+              },
+              "status": 404,
+              "title": "Not found",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/not_found.resource"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The resource does not exist or is not visible to the caller (the two look alike).",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "PayloadTooLarge": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.body_too_large",
+              "params": {
+                "max_bytes": 1048576
+              },
+              "status": 413,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.body_too_large"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The body is larger than the limit.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "PreconditionFailed": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "conflict.version_mismatch",
+              "params": {
+                "current_etag": "\"rev-18\""
+              },
+              "status": 412,
+              "title": "Conflict",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/conflict.version_mismatch"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "If-Match no longer matches the current version.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "PreconditionRequired": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.precondition_required",
+              "status": 428,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.precondition_required"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The request needs an If-Match header.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "ServerError": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "server.internal",
+              "status": 500,
+              "title": "Server error",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/server.internal"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The server failed; the trace id finds the log line.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "TooManyRequests": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "rate_limited.requests",
+              "params": {
+                "retry_after_seconds": 5
+              },
+              "status": 429,
+              "title": "Too many requests",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/rate_limited.requests"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "A limit was exceeded; wait Retry-After seconds.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "Unauthorized": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "auth.token_missing",
+              "status": 401,
+              "title": "Unauthorized",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/auth.token_missing"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The caller is not logged in or the token is not accepted.",
+        "headers": {
+          "WWW-Authenticate": {
+            "$ref": "#/components/headers/WWWAuthenticate"
+          },
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "Unavailable": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "server.unavailable",
+              "params": {
+                "reason": "starting"
+              },
+              "status": 503,
+              "title": "Server error",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/server.unavailable"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The server is not ready to take work.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      }
+    },
+    "schemas": {
+      "ActionType": {
+        "description": "An action type with its four risk axes.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "applies_to": {
+            "description": "The targets the action applies to.",
+            "items": {
+              "$ref": "#/components/schemas/Endpoint"
+            },
+            "type": "array"
+          },
+          "declared_effects": {
+            "description": "The effects it declares.",
+            "items": {
+              "description": "An effect.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "What the action does.",
+            "type": "string"
+          },
+          "disruption": {
+            "description": "How much it disturbs service.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The action type id.",
+            "type": "string"
+          },
+          "inverse": {
+            "description": "The action that undoes it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "mutates": {
+            "description": "Whether it changes state.",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "The action type name.",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "std, org or ext.",
+            "type": "string"
+          },
+          "physical": {
+            "description": "Whether it acts on the physical world.",
+            "type": "boolean"
+          },
+          "reversibility": {
+            "description": "reversible, compensable or irreversible.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "status": {
+            "description": "The lifecycle status.",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "The action type that replaces it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "aliases",
+          "namespace",
+          "applies_to",
+          "mutates",
+          "reversibility",
+          "disruption",
+          "physical",
+          "declared_effects",
+          "inverse",
+          "description",
+          "status",
+          "superseded_by"
+        ],
+        "type": "object"
+      },
+      "ActionTypeAnswer": {
+        "description": "One action type.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ActionTypeList": {
+        "description": "A page of action types.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ActionType"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "AllowedAction": {
+        "description": "One action the caller may or may not do, with the reason when not.",
+        "properties": {
+          "action": {
+            "description": "The action name, such as edit.",
+            "type": "string"
+          },
+          "allowed": {
+            "description": "Whether the caller may do it now.",
+            "type": "boolean"
+          },
+          "reason_code": {
+            "description": "Why not, from GET /v1/catalog/reason-codes; null when allowed.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "action",
+          "allowed",
+          "reason_code"
+        ],
+        "type": "object"
+      },
+      "AsOf": {
+        "description": "Which state of which KG an answer reads (KG answers only).",
+        "properties": {
+          "change_seq": {
+            "description": "The last change number the answer includes.",
+            "type": "integer"
+          },
+          "generation": {
+            "description": "The generation, which rises on every point-in-time restore.",
+            "type": "integer"
+          },
+          "kg": {
+            "description": "The id of the KG.",
+            "type": "string"
+          },
+          "sealed_version": {
+            "description": "The sealed KG version, when the answer reads one.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "volatile_as_of": {
+            "description": "Whether volatile values are current or omitted.",
+            "enum": [
+              "current",
+              "omitted"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "kg",
+          "generation",
+          "change_seq"
+        ],
+        "type": "object"
+      },
+      "Binding": {
+        "description": "One pair of ends a link type may join.",
+        "properties": {
+          "cardinality": {
+            "description": "The cardinality, such as 1:n.",
+            "type": "string"
+          },
+          "from": {
+            "$ref": "#/components/schemas/Endpoint"
+          },
+          "id": {
+            "description": "The binding id.",
+            "type": "string"
+          },
+          "param_constraints": {
+            "additionalProperties": {
+              "description": "The accepted values.",
+              "items": {
+                "description": "A value.",
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "description": "The values this binding accepts for a parameter of the meaning.",
+            "type": "object"
+          },
+          "to": {
+            "$ref": "#/components/schemas/Endpoint"
+          }
+        },
+        "required": [
+          "id",
+          "from",
+          "to",
+          "cardinality",
+          "param_constraints"
+        ],
+        "type": "object"
+      },
+      "BindingList": {
+        "description": "The bindings of one link type.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Binding"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "BoundLink": {
+        "description": "A binding with the link type it belongs to.",
+        "properties": {
+          "binding": {
+            "$ref": "#/components/schemas/Binding"
+          },
+          "link_type": {
+            "description": "The link type id.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "link_type",
+          "binding"
+        ],
+        "type": "object"
+      },
+      "CatalogAnswer": {
+        "description": "The catalogues the server serves.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/CatalogEntry"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "CatalogEntry": {
+        "description": "One catalogue the server serves.",
+        "properties": {
+          "description": {
+            "description": "What it holds.",
+            "type": "string"
+          },
+          "href": {
+            "description": "Where to read it.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The catalogue name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "href",
+          "description"
+        ],
+        "type": "object"
+      },
+      "Channel": {
+        "description": "One channel of state.",
+        "properties": {
+          "channel": {
+            "description": "The channel name.",
+            "type": "string"
+          },
+          "states": {
+            "description": "The values the channel can have.",
+            "items": {
+              "description": "A state.",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "channel",
+          "states"
+        ],
+        "type": "object"
+      },
+      "ChannelList": {
+        "description": "The channels of state.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Channel"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "Endpoint": {
+        "description": "One end of a binding or one target of an action.",
+        "properties": {
+          "kind": {
+            "description": "type, trait or any.",
+            "type": "string"
+          },
+          "ref": {
+            "description": "The id of the type or the trait; null for any.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "kind",
+          "ref"
+        ],
+        "type": "object"
+      },
+      "ErrorCode": {
+        "description": "One error code of the closed catalogue.",
+        "properties": {
+          "code": {
+            "description": "The code, <group>.<detail>.",
+            "type": "string"
+          },
+          "group": {
+            "description": "The group.",
+            "type": "string"
+          },
+          "meaning": {
+            "description": "What the code means.",
+            "type": "string"
+          },
+          "status": {
+            "description": "The HTTP status.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "code",
+          "group",
+          "status",
+          "meaning"
+        ],
+        "type": "object"
+      },
+      "ErrorCodeList": {
+        "description": "The closed catalogue of error codes.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ErrorCode"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "Evidence": {
+        "description": "The grade of the facts behind an answer (KG answers only).",
+        "properties": {
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "description": "How many facts of each grade.",
+            "type": "object"
+          },
+          "min_grade": {
+            "description": "The lowest grade used: fact, assumed or unknown.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "min_grade"
+        ],
+        "type": "object"
+      },
+      "FieldError": {
+        "description": "One wrong field of a request.",
+        "properties": {
+          "code": {
+            "description": "The code of this field's problem.",
+            "type": "string"
+          },
+          "params": {
+            "description": "The values a screen needs to write the message.",
+            "type": "object"
+          },
+          "pointer": {
+            "description": "A JSON pointer to the field, or the query parameter name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "pointer",
+          "code",
+          "params"
+        ],
+        "type": "object"
+      },
+      "Freshness": {
+        "description": "How old the sources of an answer are (KG answers only).",
+        "properties": {
+          "oldest_age_seconds": {
+            "description": "The age of that data in seconds.",
+            "type": "integer"
+          },
+          "state": {
+            "description": "The worst state among the sources.",
+            "type": "string"
+          },
+          "worst_source_id": {
+            "description": "The source with the oldest data.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "type": "object"
+      },
+      "HealthLive": {
+        "description": "The answer of a liveness probe.",
+        "properties": {
+          "status": {
+            "description": "live.",
+            "enum": [
+              "live"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "type": "object"
+      },
+      "HealthLiveAnswer": {
+        "description": "The answer of GET /v1/health/live.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HealthLive"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "HealthReady": {
+        "description": "The answer of a readiness probe.",
+        "properties": {
+          "model_hash": {
+            "description": "The hash of the loaded model.",
+            "type": "string"
+          },
+          "status": {
+            "description": "ready.",
+            "enum": [
+              "ready"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "model_hash"
+        ],
+        "type": "object"
+      },
+      "HealthReadyAnswer": {
+        "description": "The answer of GET /v1/health/ready.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HealthReady"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "HealthStarted": {
+        "description": "The answer of a start-up probe.",
+        "properties": {
+          "status": {
+            "description": "started.",
+            "enum": [
+              "started"
+            ],
+            "type": "string"
+          },
+          "version": {
+            "description": "The build version.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version"
+        ],
+        "type": "object"
+      },
+      "HealthStartedAnswer": {
+        "description": "The answer of GET /v1/health/started.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HealthStarted"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "Hidden": {
+        "description": "Whether the caller's scope hid something from the answer.",
+        "properties": {
+          "has_hidden": {
+            "description": "Whether something was hidden.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "has_hidden"
+        ],
+        "type": "object"
+      },
+      "IdentifierScheme": {
+        "description": "An identifier scheme: a kind of external identifier.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "What the scheme identifies.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The scheme id.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The scheme name.",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "std, org or ext.",
+            "type": "string"
+          },
+          "normalizer": {
+            "description": "The value type that tidies the value.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "aliases",
+          "namespace",
+          "normalizer",
+          "description"
+        ],
+        "type": "object"
+      },
+      "IdentityKey": {
+        "description": "One identity key of a type, in priority order.",
+        "properties": {
+          "components": {
+            "description": "The components of the key.",
+            "items": {
+              "$ref": "#/components/schemas/KeyComponent"
+            },
+            "type": "array"
+          },
+          "scheme": {
+            "description": "The identifier scheme, when the key is an external identifier.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "strength": {
+            "description": "strong or weak.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "strength",
+          "scheme",
+          "components"
+        ],
+        "type": "object"
+      },
+      "ItemMeta": {
+        "description": "The meta of a single resource of the type registry.",
+        "properties": {
+          "allowed_actions": {
+            "description": "What the caller may do with this resource now. A hint for screens; the server judges again on every request.",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            },
+            "type": "array"
+          },
+          "model_hash": {
+            "description": "The hash of the model the answer was read from; the ETag is made from it.",
+            "type": "string"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "model_hash",
+          "allowed_actions"
+        ],
+        "type": "object"
+      },
+      "KeyComponent": {
+        "description": "One component of an identity key.",
+        "properties": {
+          "incoming": {
+            "description": "Whether the context is read against the link direction.",
+            "type": "boolean"
+          },
+          "kind": {
+            "description": "property, set or context.",
+            "enum": [
+              "property",
+              "set",
+              "context"
+            ],
+            "type": "string"
+          },
+          "ref": {
+            "description": "The property or context the component names.",
+            "type": "string"
+          },
+          "size": {
+            "description": "The size of a set component; 0 otherwise.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "kind",
+          "ref",
+          "incoming",
+          "size"
+        ],
+        "type": "object"
+      },
+      "Layer": {
+        "description": "One layer of the model.",
+        "properties": {
+          "layer": {
+            "description": "The layer name.",
+            "type": "string"
+          },
+          "type_count": {
+            "description": "How many object types it holds.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "layer",
+          "type_count"
+        ],
+        "type": "object"
+      },
+      "LayerList": {
+        "description": "The layers of the model.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Layer"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "LinkMeaning": {
+        "description": "One of the closed meanings of a link.",
+        "properties": {
+          "from_channel": {
+            "description": "The channel of the start that depends.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "from_param": {
+            "description": "The parameter that names the start channel.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "meaning": {
+            "description": "The meaning name.",
+            "type": "string"
+          },
+          "params": {
+            "description": "Its parameters.",
+            "items": {
+              "$ref": "#/components/schemas/MeaningParam"
+            },
+            "type": "array"
+          },
+          "spreads": {
+            "description": "Whether state spreads along it.",
+            "type": "boolean"
+          },
+          "to_channel": {
+            "description": "The channel of the end it depends on.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "meaning",
+          "from_channel",
+          "to_channel",
+          "from_param",
+          "spreads",
+          "params"
+        ],
+        "type": "object"
+      },
+      "LinkMeaningList": {
+        "description": "The closed link meanings.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/LinkMeaning"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "LinkType": {
+        "description": "A link type with its properties and bindings.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "binding_count": {
+            "description": "How many bindings it has.",
+            "type": "integer"
+          },
+          "bindings": {
+            "description": "The pairs of ends it may join.",
+            "items": {
+              "$ref": "#/components/schemas/Binding"
+            },
+            "type": "array"
+          },
+          "delay_class": {
+            "description": "How fast a change spreads.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the link type is.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The link type id.",
+            "type": "string"
+          },
+          "link_type_no": {
+            "description": "The stable link type number.",
+            "type": "integer"
+          },
+          "meaning": {
+            "description": "One of the eleven closed meanings.",
+            "type": "string"
+          },
+          "meaning_params": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The parameters of the meaning.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The link type name.",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "std, org or ext.",
+            "type": "string"
+          },
+          "properties": {
+            "description": "The link type's properties.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            },
+            "type": "array"
+          },
+          "status": {
+            "description": "The lifecycle status.",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "The link type that replaces it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "link_type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "meaning",
+          "meaning_params",
+          "delay_class",
+          "status",
+          "superseded_by",
+          "description",
+          "binding_count",
+          "properties",
+          "bindings"
+        ],
+        "type": "object"
+      },
+      "LinkTypeAnswer": {
+        "description": "One link type.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LinkType"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "LinkTypeList": {
+        "description": "A page of link types.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/LinkTypeSummary"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "LinkTypeSummary": {
+        "description": "A link type as a list shows it.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "binding_count": {
+            "description": "How many bindings it has.",
+            "type": "integer"
+          },
+          "delay_class": {
+            "description": "How fast a change spreads.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the link type is.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The link type id.",
+            "type": "string"
+          },
+          "link_type_no": {
+            "description": "The stable link type number.",
+            "type": "integer"
+          },
+          "meaning": {
+            "description": "One of the eleven closed meanings.",
+            "type": "string"
+          },
+          "meaning_params": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The parameters of the meaning.",
+            "type": "object"
+          },
+          "name": {
+            "description": "The link type name.",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "std, org or ext.",
+            "type": "string"
+          },
+          "status": {
+            "description": "The lifecycle status.",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "The link type that replaces it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "link_type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "meaning",
+          "meaning_params",
+          "delay_class",
+          "status",
+          "superseded_by",
+          "description",
+          "binding_count"
+        ],
+        "type": "object"
+      },
+      "ListMeta": {
+        "description": "The meta of a list of the type registry.",
+        "properties": {
+          "model_hash": {
+            "description": "The hash of the model the answer was read from; a cursor of another model hash is refused.",
+            "type": "string"
+          },
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "model_hash",
+          "result_complete"
+        ],
+        "type": "object"
+      },
+      "MeaningParam": {
+        "description": "One parameter of a link meaning.",
+        "properties": {
+          "kind": {
+            "description": "The kind of the value.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The parameter name.",
+            "type": "string"
+          },
+          "values": {
+            "description": "The allowed values of an enum.",
+            "items": {
+              "description": "A value.",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "kind",
+          "values"
+        ],
+        "type": "object"
+      },
+      "Meta": {
+        "description": "The meta of an answer that is not a KG answer: only the trace id is always there.",
+        "properties": {
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id"
+        ],
+        "type": "object"
+      },
+      "Need": {
+        "description": "One channel a type needs.",
+        "properties": {
+          "channel": {
+            "description": "The channel name.",
+            "type": "string"
+          },
+          "strength": {
+            "description": "hard or soft.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "channel",
+          "strength"
+        ],
+        "type": "object"
+      },
+      "ObjectType": {
+        "description": "An object type with everything it declares, and the parts asked by include.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "ancestors": {
+            "description": "The parents, nearest first (include=ancestors).",
+            "items": {
+              "$ref": "#/components/schemas/TypeRef"
+            },
+            "type": "array"
+          },
+          "bindings": {
+            "description": "The bindings the type can be an end of (include=bindings).",
+            "items": {
+              "$ref": "#/components/schemas/BoundLink"
+            },
+            "type": "array"
+          },
+          "contacts": {
+            "description": "Who to ask about the type.",
+            "items": {
+              "description": "A contact.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "What the type is.",
+            "type": "string"
+          },
+          "display_names": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The display name by language.",
+            "type": "object"
+          },
+          "effective_needs": {
+            "description": "Own and inherited needs (include=effective_needs).",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            },
+            "type": "array"
+          },
+          "effective_properties": {
+            "description": "Own and inherited properties (include=effective_properties).",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            },
+            "type": "array"
+          },
+          "id": {
+            "description": "The type id.",
+            "type": "string"
+          },
+          "identity_keys": {
+            "description": "The identity keys, in priority order.",
+            "items": {
+              "$ref": "#/components/schemas/IdentityKey"
+            },
+            "type": "array"
+          },
+          "layer": {
+            "description": "The layer of the model.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The type name.",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "std, org or ext.",
+            "type": "string"
+          },
+          "needs": {
+            "description": "The channels the type itself needs.",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            },
+            "type": "array"
+          },
+          "parent": {
+            "description": "The parent type id.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "properties": {
+            "description": "The type's own properties.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            },
+            "type": "array"
+          },
+          "standard_ref": {
+            "description": "The standard the type follows, if any.",
+            "type": "string"
+          },
+          "status": {
+            "description": "The lifecycle status.",
+            "type": "string"
+          },
+          "subtypes": {
+            "description": "Every subtype (include=subtypes).",
+            "items": {
+              "$ref": "#/components/schemas/TypeRef"
+            },
+            "type": "array"
+          },
+          "superseded_by": {
+            "description": "The type that replaces it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tier": {
+            "description": "core, extension or custom.",
+            "type": "string"
+          },
+          "title_property": {
+            "description": "The property that titles an object.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "traits": {
+            "description": "The traits the type carries itself.",
+            "items": {
+              "description": "A trait id.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type_no": {
+            "description": "The stable type number.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "layer",
+          "tier",
+          "parent",
+          "traits",
+          "status",
+          "superseded_by",
+          "description",
+          "standard_ref",
+          "display_names",
+          "properties",
+          "needs",
+          "identity_keys",
+          "title_property",
+          "contacts"
+        ],
+        "type": "object"
+      },
+      "ObjectTypeAnswer": {
+        "description": "One object type.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ObjectType"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ObjectTypeList": {
+        "description": "A page of object types.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ObjectTypeSummary"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ObjectTypeSummary": {
+        "description": "An object type as a list shows it.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "What the type is.",
+            "type": "string"
+          },
+          "display_names": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "The display name by language.",
+            "type": "object"
+          },
+          "id": {
+            "description": "The type id.",
+            "type": "string"
+          },
+          "layer": {
+            "description": "The layer of the model.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The type name.",
+            "type": "string"
+          },
+          "namespace": {
+            "description": "std, org or ext.",
+            "type": "string"
+          },
+          "parent": {
+            "description": "The parent type id.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "standard_ref": {
+            "description": "The standard the type follows, if any.",
+            "type": "string"
+          },
+          "status": {
+            "description": "The lifecycle status.",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "The type that replaces it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "tier": {
+            "description": "core, extension or custom.",
+            "type": "string"
+          },
+          "traits": {
+            "description": "The traits the type carries itself.",
+            "items": {
+              "description": "A trait id.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "type_no": {
+            "description": "The stable type number.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "id",
+          "type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "layer",
+          "tier",
+          "parent",
+          "traits",
+          "status",
+          "superseded_by",
+          "description",
+          "standard_ref",
+          "display_names"
+        ],
+        "type": "object"
+      },
+      "Operation": {
+        "description": "A long-running job returned with 202 and a Location header (rest-api.md 3-7).",
+        "properties": {
+          "created_at": {
+            "description": "When the job was created, UTC.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "expires_at": {
+            "description": "When the job and its result disappear, UTC.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "job_id": {
+            "description": "The id of the job.",
+            "type": "string"
+          },
+          "kind": {
+            "description": "What the job does.",
+            "type": "string"
+          },
+          "state": {
+            "description": "Where the job is.",
+            "enum": [
+              "queued",
+              "running",
+              "succeeded",
+              "failed",
+              "cancel_requested",
+              "canceled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "job_id",
+          "kind",
+          "state",
+          "created_at"
+        ],
+        "type": "object"
+      },
+      "Problem": {
+        "description": "The standard error shape of every failure (RFC 9457, rest-api.md 3-9).",
+        "properties": {
+          "code": {
+            "$ref": "#/components/schemas/ProblemCode"
+          },
+          "errors": {
+            "description": "One entry per wrong field of the input.",
+            "items": {
+              "$ref": "#/components/schemas/FieldError"
+            },
+            "type": "array"
+          },
+          "params": {
+            "description": "The values a screen needs to write the message.",
+            "type": "object"
+          },
+          "status": {
+            "description": "The HTTP status.",
+            "type": "integer"
+          },
+          "title": {
+            "description": "A short English line for logs; screens build their words from code and params.",
+            "type": "string"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          },
+          "type": {
+            "description": "Where the code is explained: /v1/problems/<code>.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "title",
+          "status",
+          "code",
+          "trace_id"
+        ],
+        "type": "object"
+      },
+      "ProblemAnswer": {
+        "description": "The explanation of one error code.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ProblemCode": {
+        "description": "The closed catalogue of error codes. A new code is an addition inside the same major version; the meaning and status of an issued code never change (rest-api.md 3-9).",
+        "enum": [
+          "auth.token_expired",
+          "auth.token_invalid",
+          "auth.token_missing",
+          "blocked.proposal",
+          "conflict.generation_changed",
+          "conflict.idempotency_key_reused",
+          "conflict.request_in_progress",
+          "conflict.state_not_allowed",
+          "conflict.version_mismatch",
+          "invalid_input.body_too_large",
+          "invalid_input.cursor_invalid",
+          "invalid_input.envelope_too_large",
+          "invalid_input.field",
+          "invalid_input.field_format",
+          "invalid_input.field_required",
+          "invalid_input.fields_unknown",
+          "invalid_input.filter_field_unknown",
+          "invalid_input.filter_op_unknown",
+          "invalid_input.history_with_filter",
+          "invalid_input.idempotency_key_required",
+          "invalid_input.include_unknown",
+          "invalid_input.limit_invalid",
+          "invalid_input.method_not_allowed",
+          "invalid_input.not_acceptable",
+          "invalid_input.param_invalid",
+          "invalid_input.param_unknown",
+          "invalid_input.precondition_required",
+          "invalid_input.sort_field_unknown",
+          "invalid_input.unsupported_media_type",
+          "not_found.resource",
+          "permission.hidden_attribute",
+          "permission.not_in_scope",
+          "permission.role_missing",
+          "permission.self_approval",
+          "rate_limited.compute_budget",
+          "rate_limited.concurrency",
+          "rate_limited.requests",
+          "server.internal",
+          "server.unavailable",
+          "stale.branch_behind_trunk",
+          "stale.min_seq_not_reached",
+          "stale.projection_not_ready",
+          "stale.since_too_old"
+        ],
+        "type": "string",
+        "x-catalogue": {
+          "auth.token_expired": {
+            "group": "auth",
+            "status": 401
+          },
+          "auth.token_invalid": {
+            "group": "auth",
+            "status": 401
+          },
+          "auth.token_missing": {
+            "group": "auth",
+            "status": 401
+          },
+          "blocked.proposal": {
+            "group": "blocked",
+            "status": 409
+          },
+          "conflict.generation_changed": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.idempotency_key_reused": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.request_in_progress": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.state_not_allowed": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.version_mismatch": {
+            "group": "conflict",
+            "status": 412
+          },
+          "invalid_input.body_too_large": {
+            "group": "invalid_input",
+            "status": 413
+          },
+          "invalid_input.cursor_invalid": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.envelope_too_large": {
+            "group": "invalid_input",
+            "status": 413
+          },
+          "invalid_input.field": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.field_format": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.field_required": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.fields_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.filter_field_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.filter_op_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.history_with_filter": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.idempotency_key_required": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.include_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.limit_invalid": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.method_not_allowed": {
+            "group": "invalid_input",
+            "status": 405
+          },
+          "invalid_input.not_acceptable": {
+            "group": "invalid_input",
+            "status": 406
+          },
+          "invalid_input.param_invalid": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.param_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.precondition_required": {
+            "group": "invalid_input",
+            "status": 428
+          },
+          "invalid_input.sort_field_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.unsupported_media_type": {
+            "group": "invalid_input",
+            "status": 415
+          },
+          "not_found.resource": {
+            "group": "not_found",
+            "status": 404
+          },
+          "permission.hidden_attribute": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.not_in_scope": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.role_missing": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.self_approval": {
+            "group": "permission",
+            "status": 403
+          },
+          "rate_limited.compute_budget": {
+            "group": "rate_limited",
+            "status": 429
+          },
+          "rate_limited.concurrency": {
+            "group": "rate_limited",
+            "status": 429
+          },
+          "rate_limited.requests": {
+            "group": "rate_limited",
+            "status": 429
+          },
+          "server.internal": {
+            "group": "server",
+            "status": 500
+          },
+          "server.unavailable": {
+            "group": "server",
+            "status": 503
+          },
+          "stale.branch_behind_trunk": {
+            "group": "stale",
+            "status": 409
+          },
+          "stale.min_seq_not_reached": {
+            "group": "stale",
+            "status": 503
+          },
+          "stale.projection_not_ready": {
+            "group": "stale",
+            "status": 503
+          },
+          "stale.since_too_old": {
+            "group": "stale",
+            "status": 410
+          }
+        }
+      },
+      "Property": {
+        "description": "One property of a type, a trait or a link type.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "attr_no": {
+            "description": "The stable attribute number.",
+            "type": "integer"
+          },
+          "change_class": {
+            "description": "How the value changes: static, slow or volatile.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the property means.",
+            "type": "string"
+          },
+          "enum_values": {
+            "description": "The allowed values of an enum.",
+            "items": {
+              "description": "An allowed value.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "history_kind": {
+            "description": "How history is kept.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The property id.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The property name.",
+            "type": "string"
+          },
+          "required": {
+            "description": "Whether an object must have it.",
+            "type": "boolean"
+          },
+          "scope_key": {
+            "description": "Whether the property is a scope key.",
+            "type": "boolean"
+          },
+          "sensitivity": {
+            "description": "How sensitive the value is.",
+            "type": "string"
+          },
+          "status": {
+            "description": "The lifecycle status.",
+            "type": "string"
+          },
+          "superseded_by": {
+            "description": "The property that replaces it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "unit": {
+            "description": "The unit of the value, when it has one.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "value_type": {
+            "description": "The id of the value type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "attr_no",
+          "name",
+          "aliases",
+          "value_type",
+          "unit",
+          "enum_values",
+          "required",
+          "change_class",
+          "sensitivity",
+          "history_kind",
+          "scope_key",
+          "status",
+          "superseded_by",
+          "description"
+        ],
+        "type": "object"
+      },
+      "ReasonCode": {
+        "description": "One reason an action is refused.",
+        "properties": {
+          "code": {
+            "description": "The reason code.",
+            "type": "string"
+          },
+          "meaning": {
+            "description": "What it means.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "meaning"
+        ],
+        "type": "object"
+      },
+      "ReasonCodeList": {
+        "description": "The reasons an action is refused.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ReasonCode"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ResultComplete": {
+        "description": "How much of a list this answer holds (rest-api.md 3-2, 3-3).",
+        "properties": {
+          "next_cursor": {
+            "description": "The cursor of the next page; null on the last page.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "reason": {
+            "description": "Why it was cut, when truncated.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "returned": {
+            "description": "How many items this page holds.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "total": {
+            "description": "How many items match the filter, without those hidden from the caller.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "truncated": {
+            "description": "Whether the answer was cut by a limit other than the page size.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "total",
+          "returned",
+          "truncated",
+          "reason",
+          "next_cursor"
+        ],
+        "type": "object"
+      },
+      "Role": {
+        "description": "One role and what it may do.",
+        "properties": {
+          "abilities": {
+            "description": "The abilities of the role table.",
+            "items": {
+              "description": "An ability.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "includes_read": {
+            "description": "Whether the role includes reading.",
+            "type": "boolean"
+          },
+          "role": {
+            "description": "The role name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "includes_read",
+          "abilities"
+        ],
+        "type": "object"
+      },
+      "RoleList": {
+        "description": "The eight roles.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "SchemeAnswer": {
+        "description": "One identifier scheme.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/IdentifierScheme"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "SchemeList": {
+        "description": "A page of identifier schemes.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierScheme"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ServedBy": {
+        "description": "Which role of the product answered.",
+        "properties": {
+          "role": {
+            "description": "api_sql or engine.",
+            "enum": [
+              "api_sql",
+              "engine"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "role"
+        ],
+        "type": "object"
+      },
+      "Trait": {
+        "description": "A trait with the types that carry it.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "carriers": {
+            "description": "The types that carry the trait, their own or inherited.",
+            "items": {
+              "$ref": "#/components/schemas/TypeRef"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "What the trait is.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The trait id.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The trait name.",
+            "type": "string"
+          },
+          "needs": {
+            "description": "The channels it needs.",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            },
+            "type": "array"
+          },
+          "properties": {
+            "description": "The properties it gives.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "aliases",
+          "description",
+          "properties",
+          "needs",
+          "carriers"
+        ],
+        "type": "object"
+      },
+      "TraitAnswer": {
+        "description": "One trait.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trait"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "TraitList": {
+        "description": "A page of traits.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/TraitSummary"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "TraitSummary": {
+        "description": "A trait: a set of properties and needs many types share.",
+        "properties": {
+          "aliases": {
+            "description": "Old names that still resolve.",
+            "items": {
+              "description": "An old name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "description": {
+            "description": "What the trait is.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The trait id.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The trait name.",
+            "type": "string"
+          },
+          "needs": {
+            "description": "The channels it needs.",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            },
+            "type": "array"
+          },
+          "properties": {
+            "description": "The properties it gives.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "aliases",
+          "description",
+          "properties",
+          "needs"
+        ],
+        "type": "object"
+      },
+      "TypeRef": {
+        "description": "A short reference to a type.",
+        "properties": {
+          "id": {
+            "description": "The type id.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The type name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ],
+        "type": "object"
+      },
+      "ValueType": {
+        "description": "A value type a property can have.",
+        "properties": {
+          "base": {
+            "description": "The base kind.",
+            "type": "string"
+          },
+          "builtin": {
+            "description": "Whether it is a base type itself.",
+            "type": "boolean"
+          },
+          "description": {
+            "description": "What the type means.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The value type id.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The value type name.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "base",
+          "description",
+          "builtin"
+        ],
+        "type": "object"
+      },
+      "ValueTypeList": {
+        "description": "The value types.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ValueType"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "bearerAuth": {
+        "description": "A bearer token. The identity backend that issues tokens is not built yet; a development token exists for development only (ADR-0024).",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "description": "The REST contract of Praxium. This document is assembled from the parts of backend/internal/contract/openapi/parts and is never edited by hand. Routes designed but not yet specified are in backend/internal/contract/planned/routes.json.",
+    "title": "Praxium API",
+    "version": "1.0.0-alpha.1"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/v1/action-types": {
+      "get": {
+        "description": "The action types and their four risk axes. applies_to matches the types an action covers, with subtypes and traits expanded.",
+        "operationId": "listActionTypes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "applies_to": {
+                  "description": "Filter on applies_to.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "disruption": {
+                  "description": "Filter on disruption.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "namespace": {
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "status": {
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, applies_to, declared_effects, description, disruption, id, inverse, mutates, name, namespace, physical, reversibility, status, superseded_by.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "applies_to": [
+                        {
+                          "kind": "trait",
+                          "ref": "tr.manageable"
+                        }
+                      ],
+                      "declared_effects": [
+                        "경보 ack 표시"
+                      ],
+                      "description": "",
+                      "disruption": "none",
+                      "id": "ac.acknowledge_alarm",
+                      "inverse": null,
+                      "mutates": true,
+                      "name": "acknowledge_alarm",
+                      "namespace": "std",
+                      "physical": false,
+                      "reversibility": "reversible",
+                      "status": "active",
+                      "superseded_by": null
+                    },
+                    {
+                      "aliases": [],
+                      "applies_to": [
+                        {
+                          "kind": "type",
+                          "ref": "ot.dns_zone"
+                        }
+                      ],
+                      "declared_effects": [
+                        "`DnsRecord` 생성"
+                      ],
+                      "description": "",
+                      "disruption": "none",
+                      "id": "ac.add_dns_record",
+                      "inverse": "ac.remove_dns_record",
+                      "mutates": true,
+                      "name": "add_dns_record",
+                      "namespace": "std",
+                      "physical": false,
+                      "reversibility": "reversible",
+                      "status": "active",
+                      "superseded_by": null
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyJhZGRfZG5zX3JlY29yZCJdLCJpIjoiYWMuYWRkX2Ruc19yZWNvcmQifQ",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 112,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ActionTypeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List action types",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/action-types/{action_type_id}": {
+      "get": {
+        "description": "One action type by id, name or an old name.",
+        "operationId": "getActionType",
+        "parameters": [
+          {
+            "description": "An action type id, name or old name.",
+            "in": "path",
+            "name": "action_type_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "applies_to": [
+                      {
+                        "kind": "trait",
+                        "ref": "tr.manageable"
+                      }
+                    ],
+                    "declared_effects": [
+                      "경보 ack 표시"
+                    ],
+                    "description": "",
+                    "disruption": "none",
+                    "id": "ac.acknowledge_alarm",
+                    "inverse": null,
+                    "mutates": true,
+                    "name": "acknowledge_alarm",
+                    "namespace": "std",
+                    "physical": false,
+                    "reversibility": "reversible",
+                    "status": "active",
+                    "superseded_by": null
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ActionTypeAnswer"
+                }
+              }
+            },
+            "description": "The resource.",
+            "headers": {
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "Get an action type",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/catalog": {
+      "get": {
+        "description": "The index of the catalogues the server serves.",
+        "operationId": "listCatalog",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: description, href, name.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "description": "The six channels of state an object has.",
+                      "href": "/v1/catalog/channels",
+                      "name": "channels"
+                    },
+                    {
+                      "description": "The closed catalogue of error codes.",
+                      "href": "/v1/catalog/error-codes",
+                      "name": "error-codes"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 6,
+                      "total": 6,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogAnswer"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List the catalogues",
+        "tags": [
+          "catalog"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/catalog/channels": {
+      "get": {
+        "description": "The channels of state an object has.",
+        "operationId": "listChannels",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: channel, states.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "channel": "cooling",
+                      "states": [
+                        "up",
+                        "down"
+                      ]
+                    },
+                    {
+                      "channel": "management",
+                      "states": [
+                        "up",
+                        "down"
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 6,
+                      "total": 6,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The channels",
+        "tags": [
+          "catalog"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/catalog/error-codes": {
+      "get": {
+        "description": "The closed catalogue of error codes. Every problem the server sends uses one of these.",
+        "operationId": "listErrorCodes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "code": {
+                  "description": "Filter on code.",
+                  "properties": {
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "group": {
+                  "description": "Filter on group.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "status": {
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    },
+                    "range": {
+                      "description": "A number range from..to; either side may be empty.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: code, group, meaning, status.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "code": "auth.token_expired",
+                      "group": "auth",
+                      "meaning": "The bearer token has expired; get a new one.",
+                      "status": 401
+                    },
+                    {
+                      "code": "auth.token_invalid",
+                      "group": "auth",
+                      "meaning": "The bearer token is not accepted.",
+                      "status": 401
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 43,
+                      "total": 43,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorCodeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The error codes",
+        "tags": [
+          "catalog"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/catalog/link-meanings": {
+      "get": {
+        "description": "The closed meanings of a link and how each spreads state.",
+        "operationId": "listLinkMeanings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: from_channel, from_param, meaning, params, spreads, to_channel.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "from_channel": "network",
+                      "from_param": null,
+                      "meaning": "connected_to",
+                      "params": [],
+                      "spreads": true,
+                      "to_channel": "network"
+                    },
+                    {
+                      "from_channel": null,
+                      "from_param": null,
+                      "meaning": "contained_in",
+                      "params": [],
+                      "spreads": false,
+                      "to_channel": null
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 11,
+                      "total": 11,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/LinkMeaningList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The link meanings",
+        "tags": [
+          "catalog"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/catalog/reason-codes": {
+      "get": {
+        "description": "The reasons an action in meta.allowed_actions is refused.",
+        "operationId": "listReasonCodes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: code, meaning.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "code": "blocked.approval_required",
+                      "meaning": "An approval is needed first."
+                    },
+                    {
+                      "code": "blocked.limit",
+                      "meaning": "A limit (open items or budget of the subject) is reached."
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 6,
+                      "total": 6,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ReasonCodeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The reason codes",
+        "tags": [
+          "catalog"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/contract": {
+      "get": {
+        "description": "Serves this OpenAPI document as it is, not in an envelope. Its ETag is the hash of the document.",
+        "operationId": "getContract",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "info": {
+                    "title": "Praxium API",
+                    "version": "1.0.0-alpha.1"
+                  },
+                  "openapi": "3.1.0",
+                  "paths": {}
+                },
+                "schema": {
+                  "description": "An OpenAPI 3.1 document.",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "The OpenAPI 3.1 document.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The contract",
+        "tags": [
+          "contract"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/health/live": {
+      "get": {
+        "description": "Answers 200 while the process runs. Needs no login.",
+        "operationId": "getHealthLive",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "status": "live"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/HealthLiveAnswer"
+                }
+              }
+            },
+            "description": "The process is live.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [],
+        "summary": "Liveness probe",
+        "tags": [
+          "health"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "anonymous"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/health/ready": {
+      "get": {
+        "description": "Answers 200 when the server takes work and 503 while it is draining for shutdown. Needs no login.",
+        "operationId": "getHealthReady",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "model_hash": "712b5ae602cd347a",
+                    "status": "ready"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/HealthReadyAnswer"
+                }
+              }
+            },
+            "description": "The server is ready.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "security": [],
+        "summary": "Readiness probe",
+        "tags": [
+          "health"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "anonymous"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/health/started": {
+      "get": {
+        "description": "Answers 503 until start-up has finished, then 200. Needs no login.",
+        "operationId": "getHealthStarted",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "status": "started",
+                    "version": "dev"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStartedAnswer"
+                }
+              }
+            },
+            "description": "The server has started.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "security": [],
+        "summary": "Start-up probe",
+        "tags": [
+          "health"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "anonymous"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/identifier-schemes": {
+      "get": {
+        "description": "The kinds of external identifier.",
+        "operationId": "listIdentifierSchemes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "namespace": {
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, description, id, name, namespace, normalizer.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "description": "외부 식별자의 방식. 초안의 이름은 ext:array.system_id. 유효한 테두리: mgmt",
+                      "id": "is.array_system_id",
+                      "name": "array_system_id",
+                      "namespace": "std",
+                      "normalizer": "vt.string"
+                    },
+                    {
+                      "aliases": [],
+                      "description": "외부 식별자의 방식. 초안의 이름은 ext:bmc.mac",
+                      "id": "is.bmc_mac",
+                      "name": "bmc_mac",
+                      "namespace": "std",
+                      "normalizer": "vt.mac_address"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyJibWNfbWFjIl0sImkiOiJpcy5ibWNfbWFjIn0",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 37,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/SchemeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List identifier schemes",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/identifier-schemes/{scheme_id}": {
+      "get": {
+        "description": "One identifier scheme by id, name or an old name.",
+        "operationId": "getIdentifierScheme",
+        "parameters": [
+          {
+            "description": "An identifier scheme id, name or old name.",
+            "in": "path",
+            "name": "scheme_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "description": "외부 식별자의 방식. 초안의 이름은 ext:array.system_id. 유효한 테두리: mgmt",
+                    "id": "is.array_system_id",
+                    "name": "array_system_id",
+                    "namespace": "std",
+                    "normalizer": "vt.string"
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/SchemeAnswer"
+                }
+              }
+            },
+            "description": "The resource.",
+            "headers": {
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "Get an identifier scheme",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/layers": {
+      "get": {
+        "description": "The layers of the model and how many object types each holds.",
+        "operationId": "listLayers",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: layer, type_count.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "layer": "container",
+                      "type_count": 16
+                    },
+                    {
+                      "layer": "cross_cutting",
+                      "type_count": 10
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 10,
+                      "total": 10,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/LayerList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The layers",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/link-types": {
+      "get": {
+        "description": "The link types. from_type and to_type match the bindings, with subtypes and traits expanded.",
+        "operationId": "listLinkTypes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "delay_class": {
+                  "description": "Filter on delay_class.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "from_type": {
+                  "description": "Filter on from_type.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "link_type_no": {
+                  "description": "Filter on link_type_no.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    },
+                    "range": {
+                      "description": "A number range from..to; either side may be empty.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "meaning": {
+                  "description": "Filter on meaning.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "namespace": {
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "status": {
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "to_type": {
+                  "description": "Filter on to_type.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: link_type_no, name.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, binding_count, delay_class, description, id, link_type_no, meaning, meaning_params, name, namespace, status, superseded_by.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "binding_count": 22,
+                      "delay_class": "immediate",
+                      "description": "",
+                      "id": "lt.located_in",
+                      "link_type_no": 1,
+                      "meaning": "contained_in",
+                      "meaning_params": {},
+                      "name": "LOCATED_IN",
+                      "namespace": "std",
+                      "status": "active",
+                      "superseded_by": null
+                    },
+                    {
+                      "aliases": [],
+                      "binding_count": 1,
+                      "delay_class": "immediate",
+                      "description": "",
+                      "id": "lt.mounted_in",
+                      "link_type_no": 2,
+                      "meaning": "contained_in",
+                      "meaning_params": {},
+                      "name": "MOUNTED_IN",
+                      "namespace": "std",
+                      "status": "active",
+                      "superseded_by": null
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyIyIl0sImkiOiJsdC5tb3VudGVkX2luIn0",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 55,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/LinkTypeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List link types",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/link-types/{link_type_id}": {
+      "get": {
+        "description": "One link type with its properties and bindings, by id, name or an old name.",
+        "operationId": "getLinkType",
+        "parameters": [
+          {
+            "description": "A link type id, name or old name.",
+            "in": "path",
+            "name": "link_type_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "binding_count": 22,
+                    "bindings": [
+                      {
+                        "cardinality": "N:1",
+                        "from": {
+                          "kind": "type",
+                          "ref": "ot.site"
+                        },
+                        "id": "bd.located_in.site.region",
+                        "param_constraints": {},
+                        "to": {
+                          "kind": "type",
+                          "ref": "ot.region"
+                        }
+                      },
+                      {
+                        "cardinality": "N:1",
+                        "from": {
+                          "kind": "type",
+                          "ref": "ot.building"
+                        },
+                        "id": "bd.located_in.building.site",
+                        "param_constraints": {},
+                        "to": {
+                          "kind": "type",
+                          "ref": "ot.site"
+                        }
+                      }
+                    ],
+                    "delay_class": "immediate",
+                    "description": "",
+                    "id": "lt.located_in",
+                    "link_type_no": 1,
+                    "meaning": "contained_in",
+                    "meaning_params": {},
+                    "name": "LOCATED_IN",
+                    "namespace": "std",
+                    "properties": [],
+                    "status": "active",
+                    "superseded_by": null
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/LinkTypeAnswer"
+                }
+              }
+            },
+            "description": "The resource.",
+            "headers": {
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "Get a link type",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/link-types/{link_type_id}/bindings": {
+      "get": {
+        "description": "The pairs of ends one link type may join.",
+        "operationId": "listLinkTypeBindings",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: cardinality, from, id, param_constraints, to.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "A link type id, name or old name.",
+            "in": "path",
+            "name": "link_type_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "cardinality": "N:1",
+                      "from": {
+                        "kind": "type",
+                        "ref": "ot.aisle"
+                      },
+                      "id": "bd.located_in.aisle.room",
+                      "param_constraints": {},
+                      "to": {
+                        "kind": "type",
+                        "ref": "ot.room"
+                      }
+                    },
+                    {
+                      "cardinality": "N:1",
+                      "from": {
+                        "kind": "type",
+                        "ref": "ot.aisle"
+                      },
+                      "id": "bd.located_in.aisle.row",
+                      "param_constraints": {},
+                      "to": {
+                        "kind": "type",
+                        "ref": "ot.row"
+                      }
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 22,
+                      "total": 22,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/BindingList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List the bindings of a link type",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/object-types": {
+      "get": {
+        "description": "The object types of the model. subtype_of is reflexive and includes the type itself; trait counts inherited traits.",
+        "operationId": "listObjectTypes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "layer": {
+                  "description": "Filter on layer.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "namespace": {
+                  "description": "Filter on namespace.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "parent": {
+                  "description": "Filter on parent.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "status": {
+                  "description": "Filter on status.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "subtype_of": {
+                  "description": "Filter on subtype_of.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "tier": {
+                  "description": "Filter on tier.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "trait": {
+                  "description": "Filter on trait.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "type_no": {
+                  "description": "Filter on type_no.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    },
+                    "range": {
+                      "description": "A number range from..to; either side may be empty.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: type_no, name, layer.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, description, display_names, id, layer, name, namespace, parent, standard_ref, status, superseded_by, tier, traits, type_no.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "description": "지리 권역(재해복구 단위)",
+                      "display_names": {},
+                      "id": "ot.region",
+                      "layer": "facility",
+                      "name": "Region",
+                      "namespace": "std",
+                      "parent": null,
+                      "standard_ref": "",
+                      "status": "active",
+                      "superseded_by": null,
+                      "tier": "extension",
+                      "traits": [
+                        "tr.common",
+                        "tr.is_failure_domain"
+                      ],
+                      "type_no": 1
+                    },
+                    {
+                      "aliases": [],
+                      "description": "부지/캠퍼스",
+                      "display_names": {},
+                      "id": "ot.site",
+                      "layer": "facility",
+                      "name": "Site",
+                      "namespace": "std",
+                      "parent": null,
+                      "standard_ref": "Redfish Facility(Site)",
+                      "status": "active",
+                      "superseded_by": null,
+                      "tier": "core",
+                      "traits": [
+                        "tr.common",
+                        "tr.is_failure_domain"
+                      ],
+                      "type_no": 2
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI0YjM1MjA5NGQ4MmE1ZmM2IiwiayI6WyIyIl0sImkiOiJvdC5zaXRlIn0",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 41,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectTypeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List object types",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/object-types/{type_id}": {
+      "get": {
+        "description": "One object type by id, name or an old name (the answer then carries Content-Location). include adds inherited properties, ancestors, subtypes, bindings and effective needs.",
+        "operationId": "getObjectType",
+        "parameters": [
+          {
+            "description": "An object type id, name or old name.",
+            "in": "path",
+            "name": "type_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated parts to add. Allowed: effective_properties, ancestors, subtypes, bindings, effective_needs.",
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "ancestors": [],
+                    "bindings": [
+                      {
+                        "binding": {
+                          "cardinality": "N:1",
+                          "from": {
+                            "kind": "type",
+                            "ref": "ot.site"
+                          },
+                          "id": "bd.located_in.site.region",
+                          "param_constraints": {},
+                          "to": {
+                            "kind": "type",
+                            "ref": "ot.region"
+                          }
+                        },
+                        "link_type": "lt.located_in"
+                      },
+                      {
+                        "binding": {
+                          "cardinality": "N:1",
+                          "from": {
+                            "kind": "type",
+                            "ref": "ot.building"
+                          },
+                          "id": "bd.located_in.building.site",
+                          "param_constraints": {},
+                          "to": {
+                            "kind": "type",
+                            "ref": "ot.site"
+                          }
+                        },
+                        "link_type": "lt.located_in"
+                      }
+                    ],
+                    "contacts": [],
+                    "description": "부지/캠퍼스",
+                    "display_names": {},
+                    "effective_needs": [],
+                    "effective_properties": [
+                      {
+                        "aliases": [],
+                        "attr_no": 1,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.name",
+                        "name": "name",
+                        "required": true,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      },
+                      {
+                        "aliases": [],
+                        "attr_no": 2,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.display_name",
+                        "name": "display_name",
+                        "required": false,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      }
+                    ],
+                    "id": "ot.site",
+                    "identity_keys": [
+                      {
+                        "components": [
+                          {
+                            "incoming": false,
+                            "kind": "property",
+                            "ref": "pr.site.site_code",
+                            "size": 0
+                          }
+                        ],
+                        "scheme": null,
+                        "strength": "strong"
+                      }
+                    ],
+                    "layer": "facility",
+                    "name": "Site",
+                    "namespace": "std",
+                    "needs": [],
+                    "parent": null,
+                    "properties": [
+                      {
+                        "aliases": [],
+                        "attr_no": 39,
+                        "change_class": "static",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.site.site_code",
+                        "name": "site_code",
+                        "required": true,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      },
+                      {
+                        "aliases": [],
+                        "attr_no": 40,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.site.address",
+                        "name": "address",
+                        "required": false,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      }
+                    ],
+                    "standard_ref": "Redfish Facility(Site)",
+                    "status": "active",
+                    "subtypes": [],
+                    "superseded_by": null,
+                    "tier": "core",
+                    "title_property": null,
+                    "traits": [
+                      "tr.common",
+                      "tr.is_failure_domain"
+                    ],
+                    "type_no": 2
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ObjectTypeAnswer"
+                }
+              }
+            },
+            "description": "The resource.",
+            "headers": {
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "Get an object type",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/problems/{code}": {
+      "get": {
+        "description": "The address a problem's type points at: the meaning and status of one code of the closed catalogue. Needs no login.",
+        "operationId": "getProblem",
+        "parameters": [
+          {
+            "description": "An error code, such as not_found.resource.",
+            "in": "path",
+            "name": "code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "code": "not_found.resource",
+                    "group": "not_found",
+                    "meaning": "The resource does not exist or is not visible to the subject.",
+                    "status": 404
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemAnswer"
+                }
+              }
+            },
+            "description": "The code.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": [],
+        "summary": "Explain an error code",
+        "tags": [
+          "contract"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "anonymous"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/roles": {
+      "get": {
+        "description": "The eight roles and the abilities of each.",
+        "operationId": "listRoles",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: abilities, includes_read, role.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "abilities": [
+                        "read",
+                        "read_definitions"
+                      ],
+                      "includes_read": true,
+                      "role": "admin"
+                    },
+                    {
+                      "abilities": [
+                        "read",
+                        "read_definitions"
+                      ],
+                      "includes_read": true,
+                      "role": "approver"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 8,
+                      "total": 8,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/RoleList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The roles",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/traits": {
+      "get": {
+        "description": "The traits, their properties and needs.",
+        "operationId": "listTraits",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: aliases, description, id, name, needs, properties.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "aliases": [],
+                      "description": "",
+                      "id": "tr.addressable",
+                      "name": "Addressable",
+                      "needs": [],
+                      "properties": [
+                        {
+                          "aliases": [],
+                          "attr_no": 29,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.addressable.primary_address",
+                          "name": "primary_address",
+                          "required": false,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.string"
+                        },
+                        {
+                          "aliases": [],
+                          "attr_no": 30,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.addressable.hostnames",
+                          "name": "hostnames",
+                          "required": false,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.list"
+                        }
+                      ]
+                    },
+                    {
+                      "aliases": [],
+                      "description": "모든 타입이 가지는 공통 속성",
+                      "id": "tr.common",
+                      "name": "Common",
+                      "needs": [],
+                      "properties": [
+                        {
+                          "aliases": [],
+                          "attr_no": 1,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.common.name",
+                          "name": "name",
+                          "required": true,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.string"
+                        },
+                        {
+                          "aliases": [],
+                          "attr_no": 2,
+                          "change_class": "slow",
+                          "description": "",
+                          "enum_values": [],
+                          "history_kind": "versioned",
+                          "id": "pr.common.display_name",
+                          "name": "display_name",
+                          "required": false,
+                          "scope_key": false,
+                          "sensitivity": "open",
+                          "status": "active",
+                          "superseded_by": null,
+                          "unit": null,
+                          "value_type": "vt.string"
+                        }
+                      ]
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": "eyJ2IjoxLCJnIjoiNzEyYjVhZTYwMmNkMzQ3YSIsInEiOiI4MDliZWNjNGMzNWIyZmZhIiwiayI6WyJDb21tb24iXSwiaSI6InRyLmNvbW1vbiJ9",
+                      "reason": null,
+                      "returned": 2,
+                      "total": 19,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TraitList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "List traits",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/traits/{trait_id}": {
+      "get": {
+        "description": "One trait with the types that carry it, by id, name or an old name.",
+        "operationId": "getTrait",
+        "parameters": [
+          {
+            "description": "A trait id, name or old name.",
+            "in": "path",
+            "name": "trait_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "aliases": [],
+                    "carriers": [
+                      {
+                        "id": "ot.region",
+                        "name": "Region"
+                      },
+                      {
+                        "id": "ot.site",
+                        "name": "Site"
+                      }
+                    ],
+                    "description": "모든 타입이 가지는 공통 속성",
+                    "id": "tr.common",
+                    "name": "Common",
+                    "needs": [],
+                    "properties": [
+                      {
+                        "aliases": [],
+                        "attr_no": 1,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.name",
+                        "name": "name",
+                        "required": true,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      },
+                      {
+                        "aliases": [],
+                        "attr_no": 2,
+                        "change_class": "slow",
+                        "description": "",
+                        "enum_values": [],
+                        "history_kind": "versioned",
+                        "id": "pr.common.display_name",
+                        "name": "display_name",
+                        "required": false,
+                        "scope_key": false,
+                        "sensitivity": "open",
+                        "status": "active",
+                        "superseded_by": null,
+                        "unit": null,
+                        "value_type": "vt.string"
+                      }
+                    ]
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "model_hash": "712b5ae602cd347a",
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TraitAnswer"
+                }
+              }
+            },
+            "description": "The resource.",
+            "headers": {
+              "Content-Location": {
+                "$ref": "#/components/headers/ContentLocation"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "Get a trait",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/value-types": {
+      "get": {
+        "description": "The value types a property can have.",
+        "operationId": "listValueTypes",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Two filters on one field both apply (and). A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "base": {
+                  "description": "Filter on base.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "builtin": {
+                  "description": "Filter on builtin.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: base, builtin, description, id, name.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "base": "boolean",
+                      "builtin": true,
+                      "description": "",
+                      "id": "vt.boolean",
+                      "name": "boolean"
+                    },
+                    {
+                      "base": "enum",
+                      "builtin": true,
+                      "description": "",
+                      "id": "vt.enum",
+                      "name": "enum"
+                    }
+                  ],
+                  "meta": {
+                    "model_hash": "712b5ae602cd347a",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 14,
+                      "total": 14,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ValueTypeList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "summary": "The value types",
+        "tags": [
+          "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "servers": [
+    {
+      "description": "The server that serves this document.",
+      "url": "/"
+    }
+  ],
+  "tags": [
+    {
+      "description": "Probes for the process and the deployment.",
+      "name": "health"
+    },
+    {
+      "description": "The contract itself and the explanation of its error codes.",
+      "name": "contract"
+    },
+    {
+      "description": "Closed lists the model and the API are built on.",
+      "name": "catalog"
+    },
+    {
+      "description": "The read side of the type registry: object, link and action types, traits and identifier schemes.",
+      "name": "type-registry"
+    }
+  ]
+}

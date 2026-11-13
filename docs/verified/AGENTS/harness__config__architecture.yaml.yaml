@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "3f6cf41f63800317"
+hash: "14d5ff56d2e56b8b"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+note: "ADR-0024: REST 계약, API 검사, 새 단위를 문서에 맞춤"
 text_changed: true
-doc_hash: "6f2bd0a351d4b6fe"
+doc_hash: "59c91679fee1f90d"

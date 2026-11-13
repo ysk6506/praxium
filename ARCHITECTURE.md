@@ -19,9 +19,13 @@ covers:
 | `harness` | TypeScript | `harness/src` | 구조 검사. Go 코드도 읽는다(ADR-0019) | 없음(제품 코드를 import하지 않는다) |
 | `core.kernel` | Go | `backend/internal/kernel` | 타입 있는 ID, 안정된 코드를 가진 오류, 시계·난수·ID 발급의 포트와 구현, 정규 인코딩 위의 SHA-256. 시계와 난수를 읽는 곳은 `entropy.go` 한 파일뿐이다 | 없음 |
 | `core.model` | Go | `backend/internal/model` | 타입 등록부(객체·링크·액션 타입, 속성, 특성, 값 타입)의 도메인 타입과 검증, 표준 모델의 JSON 데이터 파일(`go:embed`), 번호를 매기고 내용 해시를 내는 불변 등록부. 오류 코드는 `model_`로 시작하는 자기 목록을 가진다 | `core.kernel` |
-| `core.contract` | Go | `backend/internal/contract` | 밖으로 내는 모양(HTTP 길과 스키마, MCP 툴, 파일 형식). 지금은 비어 있고 등록만 되어 있다 | `core.kernel` |
+| `core.access` | Go | `backend/internal/access` | 역할, 능력(ability), 주체(`Subject`), 인증기(`Authenticator`)와 권한 판정기(`Authorizer`)의 포트, 역할표. 어느 역할이 무엇을 할 수 있는지의 한 곳 | `core.kernel` |
+| `core.contract` | Go | `backend/internal/contract` | 밖으로 내는 모양. OpenAPI 3.1 계약을 조각(`openapi/parts`)으로 두고 기계가 합쳐(`openapi.json`) `go:embed`로 내장한다. 아직 없는 길의 등록부(`planned/routes.json`), JSON Schema 부분집합 검증기, 문제 코드 목록을 함께 가진다. MCP 툴과 파일 형식은 이후 | `core.kernel` |
+| `adapter.devauth` | Go | `backend/internal/devauth` | 개발용 인증기. 고정 토큰 하나와 역할 목록. 운영 모드, 16자 미만 토큰, 모르는 역할은 거부한다. OIDC로 바뀌기 전의 임시이다(ADR-0024, 부채 TD-0010) | `core.kernel`, `core.access` |
+| `adapter.http` | Go | `backend/internal/httpapi` | `net/http` 서버 골격. 계약의 길 24개를 서버로 낸다(상태 확인, 목록, 타입 등록부). 봉투, 문제 본문, 커서, ETag, 추적 ID, `allowed_actions`. 인증기는 포트로 받는다 | `core.kernel`, `core.model`, `core.contract`, `core.access` |
+| `adapter.cli` | Go | `backend/internal/cli` | 같은 바이너리에 든 명령줄 클라이언트. 공개된 `/v1`만 부르고 종료 코드는 문제의 묶음을 따른다 | `core.kernel` |
 | `core.worldgen` | Go | `backend/internal/worldgen` | 지어낸 세계 생성기. 씨앗과 인자로 표준 모델만 쓴 데이터센터의 정답(JSON Lines)과 소스 보기(CSV, JSON 쪽, 장치 설정, 고정 폭 표)와 변경 스트림과 모양 카드를 흘려 내고, 정답을 등록부로 검사한다. 파일은 `Store`로 받는다(운영체제를 읽지 않는다) | `core.kernel`, `core.model` |
-| `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 넷(`api`, `worker`, `query`, `collector`) 가운데 하나를 골라 커널을 엮고 한 줄 구조 로그를 남긴 뒤 끝난다. 서버는 아직 없다 | `core.*` |
+| `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 이름만 주면 커널을 엮고 한 줄 구조 로그를 남긴 뒤 끝난다. `api serve`는 서버를 띄우고, `api routes`, `contract`, 클라이언트 명령(`health`, `types`, `catalog`)을 가진다. 환경과 파일, 청취, 정지 신호는 `wiring`으로 묶어 시험이 바꿔 끼운다 | `core.*`, `adapter.*` |
 
 TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 단위다. 구조 계약에서 Go 단위는 `go:` 절에 따로 적는다.
 

@@ -1,0 +1,279 @@
+{
+  "components": {
+    "schemas": {
+      "Problem": {
+        "type": "object",
+        "description": "The standard error shape of every failure (RFC 9457, rest-api.md 3-9).",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Where the code is explained: /v1/problems/<code>."
+          },
+          "title": {
+            "type": "string",
+            "description": "A short English line for logs; screens build their words from code and params."
+          },
+          "status": {
+            "type": "integer",
+            "description": "The HTTP status."
+          },
+          "code": {
+            "$ref": "#/components/schemas/ProblemCode"
+          },
+          "params": {
+            "type": "object",
+            "description": "The values a screen needs to write the message."
+          },
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "errors": {
+            "type": "array",
+            "description": "One entry per wrong field of the input.",
+            "items": {
+              "$ref": "#/components/schemas/FieldError"
+            }
+          }
+        },
+        "required": ["type", "title", "status", "code", "trace_id"]
+      },
+      "FieldError": {
+        "type": "object",
+        "description": "One wrong field of a request.",
+        "properties": {
+          "pointer": {
+            "type": "string",
+            "description": "A JSON pointer to the field, or the query parameter name."
+          },
+          "code": {
+            "type": "string",
+            "description": "The code of this field's problem."
+          },
+          "params": {
+            "type": "object",
+            "description": "The values a screen needs to write the message."
+          }
+        },
+        "required": ["pointer", "code", "params"]
+      },
+      "Meta": {
+        "type": "object",
+        "description": "The meta of an answer that is not a KG answer: only the trace id is always there.",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          }
+        },
+        "required": ["trace_id"]
+      },
+      "ItemMeta": {
+        "type": "object",
+        "description": "The meta of a single resource of the type registry.",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "model_hash": {
+            "type": "string",
+            "description": "The hash of the model the answer was read from; the ETag is made from it."
+          },
+          "allowed_actions": {
+            "type": "array",
+            "description": "What the caller may do with this resource now. A hint for screens; the server judges again on every request.",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            }
+          }
+        },
+        "required": ["trace_id", "model_hash", "allowed_actions"]
+      },
+      "ListMeta": {
+        "type": "object",
+        "description": "The meta of a list of the type registry.",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "model_hash": {
+            "type": "string",
+            "description": "The hash of the model the answer was read from; a cursor of another model hash is refused."
+          },
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          }
+        },
+        "required": ["trace_id", "model_hash", "result_complete"]
+      },
+      "AllowedAction": {
+        "type": "object",
+        "description": "One action the caller may or may not do, with the reason when not.",
+        "properties": {
+          "action": {
+            "type": "string",
+            "description": "The action name, such as edit."
+          },
+          "allowed": {
+            "type": "boolean",
+            "description": "Whether the caller may do it now."
+          },
+          "reason_code": {
+            "type": ["string", "null"],
+            "description": "Why not, from GET /v1/catalog/reason-codes; null when allowed."
+          }
+        },
+        "required": ["action", "allowed", "reason_code"]
+      },
+      "ResultComplete": {
+        "type": "object",
+        "description": "How much of a list this answer holds (rest-api.md 3-2, 3-3).",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "How many items match the filter, without those hidden from the caller.",
+            "minimum": 0
+          },
+          "returned": {
+            "type": "integer",
+            "description": "How many items this page holds.",
+            "minimum": 0
+          },
+          "truncated": {
+            "type": "boolean",
+            "description": "Whether the answer was cut by a limit other than the page size."
+          },
+          "reason": {
+            "type": ["string", "null"],
+            "description": "Why it was cut, when truncated."
+          },
+          "next_cursor": {
+            "type": ["string", "null"],
+            "description": "The cursor of the next page; null on the last page."
+          }
+        },
+        "required": ["total", "returned", "truncated", "reason", "next_cursor"]
+      },
+      "AsOf": {
+        "type": "object",
+        "description": "Which state of which KG an answer reads (KG answers only).",
+        "properties": {
+          "kg": {
+            "type": "string",
+            "description": "The id of the KG."
+          },
+          "generation": {
+            "type": "integer",
+            "description": "The generation, which rises on every point-in-time restore."
+          },
+          "change_seq": {
+            "type": "integer",
+            "description": "The last change number the answer includes."
+          },
+          "sealed_version": {
+            "type": ["string", "null"],
+            "description": "The sealed KG version, when the answer reads one."
+          },
+          "volatile_as_of": {
+            "type": "string",
+            "description": "Whether volatile values are current or omitted.",
+            "enum": ["current", "omitted"]
+          }
+        },
+        "required": ["kg", "generation", "change_seq"]
+      },
+      "Freshness": {
+        "type": "object",
+        "description": "How old the sources of an answer are (KG answers only).",
+        "properties": {
+          "worst_source_id": {
+            "type": ["string", "null"],
+            "description": "The source with the oldest data."
+          },
+          "oldest_age_seconds": {
+            "type": "integer",
+            "description": "The age of that data in seconds."
+          },
+          "state": {
+            "type": "string",
+            "description": "The worst state among the sources."
+          }
+        },
+        "required": ["state"]
+      },
+      "Evidence": {
+        "type": "object",
+        "description": "The grade of the facts behind an answer (KG answers only).",
+        "properties": {
+          "min_grade": {
+            "type": "string",
+            "description": "The lowest grade used: fact, assumed or unknown."
+          },
+          "counts": {
+            "type": "object",
+            "description": "How many facts of each grade.",
+            "additionalProperties": {
+              "type": "integer"
+            }
+          }
+        },
+        "required": ["min_grade"]
+      },
+      "Hidden": {
+        "type": "object",
+        "description": "Whether the caller's scope hid something from the answer.",
+        "properties": {
+          "has_hidden": {
+            "type": "boolean",
+            "description": "Whether something was hidden."
+          }
+        },
+        "required": ["has_hidden"]
+      },
+      "ServedBy": {
+        "type": "object",
+        "description": "Which role of the product answered.",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "api_sql or engine.",
+            "enum": ["api_sql", "engine"]
+          }
+        },
+        "required": ["role"]
+      },
+      "Operation": {
+        "type": "object",
+        "description": "A long-running job returned with 202 and a Location header (rest-api.md 3-7).",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "The id of the job."
+          },
+          "kind": {
+            "type": "string",
+            "description": "What the job does."
+          },
+          "state": {
+            "type": "string",
+            "description": "Where the job is.",
+            "enum": ["queued", "running", "succeeded", "failed", "cancel_requested", "canceled"]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the job was created, UTC.",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "When the job and its result disappear, UTC.",
+            "format": "date-time"
+          }
+        },
+        "required": ["job_id", "kind", "state", "created_at"]
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 /** Run every structural check and print one verdict (`pnpm structure`, part of `pnpm check`). */
+import { run as apiContract } from "./checks/api-contract";
 import { run as architecture } from "./checks/architecture";
 import { run as coverage } from "./checks/coverage";
 import { run as debt } from "./checks/debt";
@@ -29,7 +30,12 @@ export function checks(
         // License rules ride on this check: common.test.ts is locked and lists the check names (ADR-0185).
         const { violations, notes: lic } = licenses(root);
         notes.push(...lic);
-        return [...architecture(root), ...violations, ...go.architecture(root)];
+        return [
+          ...architecture(root),
+          ...violations,
+          ...go.architecture(root),
+          ...apiContract(root, base),
+        ];
       },
     ],
     [

@@ -11,6 +11,111 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestApiRoutesAndListenFailuresAreReported": {
+   "kind": "test",
+   "hash": "84ed9b0aa03562b0",
+   "asserts": 3,
+   "literals": [
+    "ad8eac810dc08fa8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestApiRoutesListsWhatTheServerRegisters": {
+   "kind": "test",
+   "hash": "946ba7f04f5db2f0",
+   "asserts": 5,
+   "literals": [
+    "ca1fcc9fa1c0a751"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestApiServeAndTheClientTalkOverTheContract": {
+   "kind": "test",
+   "hash": "2a4666d0843a98ef",
+   "asserts": 12,
+   "literals": [
+    "3cabbb19e0e90a60"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestApiServeRefusesUnsafeOrBrokenConfiguration": {
+   "kind": "test",
+   "hash": "c9772c30fbcbae4b",
+   "asserts": 1,
+   "literals": [
+    "62e8ae8cc0fea756"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes": {
+   "kind": "test",
+   "hash": "f627879b2a41bdf2",
+   "asserts": 4,
+   "literals": [
+    "b6cfea93ad7c2534"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestApiUsageStaysForUnknownSubcommands": {
+   "kind": "test",
+   "hash": "7ebc49e5b11fd426",
+   "asserts": 2,
+   "literals": [
+    "3a9028569311b537"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestContractCommandAssemblesAndChecks": {
+   "kind": "test",
+   "hash": "37f69ec23cfda2f8",
+   "asserts": 4,
+   "literals": [
+    "ecf9993e1072b5c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestDirStoreStaysInside": {
    "kind": "test",
    "hash": "47bf3b3d02b94be0",
@@ -76,6 +181,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestSystemWiringIsTheRealThing": {
+   "kind": "test",
+   "hash": "4c79c4f365bc9df4",
+   "asserts": 4,
+   "literals": [
+    "9e3e07a36326517f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestWorldgenCountsWithoutFiles": {
    "kind": "test",
    "hash": "00d49ce55bbcac83",
@@ -138,6 +258,786 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/access::TestRolesAndAbilitiesAgreeWithEachOther": {
+   "kind": "test",
+   "hash": "97f3bf0845128cd8",
+   "asserts": 6,
+   "literals": [
+    "1fb9a1b43be3d18d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/access::TestRoleTableGrantsEachAbilityToItsRolesOnly": {
+   "kind": "test",
+   "hash": "b2fe51a899a73422",
+   "asserts": 3,
+   "literals": [
+    "5d030f24605fb9fa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/access::TestSubjectHoldsRoles": {
+   "kind": "test",
+   "hash": "2c88a5f2a81ca03d",
+   "asserts": 2,
+   "literals": [
+    "6de75fe5f1691a3a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestClientFlagsAreRecognisedBeforeTheCommand": {
+   "kind": "test",
+   "hash": "bb0556fecf32adc6",
+   "asserts": 1,
+   "literals": [
+    "b4e4c726e7e5b353"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestExitCodesFollowTheProblemGroup": {
+   "kind": "test",
+   "hash": "3c719ef076896fea",
+   "asserts": 2,
+   "literals": [
+    "ef2cc1c458f0ce8f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestProblemsBecomeExitCodesAndOneErrorLine": {
+   "kind": "test",
+   "hash": "8bd85efa0eb620e4",
+   "asserts": 2,
+   "literals": [
+    "35d6523fea05da39"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestSettingsFollowFlagThenEnvironmentThenFileThenDefault": {
+   "kind": "test",
+   "hash": "a7386af7148c25ce",
+   "asserts": 2,
+   "literals": [
+    "bb56e8ea30cca96d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTransportAndUsageErrorsHaveTheirOwnCodes": {
+   "kind": "test",
+   "hash": "03abd47ef063e922",
+   "asserts": 5,
+   "literals": [
+    "5b73d264dc875844"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTypesGetCatalogAndHealth": {
+   "kind": "test",
+   "hash": "1973f6ba1bfeee0b",
+   "asserts": 7,
+   "literals": [
+    "75edaca2897bc575"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTypesListPrintsATableOrJSONAndFollowsCursors": {
+   "kind": "test",
+   "hash": "b346bde7daa6f1ed",
+   "asserts": 5,
+   "literals": [
+    "bfc0bcc33e5904e2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-245"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestAssembleBuildsOneCanonicalDocument": {
+   "kind": "test",
+   "hash": "ee9d469f56aea009",
+   "asserts": 3,
+   "literals": [
+    "b2cfa23e73319297"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestAssembleRefusesWhatIsAmbiguous": {
+   "kind": "test",
+   "hash": "6e119cab4fbc808f",
+   "asserts": 2,
+   "literals": [
+    "7def8d8dbf38b129"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestAssembleReportsAMissingFolder": {
+   "kind": "test",
+   "hash": "fff41f7e92723168",
+   "asserts": 1,
+   "literals": [
+    "dfe04a3dc0038bc3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestCommittedContractIsWhatThePartsAssembleTo": {
+   "kind": "test",
+   "hash": "b943c57cb9f29dbe",
+   "asserts": 2,
+   "literals": [
+    "77e6f209008ef8ad"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestContractListsExactlyTheCataloguedProblemCodes": {
+   "kind": "test",
+   "hash": "6850b6a8915575fc",
+   "asserts": 5,
+   "literals": [
+    "5cc453eb28d4dfa4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestContractUsesOnlyTheDocumentedSchemaSubset": {
+   "kind": "test",
+   "hash": "46deab85a41a05e7",
+   "asserts": 4,
+   "literals": [
+    "5cfda1a5da0aa7cd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestDocumentReadsOperationsAndReferences": {
+   "kind": "test",
+   "hash": "fb71ce3e6f3e6bdc",
+   "asserts": 6,
+   "literals": [
+    "87a7c750bf3ab0be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestErrorExamplesUseOnlyCataloguedCodes": {
+   "kind": "test",
+   "hash": "825d75f8a20f41bc",
+   "asserts": 7,
+   "literals": [
+    "cb340f5a149098d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestEveryOperationDeclaresTheConventions": {
+   "kind": "test",
+   "hash": "498ce03c12f92769",
+   "asserts": 6,
+   "literals": [
+    "39e056c76d539d28"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestEveryResponseHasAnExampleThatFitsItsSchema": {
+   "kind": "test",
+   "hash": "dd22a44ffa3c8796",
+   "asserts": 7,
+   "literals": [
+    "d401d3dbf35d1360"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestPlannedRoutesAreRegisteredAndNotInTheContract": {
+   "kind": "test",
+   "hash": "6ed12206747cee17",
+   "asserts": 6,
+   "literals": [
+    "25ddf535464c0cfe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestProblemCatalogueIsClosedAndWellFormed": {
+   "kind": "test",
+   "hash": "362220032f06be65",
+   "asserts": 5,
+   "literals": [
+    "543c2b7ea9f88f94"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestSchemaKeywordsAreClosedAndSorted": {
+   "kind": "test",
+   "hash": "f4c97790ada495e0",
+   "asserts": 2,
+   "literals": [
+    "d1955b3fe4d143c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestValidateResponseChecksStatusHeadersAndBody": {
+   "kind": "test",
+   "hash": "29b66e799d9ea2b5",
+   "asserts": 4,
+   "literals": [
+    "875c6a07387d3a61"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestValidatorChecksTheDocumentedSubset": {
+   "kind": "test",
+   "hash": "2e855615907650c9",
+   "asserts": 6,
+   "literals": [
+    "227128c4f832e295"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestValidatorRefusesWhatItCannotCheck": {
+   "kind": "test",
+   "hash": "892f58ea82f41729",
+   "asserts": 3,
+   "literals": [
+    "10553f2418293fe6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devauth::TestAuthenticateAcceptsExactlyOneToken": {
+   "kind": "test",
+   "hash": "ae284448e2f66f8a",
+   "asserts": 5,
+   "literals": [
+    "f1147c69c4e55571"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devauth::TestNewRefusesWhatWouldBeAnOpenDoor": {
+   "kind": "test",
+   "hash": "a76e0d980cb14f03",
+   "asserts": 2,
+   "literals": [
+    "7455e4db5e64d8c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAcceptHeaderNegotiation": {
+   "kind": "test",
+   "hash": "09c25261379f9f17",
+   "asserts": 1,
+   "literals": [
+    "a70018a2e285e67c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAccessLogHasOneStructuredLinePerRequest": {
+   "kind": "test",
+   "hash": "b2102ebda1d2d0e9",
+   "asserts": 5,
+   "literals": [
+    "a49ffcf55db854d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAllowedActionsFollowTheRoleTable": {
+   "kind": "test",
+   "hash": "a0e2ec558d1ccc70",
+   "asserts": 4,
+   "literals": [
+    "50473e1e6ea372b6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestBodyLimitAndMediaType": {
+   "kind": "test",
+   "hash": "a06662b446f3e3ae",
+   "asserts": 7,
+   "literals": [
+    "0fdc61a208c5090e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestCatalogsServeTheClosedLists": {
+   "kind": "test",
+   "hash": "203e264387b367fd",
+   "asserts": 7,
+   "literals": [
+    "5cb8aa53f6fc9be8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestConditionalReadsAnswerNotModified": {
+   "kind": "test",
+   "hash": "3638224c48fdcf70",
+   "asserts": 8,
+   "literals": [
+    "a11f30fb187d1f96"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestCursorIsRefusedWhenItDoesNotBelong": {
+   "kind": "test",
+   "hash": "a840e6d48ad4aff4",
+   "asserts": 9,
+   "literals": [
+    "4e72fe48782eb104"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestCursorPagingWalksEveryItemOnceInOrder": {
+   "kind": "test",
+   "hash": "a8e1dddf938c9074",
+   "asserts": 9,
+   "literals": [
+    "dab0cb2990b16b5d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestCursorRoundTripAndTampering": {
+   "kind": "test",
+   "hash": "9c556aa19c012f49",
+   "asserts": 2,
+   "literals": [
+    "23cad34e28172fd1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestEntityTagComparisonIsWeakAndListAware": {
+   "kind": "test",
+   "hash": "25b90966592e0799",
+   "asserts": 1,
+   "literals": [
+    "cb73da11998796d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestEveryAnswerFitsTheContract": {
+   "kind": "test",
+   "hash": "5eb6105f221ed4d9",
+   "asserts": 7,
+   "literals": [
+    "444428ad5c778c77"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestEveryOperationAsksForTheRoleItDeclares": {
+   "kind": "test",
+   "hash": "f6f25d8ebc720ca7",
+   "asserts": 5,
+   "literals": [
+    "513c286c917239e2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestFiltersSelectWhatTheModelHolds": {
+   "kind": "test",
+   "hash": "0b88b77e7e764f45",
+   "asserts": 8,
+   "literals": [
+    "a67fceb4b5fcc15b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestListQueryGrammarIsClosed": {
+   "kind": "test",
+   "hash": "017069e696d60cd7",
+   "asserts": 8,
+   "literals": [
+    "67004bdb77666b8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestMethodsAndPathsOutsideTheContractAreProblems": {
+   "kind": "test",
+   "hash": "c49989bd416e3572",
+   "asserts": 7,
+   "literals": [
+    "ad99a70303213954"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestObjectTypeDetailCarriesWhatWasAskedFor": {
+   "kind": "test",
+   "hash": "b420cebf61494833",
+   "asserts": 13,
+   "literals": [
+    "94b3deb6e61a1be8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestOldNamesAnswerAsAliases": {
+   "kind": "test",
+   "hash": "a01aebb1bb94770d",
+   "asserts": 8,
+   "literals": [
+    "261fd1bb3da3d645"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-241"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestPanicInAHandlerBecomesAProblemAndIsLogged": {
+   "kind": "test",
+   "hash": "665199dabecf2564",
+   "asserts": 5,
+   "literals": [
+    "4182e9ca5c8c6ae5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestProblemsKeepTheirShapeAndCatalogue": {
+   "kind": "test",
+   "hash": "78499f5dbc21cf13",
+   "asserts": 11,
+   "literals": [
+    "925b9877b3346eb9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestRangeFilterReadsOpenEnds": {
+   "kind": "test",
+   "hash": "0cd625463b6fcbe3",
+   "asserts": 1,
+   "literals": [
+    "9cc7ce640d0cf444"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestServedRoutesAreExactlyTheContractsOperations": {
+   "kind": "test",
+   "hash": "564fc2a4227a77d8",
+   "asserts": 6,
+   "literals": [
+    "ab5b28d4d6e97bac"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestServeIsGracefulAndReadyFollowsLife": {
+   "kind": "test",
+   "hash": "d8bc018374f192e6",
+   "asserts": 7,
+   "literals": [
+    "f1b62a42559a9108"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestServerNeedsItsParts": {
+   "kind": "test",
+   "hash": "7b5304a1f08a05dc",
+   "asserts": 1,
+   "literals": [
+    "653ff0f85d508b73"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestTraceIDComesFromTraceparentOrIsMade": {
+   "kind": "test",
+   "hash": "24f9bf87f5643ae1",
+   "asserts": 3,
+   "literals": [
+    "eb2b83c87da14140"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -298,6 +1198,21 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/kernel::TestLookupEnvReadsTheEnvironmentOnlyHere": {
+   "kind": "test",
+   "hash": "7739e52a00ea3b5e",
+   "asserts": 2,
+   "literals": [
+    "56bae925aaf9babc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-001"
+   ],
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -1815,6 +2730,1933 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::<import:33cb4edc>": {
+   "kind": "support",
+   "hash": "33cb4edc20ddbe8a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::<import:abd440f3>": {
+   "kind": "support",
+   "hash": "abd440f3378fea25",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::<import:d42c7cf9>": {
+   "kind": "support",
+   "hash": "d42c7cf9b2e3b0b0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::=textOf": {
+   "kind": "support",
+   "hash": "0849978b63f500d8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the committed contract is what the parts assemble to [REQ-143] > %s": {
+   "kind": "test",
+   "hash": "7c0e7d944bbb2c40",
+   "asserts": 2,
+   "literals": [
+    "\"%s\"",
+    "\"20\"",
+    "\"20\"",
+    "\"API020\"",
+    "\"API021\"",
+    "\"part x.json: not JSON\"",
+    "\"{}\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the committed contract is what the parts assemble to [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the committed contract is what the parts assemble to [REQ-143] > a missing committed document is reported before anything is assembled": {
+   "kind": "test",
+   "hash": "0574d096bbe5085d",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"/nonexistent-root\"",
+    "\"API022\"",
+    "\"API022\"",
+    "\"a missing committed document is reported before anything is assembled\"",
+    "\"must not run\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the committed contract is what the parts assemble to [REQ-143] > an assembled document that equals the committed one passes": {
+   "kind": "test",
+   "hash": "c2949122ce991c5c",
+   "asserts": 1,
+   "literals": [
+    "\"an assembled document that equals the committed one passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the schema keywords of the harness and of the Go validator agree [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the schema keywords of the harness and of the Go validator agree [REQ-143] > a different list or a missing function fails": {
+   "kind": "test",
+   "hash": "d41ace170b74528c",
+   "asserts": 3,
+   "literals": [
+    "\"/nonexistent-root\"",
+    "\"/nonexistent-root\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"API091\"",
+    "\"API091\"",
+    "\"API091\"",
+    "\"API091\"",
+    "\"a different list or a missing function fails\"",
+    "\"func SchemaKeywords() []string {\\n\\treturn []string{\\\"$ref\\\", \\\"oneOf\\\"}\\n}\\n\"",
+    "\"not in the Go validator\"",
+    "\"not in the Go validator\"",
+    "\"package contract\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the schema keywords of the harness and of the Go validator agree [REQ-143] > the same words pass, in any order": {
+   "kind": "test",
+   "hash": "1149d22bf083935e",
+   "asserts": 2,
+   "literals": [
+    "\"func SchemaKeywords() []string {\\n\\treturn []string{\\\"example\\\", \\\"description\\\", \\\"enum\\\", \\\"items\\\", \\\"required\\\", \\\"properties\\\", \\\"type\\\", \\\"$ref\\\"}\\n}\\n\"",
+    "\"the same words pass, in any order\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-assembled.test.ts::the schema keywords of the harness and of the Go validator agree [REQ-143] > the words are the literals of the function": {
+   "kind": "test",
+   "hash": "2e5461d49bd25be5",
+   "asserts": 3,
+   "literals": [
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"func Other() {}\"",
+    "\"func Other() {}\"",
+    "\"func SchemaKeywords() []string { return []string{\\\"a\\\"}\"",
+    "\"func SchemaKeywords() []string { return []string{\\\"a\\\"}\"",
+    "\"the words are the literals of the function\"",
+    "\"x\\nfunc SchemaKeywords() []string {\\n\\treturn []string{\\\"a\\\", \\\"b\\\"}\\n}\\n\\\"c\\\"\"",
+    "\"x\\nfunc SchemaKeywords() []string {\\n\\treturn []string{\\\"a\\\", \\\"b\\\"}\\n}\\n\\\"c\\\"\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::<import:5198417d>": {
+   "kind": "support",
+   "hash": "5198417d4f7be7b8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::<import:5744ba03>": {
+   "kind": "support",
+   "hash": "5744ba035699fd1a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::<import:eb4b672f>": {
+   "kind": "support",
+   "hash": "eb4b672ffb265275",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::<import:f5f20a75>": {
+   "kind": "support",
+   "hash": "f5f20a759b854df8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::<import:f8cd0c0e>": {
+   "kind": "support",
+   "hash": "f8cd0c0e0ad6b69a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=base": {
+   "kind": "support",
+   "hash": "ffa8300c99c91e2c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=GET": {
+   "kind": "support",
+   "hash": "b7b5892399b8c7a4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=keys": {
+   "kind": "support",
+   "hash": "3aba6be83d7e1a50",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=NONE": {
+   "kind": "support",
+   "hash": "b5b24b6585079649",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=OK": {
+   "kind": "support",
+   "hash": "55b144ebebb860f8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=op": {
+   "kind": "support",
+   "hash": "e592a82db6e94c4e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=props": {
+   "kind": "support",
+   "hash": "a00ffaf75b2ec313",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=put": {
+   "kind": "support",
+   "hash": "e37437ca417e448b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=REASON": {
+   "kind": "support",
+   "hash": "6dca79be4ae0a8ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=schemas": {
+   "kind": "support",
+   "hash": "a45068697c630385",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=sealed": {
+   "kind": "support",
+   "hash": "4455639a4452c157",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=unset": {
+   "kind": "support",
+   "hash": "9e03cece49e6b88a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::a break is declared by a new sealed ADR [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::a break is declared by a new sealed ADR [REQ-143] > API031: %s": {
+   "kind": "test",
+   "hash": "7e4b2b887729d64a",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0002-a.md\"",
+    "\"API031\"",
+    "\"API031\"",
+    "\"API031: %s\"",
+    "\"a short reason\"",
+    "\"an empty list\"",
+    "\"no reason\"",
+    "\"not a list\"",
+    "\"too short\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::a break is declared by a new sealed ADR [REQ-143] > API031: an ADR that is not sealed": {
+   "kind": "test",
+   "hash": "825c70c6a7645291",
+   "asserts": 1,
+   "literals": [
+    "\"0002-a.md\"",
+    "\"0002-a.md\"",
+    "\"API031\"",
+    "\"API031\"",
+    "\"API031: an ADR that is not sealed\"",
+    "\"Body\"",
+    "\"Edited body\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::a break is declared by a new sealed ADR [REQ-143] > the keys of a sealed ADR with a reason are accepted": {
+   "kind": "test",
+   "hash": "5c349318f483d689",
+   "asserts": 2,
+   "literals": [
+    "\"---\\ntitle: plain\\n---\\nBody\\n\"",
+    "\"0002-a.md\"",
+    "\"0003-b.md\"",
+    "\"the keys of a sealed ADR with a reason are accepted\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::breaking changes against the base [REQ-143] > %s: %s": {
+   "kind": "test",
+   "hash": "889879a35cb7356f",
+   "asserts": 1,
+   "literals": [
+    "\"%s: %s\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"200\"",
+    "\"410\"",
+    "\"Thing\"",
+    "\"Thing\"",
+    "\"Thing\"",
+    "\"a code changes status\"",
+    "\"a code is removed\"",
+    "\"a parameter is removed\"",
+    "\"a response field changes type\"",
+    "\"a response field is removed\"",
+    "\"a response field stops being required\"",
+    "\"a response status is removed\"",
+    "\"a role is no longer accepted\"",
+    "\"a\"",
+    "\"admin\"",
+    "\"an enum value is removed\"",
+    "\"an operation is removed\"",
+    "\"auth.token_missing\"",
+    "\"code not_found.resource\"",
+    "\"code not_found.resource\"",
+    "\"enum\"",
+    "\"get\"",
+    "\"get\"",
+    "\"get\"",
+    "\"get\"",
+    "\"id\"",
+    "\"id\"",
+    "\"integer\"",
+    "\"invalid_input.not_acceptable\"",
+    "\"kind\"",
+    "\"not_found\"",
+    "\"not_found.resource\"",
+    "\"parameters\"",
+    "\"required\"",
+    "\"x\"",
+    "\"x-catalogue\"",
+    "\"x-required-role\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::breaking changes against the base [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::breaking changes against the base [REQ-143] > a new required parameter or request field is a break, but not on a new operation": {
+   "kind": "test",
+   "hash": "9b7cf773cc5f314f",
+   "asserts": 5,
+   "literals": [
+    "\"/v1/fresh\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"0\"",
+    "\"GET /v1/things body application/json /\"",
+    "\"GET /v1/things body application/json /\"",
+    "\"GET /v1/things body application/json /\"",
+    "\"GET /v1/things body application/json /\"",
+    "\"a new required parameter or request field is a break, but not on a new operation\"",
+    "\"application/json\"",
+    "\"get\"",
+    "\"get\"",
+    "\"get\"",
+    "\"get\"",
+    "\"limit\"",
+    "\"object\"",
+    "\"q\"",
+    "\"q\"",
+    "\"query\"",
+    "\"query\"",
+    "\"query\"",
+    "\"string\"",
+    "\"string\"",
+    "\"string\"",
+    "\"string\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::breaking changes against the base [REQ-143] > a recursive schema does not run forever": {
+   "kind": "test",
+   "hash": "d6318e2c180e9fd1",
+   "asserts": 2,
+   "literals": [
+    "\"#/components/schemas/Thing\"",
+    "\"10\"",
+    "\"10\"",
+    "\"Thing\"",
+    "\"a recursive schema does not run forever\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::breaking changes against the base [REQ-143] > a removed operation explains the facts below it, a removed response its fields": {
+   "kind": "test",
+   "hash": "99bb829bc14bff1b",
+   "asserts": 2,
+   "literals": [
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"200\"",
+    "\"a removed operation explains the facts below it, a removed response its fields\"",
+    "\"get\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::breaking changes against the base [REQ-143] > an unchanged contract and additions are not breaks": {
+   "kind": "test",
+   "hash": "d989776c9d97e157",
+   "asserts": 2,
+   "literals": [
+    "\"#/components/responses/NotFound\"",
+    "\"/v1/new-things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"404\"",
+    "\"Thing\"",
+    "\"an unchanged contract and additions are not breaks\"",
+    "\"get\"",
+    "\"get\"",
+    "\"get\"",
+    "\"new\"",
+    "\"q\"",
+    "\"query\"",
+    "\"read\"",
+    "\"string\"",
+    "\"string\"",
+    "\"viewer\"",
+    "\"x\"",
+    "\"x-required-role\"",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > =baseText": {
+   "kind": "support",
+   "hash": "4c43b86bfbc58905",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > =broken": {
+   "kind": "support",
+   "hash": "9d46caa8877a4c26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > a compatible change passes, with or without a base": {
+   "kind": "test",
+   "hash": "7eb6c9bd25827ddf",
+   "asserts": 3,
+   "literals": [
+    "\"a compatible change passes, with or without a base\"",
+    "\"not json\"",
+    "\"not json\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > a declared break passes, and a declaration of nothing is stale (API032)": {
+   "kind": "test",
+   "hash": "199a278ba23e9036",
+   "asserts": 2,
+   "literals": [
+    "\"API032\"",
+    "\"API032\"",
+    "\"GET /v1/health/live#406\"",
+    "\"a declared break passes, and a declaration of nothing is stale (API032)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > API030: a break nobody declared": {
+   "kind": "test",
+   "hash": "57daf96ec6e7b9e1",
+   "asserts": 2,
+   "literals": [
+    "\"API030\"",
+    "\"API030\"",
+    "\"API030: a break nobody declared\"",
+    "\"[GET /v1/health/live#406]\"",
+    "\"[GET /v1/health/live#406]\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:5e16f4d7>": {
+   "kind": "support",
+   "hash": "5e16f4d774459369",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:75a2c9c5>": {
+   "kind": "support",
+   "hash": "75a2c9c5e40c72f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:8a947ef8>": {
+   "kind": "support",
+   "hash": "8a947ef8675a8ebd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:92d11c27>": {
+   "kind": "support",
+   "hash": "92d11c273fc6952a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:a5fb6f49>": {
+   "kind": "support",
+   "hash": "a5fb6f499020a3a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:caba6ef7>": {
+   "kind": "support",
+   "hash": "caba6ef7cb3e80ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:ed34b54c>": {
+   "kind": "support",
+   "hash": "ed34b54c0d4b8dfc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::<import:f8cd0c0e>": {
+   "kind": "support",
+   "hash": "f8cd0c0e0ad6b69a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::=at": {
+   "kind": "support",
+   "hash": "02f92fc185028020",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::=io": {
+   "kind": "support",
+   "hash": "d7e38e3f0a6969d4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::=SERVED": {
+   "kind": "support",
+   "hash": "06ee30461189a91d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > a break against the base needs a new sealed ADR that declares it": {
+   "kind": "test",
+   "hash": "b3cf85575bf48864",
+   "asserts": 3,
+   "literals": [
+    "\"#/components/responses/NotFound\"",
+    "\"/v1/health/live\"",
+    "\"2\"",
+    "\"404\"",
+    "\"45\"",
+    "\"API030\"",
+    "\"API030\"",
+    "\"API030\"",
+    "\"API030\"",
+    "\"Body\\n\"",
+    "\"GET /v1/health/live#404\"",
+    "\"a break against the base needs a new sealed ADR that declares it\"",
+    "\"docs/design-docs/adr/0001-first.md\"",
+    "\"docs/design-docs/adr/0002-break.md\"",
+    "\"docs/design-docs/adr/0002-break.md\"",
+    "\"origin/main\"",
+    "\"origin/main\"",
+    "\"origin/main\"",
+    "\"origin/main\"",
+    "\"origin/main\"",
+    "\"x\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > a contract that is not JSON or is missing is reported once": {
+   "kind": "test",
+   "hash": "3da4000209c1211a",
+   "asserts": 2,
+   "literals": [
+    "\"API001\"",
+    "\"API001\"",
+    "\"API022\"",
+    "\"API022\"",
+    "\"a contract that is not JSON or is missing is reported once\"",
+    "\"nope\"",
+    "\"rm\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > a healthy repository passes": {
+   "kind": "test",
+   "hash": "8c19ec5791c87762",
+   "asserts": 1,
+   "literals": [
+    "\"a healthy repository passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > a repository without an ADR folder has no declarations": {
+   "kind": "test",
+   "hash": "08f1dae14d6d4f16",
+   "asserts": 2,
+   "literals": [
+    "\"-r\"",
+    "\"API031\"",
+    "\"API031\"",
+    "\"a repository without an ADR folder has no declarations\"",
+    "\"origin/main\"",
+    "\"origin/main\"",
+    "\"origin/main\"",
+    "\"rm\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > a repository without the configuration is not checked": {
+   "kind": "test",
+   "hash": "0be809877b9cf84d",
+   "asserts": 1,
+   "literals": [
+    "\"a repository without the configuration is not checked\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the API checks as one [REQ-143] > the problems of every part are reported together": {
+   "kind": "test",
+   "hash": "2cbebd04ebf3d140",
+   "asserts": 1,
+   "literals": [
+    "\"API020\"",
+    "\"API020\"",
+    "\"API051\"",
+    "\"API051\"",
+    "\"the problems of every part are reported together\"",
+    "\"x\"",
+    "\"{}\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the default io runs the program once and reads git [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the default io runs the program once and reads git [REQ-143] > a repository with no Go module reports the build failure for both commands": {
+   "kind": "test",
+   "hash": "f271aa0323d35d48",
+   "asserts": 3,
+   "literals": [
+    "\"a repository with no Go module reports the build failure for both commands\"",
+    "\"error\"",
+    "\"error\"",
+    "\"error\"",
+    "\"error\"",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::the default io runs the program once and reads git [REQ-143] > the base ref is read through git, and an unknown ref means no base": {
+   "kind": "test",
+   "hash": "15c585eda95e8e69",
+   "asserts": 5,
+   "literals": [
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"HEAD\"",
+    "\"later.txt\"",
+    "\"later.txt\"",
+    "\"later.txt\"",
+    "\"later.txt\"",
+    "\"later.txt\"",
+    "\"no-such-ref\"",
+    "\"no-such-ref\"",
+    "\"the base ref is read through git, and an unknown ref means no base\"",
+    "\"x\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::<import:a1fcc303>": {
+   "kind": "support",
+   "hash": "a1fcc3038d928de9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::=DOC": {
+   "kind": "support",
+   "hash": "3d234ea1cfd7c81e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::JSON helpers of the API checks [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::JSON helpers of the API checks [REQ-143] > only a JSON object parses": {
+   "kind": "test",
+   "hash": "888a294c2f243fbe",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"[1]\"",
+    "\"[1]\"",
+    "\"only a JSON object parses\"",
+    "\"{\"",
+    "\"{\"",
+    "\"{\\\"a\\\":1}\"",
+    "\"{\\\"a\\\":1}\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::JSON helpers of the API checks [REQ-143] > operations come sorted by path and then in method order": {
+   "kind": "test",
+   "hash": "b01bddf3ef9f63af",
+   "asserts": 2,
+   "literals": [
+    "\"DELETE /a\"",
+    "\"DELETE /a\"",
+    "\"GET /a\"",
+    "\"GET /a\"",
+    "\"POST /b\"",
+    "\"POST /b\"",
+    "\"operations come sorted by path and then in method order\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::JSON helpers of the API checks [REQ-143] > references resolve inside the document only": {
+   "kind": "test",
+   "hash": "1165e9b7cfc6029f",
+   "asserts": 9,
+   "literals": [
+    "\"#/components/nothing\"",
+    "\"#/components/nothing\"",
+    "\"#/components/schemas/A\"",
+    "\"#/components/schemas/A\"",
+    "\"#/components/schemas/B\"",
+    "\"#/components/schemas/B\"",
+    "\"#/components/schemas/B/type/x\"",
+    "\"#/components/schemas/B/type/x\"",
+    "\"#/components/schemas/L\"",
+    "\"#/components/schemas/L\"",
+    "\"#/components/schemas/L\"",
+    "\"#/components/schemas/L\"",
+    "\"#/components/schemas/L\"",
+    "\"#/components/schemas/a~1b\"",
+    "\"#/components/schemas/a~1b\"",
+    "\"#/nothing\"",
+    "\"#/nothing\"",
+    "\"1\"",
+    "\"1\"",
+    "\"5\"",
+    "\"5\"",
+    "\"5\"",
+    "\"5\"",
+    "\"https://example.test/x\"",
+    "\"https://example.test/x\"",
+    "\"references resolve inside the document only\"",
+    "\"string\"",
+    "\"string\"",
+    "\"string\"",
+    "\"string\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-json.test.ts::JSON helpers of the API checks [REQ-143] > values are read safely": {
+   "kind": "test",
+   "hash": "4f6690b43b06fe3e",
+   "asserts": 8,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"3\"",
+    "\"3\"",
+    "\"values are read safely\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "\"x\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::<import:ad321ab3>": {
+   "kind": "support",
+   "hash": "ad321ab318dece15",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::<import:eb4b672f>": {
+   "kind": "support",
+   "hash": "eb4b672ffb265275",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::<import:f5f20a75>": {
+   "kind": "support",
+   "hash": "f5f20a759b854df8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=ACTS": {
+   "kind": "support",
+   "hash": "15d937f2ae552345",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=ASK": {
+   "kind": "support",
+   "hash": "8c72bb63738eca2f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=catalogue": {
+   "kind": "support",
+   "hash": "409e9fd7516860cb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=clone": {
+   "kind": "support",
+   "hash": "6230d6061efae73b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=GETS": {
+   "kind": "support",
+   "hash": "75ca482b473fee14",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=lint": {
+   "kind": "support",
+   "hash": "031ab912d2123255",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=Mutation": {
+   "kind": "support",
+   "hash": "53e8d2fdb799abf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=MUTATIONS": {
+   "kind": "support",
+   "hash": "7ef66423b19a9161",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=op": {
+   "kind": "support",
+   "hash": "3b072c1b095d2c83",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=PATCHES": {
+   "kind": "support",
+   "hash": "6d80b9ad669d5170",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=path": {
+   "kind": "support",
+   "hash": "55504f23c9839216",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=problemMedia": {
+   "kind": "support",
+   "hash": "3b1cf6e68d9cfe4a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=props": {
+   "kind": "support",
+   "hash": "a00ffaf75b2ec313",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=put": {
+   "kind": "support",
+   "hash": "e37437ca417e448b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=queryParam": {
+   "kind": "support",
+   "hash": "6031c87259bb405c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=responses": {
+   "kind": "support",
+   "hash": "a427d7f70e282563",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=schemas": {
+   "kind": "support",
+   "hash": "a45068697c630385",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=shared": {
+   "kind": "support",
+   "hash": "f02cc3f877e0b9dd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=unset": {
+   "kind": "support",
+   "hash": "9e03cece49e6b88a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::contract lint [REQ-143] > %s: %s": {
+   "kind": "test",
+   "hash": "1f007042c6aee72b",
+   "asserts": 1,
+   "literals": [
+    "\"%s: %s\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::contract lint [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::contract lint [REQ-143] > a healthy contract has no violation": {
+   "kind": "test",
+   "hash": "1e6caeeb0e316f52",
+   "asserts": 1,
+   "literals": [
+    "\"a healthy contract has no violation\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::contract lint [REQ-143] > a message names the place and the way out": {
+   "kind": "test",
+   "hash": "57b8a770a7b4a6fc",
+   "asserts": 2,
+   "literals": [
+    "\"10\"",
+    "\"10\"",
+    "\"API003\"",
+    "\"GET /v1/things\"",
+    "\"GET /v1/things\"",
+    "\"a message names the place and the way out\"",
+    "\"get\"",
+    "\"operationId\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::<import:c5caf0b0>": {
+   "kind": "support",
+   "hash": "c5caf0b0cbcbf9a8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::<import:fc2fac33>": {
+   "kind": "support",
+   "hash": "fc2fac330983de59",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::=codes": {
+   "kind": "support",
+   "hash": "e29688954f24948d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::=entry": {
+   "kind": "support",
+   "hash": "5bd78c0d0ba4ece3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::=planned": {
+   "kind": "support",
+   "hash": "cce8f98f567e2dba",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::=run": {
+   "kind": "support",
+   "hash": "6a8757eb923fef2e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API040: a route of the table that is neither specified nor planned": {
+   "kind": "test",
+   "hash": "8ff2da0d65f06f90",
+   "asserts": 1,
+   "literals": [
+    "\"API040\"",
+    "\"API040\"",
+    "\"API040: a route of the table that is neither specified nor planned\"",
+    "\"GET, POST /v1/later\"",
+    "\"GET, POST /v1/later\"",
+    "\"GET, POST /v1/later`, `GET /v1/lost\"",
+    "\"GET, POST /v1/later`, `GET /v1/lost\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API041: a specified operation that is not in the table": {
+   "kind": "test",
+   "hash": "fcb740cd7905ee9e",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"API041\"",
+    "\"API041\"",
+    "\"API041: a specified operation that is not in the table\"",
+    "\"`GET /v1/things`, \"",
+    "\"`GET /v1/things`, \""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API042: a planned route that is not in the table": {
+   "kind": "test",
+   "hash": "dd63b42abc61b414",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/ghost\"",
+    "\"/v1/ghost\"",
+    "\"API042\"",
+    "\"API042\"",
+    "\"API042: a planned route that is not in the table\"",
+    "\"POST\"",
+    "\"POST\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API043: a route that is both specified and planned": {
+   "kind": "test",
+   "hash": "cc52f9eea946c4c5",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"API043\"",
+    "\"API043\"",
+    "\"API043: a route that is both specified and planned\"",
+    "\"POST\"",
+    "\"POST\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API044: %s": {
+   "kind": "test",
+   "hash": "19e679142a1bcd42",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"ADR-9999\"",
+    "\"API044\"",
+    "\"API044\"",
+    "\"API044: %s\"",
+    "\"FETCH\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"POST\"",
+    "\"a bad method\"",
+    "\"a repeated route\"",
+    "\"a status other than planned\"",
+    "\"an ADR that does not exist\"",
+    "\"an unknown phase\"",
+    "\"done\"",
+    "\"no feature\"",
+    "\"someday\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API044: a missing or broken registry, API040: a missing table": {
+   "kind": "test",
+   "hash": "b8f4acd7d12e18a5",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"API040\"",
+    "\"API040\"",
+    "\"API044\"",
+    "\"API044\"",
+    "\"API044\"",
+    "\"API044\"",
+    "\"API044\"",
+    "\"API044\"",
+    "\"API044: a missing or broken registry, API040: a missing table\"",
+    "\"not json\"",
+    "\"not json\"",
+    "\"nowhere\"",
+    "\"nowhere\"",
+    "\"nowhere.json\"",
+    "\"nowhere.json\"",
+    "\"nowhere.md\"",
+    "\"nowhere.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > API045: %s": {
+   "kind": "test",
+   "hash": "88a51ee0c222c7bf",
+   "asserts": 1,
+   "literals": [
+    "\"API045\"",
+    "\"API045\"",
+    "\"API045: %s\"",
+    "\"`GET /v1/things`, `.../{id}`\"",
+    "\"`GET /v1/things`, `/v1/other`\"",
+    "\"`GET /v1/things`, `:approve`\"",
+    "\"`GET, POST /v1/later`\"",
+    "\"`GET`\"",
+    "\"a bare path\"",
+    "\"a lone action\"",
+    "\"a shorthand span\"",
+    "\"a span with a method and no path\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > consistent files pass": {
+   "kind": "test",
+   "hash": "3ff48ffecfa46134",
+   "asserts": 1,
+   "literals": [
+    "\"consistent files pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > the registry text is read leniently": {
+   "kind": "test",
+   "hash": "6339043eca3d4d2e",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"2\"",
+    "\"2\"",
+    "\"the registry text is read leniently\"",
+    "\"{\"",
+    "\"{\"",
+    "\"{\\\"routes\\\": [{}]}\"",
+    "\"{\\\"routes\\\": [{}]}\"",
+    "\"{}\"",
+    "\"{}\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-routes.test.ts::the table, the contract and the planned registry agree [REQ-143] > the table is read from its second column: absolute spans only": {
+   "kind": "test",
+   "hash": "5b5f8ff4ca732e6e",
+   "asserts": 3,
+   "literals": [
+    "\"/v1/y\"",
+    "\"/v1/y\"",
+    "\"3\"",
+    "\"3\"",
+    "\"GET /v1/health/live\"",
+    "\"GET /v1/health/live\"",
+    "\"GET /v1/later\"",
+    "\"GET /v1/later\"",
+    "\"GET /v1/things\"",
+    "\"GET /v1/things\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"PATCH /v1/things/{thing_id}\"",
+    "\"PATCH /v1/things/{thing_id}\"",
+    "\"POST /v1/kgs/{kg}/questions/{question_name}\"",
+    "\"POST /v1/kgs/{kg}/questions/{question_name}\"",
+    "\"POST /v1/later\"",
+    "\"POST /v1/later\"",
+    "\"POST /v1/things/{thing_id}:approve\"",
+    "\"POST /v1/things/{thing_id}:approve\"",
+    "\"the table is read from its second column: absolute spans only\"",
+    "\"| 기능 | 길 |\\n|---|---|\\n| a `GET /v1/x` | prose `GET /v1/y?since=` and `meta.x` |\"",
+    "\"| 기능 | 길 |\\n|---|---|\\n| a `GET /v1/x` | prose `GET /v1/y?since=` and `meta.x` |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::<import:58ebfbd6>": {
+   "kind": "support",
+   "hash": "58ebfbd634b52faf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::<import:eb4b672f>": {
+   "kind": "support",
+   "hash": "eb4b672ffb265275",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::=codes": {
+   "kind": "support",
+   "hash": "8b550c0bd7c2af91",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::=doc": {
+   "kind": "support",
+   "hash": "62daa3bfc1dd832a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::=SERVED": {
+   "kind": "support",
+   "hash": "60d87dc225cd4c6a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::the server serves exactly what the contract says [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::the server serves exactly what the contract says [REQ-143] > a route only the contract has, only the server has, or with other roles fails": {
+   "kind": "test",
+   "hash": "152efb1cf7787289",
+   "asserts": 4,
+   "literals": [
+    "\"/v1/extra\"",
+    "\"/v1/extra\"",
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"API050\"",
+    "\"API050\"",
+    "\"API050\"",
+    "\"API050\"",
+    "\"API052\"",
+    "\"API052\"",
+    "\"GET /v1/things\"",
+    "\"GET /v1/things\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"a route only the contract has, only the server has, or with other roles fails\"",
+    "\"admin\"",
+    "\"admin\"",
+    "\"read\"",
+    "\"read\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::the server serves exactly what the contract says [REQ-143] > a server whose routes cannot be listed fails": {
+   "kind": "test",
+   "hash": "5a4440328ce42e4b",
+   "asserts": 2,
+   "literals": [
+    "\"API051\"",
+    "\"API051\"",
+    "\"a server whose routes cannot be listed fails\"",
+    "\"go: no such file\"",
+    "\"no such file\"",
+    "\"no such file\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::the server serves exactly what the contract says [REQ-143] > equal routes and roles pass": {
+   "kind": "test",
+   "hash": "71b95a2631269410",
+   "asserts": 1,
+   "literals": [
+    "\"equal routes and roles pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::the server serves exactly what the contract says [REQ-143] > the output of the routes command is read": {
+   "kind": "test",
+   "hash": "0a1f76d8a18745ee",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"/v1/x\"",
+    "\"/v1/x\"",
+    "\"/v1/x\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"nope\"",
+    "\"nope\"",
+    "\"read\"",
+    "\"read\"",
+    "\"read\"",
+    "\"the output of the routes command is read\"",
+    "\"{}\"",
+    "\"{}\""
+   ],
+   "precision": [],
+   "skips": 0,
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -17738,6 +20580,116 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::<import:15d03698>": {
+   "kind": "support",
+   "hash": "15d03698d767df03",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::<import:1e7cd3e2>": {
+   "kind": "support",
+   "hash": "1e7cd3e23a556b10",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::<import:9a8c126c>": {
+   "kind": "support",
+   "hash": "9a8c126c31747fdb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=API_CONFIG": {
+   "kind": "support",
+   "hash": "8a4bfddf2ce8ec0f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=apiRepo": {
+   "kind": "support",
+   "hash": "bea53e684d5399ca",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=FEATURE_TABLE": {
+   "kind": "support",
+   "hash": "70e09c860be131ad",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=healthyContract": {
+   "kind": "support",
+   "hash": "4b0709b0d98d8067",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=operation": {
+   "kind": "support",
+   "hash": "f30e28da8997a108",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=PLANNED": {
+   "kind": "support",
+   "hash": "48ee7cc2dc8e2998",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=problem": {
+   "kind": "support",
+   "hash": "b39ce61d65b22afb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=ref": {
+   "kind": "support",
+   "hash": "ebf9ea949cdabbe8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
    "amended_by": null
   },
   "harness/src/test-support/docs-repo.ts::<import:0bf8b541>": {

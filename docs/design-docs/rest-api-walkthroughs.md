@@ -245,9 +245,9 @@ POST /v1/feed-flows/flow_3:release    Idempotency-Key: 90c2-...
 **6) 같은 일을 명령줄로.** 화면 없이도 같은 일이 돼요. 명령줄 클라이언트는 같은 길을 불러요(도구의 이름은 정하지 않아서 `px`라고 적어요).
 
 ```
-px feed-flow list --filter flow_state=held
-px sync-run replay run_88 --branch br_20 --wait
-px feed-flow release flow_3 --reason "mapping fixed in prop_40" --wait
+praxium feed-flow list --filter flow_state=held
+praxium sync-run replay run_88 --branch br_20 --wait
+praxium feed-flow release flow_3 --reason "mapping fixed in prop_40" --wait
 ```
 
 ## 4. 이 예시들이 보여 주는 규칙

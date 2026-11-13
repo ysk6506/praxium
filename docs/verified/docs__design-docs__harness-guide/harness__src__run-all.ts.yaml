@@ -1,7 +1,7 @@
 doc: "docs/design-docs/harness-guide.md"
 target: "harness/src/run-all.ts"
-hash: "a04fe9569b7c6245"
+hash: "2c656aff5775d2ad"
 date: "2026-11-13"
-note: "run-all.ts와 Go 검사 연결(go.ts), 검사 이름 목록 고정, 코드 접두어를 대조"
+note: "ADR-0024: REST 계약, API 검사, 새 단위를 문서에 맞춤"
 text_changed: true
-doc_hash: "62b488f3cf6247f3"
+doc_hash: "510b03111574884d"

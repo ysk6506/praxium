@@ -1,0 +1,1107 @@
+{
+  "components": {
+    "schemas": {
+      "Property": {
+        "type": "object",
+        "description": "One property of a type, a trait or a link type.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The property id."
+          },
+          "attr_no": {
+            "type": "integer",
+            "description": "The stable attribute number."
+          },
+          "name": {
+            "type": "string",
+            "description": "The property name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "value_type": {
+            "type": "string",
+            "description": "The id of the value type."
+          },
+          "unit": {
+            "type": ["string", "null"],
+            "description": "The unit of the value, when it has one."
+          },
+          "enum_values": {
+            "type": "array",
+            "description": "The allowed values of an enum.",
+            "items": {
+              "type": "string",
+              "description": "An allowed value."
+            }
+          },
+          "required": {
+            "type": "boolean",
+            "description": "Whether an object must have it."
+          },
+          "change_class": {
+            "type": "string",
+            "description": "How the value changes: static, slow or volatile."
+          },
+          "sensitivity": {
+            "type": "string",
+            "description": "How sensitive the value is."
+          },
+          "history_kind": {
+            "type": "string",
+            "description": "How history is kept."
+          },
+          "scope_key": {
+            "type": "boolean",
+            "description": "Whether the property is a scope key."
+          },
+          "status": {
+            "type": "string",
+            "description": "The lifecycle status."
+          },
+          "superseded_by": {
+            "type": ["string", "null"],
+            "description": "The property that replaces it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the property means."
+          }
+        },
+        "required": [
+          "id",
+          "attr_no",
+          "name",
+          "aliases",
+          "value_type",
+          "unit",
+          "enum_values",
+          "required",
+          "change_class",
+          "sensitivity",
+          "history_kind",
+          "scope_key",
+          "status",
+          "superseded_by",
+          "description"
+        ]
+      },
+      "Need": {
+        "type": "object",
+        "description": "One channel a type needs.",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "The channel name."
+          },
+          "strength": {
+            "type": ["string", "null"],
+            "description": "hard or soft."
+          }
+        },
+        "required": ["channel", "strength"]
+      },
+      "KeyComponent": {
+        "type": "object",
+        "description": "One component of an identity key.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "property, set or context.",
+            "enum": ["property", "set", "context"]
+          },
+          "ref": {
+            "type": "string",
+            "description": "The property or context the component names."
+          },
+          "incoming": {
+            "type": "boolean",
+            "description": "Whether the context is read against the link direction."
+          },
+          "size": {
+            "type": "integer",
+            "description": "The size of a set component; 0 otherwise."
+          }
+        },
+        "required": ["kind", "ref", "incoming", "size"]
+      },
+      "IdentityKey": {
+        "type": "object",
+        "description": "One identity key of a type, in priority order.",
+        "properties": {
+          "strength": {
+            "type": "string",
+            "description": "strong or weak."
+          },
+          "scheme": {
+            "type": ["string", "null"],
+            "description": "The identifier scheme, when the key is an external identifier."
+          },
+          "components": {
+            "type": "array",
+            "description": "The components of the key.",
+            "items": {
+              "$ref": "#/components/schemas/KeyComponent"
+            }
+          }
+        },
+        "required": ["strength", "scheme", "components"]
+      },
+      "Endpoint": {
+        "type": "object",
+        "description": "One end of a binding or one target of an action.",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "description": "type, trait or any."
+          },
+          "ref": {
+            "type": ["string", "null"],
+            "description": "The id of the type or the trait; null for any."
+          }
+        },
+        "required": ["kind", "ref"]
+      },
+      "Binding": {
+        "type": "object",
+        "description": "One pair of ends a link type may join.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The binding id."
+          },
+          "from": {
+            "$ref": "#/components/schemas/Endpoint"
+          },
+          "to": {
+            "$ref": "#/components/schemas/Endpoint"
+          },
+          "cardinality": {
+            "type": "string",
+            "description": "The cardinality, such as 1:n."
+          },
+          "param_constraints": {
+            "type": "object",
+            "description": "The values this binding accepts for a parameter of the meaning.",
+            "additionalProperties": {
+              "type": "array",
+              "description": "The accepted values.",
+              "items": {
+                "type": "string",
+                "description": "A value."
+              }
+            }
+          }
+        },
+        "required": ["id", "from", "to", "cardinality", "param_constraints"]
+      },
+      "BoundLink": {
+        "type": "object",
+        "description": "A binding with the link type it belongs to.",
+        "properties": {
+          "link_type": {
+            "type": "string",
+            "description": "The link type id."
+          },
+          "binding": {
+            "$ref": "#/components/schemas/Binding"
+          }
+        },
+        "required": ["link_type", "binding"]
+      },
+      "TypeRef": {
+        "type": "object",
+        "description": "A short reference to a type.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The type id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The type name."
+          }
+        },
+        "required": ["id", "name"]
+      },
+      "ObjectTypeSummary": {
+        "type": "object",
+        "description": "An object type as a list shows it.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The type id."
+          },
+          "type_no": {
+            "type": "integer",
+            "description": "The stable type number."
+          },
+          "name": {
+            "type": "string",
+            "description": "The type name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "std, org or ext."
+          },
+          "layer": {
+            "type": "string",
+            "description": "The layer of the model."
+          },
+          "tier": {
+            "type": "string",
+            "description": "core, extension or custom."
+          },
+          "parent": {
+            "type": ["string", "null"],
+            "description": "The parent type id."
+          },
+          "traits": {
+            "type": "array",
+            "description": "The traits the type carries itself.",
+            "items": {
+              "type": "string",
+              "description": "A trait id."
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "The lifecycle status."
+          },
+          "superseded_by": {
+            "type": ["string", "null"],
+            "description": "The type that replaces it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the type is."
+          },
+          "standard_ref": {
+            "type": "string",
+            "description": "The standard the type follows, if any."
+          },
+          "display_names": {
+            "type": "object",
+            "description": "The display name by language.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "layer",
+          "tier",
+          "parent",
+          "traits",
+          "status",
+          "superseded_by",
+          "description",
+          "standard_ref",
+          "display_names"
+        ]
+      },
+      "ObjectType": {
+        "type": "object",
+        "description": "An object type with everything it declares, and the parts asked by include.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The type id."
+          },
+          "type_no": {
+            "type": "integer",
+            "description": "The stable type number."
+          },
+          "name": {
+            "type": "string",
+            "description": "The type name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "std, org or ext."
+          },
+          "layer": {
+            "type": "string",
+            "description": "The layer of the model."
+          },
+          "tier": {
+            "type": "string",
+            "description": "core, extension or custom."
+          },
+          "parent": {
+            "type": ["string", "null"],
+            "description": "The parent type id."
+          },
+          "traits": {
+            "type": "array",
+            "description": "The traits the type carries itself.",
+            "items": {
+              "type": "string",
+              "description": "A trait id."
+            }
+          },
+          "status": {
+            "type": "string",
+            "description": "The lifecycle status."
+          },
+          "superseded_by": {
+            "type": ["string", "null"],
+            "description": "The type that replaces it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the type is."
+          },
+          "standard_ref": {
+            "type": "string",
+            "description": "The standard the type follows, if any."
+          },
+          "display_names": {
+            "type": "object",
+            "description": "The display name by language.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "properties": {
+            "type": "array",
+            "description": "The type's own properties.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          },
+          "needs": {
+            "type": "array",
+            "description": "The channels the type itself needs.",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            }
+          },
+          "identity_keys": {
+            "type": "array",
+            "description": "The identity keys, in priority order.",
+            "items": {
+              "$ref": "#/components/schemas/IdentityKey"
+            }
+          },
+          "title_property": {
+            "type": ["string", "null"],
+            "description": "The property that titles an object."
+          },
+          "contacts": {
+            "type": "array",
+            "description": "Who to ask about the type.",
+            "items": {
+              "type": "string",
+              "description": "A contact."
+            }
+          },
+          "effective_properties": {
+            "type": "array",
+            "description": "Own and inherited properties (include=effective_properties).",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          },
+          "effective_needs": {
+            "type": "array",
+            "description": "Own and inherited needs (include=effective_needs).",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            }
+          },
+          "ancestors": {
+            "type": "array",
+            "description": "The parents, nearest first (include=ancestors).",
+            "items": {
+              "$ref": "#/components/schemas/TypeRef"
+            }
+          },
+          "subtypes": {
+            "type": "array",
+            "description": "Every subtype (include=subtypes).",
+            "items": {
+              "$ref": "#/components/schemas/TypeRef"
+            }
+          },
+          "bindings": {
+            "type": "array",
+            "description": "The bindings the type can be an end of (include=bindings).",
+            "items": {
+              "$ref": "#/components/schemas/BoundLink"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "layer",
+          "tier",
+          "parent",
+          "traits",
+          "status",
+          "superseded_by",
+          "description",
+          "standard_ref",
+          "display_names",
+          "properties",
+          "needs",
+          "identity_keys",
+          "title_property",
+          "contacts"
+        ]
+      },
+      "LinkTypeSummary": {
+        "type": "object",
+        "description": "A link type as a list shows it.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The link type id."
+          },
+          "link_type_no": {
+            "type": "integer",
+            "description": "The stable link type number."
+          },
+          "name": {
+            "type": "string",
+            "description": "The link type name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "std, org or ext."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "One of the eleven closed meanings."
+          },
+          "meaning_params": {
+            "type": "object",
+            "description": "The parameters of the meaning.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "delay_class": {
+            "type": "string",
+            "description": "How fast a change spreads."
+          },
+          "status": {
+            "type": "string",
+            "description": "The lifecycle status."
+          },
+          "superseded_by": {
+            "type": ["string", "null"],
+            "description": "The link type that replaces it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the link type is."
+          },
+          "binding_count": {
+            "type": "integer",
+            "description": "How many bindings it has."
+          }
+        },
+        "required": [
+          "id",
+          "link_type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "meaning",
+          "meaning_params",
+          "delay_class",
+          "status",
+          "superseded_by",
+          "description",
+          "binding_count"
+        ]
+      },
+      "LinkType": {
+        "type": "object",
+        "description": "A link type with its properties and bindings.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The link type id."
+          },
+          "link_type_no": {
+            "type": "integer",
+            "description": "The stable link type number."
+          },
+          "name": {
+            "type": "string",
+            "description": "The link type name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "std, org or ext."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "One of the eleven closed meanings."
+          },
+          "meaning_params": {
+            "type": "object",
+            "description": "The parameters of the meaning.",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "delay_class": {
+            "type": "string",
+            "description": "How fast a change spreads."
+          },
+          "status": {
+            "type": "string",
+            "description": "The lifecycle status."
+          },
+          "superseded_by": {
+            "type": ["string", "null"],
+            "description": "The link type that replaces it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the link type is."
+          },
+          "binding_count": {
+            "type": "integer",
+            "description": "How many bindings it has."
+          },
+          "properties": {
+            "type": "array",
+            "description": "The link type's properties.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          },
+          "bindings": {
+            "type": "array",
+            "description": "The pairs of ends it may join.",
+            "items": {
+              "$ref": "#/components/schemas/Binding"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "link_type_no",
+          "name",
+          "aliases",
+          "namespace",
+          "meaning",
+          "meaning_params",
+          "delay_class",
+          "status",
+          "superseded_by",
+          "description",
+          "binding_count",
+          "properties",
+          "bindings"
+        ]
+      },
+      "ActionType": {
+        "type": "object",
+        "description": "An action type with its four risk axes.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The action type id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The action type name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "std, org or ext."
+          },
+          "applies_to": {
+            "type": "array",
+            "description": "The targets the action applies to.",
+            "items": {
+              "$ref": "#/components/schemas/Endpoint"
+            }
+          },
+          "mutates": {
+            "type": "boolean",
+            "description": "Whether it changes state."
+          },
+          "reversibility": {
+            "type": ["string", "null"],
+            "description": "reversible, compensable or irreversible."
+          },
+          "disruption": {
+            "type": "string",
+            "description": "How much it disturbs service."
+          },
+          "physical": {
+            "type": "boolean",
+            "description": "Whether it acts on the physical world."
+          },
+          "declared_effects": {
+            "type": "array",
+            "description": "The effects it declares.",
+            "items": {
+              "type": "string",
+              "description": "An effect."
+            }
+          },
+          "inverse": {
+            "type": ["string", "null"],
+            "description": "The action that undoes it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the action does."
+          },
+          "status": {
+            "type": "string",
+            "description": "The lifecycle status."
+          },
+          "superseded_by": {
+            "type": ["string", "null"],
+            "description": "The action type that replaces it."
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "aliases",
+          "namespace",
+          "applies_to",
+          "mutates",
+          "reversibility",
+          "disruption",
+          "physical",
+          "declared_effects",
+          "inverse",
+          "description",
+          "status",
+          "superseded_by"
+        ]
+      },
+      "Trait": {
+        "type": "object",
+        "description": "A trait with the types that carry it.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The trait id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The trait name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "What the trait is."
+          },
+          "properties": {
+            "type": "array",
+            "description": "The properties it gives.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          },
+          "needs": {
+            "type": "array",
+            "description": "The channels it needs.",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            }
+          },
+          "carriers": {
+            "type": "array",
+            "description": "The types that carry the trait, their own or inherited.",
+            "items": {
+              "$ref": "#/components/schemas/TypeRef"
+            }
+          }
+        },
+        "required": ["id", "name", "aliases", "description", "properties", "needs", "carriers"]
+      },
+      "TraitSummary": {
+        "type": "object",
+        "description": "A trait: a set of properties and needs many types share.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The trait id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The trait name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "What the trait is."
+          },
+          "properties": {
+            "type": "array",
+            "description": "The properties it gives.",
+            "items": {
+              "$ref": "#/components/schemas/Property"
+            }
+          },
+          "needs": {
+            "type": "array",
+            "description": "The channels it needs.",
+            "items": {
+              "$ref": "#/components/schemas/Need"
+            }
+          }
+        },
+        "required": ["id", "name", "aliases", "description", "properties", "needs"]
+      },
+      "IdentifierScheme": {
+        "type": "object",
+        "description": "An identifier scheme: a kind of external identifier.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The scheme id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The scheme name."
+          },
+          "aliases": {
+            "type": "array",
+            "description": "Old names that still resolve.",
+            "items": {
+              "type": "string",
+              "description": "An old name."
+            }
+          },
+          "namespace": {
+            "type": "string",
+            "description": "std, org or ext."
+          },
+          "normalizer": {
+            "type": "string",
+            "description": "The value type that tidies the value."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the scheme identifies."
+          }
+        },
+        "required": ["id", "name", "aliases", "namespace", "normalizer", "description"]
+      },
+      "ValueType": {
+        "type": "object",
+        "description": "A value type a property can have.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The value type id."
+          },
+          "name": {
+            "type": "string",
+            "description": "The value type name."
+          },
+          "base": {
+            "type": "string",
+            "description": "The base kind."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the type means."
+          },
+          "builtin": {
+            "type": "boolean",
+            "description": "Whether it is a base type itself."
+          }
+        },
+        "required": ["id", "name", "base", "description", "builtin"]
+      },
+      "Layer": {
+        "type": "object",
+        "description": "One layer of the model.",
+        "properties": {
+          "layer": {
+            "type": "string",
+            "description": "The layer name."
+          },
+          "type_count": {
+            "type": "integer",
+            "description": "How many object types it holds."
+          }
+        },
+        "required": ["layer", "type_count"]
+      },
+      "Role": {
+        "type": "object",
+        "description": "One role and what it may do.",
+        "properties": {
+          "role": {
+            "type": "string",
+            "description": "The role name."
+          },
+          "includes_read": {
+            "type": "boolean",
+            "description": "Whether the role includes reading."
+          },
+          "abilities": {
+            "type": "array",
+            "description": "The abilities of the role table.",
+            "items": {
+              "type": "string",
+              "description": "An ability."
+            }
+          }
+        },
+        "required": ["role", "includes_read", "abilities"]
+      },
+      "MeaningParam": {
+        "type": "object",
+        "description": "One parameter of a link meaning.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The parameter name."
+          },
+          "kind": {
+            "type": "string",
+            "description": "The kind of the value."
+          },
+          "values": {
+            "type": "array",
+            "description": "The allowed values of an enum.",
+            "items": {
+              "type": "string",
+              "description": "A value."
+            }
+          }
+        },
+        "required": ["name", "kind", "values"]
+      },
+      "LinkMeaning": {
+        "type": "object",
+        "description": "One of the closed meanings of a link.",
+        "properties": {
+          "meaning": {
+            "type": "string",
+            "description": "The meaning name."
+          },
+          "from_channel": {
+            "type": ["string", "null"],
+            "description": "The channel of the start that depends."
+          },
+          "to_channel": {
+            "type": ["string", "null"],
+            "description": "The channel of the end it depends on."
+          },
+          "from_param": {
+            "type": ["string", "null"],
+            "description": "The parameter that names the start channel."
+          },
+          "spreads": {
+            "type": "boolean",
+            "description": "Whether state spreads along it."
+          },
+          "params": {
+            "type": "array",
+            "description": "Its parameters.",
+            "items": {
+              "$ref": "#/components/schemas/MeaningParam"
+            }
+          }
+        },
+        "required": ["meaning", "from_channel", "to_channel", "from_param", "spreads", "params"]
+      },
+      "Channel": {
+        "type": "object",
+        "description": "One channel of state.",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "The channel name."
+          },
+          "states": {
+            "type": "array",
+            "description": "The values the channel can have.",
+            "items": {
+              "type": "string",
+              "description": "A state."
+            }
+          }
+        },
+        "required": ["channel", "states"]
+      },
+      "ErrorCode": {
+        "type": "object",
+        "description": "One error code of the closed catalogue.",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The code, <group>.<detail>."
+          },
+          "group": {
+            "type": "string",
+            "description": "The group."
+          },
+          "status": {
+            "type": "integer",
+            "description": "The HTTP status."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "What the code means."
+          }
+        },
+        "required": ["code", "group", "status", "meaning"]
+      },
+      "ReasonCode": {
+        "type": "object",
+        "description": "One reason an action is refused.",
+        "properties": {
+          "code": {
+            "type": "string",
+            "description": "The reason code."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "What it means."
+          }
+        },
+        "required": ["code", "meaning"]
+      },
+      "CatalogEntry": {
+        "type": "object",
+        "description": "One catalogue the server serves.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The catalogue name."
+          },
+          "href": {
+            "type": "string",
+            "description": "Where to read it."
+          },
+          "description": {
+            "type": "string",
+            "description": "What it holds."
+          }
+        },
+        "required": ["name", "href", "description"]
+      },
+      "HealthLive": {
+        "type": "object",
+        "description": "The answer of a liveness probe.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "live.",
+            "enum": ["live"]
+          }
+        },
+        "required": ["status"]
+      },
+      "HealthReady": {
+        "type": "object",
+        "description": "The answer of a readiness probe.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "ready.",
+            "enum": ["ready"]
+          },
+          "model_hash": {
+            "type": "string",
+            "description": "The hash of the loaded model."
+          }
+        },
+        "required": ["status", "model_hash"]
+      },
+      "HealthStarted": {
+        "type": "object",
+        "description": "The answer of a start-up probe.",
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "started.",
+            "enum": ["started"]
+          },
+          "version": {
+            "type": "string",
+            "description": "The build version."
+          }
+        },
+        "required": ["status", "version"]
+      }
+    }
+  }
+}
