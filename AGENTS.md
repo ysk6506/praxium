@@ -24,6 +24,7 @@ covers:
 pnpm install
 pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사(Go의 gofmt, vet, 시험 포함). 이게 통과해야 끝난 것.
 cd backend && go test ./... && go vet ./...   # Go만 빨리 볼 때. Go 1.24 이상이 있어야 한다.
+go run ./backend/cmd/praxium worldgen -scale 100000   # 지어낸 세계(생성기). 인자는 docs/design-docs/worldgen.md
 ```
 
 CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, 필수 검사 `gate`가 초록일 때만 합친다. 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사만 돈다([ADR-0002](docs/design-docs/adr/0002-harness-and-working-rules-from-terrarium.md)).

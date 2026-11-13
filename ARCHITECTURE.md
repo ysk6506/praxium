@@ -20,6 +20,7 @@ covers:
 | `core.kernel` | Go | `backend/internal/kernel` | 타입 있는 ID, 안정된 코드를 가진 오류, 시계·난수·ID 발급의 포트와 구현, 정규 인코딩 위의 SHA-256. 시계와 난수를 읽는 곳은 `entropy.go` 한 파일뿐이다 | 없음 |
 | `core.model` | Go | `backend/internal/model` | 타입 등록부(객체·링크·액션 타입, 속성, 특성, 값 타입)의 도메인 타입과 검증, 표준 모델의 JSON 데이터 파일(`go:embed`), 번호를 매기고 내용 해시를 내는 불변 등록부. 오류 코드는 `model_`로 시작하는 자기 목록을 가진다 | `core.kernel` |
 | `core.contract` | Go | `backend/internal/contract` | 밖으로 내는 모양(HTTP 길과 스키마, MCP 툴, 파일 형식). 지금은 비어 있고 등록만 되어 있다 | `core.kernel` |
+| `core.worldgen` | Go | `backend/internal/worldgen` | 지어낸 세계 생성기. 씨앗과 인자로 표준 모델만 쓴 데이터센터의 정답(JSON Lines)과 소스 보기(CSV, JSON 쪽, 장치 설정, 고정 폭 표)와 변경 스트림과 모양 카드를 흘려 내고, 정답을 등록부로 검사한다. 파일은 `Store`로 받는다(운영체제를 읽지 않는다) | `core.kernel`, `core.model` |
 | `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 넷(`api`, `worker`, `query`, `collector`) 가운데 하나를 골라 커널을 엮고 한 줄 구조 로그를 남긴 뒤 끝난다. 서버는 아직 없다 | `core.*` |
 
 TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 단위다. 구조 계약에서 Go 단위는 `go:` 절에 따로 적는다.
@@ -52,13 +53,14 @@ Go 코드는 `backend/` 한 모듈에 있다. 단위는 `internal/<단위>` 패�
 
 ## 정해진 구조 (ADR-0006). 코드가 생길 때 구조 계약에 등록한다
 
-원칙은 "하나만 쓴다"가 아니라 "자리에 맞는 것을 쓴다"이고, 지킬 것은 **진실의 자리는 하나**와 **뜻의 구현은 하나**다. 백엔드의 중심(정의, 실행기, API)은 Go, 구조 검사는 TypeScript다. 이 저장소는 백엔드다. 화면은 다른 저장소에서 TypeScript로 만든다(ADR-0016). 질의 엔진도 Go로 직접 만든다(기성 그래프 엔진은 쓰지 않는다. ADR-0006, ADR-0010). 수집 봉투의 클라이언트 라이브러리는 여러 언어(Go, Python, TypeScript부터)로 낸다. 이 절은 정해진 방향이다. 지금 코드가 있는 것은 `core.kernel`, `core.model`, `core.contract`(비어 있음), 시작점뿐이다. 나머지 단위는 코드가 생기는 변경에서 `harness/config/architecture.yaml`에 등록하고, 폴더의 자리도 구현하는 변경에서 정한다. Go용 구조 검사는 ADR-0019가 만들었다.
+원칙은 "하나만 쓴다"가 아니라 "자리에 맞는 것을 쓴다"이고, 지킬 것은 **진실의 자리는 하나**와 **뜻의 구현은 하나**다. 백엔드의 중심(정의, 실행기, API)은 Go, 구조 검사는 TypeScript다. 이 저장소는 백엔드다. 화면은 다른 저장소에서 TypeScript로 만든다(ADR-0016). 질의 엔진도 Go로 직접 만든다(기성 그래프 엔진은 쓰지 않는다. ADR-0006, ADR-0010). 수집 봉투의 클라이언트 라이브러리는 여러 언어(Go, Python, TypeScript부터)로 낸다. 이 절은 정해진 방향이다. 지금 코드가 있는 것은 `core.kernel`, `core.model`, `core.worldgen`(지어낸 세계 생성기, ADR-0021), `core.contract`(비어 있음), 시작점뿐이다. 나머지 단위는 코드가 생기는 변경에서 `harness/config/architecture.yaml`에 등록하고, 폴더의 자리도 구현하는 변경에서 정한다. Go용 구조 검사는 ADR-0019가 만들었다.
 
 ### 백엔드(Go)의 단위 방향
 
 ```
 core.kernel
   └─ core.model        타입 등록부, 링크의 뜻, 근거 등급, 식별 키, 표준 모델
+       ├─ core.worldgen     지어낸 세계 생성기: 정답, 소스 보기, 변경 스트림, 모양 카드 (kernel과 model만 읽는다)
        ├─ core.definitions  정의의 저장, 브랜치, 제안, 병합
        ├─ core.ingest       소스 설정, 프리셋, 원본 기록, 정제, 매핑, 식별, 링크 정의 (어댑터 포트)
        ├─ core.graph        KG 버전, 후보와 차이, 적용과 안전장치 (저장소 포트)

@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "344ed007de6c0b3a"
+hash: "c73f6496e74e9798"
 date: "2026-11-13"
-note: "core.model 추가 반영"
+note: "5단계 상태에 생성기 완료(ADR-0021)를 적고 읽어 맞춤"
 text_changed: true
-doc_hash: "fa2a4202fe8922ff"
+doc_hash: "129d40a3a854fd63"

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/worldgen.md"
+target: "docs/design-docs/adr/0021-synthetic-world-generator.md"
+hash: "a7c105ad5363d038"
+date: "2026-11-13"
+note: "ADR-0021 본문(보호 경로 문장)이 바뀐 뒤 다시 읽고 맞음"
+text_changed: false
+doc_hash: "774dc0e1b13d86d0"

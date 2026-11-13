@@ -42,6 +42,7 @@ go:
     core.kernel:    {path: backend/internal/kernel, may_import: []}
     core.model:     {path: backend/internal/model, may_import: [core.kernel]}
     core.contract:  {path: backend/internal/contract, may_import: [core.kernel]}
+    core.worldgen:  {path: backend/internal/worldgen, may_import: [core.kernel, core.model]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium

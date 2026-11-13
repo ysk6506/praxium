@@ -1,7 +1,8 @@
 {
   "core.kernel": 98,
-  "go:cmd.praxium": 90,
+  "go:cmd.praxium": 93.5,
   "go:core.kernel": 98,
-  "go:core.model": 97,
+  "go:core.model": 98,
+  "go:core.worldgen": 96.5,
   "harness": 96
 }

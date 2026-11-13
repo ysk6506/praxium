@@ -2,6 +2,6 @@ doc: "docs/design-docs/product-design.md"
 target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
 hash: "0a5542b1b8b7c8c7"
 date: "2026-11-13"
-note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
 text_changed: true
-doc_hash: "6ecc97b40aba4028"
+doc_hash: "21d54c87111f1d83"

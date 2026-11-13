@@ -1,0 +1,7 @@
+doc: "docs/design-docs/worldgen.md"
+target: "docs/design-docs/query-engine-shape.md"
+hash: "e133147b6c781f10"
+date: "2026-11-13"
+note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+text_changed: true
+doc_hash: "774dc0e1b13d86d0"
