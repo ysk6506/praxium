@@ -696,6 +696,374 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/graph::TestApplierConstructionAndRefusals": {
+   "kind": "test",
+   "hash": "9bdbc7800f0a69cd",
+   "asserts": 8,
+   "literals": [
+    "606bba360614953c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestBatchShapeRefusals": {
+   "kind": "test",
+   "hash": "6c1b885e30e9c9af",
+   "asserts": 6,
+   "literals": [
+    "fa96492beefd727b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestCanonicalValuesIgnoreListOrderAndKeepConfidentialValuesOut": {
+   "kind": "test",
+   "hash": "738bc64b35ef1dbd",
+   "asserts": 8,
+   "literals": [
+    "4a9b11fc38c85f25"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestChunkingCutsTheSameWorkAtAnyLimit": {
+   "kind": "test",
+   "hash": "68570f0893ef9ebb",
+   "asserts": 6,
+   "literals": [
+    "c2041e2a557ca1b0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-246"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestChunksAreCutBySortedIDsAndDoNotDependOnInputOrder": {
+   "kind": "test",
+   "hash": "e212d4240ee35211",
+   "asserts": 18,
+   "literals": [
+    "9d6104c6606c852a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestClosedListsOfRolesAndKinds": {
+   "kind": "test",
+   "hash": "c08e345abcc44808",
+   "asserts": 3,
+   "literals": [
+    "1fc5f0187033d379"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestCodesAreListedAndExplained": {
+   "kind": "test",
+   "hash": "bb688bf749f0f597",
+   "asserts": 4,
+   "literals": [
+    "c16f15d983f192ce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestContentHashSeesWhatMattersOnly": {
+   "kind": "test",
+   "hash": "c62859dab7b7e2d7",
+   "asserts": 9,
+   "literals": [
+    "f5fb2ea241554083"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestEveryStoreFailureComesBackAsAnError": {
+   "kind": "test",
+   "hash": "6eca0c5e4349e737",
+   "asserts": 6,
+   "literals": [
+    "c5ccf5e40ffdc45c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestHashStateKeepsPartsAndCleansUp": {
+   "kind": "test",
+   "hash": "08cf38093f0763eb",
+   "asserts": 4,
+   "literals": [
+    "81787ab5c96e3d75"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestIDsAreDerivedFromTheirParts": {
+   "kind": "test",
+   "hash": "2d89d81564f9839d",
+   "asserts": 9,
+   "literals": [
+    "a24ddb6e46230480"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestKeyShapes": {
+   "kind": "test",
+   "hash": "f886bb6e7fb58cf1",
+   "asserts": 7,
+   "literals": [
+    "14bbfa3e2aed336d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestLinkAndVersionIDs": {
+   "kind": "test",
+   "hash": "dcb137312901d7aa",
+   "asserts": 6,
+   "literals": [
+    "7ab0557e305223e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestLinkAndVolatileValidation": {
+   "kind": "test",
+   "hash": "d434c58003b4478d",
+   "asserts": 5,
+   "literals": [
+    "d9af50400ec3ee8e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestObjectValidationAgainstTheRegistry": {
+   "kind": "test",
+   "hash": "f32167a7e6bd3beb",
+   "asserts": 3,
+   "literals": [
+    "7d2acd4e28ffbdbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestOrderEventsAndTheInputChain": {
+   "kind": "test",
+   "hash": "ac8b7738af495ea3",
+   "asserts": 6,
+   "literals": [
+    "d2a0f409e303ee07"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestReleaseAndRestoreRefusals": {
+   "kind": "test",
+   "hash": "c1d9b9c1353c948d",
+   "asserts": 5,
+   "literals": [
+    "46c5ab24c3054328"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestRenamingAndRenumberingTypesLeavesHashesAsTheyWere": {
+   "kind": "test",
+   "hash": "63d888ea1e42622a",
+   "asserts": 11,
+   "literals": [
+    "bb6e2ba5eb4e871f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-233",
+    "REQ-246"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestRetirementsChangesAndIdentifiersOnTheLiveStore": {
+   "kind": "test",
+   "hash": "aa002cfa11c2eb87",
+   "asserts": 13,
+   "literals": [
+    "cee2e7a08f088f43"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestRowValidityAndCloning": {
+   "kind": "test",
+   "hash": "52125802ea4cbe2c",
+   "asserts": 3,
+   "literals": [
+    "77951602dde2ae23"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestSameBatchesGiveTheSameIdsNumbersHashesAndVersions": {
+   "kind": "test",
+   "hash": "62517ae6021f36f1",
+   "asserts": 9,
+   "literals": [
+    "52f24296f9d2b70b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-233",
+    "REQ-246"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestSealRefusesWhileAnApplyIsOpen": {
+   "kind": "test",
+   "hash": "7ba5fe37158d593e",
+   "asserts": 10,
+   "literals": [
+    "5720c4ff4b015fa9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestSealRulesOnTheLiveStore": {
+   "kind": "test",
+   "hash": "2ea02b00fdd24722",
+   "asserts": 6,
+   "literals": [
+    "3fe2ad2f201a763e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestSumArithmeticIsExactAndOrderFree": {
+   "kind": "test",
+   "hash": "2c5704b96f23e55a",
+   "asserts": 4,
+   "literals": [
+    "df9802047fd406b3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestVerifyFindsAHashThatDoesNotMatchTheRows": {
+   "kind": "test",
+   "hash": "1a9ef9d385ed5329",
+   "asserts": 6,
+   "literals": [
+    "082af955f9e94622"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestVolatileChangesLeaveTheHashAloneAndMakeLightLines": {
+   "kind": "test",
+   "hash": "d84c8daeb8f2e463",
+   "asserts": 6,
+   "literals": [
+    "ab1f46adb2121ccc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-247"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graphcheck::TestReferenceStorePassesTheSuite": {
+   "kind": "test",
+   "hash": "43df99d101b5f086",
+   "asserts": 1,
+   "literals": [
+    "fcdb07a1afee9efe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135",
+    "REQ-246",
+    "REQ-247",
+    "REQ-248",
+    "REQ-249"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestAcceptHeaderNegotiation": {
    "kind": "test",
    "hash": "09c25261379f9f17",
@@ -1459,6 +1827,105 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber": {
+   "kind": "test",
+   "hash": "b66096535b17c9fe",
+   "asserts": 22,
+   "literals": [
+    "a5fdb3c9ba3674d1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135",
+    "REQ-246",
+    "REQ-247",
+    "REQ-248",
+    "REQ-249"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAnAbandonedApplyGoesAndItsNumbersComeBack": {
+   "kind": "test",
+   "hash": "6736cacf4b60ad2b",
+   "asserts": 7,
+   "literals": [
+    "2e57c64565446733"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-246"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAnUnknownKGIsRefusedByEveryOperation": {
+   "kind": "test",
+   "hash": "f9489f0a8946ad71",
+   "asserts": 16,
+   "literals": [
+    "41d184b90880070b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestARestoreRaisesTheGenerationAndCutsLaterRows": {
+   "kind": "test",
+   "hash": "9798706317303b8f",
+   "asserts": 4,
+   "literals": [
+    "f24823c1de245e11"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-248"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestTheCatalogAndLeaseRefuseBadInput": {
+   "kind": "test",
+   "hash": "af9480b72c3681ac",
+   "asserts": 15,
+   "literals": [
+    "210cb74d77170f88"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead": {
+   "kind": "test",
+   "hash": "48c9816459b1019c",
+   "asserts": 29,
+   "literals": [
+    "13f76d104c55d60b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135",
+    "REQ-248"
+   ],
    "added": "2026-11-13",
    "amended_by": null
   },

@@ -14,6 +14,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 1366bf985331a7c3
+amended_by:
+  - adr: "0025"
+    what: 링크의 내용 해시에 등급과 근거의 종류가 들고, 반쯤 든 배치는 되감아 포기한다
 ---
 # ADR-0009 KG의 저장과 버전 — 진실은 PostgreSQL에, 바뀌지 않는 버전, 차이와 적용
 

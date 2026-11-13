@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "92e878004290ee83"
+hash: "a2603084ba3fa8be"
 date: "2026-11-13"
-note: "ADR-0024: 계약, 요구사항 분할, 계획 6단계 반영 확인"
+note: "ADR-0025의 변경(단위 core.graph, adapter.memstore, 요구사항 나눔)과 대조해 확인"
 text_changed: false
 doc_hash: "21d54c87111f1d83"
