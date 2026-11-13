@@ -215,8 +215,9 @@ func (sn *snapshot) identifiers(scheme, value string, history bool) ([]graph.Ide
 		return nil, err
 	}
 	var out []graph.IdentifierRecord
-	for _, r := range sn.st.idents {
-		if r.Scheme != scheme || r.Value != value || r.SeqFrom > sn.info.Seq {
+	for _, i := range sn.st.identByValue[identKey{scheme, value}] {
+		r := sn.st.idents[i]
+		if r.SeqFrom > sn.info.Seq {
 			continue
 		}
 		if history || r.SeqTo == 0 || sn.info.Seq < r.SeqTo {
@@ -251,8 +252,9 @@ func (sn *snapshot) IdentifiersOf(_ context.Context, id graph.ObjectID) ([]graph
 		return nil, err
 	}
 	var out []graph.IdentifierRecord
-	for _, r := range sn.st.idents {
-		if r.Object == id && r.SeqFrom <= sn.info.Seq && (r.SeqTo == 0 || sn.info.Seq < r.SeqTo) {
+	for _, i := range sn.st.identByObject[id] {
+		r := sn.st.idents[i]
+		if r.SeqFrom <= sn.info.Seq && (r.SeqTo == 0 || sn.info.Seq < r.SeqTo) {
 			out = append(out, r)
 		}
 	}

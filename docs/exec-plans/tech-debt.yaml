@@ -88,3 +88,11 @@ items:
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
+  - id: TD-0011
+    title: "API의 저장소는 메모리 구현(`adapter.memstore`)뿐이다. 운영용 저장소(PostgreSQL 어댑터)가 없어서 `api serve -mode production`은 늘 시작을 거부하고, 개발 모드의 서버는 시작할 때마다 `-dev-truth`로 세계를 다시 적재한다. 서버가 끝나면 KG도 없어진다(ADR-0027)"
+    severity: medium
+    cost: "저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)를 PostgreSQL 어댑터로 구현해 적합 시험(`adapter.graphcheck`)을 통과시키고, 시작점이 운영 모드에서 그것을 고르게 하고(`requireRealAuthenticator`의 거부가 TD-0010과 함께 풀린다), 개발 모드의 메모리 저장소와 `-dev-truth`는 시험과 개발의 길로 남긴다. 길과 계약은 바뀌지 않는다"
+    created: "2026-11-13"
+    due: "2027-02-01"
+    status: open
+    units: [go:adapter.memstore]

@@ -123,14 +123,11 @@
           }
         }
       },
-      "Unauthorized": {
-        "description": "The caller is not logged in or the token is not accepted.",
+      "Conflict": {
+        "description": "The cursor belongs to another generation of the model; read the list again from the start.",
         "headers": {
           "X-Trace-Id": {
             "$ref": "#/components/headers/TraceId"
-          },
-          "WWW-Authenticate": {
-            "$ref": "#/components/headers/WWWAuthenticate"
           }
         },
         "content": {
@@ -139,10 +136,10 @@
               "$ref": "#/components/schemas/Problem"
             },
             "example": {
-              "type": "/v1/problems/auth.token_missing",
-              "title": "Unauthorized",
-              "status": 401,
-              "code": "auth.token_missing",
+              "type": "/v1/problems/conflict.generation_changed",
+              "title": "Conflict",
+              "status": 409,
+              "code": "conflict.generation_changed",
               "trace_id": "tr-0123456789abcdef"
             }
           }
@@ -167,31 +164,6 @@
               "code": "permission.role_missing",
               "params": {
                 "required": ["read"]
-              },
-              "trace_id": "tr-0123456789abcdef"
-            }
-          }
-        }
-      },
-      "NotFound": {
-        "description": "The resource does not exist or is not visible to the caller (the two look alike).",
-        "headers": {
-          "X-Trace-Id": {
-            "$ref": "#/components/headers/TraceId"
-          }
-        },
-        "content": {
-          "application/problem+json": {
-            "schema": {
-              "$ref": "#/components/schemas/Problem"
-            },
-            "example": {
-              "type": "/v1/problems/not_found.resource",
-              "title": "Not found",
-              "status": 404,
-              "code": "not_found.resource",
-              "params": {
-                "resource": "object_type"
               },
               "trace_id": "tr-0123456789abcdef"
             }
@@ -252,8 +224,8 @@
           }
         }
       },
-      "Conflict": {
-        "description": "The cursor belongs to another generation of the model; read the list again from the start.",
+      "NotFound": {
+        "description": "The resource does not exist or is not visible to the caller (the two look alike).",
         "headers": {
           "X-Trace-Id": {
             "$ref": "#/components/headers/TraceId"
@@ -265,10 +237,38 @@
               "$ref": "#/components/schemas/Problem"
             },
             "example": {
-              "type": "/v1/problems/conflict.generation_changed",
-              "title": "Conflict",
-              "status": 409,
-              "code": "conflict.generation_changed",
+              "type": "/v1/problems/not_found.resource",
+              "title": "Not found",
+              "status": 404,
+              "code": "not_found.resource",
+              "params": {
+                "resource": "object_type"
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "PayloadTooLarge": {
+        "description": "The body is larger than the limit.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.body_too_large",
+              "title": "Invalid input",
+              "status": 413,
+              "code": "invalid_input.body_too_large",
+              "params": {
+                "max_bytes": 1048576
+              },
               "trace_id": "tr-0123456789abcdef"
             }
           }
@@ -321,8 +321,8 @@
           }
         }
       },
-      "PayloadTooLarge": {
-        "description": "The body is larger than the limit.",
+      "ServerError": {
+        "description": "The server failed; the trace id finds the log line.",
         "headers": {
           "X-Trace-Id": {
             "$ref": "#/components/headers/TraceId"
@@ -334,13 +334,10 @@
               "$ref": "#/components/schemas/Problem"
             },
             "example": {
-              "type": "/v1/problems/invalid_input.body_too_large",
-              "title": "Invalid input",
-              "status": 413,
-              "code": "invalid_input.body_too_large",
-              "params": {
-                "max_bytes": 1048576
-              },
+              "type": "/v1/problems/server.internal",
+              "title": "Server error",
+              "status": 500,
+              "code": "server.internal",
               "trace_id": "tr-0123456789abcdef"
             }
           }
@@ -371,11 +368,14 @@
           }
         }
       },
-      "ServerError": {
-        "description": "The server failed; the trace id finds the log line.",
+      "Unauthorized": {
+        "description": "The caller is not logged in or the token is not accepted.",
         "headers": {
           "X-Trace-Id": {
             "$ref": "#/components/headers/TraceId"
+          },
+          "WWW-Authenticate": {
+            "$ref": "#/components/headers/WWWAuthenticate"
           }
         },
         "content": {
@@ -384,10 +384,10 @@
               "$ref": "#/components/schemas/Problem"
             },
             "example": {
-              "type": "/v1/problems/server.internal",
-              "title": "Server error",
-              "status": 500,
-              "code": "server.internal",
+              "type": "/v1/problems/auth.token_missing",
+              "title": "Unauthorized",
+              "status": 401,
+              "code": "auth.token_missing",
               "trace_id": "tr-0123456789abcdef"
             }
           }
@@ -412,6 +412,56 @@
               "code": "server.unavailable",
               "params": {
                 "reason": "starting"
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "Unprocessable": {
+        "description": "A value of the request is not acceptable.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.field",
+              "title": "Invalid input",
+              "status": 422,
+              "code": "invalid_input.field",
+              "params": {
+                "detail": "shape \"wide\" is not summary or items"
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "UnsupportedMediaType": {
+        "description": "The body is not JSON.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.unsupported_media_type",
+              "title": "Invalid input",
+              "status": 415,
+              "code": "invalid_input.unsupported_media_type",
+              "params": {
+                "content_type": "text/plain"
               },
               "trace_id": "tr-0123456789abcdef"
             }

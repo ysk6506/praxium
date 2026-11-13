@@ -1,6 +1,146 @@
 {
  "version": 1,
  "entries": {
+  "backend/internal/cli/testdata/find.json::<data>": {
+   "kind": "data",
+   "hash": "be98823b1a02f411",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/get.json::<data>": {
+   "kind": "data",
+   "hash": "6a75ad8b7cda3a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/kg_get.txt::<data>": {
+   "kind": "data",
+   "hash": "5be25ce5d19c7e69",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/kg_list.txt::<data>": {
+   "kind": "data",
+   "hash": "a3844060531c949f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/object_get.json::<data>": {
+   "kind": "data",
+   "hash": "ee00b69df666f5b2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/object_get.txt::<data>": {
+   "kind": "data",
+   "hash": "97245426ea2447b1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/object_links.txt::<data>": {
+   "kind": "data",
+   "hash": "305fe74b2e6fdb57",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/query_find.json::<data>": {
+   "kind": "data",
+   "hash": "5fe348766dc0be9b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/query_find.txt::<data>": {
+   "kind": "data",
+   "hash": "67b26439733c2c5e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/query_get.txt::<data>": {
+   "kind": "data",
+   "hash": "97245426ea2447b1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/golden/query_neighbors.txt::<data>": {
+   "kind": "data",
+   "hash": "305fe74b2e6fdb57",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/kg.json::<data>": {
+   "kind": "data",
+   "hash": "63c7ad179f4a29e1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/kgs.json::<data>": {
+   "kind": "data",
+   "hash": "04a81b362c384b74",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "backend/internal/cli/testdata/links.json::<data>": {
+   "kind": "data",
+   "hash": "70e6e2bad96fa64f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "backend/internal/model/testdata/numbering_v1.json::<data>": {
    "kind": "data",
    "hash": "ebc10d73a75456db",
@@ -8,6 +148,51 @@
    "literals": [],
    "precision": [],
    "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestADevelopmentServerRefusesATruthFileItCannotLoad": {
+   "kind": "test",
+   "hash": "f6e7e8db7a9bc164",
+   "asserts": 3,
+   "literals": [
+    "8a231d036bd5fbcc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestADevelopmentServerWithATruthFileServesTheKgToTheClient": {
+   "kind": "test",
+   "hash": "21bf6286e83bb8d2",
+   "asserts": 8,
+   "literals": [
+    "9d7fec57a0c3ca99"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestADevelopmentServerWithoutATruthFileHasNoKgToRead": {
+   "kind": "test",
+   "hash": "da6460d65c0339ec",
+   "asserts": 3,
+   "literals": [
+    "0cacbe89b885e9d1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
+   ],
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -116,6 +301,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
+   "kind": "test",
+   "hash": "74c14581e9651876",
+   "asserts": 1,
+   "literals": [
+    "21c6c5d263b2e3df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestContractCommandAssemblesAndChecks": {
    "kind": "test",
    "hash": "37f69ec23cfda2f8",
@@ -127,6 +327,37 @@
    "skips": 0,
    "reqs": [
     "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDevLoadTruthLoadsIntoAThrowawayStoreAndPrintsTheCounts": {
+   "kind": "test",
+   "hash": "93874db4f9528f89",
+   "asserts": 4,
+   "literals": [
+    "3a1f8f3cb945bc27"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258",
+    "REQ-260"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDevLoadTruthRefusesWhatItCannotRun": {
+   "kind": "test",
+   "hash": "402145c4b9a1c6b8",
+   "asserts": 3,
+   "literals": [
+    "4c8d64620af9a312"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
    ],
    "added": "2026-11-13",
    "amended_by": null
@@ -154,6 +385,21 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestProductionNamesWhatItLacks": {
+   "kind": "test",
+   "hash": "37980d5779564c05",
+   "asserts": 1,
+   "literals": [
+    "ae6b7b36e01e09dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
+   ],
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -338,7 +584,7 @@
   },
   "go:backend/internal/cli::TestExitCodesFollowTheProblemGroup": {
    "kind": "test",
-   "hash": "3c719ef076896fea",
+   "hash": "d9e91216b50b4608",
    "asserts": 2,
    "literals": [
     "ef2cc1c458f0ce8f"
@@ -349,7 +595,67 @@
     "REQ-245"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestKGCommandsAskTheRoutesTheyName": {
+   "kind": "test",
+   "hash": "7af15409cfa35689",
+   "asserts": 5,
+   "literals": [
+    "077f7e26d39e820c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-257"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestKGCommandsFollowCursorsAndRefuseWhatTheyCannotAsk": {
+   "kind": "test",
+   "hash": "ab9d98f2a08cc71e",
+   "asserts": 7,
+   "literals": [
+    "dc931f02e306cbcf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-257"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestKGCommandsPrintWhatTheServerAnswered": {
+   "kind": "test",
+   "hash": "9ab12aa7100d1b86",
+   "asserts": 4,
+   "literals": [
+    "1b78b4e9df8d367a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-257"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestKGCommandsReportProblemsAndOddAnswers": {
+   "kind": "test",
+   "hash": "f2ceffaf1a38010d",
+   "asserts": 6,
+   "literals": [
+    "947844c3dd034a61"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-257"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/cli::TestProblemsBecomeExitCodesAndOneErrorLine": {
    "kind": "test",
@@ -548,10 +854,10 @@
   },
   "go:backend/internal/contract::TestEveryOperationDeclaresTheConventions": {
    "kind": "test",
-   "hash": "498ce03c12f92769",
+   "hash": "374781b5040a251d",
    "asserts": 6,
    "literals": [
-    "39e056c76d539d28"
+    "bbc861fd27ec0033"
    ],
    "precision": [],
    "skips": 0,
@@ -559,7 +865,7 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/contract::TestEveryResponseHasAnExampleThatFitsItsSchema": {
    "kind": "test",
@@ -612,6 +918,21 @@
    "asserts": 2,
    "literals": [
     "d1955b3fe4d143c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestThePathRuleAcceptsActionsAndRefusesWhatTheDecisionRefuses": {
+   "kind": "test",
+   "hash": "486fe73ef4357130",
+   "asserts": 1,
+   "literals": [
+    "eed04a8980884410"
    ],
    "precision": [],
    "skips": 0,
@@ -692,6 +1013,186 @@
    "skips": 0,
    "reqs": [
     "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestALoadNeedsAKGItCanLeaseAndATruthItCanReadAndALoadAgainChangesNothing": {
+   "kind": "test",
+   "hash": "6e375ac0ee1163b6",
+   "asserts": 13,
+   "literals": [
+    "442dcbe891de7942"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestAnObjectThatCannotFormItsKeyIsCountedWithTheLinksThatLoseAnEnd": {
+   "kind": "test",
+   "hash": "240d7c80e6731143",
+   "asserts": 5,
+   "literals": [
+    "7d3fa2db1c384366"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestAReplayGivesTheSameHashesAndVersion": {
+   "kind": "test",
+   "hash": "3c19876a5e62e59f",
+   "asserts": 14,
+   "literals": [
+    "0db6f3c2cb82db68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestAStoreThatRefusesStopsTheLoadWithTheBatchItReached": {
+   "kind": "test",
+   "hash": "ed523330eb99beb8",
+   "asserts": 7,
+   "literals": [
+    "18dcd6bca2f92450"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestATruthThatBreaksTheModelIsRefusedWithAReason": {
+   "kind": "test",
+   "hash": "abb9c23a08002d53",
+   "asserts": 8,
+   "literals": [
+    "f8babc6fb8cb6bc5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestConvertGivesTheFormTheGraphTakes": {
+   "kind": "test",
+   "hash": "6cd2db628b04fa53",
+   "asserts": 4,
+   "literals": [
+    "53e54e382c44cacd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestCountsMatchTheManifest": {
+   "kind": "test",
+   "hash": "6a4ee29defe8e29b",
+   "asserts": 7,
+   "literals": [
+    "2889c45870351285"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestEveryTruthObjectAndLinkIsReadableThroughTheQueries": {
+   "kind": "test",
+   "hash": "072fca7db2ce315a",
+   "asserts": 8,
+   "literals": [
+    "891e8665044b046a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestNeighborsAgreeWithTheTruth": {
+   "kind": "test",
+   "hash": "9893b8f0d992177b",
+   "asserts": 5,
+   "literals": [
+    "6a77158fdb73f04f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestTheTextOfAScalarIsTheTextTheKeyReads": {
+   "kind": "test",
+   "hash": "9e744436074b7412",
+   "asserts": 1,
+   "literals": [
+    "f52a164cdccd80be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/devload::TestWhatNoSourceCanDeliverIsCountedAndLeftOut": {
+   "kind": "test",
+   "hash": "48b0a667b2d56977",
+   "asserts": 5,
+   "literals": [
+    "1d33910efa6818c7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestACardinalityBelongsToABindingNotToALinkType": {
+   "kind": "test",
+   "hash": "5f976c6a46f8ec56",
+   "asserts": 17,
+   "literals": [
+    "4ea12660d5c19484"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-261"
    ],
    "added": "2026-11-13",
    "amended_by": null
@@ -977,6 +1478,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/graph::TestScratchStoreSealsAndRefusesWhatItCannotDo": {
+   "kind": "test",
+   "hash": "9bea5309015d98de",
+   "asserts": 16,
+   "literals": [
+    "13dfbfb54d65adf1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-259"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestScratchStoreServesWhatTheUnitsAboveItNeed": {
+   "kind": "test",
+   "hash": "560a83e6bf6e22a6",
+   "asserts": 19,
+   "literals": [
+    "f405096e5a90fc1e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-259"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/internal/graph::TestSealRefusesWhileAnApplyIsOpen": {
    "kind": "test",
    "hash": "7ba5fe37158d593e",
@@ -1096,15 +1627,30 @@
   },
   "go:backend/internal/httpapi::TestAllowedActionsFollowTheRoleTable": {
    "kind": "test",
-   "hash": "a0e2ec558d1ccc70",
+   "hash": "ecc4d0319b91becd",
    "asserts": 4,
    "literals": [
-    "50473e1e6ea372b6"
+    "3f42e8c2994853fc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/httpapi::TestAStoreThatFailsIsAServerProblem": {
+   "kind": "test",
+   "hash": "4c7edd0f45b1b4e3",
+   "asserts": 3,
+   "literals": [
+    "3b764d60fcd2e294"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
    ],
    "added": "2026-11-13",
    "amended_by": null
@@ -1126,10 +1672,10 @@
   },
   "go:backend/internal/httpapi::TestCatalogsServeTheClosedLists": {
    "kind": "test",
-   "hash": "203e264387b367fd",
+   "hash": "1272941bb744370c",
    "asserts": 7,
    "literals": [
-    "5cb8aa53f6fc9be8"
+    "b596a6b83394e232"
    ],
    "precision": [],
    "skips": 0,
@@ -1137,14 +1683,14 @@
     "REQ-229"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestConditionalReadsAnswerNotModified": {
    "kind": "test",
-   "hash": "3638224c48fdcf70",
+   "hash": "5215c9b14264692e",
    "asserts": 8,
    "literals": [
-    "a11f30fb187d1f96"
+    "b49c8cbaa9289aaa"
    ],
    "precision": [],
    "skips": 0,
@@ -1152,14 +1698,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestCursorIsRefusedWhenItDoesNotBelong": {
    "kind": "test",
-   "hash": "a840e6d48ad4aff4",
+   "hash": "bd371dcbe7e12562",
    "asserts": 9,
    "literals": [
-    "4e72fe48782eb104"
+    "c911796938dd1ca5"
    ],
    "precision": [],
    "skips": 0,
@@ -1167,14 +1713,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestCursorPagingWalksEveryItemOnceInOrder": {
    "kind": "test",
-   "hash": "a8e1dddf938c9074",
+   "hash": "5251488a7fdd2136",
    "asserts": 9,
    "literals": [
-    "dab0cb2990b16b5d"
+    "aa5b743e46f26a03"
    ],
    "precision": [],
    "skips": 0,
@@ -1182,7 +1728,7 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestCursorRoundTripAndTampering": {
    "kind": "test",
@@ -1216,10 +1762,10 @@
   },
   "go:backend/internal/httpapi::TestEveryAnswerFitsTheContract": {
    "kind": "test",
-   "hash": "5eb6105f221ed4d9",
-   "asserts": 7,
+   "hash": "c3364e22d4feb634",
+   "asserts": 13,
    "literals": [
-    "444428ad5c778c77"
+    "f88b08c3b71620c4"
    ],
    "precision": [],
    "skips": 0,
@@ -1227,14 +1773,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestEveryOperationAsksForTheRoleItDeclares": {
    "kind": "test",
-   "hash": "f6f25d8ebc720ca7",
-   "asserts": 5,
+   "hash": "4be3bf2a42e24715",
+   "asserts": 8,
    "literals": [
-    "513c286c917239e2"
+    "faf8623deebdb787"
    ],
    "precision": [],
    "skips": 0,
@@ -1242,14 +1788,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestFiltersSelectWhatTheModelHolds": {
    "kind": "test",
-   "hash": "0b88b77e7e764f45",
+   "hash": "c3806b9e76f0d2ed",
    "asserts": 8,
    "literals": [
-    "a67fceb4b5fcc15b"
+    "2540acd2dedbeb94"
    ],
    "precision": [],
    "skips": 0,
@@ -1257,14 +1803,104 @@
     "REQ-229"
    ],
    "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/httpapi::TestFindFiltersAndPages": {
+   "kind": "test",
+   "hash": "b0cd49dbfd361a84",
+   "asserts": 10,
+   "literals": [
+    "5ccca587c1ac3792"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestGetObjectAndItsLinks": {
+   "kind": "test",
+   "hash": "5f37e50b3cdf2c9b",
+   "asserts": 16,
+   "literals": [
+    "c3104167d3e3462b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestKGAnswersFitTheContract": {
+   "kind": "test",
+   "hash": "d3bdcd76c62f0fa1",
+   "asserts": 6,
+   "literals": [
+    "a41eafd9041a6dd2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestKGListAndOne": {
+   "kind": "test",
+   "hash": "7fe4a184515eb78a",
+   "asserts": 8,
+   "literals": [
+    "3cfb0ff6b862fbf7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestKGReadsKeepTimeAndConditions": {
+   "kind": "test",
+   "hash": "5c96015f6f3d9e88",
+   "asserts": 10,
+   "literals": [
+    "9dca34c878fdac08"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestKGRoutesWantReadAndAStore": {
+   "kind": "test",
+   "hash": "aa03bcb1875486ca",
+   "asserts": 6,
+   "literals": [
+    "cdbfb8618001b0f3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
    "amended_by": null
   },
   "go:backend/internal/httpapi::TestListQueryGrammarIsClosed": {
    "kind": "test",
-   "hash": "017069e696d60cd7",
+   "hash": "f3fea862c085ce01",
    "asserts": 8,
    "literals": [
-    "67004bdb77666b8d"
+    "cd81f373c6233246"
    ],
    "precision": [],
    "skips": 0,
@@ -1272,14 +1908,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestMethodsAndPathsOutsideTheContractAreProblems": {
    "kind": "test",
-   "hash": "c49989bd416e3572",
+   "hash": "8033eeb9aec97c77",
    "asserts": 7,
    "literals": [
-    "ad99a70303213954"
+    "483663a759a740df"
    ],
    "precision": [],
    "skips": 0,
@@ -1287,14 +1923,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestObjectTypeDetailCarriesWhatWasAskedFor": {
    "kind": "test",
-   "hash": "b420cebf61494833",
+   "hash": "807e872da58cb45f",
    "asserts": 13,
    "literals": [
-    "94b3deb6e61a1be8"
+    "94f58cae44b9805d"
    ],
    "precision": [],
    "skips": 0,
@@ -1302,14 +1938,14 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestOldNamesAnswerAsAliases": {
    "kind": "test",
-   "hash": "a01aebb1bb94770d",
+   "hash": "1ddd8fa42143c039",
    "asserts": 8,
    "literals": [
-    "261fd1bb3da3d645"
+    "7b562e69f867ed6e"
    ],
    "precision": [],
    "skips": 0,
@@ -1317,7 +1953,7 @@
     "REQ-241"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestPanicInAHandlerBecomesAProblemAndIsLogged": {
    "kind": "test",
@@ -1336,10 +1972,10 @@
   },
   "go:backend/internal/httpapi::TestProblemsKeepTheirShapeAndCatalogue": {
    "kind": "test",
-   "hash": "78499f5dbc21cf13",
-   "asserts": 11,
+   "hash": "4397d7716f1a834f",
+   "asserts": 18,
    "literals": [
-    "925b9877b3346eb9"
+    "0a5b2cb6cb2a4921"
    ],
    "precision": [],
    "skips": 0,
@@ -1347,7 +1983,37 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/httpapi::TestQuestionBodiesAreRefusedWithAProblem": {
+   "kind": "test",
+   "hash": "d32222d3de9cd662",
+   "asserts": 17,
+   "literals": [
+    "10a63e70e99903f3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-256"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/httpapi::TestQuestionsAnswerLikeTheirShortForm": {
+   "kind": "test",
+   "hash": "a7bb1eed283e8440",
+   "asserts": 12,
+   "literals": [
+    "aa2a26bed84b5d86"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-256"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestRangeFilterReadsOpenEnds": {
    "kind": "test",
@@ -1363,6 +2029,21 @@
    ],
    "added": "2026-11-13",
    "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestRefusalsOfTheQueriesKeepTheirCatalogueCodes": {
+   "kind": "test",
+   "hash": "4238fda17856350e",
+   "asserts": 9,
+   "literals": [
+    "6ade021343edb2d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-255"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/httpapi::TestServedRoutesAreExactlyTheContractsOperations": {
    "kind": "test",
@@ -1426,10 +2107,10 @@
   },
   "go:backend/internal/httpapi::TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer": {
    "kind": "test",
-   "hash": "516834f36abd0cdf",
-   "asserts": 11,
+   "hash": "414dac7dd07e2a2b",
+   "asserts": 14,
    "literals": [
-    "6184247744fa6efe"
+    "bbbccb895666a630"
    ],
    "precision": [],
    "skips": 0,
@@ -1437,7 +2118,7 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/kernel::TestCodeCatalogueIsStable": {
    "kind": "test",
@@ -1968,6 +2649,21 @@
    "skips": 0,
    "reqs": [
     "REQ-100"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestBindingForGivesTheFirstBindingOfOneLinkType": {
+   "kind": "test",
+   "hash": "dc555b3c2eb92886",
+   "asserts": 4,
+   "literals": [
+    "3b1b03668287f415"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-261"
    ],
    "added": "2026-11-13",
    "amended_by": null
@@ -2682,7 +3378,7 @@
   },
   "go:backend/internal/query::TestFindExpandsSubtypesAndCountsByType": {
    "kind": "test",
-   "hash": "8ad243a7e4696831",
+   "hash": "e4d87be8fa0bad8d",
    "asserts": 6,
    "literals": [
     "4d382907fc70d702"
@@ -2693,11 +3389,11 @@
     "REQ-250"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestFindFiltersObjectsAndNeverMatchesOnAValueAboveTheCap": {
    "kind": "test",
-   "hash": "7546d23dc64c0c6d",
+   "hash": "5c66831a7ce0928c",
    "asserts": 8,
    "literals": [
     "9a77b240ac41b3cf"
@@ -2708,11 +3404,11 @@
     "REQ-253"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestFindFiltersTableDriven": {
    "kind": "test",
-   "hash": "656297122a751daf",
+   "hash": "ad335bafe804db3c",
    "asserts": 2,
    "literals": [
     "5a2863e415fdc6c9"
@@ -2723,11 +3419,11 @@
     "REQ-250"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestFindIsDeterministic": {
    "kind": "test",
-   "hash": "1cfcc4707dac0cae",
+   "hash": "d576cfefd2b338a2",
    "asserts": 3,
    "literals": [
     "559139f6e05f2082"
@@ -2738,42 +3434,11 @@
     "REQ-250"
    ],
    "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/query::TestFindPagesAtASealedVersionKeepTheVersion": {
-   "kind": "test",
-   "hash": "fb94418e38408d76",
-   "asserts": 4,
-   "literals": [
-    "7c99953f5b8916d4"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-250",
-    "REQ-252"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/query::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": {
-   "kind": "test",
-   "hash": "6cbea68674f6c08b",
-   "asserts": 8,
-   "literals": [
-    "d63e875f54031d8c"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-250"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestFindRefusesWhatIsNotServedYet": {
    "kind": "test",
-   "hash": "8d0d5900b0d3ca40",
+   "hash": "96a38822a13c2a5c",
    "asserts": 2,
    "literals": [
     "846a8b379adafe0f"
@@ -2784,11 +3449,11 @@
     "REQ-250"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestFindSummaryHasCountsOnly": {
    "kind": "test",
-   "hash": "a0a8680ba9c4c1ad",
+   "hash": "58b5a601a215a1d7",
    "asserts": 4,
    "literals": [
     "485e0bc11b18bf1c"
@@ -2799,7 +3464,7 @@
     "REQ-250"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestFingerprintFallsBackWhenAValueCannotBeHashed": {
    "kind": "test",
@@ -2816,7 +3481,7 @@
   },
   "go:backend/internal/query::TestGetEnvelopeGolden": {
    "kind": "test",
-   "hash": "52a1ae265f11f4a1",
+   "hash": "c707a09b728631e9",
    "asserts": 4,
    "literals": [
     "510fcdc429e9199d"
@@ -2827,11 +3492,11 @@
     "REQ-252"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestGetHonoursViewAndMaxStaleness": {
    "kind": "test",
-   "hash": "1b407617e42d4df6",
+   "hash": "8b73ae3a978705db",
    "asserts": 6,
    "literals": [
     "e7f49db952b07391"
@@ -2842,11 +3507,11 @@
     "REQ-251"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestGetMasksSensitiveAttributesAndHidesObjects": {
    "kind": "test",
-   "hash": "89bd7eb9e5633f0f",
+   "hash": "3d1d0db0807c8937",
    "asserts": 8,
    "literals": [
     "30958d5008be5098"
@@ -2858,27 +3523,11 @@
     "REQ-253"
    ],
    "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": {
-   "kind": "test",
-   "hash": "b78007ac45a2ebb2",
-   "asserts": 10,
-   "literals": [
-    "25d5171913433d58"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-251",
-    "REQ-252"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestGetRefusesBadInputs": {
    "kind": "test",
-   "hash": "63ec8ed9d9853f79",
+   "hash": "29f6dd3eb5279941",
    "asserts": 2,
    "literals": [
     "e202bc78242f31f7"
@@ -2889,11 +3538,11 @@
     "REQ-251"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestGetReturnsWhatTheIncludeListAsks": {
    "kind": "test",
-   "hash": "a6c9782eabf22e78",
+   "hash": "a3a05e9cea828138",
    "asserts": 11,
    "literals": [
     "668610612bc1044a"
@@ -2904,11 +3553,11 @@
     "REQ-251"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestGrantsJudgeByLayerNamespaceAndScopeKeyConditions": {
    "kind": "test",
-   "hash": "72952f7d63beb2c0",
+   "hash": "04e6e50f8884de0e",
    "asserts": 8,
    "literals": [
     "d59194401404e895"
@@ -2919,11 +3568,11 @@
     "REQ-253"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestNeighborsGroupsAndStepsAreReported": {
    "kind": "test",
-   "hash": "9bdf09de8a7f5ecc",
+   "hash": "e368522965604458",
    "asserts": 6,
    "literals": [
     "3067384c62c61f35"
@@ -2934,11 +3583,11 @@
     "REQ-254"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestNeighborsLeaveHiddenObjectsOutAndCountThem": {
    "kind": "test",
-   "hash": "c7c625a83b0e901c",
+   "hash": "4e1ba5628edd963c",
    "asserts": 8,
    "literals": [
     "df1cce66129246a9"
@@ -2950,11 +3599,11 @@
     "REQ-254"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestNeighborsPagesOfAHubRoundTrip": {
    "kind": "test",
-   "hash": "4e2027731e752bab",
+   "hash": "4f878d483c9de884",
    "asserts": 4,
    "literals": [
     "fea772247fce71e2"
@@ -2965,27 +3614,11 @@
     "REQ-254"
    ],
    "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/query::TestNeighborsReadThePastAndTheView": {
-   "kind": "test",
-   "hash": "90518272d4de0e80",
-   "asserts": 5,
-   "literals": [
-    "7ab9a8e1bf1ce63f"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-252",
-    "REQ-254"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestNeighborsRefusesBadInputs": {
    "kind": "test",
-   "hash": "5ab4a4dc4096286e",
+   "hash": "422766c77c55ea3f",
    "asserts": 2,
    "literals": [
     "fc8cedbce9c1ffc7"
@@ -2996,11 +3629,11 @@
     "REQ-254"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestNeighborsTableDriven": {
    "kind": "test",
-   "hash": "026910ab02c3c9c6",
+   "hash": "47469a7a1e02598e",
    "asserts": 3,
    "literals": [
     "9e0a63a4a09b9c88"
@@ -3011,7 +3644,7 @@
     "REQ-254"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
   "go:backend/internal/query::TestNewRefusesMissingParts": {
    "kind": "test",
@@ -3026,22 +3659,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration": {
-   "kind": "test",
-   "hash": "706de77282acf388",
-   "asserts": 5,
-   "literals": [
-    "5bbef4a37014c3cc"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-252",
-    "REQ-254"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "go:backend/internal/query::TestValueTextForms": {
    "kind": "test",
    "hash": "708aed8c2ece3c18",
@@ -3052,6 +3669,100 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestAWorldLoadsToTheSameHashInBothStores": {
+   "kind": "test",
+   "hash": "57e3ea8dd5314ef7",
+   "asserts": 9,
+   "literals": [
+    "b6b911d4567e1600"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestFindPagesAtASealedVersionKeepTheVersion": {
+   "kind": "test",
+   "hash": "8a00d757a98b56c6",
+   "asserts": 4,
+   "literals": [
+    "41f0ab1ebf7e8d9c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-250",
+    "REQ-252"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": {
+   "kind": "test",
+   "hash": "7788a6a09b556e6a",
+   "asserts": 8,
+   "literals": [
+    "eead12a911e39df4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-250"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestGetReadsThePastWithoutVolatileValues": {
+   "kind": "test",
+   "hash": "422af34ba6b82b82",
+   "asserts": 10,
+   "literals": [
+    "13141c3c642639e3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-251",
+    "REQ-252"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestNeighborsReadThePastAndTheView": {
+   "kind": "test",
+   "hash": "db1f65dc48122299",
+   "asserts": 5,
+   "literals": [
+    "59c0a0ce7d8916c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-252",
+    "REQ-254"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestReadsWaitForMinSeqAndNoticeANewGeneration": {
+   "kind": "test",
+   "hash": "fdc8e5c921db90d3",
+   "asserts": 5,
+   "literals": [
+    "944a16583831e324"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-252",
+    "REQ-254"
+   ],
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -23291,5 +24002,11 @@
    "amended_by": null
   }
  },
- "removed": {}
+ "removed": {
+  "go:backend/internal/query::TestFindPagesAtASealedVersionKeepTheVersion": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
+  "go:backend/internal/query::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
+  "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
+  "go:backend/internal/query::TestNeighborsReadThePastAndTheView": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
+  "go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+ }
 }

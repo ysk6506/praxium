@@ -1,0 +1,7 @@
+doc: "docs/design-docs/kg-read-measurements.md"
+target: "backend/internal/devload/refuse_test.go"
+hash: "f7bd9a1a6398c6c1"
+date: "2026-11-13"
+note: "적재기의 시험이 늘었을 뿐 숫자와 조건은 그대로임을 확인"
+text_changed: false
+doc_hash: "e39e4182b744e728"

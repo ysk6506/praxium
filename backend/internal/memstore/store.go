@@ -29,10 +29,14 @@ type kgState struct {
 	batches  []graph.ChangeBatch
 	entries  map[int64][]graph.ChangeEntry
 	idents   []graph.IdentifierRecord
-	events   []graph.IdentityEvent
-	order    []graph.OrderEvent
-	versions []graph.Version
-	gens     []graph.GenerationEvent
+	// identByValue and identByObject list the places in idents by the value and by the object; they make the
+	// lookups of an identifier cost what the records of that value cost, not what all records do.
+	identByValue  map[identKey][]int
+	identByObject map[graph.ObjectID][]int
+	events        []graph.IdentityEvent
+	order         []graph.OrderEvent
+	versions      []graph.Version
+	gens          []graph.GenerationEvent
 
 	objIDs []graph.ObjectID
 	lnkIDs []graph.LinkID
@@ -217,4 +221,23 @@ func (st *kgState) guard(generation int, expected int64, l graph.Lease, now time
 		return kernel.Errorf(graph.CodeHeadMoved, "expected applied_seq %d, the head is at %d", expected, st.head.AppliedSeq)
 	}
 	return nil
+}
+
+// identKey is what an identifier is looked up by.
+type identKey struct{ scheme, value string }
+
+// reindexIdents rebuilds the two indexes of the identifier records.
+func (st *kgState) reindexIdents() {
+	st.identByValue = make(map[identKey][]int, len(st.idents))
+	st.identByObject = make(map[graph.ObjectID][]int, len(st.idents))
+	for i := range st.idents {
+		st.indexIdent(i)
+	}
+}
+
+func (st *kgState) indexIdent(i int) {
+	r := st.idents[i]
+	k := identKey{r.Scheme, r.Value}
+	st.identByValue[k] = append(st.identByValue[k], i)
+	st.identByObject[r.Object] = append(st.identByObject[r.Object], i)
 }

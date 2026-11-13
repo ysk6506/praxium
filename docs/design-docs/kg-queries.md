@@ -26,7 +26,7 @@ KG에 묻는 길 전체의 설계예요. 닫힌 질의 열셋, 모든 답에 붙
 
 ## 3. 닫힌 질의 열셋
 
-HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/kgs/{kg}/questions/<질의 이름>`. `{kg}`는 KG의 ID이고 운영의 KG는 `main`으로도 가리켜요), 여기서는 질의의 이름과 칸으로 적어요. 칸 이름은 계약 단위(`core.contract`)가 그대로 쓸 이름이에요.
+HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/kgs/{kg}/queries:<질의 이름>`. `{kg}`는 KG의 ID이고 운영의 KG는 `main`으로도 가리켜요), 여기서는 질의의 이름과 칸으로 적어요. 칸 이름은 계약 단위(`core.contract`)가 그대로 쓸 이름이에요.
 
 ### 공통 입력
 
@@ -68,6 +68,8 @@ HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/kgs/{kg}/questions/
 - **`get`의 `include`**: 안 주면 `attributes`. 속성은 항상 `grade`, `basis`, `seen_at`, `stale`을 단다. `evidence`는 등급 수와 가장 묵은 속성(`worst_freshness`)을 더한다.
 - **`neighbors`**: 걷기는 전체 그래프에서 하고 가려진 객체의 너머로도 가며, `max_steps`번째 걸음에서 만난 가려진 객체는 `hidden_reached`, 앞 걸음에서 지난 것은 `hidden_passed`다. 항목은 (걸음, 링크 ID) 순서다.
 - **거절**: 가려진 속성, `volatile` 속성, `scope_id`를 조건으로 쓰면 거절한다(아직 서비스하지 않는다).
+- **길과 기본 `shape`**(ADR-0027): 셋은 `POST /v1/kgs/{kg}/queries:find`, `queries:get`, `queries:neighbors`로 서고, 목록의 짧은 길(`GET /objects`, `/objects/{object_id}/links`)은 같은 질의를 부른다. 질의는 기본이 `summary`이고 **목록 길은 기본이 `items`**다(목록을 부르는 사람은 항목을 보려고 부른다). POST의 답에는 ETag를 달지 않는다. 읽기 거름은 호출자의 역할에서 온다: 읽기 역할은 모든 타입, 민감 등급 `open`까지, 전체 범위의 부여 하나를 가진 것으로 읽고, 저장된 부여가 서면 그것으로 바뀐다.
+- **잰 것**은 [KG 읽기의 측정](kg-read-measurements.md)에 있다. `get`과 평범한 `neighbors`는 크기를 타지 않고(0.1ms 안팎), `find`는 객체 수에 선형이다(10만 객체에서 0.3~0.5초).
 
 ## 4. 모든 답에 붙는 봉투
 

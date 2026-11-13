@@ -155,10 +155,44 @@ type hasher struct {
 	reg  *model.Registry
 	keys KeyProvider
 	kg   KGID
+	// objTypes and linkTypes give the immutable id of a type by its number; nil means ask the registry, which
+	// copies the whole type at every call.
+	objTypes  map[int]string
+	linkTypes map[int]string
+}
+
+// typeIDs lists the immutable ids of the types of a registry by their numbers.
+func typeIDs(reg *model.Registry) (objects, links map[int]string) {
+	objects, links = map[int]string{}, map[int]string{}
+	for _, t := range reg.ObjectTypes() {
+		objects[t.TypeNo] = t.ID.String()
+	}
+	for _, t := range reg.LinkTypes() {
+		links[t.LinkTypeNo] = t.ID.String()
+	}
+	return objects, links
+}
+
+func (h hasher) objectTypeID(no int) (string, bool) {
+	if h.objTypes != nil {
+		id, ok := h.objTypes[no]
+		return id, ok
+	}
+	t, ok := h.reg.ObjectTypeByNo(no)
+	return t.ID.String(), ok
+}
+
+func (h hasher) linkTypeID(no int) (string, bool) {
+	if h.linkTypes != nil {
+		id, ok := h.linkTypes[no]
+		return id, ok
+	}
+	t, ok := h.reg.LinkTypeByNo(no)
+	return t.ID.String(), ok
 }
 
 func (h hasher) objectContent(row ObjectRow) (kernel.Hash, error) {
-	typ, ok := h.reg.ObjectTypeByNo(row.TypeNo)
+	typeID, ok := h.objectTypeID(row.TypeNo)
 	if !ok {
 		return kernel.Hash{}, kernel.Errorf(CodeBatchInvalid, "unknown type number %d", row.TypeNo)
 	}
@@ -166,11 +200,11 @@ func (h hasher) objectContent(row ObjectRow) (kernel.Hash, error) {
 	if err != nil {
 		return kernel.Hash{}, err
 	}
-	return kernel.ContentHash([]any{"praxium.content.v1", HashRuleVersion, "object", typ.ID.String(), row.Name, attrs})
+	return kernel.ContentHash([]any{"praxium.content.v1", HashRuleVersion, "object", typeID, row.Name, attrs})
 }
 
 func (h hasher) linkContent(row LinkRow) (kernel.Hash, error) {
-	typ, ok := h.reg.LinkTypeByNo(row.TypeNo)
+	typeID, ok := h.linkTypeID(row.TypeNo)
 	if !ok {
 		return kernel.Hash{}, kernel.Errorf(CodeBatchInvalid, "unknown link type number %d", row.TypeNo)
 	}
@@ -178,7 +212,7 @@ func (h hasher) linkContent(row LinkRow) (kernel.Hash, error) {
 	if err != nil {
 		return kernel.Hash{}, err
 	}
-	return kernel.ContentHash([]any{"praxium.content.v1", HashRuleVersion, "link", typ.ID.String(),
+	return kernel.ContentHash([]any{"praxium.content.v1", HashRuleVersion, "link", typeID,
 		row.Src.String(), row.Dst.String(), row.Discriminator, string(row.Grade), string(row.Basis), attrs})
 }
 

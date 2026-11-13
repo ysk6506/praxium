@@ -414,6 +414,56 @@
             "$ref": "#/components/headers/TraceId"
           }
         }
+      },
+      "Unprocessable": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.field",
+              "params": {
+                "detail": "shape \"wide\" is not summary or items"
+              },
+              "status": 422,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.field"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "A value of the request is not acceptable.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
+      },
+      "UnsupportedMediaType": {
+        "content": {
+          "application/problem+json": {
+            "example": {
+              "code": "invalid_input.unsupported_media_type",
+              "params": {
+                "content_type": "text/plain"
+              },
+              "status": 415,
+              "title": "Invalid input",
+              "trace_id": "tr-0123456789abcdef",
+              "type": "/v1/problems/invalid_input.unsupported_media_type"
+            },
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            }
+          }
+        },
+        "description": "The body is not JSON.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        }
       }
     },
     "schemas": {
@@ -612,6 +662,103 @@
           "kg",
           "generation",
           "change_seq"
+        ],
+        "type": "object"
+      },
+      "AttributeFilter": {
+        "description": "A condition on one attribute.",
+        "properties": {
+          "name": {
+            "description": "The attribute name.",
+            "type": "string"
+          },
+          "op": {
+            "description": "The operation.",
+            "enum": [
+              "equals",
+              "in",
+              "prefix",
+              "range"
+            ],
+            "type": "string"
+          },
+          "values": {
+            "description": "The values: one for equals and prefix, a list for in, from and to for range.",
+            "items": {
+              "description": "A value.",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "op",
+          "values"
+        ],
+        "type": "object"
+      },
+      "AttributeValue": {
+        "description": "One attribute of an object with the evidence behind it.",
+        "properties": {
+          "basis": {
+            "description": "How the value is known.",
+            "type": "string"
+          },
+          "grade": {
+            "description": "fact, assumed or unknown.",
+            "type": "string"
+          },
+          "masked": {
+            "description": "Whether the value is hidden by sensitivity.",
+            "type": "boolean"
+          },
+          "name": {
+            "description": "The attribute name.",
+            "type": "string"
+          },
+          "reason": {
+            "description": "Why the value is masked.",
+            "type": "string"
+          },
+          "seen_at": {
+            "description": "When the source saw it.",
+            "type": "string"
+          },
+          "source_ref": {
+            "description": "The source of the value.",
+            "type": "string"
+          },
+          "stale": {
+            "description": "Whether the value is older than its period.",
+            "type": "boolean"
+          },
+          "unit": {
+            "description": "The unit of the value.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The value; null when masked.",
+            "type": [
+              "string",
+              "number",
+              "boolean",
+              "null",
+              "array",
+              "object"
+            ]
+          },
+          "volatile": {
+            "description": "Whether the value is volatile.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "name",
+          "value",
+          "grade",
+          "basis",
+          "stale"
         ],
         "type": "object"
       },
@@ -855,9 +1002,27 @@
             "description": "How many facts of each grade.",
             "type": "object"
           },
+          "kinds": {
+            "description": "The kinds of evidence behind the facts.",
+            "items": {
+              "description": "configured, observed, declared and so on.",
+              "type": "string"
+            },
+            "type": "array"
+          },
           "min_grade": {
             "description": "The lowest grade used: fact, assumed or unknown.",
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "observation_age_seconds": {
+            "description": "The age in seconds of the oldest observation.",
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
@@ -888,12 +1053,170 @@
         ],
         "type": "object"
       },
+      "FindAnswer": {
+        "description": "The answer of find.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FindData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "FindData": {
+        "description": "What find returns.",
+        "properties": {
+          "counts_by_type": {
+            "description": "The matches by object type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            },
+            "type": "array"
+          },
+          "items": {
+            "description": "The matches of this page; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/FindItem"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "counts_by_type"
+        ],
+        "type": "object"
+      },
+      "FindItem": {
+        "description": "One object found.",
+        "properties": {
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "matched_on": {
+            "description": "Which filters matched.",
+            "items": {
+              "description": "A filter field.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "object_id": {
+            "description": "The object id.",
+            "type": "string"
+          },
+          "object_type": {
+            "description": "The name of the object type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "matched_on"
+        ],
+        "type": "object"
+      },
+      "FindRequest": {
+        "description": "The input of find.",
+        "properties": {
+          "attributes": {
+            "description": "Conditions on attributes, joined by and.",
+            "items": {
+              "$ref": "#/components/schemas/AttributeFilter"
+            },
+            "type": "array"
+          },
+          "change_seq": {
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "cursor": {
+            "description": "The cursor of the previous page.",
+            "type": "string"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierFilter"
+          },
+          "include_subtypes": {
+            "description": "Whether subtypes match; default true.",
+            "type": "boolean"
+          },
+          "kg_version_id": {
+            "description": "Read this sealed KG version (time travel).",
+            "type": "string"
+          },
+          "limit": {
+            "description": "The page size; default 100, at most 1000.",
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "max_staleness": {
+            "description": "Refuse values older than this, an ISO 8601 duration.",
+            "type": "string"
+          },
+          "min_seq": {
+            "description": "Wait until this change number is readable.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "object_type": {
+            "description": "Objects of this type; its subtypes too unless include_subtypes is false.",
+            "type": "string"
+          },
+          "scope_id": {
+            "description": "Not supported yet: refused with query_scope_unsupported.",
+            "type": "string"
+          },
+          "shape": {
+            "description": "summary (default) or items.",
+            "enum": [
+              "summary",
+              "items"
+            ],
+            "type": "string"
+          },
+          "text": {
+            "description": "Objects whose display name or string attributes contain this text.",
+            "type": "string"
+          },
+          "trait": {
+            "description": "Objects of a type that has this trait.",
+            "type": "string"
+          },
+          "view": {
+            "description": "as_observed (default) or as_designed.",
+            "enum": [
+              "as_observed",
+              "as_designed"
+            ],
+            "type": "string"
+          },
+          "wait_timeout": {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "Freshness": {
         "description": "How old the sources of an answer are (KG answers only).",
         "properties": {
           "oldest_age_seconds": {
             "description": "The age of that data in seconds.",
-            "type": "integer"
+            "type": [
+              "integer",
+              "null"
+            ]
           },
           "state": {
             "description": "The worst state among the sources.",
@@ -910,6 +1233,125 @@
         "required": [
           "state"
         ],
+        "type": "object"
+      },
+      "GetAnswer": {
+        "description": "The answer of get.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/GetData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "GetData": {
+        "description": "What get returns.",
+        "properties": {
+          "attributes": {
+            "description": "The attributes; only when asked for.",
+            "items": {
+              "$ref": "#/components/schemas/AttributeValue"
+            },
+            "type": "array"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/ObjectEvidence"
+          },
+          "identifiers": {
+            "description": "The identifiers; only when asked for.",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierItem"
+            },
+            "type": "array"
+          },
+          "link_counts": {
+            "$ref": "#/components/schemas/LinkCounts"
+          },
+          "object": {
+            "$ref": "#/components/schemas/ObjectRef"
+          },
+          "provenance_refs": {
+            "description": "Provenance references; only when asked for.",
+            "items": {
+              "description": "A reference.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "valid": {
+            "$ref": "#/components/schemas/Valid"
+          }
+        },
+        "required": [
+          "object",
+          "valid"
+        ],
+        "type": "object"
+      },
+      "GetRequest": {
+        "description": "The input of get: an object id or an identifier.",
+        "properties": {
+          "change_seq": {
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierFilter"
+          },
+          "include": {
+            "description": "The parts to add; default attributes.",
+            "items": {
+              "description": "attributes, identifiers, link_counts, evidence or provenance.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "kg_version_id": {
+            "description": "Read this sealed KG version (time travel).",
+            "type": "string"
+          },
+          "max_staleness": {
+            "description": "Refuse values older than this, an ISO 8601 duration.",
+            "type": "string"
+          },
+          "min_seq": {
+            "description": "Wait until this change number is readable.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "object_id": {
+            "description": "An object id, obj_ and 32 hex digits.",
+            "type": "string"
+          },
+          "shape": {
+            "description": "summary (default) or items.",
+            "enum": [
+              "summary",
+              "items"
+            ],
+            "type": "string"
+          },
+          "view": {
+            "description": "as_observed (default) or as_designed.",
+            "enum": [
+              "as_observed",
+              "as_designed"
+            ],
+            "type": "string"
+          },
+          "wait_timeout": {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "HealthLive": {
@@ -1024,10 +1466,72 @@
           "has_hidden": {
             "description": "Whether something was hidden.",
             "type": "boolean"
+          },
+          "hidden_passed": {
+            "description": "Whether the path went through something hidden.",
+            "type": "boolean"
+          },
+          "hidden_passed_count": {
+            "description": "How many hidden objects the path went through, when the caller may know.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "hidden_reached": {
+            "description": "Whether something hidden was a match.",
+            "type": "boolean"
+          },
+          "hidden_reached_count": {
+            "description": "How many hidden objects matched, when the caller may know.",
+            "type": [
+              "integer",
+              "null"
+            ]
           }
         },
         "required": [
           "has_hidden"
+        ],
+        "type": "object"
+      },
+      "IdentifierFilter": {
+        "description": "An identifier to look for.",
+        "properties": {
+          "scheme": {
+            "description": "The identifier scheme.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The value.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scheme",
+          "value"
+        ],
+        "type": "object"
+      },
+      "IdentifierItem": {
+        "description": "One identifier of an object.",
+        "properties": {
+          "scheme": {
+            "description": "The scheme.",
+            "type": "string"
+          },
+          "scope": {
+            "description": "The scope of the identifier.",
+            "type": "string"
+          },
+          "value": {
+            "description": "The value.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "scheme",
+          "value"
         ],
         "type": "object"
       },
@@ -1128,6 +1632,152 @@
         ],
         "type": "object"
       },
+      "KG": {
+        "description": "One KG.",
+        "properties": {
+          "alias": {
+            "description": "main for the production KG, else null.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "created_at": {
+            "description": "When the KG was created, UTC.",
+            "type": "string"
+          },
+          "definition_set": {
+            "description": "The hash of the model definition set the KG was built on.",
+            "type": "string"
+          },
+          "generation": {
+            "description": "The generation, which rises on every point-in-time restore.",
+            "type": "integer"
+          },
+          "head_change_seq": {
+            "description": "The last applied change number.",
+            "type": "integer"
+          },
+          "kg_id": {
+            "description": "The id of the KG.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the KG.",
+            "type": "string"
+          },
+          "projection_state": {
+            "description": "The state of the projections of the KG; none while there are none.",
+            "type": "string"
+          },
+          "readable_through": {
+            "description": "The last change number that readers may see.",
+            "type": "integer"
+          },
+          "role": {
+            "description": "production, candidate, test or system.",
+            "enum": [
+              "production",
+              "candidate",
+              "test",
+              "system"
+            ],
+            "type": "string"
+          },
+          "state": {
+            "description": "The state of the KG in its life.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kg_id",
+          "name",
+          "alias",
+          "role",
+          "state",
+          "definition_set",
+          "generation",
+          "head_change_seq",
+          "readable_through",
+          "projection_state",
+          "created_at"
+        ],
+        "type": "object"
+      },
+      "KGAnswer": {
+        "description": "One KG.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/KG"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/KGItemMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "KGItemMeta": {
+        "description": "The meta of one KG.",
+        "properties": {
+          "allowed_actions": {
+            "description": "What the caller may do with the KG now.",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            },
+            "type": "array"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "allowed_actions"
+        ],
+        "type": "object"
+      },
+      "KGList": {
+        "description": "A page of KGs.",
+        "properties": {
+          "data": {
+            "description": "The KGs of this page.",
+            "items": {
+              "$ref": "#/components/schemas/KG"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/KGListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "KGListMeta": {
+        "description": "The meta of a list of KGs.",
+        "properties": {
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "result_complete"
+        ],
+        "type": "object"
+      },
       "KeyComponent": {
         "description": "One component of an identity key.",
         "properties": {
@@ -1196,6 +1846,55 @@
         "required": [
           "data",
           "meta"
+        ],
+        "type": "object"
+      },
+      "LinkCountGroup": {
+        "description": "Links of one type and direction.",
+        "properties": {
+          "count": {
+            "description": "How many links.",
+            "type": "integer"
+          },
+          "direction": {
+            "description": "out or in.",
+            "type": "string"
+          },
+          "link_type": {
+            "description": "The link type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "link_type",
+          "direction",
+          "count"
+        ],
+        "type": "object"
+      },
+      "LinkCounts": {
+        "description": "How many links an object has.",
+        "properties": {
+          "groups": {
+            "description": "The counts by type and direction.",
+            "items": {
+              "$ref": "#/components/schemas/LinkCountGroup"
+            },
+            "type": "array"
+          },
+          "in": {
+            "description": "Incoming links.",
+            "type": "integer"
+          },
+          "out": {
+            "description": "Outgoing links.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "out",
+          "in",
+          "groups"
         ],
         "type": "object"
       },
@@ -1557,6 +2256,318 @@
         "required": [
           "channel",
           "strength"
+        ],
+        "type": "object"
+      },
+      "NeighborGroup": {
+        "description": "Neighbors of one link type, direction and peer type.",
+        "properties": {
+          "count": {
+            "description": "How many neighbors.",
+            "type": "integer"
+          },
+          "direction": {
+            "description": "out or in.",
+            "type": "string"
+          },
+          "link_type": {
+            "description": "The link type.",
+            "type": "string"
+          },
+          "meaning": {
+            "description": "The meaning of the link type.",
+            "type": "string"
+          },
+          "peer_type": {
+            "description": "The object type of the peers.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "link_type",
+          "meaning",
+          "direction",
+          "peer_type",
+          "count"
+        ],
+        "type": "object"
+      },
+      "NeighborItem": {
+        "description": "One neighbor.",
+        "properties": {
+          "basis": {
+            "description": "The basis of the link.",
+            "type": "string"
+          },
+          "direction": {
+            "description": "out or in.",
+            "type": "string"
+          },
+          "grade": {
+            "description": "The grade of the link.",
+            "type": "string"
+          },
+          "link_id": {
+            "description": "The link id, lnk_ and 32 hex digits.",
+            "type": "string"
+          },
+          "link_type": {
+            "description": "The link type.",
+            "type": "string"
+          },
+          "meaning": {
+            "description": "The meaning.",
+            "type": "string"
+          },
+          "peer_display_name": {
+            "description": "The peer's display name.",
+            "type": "string"
+          },
+          "peer_object_id": {
+            "description": "The peer object id.",
+            "type": "string"
+          },
+          "peer_type": {
+            "description": "The peer's object type.",
+            "type": "string"
+          },
+          "step": {
+            "description": "How many links from the object.",
+            "type": "integer"
+          },
+          "via_hidden": {
+            "description": "Whether the object in between is hidden from the caller.",
+            "type": "boolean"
+          },
+          "via_object_id": {
+            "description": "The object the path went through; null at step 1.",
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "link_id",
+          "link_type",
+          "meaning",
+          "direction",
+          "step",
+          "via_object_id",
+          "peer_object_id",
+          "peer_type",
+          "peer_display_name",
+          "grade",
+          "basis"
+        ],
+        "type": "object"
+      },
+      "NeighborsAnswer": {
+        "description": "The answer of neighbors.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/NeighborsData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "NeighborsData": {
+        "description": "What neighbors returns.",
+        "properties": {
+          "groups": {
+            "description": "The neighbors by link type, direction and peer type.",
+            "items": {
+              "$ref": "#/components/schemas/NeighborGroup"
+            },
+            "type": "array"
+          },
+          "items": {
+            "description": "The neighbors of this page; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/NeighborItem"
+            },
+            "type": "array"
+          },
+          "object": {
+            "$ref": "#/components/schemas/ObjectRef"
+          }
+        },
+        "required": [
+          "object",
+          "groups"
+        ],
+        "type": "object"
+      },
+      "NeighborsRequest": {
+        "description": "The input of neighbors.",
+        "properties": {
+          "change_seq": {
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "cursor": {
+            "description": "The cursor of the previous page.",
+            "type": "string"
+          },
+          "direction": {
+            "description": "out, in or both.",
+            "enum": [
+              "out",
+              "in",
+              "both"
+            ],
+            "type": "string"
+          },
+          "kg_version_id": {
+            "description": "Read this sealed KG version (time travel).",
+            "type": "string"
+          },
+          "limit": {
+            "description": "The page size; default 100, at most 1000.",
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "link_types": {
+            "description": "Only these link types.",
+            "items": {
+              "description": "A link type name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "max_staleness": {
+            "description": "Refuse values older than this, an ISO 8601 duration.",
+            "type": "string"
+          },
+          "max_steps": {
+            "description": "How many links to follow; default 1, at most 3.",
+            "maximum": 3,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "meanings": {
+            "description": "Only these meanings.",
+            "items": {
+              "description": "A meaning.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "min_seq": {
+            "description": "Wait until this change number is readable.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "object_id": {
+            "description": "An object id, obj_ and 32 hex digits.",
+            "type": "string"
+          },
+          "peer_types": {
+            "description": "Only peers of these object types.",
+            "items": {
+              "description": "An object type name.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "shape": {
+            "description": "summary (default) or items.",
+            "enum": [
+              "summary",
+              "items"
+            ],
+            "type": "string"
+          },
+          "view": {
+            "description": "as_observed (default) or as_designed.",
+            "enum": [
+              "as_observed",
+              "as_designed"
+            ],
+            "type": "string"
+          },
+          "wait_timeout": {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "type": "object"
+      },
+      "ObjectEvidence": {
+        "description": "The evidence of the attributes of one object.",
+        "properties": {
+          "counts": {
+            "description": "Facts by grade.",
+            "properties": {
+              "assumed": {
+                "description": "Assumed.",
+                "type": "integer"
+              },
+              "fact": {
+                "description": "Facts.",
+                "type": "integer"
+              },
+              "unknown": {
+                "description": "Unknown.",
+                "type": "integer"
+              }
+            },
+            "required": [
+              "fact",
+              "assumed",
+              "unknown"
+            ],
+            "type": "object"
+          },
+          "min_grade": {
+            "description": "The lowest grade.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "worst_freshness": {
+            "$ref": "#/components/schemas/WorstFreshness"
+          }
+        },
+        "required": [
+          "min_grade",
+          "counts"
+        ],
+        "type": "object"
+      },
+      "ObjectRef": {
+        "description": "An object by its id, type and display name.",
+        "properties": {
+          "display_name": {
+            "description": "The display name of the object.",
+            "type": "string"
+          },
+          "object_id": {
+            "description": "The object id, obj_ and 32 hex digits.",
+            "type": "string"
+          },
+          "object_type": {
+            "description": "The name of the object type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name"
         ],
         "type": "object"
       },
@@ -2283,6 +3294,68 @@
         ],
         "type": "object"
       },
+      "QueryMeta": {
+        "description": "The meta of an answer read from a KG (kg-queries.md 4, rest-api.md 3-2).",
+        "properties": {
+          "allowed_actions": {
+            "description": "What the caller may do with the object now; on a single object only.",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            },
+            "type": "array"
+          },
+          "as_of": {
+            "$ref": "#/components/schemas/AsOf"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/Evidence"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "hidden": {
+            "$ref": "#/components/schemas/Hidden"
+          },
+          "model_limits": {
+            "description": "Limits of the model that touch this answer.",
+            "items": {
+              "description": "One limit.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          },
+          "served_by": {
+            "$ref": "#/components/schemas/ServedBy"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          },
+          "warnings": {
+            "description": "Warnings about the answer.",
+            "items": {
+              "description": "One warning.",
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "trace_id",
+          "as_of",
+          "served_by",
+          "freshness",
+          "evidence",
+          "result_complete",
+          "hidden",
+          "model_limits",
+          "warnings"
+        ],
+        "type": "object"
+      },
       "ReasonCode": {
         "description": "One reason an action is refused.",
         "properties": {
@@ -2602,6 +3675,24 @@
         ],
         "type": "object"
       },
+      "TypeCount": {
+        "description": "How many matches an object type holds.",
+        "properties": {
+          "count": {
+            "description": "How many objects.",
+            "type": "integer"
+          },
+          "object_type": {
+            "description": "The name of the object type.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_type",
+          "count"
+        ],
+        "type": "object"
+      },
       "TypeRef": {
         "description": "A short reference to a type.",
         "properties": {
@@ -2617,6 +3708,27 @@
         "required": [
           "id",
           "name"
+        ],
+        "type": "object"
+      },
+      "Valid": {
+        "description": "The change numbers an object state is valid for.",
+        "properties": {
+          "from_change_seq": {
+            "description": "The first change number.",
+            "type": "integer"
+          },
+          "to_change_seq": {
+            "description": "The last change number; null while current.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "from_change_seq",
+          "to_change_seq"
         ],
         "type": "object"
       },
@@ -2670,6 +3782,28 @@
         "required": [
           "data",
           "meta"
+        ],
+        "type": "object"
+      },
+      "WorstFreshness": {
+        "description": "The attribute with the oldest data.",
+        "properties": {
+          "attribute": {
+            "description": "The attribute name.",
+            "type": "string"
+          },
+          "oldest_age_seconds": {
+            "description": "Its age in seconds.",
+            "type": "integer"
+          },
+          "source_ref": {
+            "description": "Its source.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "attribute",
+          "oldest_age_seconds"
         ],
         "type": "object"
       }
@@ -4114,6 +5248,1732 @@
         "summary": "Get an identifier scheme",
         "tags": [
           "type-registry"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs": {
+      "get": {
+        "description": "The KGs the caller may see, by id: the production KG, candidates, tests and the system KG.",
+        "operationId": "listKGs",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused.",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "role": {
+                  "description": "Filter on role.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "state": {
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "alias": "main",
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "definition_set": "712b5ae602cd347af9b4eecaa975b3637b5e96ccaa9d8682064d31749a07f98a",
+                      "generation": 1,
+                      "head_change_seq": 1,
+                      "kg_id": "kg-63033b0ca389c35a",
+                      "name": "main-kg",
+                      "projection_state": "none",
+                      "readable_through": 1,
+                      "role": "production",
+                      "state": "serving"
+                    }
+                  ],
+                  "meta": {
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/KGList"
+                }
+              }
+            },
+            "description": "A page of KGs.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "List KGs",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}": {
+      "get": {
+        "description": "One KG by id, name or the alias main, with its generation and how far it can be read.",
+        "operationId": "getKG",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "alias": "main",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "definition_set": "712b5ae602cd347af9b4eecaa975b3637b5e96ccaa9d8682064d31749a07f98a",
+                    "generation": 1,
+                    "head_change_seq": 1,
+                    "kg_id": "kg-63033b0ca389c35a",
+                    "name": "main-kg",
+                    "projection_state": "none",
+                    "readable_through": 1,
+                    "role": "production",
+                    "state": "serving"
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/KGAnswer"
+                }
+              }
+            },
+            "description": "The KG.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Get a KG",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/objects": {
+      "get": {
+        "description": "The closed query find in its short form: objects by type, trait, text, identifier or attribute. Attribute filters are filter[<attribute>][equals|in|prefix|range]. Hidden filters and filters on volatile attributes are refused.",
+        "operationId": "findObjects",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. Besides these fields, any attribute of the chosen type may be filtered.",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "identifier": {
+                  "description": "An identifier as scheme:value.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "object_type": {
+                  "description": "Objects of this type; its subtypes too unless include_subtypes is false.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "scope_id": {
+                  "description": "Not supported yet: refused with query_scope_unsupported.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "text": {
+                  "description": "Objects whose display name or identifier contains this text.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "trait": {
+                  "description": "Objects of a type that has this trait.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Whether subtypes of the chosen type match; default true.",
+            "in": "query",
+            "name": "include_subtypes",
+            "required": false,
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "description": "Read this sealed KG version (time travel).",
+            "in": "query",
+            "name": "kg_version_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Read the state at this change number (time travel).",
+            "in": "query",
+            "name": "change_seq",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "as_observed (default) or as_designed.",
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "enum": [
+                "as_observed",
+                "as_designed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Wait until this change number is readable.",
+            "in": "query",
+            "name": "min_seq",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "in": "query",
+            "name": "wait_timeout",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Refuse the answer when its data is older than this, an ISO 8601 duration.",
+            "in": "query",
+            "name": "max_staleness",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "items (default) or summary.",
+            "in": "query",
+            "name": "shape",
+            "required": false,
+            "schema": {
+              "enum": [
+                "summary",
+                "items"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "counts_by_type": [
+                      {
+                        "count": 4,
+                        "object_type": "Rack"
+                      }
+                    ],
+                    "items": [
+                      {
+                        "display_name": "Rack R01",
+                        "matched_on": [
+                          "object_type"
+                        ],
+                        "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                        "object_type": "Rack"
+                      },
+                      {
+                        "display_name": "Rack R00",
+                        "matched_on": [
+                          "object_type"
+                        ],
+                        "object_id": "obj_9ecd2b96c13b741151179326057c4e5c",
+                        "object_type": "Rack"
+                      }
+                    ]
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 0,
+                        "unknown": 2
+                      },
+                      "kinds": [],
+                      "min_grade": "unknown",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [],
+                    "result_complete": {
+                      "next_cursor": "eyJnIjoxLCJzIjoxLCJxIjoiMTRlNzRmM2JlNmVjZDQ1MyIsImsiOiJvYmpfOWVjZDJiOTZjMTNiNzQxMTUxMTc5MzI2MDU3YzRlNWMifQ",
+                      "reason": "limit",
+                      "returned": 2,
+                      "total": 4,
+                      "truncated": true
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/FindAnswer"
+                }
+              }
+            },
+            "description": "The matches.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Find objects",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/objects/{object_id}": {
+      "get": {
+        "description": "The closed query get: one object, with the parts that include asks for.",
+        "operationId": "getObject",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "An object id, obj_ and 32 hex digits.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated parts to add. Allowed: attributes, identifiers, link_counts, evidence, provenance.",
+            "in": "query",
+            "name": "include",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Read this sealed KG version (time travel).",
+            "in": "query",
+            "name": "kg_version_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Read the state at this change number (time travel).",
+            "in": "query",
+            "name": "change_seq",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "as_observed (default) or as_designed.",
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "enum": [
+                "as_observed",
+                "as_designed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Wait until this change number is readable.",
+            "in": "query",
+            "name": "min_seq",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "in": "query",
+            "name": "wait_timeout",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Refuse the answer when its data is older than this, an ISO 8601 duration.",
+            "in": "query",
+            "name": "max_staleness",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "items (default) or summary.",
+            "in": "query",
+            "name": "shape",
+            "required": false,
+            "schema": {
+              "enum": [
+                "summary",
+                "items"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "attributes": [
+                      {
+                        "basis": "configured",
+                        "grade": "fact",
+                        "name": "model",
+                        "seen_at": "2030-01-01T10:00:00Z",
+                        "source_ref": "src-inventory",
+                        "stale": false,
+                        "value": "M1"
+                      },
+                      {
+                        "basis": "observed",
+                        "grade": "fact",
+                        "name": "power_state",
+                        "seen_at": "2030-01-01T00:00:00Z",
+                        "stale": false,
+                        "value": "on",
+                        "volatile": true
+                      }
+                    ],
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "min_grade": "fact",
+                      "worst_freshness": {
+                        "attribute": "power_state",
+                        "oldest_age_seconds": 97445
+                      }
+                    },
+                    "link_counts": {
+                      "groups": [
+                        {
+                          "count": 1,
+                          "direction": "out",
+                          "link_type": "MOUNTED_IN"
+                        }
+                      ],
+                      "in": 0,
+                      "out": 1
+                    },
+                    "object": {
+                      "display_name": "Server SN-010100",
+                      "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                      "object_type": "PhysicalServer"
+                    },
+                    "valid": {
+                      "from_change_seq": 1,
+                      "to_change_seq": null
+                    }
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "kinds": [
+                        "configured",
+                        "observed"
+                      ],
+                      "min_grade": "fact",
+                      "observation_age_seconds": 97445
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": 97445,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnswer"
+                }
+              }
+            },
+            "description": "The object.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Get an object",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/objects/{object_id}/links": {
+      "get": {
+        "description": "The closed query neighbors: the objects linked to this one, up to max_steps links away.",
+        "operationId": "listObjectLinks",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "An object id, obj_ and 32 hex digits.",
+            "in": "path",
+            "name": "object_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>.",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "direction": {
+                  "description": "out, in or both.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "link_type": {
+                  "description": "Filter on link type.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "meaning": {
+                  "description": "Filter on the meaning of the link type.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "peer_type": {
+                  "description": "Filter on the peer's object type.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "How many links to follow; default 1, at most 3.",
+            "in": "query",
+            "name": "max_steps",
+            "required": false,
+            "schema": {
+              "maximum": 3,
+              "minimum": 1,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "Read this sealed KG version (time travel).",
+            "in": "query",
+            "name": "kg_version_id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Read the state at this change number (time travel).",
+            "in": "query",
+            "name": "change_seq",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "as_observed (default) or as_designed.",
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "enum": [
+                "as_observed",
+                "as_designed"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "description": "Wait until this change number is readable.",
+            "in": "query",
+            "name": "min_seq",
+            "required": false,
+            "schema": {
+              "minimum": 0,
+              "type": "integer"
+            }
+          },
+          {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "in": "query",
+            "name": "wait_timeout",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Refuse the answer when its data is older than this, an ISO 8601 duration.",
+            "in": "query",
+            "name": "max_staleness",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "items (default) or summary.",
+            "in": "query",
+            "name": "shape",
+            "required": false,
+            "schema": {
+              "enum": [
+                "summary",
+                "items"
+              ],
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "groups": [
+                      {
+                        "count": 1,
+                        "direction": "out",
+                        "link_type": "MOUNTED_IN",
+                        "meaning": "contained_in",
+                        "peer_type": "Rack"
+                      }
+                    ],
+                    "items": [
+                      {
+                        "basis": "configured",
+                        "direction": "out",
+                        "grade": "fact",
+                        "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                        "link_type": "MOUNTED_IN",
+                        "meaning": "contained_in",
+                        "peer_display_name": "Rack R01",
+                        "peer_object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                        "peer_type": "Rack",
+                        "step": 1,
+                        "via_object_id": null
+                      }
+                    ],
+                    "object": {
+                      "display_name": "Server SN-010100",
+                      "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                      "object_type": "PhysicalServer"
+                    }
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 1,
+                        "unknown": 0
+                      },
+                      "kinds": [
+                        "configured"
+                      ],
+                      "min_grade": "fact",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NeighborsAnswer"
+                }
+              }
+            },
+            "description": "The neighbors.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              },
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "List the links of an object",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/queries:find": {
+      "post": {
+        "description": "The closed query find with its full input in the body. Safe: it changes nothing and may be sent again.",
+        "operationId": "askFind",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "attributes": [
+                  {
+                    "name": "name",
+                    "op": "prefix",
+                    "values": [
+                      "R0"
+                    ]
+                  }
+                ],
+                "limit": 2,
+                "object_type": "Rack",
+                "shape": "items"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/FindRequest"
+              }
+            }
+          },
+          "description": "The input of the query.",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "counts_by_type": [
+                      {
+                        "count": 4,
+                        "object_type": "Rack"
+                      }
+                    ],
+                    "items": [
+                      {
+                        "display_name": "Rack R01",
+                        "matched_on": [
+                          "object_type"
+                        ],
+                        "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                        "object_type": "Rack"
+                      },
+                      {
+                        "display_name": "Rack R00",
+                        "matched_on": [
+                          "object_type"
+                        ],
+                        "object_id": "obj_9ecd2b96c13b741151179326057c4e5c",
+                        "object_type": "Rack"
+                      }
+                    ]
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 0,
+                        "unknown": 2
+                      },
+                      "kinds": [],
+                      "min_grade": "unknown",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [],
+                    "result_complete": {
+                      "next_cursor": "eyJnIjoxLCJzIjoxLCJxIjoiMTRlNzRmM2JlNmVjZDQ1MyIsImsiOiJvYmpfOWVjZDJiOTZjMTNiNzQxMTUxMTc5MzI2MDU3YzRlNWMifQ",
+                      "reason": "limit",
+                      "returned": 2,
+                      "total": 4,
+                      "truncated": true
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/FindAnswer"
+                }
+              }
+            },
+            "description": "The matches.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Ask find",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/queries:get": {
+      "post": {
+        "description": "The closed query get: one object by id or identifier, with the parts that include asks for.",
+        "operationId": "askGet",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "include": [
+                  "attributes",
+                  "link_counts"
+                ],
+                "object_id": "obj_00000000000000000000000000000000"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/GetRequest"
+              }
+            }
+          },
+          "description": "The input of the query.",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "attributes": [
+                      {
+                        "basis": "configured",
+                        "grade": "fact",
+                        "name": "model",
+                        "seen_at": "2030-01-01T10:00:00Z",
+                        "source_ref": "src-inventory",
+                        "stale": false,
+                        "value": "M1"
+                      },
+                      {
+                        "basis": "observed",
+                        "grade": "fact",
+                        "name": "power_state",
+                        "seen_at": "2030-01-01T00:00:00Z",
+                        "stale": false,
+                        "value": "on",
+                        "volatile": true
+                      }
+                    ],
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "min_grade": "fact",
+                      "worst_freshness": {
+                        "attribute": "power_state",
+                        "oldest_age_seconds": 97445
+                      }
+                    },
+                    "link_counts": {
+                      "groups": [
+                        {
+                          "count": 1,
+                          "direction": "out",
+                          "link_type": "MOUNTED_IN"
+                        }
+                      ],
+                      "in": 0,
+                      "out": 1
+                    },
+                    "object": {
+                      "display_name": "Server SN-010100",
+                      "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                      "object_type": "PhysicalServer"
+                    },
+                    "valid": {
+                      "from_change_seq": 1,
+                      "to_change_seq": null
+                    }
+                  },
+                  "meta": {
+                    "allowed_actions": [
+                      {
+                        "action": "edit",
+                        "allowed": false,
+                        "reason_code": "forbidden.role"
+                      }
+                    ],
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "kinds": [
+                        "configured",
+                        "observed"
+                      ],
+                      "min_grade": "fact",
+                      "observation_age_seconds": 97445
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": 97445,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/GetAnswer"
+                }
+              }
+            },
+            "description": "The object.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Ask get",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/queries:neighbors": {
+      "post": {
+        "description": "The closed query neighbors with its full input in the body.",
+        "operationId": "askNeighbors",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "direction": "in",
+                "max_steps": 2,
+                "object_id": "obj_00000000000000000000000000000000",
+                "shape": "items"
+              },
+              "schema": {
+                "$ref": "#/components/schemas/NeighborsRequest"
+              }
+            }
+          },
+          "description": "The input of the query.",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "groups": [
+                      {
+                        "count": 1,
+                        "direction": "out",
+                        "link_type": "MOUNTED_IN",
+                        "meaning": "contained_in",
+                        "peer_type": "Rack"
+                      }
+                    ],
+                    "items": [
+                      {
+                        "basis": "configured",
+                        "direction": "out",
+                        "grade": "fact",
+                        "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                        "link_type": "MOUNTED_IN",
+                        "meaning": "contained_in",
+                        "peer_display_name": "Rack R01",
+                        "peer_object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                        "peer_type": "Rack",
+                        "step": 1,
+                        "via_object_id": null
+                      }
+                    ],
+                    "object": {
+                      "display_name": "Server SN-010100",
+                      "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                      "object_type": "PhysicalServer"
+                    }
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 1,
+                        "unknown": 0
+                      },
+                      "kinds": [
+                        "configured"
+                      ],
+                      "min_grade": "fact",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/NeighborsAnswer"
+                }
+              }
+            },
+            "description": "The neighbors.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Ask neighbors",
+        "tags": [
+          "kg"
         ],
         "x-long-running": false,
         "x-required-role": [
@@ -6038,6 +8898,10 @@
     {
       "description": "The read side of the type registry: object, link and action types, traits and identifier schemes.",
       "name": "type-registry"
+    },
+    {
+      "description": "Reads of a KG: the KGs, objects, their links and the closed queries.",
+      "name": "kg"
     }
   ]
 }

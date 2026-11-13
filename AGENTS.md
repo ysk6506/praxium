@@ -27,6 +27,17 @@ cd backend && go test ./... && go vet ./...   # Go만 빨리 볼 때. Go 1.24 �
 go run ./backend/cmd/praxium worldgen -scale 100000   # 지어낸 세계(생성기). 인자는 docs/design-docs/worldgen.md
 ```
 
+세계를 지어 개발 모드 API에 싣고 명령줄로 읽는 가장 짧은 길(개발과 시험의 편의이지 수집 파이프라인이 아니다. 토큰은 지어낸 값이다, [ADR-0027](docs/design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md)):
+
+```
+cd backend && go build -o /tmp/praxium ./cmd/praxium
+/tmp/praxium worldgen -scale 500 -seed 7 -out /tmp/world
+printf 'dev-token-not-a-secret' > /tmp/dev.tok
+/tmp/praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl &
+/tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret kg list
+/tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query find --type PhysicalServer --limit 3
+```
+
 CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, 필수 검사 `gate`가 초록일 때만 합친다. 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사만 돈다([ADR-0002](docs/design-docs/adr/0002-harness-and-working-rules-from-terrarium.md)).
 
 실패 메시지는 `problem`과 `fix`를 알려준다. 메시지를 믿고 그대로 고친다.

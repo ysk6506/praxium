@@ -18,10 +18,36 @@ func invalid(format string, args ...any) error {
 type validator struct {
 	reg   *model.Registry
 	props map[string]map[int]model.Property
+	// types and links keep what the registry gave out: it copies a type, with its bindings, at every call.
+	types map[model.ObjectTypeID]model.ObjectType
+	links map[model.LinkTypeID]model.LinkType
 }
 
 func newValidator(reg *model.Registry) *validator {
-	return &validator{reg: reg, props: map[string]map[int]model.Property{}}
+	return &validator{reg: reg, props: map[string]map[int]model.Property{},
+		types: map[model.ObjectTypeID]model.ObjectType{}, links: map[model.LinkTypeID]model.LinkType{}}
+}
+
+func (v *validator) objectType(id model.ObjectTypeID) (model.ObjectType, bool) {
+	if t, ok := v.types[id]; ok {
+		return t, true
+	}
+	t, ok := v.reg.ObjectType(id)
+	if ok {
+		v.types[id] = t
+	}
+	return t, ok
+}
+
+func (v *validator) linkType(id model.LinkTypeID) (model.LinkType, bool) {
+	if t, ok := v.links[id]; ok {
+		return t, true
+	}
+	t, ok := v.reg.LinkType(id)
+	if ok {
+		v.links[id] = t
+	}
+	return t, ok
 }
 
 func (v *validator) objectProps(id model.ObjectTypeID) map[int]model.Property {
@@ -50,7 +76,7 @@ func (v *validator) linkProps(lt model.LinkType) map[int]model.Property {
 
 // object checks an upsert and derives its id.
 func (v *validator) object(u ObjectUpsert) (model.ObjectType, ObjectID, error) {
-	typ, ok := v.reg.ObjectType(u.Type)
+	typ, ok := v.objectType(u.Type)
 	if !ok {
 		return typ, ObjectID{}, invalid("unknown object type %q", u.Type)
 	}
@@ -130,7 +156,7 @@ func checkParts(key []KeyPart) error {
 
 // link checks an upsert (not its ends: the planner sees the state) and derives its id.
 func (v *validator) link(u LinkUpsert) (model.LinkType, LinkID, error) {
-	lt, ok := v.reg.LinkType(u.Type)
+	lt, ok := v.linkType(u.Type)
 	if !ok {
 		return lt, LinkID{}, invalid("unknown link type %q", u.Type)
 	}

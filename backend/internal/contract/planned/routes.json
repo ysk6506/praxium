@@ -539,22 +539,6 @@
     },
     {
       "method": "GET",
-      "path": "/v1/kgs",
-      "feature": "KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리",
-      "adr": "ADR-0009",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
-      "path": "/v1/kgs/{kg}",
-      "feature": "KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리",
-      "adr": "ADR-0009",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
       "path": "/v1/kgs/{kg}/changes",
       "feature": "변경의 이어짐을 번호로 가져가기",
       "adr": "ADR-0009",
@@ -650,22 +634,6 @@
       "status": "planned"
     },
     {
-      "method": "GET",
-      "path": "/v1/kgs/{kg}/objects",
-      "feature": "객체 찾기와 한 객체, 링크, 이웃",
-      "adr": "ADR-0010",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
-      "path": "/v1/kgs/{kg}/objects/{object_id}",
-      "feature": "객체 찾기와 한 객체, 링크, 이웃",
-      "adr": "ADR-0010",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
       "method": "POST",
       "path": "/v1/kgs/{kg}/objects/{object_id}/issue-reports",
       "feature": "KG가 틀렸다고 알리기",
@@ -691,7 +659,7 @@
     },
     {
       "method": "POST",
-      "path": "/v1/kgs/{kg}/questions/changes",
+      "path": "/v1/kgs/{kg}/queries:changes",
       "feature": "변경의 이어짐을 번호로 가져가기",
       "adr": "ADR-0009",
       "phase": "alpha-1",
@@ -699,7 +667,7 @@
     },
     {
       "method": "POST",
-      "path": "/v1/kgs/{kg}/questions/competency",
+      "path": "/v1/kgs/{kg}/queries:competency",
       "feature": "역량 질문과 충족률",
       "adr": "ADR-0013",
       "phase": "alpha-1",
@@ -707,7 +675,55 @@
     },
     {
       "method": "POST",
-      "path": "/v1/kgs/{kg}/questions/{question_name}",
+      "path": "/v1/kgs/{kg}/queries:containment",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/queries:exposure",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/queries:health",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/queries:impact",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/queries:paths",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/queries:quality",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/queries:versions",
       "feature": "닫힌 질의 열셋",
       "adr": "ADR-0010",
       "phase": "alpha-1",

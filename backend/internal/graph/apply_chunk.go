@@ -26,7 +26,7 @@ type chunkBuilder struct {
 }
 
 func newChunkBuilder(a *Applier, kg KGID, snap Snapshot, hash HashState) *chunkBuilder {
-	return &chunkBuilder{a: a, kg: kg, snap: snap, hs: hasher{reg: a.reg, keys: a.keys, kg: kg}, hash: hash.Clone()}
+	return &chunkBuilder{a: a, kg: kg, snap: snap, hs: hasher{reg: a.reg, keys: a.keys, kg: kg, objTypes: a.objTypeIDs, linkTypes: a.linkTypeIDs}, hash: hash.Clone()}
 }
 
 func (c *chunkBuilder) empty() bool {
@@ -71,19 +71,19 @@ func (c *chunkBuilder) build(ctx context.Context, p *plan, items []item, last bo
 }
 
 func (c *chunkBuilder) objectKey(typeNo int) (PartKey, error) {
-	t, ok := c.a.reg.ObjectTypeByNo(typeNo)
+	id, ok := c.hs.objectTypeID(typeNo)
 	if !ok {
 		return PartKey{}, kernel.Errorf(kernel.CodeInternal, "stored row has unknown type number %d", typeNo)
 	}
-	return PartKey{Entity: entityObject, TypeID: t.ID.String()}, nil
+	return PartKey{Entity: entityObject, TypeID: id}, nil
 }
 
 func (c *chunkBuilder) linkKey(typeNo int) (PartKey, error) {
-	t, ok := c.a.reg.LinkTypeByNo(typeNo)
+	id, ok := c.hs.linkTypeID(typeNo)
 	if !ok {
 		return PartKey{}, kernel.Errorf(kernel.CodeInternal, "stored row has unknown link type number %d", typeNo)
 	}
-	return PartKey{Entity: entityLink, TypeID: t.ID.String()}, nil
+	return PartKey{Entity: entityLink, TypeID: id}, nil
 }
 
 func (c *chunkBuilder) upsertObject(ctx context.Context, po plannedObject) error {

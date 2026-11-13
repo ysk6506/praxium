@@ -121,11 +121,15 @@ func (st *kgState) addLink(row graph.LinkRow) {
 
 func (st *kgState) applyIdentifiers(changes []graph.IdentifierChange, seq int64) {
 	for _, c := range changes {
+		if st.identByValue == nil {
+			st.reindexIdents()
+		}
 		if !c.Closes {
 			st.idents = append(st.idents, c.Record)
+			st.indexIdent(len(st.idents) - 1)
 			continue
 		}
-		for i := range st.idents {
+		for _, i := range st.identByValue[identKey{c.Record.Scheme, c.Record.Value}] {
 			r := &st.idents[i]
 			if r.SeqTo == 0 && r.Object == c.Record.Object && r.Scheme == c.Record.Scheme && r.Value == c.Record.Value && r.Scope == c.Record.Scope {
 				r.SeqTo = seq
@@ -292,6 +296,7 @@ func (st *kgState) truncateLogs(seq int64) {
 		idents = append(idents, r)
 	}
 	st.idents = idents
+	st.reindexIdents()
 	events := st.events[:0]
 	for _, e := range st.events {
 		if e.Seq <= seq {

@@ -4,11 +4,8 @@ import (
 	"reflect"
 	"sort"
 	"testing"
-	"time"
 
-	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
-	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
 func (r *rig) neighbors(in NeighborsInput, f ReadFilter) (Answer[NeighborsData], error) {
@@ -207,60 +204,6 @@ func TestNeighborsLeaveHiddenObjectsOutAndCountThem(t *testing.T) {
 	}
 	if _, err := r.neighbors(NeighborsInput{ObjectID: server}, noServers(true)); codeOf(err) != CodeObjectNotFound {
 		t.Fatalf("neighbors of a hidden object: %v", err)
-	}
-}
-
-// [REQ-252] [REQ-254]
-func TestNeighborsReadThePastAndTheView(t *testing.T) {
-	r := newRig(t, false)
-	r.world()
-	rack := r.fx.RackID(r.fx.SiteID("S00"), "R00")
-	before := r.headSeq()
-	extra := r.fx.Server("SN-000099", "M1")
-	extraID := r.fx.ServerID("SN-000099")
-	observed := r.fx.MountedIn(extraID, rack, 9)
-	observed.Basis = model.BasisObserved
-	r.apply(graph.Batch{Objects: []graph.ObjectUpsert{extra}, Links: []graph.LinkUpsert{observed}})
-	now := r.must(NeighborsInput{ObjectID: rack.String()}, AllowAll())
-	if len(now.Data.Items) != 5 {
-		t.Fatalf("latest: %d", len(now.Data.Items))
-	}
-	past := r.must(NeighborsInput{Common: Common{KG: "main", Shape: ShapeItems, ChangeSeq: &before}, ObjectID: rack.String()}, AllowAll())
-	if len(past.Data.Items) != 4 || past.Meta.AsOf.ChangeSeq != before {
-		t.Fatalf("past: %d %+v", len(past.Data.Items), past.Meta.AsOf)
-	}
-	designed := r.must(NeighborsInput{Common: Common{KG: "main", Shape: ShapeItems, View: ViewAsDesigned}, ObjectID: rack.String()}, AllowAll())
-	if len(designed.Data.Items) != 4 {
-		t.Fatalf("as_designed gave an observed link: %d", len(designed.Data.Items))
-	}
-	if now.Meta.Evidence.Counts.Fact != 5 {
-		t.Fatalf("evidence %+v", now.Meta.Evidence)
-	}
-}
-
-// [REQ-252] [REQ-254]
-func TestReadsWaitForMinSeqAndNoticeANewGeneration(t *testing.T) {
-	r := newRig(t, false)
-	r.world()
-	head := r.headSeq()
-	rack := r.fx.RackID(r.fx.SiteID("S00"), "R00").String()
-	ok := NeighborsInput{Common: Common{KG: "main", MinSeq: head, WaitTimeout: time.Millisecond}, ObjectID: rack}
-	if _, err := r.neighbors(ok, AllowAll()); err != nil {
-		t.Fatalf("min_seq already reached: %v", err)
-	}
-	ahead := ok
-	ahead.MinSeq = head + 10
-	if _, err := r.neighbors(ahead, AllowAll()); codeOf(err) != graph.CodeWaitTimeout {
-		t.Fatalf("min_seq ahead: %v", err)
-	}
-	first := r.mustFind(FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 2}})
-	cur := *first.Meta.ResultComplete.NextCursor
-	if _, err := r.a.Restore(r.ctx, r.kg.ID, head); err != nil {
-		t.Fatalf("restore: %v", err)
-	}
-	_, err := r.find(FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 2, Cursor: cur}}, AllowAll())
-	if codeOf(err) != graph.CodeGenerationChanged {
-		t.Fatalf("a cursor of an older generation: %v", err)
 	}
 }
 

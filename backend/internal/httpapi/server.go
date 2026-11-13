@@ -11,6 +11,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/access"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/query"
 )
 
 // Defaults of the server's limits.
@@ -40,6 +41,9 @@ type Config struct {
 	MaxBodyBytes int64
 	// Grace is the shutdown wait; zero means DefaultGrace.
 	Grace time.Duration
+	// Queries and KGs read the KGs; both nil means the server has no store and the KG routes answer 503.
+	Queries *query.Engine
+	KGs     KGSource
 	// Version is the build version, reported by capabilities later and logged now.
 	Version string
 }
@@ -58,6 +62,8 @@ type Server struct {
 	mux      *http.ServeMux
 	handler  http.Handler
 	lists    *registryLists
+	queries  *query.Engine
+	kgs      KGSource
 	started  atomic.Bool
 	draining atomic.Bool
 }
@@ -69,7 +75,7 @@ func New(cfg Config) (*Server, error) {
 	}
 	s := &Server{
 		reg: cfg.Registry, authn: cfg.Authenticator, authz: cfg.Authorizer, clock: cfg.Clock,
-		ids: cfg.IDs, log: cfg.Logger, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
+		ids: cfg.IDs, log: cfg.Logger, queries: cfg.Queries, kgs: cfg.KGs, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
 		mux: http.NewServeMux(),
 	}
 	if s.authz == nil {

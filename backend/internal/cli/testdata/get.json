@@ -1,0 +1,107 @@
+{
+  "data": {
+    "attributes": [
+      {
+        "basis": "configured",
+        "grade": "fact",
+        "name": "model",
+        "seen_at": "2030-01-01T10:00:00Z",
+        "source_ref": "src-inventory",
+        "stale": false,
+        "value": "M1"
+      },
+      {
+        "basis": "observed",
+        "grade": "fact",
+        "name": "power_state",
+        "seen_at": "2030-01-01T00:00:00Z",
+        "stale": false,
+        "value": "on",
+        "volatile": true
+      }
+    ],
+    "evidence": {
+      "counts": {
+        "assumed": 0,
+        "fact": 2,
+        "unknown": 0
+      },
+      "min_grade": "fact",
+      "worst_freshness": {
+        "attribute": "power_state",
+        "oldest_age_seconds": 97445
+      }
+    },
+    "link_counts": {
+      "groups": [
+        {
+          "count": 1,
+          "direction": "out",
+          "link_type": "MOUNTED_IN"
+        }
+      ],
+      "in": 0,
+      "out": 1
+    },
+    "object": {
+      "display_name": "Server SN-010100",
+      "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+      "object_type": "PhysicalServer"
+    },
+    "valid": {
+      "from_change_seq": 1,
+      "to_change_seq": null
+    }
+  },
+  "meta": {
+    "allowed_actions": [
+      {
+        "action": "edit",
+        "allowed": false,
+        "reason_code": "forbidden.role"
+      }
+    ],
+    "as_of": {
+      "change_seq": 1,
+      "generation": 1,
+      "kg": "kg-63033b0ca389c35a",
+      "sealed_version": null,
+      "volatile_as_of": "current"
+    },
+    "evidence": {
+      "counts": {
+        "assumed": 0,
+        "fact": 2,
+        "unknown": 0
+      },
+      "kinds": ["configured", "observed"],
+      "min_grade": "fact",
+      "observation_age_seconds": 97445
+    },
+    "freshness": {
+      "oldest_age_seconds": 97445,
+      "state": "no_expected_period",
+      "worst_source_id": null
+    },
+    "hidden": {
+      "has_hidden": false,
+      "hidden_passed": false,
+      "hidden_passed_count": 0,
+      "hidden_reached": false,
+      "hidden_reached_count": 0
+    },
+    "model_limits": [],
+    "result_complete": {
+      "next_cursor": null,
+      "reason": null,
+      "returned": 1,
+      "total": 1,
+      "truncated": false
+    },
+    "served_by": {
+      "role": "api_sql"
+    },
+    "trace_id": "tr-0123456789abcdef",
+    "warnings": []
+  }
+}

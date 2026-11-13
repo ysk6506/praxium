@@ -21,6 +21,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/httpapi"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/query"
 )
 
 // exitFailure is the exit code of a command that was understood and failed.
@@ -37,6 +38,8 @@ type wiring struct {
 	signals func() (context.Context, context.CancelFunc)
 	// client is the HTTP client of the client commands; nil means a default one.
 	client *http.Client
+	// open opens a truth file for the development loader; nil means the whole file read through env.
+	open func(path string) (io.ReadCloser, error)
 }
 
 // systemWiring is the wiring of the real process.
@@ -44,6 +47,7 @@ func systemWiring() wiring {
 	return wiring{
 		deps:   deps{clock: kernel.SystemClock{}, ids: kernel.NewRandomIDs(kernel.NewSystemRng())},
 		env:    cli.Env{Lookup: kernel.LookupEnv, ReadFile: os.ReadFile},
+		open:   systemOpen,
 		listen: func(addr string) (net.Listener, error) { return net.Listen("tcp", addr) },
 		signals: func() (context.Context, context.CancelFunc) {
 			return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -67,6 +71,8 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 	switch {
 	case args[0] == "api" && len(args) >= 2 && (args[1] == "serve" || args[1] == "routes"):
 		return runAPI(args[1:], stdout, stderr, w), true
+	case args[0] == "dev":
+		return runDev(args[1:], stdout, stderr, w), true
 	case args[0] == "contract":
 		return runContract(args[1:], stdout, stderr), true
 	case cli.IsClientCommand(args[0]) || cli.IsClientFlag(args[0]):
@@ -79,7 +85,7 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 // token file flag is the safer way and wins over it.
 const envDevToken = "PRAXIUM_DEV_TOKEN"
 
-const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2]\n       praxium api routes --json\n"
+const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file]\n       praxium api routes --json\n"
 
 // runAPI handles `praxium api serve` and `praxium api routes`; runCommand sends nothing else here.
 func runAPI(args []string, stdout, stderr io.Writer, d wiring) int {
@@ -110,6 +116,9 @@ func runRoutes(args []string, stdout, stderr io.Writer) int {
 
 type serveOptions struct {
 	addr, mode, tokenFile, subject, roles string
+	// truth is a developer convenience of development mode (production never starts): a truth file of the generator
+	// to load into the development store. It is not the ingestion pipeline (ADR-0027).
+	truth string
 }
 
 func parseServe(args []string) (serveOptions, error) {
@@ -121,6 +130,7 @@ func parseServe(args []string) (serveOptions, error) {
 	fs.StringVar(&o.tokenFile, "dev-token-file", "", "")
 	fs.StringVar(&o.subject, "dev-subject", "dev-user", "")
 	fs.StringVar(&o.roles, "dev-roles", "viewer", "")
+	fs.StringVar(&o.truth, "dev-truth", "", "")
 	if err := fs.Parse(args); err != nil {
 		return o, kernel.Wrap(kernel.CodeInvalidValue, err, "bad flags for api serve")
 	}
@@ -160,16 +170,16 @@ func devToken(o serveOptions, d wiring) (string, error) {
 	return strings.TrimSpace(token), nil
 }
 
-// requireRealAuthenticator is the fail-closed guard of the server (ADR-0024). Only a development server may
-// start, and only the development authenticator exists; production mode needs a real one (OIDC, TD-0010),
-// so it refuses whatever else is configured.
+// requireRealAuthenticator is the fail-closed guard of the server (ADR-0024, ADR-0027). Only a development server
+// may start: only the development authenticator exists, so production mode needs a real one (OIDC, TD-0010),
+// and only the in-memory store exists, so it needs a production store (TD-0011). It refuses whatever else is configured.
 func requireRealAuthenticator(o serveOptions) error {
 	switch strings.ToLower(strings.TrimSpace(o.mode)) {
 	case devauth.ModeDevelopment:
 		return nil
 	case devauth.ModeProduction:
 		return kernel.Errorf(kernel.CodeInvalidValue,
-			"mode production needs a real authenticator and none is configured yet (TD-0010); use -mode development for a development server")
+			"mode production needs a real authenticator (TD-0010) and a production store (TD-0011), and neither exists yet; use -mode development for a development server")
 	}
 	return kernel.Errorf(kernel.CodeInvalidValue, "unknown -mode %q: use development or production", o.mode)
 }
@@ -191,8 +201,20 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 		return err
 	}
 	log := logger(stderr)
+	store, rep, err := loadDevStore(context.Background(), reg, d, o.truth, 0)
+	if err != nil {
+		return err
+	}
+	if rep != nil {
+		log.Info("praxium dev truth loaded", slog.Int64("objects", rep.Objects), slog.Int64("links", rep.Links), slog.String("version", rep.VersionID))
+	}
+	queries, err := query.New(store, reg, d.clock)
+	if err != nil {
+		return err
+	}
 	srv, err := httpapi.New(httpapi.Config{
 		Registry: reg, Authenticator: authn, Clock: d.clock, IDs: d.ids, Logger: log, Version: version,
+		Queries: queries, KGs: store,
 	})
 	if err != nil {
 		return err

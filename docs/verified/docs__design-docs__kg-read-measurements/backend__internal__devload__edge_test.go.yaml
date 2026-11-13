@@ -1,0 +1,7 @@
+doc: "docs/design-docs/kg-read-measurements.md"
+target: "backend/internal/devload/edge_test.go"
+hash: "827eb726f7941df9"
+date: "2026-11-13"
+note: "ADR-0027의 변경(KG 읽기 길, 명령줄, 개발용 적재기, 구조 계약)에 맞춰 대조해 고침"
+text_changed: true
+doc_hash: "e39e4182b744e728"

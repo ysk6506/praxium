@@ -78,6 +78,8 @@ type stateCheck struct {
 	retObj   map[ObjectID]bool
 	retLink  map[LinkID]bool
 	byEnd    map[string]map[LinkID]bool
+	planned  map[LinkID]plannedLink
+	bindMemo map[bindKey]*model.Binding
 	typeMemo map[ObjectID]model.ObjectType
 }
 
@@ -86,7 +88,7 @@ type stateCheck struct {
 // and identifiers. It reads only what the batch touches.
 func checkState(ctx context.Context, snap Snapshot, reg *model.Registry, v *validator, p *plan) error {
 	c := &stateCheck{snap: snap, reg: reg, v: v, p: p, retObj: map[ObjectID]bool{}, retLink: map[LinkID]bool{},
-		byEnd: map[string]map[LinkID]bool{}, typeMemo: map[ObjectID]model.ObjectType{}}
+		byEnd: map[string]map[LinkID]bool{}, planned: map[LinkID]plannedLink{}, bindMemo: map[bindKey]*model.Binding{}, typeMemo: map[ObjectID]model.ObjectType{}}
 	for _, id := range p.retObjs {
 		c.retObj[id] = true
 	}
@@ -94,6 +96,7 @@ func checkState(ctx context.Context, snap Snapshot, reg *model.Registry, v *vali
 		c.retLink[id] = true
 	}
 	for _, l := range p.links {
+		c.planned[l.id] = l
 		c.index("out", l.typ.ID, l.upsert.Src, l.id)
 		c.index("in", l.typ.ID, l.upsert.Dst, l.id)
 	}
@@ -148,47 +151,91 @@ func (c *stateCheck) links(ctx context.Context) error {
 		if !okSrc || !okDst {
 			return kernel.Errorf(CodeDanglingLink, "link %s ends at an object that is not live", l.id)
 		}
-		var found *model.Binding
-		for _, b := range c.reg.BindingsFor(src.ID, dst.ID) {
-			if b.LinkType == l.typ.ID {
-				bind := b.Binding
-				found = &bind
-				break
-			}
-		}
+		found := c.bindingFor(src.ID, dst.ID, l.typ.ID)
 		if found == nil {
 			return kernel.Errorf(CodeBindingMissing, "%s has no binding from %s to %s", l.typ.Name, src.Name, dst.Name)
 		}
-		if err := c.cardinality(ctx, l, found.Cardinality); err != nil {
+		if err := c.cardinality(ctx, l, *found); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (c *stateCheck) cardinality(ctx context.Context, l plannedLink, card model.Cardinality) error {
-	if strings.HasSuffix(string(card), ":1") {
-		if err := c.degree(ctx, l, "out", l.upsert.Src, Out); err != nil {
+// cardinality checks the degree rule of the binding the link is on. A rule belongs to a binding, not to the
+// link type: a cluster may hold one control plane through a 1:1 binding and many namespaces through others (ADR-0027).
+func (c *stateCheck) cardinality(ctx context.Context, l plannedLink, bind model.Binding) error {
+	card := string(bind.Cardinality)
+	if strings.HasSuffix(card, ":1") {
+		if err := c.degree(ctx, l, "out", l.upsert.Src, Out, bind.ID); err != nil {
 			return err
 		}
 	}
-	if strings.HasPrefix(string(card), "1:") {
-		return c.degree(ctx, l, "in", l.upsert.Dst, In)
+	if strings.HasPrefix(card, "1:") {
+		return c.degree(ctx, l, "in", l.upsert.Dst, In, bind.ID)
 	}
 	return nil
 }
 
-func (c *stateCheck) degree(ctx context.Context, l plannedLink, dir string, end ObjectID, d Direction) error {
+// onBinding says whether a link of the type between the two objects is on the binding.
+func (c *stateCheck) onBinding(ctx context.Context, lt model.LinkTypeID, src, dst ObjectID, want model.BindingID) (bool, error) {
+	st, okSrc, err := c.typeOf(ctx, src)
+	if err != nil || !okSrc {
+		return false, err
+	}
+	dt, okDst, err := c.typeOf(ctx, dst)
+	if err != nil || !okDst {
+		return false, err
+	}
+	b := c.bindingFor(st.ID, dt.ID, lt)
+	return b != nil && b.ID == want, nil
+}
+
+type bindKey struct {
+	src, dst model.ObjectTypeID
+	lt       model.LinkTypeID
+}
+
+// bindingFor is the binding of the link type that covers the two object types, or nil. The registry copies the
+// bindings it gives out, so the answers are kept: a load asks the same few questions for every link.
+func (c *stateCheck) bindingFor(src, dst model.ObjectTypeID, lt model.LinkTypeID) *model.Binding {
+	key := bindKey{src, dst, lt}
+	if b, ok := c.bindMemo[key]; ok {
+		return b
+	}
+	var found *model.Binding
+	if b, ok := c.reg.BindingFor(src, dst, lt); ok {
+		found = &b
+	}
+	c.bindMemo[key] = found
+	return found
+}
+
+func (c *stateCheck) degree(ctx context.Context, l plannedLink, dir string, end ObjectID, d Direction, want model.BindingID) error {
 	set := map[LinkID]bool{}
 	for id := range c.byEnd[dir+"|"+l.typ.ID.String()+"|"+end.String()] {
-		set[id] = true
+		pl := c.planned[id]
+		on, err := c.onBinding(ctx, l.typ.ID, pl.upsert.Src, pl.upsert.Dst, want)
+		if err != nil {
+			return err
+		}
+		if on {
+			set[id] = true
+		}
 	}
 	rows, err := c.snap.LinksOf(ctx, end, d)
 	if err != nil {
 		return err
 	}
 	for _, r := range rows {
-		if r.TypeNo == l.typ.LinkTypeNo && !c.retLink[r.ID] {
+		if r.TypeNo != l.typ.LinkTypeNo || c.retLink[r.ID] || set[r.ID] {
+			continue
+		}
+		on, err := c.onBinding(ctx, l.typ.ID, r.Src, r.Dst, want)
+		if err != nil {
+			return err
+		}
+		if on {
 			set[r.ID] = true
 		}
 	}

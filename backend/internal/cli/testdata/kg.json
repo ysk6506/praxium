@@ -1,0 +1,25 @@
+{
+  "data": {
+    "alias": "main",
+    "created_at": "2030-01-02T03:04:05Z",
+    "definition_set": "712b5ae602cd347af9b4eecaa975b3637b5e96ccaa9d8682064d31749a07f98a",
+    "generation": 1,
+    "head_change_seq": 1,
+    "kg_id": "kg-63033b0ca389c35a",
+    "name": "main-kg",
+    "projection_state": "none",
+    "readable_through": 1,
+    "role": "production",
+    "state": "serving"
+  },
+  "meta": {
+    "allowed_actions": [
+      {
+        "action": "edit",
+        "allowed": false,
+        "reason_code": "forbidden.role"
+      }
+    ],
+    "trace_id": "tr-0123456789abcdef"
+  }
+}

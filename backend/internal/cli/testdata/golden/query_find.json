@@ -1,0 +1,22 @@
+{
+  "counts_by_type": [
+    {
+      "count": 4,
+      "object_type": "Rack"
+    }
+  ],
+  "items": [
+    {
+      "display_name": "Rack R01",
+      "matched_on": ["object_type"],
+      "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+      "object_type": "Rack"
+    },
+    {
+      "display_name": "Rack R00",
+      "matched_on": ["object_type"],
+      "object_id": "obj_9ecd2b96c13b741151179326057c4e5c",
+      "object_type": "Rack"
+    }
+  ]
+}

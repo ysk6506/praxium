@@ -58,16 +58,44 @@ func (c *Client) Status(ctx context.Context, path string) (int, error) {
 	return status, err
 }
 
+// Post sends a JSON body to a route that answers a closed question (it changes
+// nothing) and returns the envelope, or the server's problem as a *ProblemError.
+func (c *Client) Post(ctx context.Context, path string, body any) (*Envelope, error) {
+	raw, err := json.Marshal(body)
+	if err != nil {
+		return nil, usageError{msg: "the request cannot be written as JSON: " + err.Error()}
+	}
+	status, answer, err := c.do(ctx, http.MethodPost, path, nil, raw)
+	if err != nil {
+		return nil, err
+	}
+	if status >= 400 {
+		return nil, problemOf(status, answer)
+	}
+	var env Envelope
+	if err := json.Unmarshal(answer, &env); err != nil {
+		return nil, transportError{err: err}
+	}
+	return &env, nil
+}
+
 func (c *Client) raw(ctx context.Context, path string, query url.Values) (int, []byte, error) {
+	return c.do(ctx, http.MethodGet, path, query, nil)
+}
+
+func (c *Client) do(ctx context.Context, method, path string, query url.Values, body []byte) (int, []byte, error) {
 	target := c.base + path
 	if len(query) > 0 {
 		target += "?" + query.Encode()
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, target, nil)
+	req, err := http.NewRequestWithContext(ctx, method, target, bytes.NewReader(body))
 	if err != nil {
 		return 0, nil, usageError{msg: "the endpoint is not a URL: " + err.Error()}
 	}
 	req.Header.Set("Accept", "application/json")
+	if body != nil {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	if c.token != "" {
 		req.Header.Set("Authorization", "Bearer "+c.token)
 	}
@@ -76,11 +104,11 @@ func (c *Client) raw(ctx context.Context, path string, query url.Values) (int, [
 		return 0, nil, transportError{err: err}
 	}
 	defer resp.Body.Close()
-	body, err := io.ReadAll(io.LimitReader(resp.Body, 16<<20))
+	answer, err := io.ReadAll(io.LimitReader(resp.Body, 16<<20))
 	if err != nil {
 		return 0, nil, transportError{err: err}
 	}
-	return resp.StatusCode, body, nil
+	return resp.StatusCode, answer, nil
 }
 
 // problemOf reads an error body; a body that is not a problem still gives an error with the status.
