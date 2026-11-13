@@ -48,7 +48,8 @@ go:
     # The KG as a sequence of applied changes and the storage port (ADR-0025); the conformance suite for its adapters is its own unit, apart so that each unit's tests reach the coverage floor.
     core.graph:     {path: backend/internal/graph, may_import: [core.kernel, core.model]}
     adapter.memstore: {path: backend/internal/memstore, may_import: [core.kernel, core.graph]}
-    adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph, adapter.memstore]}
+    # The conformance suite is production code of its own (it cannot import "testing"), so it never imports the adapter it checks: only the test that runs it does (ADR-0028).
+    adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.memstore]}
     # The first three closed queries over the storage port (ADR-0026). The core imports no adapter (ADR-0027): its tests run on graph.ScratchStore.
     core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph]}
     # Adapters sit outside the core and never import each other: only the composition root joins them.
@@ -57,8 +58,9 @@ go:
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
     # Checks of the read path that need a store with history (ADR-0027); a unit of tests only, so the units above the port stay free of adapters.
     # The development loader of the generator's ground truth (ADR-0027): a developer convenience and test path, not the ingestion pipeline.
-    adapter.devload: {path: backend/internal/devload, may_import: [core.kernel, core.model, core.graph, core.worldgen, core.query]}
-    adapter.readcheck: {path: backend/internal/readcheck, may_import: [core.kernel, core.model, core.graph, core.query, core.access, core.contract, core.worldgen, adapter.memstore, adapter.http, adapter.devload]}
+    adapter.devload: {path: backend/internal/devload, may_import: [core.kernel, core.model, core.graph, core.worldgen], test_may_import: [core.query]}
+    # A package of tests only: its production code (the package clause) imports nothing, everything below is for its _test.go files (ADR-0028).
+    adapter.readcheck: {path: backend/internal/readcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.query, core.access, core.contract, core.worldgen, adapter.memstore, adapter.http, adapter.devload]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium
@@ -66,8 +68,9 @@ go:
   # Every module here also needs a row in the table of ARCHITECTURE.md (REQ-239) and an ADR.
   third_party: {}
   # Standard-library packages that only the listed units may import: the core knows no operating system and no network.
+  # An entry that ends in .go is one file: the environment is read through entropy.go and nowhere else in core.kernel (ADR-0028).
   restricted_stdlib:
-    os: [cmd.praxium, core.kernel]
+    os: [cmd.praxium, backend/internal/kernel/entropy.go]
     os/exec: [cmd.praxium]
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
@@ -78,3 +81,5 @@ go:
   # The only files that may read the clock, system randomness and the environment (REQ-001).
   nondeterminism_allowed: [backend/internal/kernel/entropy.go]
   dependency_table: ARCHITECTURE.md
+  # Non-test code that locked tests lean on: the case table of the storage conformance suite. It is fingerprinted into every test that reaches it, so a case removed or weakened there breaks the lock of the test that runs it (ADR-0028).
+  locked_support: [backend/internal/graphcheck]

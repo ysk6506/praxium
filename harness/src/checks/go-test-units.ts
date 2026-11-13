@@ -9,6 +9,11 @@
  * do not count; the requirement tags `[REQ-NNN]` of a test do. Reaching by name over-approximates: a local variable
  * that shares the name of a package-level one pulls that one in. That can only make the lock stricter, never looser.
  *
+ * Non-test code that the contract names in `go.locked_support` (a conformance suite, a case table) is fingerprinted
+ * the same way: a test whose file imports such a package, or that sits in its folder, reaches that package's
+ * declarations by `package.Name`, and from there everything they reach inside the package. Removing a case or
+ * weakening one inside the table then changes the digest of the test that runs it (ADR-0028).
+ *
  * Besides the digest the unit carries what a weakening would change (like the TypeScript units): the number of calls
  * that can fail the test, a digest of every literal it reaches, and the number of skips.
  *
@@ -19,9 +24,9 @@ import path from "node:path";
 import { type Violation, violation } from "../common";
 import { listFiles, matchesGlob } from "../files";
 import { sha16 } from "../ts-ast";
-import { type GoConfig, type GoFile, goFiles, loadGoConfig } from "./go-config";
+import { type GoConfig, type GoFile, goFiles, loadGoConfig, moduleDir } from "./go-config";
 import { declsOf, type GoDecl, normalizedText } from "./go-decls";
-import { closeOf, type GoTok, stringValue } from "./go-lex";
+import { closeOf, type GoTok, localName, stringValue } from "./go-lex";
 import type { Unit } from "./test-units";
 
 export interface GoTestInfo {
@@ -60,6 +65,27 @@ interface Entry {
   readonly members: ReadonlySet<string>;
   /** Names of the testing handles it declares: `t` in `t *testing.T`. */
   readonly handles: ReadonlySet<string>;
+  /** The folder of the locked-support package this entry belongs to; undefined for a declaration of a test file. */
+  readonly supportDir?: string;
+}
+
+/** The declarations of one locked-support package folder, indexed the way a pool indexes its own. */
+class Support {
+  readonly byName = new Map<string, Entry[]>();
+  readonly byMethod = new Map<string, Entry[]>();
+  readonly byRecv = new Map<string, Entry[]>();
+
+  constructor(
+    readonly dir: string,
+    entries: readonly Entry[],
+  ) {
+    for (const e of entries) {
+      if (e.decl.recv) {
+        push(this.byMethod, e.decl.names[0] ?? "", e);
+        push(this.byRecv, e.decl.recv, e);
+      } else for (const name of e.decl.names) if (name !== "_") push(this.byName, name, e);
+    }
+  }
 }
 
 const isPunct = (tok: GoTok | undefined, text: string): boolean =>
@@ -85,7 +111,7 @@ function nameAt(toks: readonly GoTok[]): number {
   return isPunct(toks[1], "(") ? closeOf(toks, 1) + 1 : 1;
 }
 
-function entryOf(decl: GoDecl, file: GoFile): Entry {
+function entryOf(decl: GoDecl, file: GoFile, supportDir?: string): Entry {
   const refs = new Set<string>();
   const members = new Set<string>();
   const own = decl.kind === "func" ? nameAt(decl.toks) : -1;
@@ -101,6 +127,7 @@ function entryOf(decl: GoDecl, file: GoFile): Entry {
     refs,
     members,
     handles: handlesOf(decl.toks),
+    ...(supportDir === undefined ? {} : { supportDir }),
   };
 }
 
@@ -111,7 +138,11 @@ class Pool {
   private readonly byRecv = new Map<string, Entry[]>();
   private readonly always: Entry[] = [];
 
-  constructor(readonly entries: readonly Entry[]) {
+  constructor(
+    readonly entries: readonly Entry[],
+    private readonly supports: readonly Support[] = [],
+    private readonly config?: GoConfig,
+  ) {
     for (const e of entries) {
       const { decl } = e;
       if (decl.recv) {
@@ -126,6 +157,27 @@ class Pool {
     }
   }
 
+  private supportOf(e: Entry): Support | undefined {
+    return e.supportDir === undefined
+      ? undefined
+      : this.supports.find((sup) => sup.dir === e.supportDir);
+  }
+
+  /**
+   * Declarations of a locked-support package that `e` reaches: by bare name from inside the package (its own files and
+   * the tests of the same folder), by `package.Name` from anywhere that imports it. Methods follow by member name.
+   */
+  private reachSupport(e: Entry, visit: (e: Entry | undefined) => void): void {
+    for (const sup of this.supports) {
+      const inside = e.supportDir === sup.dir || path.posix.dirname(e.file.path) === sup.dir;
+      const qualifiers = importedAs(this.config, e.file, sup.dir);
+      const names = [...(inside ? e.refs : []), ...qualifiedNames(e.decl.toks, qualifiers)];
+      for (const name of names) sup.byName.get(name)?.forEach(visit);
+      if (inside || qualifiers.size > 0)
+        for (const member of e.members) sup.byMethod.get(member)?.forEach(visit);
+    }
+  }
+
   /** Everything `start` reaches by name, `start` itself left out. Package hooks and blank variables are always in. */
   closure(start: Entry): Entry[] {
     const seen = new Set<Entry>([start, ...this.always]);
@@ -134,15 +186,48 @@ class Pool {
       if (!e || seen.has(e)) return;
       seen.add(e);
       queue.push(e);
-      if (e.decl.kind === "type") for (const n of e.decl.names) this.byRecv.get(n)?.forEach(visit);
+      if (e.decl.kind === "type")
+        for (const n of e.decl.names) {
+          this.byRecv.get(n)?.forEach(visit);
+          this.supportOf(e)?.byRecv.get(n)?.forEach(visit);
+        }
     };
     for (let e = queue.pop(); e; e = queue.pop()) {
       for (const ref of e.refs) this.byName.get(ref)?.forEach(visit);
       for (const member of e.members) this.byMethod.get(member)?.forEach(visit);
+      this.reachSupport(e, visit);
     }
     seen.delete(start);
     return [...seen];
   }
+}
+
+/** The names a file gives to the imports that lead into the folder `dir` of this module. */
+function importedAs(config: GoConfig | undefined, file: GoFile, dir: string): Set<string> {
+  const names = new Set<string>();
+  if (!config) return names;
+  for (const imp of file.imports) {
+    const name = moduleDir(config, imp.path) === dir ? localName(imp) : undefined;
+    if (name) names.add(name);
+  }
+  return names;
+}
+
+/** Names that follow `qualifier.` in the tokens: `graphcheck.Cases` gives `Cases`. */
+function qualifiedNames(toks: readonly GoTok[], qualifiers: ReadonlySet<string>): string[] {
+  const found: string[] = [];
+  toks.forEach((tok, k) => {
+    const member = toks[k + 2];
+    if (
+      tok.kind === "ident" &&
+      qualifiers.has(tok.text) &&
+      isPunct(toks[k + 1], ".") &&
+      !isPunct(toks[k - 1], ".") &&
+      member?.kind === "ident"
+    )
+      found.push(member.text);
+  });
+  return found;
 }
 
 function push(map: Map<string, Entry[]>, key: string, entry: Entry): void {
@@ -335,8 +420,25 @@ const isTestFunc = (e: Entry): boolean =>
   TEST_NAME.test(e.decl.names[0] ?? "") &&
   e.decl.names[0] !== "TestMain";
 
+/** The non-test declarations of every folder or file that `go.locked_support` names, grouped by package folder. */
+function supportsOf(root: string, config: GoConfig): Support[] {
+  const named = goFiles(root, config).filter(
+    (f) =>
+      !f.isTest &&
+      config.lockedSupport.some((s) => f.path === s || path.posix.dirname(f.path) === s),
+  );
+  const byDir = new Map<string, Entry[]>();
+  for (const file of named) {
+    const dir = path.posix.dirname(file.path);
+    const entries = declsOf(file.toks, file.code).map((decl) => entryOf(decl, file, dir));
+    byDir.set(dir, [...(byDir.get(dir) ?? []), ...entries]);
+  }
+  return [...byDir].map(([dir, entries]) => new Support(dir, entries));
+}
+
 function packagesOf(root: string, config: GoConfig): Pack[] {
   const byDir = new Map<string, GoFile[]>();
+  const supports = supportsOf(root, config);
   for (const file of goFiles(root, config).filter((f) => f.isTest)) {
     const dir = path.posix.dirname(file.path);
     byDir.set(dir, [...(byDir.get(dir) ?? []), file]);
@@ -347,7 +449,12 @@ function packagesOf(root: string, config: GoConfig): Pack[] {
       const entries = files.flatMap((file) =>
         declsOf(file.toks, file.code).map((decl) => entryOf(decl, file)),
       );
-      return { dir, files, pool: new Pool(entries), tests: entries.filter(isTestFunc) };
+      return {
+        dir,
+        files,
+        pool: new Pool(entries, supports, config),
+        tests: entries.filter(isTestFunc),
+      };
     });
 }
 

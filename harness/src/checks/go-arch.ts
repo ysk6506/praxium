@@ -14,6 +14,12 @@
  *                                                         os.Exit or log.Fatal outside the composition root)
  * GOARCH051 dot import, or blank import outside the composition root     GOARCH052 clock, randomness or environment
  * GOARCH053 `func init`                                   read outside the designated files (REQ-001)
+ * GOARCH054 import path written with an escape or with characters a package path never has (ADR-0028)
+ * GOARCH055 build constraint on a test file: `//go:build`, `// +build`, an OS or architecture file suffix (ADR-0028)
+ * GOARCH005 test_may_import repeats what may_import already allows (ADR-0028)
+ * GOARCH006 restricted_stdlib or locked_support names a unit or file that does not exist (ADR-0028)
+ *
+ * GOARCH010 reads `may_import` for production files and `may_import` + `test_may_import` for `_test.go` files.
  */
 import { existsSync, statSync } from "node:fs";
 import path from "node:path";
@@ -55,6 +61,21 @@ const EXIT_CALLS = new Set([
   "log.Panicln",
 ]);
 const BANNED_IMPORTS = new Set(["unsafe", "plugin", "C"]);
+/** What a package path is made of. A backslash, a space or anything else means an escape or a trick. */
+const PLAIN_PATH = /^[A-Za-z0-9._~+/-]+$/;
+
+/** Operating systems and architectures that Go reads from the end of a file name as a build constraint. */
+const GOOS = new Set(
+  "aix android darwin dragonfly freebsd hurd illumos ios js linux nacl netbsd openbsd plan9 solaris wasip1 windows zos".split(
+    " ",
+  ),
+);
+const GOARCH = new Set(
+  "386 amd64 amd64p32 arm armbe arm64 arm64be loong64 mips mipsle mips64 mips64le mips64p32 mips64p32le ppc ppc64 ppc64le riscv riscv64 s390 s390x sparc sparc64 wasm".split(
+    " ",
+  ),
+);
+const CONSTRAINT_LINE = /^\/\/\s*(go:build\b|\+build\b)/;
 
 export function checkStructure(
   root: string,
@@ -76,19 +97,32 @@ export function checkStructure(
         ),
       );
     }
-    for (const other of unit.mayImport.filter((n) => !n.endsWith(".*") && !names.has(n))) {
+    const listed = [...unit.mayImport, ...unit.testMayImport];
+    for (const other of listed.filter((n) => !n.endsWith(".*") && !names.has(n))) {
       out.push(
         violation(
           "GOARCH004",
           "harness/config/architecture.yaml",
           0,
-          `Go unit '${unit.name}' may import '${other}', which is not a Go unit`,
+          `Go unit '${unit.name}' lists '${other}' as importable, but it is not a Go unit`,
           `Fix the name. ${HINT}`,
+        ),
+      );
+    }
+    for (const other of unit.testMayImport.filter((n) => allowedBy(unit.mayImport, n))) {
+      out.push(
+        violation(
+          "GOARCH005",
+          "harness/config/architecture.yaml",
+          0,
+          `Go unit '${unit.name}' lists '${other}' in test_may_import, but may_import already allows it`,
+          `Remove it from test_may_import: that list is for what only tests may import. ${HINT}`,
         ),
       );
     }
     out.push(...checkUnitRoot(unit, files));
   }
+  out.push(...checkNamedScopes(root, config, names));
   for (const file of files.filter((f) => !f.unit)) {
     out.push(
       violation(
@@ -102,6 +136,40 @@ export function checkStructure(
   }
   return out;
 }
+
+/** Units and files that `restricted_stdlib` and `locked_support` name must exist. */
+function checkNamedScopes(root: string, config: GoConfig, names: ReadonlySet<string>): Violation[] {
+  const out: Violation[] = [];
+  const missing = (what: string, fix: string): number =>
+    out.push(violation("GOARCH006", "harness/config/architecture.yaml", 0, what, `${fix} ${HINT}`));
+  for (const [pkg, scope] of config.restrictedStdlib) {
+    for (const entry of scope) {
+      if (isFileEntry(entry)) {
+        if (!existsSync(path.join(root, entry)))
+          missing(
+            `restricted_stdlib '${pkg}' names file ${entry}, which does not exist`,
+            "Fix the path.",
+          );
+      } else if (!entry.endsWith(".*") && !names.has(entry)) {
+        missing(
+          `restricted_stdlib '${pkg}' names '${entry}', which is not a Go unit`,
+          "Fix the name.",
+        );
+      }
+    }
+  }
+  for (const entry of config.lockedSupport) {
+    if (!existsSync(path.join(root, entry)))
+      missing(
+        `locked_support names ${entry}, which does not exist`,
+        "Fix the path or remove the entry.",
+      );
+  }
+  return out;
+}
+
+/** A restricted_stdlib entry that ends in `.go` is one file, anything else a unit name or pattern. */
+const isFileEntry = (entry: string): boolean => entry.endsWith(".go");
 
 /** A unit is a package: it needs Go code in its own folder, and a doc comment saying what it is for. */
 function checkUnitRoot(unit: GoUnit, files: readonly GoFile[]): Violation[] {
@@ -164,13 +232,19 @@ function internalImport(
   }
   if (!target || target === site.unit) return [];
   const out: Violation[] = [];
-  if (!allowedBy(site.unit.mayImport, target.name)) {
+  const allowed =
+    allowedBy(site.unit.mayImport, target.name) ||
+    (site.file.isTest && allowedBy(site.unit.testMayImport, target.name));
+  if (!allowed) {
+    const onlyTests = allowedBy(site.unit.testMayImport, target.name);
     out.push(
       violation(
         "GOARCH010",
         site.file.path,
         site.line,
-        `${site.unit.name} must not import ${target.name} (imports ${importPath})`,
+        onlyTests
+          ? `${site.unit.name} may import ${target.name} in test files only (imports ${importPath} from production code)`
+          : `${site.unit.name} must not import ${target.name} (imports ${importPath})`,
         `Depend downward only: move the shared code to a lower layer, or define a port (interface) lower down. ${HINT}`,
       ),
     );
@@ -217,16 +291,22 @@ function moduleImport(config: GoConfig, site: Site, importPath: string): Violati
   ];
 }
 
+/** A file entry of the scope allows that one file; any other entry is a unit name or pattern. */
+function stdlibAllowed(scope: readonly string[], site: Site): boolean {
+  const units = scope.filter((entry) => !isFileEntry(entry));
+  return allowedBy(units, site.unit.name) || scope.includes(site.file.path);
+}
+
 function stdlibImport(config: GoConfig, site: Site, importPath: string): Violation[] {
   const out: Violation[] = [];
   const scope = config.restrictedStdlib.get(importPath);
-  if (scope && !allowedBy(scope, site.unit.name)) {
+  if (scope && !stdlibAllowed(scope, site)) {
     out.push(
       violation(
         "GOARCH021",
         site.file.path,
         site.line,
-        `'${importPath}' in ${site.unit.name}: only ${scope.join(", ")} may know the operating system or the network`,
+        `'${importPath}' in ${site.file.path}: only ${scope.join(", ")} may know the operating system or the network`,
         `Put it behind a port defined in the core and implement the port in an outer unit. ${HINT}`,
       ),
     );
@@ -294,6 +374,12 @@ function importProblems(config: GoConfig, file: GoFile): Violation[] {
   for (const imp of file.imports) {
     const at = (code: string, message: string, fix: string): number =>
       out.push(violation(code, file.path, imp.line, message, fix));
+    if (!PLAIN_PATH.test(imp.path))
+      at(
+        "GOARCH054",
+        `import path ${JSON.stringify(imp.path)} is not written plainly`,
+        "Write the import path as plain text: an escape such as \\x73 hides which package it is from every import rule.",
+      );
     if (BANNED_IMPORTS.has(imp.path))
       at(
         "GOARCH050",
@@ -377,11 +463,45 @@ function initProblems(file: GoFile): Violation[] {
   return out;
 }
 
+/**
+ * A test file that only some builds compile is counted by the lock and the tracer and never runs on the rest. Test
+ * files take no build constraint: neither a `//go:build` or `// +build` line before the package clause, nor an
+ * operating-system or architecture suffix in the file name (`x_linux_test.go`, `x_arm64_test.go`).
+ */
+function constraintProblems(file: GoFile): Violation[] {
+  if (!file.isTest) return [];
+  const out: Violation[] = [];
+  const fix =
+    "A test file must run everywhere: remove the constraint, or put the platform-specific part in production code behind an interface.";
+  const clause = file.pkg?.line ?? Number.POSITIVE_INFINITY;
+  for (const tok of file.toks) {
+    if (tok.kind === "comment" && tok.line < clause && CONSTRAINT_LINE.test(tok.text))
+      out.push(violation("GOARCH055", file.path, tok.line, "build constraint on a test file", fix));
+  }
+  const parts = path.posix
+    .basename(file.path)
+    .replace(/_test\.go$/, "")
+    .split("_");
+  const last = parts.at(-1) ?? "";
+  if (parts.length > 1 && (GOOS.has(last) || GOARCH.has(last)))
+    out.push(
+      violation(
+        "GOARCH055",
+        file.path,
+        1,
+        `the file name ends in '_${last}', which is a build constraint on a test file`,
+        fix,
+      ),
+    );
+  return out;
+}
+
 export function checkConstructs(config: GoConfig, files: readonly GoFile[]): Violation[] {
   return files.flatMap((file) => [
     ...importProblems(config, file),
     ...callProblems(config, file),
     ...initProblems(file),
+    ...constraintProblems(file),
   ]);
 }
 

@@ -57,7 +57,10 @@ const isPunct = (tok: GoTok | undefined, text: string): boolean =>
 const isIdent = (tok: GoTok | undefined, text: string): boolean =>
   tok !== undefined && tok.kind === "ident" && tok.text === text;
 
-/** The value of an interpreted or raw string token (import paths and directive arguments have no escapes). */
+/**
+ * The text between the quotes of an interpreted or raw string token, escapes left as written. Import paths and
+ * directive arguments are read this way, so a path written with an escape keeps its backslash and GOARCH054 refuses it.
+ */
 export function stringValue(tok: GoTok): string {
   const body = tok.text.slice(1);
   return body.endsWith(tok.text.charAt(0)) ? body.slice(0, -1) : body;
