@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "3f6cf41f63800317"
+hash: "14d5ff56d2e56b8b"
 date: "2026-11-13"
-note: "identity keys now have set components (ADR-0022); units and dependency directions unchanged"
+note: "ADR-0024: REST 계약, API 검사, 새 단위를 문서에 맞춤"
 text_changed: true
-doc_hash: "b67b04283ec99f40"
+doc_hash: "e8c51e90a13dfdf9"

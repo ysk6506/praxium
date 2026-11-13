@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "2d48db5ffcf47a72"
+hash: "1b4c8b434b825180"
 date: "2026-11-13"
-note: "계획 문서의 바뀐 것은 Go 시험 잠금 한 줄이다. README와 어긋나지 않아 고칠 것 없다"
+note: "ADR-0024: 계약, 요구사항 분할, 계획 6단계 반영 확인"
 text_changed: false
 doc_hash: "129d40a3a854fd63"

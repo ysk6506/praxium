@@ -1,0 +1,37 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Praxium API",
+    "version": "1.0.0-alpha.1",
+    "description": "The REST contract of Praxium. This document is assembled from the parts of backend/internal/contract/openapi/parts and is never edited by hand. Routes designed but not yet specified are in backend/internal/contract/planned/routes.json."
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "The server that serves this document."
+    }
+  ],
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "health",
+      "description": "Probes for the process and the deployment."
+    },
+    {
+      "name": "contract",
+      "description": "The contract itself and the explanation of its error codes."
+    },
+    {
+      "name": "catalog",
+      "description": "Closed lists the model and the API are built on."
+    },
+    {
+      "name": "type-registry",
+      "description": "The read side of the type registry: object, link and action types, traits and identifier schemes."
+    }
+  ]
+}

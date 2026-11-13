@@ -1,0 +1,361 @@
+{
+  "components": {
+    "schemas": {
+      "HealthLiveAnswer": {
+        "type": "object",
+        "description": "The answer of GET /v1/health/live.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HealthLive"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "HealthReadyAnswer": {
+        "type": "object",
+        "description": "The answer of GET /v1/health/ready.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HealthReady"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "HealthStartedAnswer": {
+        "type": "object",
+        "description": "The answer of GET /v1/health/started.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/HealthStarted"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ProblemAnswer": {
+        "type": "object",
+        "description": "The explanation of one error code.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ErrorCode"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "CatalogAnswer": {
+        "type": "object",
+        "description": "The catalogues the server serves.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/CatalogEntry"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "LinkMeaningList": {
+        "type": "object",
+        "description": "The closed link meanings.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/LinkMeaning"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ChannelList": {
+        "type": "object",
+        "description": "The channels of state.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Channel"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ErrorCodeList": {
+        "type": "object",
+        "description": "The closed catalogue of error codes.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ErrorCode"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ReasonCodeList": {
+        "type": "object",
+        "description": "The reasons an action is refused.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ReasonCode"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "RoleList": {
+        "type": "object",
+        "description": "The eight roles.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Role"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ValueTypeList": {
+        "type": "object",
+        "description": "The value types.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ValueType"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "LayerList": {
+        "type": "object",
+        "description": "The layers of the model.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Layer"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ObjectTypeList": {
+        "type": "object",
+        "description": "A page of object types.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ObjectTypeSummary"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ObjectTypeAnswer": {
+        "type": "object",
+        "description": "One object type.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ObjectType"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "LinkTypeList": {
+        "type": "object",
+        "description": "A page of link types.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/LinkTypeSummary"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "LinkTypeAnswer": {
+        "type": "object",
+        "description": "One link type.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/LinkType"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "BindingList": {
+        "type": "object",
+        "description": "The bindings of one link type.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Binding"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ActionTypeList": {
+        "type": "object",
+        "description": "A page of action types.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/ActionType"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "ActionTypeAnswer": {
+        "type": "object",
+        "description": "One action type.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ActionType"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "TraitList": {
+        "type": "object",
+        "description": "A page of traits.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/TraitSummary"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "TraitAnswer": {
+        "type": "object",
+        "description": "One trait.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Trait"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "SchemeList": {
+        "type": "object",
+        "description": "A page of identifier schemes.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierScheme"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "SchemeAnswer": {
+        "type": "object",
+        "description": "One identifier scheme.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/IdentifierScheme"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/ItemMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      }
+    }
+  }
+}

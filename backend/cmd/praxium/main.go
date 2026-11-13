@@ -5,11 +5,15 @@
 // Usage:
 //
 //	praxium <api|worker|query|collector>
+//	praxium api serve [flags]          the REST API on net/http
+//	praxium api routes --json          the routes the server registers
+//	praxium contract assemble|check    the OpenAPI document of the API
+//	praxium health | types | catalog   the command line client of the API
 //	praxium worldgen [flags]
 //	praxium --version
 //
-// This first step wires the kernel, logs one structured line and exits; the
-// roles do their work in later changes.
+// A bare role name wires the kernel, logs one structured line and exits; only
+// api serve does work so far, the other roles come in later changes.
 package main
 
 import (
@@ -60,8 +64,7 @@ type deps struct {
 }
 
 func main() {
-	d := deps{clock: kernel.SystemClock{}, ids: kernel.NewRandomIDs(kernel.NewSystemRng())}
-	os.Exit(run(os.Args[1:], os.Stdout, os.Stderr, d))
+	os.Exit(execute(os.Args[1:], os.Stdout, os.Stderr, systemWiring()))
 }
 
 // run is main without the process: it returns the exit code.

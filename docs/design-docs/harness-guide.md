@@ -14,6 +14,7 @@ covers:
 | 문서 품질 (REQ-020) | `harness/src/checks/docs.ts` | `DOC*` |
 | 아키텍처 강제 (REQ-021) | `harness/src/checks/architecture.ts` | `ARCH*` |
 | 제3자 라이선스 (함께 나가는 npm 패키지와 자료는 허용 목록 안의 라이선스여야 한다) | `harness/src/checks/licenses.ts` | `LIC*` |
+| REST 계약 (REQ-143, REQ-148) | `harness/src/checks/api-contract.ts` (`architecture` 안에서 돈다) | `API*` |
 | 기술 부채 (REQ-022) | `harness/src/checks/debt.ts` | `DEBT*` |
 | 검사 끄기 금지 (끄기 주석·건너뛴 시험·CI `continue-on-error`는 이유와 근거 번호가 있어야 하고 수는 늘 수 없다) | `harness/src/checks/ignores.ts` | `IGN*` |
 | 테스트 변조 방지 (REQ-023) | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` (Go 시험 함수도) |
@@ -34,6 +35,19 @@ covers:
 - Go가 설치돼 있어야 한다(`GOTOOL000`). 하네스는 `GOTOOLCHAIN=local`로 다른 Go를 내려받지 않고, 모듈 파일을 고치지 않는다.
 - 커버리지 하한은 `harness/config/coverage-floor.json`에 `go:<단위>`로 있고, `pnpm ratchet`이 올린다.
 - 시험 잠금, 요구사항 추적, 품질 등급표도 Go를 읽는다(ADR-0023, 부채 TD-0008을 닫았다). 아래 절에 있다.
+
+## REST 계약 검사 (ADR-0024)
+
+`architecture` 안에서 도는 `API*` 검사가 `backend/internal/contract`의 OpenAPI 계약을 지킨다. 설정은 `harness/config/api-contract.yaml`이다. 검사 이름 목록은 늘리지 않았다.
+
+- **린트** (`API001`~`API018`): `rest-api.md`의 규칙을 문서로 읽는다. 길 이름, 동사, 봉투, 오류 응답, `x-required-role`, 목록의 쪽 넘김 매개변수, 예시가 스키마를 지키는지 같은 것이다.
+- **합친 것 = 조각** (`API020`~`API022`): Go가 합친 결과가 커밋된 `openapi.json`과 같아야 한다.
+- **호환을 깨는 변경** (`API030`~`API032`): 기준 ref의 계약과 견줘 길, 역할, 매개변수, 응답, 필드, 문제 코드가 빠지거나 좁아지면 실패한다. 새 봉인된 ADR의 머리말 `breaks_contract`(열쇠 목록)와 `contract_break_reason`(40자 이상)으로 선언한다. 선언한 것이 깨짐이 아니면 낡은 선언이다(`API032`).
+- **길 등록부** (`API040`~`API045`): 아직 없는 길(`planned/routes.json`)과 `rest-api-feature-routes.md`의 표, 구현된 길이 서로 어긋나지 않아야 한다.
+- **서버 적합** (`API050`~`API052`): 서버가 등록한 길(`api routes --json`)이 계약의 구현된 길과 같아야 한다.
+- **스키마 부분집합** (`API091`): Go의 `SchemaKeywords()`와 설정의 목록이 같아야 한다.
+
+Go 프로그램은 한 번 빌드해 임시 폴더에서 돌린다. 로그인 없이 부를 수 있는 길은 설정의 `anonymous_operations`뿐이다(`API016`).
 
 ## Go 시험의 잠금, 요구사항 추적, 품질 등급표 (ADR-0023)
 

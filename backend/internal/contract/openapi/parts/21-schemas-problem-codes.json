@@ -1,0 +1,229 @@
+{
+  "components": {
+    "schemas": {
+      "ProblemCode": {
+        "type": "string",
+        "description": "The closed catalogue of error codes. A new code is an addition inside the same major version; the meaning and status of an issued code never change (rest-api.md 3-9).",
+        "enum": [
+          "auth.token_expired",
+          "auth.token_invalid",
+          "auth.token_missing",
+          "blocked.proposal",
+          "conflict.generation_changed",
+          "conflict.idempotency_key_reused",
+          "conflict.request_in_progress",
+          "conflict.state_not_allowed",
+          "conflict.version_mismatch",
+          "invalid_input.body_too_large",
+          "invalid_input.cursor_invalid",
+          "invalid_input.envelope_too_large",
+          "invalid_input.field",
+          "invalid_input.field_format",
+          "invalid_input.field_required",
+          "invalid_input.fields_unknown",
+          "invalid_input.filter_field_unknown",
+          "invalid_input.filter_op_unknown",
+          "invalid_input.history_with_filter",
+          "invalid_input.idempotency_key_required",
+          "invalid_input.include_unknown",
+          "invalid_input.limit_invalid",
+          "invalid_input.method_not_allowed",
+          "invalid_input.not_acceptable",
+          "invalid_input.param_invalid",
+          "invalid_input.param_unknown",
+          "invalid_input.precondition_required",
+          "invalid_input.sort_field_unknown",
+          "invalid_input.unsupported_media_type",
+          "not_found.resource",
+          "permission.hidden_attribute",
+          "permission.not_in_scope",
+          "permission.role_missing",
+          "permission.self_approval",
+          "rate_limited.compute_budget",
+          "rate_limited.concurrency",
+          "rate_limited.requests",
+          "server.internal",
+          "server.unavailable",
+          "stale.branch_behind_trunk",
+          "stale.min_seq_not_reached",
+          "stale.projection_not_ready",
+          "stale.since_too_old"
+        ],
+        "x-catalogue": {
+          "auth.token_expired": {
+            "group": "auth",
+            "status": 401
+          },
+          "auth.token_invalid": {
+            "group": "auth",
+            "status": 401
+          },
+          "auth.token_missing": {
+            "group": "auth",
+            "status": 401
+          },
+          "blocked.proposal": {
+            "group": "blocked",
+            "status": 409
+          },
+          "conflict.generation_changed": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.idempotency_key_reused": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.request_in_progress": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.state_not_allowed": {
+            "group": "conflict",
+            "status": 409
+          },
+          "conflict.version_mismatch": {
+            "group": "conflict",
+            "status": 412
+          },
+          "invalid_input.body_too_large": {
+            "group": "invalid_input",
+            "status": 413
+          },
+          "invalid_input.cursor_invalid": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.envelope_too_large": {
+            "group": "invalid_input",
+            "status": 413
+          },
+          "invalid_input.field": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.field_format": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.field_required": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.fields_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.filter_field_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.filter_op_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.history_with_filter": {
+            "group": "invalid_input",
+            "status": 422
+          },
+          "invalid_input.idempotency_key_required": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.include_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.limit_invalid": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.method_not_allowed": {
+            "group": "invalid_input",
+            "status": 405
+          },
+          "invalid_input.not_acceptable": {
+            "group": "invalid_input",
+            "status": 406
+          },
+          "invalid_input.param_invalid": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.param_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.precondition_required": {
+            "group": "invalid_input",
+            "status": 428
+          },
+          "invalid_input.sort_field_unknown": {
+            "group": "invalid_input",
+            "status": 400
+          },
+          "invalid_input.unsupported_media_type": {
+            "group": "invalid_input",
+            "status": 415
+          },
+          "not_found.resource": {
+            "group": "not_found",
+            "status": 404
+          },
+          "permission.hidden_attribute": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.not_in_scope": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.role_missing": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.self_approval": {
+            "group": "permission",
+            "status": 403
+          },
+          "rate_limited.compute_budget": {
+            "group": "rate_limited",
+            "status": 429
+          },
+          "rate_limited.concurrency": {
+            "group": "rate_limited",
+            "status": 429
+          },
+          "rate_limited.requests": {
+            "group": "rate_limited",
+            "status": 429
+          },
+          "server.internal": {
+            "group": "server",
+            "status": 500
+          },
+          "server.unavailable": {
+            "group": "server",
+            "status": 503
+          },
+          "stale.branch_behind_trunk": {
+            "group": "stale",
+            "status": 409
+          },
+          "stale.min_seq_not_reached": {
+            "group": "stale",
+            "status": 503
+          },
+          "stale.projection_not_ready": {
+            "group": "stale",
+            "status": 503
+          },
+          "stale.since_too_old": {
+            "group": "stale",
+            "status": 410
+          }
+        }
+      }
+    }
+  }
+}

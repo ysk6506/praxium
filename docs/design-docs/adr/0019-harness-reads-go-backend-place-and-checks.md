@@ -32,6 +32,8 @@ decision_hash: f8c7ad079fc7579f
 amended_by:
   - adr: "0023"
     what: Go 시험 잠금과 추적과 등급표
+  - adr: "0024"
+    what: 코어 단위 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)
 ---
 # ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 자리와 검사
 

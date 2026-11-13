@@ -1,0 +1,269 @@
+{
+  "paths": {
+    "/v1/health/live": {
+      "get": {
+        "operationId": "getHealthLive",
+        "summary": "Liveness probe",
+        "description": "Answers 200 while the process runs. Needs no login.",
+        "tags": ["health"],
+        "x-required-role": ["anonymous"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The process is live.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthLiveAnswer"
+                },
+                "example": {
+                  "data": {
+                    "status": "live"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/health/ready": {
+      "get": {
+        "operationId": "getHealthReady",
+        "summary": "Readiness probe",
+        "description": "Answers 200 when the server takes work and 503 while it is draining for shutdown. Needs no login.",
+        "tags": ["health"],
+        "x-required-role": ["anonymous"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The server is ready.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthReadyAnswer"
+                },
+                "example": {
+                  "data": {
+                    "model_hash": "712b5ae602cd347a",
+                    "status": "ready"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/health/started": {
+      "get": {
+        "operationId": "getHealthStarted",
+        "summary": "Start-up probe",
+        "description": "Answers 503 until start-up has finished, then 200. Needs no login.",
+        "tags": ["health"],
+        "x-required-role": ["anonymous"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "The server has started.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthStartedAnswer"
+                },
+                "example": {
+                  "data": {
+                    "status": "started",
+                    "version": "dev"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "security": []
+      }
+    },
+    "/v1/contract": {
+      "get": {
+        "operationId": "getContract",
+        "summary": "The contract",
+        "description": "Serves this OpenAPI document as it is, not in an envelope. Its ETag is the hash of the document.",
+        "tags": ["contract"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IfNoneMatch"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The OpenAPI 3.1 document.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "description": "An OpenAPI 3.1 document."
+                },
+                "example": {
+                  "openapi": "3.1.0",
+                  "info": {
+                    "title": "Praxium API",
+                    "version": "1.0.0-alpha.1"
+                  },
+                  "paths": {}
+                }
+              }
+            }
+          },
+          "304": {
+            "description": "Not modified: the If-None-Match tag is current. No body.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              },
+              "ETag": {
+                "$ref": "#/components/headers/ETag"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/v1/problems/{code}": {
+      "get": {
+        "operationId": "getProblem",
+        "summary": "Explain an error code",
+        "description": "The address a problem's type points at: the meaning and status of one code of the closed catalogue. Needs no login.",
+        "tags": ["contract"],
+        "x-required-role": ["anonymous"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "code",
+            "in": "path",
+            "required": true,
+            "description": "An error code, such as not_found.resource.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The code.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemAnswer"
+                },
+                "example": {
+                  "data": {
+                    "code": "not_found.resource",
+                    "group": "not_found",
+                    "status": 404,
+                    "meaning": "The resource does not exist or is not visible to the subject."
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        },
+        "security": []
+      }
+    }
+  }
+}

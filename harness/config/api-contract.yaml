@@ -1,0 +1,87 @@
+# The contract of the REST API as a checked document (ADR-0024). Read by harness/src/checks/api-*.ts.
+# Protected path: change only with an accepted ADR that lists it in touches_protected.
+openapi: backend/internal/contract/openapi/openapi.json
+parts: backend/internal/contract/openapi/parts
+planned: backend/internal/contract/planned/routes.json
+feature_routes: docs/design-docs/rest-api-feature-routes.md
+adr_dir: docs/design-docs/adr
+
+# The Go module, the program that is built once, and the arguments that assemble the document and list the routes
+# the server registers.
+go_root: backend
+program: ./cmd/praxium
+assemble_args: [contract, assemble]
+routes_args: [api, routes, --json]
+
+# The subset of JSON Schema the contract may use. backend/internal/contract/validate.go lists the same words
+# in SchemaKeywords(); API091 fails when the two lists differ. Keys starting with x- are extensions.
+schema_keywords_source: backend/internal/contract/validate.go
+schema_keywords:
+  - $ref
+  - type
+  - properties
+  - required
+  - additionalProperties
+  - items
+  - enum
+  - const
+  - pattern
+  - minLength
+  - maxLength
+  - minimum
+  - maximum
+  - minItems
+  - maxItems
+  - format
+  - description
+  - title
+  - example
+  - default
+  - deprecated
+
+# Values of x-required-role: three that are no role, and the eight roles of access-control.md.
+# The only operations that may be called without a login (x-required-role: anonymous, security: []).
+# Everything else answers 401 until a real authenticator vouches for the caller (ADR-0024).
+anonymous_operations:
+  - GET /v1/health/live
+  - GET /v1/health/ready
+  - GET /v1/health/started
+  - GET /v1/problems/{code}
+
+roles:
+  - anonymous
+  - authenticated
+  - read
+  - viewer
+  - editor
+  - approver
+  - operator
+  - model_steward
+  - auditor
+  - admin
+  - ingester
+
+# Phases a planned route may name (plan.md).
+phases: [alpha-1, alpha-2, closed-beta, open-beta]
+
+# Path segments that are not plural nouns (rest-api.md 3-1 asks for plural resource names).
+singular_segments: [health, live, ready, started, contract, catalog]
+
+# Resources that live inside a KG: their paths must start with /v1/kgs/{kg}/ (rest-api.md 3-15).
+kg_resources:
+  - objects
+  - links
+  - questions
+  - changes
+  - graph-versions
+  - serving-pins
+  - identity-events
+  - scopes
+  - issues
+  - pending-values
+  - completeness-declarations
+  - refreshes
+  - value-checks
+
+# Words that may not stand as a /verb segment: an action is written after a colon (rest-api.md 3-8).
+action_verbs: [approve, reject, enqueue, close, cancel, revoke, release, discard, resolve, align, retire, rotate, disable, pause, resume, run-now, revert, restore]

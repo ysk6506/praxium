@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "92b46be5bb9f9564"
+hash: "59c91679fee1f90d"
 date: "2026-11-13"
-note: "AGENTS.md와 ADR 절차의 바뀐 줄은 Go 시험 잠금 키와 태그 규칙뿐이다. 이 문서의 믿음과 맞는지 읽었고 고칠 것 없다"
+note: "ADR-0024: 계약, 요구사항 분할, 계획 6단계 반영 확인"
 text_changed: false
 doc_hash: "c68185f5b10e5ba0"

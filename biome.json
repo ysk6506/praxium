@@ -11,7 +11,8 @@
       "!**/dist",
       "!**/coverage",
       "!**/node_modules",
-      "!harness/config/test-lock.json"
+      "!harness/config/test-lock.json",
+      "!backend/internal/contract/openapi/openapi.json"
     ]
   },
   "formatter": {

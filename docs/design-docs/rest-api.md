@@ -9,7 +9,7 @@ follows:
 
 화면은 다른 저장소에 있어요. 그래서 이 저장소의 백엔드와 화면은 **REST API의 계약(OpenAPI 문서) 하나로만** 만나요. 이 문서는 계약 전체에 걸리는 규칙을 적어요. 자원과 길의 목록은 [모델·받기·실행·정의](rest-api-resources-data.md), [KG·관측·역량 질문·권한·바탕](rest-api-resources-graph.md), [더한 기능의 길](rest-api-resources-additions.md)에, 기능마다 길이 있는지의 표는 [기능마다의 길](rest-api-feature-routes.md)에, 끝까지 따라가는 예시는 [예시 셋](rest-api-walkthroughs.md)에 있어요. 결정은 ADR-0016에 있어요.
 
-> **이 문서의 길과 칸은 다음 변경에서 OpenAPI 문서로 굳어요. 그때 바뀔 수 있어요.** 이 문서는 OpenAPI 문서를 쓸 사람이 규칙과 자원의 목차를 헷갈리지 않게 하려는 설계예요. 길은 `/v1/...`로 적어요.
+> **계약은 이제 `backend/internal/contract/openapi/parts`의 조각으로 있고 합친 `openapi.json`이 서버에 내장돼요(ADR-0024). 길과 칸이 이 문서와 다르면 계약이 맞아요. 이 문서의 길 가운데 알파에 있는 것은 24개이고 나머지는 `planned/routes.json`에 단계와 함께 있어요.** 이 문서는 OpenAPI 문서를 쓸 사람이 규칙과 자원의 목차를 헷갈리지 않게 하려는 설계예요. 길은 `/v1/...`로 적어요.
 
 프런트엔드는 별도 저장소예요. 백엔드는 제품 수준으로 설계하고 구현하고, 화면은 알파에서 기능을 시험할 수 있는 만큼(임시 콘솔)만 만들며 UX와 UI는 클로즈 베타에서 제대로 해요.
 
@@ -320,7 +320,7 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 - **모든 오류 `code`의 목록**이 계약에 있고 응답이 그 안의 것만 써요.
 - 쪽 넘김의 모양(`limit`, `cursor`, `meta.result_complete`)과 오류의 모양(문제의 세부)이 모든 길에서 같아요.
 - 닫힌 질의에 "안전함" 표시가 있고 만들기와 행위의 POST에 `Idempotency-Key`가, 바꾸는 길에 `If-Match`가 있어요.
-- 모든 길에 필요한 역할(`x-required-role`), 상태를 바꾸지 않는 길의 표시(`x-safe`)와 "오래 걸리나" 표시가 있어요.
+- 모든 길에 필요한 역할(`x-required-role`), 상태를 바꾸지 않는 길의 표시(`x-safe`)와 "오래 걸리나" 표시(`x-long-running`)가 있어요. 목록의 `meta.result_complete`는 `total`, `returned`, `truncated`, `reason`, `next_cursor`를 모두 줘요. 커서는 모델 해시(세대)를 담아서 틀리면 `invalid_input.cursor_invalid`, 세대가 달라지면 `conflict.generation_changed`예요.
 - **문서의 기능마다 `/v1`의 길이 있어요.** [기능마다의 길](rest-api-feature-routes.md)의 표가 그 검사의 바탕이에요. 행위는 쌍점 표기만 써요.
 - KG에 든 길은 모두 `/v1/kgs/{kg}/...` 아래에 있어요.
 
@@ -332,12 +332,12 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 
 ### 5-5. 명령줄 클라이언트
 - **API를 그대로 불러요.** 서버 안의 코드에 직접 닿지 않아요. 그래서 화면 없이도 모든 기능을 시험하고 운영할 수 있어요. 알파의 기준은 "모든 기능이 API와 명령줄 클라이언트로 된다"(REQ-147)예요.
-- **명령의 모양은 자원과 행위를 따라가요**: `<무리> <자원> <행위> [인자]`. 도구의 이름은 정하지 않았어요(여기서는 `px`라고 적어요).
+- **명령의 모양은 자원과 행위를 따라가요**: `<무리> <자원> <행위> [인자]`. 도구의 이름은 `praxium`이고 서버와 같은 바이너리에 있어요. 서버는 `praxium api serve`로 띄우고, 클라이언트의 플래그(`--endpoint`, `--token`, `--config`, `--json`)는 명령 앞에 놓아요. 종료 코드는 문제의 묶음을 따라요(ADR-0024).
 
 ```
-px question impact --kg main --dead obj_sw0417 --view as_observed
-px proposal approve prop_31
-px job get job_4d2 --wait            # 끝날 때까지 기다려요
+praxium question impact --kg main --dead obj_sw0417 --view as_observed
+praxium proposal approve prop_31
+praxium job get job_4d2 --wait            # 끝날 때까지 기다려요
 ```
 
 - 출력은 기본이 JSON이고 `--output table`도 있어요. 종료 코드는 오류의 무리를 따라가요. 로그인은 사람이면 기기 인증 흐름(4절), 시스템이면 계정의 토큰이에요.

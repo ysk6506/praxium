@@ -4,12 +4,14 @@ import (
 	"crypto/rand"
 	"encoding/binary"
 	"encoding/hex"
+	"os"
 	"time"
 )
 
-// This file is the only place in the backend that reads the wall clock or
-// system randomness (REQ-001). The structure check lists it as the one
-// designated file; every other file receives a Clock or an Rng.
+// This file is the only place in the backend that reads the wall clock,
+// system randomness or the environment (REQ-001). The structure check lists
+// it as the one designated file; every other file receives a Clock, an Rng or
+// a lookup function.
 
 // SystemClock is the Clock of the real world, in UTC.
 type SystemClock struct{}
@@ -38,3 +40,8 @@ func NewToken(n int) string {
 	_, _ = rand.Read(raw)
 	return hex.EncodeToString(raw)
 }
+
+// LookupEnv reads one environment variable. The command line client and the
+// composition root pass this function (or a fixed one in tests) to the code
+// that needs configuration, so the environment is read here and nowhere else.
+func LookupEnv(name string) (string, bool) { return os.LookupEnv(name) }

@@ -23,6 +23,9 @@ touches_protected:
   - AGENTS.md
 amends_tests: []
 decision_hash: bb6c4cfdc46cfeb7
+amended_by:
+  - adr: "0024"
+    what: 계약의 자리와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 나눔
 ---
 # ADR-0016 화면은 다른 저장소에 두고, REST API의 계약이 유일한 이음매다: 계약이 먼저, 큰 버전, 한결같은 모양
 

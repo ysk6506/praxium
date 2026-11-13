@@ -43,7 +43,13 @@ go:
     core.model:     {path: backend/internal/model, may_import: [core.kernel]}
     core.contract:  {path: backend/internal/contract, may_import: [core.kernel]}
     core.worldgen:  {path: backend/internal/worldgen, may_import: [core.kernel, core.model]}
-    cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*"]}
+    # Who may do what: the role table and the ports for login and judgement (ADR-0024).
+    core.access:    {path: backend/internal/access, may_import: [core.kernel]}
+    # Adapters sit outside the core and never import each other: only the composition root joins them.
+    adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
+    adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access]}
+    adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
+    cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium
   # Module path -> units allowed to import it. None yet: the backend uses the standard library only.
@@ -51,12 +57,12 @@ go:
   third_party: {}
   # Standard-library packages that only the listed units may import: the core knows no operating system and no network.
   restricted_stdlib:
-    os: [cmd.praxium]
+    os: [cmd.praxium, core.kernel]
     os/exec: [cmd.praxium]
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
-    net: [cmd.praxium]
-    net/http: [cmd.praxium]
+    net: [cmd.praxium, adapter.http]
+    net/http: [cmd.praxium, adapter.http, adapter.cli]
     net/rpc: [cmd.praxium]
     syscall: [cmd.praxium]
   # The only files that may read the clock, system randomness and the environment (REQ-001).

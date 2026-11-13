@@ -1,0 +1,1389 @@
+{
+  "version": 1,
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/v1/adapters",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/agent-runs/{agent_run_id}/reverts",
+      "feature": "에이전트 실행 하나가 만든 병합을 크게 되돌리기",
+      "adr": "ADR-0014",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/alert-rules",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/alerts",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/alerts/{alert_id}:acknowledge",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/alerts/{alert_id}:hand-over",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/alerts/{alert_id}:snooze",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/audit-records",
+      "feature": "감사 기록, 사용 기록",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/blocked-items/{id}:resolve",
+      "feature": "막힌 일 풀기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/branches",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/branches/{branch_id}",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/branches/{branch_id}/conflicts",
+      "feature": "본줄기에 맞추기, 충돌 풀기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches/{branch_id}/conflicts/{conflict_id}:resolve",
+      "feature": "본줄기에 맞추기, 충돌 풀기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/branches/{branch_id}/items",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches/{branch_id}/items",
+      "feature": "타입을 만들고 고치기(UI에서 CRUD)",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/branches/{branch_id}/items/{item_id}",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/branches/{branch_id}/items/{item_id}",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches/{branch_id}/items:batch",
+      "feature": "브랜치 열기, 항목 쓰기, 한 번에 쓰기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches/{branch_id}/type-merges",
+      "feature": "타입 합치기와 올리기(`ext`를 `org`로)",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches/{branch_id}/type-promotions",
+      "feature": "타입 합치기와 올리기(`ext`를 `org`로)",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/branches/{branch_id}:align",
+      "feature": "본줄기에 맞추기, 충돌 풀기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/candidate-runs/{run_id}",
+      "feature": "제안, 검사, 후보 실행, 미리 돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/capabilities",
+      "feature": "임시 콘솔을 내주기",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/defaults",
+      "feature": "사건 코드, 오류 코드, 기본값",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/event-codes",
+      "feature": "사건 코드, 오류 코드, 기본값",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/event-codes/{code}",
+      "feature": "목록(정제 연산, 해석기, 받는 방식, 링크의 뜻과 채널, 값 타입, 순수 함수, 질의, 역할, 오류와 사건 코드, 기본값)",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/parsers",
+      "feature": "읽지 못한 줄, 줄 틀과 해석기의 목록",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/pure-functions",
+      "feature": "목록(정제 연산, 해석기, 받는 방식, 링크의 뜻과 채널, 값 타입, 순수 함수, 질의, 역할, 오류와 사건 코드, 기본값)",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/queries",
+      "feature": "목록(정제 연산, 해석기, 받는 방식, 링크의 뜻과 채널, 값 타입, 순수 함수, 질의, 역할, 오류와 사건 코드, 기본값)",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/receive-modes",
+      "feature": "목록(정제 연산, 해석기, 받는 방식, 링크의 뜻과 채널, 값 타입, 순수 함수, 질의, 역할, 오류와 사건 코드, 기본값)",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/catalog/refinement-ops",
+      "feature": "목록(정제 연산, 해석기, 받는 방식, 링크의 뜻과 채널, 값 타입, 순수 함수, 질의, 역할, 오류와 사건 코드, 기본값)",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/collectors",
+      "feature": "수집 봉투(`ingester`)",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/competency-questions",
+      "feature": "역량 질문과 충족률",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/datasets",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/datasets/{dataset_id}:preview",
+      "feature": "데이터셋의 견본 줄과 컬럼 통계",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-imports",
+      "feature": "정의 내보내기와 들이기",
+      "adr": "ADR-0014",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/definition-items/{item_id}",
+      "feature": "개요, 묶음, 차이, 항목의 이력",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-items:preview",
+      "feature": "매핑의 미리 보기와 제안",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-items:preview:suggest",
+      "feature": "매핑의 미리 보기와 제안",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-items:validate",
+      "feature": "저장하지 않고 검사, 미리 보기, 제안",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-items:validate:preview",
+      "feature": "저장하지 않고 검사, 미리 보기, 제안",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-items:validate:preview:suggest",
+      "feature": "저장하지 않고 검사, 미리 보기, 제안",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/definition-sets",
+      "feature": "개요, 묶음, 차이, 항목의 이력",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/definition-sets/{from}/diff/{to}",
+      "feature": "개요, 묶음, 차이, 항목의 이력",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-sets/{set_no}/exports",
+      "feature": "정의 내보내기와 들이기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-sets/{set_no}/restores",
+      "feature": "되돌리기, 판으로 돌리기, 급한 되돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/definitions-lineage",
+      "feature": "계보와 누가 쓰나",
+      "adr": "ADR-0014",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definitions-lineage/what-depends",
+      "feature": "계보와 누가 쓰나",
+      "adr": "ADR-0014",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/definitions-overview",
+      "feature": "개요, 묶음, 차이, 항목의 이력",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/directory/subjects",
+      "feature": "나, 역할, 사람과 무리 찾기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/events",
+      "feature": "사건의 흐름과 이어 받기",
+      "adr": "ADR-0016",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/events/stream",
+      "feature": "사건의 흐름과 이어 받기",
+      "adr": "ADR-0016",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/expectations",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/feed-flows",
+      "feature": "붙잡힌 흐름 풀기와 버리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/feed-flows/{id}:release",
+      "feature": "붙잡힌 흐름 풀기와 버리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/feed-flows/{id}:release:discard",
+      "feature": "붙잡힌 흐름 풀기와 버리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/feeds",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/grants",
+      "feature": "권한 부여(KG, 객체 조건, 범위 있는 관리의 자리)와 거두기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/grants",
+      "feature": "권한 부여(KG, 객체 조건, 범위 있는 관리의 자리)와 거두기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/grants/{grant_id}:revoke",
+      "feature": "권한 부여(KG, 객체 조건, 범위 있는 관리의 자리)와 거두기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/guard-confirmations",
+      "feature": "안전장치에 걸린 적용의 확인",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ingest/envelopes",
+      "feature": "수집 봉투(`ingester`)",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/jobs",
+      "feature": "작업의 진행, 취소, 결과",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/jobs/{job_id}",
+      "feature": "작업의 진행, 취소, 결과",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/jobs/{job_id}/result",
+      "feature": "대량 읽기",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/jobs/{job_id}:cancel",
+      "feature": "작업의 진행, 취소, 결과",
+      "adr": "ADR-0016",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs",
+      "feature": "KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}",
+      "feature": "KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/changes",
+      "feature": "변경의 이어짐을 번호로 가져가기",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/completeness-declarations",
+      "feature": "완전성 선언과 상태",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/graph-versions",
+      "feature": "봉한 버전의 목록과 한 버전(실행기의 의미 버전, 해시 규칙의 버전 포함)",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/graph-versions/{kg_version_id}",
+      "feature": "봉한 버전의 목록과 한 버전(실행기의 의미 버전, 해시 규칙의 버전 포함)",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/health",
+      "feature": "건강과 건강 요약",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/health/{resource_kind}/{resource_id}",
+      "feature": "건강과 건강 요약",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/identity-events",
+      "feature": "이 합침을 되돌리기와 식별 이력",
+      "adr": "ADR-0008",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/identity-events/{event_id}:revert",
+      "feature": "이 합침을 되돌리기와 식별 이력",
+      "adr": "ADR-0008",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/issues",
+      "feature": "문제 목록과 문제에서 제안 열기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/issues/{issue_id}:open-proposal",
+      "feature": "문제 목록과 문제에서 제안 열기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/links",
+      "feature": "객체 찾기와 한 객체, 링크, 이웃",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/links/{link_id}",
+      "feature": "객체 찾기와 한 객체, 링크, 이웃",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/objects",
+      "feature": "객체 찾기와 한 객체, 링크, 이웃",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/objects/{object_id}",
+      "feature": "객체 찾기와 한 객체, 링크, 이웃",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/objects/{object_id}/issue-reports",
+      "feature": "KG가 틀렸다고 알리기",
+      "adr": "ADR-0013",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/objects:batch-get",
+      "feature": "여러 객체를 한 번에 읽기",
+      "adr": "ADR-0010",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/pending-values",
+      "feature": "대기 중인 값(붙을 곳이 없는 값)",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/questions/changes",
+      "feature": "변경의 이어짐을 번호로 가져가기",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/questions/competency",
+      "feature": "역량 질문과 충족률",
+      "adr": "ADR-0013",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/questions/{question_name}",
+      "feature": "닫힌 질의 열셋",
+      "adr": "ADR-0010",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/refreshes",
+      "feature": "지정해서 다시 받기와 그 결과",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/refreshes/{refresh_id}",
+      "feature": "지정해서 다시 받기와 그 결과",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/kgs/{kg}/scopes",
+      "feature": "저장해 둔 범위",
+      "adr": "ADR-0010",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/scopes",
+      "feature": "저장해 둔 범위",
+      "adr": "ADR-0010",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/kgs/{kg}/scopes/{scope_id}",
+      "feature": "저장해 둔 범위",
+      "adr": "ADR-0010",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/scopes/{scope_id}/bulk-reads",
+      "feature": "대량 읽기",
+      "adr": "ADR-0010",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/serving-pins",
+      "feature": "묻는 쪽을 옛 버전에 고정",
+      "adr": "ADR-0009",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/kgs/{kg}/serving-pins/{pin_id}",
+      "feature": "묻는 쪽을 옛 버전에 고정",
+      "adr": "ADR-0009",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/kgs/{kg}/value-checks",
+      "feature": "기대와 견주기",
+      "adr": "ADR-0010",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/master-keys",
+      "feature": "으뜸 열쇠의 목록, 다시 감싸기, 물리기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/master-keys/{key_id}:rewrap",
+      "feature": "으뜸 열쇠의 목록, 다시 감싸기, 물리기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/master-keys/{key_id}:rewrap:retire",
+      "feature": "으뜸 열쇠의 목록, 다시 감싸기, 물리기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/me",
+      "feature": "나, 역할, 사람과 무리 찾기",
+      "adr": "ADR-0012",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/merge-policies",
+      "feature": "위험의 등급, 자동 병합의 정책",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/merge-queue",
+      "feature": "검토, 승인, 줄, 닫기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/metrics",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/metrics/query",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/object-types/{type_id}/feed-candidates",
+      "feature": "타입 쪽에서 보기와 빈 속성의 후보",
+      "adr": "ADR-0007",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/object-types/{type_id}/feed-table",
+      "feature": "타입 쪽에서 보기와 빈 속성의 후보",
+      "adr": "ADR-0007",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/object-types/{type_id}/usage",
+      "feature": "비슷한 타입 찾기, 겹치는 짝의 목록, 타입의 쓰임",
+      "adr": "ADR-0007",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/objectives",
+      "feature": "지표, 목표, 알림의 규칙, 알림, 알림의 확인·잠시 끔·넘기기",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ops/action-runs",
+      "feature": "실행의 목록, 한 건, 취소",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ops/action-runs/{run_id}",
+      "feature": "실행의 목록, 한 건, 취소",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/action-runs/{run_id}:approve",
+      "feature": "운영 행위의 승인과 거절(사람만)",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/action-runs/{run_id}:approve:reject",
+      "feature": "운영 행위의 승인과 거절(사람만)",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/action-runs/{run_id}:cancel",
+      "feature": "실행의 목록, 한 건, 취소",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ops/actions",
+      "feature": "운영 행위의 목록과 미리 해 보기",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/actions/pause_sources_by_secret/runs",
+      "feature": "비밀 값으로 소스를 한 번에 멈추기",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/actions/{action}/runs",
+      "feature": "운영 행위를 요청하기(행위마다 하나)",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/actions/{action}:dry-run",
+      "feature": "운영 행위의 목록과 미리 해 보기",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/ops/diagnose",
+      "feature": "진단",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/ops/rollout",
+      "feature": "올리는 중의 맞음(두 버전이 함께 도는 것)",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/owners",
+      "feature": "담당자 모아 보기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/parsers:probe",
+      "feature": "견본 문서로 해석기의 후보와 나무",
+      "adr": "ADR-0008",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/presets",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/proposals",
+      "feature": "제안, 검사, 후보 실행, 미리 돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals",
+      "feature": "제안, 검사, 후보 실행, 미리 돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/proposals/{proposal_id}",
+      "feature": "제안, 검사, 후보 실행, 미리 돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}/candidate-runs",
+      "feature": "제안, 검사, 후보 실행, 미리 돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/proposals/{proposal_id}/checks",
+      "feature": "제안, 검사, 후보 실행, 미리 돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/proposals/{proposal_id}/revert-preview",
+      "feature": "되돌리기, 판으로 돌리기, 급한 되돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}/reverts",
+      "feature": "되돌리기, 판으로 돌리기, 급한 되돌리기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}:approve",
+      "feature": "검토, 승인, 줄, 닫기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}:close",
+      "feature": "검토, 승인, 줄, 닫기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}:enqueue",
+      "feature": "검토, 승인, 줄, 닫기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}:reject",
+      "feature": "검토, 승인, 줄, 닫기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals/{proposal_id}:request-review",
+      "feature": "검토, 승인, 줄, 닫기",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/proposals:from-items",
+      "feature": "작은 변경을 제안 하나로",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/refinements",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/resources/{resource_kind}/{resource_id}/timeline",
+      "feature": "시간줄",
+      "adr": "ADR-0013",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/schedules",
+      "feature": "어댑터, 프리셋, 소스, 데이터셋, 정제, 공급, 기대 조건, 일정 읽기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/schedules/{id}:run-now",
+      "feature": "소스 일시 정지와 다시 켜기, 지금 한 번",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/secrets",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/secrets",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "DELETE",
+      "path": "/v1/secrets/{secret_id}",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/secrets/{secret_id}",
+      "feature": "`allowed_hosts` 바꾸기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/secrets/{secret_id}/versions",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/secrets/{secret_id}/versions",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/secrets/{secret_id}/versions/{version}:check",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/secrets/{secret_id}/versions/{version}:retire",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 시험하고 물리기, 지우기",
+      "adr": "ADR-0018",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/settings",
+      "feature": "메시지 기록 저장소 어댑터(받기, 내보내기)의 연결",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "PATCH",
+      "path": "/v1/settings",
+      "feature": "혼자 쓰는 시험 배포의 `solo_approval`",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/settings/{name}/revisions",
+      "feature": "설정을 바꾸고 되돌리기",
+      "adr": "ADR-0017",
+      "phase": "open-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/similar-type-pairs",
+      "feature": "비슷한 타입 찾기, 겹치는 짝의 목록, 타입의 쓰임",
+      "adr": "ADR-0007",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sources",
+      "feature": "메시지 기록 저장소 어댑터(받기, 내보내기)의 연결",
+      "adr": "ADR-0009",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sources/{source_id}/upload-template",
+      "feature": "엑셀·CSV 올리기와 칸 견본",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}/uploads",
+      "feature": "엑셀·CSV 올리기와 칸 견본",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}:introspect",
+      "feature": "소스 들여다보기, 점검(`branch_id`를 받음)",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}:introspect:check",
+      "feature": "소스 들여다보기, 점검(`branch_id`를 받음)",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}:pause",
+      "feature": "소스 일시 정지와 다시 켜기, 지금 한 번",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}:pause:resume",
+      "feature": "소스 일시 정지와 다시 켜기, 지금 한 번",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}:push",
+      "feature": "밀어 넣기(`ingester`)",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sync-runs",
+      "feature": "실행, 단계별 수, 견본, 다시 돌리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sync-runs/{run_id}/replays",
+      "feature": "실행, 단계별 수, 견본, 다시 돌리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sync-runs/{run_id}/samples",
+      "feature": "실행, 단계별 수, 견본, 다시 돌리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sync-runs/{run_id}/stages",
+      "feature": "실행, 단계별 수, 견본, 다시 돌리기",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/system-accounts",
+      "feature": "수집기를 등록하고 토큰을 바꾸기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/system-accounts",
+      "feature": "시스템 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/system-accounts/{account_id}:disable",
+      "feature": "시스템 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/system-accounts/{account_id}:rotate-token",
+      "feature": "시스템 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
+      "adr": "ADR-0012",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/trial-ingests",
+      "feature": "시험 수집(새 소스)",
+      "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/type-similarity-checks",
+      "feature": "비슷한 타입 찾기, 겹치는 짝의 목록, 타입의 쓰임",
+      "adr": "ADR-0007",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/type-usage",
+      "feature": "비슷한 타입 찾기, 겹치는 짝의 목록, 타입의 쓰임",
+      "adr": "ADR-0007",
+      "phase": "closed-beta",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/usage-records",
+      "feature": "감사 기록, 사용 기록",
+      "adr": "ADR-0012",
+      "phase": "closed-beta",
+      "status": "planned"
+    }
+  ]
+}

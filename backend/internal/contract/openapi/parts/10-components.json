@@ -1,0 +1,423 @@
+{
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "A bearer token. The identity backend that issues tokens is not built yet; a development token exists for development only (ADR-0024)."
+      }
+    },
+    "headers": {
+      "TraceId": {
+        "description": "The trace id of the request; the same as meta.trace_id or trace_id in the body.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ETag": {
+        "description": "The tag of this answer. For the type registry it is made from the model hash and the query.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "ContentLocation": {
+        "description": "The canonical address of the resource, sent when the request used a name or an old name.",
+        "required": false,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "WWWAuthenticate": {
+        "description": "How to authenticate: Bearer.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      },
+      "Allow": {
+        "description": "The methods the path has.",
+        "required": true,
+        "schema": {
+          "type": "string"
+        }
+      }
+    },
+    "parameters": {
+      "Limit": {
+        "name": "limit",
+        "in": "query",
+        "required": false,
+        "description": "The page size; default 100, at most 1000.",
+        "schema": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000,
+          "default": 100
+        }
+      },
+      "Cursor": {
+        "name": "cursor",
+        "in": "query",
+        "required": false,
+        "description": "The next_cursor of the previous page. Send the same filter and sort again.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IfNoneMatch": {
+        "name": "If-None-Match",
+        "in": "header",
+        "required": false,
+        "description": "The ETag of a copy you hold; the server answers 304 when it is still current.",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IfMatch": {
+        "name": "If-Match",
+        "in": "header",
+        "required": false,
+        "description": "The ETag of the version you read; required on PATCH, DELETE and actions that change an item (412 when it no longer matches, 428 when missing).",
+        "schema": {
+          "type": "string"
+        }
+      },
+      "IdempotencyKey": {
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": false,
+        "description": "A unique string made by the client; required on creating POSTs and actions. The same key and body replay the first answer.",
+        "schema": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 128
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "The request is wrong: an unknown or invalid query parameter, filter, sort, fields, include or cursor.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.limit_invalid",
+              "title": "Invalid input",
+              "status": 400,
+              "code": "invalid_input.limit_invalid",
+              "params": {
+                "min": 1,
+                "max": 1000
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "The caller is not logged in or the token is not accepted.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          },
+          "WWW-Authenticate": {
+            "$ref": "#/components/headers/WWWAuthenticate"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/auth.token_missing",
+              "title": "Unauthorized",
+              "status": 401,
+              "code": "auth.token_missing",
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "Forbidden": {
+        "description": "The caller is logged in but holds no role that may do this.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/permission.role_missing",
+              "title": "Forbidden",
+              "status": 403,
+              "code": "permission.role_missing",
+              "params": {
+                "required": ["read"]
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "The resource does not exist or is not visible to the caller (the two look alike).",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/not_found.resource",
+              "title": "Not found",
+              "status": 404,
+              "code": "not_found.resource",
+              "params": {
+                "resource": "object_type"
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "MethodNotAllowed": {
+        "description": "The path has no such method.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          },
+          "Allow": {
+            "$ref": "#/components/headers/Allow"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.method_not_allowed",
+              "title": "Invalid input",
+              "status": 405,
+              "code": "invalid_input.method_not_allowed",
+              "params": {
+                "method": "POST",
+                "allowed": ["GET"]
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "NotAcceptable": {
+        "description": "The server answers only application/json.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.not_acceptable",
+              "title": "Invalid input",
+              "status": 406,
+              "code": "invalid_input.not_acceptable",
+              "params": {
+                "accept": "text/html"
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "The cursor belongs to another generation of the model; read the list again from the start.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/conflict.generation_changed",
+              "title": "Conflict",
+              "status": 409,
+              "code": "conflict.generation_changed",
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "PreconditionFailed": {
+        "description": "If-Match no longer matches the current version.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/conflict.version_mismatch",
+              "title": "Conflict",
+              "status": 412,
+              "code": "conflict.version_mismatch",
+              "params": {
+                "current_etag": "\"rev-18\""
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "PreconditionRequired": {
+        "description": "The request needs an If-Match header.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.precondition_required",
+              "title": "Invalid input",
+              "status": 428,
+              "code": "invalid_input.precondition_required",
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "PayloadTooLarge": {
+        "description": "The body is larger than the limit.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/invalid_input.body_too_large",
+              "title": "Invalid input",
+              "status": 413,
+              "code": "invalid_input.body_too_large",
+              "params": {
+                "max_bytes": 1048576
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "A limit was exceeded; wait Retry-After seconds.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/rate_limited.requests",
+              "title": "Too many requests",
+              "status": 429,
+              "code": "rate_limited.requests",
+              "params": {
+                "retry_after_seconds": 5
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "The server failed; the trace id finds the log line.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/server.internal",
+              "title": "Server error",
+              "status": 500,
+              "code": "server.internal",
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      },
+      "Unavailable": {
+        "description": "The server is not ready to take work.",
+        "headers": {
+          "X-Trace-Id": {
+            "$ref": "#/components/headers/TraceId"
+          }
+        },
+        "content": {
+          "application/problem+json": {
+            "schema": {
+              "$ref": "#/components/schemas/Problem"
+            },
+            "example": {
+              "type": "/v1/problems/server.unavailable",
+              "title": "Server error",
+              "status": 503,
+              "code": "server.unavailable",
+              "params": {
+                "reason": "starting"
+              },
+              "trace_id": "tr-0123456789abcdef"
+            }
+          }
+        }
+      }
+    }
+  }
+}
