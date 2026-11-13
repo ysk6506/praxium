@@ -1,0 +1,15 @@
+display_name  Server SN-010100
+object_id     obj_0e54625b65d5501a4bdb9af739ac1907
+object_type   PhysicalServer
+
+attributes
+NAME         VALUE  UNIT  GRADE  BASIS       SEEN_AT               STALE
+model        M1     -     fact   configured  2030-01-01T10:00:00Z  false
+power_state  on     -     fact   observed    2030-01-01T00:00:00Z  false
+
+link_counts  out 1  in 0
+LINK_TYPE   DIRECTION  COUNT
+MOUNTED_IN  out        1
+
+evidence  min_grade fact  fact 2  assumed 0  unknown 0
+oldest  power_state (97445 s)

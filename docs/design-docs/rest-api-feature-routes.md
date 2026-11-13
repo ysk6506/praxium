@@ -44,9 +44,9 @@ follows:
 | 타입 합치기와 올리기(`ext`를 `org`로) | `POST /v1/branches/{branch_id}/type-merges`, `POST /v1/branches/{branch_id}/type-promotions` |
 | `scope_keys`를 타입의 속성에 선언하기 | 타입 항목의 칸(브랜치의 항목) |
 | 표시 이름과 설명을 언어별로 | 각 자원의 `display_names` |
-| 객체 찾기와 한 객체, 링크, 이웃 | `GET /v1/kgs/{kg}/objects`, `GET /v1/kgs/{kg}/objects/{object_id}`, `GET /v1/kgs/{kg}/links`, `GET /v1/kgs/{kg}/links/{link_id}` |
+| 객체 찾기와 한 객체, 링크, 이웃 | `GET /v1/kgs/{kg}/objects`, `GET /v1/kgs/{kg}/objects/{object_id}`, `GET /v1/kgs/{kg}/objects/{object_id}/links`, `GET /v1/kgs/{kg}/links`, `GET /v1/kgs/{kg}/links/{link_id}` |
 | 여러 객체를 한 번에 읽기 | `POST /v1/kgs/{kg}/objects:batch-get` |
-| 닫힌 질의 열셋 | `POST /v1/kgs/{kg}/questions/{question_name}` |
+| 닫힌 질의 열셋 | `POST /v1/kgs/{kg}/questions/find`, `POST /v1/kgs/{kg}/questions/get`, `POST /v1/kgs/{kg}/questions/neighbors`, `POST /v1/kgs/{kg}/questions/{question_name}`(나머지 열 가지) |
 | 노출됨의 둘(`exposed_direct`, `exposed_inherited`) | `impact`의 답 |
 | 지정해서 다시 받기와 그 결과 | `POST /v1/kgs/{kg}/refreshes`, `GET /v1/kgs/{kg}/refreshes/{refresh_id}` |
 | 기대와 견주기 | `POST /v1/kgs/{kg}/value-checks` |

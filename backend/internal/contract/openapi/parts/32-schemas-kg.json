@@ -1,0 +1,910 @@
+{
+  "components": {
+    "schemas": {
+      "KG": {
+        "type": "object",
+        "description": "One KG.",
+        "properties": {
+          "kg_id": {
+            "type": "string",
+            "description": "The id of the KG."
+          },
+          "name": {
+            "type": "string",
+            "description": "The name of the KG."
+          },
+          "alias": {
+            "type": ["string", "null"],
+            "description": "main for the production KG, else null."
+          },
+          "role": {
+            "type": "string",
+            "description": "production, candidate, test or system.",
+            "enum": ["production", "candidate", "test", "system"]
+          },
+          "state": {
+            "type": "string",
+            "description": "The state of the KG in its life."
+          },
+          "definition_set": {
+            "type": "string",
+            "description": "The hash of the model definition set the KG was built on."
+          },
+          "generation": {
+            "type": "integer",
+            "description": "The generation, which rises on every point-in-time restore."
+          },
+          "head_change_seq": {
+            "type": "integer",
+            "description": "The last applied change number."
+          },
+          "readable_through": {
+            "type": "integer",
+            "description": "The last change number that readers may see."
+          },
+          "projection_state": {
+            "type": "string",
+            "description": "The state of the projections of the KG; none while there are none."
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When the KG was created, UTC."
+          }
+        },
+        "required": [
+          "kg_id",
+          "name",
+          "alias",
+          "role",
+          "state",
+          "definition_set",
+          "generation",
+          "head_change_seq",
+          "readable_through",
+          "projection_state",
+          "created_at"
+        ]
+      },
+      "KGListMeta": {
+        "type": "object",
+        "description": "The meta of a list of KGs.",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          }
+        },
+        "required": ["trace_id", "result_complete"]
+      },
+      "KGItemMeta": {
+        "type": "object",
+        "description": "The meta of one KG.",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "allowed_actions": {
+            "type": "array",
+            "description": "What the caller may do with the KG now.",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            }
+          }
+        },
+        "required": ["trace_id", "allowed_actions"]
+      },
+      "KGList": {
+        "type": "object",
+        "description": "A page of KGs.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The KGs of this page.",
+            "items": {
+              "$ref": "#/components/schemas/KG"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/KGListMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "KGAnswer": {
+        "type": "object",
+        "description": "One KG.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/KG"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/KGItemMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "QueryMeta": {
+        "type": "object",
+        "description": "The meta of an answer read from a KG (kg-queries.md 4, rest-api.md 3-2).",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "as_of": {
+            "$ref": "#/components/schemas/AsOf"
+          },
+          "served_by": {
+            "$ref": "#/components/schemas/ServedBy"
+          },
+          "freshness": {
+            "$ref": "#/components/schemas/Freshness"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/Evidence"
+          },
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          },
+          "hidden": {
+            "$ref": "#/components/schemas/Hidden"
+          },
+          "model_limits": {
+            "type": "array",
+            "description": "Limits of the model that touch this answer.",
+            "items": {
+              "type": "string",
+              "description": "One limit."
+            }
+          },
+          "warnings": {
+            "type": "array",
+            "description": "Warnings about the answer.",
+            "items": {
+              "type": "string",
+              "description": "One warning."
+            }
+          },
+          "allowed_actions": {
+            "type": "array",
+            "description": "What the caller may do with the object now; on a single object only.",
+            "items": {
+              "$ref": "#/components/schemas/AllowedAction"
+            }
+          }
+        },
+        "required": [
+          "trace_id",
+          "as_of",
+          "served_by",
+          "freshness",
+          "evidence",
+          "result_complete",
+          "hidden",
+          "model_limits",
+          "warnings"
+        ]
+      },
+      "ObjectRef": {
+        "type": "object",
+        "description": "An object by its id, type and display name.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "The object id, obj_ and 32 hex digits."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "The name of the object type."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name of the object."
+          }
+        },
+        "required": ["object_id", "object_type", "display_name"]
+      },
+      "TypeCount": {
+        "type": "object",
+        "description": "How many matches an object type holds.",
+        "properties": {
+          "object_type": {
+            "type": "string",
+            "description": "The name of the object type."
+          },
+          "count": {
+            "type": "integer",
+            "description": "How many objects."
+          }
+        },
+        "required": ["object_type", "count"]
+      },
+      "FindItem": {
+        "type": "object",
+        "description": "One object found.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "The object id."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "The name of the object type."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name."
+          },
+          "matched_on": {
+            "type": "array",
+            "description": "Which filters matched.",
+            "items": {
+              "type": "string",
+              "description": "A filter field."
+            }
+          }
+        },
+        "required": ["object_id", "object_type", "display_name", "matched_on"]
+      },
+      "FindData": {
+        "type": "object",
+        "description": "What find returns.",
+        "properties": {
+          "counts_by_type": {
+            "type": "array",
+            "description": "The matches by object type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            }
+          },
+          "items": {
+            "type": "array",
+            "description": "The matches of this page; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/FindItem"
+            }
+          }
+        },
+        "required": ["counts_by_type"]
+      },
+      "FindAnswer": {
+        "type": "object",
+        "description": "The answer of find.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/FindData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "AttributeValue": {
+        "type": "object",
+        "description": "One attribute of an object with the evidence behind it.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The attribute name."
+          },
+          "value": {
+            "type": ["string", "number", "boolean", "null", "array", "object"],
+            "description": "The value; null when masked."
+          },
+          "unit": {
+            "type": "string",
+            "description": "The unit of the value."
+          },
+          "grade": {
+            "type": "string",
+            "description": "fact, assumed or unknown."
+          },
+          "basis": {
+            "type": "string",
+            "description": "How the value is known."
+          },
+          "seen_at": {
+            "type": "string",
+            "description": "When the source saw it."
+          },
+          "source_ref": {
+            "type": "string",
+            "description": "The source of the value."
+          },
+          "stale": {
+            "type": "boolean",
+            "description": "Whether the value is older than its period."
+          },
+          "volatile": {
+            "type": "boolean",
+            "description": "Whether the value is volatile."
+          },
+          "masked": {
+            "type": "boolean",
+            "description": "Whether the value is hidden by sensitivity."
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why the value is masked."
+          }
+        },
+        "required": ["name", "value", "grade", "basis", "stale"]
+      },
+      "IdentifierItem": {
+        "type": "object",
+        "description": "One identifier of an object.",
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "description": "The scheme."
+          },
+          "value": {
+            "type": "string",
+            "description": "The value."
+          },
+          "scope": {
+            "type": "string",
+            "description": "The scope of the identifier."
+          }
+        },
+        "required": ["scheme", "value"]
+      },
+      "LinkCountGroup": {
+        "type": "object",
+        "description": "Links of one type and direction.",
+        "properties": {
+          "link_type": {
+            "type": "string",
+            "description": "The link type."
+          },
+          "direction": {
+            "type": "string",
+            "description": "out or in."
+          },
+          "count": {
+            "type": "integer",
+            "description": "How many links."
+          }
+        },
+        "required": ["link_type", "direction", "count"]
+      },
+      "LinkCounts": {
+        "type": "object",
+        "description": "How many links an object has.",
+        "properties": {
+          "out": {
+            "type": "integer",
+            "description": "Outgoing links."
+          },
+          "in": {
+            "type": "integer",
+            "description": "Incoming links."
+          },
+          "groups": {
+            "type": "array",
+            "description": "The counts by type and direction.",
+            "items": {
+              "$ref": "#/components/schemas/LinkCountGroup"
+            }
+          }
+        },
+        "required": ["out", "in", "groups"]
+      },
+      "WorstFreshness": {
+        "type": "object",
+        "description": "The attribute with the oldest data.",
+        "properties": {
+          "attribute": {
+            "type": "string",
+            "description": "The attribute name."
+          },
+          "source_ref": {
+            "type": "string",
+            "description": "Its source."
+          },
+          "oldest_age_seconds": {
+            "type": "integer",
+            "description": "Its age in seconds."
+          }
+        },
+        "required": ["attribute", "oldest_age_seconds"]
+      },
+      "ObjectEvidence": {
+        "type": "object",
+        "description": "The evidence of the attributes of one object.",
+        "properties": {
+          "min_grade": {
+            "type": ["string", "null"],
+            "description": "The lowest grade."
+          },
+          "counts": {
+            "type": "object",
+            "description": "Facts by grade.",
+            "properties": {
+              "fact": {
+                "type": "integer",
+                "description": "Facts."
+              },
+              "assumed": {
+                "type": "integer",
+                "description": "Assumed."
+              },
+              "unknown": {
+                "type": "integer",
+                "description": "Unknown."
+              }
+            },
+            "required": ["fact", "assumed", "unknown"]
+          },
+          "worst_freshness": {
+            "$ref": "#/components/schemas/WorstFreshness"
+          }
+        },
+        "required": ["min_grade", "counts"]
+      },
+      "Valid": {
+        "type": "object",
+        "description": "The change numbers an object state is valid for.",
+        "properties": {
+          "from_change_seq": {
+            "type": "integer",
+            "description": "The first change number."
+          },
+          "to_change_seq": {
+            "type": ["integer", "null"],
+            "description": "The last change number; null while current."
+          }
+        },
+        "required": ["from_change_seq", "to_change_seq"]
+      },
+      "GetData": {
+        "type": "object",
+        "description": "What get returns.",
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ObjectRef"
+          },
+          "attributes": {
+            "type": "array",
+            "description": "The attributes; only when asked for.",
+            "items": {
+              "$ref": "#/components/schemas/AttributeValue"
+            }
+          },
+          "identifiers": {
+            "type": "array",
+            "description": "The identifiers; only when asked for.",
+            "items": {
+              "$ref": "#/components/schemas/IdentifierItem"
+            }
+          },
+          "link_counts": {
+            "$ref": "#/components/schemas/LinkCounts"
+          },
+          "evidence": {
+            "$ref": "#/components/schemas/ObjectEvidence"
+          },
+          "valid": {
+            "$ref": "#/components/schemas/Valid"
+          },
+          "provenance_refs": {
+            "type": "array",
+            "description": "Provenance references; only when asked for.",
+            "items": {
+              "type": "string",
+              "description": "A reference."
+            }
+          }
+        },
+        "required": ["object", "valid"]
+      },
+      "GetAnswer": {
+        "type": "object",
+        "description": "The answer of get.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/GetData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "NeighborGroup": {
+        "type": "object",
+        "description": "Neighbors of one link type, direction and peer type.",
+        "properties": {
+          "link_type": {
+            "type": "string",
+            "description": "The link type."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "The meaning of the link type."
+          },
+          "direction": {
+            "type": "string",
+            "description": "out or in."
+          },
+          "peer_type": {
+            "type": "string",
+            "description": "The object type of the peers."
+          },
+          "count": {
+            "type": "integer",
+            "description": "How many neighbors."
+          }
+        },
+        "required": ["link_type", "meaning", "direction", "peer_type", "count"]
+      },
+      "NeighborItem": {
+        "type": "object",
+        "description": "One neighbor.",
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "description": "The link id, lnk_ and 32 hex digits."
+          },
+          "link_type": {
+            "type": "string",
+            "description": "The link type."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "The meaning."
+          },
+          "direction": {
+            "type": "string",
+            "description": "out or in."
+          },
+          "step": {
+            "type": "integer",
+            "description": "How many links from the object."
+          },
+          "via_object_id": {
+            "type": ["string", "null"],
+            "description": "The object the path went through; null at step 1."
+          },
+          "via_hidden": {
+            "type": "boolean",
+            "description": "Whether the object in between is hidden from the caller."
+          },
+          "peer_object_id": {
+            "type": "string",
+            "description": "The peer object id."
+          },
+          "peer_type": {
+            "type": "string",
+            "description": "The peer's object type."
+          },
+          "peer_display_name": {
+            "type": "string",
+            "description": "The peer's display name."
+          },
+          "grade": {
+            "type": "string",
+            "description": "The grade of the link."
+          },
+          "basis": {
+            "type": "string",
+            "description": "The basis of the link."
+          }
+        },
+        "required": [
+          "link_id",
+          "link_type",
+          "meaning",
+          "direction",
+          "step",
+          "via_object_id",
+          "peer_object_id",
+          "peer_type",
+          "peer_display_name",
+          "grade",
+          "basis"
+        ]
+      },
+      "NeighborsData": {
+        "type": "object",
+        "description": "What neighbors returns.",
+        "properties": {
+          "object": {
+            "$ref": "#/components/schemas/ObjectRef"
+          },
+          "groups": {
+            "type": "array",
+            "description": "The neighbors by link type, direction and peer type.",
+            "items": {
+              "$ref": "#/components/schemas/NeighborGroup"
+            }
+          },
+          "items": {
+            "type": "array",
+            "description": "The neighbors of this page; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/NeighborItem"
+            }
+          }
+        },
+        "required": ["object", "groups"]
+      },
+      "NeighborsAnswer": {
+        "type": "object",
+        "description": "The answer of neighbors.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/NeighborsData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      },
+      "IdentifierFilter": {
+        "type": "object",
+        "description": "An identifier to look for.",
+        "properties": {
+          "scheme": {
+            "type": "string",
+            "description": "The identifier scheme."
+          },
+          "value": {
+            "type": "string",
+            "description": "The value."
+          }
+        },
+        "required": ["scheme", "value"]
+      },
+      "AttributeFilter": {
+        "type": "object",
+        "description": "A condition on one attribute.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The attribute name."
+          },
+          "op": {
+            "type": "string",
+            "description": "The operation.",
+            "enum": ["equals", "in", "prefix", "range"]
+          },
+          "values": {
+            "type": "array",
+            "description": "The values: one for equals and prefix, a list for in, from and to for range.",
+            "items": {
+              "type": "string",
+              "description": "A value."
+            }
+          }
+        },
+        "required": ["name", "op", "values"]
+      },
+      "FindRequest": {
+        "type": "object",
+        "description": "The input of find.",
+        "properties": {
+          "object_type": {
+            "type": "string",
+            "description": "Objects of this type; its subtypes too unless include_subtypes is false."
+          },
+          "include_subtypes": {
+            "type": "boolean",
+            "description": "Whether subtypes match; default true."
+          },
+          "trait": {
+            "type": "string",
+            "description": "Objects of a type that has this trait."
+          },
+          "attributes": {
+            "type": "array",
+            "description": "Conditions on attributes, joined by and.",
+            "items": {
+              "$ref": "#/components/schemas/AttributeFilter"
+            }
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierFilter"
+          },
+          "text": {
+            "type": "string",
+            "description": "Objects whose display name or string attributes contain this text."
+          },
+          "scope_id": {
+            "type": "string",
+            "description": "Not supported yet: refused with query_scope_unsupported."
+          },
+          "kg_version_id": {
+            "type": "string",
+            "description": "Read this sealed KG version (time travel)."
+          },
+          "change_seq": {
+            "type": "integer",
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0
+          },
+          "view": {
+            "type": "string",
+            "description": "as_observed (default) or as_designed.",
+            "enum": ["as_observed", "as_designed"]
+          },
+          "min_seq": {
+            "type": "integer",
+            "description": "Wait until this change number is readable.",
+            "minimum": 0
+          },
+          "wait_timeout": {
+            "type": "string",
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S."
+          },
+          "max_staleness": {
+            "type": "string",
+            "description": "Refuse values older than this, an ISO 8601 duration."
+          },
+          "shape": {
+            "type": "string",
+            "description": "summary (default) or items.",
+            "enum": ["summary", "items"]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The page size; default 100, at most 1000.",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "cursor": {
+            "type": "string",
+            "description": "The cursor of the previous page."
+          }
+        }
+      },
+      "GetRequest": {
+        "type": "object",
+        "description": "The input of get: an object id or an identifier.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "An object id, obj_ and 32 hex digits."
+          },
+          "identifier": {
+            "$ref": "#/components/schemas/IdentifierFilter"
+          },
+          "include": {
+            "type": "array",
+            "description": "The parts to add; default attributes.",
+            "items": {
+              "type": "string",
+              "description": "attributes, identifiers, link_counts, evidence or provenance."
+            }
+          },
+          "kg_version_id": {
+            "type": "string",
+            "description": "Read this sealed KG version (time travel)."
+          },
+          "change_seq": {
+            "type": "integer",
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0
+          },
+          "view": {
+            "type": "string",
+            "description": "as_observed (default) or as_designed.",
+            "enum": ["as_observed", "as_designed"]
+          },
+          "min_seq": {
+            "type": "integer",
+            "description": "Wait until this change number is readable.",
+            "minimum": 0
+          },
+          "wait_timeout": {
+            "type": "string",
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S."
+          },
+          "max_staleness": {
+            "type": "string",
+            "description": "Refuse values older than this, an ISO 8601 duration."
+          },
+          "shape": {
+            "type": "string",
+            "description": "summary (default) or items.",
+            "enum": ["summary", "items"]
+          }
+        }
+      },
+      "NeighborsRequest": {
+        "type": "object",
+        "description": "The input of neighbors.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "An object id, obj_ and 32 hex digits."
+          },
+          "link_types": {
+            "type": "array",
+            "description": "Only these link types.",
+            "items": {
+              "type": "string",
+              "description": "A link type name."
+            }
+          },
+          "meanings": {
+            "type": "array",
+            "description": "Only these meanings.",
+            "items": {
+              "type": "string",
+              "description": "A meaning."
+            }
+          },
+          "direction": {
+            "type": "string",
+            "description": "out, in or both.",
+            "enum": ["out", "in", "both"]
+          },
+          "max_steps": {
+            "type": "integer",
+            "description": "How many links to follow; default 1, at most 3.",
+            "minimum": 1,
+            "maximum": 3
+          },
+          "peer_types": {
+            "type": "array",
+            "description": "Only peers of these object types.",
+            "items": {
+              "type": "string",
+              "description": "An object type name."
+            }
+          },
+          "kg_version_id": {
+            "type": "string",
+            "description": "Read this sealed KG version (time travel)."
+          },
+          "change_seq": {
+            "type": "integer",
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0
+          },
+          "view": {
+            "type": "string",
+            "description": "as_observed (default) or as_designed.",
+            "enum": ["as_observed", "as_designed"]
+          },
+          "min_seq": {
+            "type": "integer",
+            "description": "Wait until this change number is readable.",
+            "minimum": 0
+          },
+          "wait_timeout": {
+            "type": "string",
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S."
+          },
+          "max_staleness": {
+            "type": "string",
+            "description": "Refuse values older than this, an ISO 8601 duration."
+          },
+          "shape": {
+            "type": "string",
+            "description": "summary (default) or items.",
+            "enum": ["summary", "items"]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The page size; default 100, at most 1000.",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "cursor": {
+            "type": "string",
+            "description": "The cursor of the previous page."
+          }
+        },
+        "required": ["object_id"]
+      }
+    }
+  }
+}

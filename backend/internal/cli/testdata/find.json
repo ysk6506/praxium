@@ -1,0 +1,68 @@
+{
+  "data": {
+    "counts_by_type": [
+      {
+        "count": 4,
+        "object_type": "Rack"
+      }
+    ],
+    "items": [
+      {
+        "display_name": "Rack R01",
+        "matched_on": ["object_type"],
+        "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+        "object_type": "Rack"
+      },
+      {
+        "display_name": "Rack R00",
+        "matched_on": ["object_type"],
+        "object_id": "obj_9ecd2b96c13b741151179326057c4e5c",
+        "object_type": "Rack"
+      }
+    ]
+  },
+  "meta": {
+    "as_of": {
+      "change_seq": 1,
+      "generation": 1,
+      "kg": "kg-63033b0ca389c35a",
+      "sealed_version": null,
+      "volatile_as_of": "current"
+    },
+    "evidence": {
+      "counts": {
+        "assumed": 0,
+        "fact": 0,
+        "unknown": 2
+      },
+      "kinds": [],
+      "min_grade": "unknown",
+      "observation_age_seconds": null
+    },
+    "freshness": {
+      "oldest_age_seconds": null,
+      "state": "no_expected_period",
+      "worst_source_id": null
+    },
+    "hidden": {
+      "has_hidden": false,
+      "hidden_passed": false,
+      "hidden_passed_count": 0,
+      "hidden_reached": false,
+      "hidden_reached_count": 0
+    },
+    "model_limits": [],
+    "result_complete": {
+      "next_cursor": "eyJnIjoxLCJzIjoxLCJxIjoiMTRlNzRmM2JlNmVjZDQ1MyIsImsiOiJvYmpfOWVjZDJiOTZjMTNiNzQxMTUxMTc5MzI2MDU3YzRlNWMifQ",
+      "reason": "limit",
+      "returned": 2,
+      "total": 4,
+      "truncated": true
+    },
+    "served_by": {
+      "role": "api_sql"
+    },
+    "trace_id": "tr-0123456789abcdef",
+    "warnings": []
+  }
+}

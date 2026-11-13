@@ -39,6 +39,10 @@ func Routes() []Route {
 	return out
 }
 
+func post(path string, roles []string, h func(*call)) routeSpec {
+	return routeSpec{method: "POST", path: path, roles: roles, handle: h}
+}
+
 func get(path string, roles []string, h func(*call)) routeSpec {
 	return routeSpec{method: "GET", path: path, roles: roles, handle: h}
 }
@@ -67,7 +71,8 @@ func (s *Server) routeSpecs() []routeSpec {
 		get("/v1/value-types", reader, listHandler(func(l *registryLists) *listDef { return l.valueTypes })),
 		get("/v1/layers", reader, listHandler(func(l *registryLists) *listDef { return l.layers })),
 	}
-	return append(specs, registryRoutes()...)
+	specs = append(specs, registryRoutes()...)
+	return append(specs, kgRoutes()...)
 }
 
 // registryRoutes are the read routes of the type registry (rest-api-resources-data.md).

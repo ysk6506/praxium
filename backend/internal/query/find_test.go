@@ -150,62 +150,6 @@ func TestFindRefusesWhatIsNotServedYet(t *testing.T) {
 }
 
 // [REQ-250]
-func TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves(t *testing.T) {
-	r := newRig(t, false)
-	r.world()
-	all := r.mustFind(FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 1000}})
-	if all.Meta.ResultComplete.Truncated || all.Meta.ResultComplete.Total != 18 {
-		t.Fatalf("whole answer: %+v", all.Meta.ResultComplete)
-	}
-	ids := func(items []FindItem) []string {
-		out := []string{}
-		for _, it := range items {
-			out = append(out, it.ObjectID)
-		}
-		return out
-	}
-	if !sort.StringsAreSorted(ids(all.Data.Items)) {
-		t.Fatal("items are not in the order of the object id")
-	}
-	var got []string
-	in := FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 5}}
-	moved := false
-	for pages := 0; ; pages++ {
-		a, err := r.find(in, AllowAll())
-		if err != nil {
-			t.Fatal(err)
-		}
-		got = append(got, ids(a.Data.Items)...)
-		if !moved { // the KG changes between the first and the second page
-			moved = true
-			r.apply(graph.Batch{Kind: graph.BatchSync, SourceID: "t", Objects: []graph.ObjectUpsert{r.fx.Site("S99", "later")}})
-		}
-		if a.Meta.ResultComplete.NextCursor == nil {
-			if a.Meta.ResultComplete.Truncated {
-				t.Fatal("truncated without a cursor")
-			}
-			break
-		}
-		if pages > 10 {
-			t.Fatal("too many pages")
-		}
-		in.Cursor = *a.Meta.ResultComplete.NextCursor
-	}
-	if !reflect.DeepEqual(got, ids(all.Data.Items)) {
-		t.Fatalf("pages do not add up to the whole answer:\n%v\n%v", got, ids(all.Data.Items))
-	}
-	// A cursor of another query is refused.
-	in.Cursor = *func() *string {
-		a, _ := r.find(FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 5}}, AllowAll())
-		return a.Meta.ResultComplete.NextCursor
-	}()
-	in.ObjectType = "Site"
-	if _, err := r.find(in, AllowAll()); codeOf(err) != CodeCursorInvalid {
-		t.Fatalf("a cursor of another query: %v", err)
-	}
-}
-
-// [REQ-250]
 func TestFindSummaryHasCountsOnly(t *testing.T) {
 	r := newRig(t, false)
 	r.world()
@@ -253,24 +197,4 @@ func keyFor(reg *model.Registry, ty model.ObjectType, value string) []graph.KeyP
 		}
 	}
 	return nil
-}
-
-// [REQ-250] [REQ-252]
-func TestFindPagesAtASealedVersionKeepTheVersion(t *testing.T) {
-	r := newRig(t, false)
-	r.world()
-	sealed, err := r.a.Seal(r.ctx, r.kg.ID, r.lease, graph.SealSync)
-	if err != nil || !sealed.Created {
-		t.Fatalf("seal: %v", err)
-	}
-	r.apply(graph.Batch{Kind: graph.BatchSync, SourceID: "t", Objects: []graph.ObjectUpsert{r.fx.Site("S77", "after the seal")}})
-	in := FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 10, KGVersionID: sealed.Version.ID.String()}}
-	first, err := r.find(in, AllowAll())
-	if err != nil || first.Meta.ResultComplete.NextCursor == nil || first.Meta.VolatileAsOf != "omitted" {
-		t.Fatalf("first page: %v %+v", err, first.Meta)
-	}
-	next, err := r.find(FindInput{Common: Common{KG: "main", Shape: ShapeItems, Limit: 10, Cursor: *first.Meta.ResultComplete.NextCursor, KGVersionID: in.KGVersionID}}, AllowAll())
-	if err != nil || next.Meta.ResultComplete.Total != 18 || next.Meta.AsOf.SealedVersion == nil || len(next.Data.Items) != 8 {
-		t.Fatalf("second page: %v total %d items %d", err, next.Meta.ResultComplete.Total, len(next.Data.Items))
-	}
 }

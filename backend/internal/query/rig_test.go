@@ -8,7 +8,6 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
-	"github.com/ysk6506/praxium/backend/internal/memstore"
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
@@ -20,7 +19,7 @@ const seenAt = "2030-01-01T10:00:00Z"
 type rig struct {
 	t     *testing.T
 	ctx   context.Context
-	store *memstore.Store
+	store *graph.ScratchStore
 	fx    *graph.Fixture
 	reg   *model.Registry
 	a     *graph.Applier
@@ -82,7 +81,7 @@ func newRigWith(t *testing.T, variant func(*testing.T, *graph.Fixture) *model.Re
 	if variant != nil {
 		fx.Reg = variant(t, fx)
 	}
-	r := &rig{t: t, ctx: context.Background(), store: memstore.New(), fx: fx, reg: fx.Reg, clock: kernel.NewManualClock(epoch)}
+	r := &rig{t: t, ctx: context.Background(), store: graph.NewScratchStore(), fx: fx, reg: fx.Reg, clock: kernel.NewManualClock(epoch)}
 	ids := kernel.NewRandomIDs(kernel.NewSeededRng(5))
 	if r.kg, err = graph.NewTestKG(r.ctx, r.store, fx.Reg, ids, r.clock, graph.KGSpec{Name: "main-kg", Role: graph.RoleProduction}); err != nil {
 		t.Fatal(err)

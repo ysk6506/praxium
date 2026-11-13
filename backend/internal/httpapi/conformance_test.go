@@ -100,6 +100,8 @@ func exchanges() []exchange {
 		{"unknown filter field", "/v1/object-types?filter[colour][equals]=red", "/v1/object-types", 400, true, nil},
 		{"unacceptable", "/v1/layers", "/v1/layers", 406, true, []string{"Accept", "text/html"}},
 		{"stale cursor", "", "/v1/object-types", 409, true, nil},
+		{"kgs without a store", "/v1/kgs", "/v1/kgs", 503, true, nil},
+		{"find without a store", "/v1/kgs/main/objects", "/v1/kgs/{kg}/objects", 503, true, nil},
 	}
 }
 
@@ -127,6 +129,23 @@ func TestEveryAnswerFitsTheContract(t *testing.T) {
 				t.Fatal("no X-Trace-Id")
 			}
 			exercised["GET "+ex.template] = true
+		})
+	}
+	world := newSampleHarness(t, access.RoleViewer)
+	for _, op := range derivedOperations(t) {
+		t.Run("sample "+op.Method+" "+op.Path, func(t *testing.T) {
+			smp, err := sampleOf(op)
+			if err != nil {
+				t.Fatal(err)
+			}
+			r := world.send(smp, true)
+			if r.status != smp.status {
+				t.Fatalf("status = %d, want %d: %s", r.status, smp.status, r.body)
+			}
+			if err := validator.ValidateResponse(op.Method, op.Path, r.status, r.header.Get("Content-Type"), r.headers, r.body); err != nil {
+				t.Fatal(err)
+			}
+			exercised[op.Method+" "+op.Path] = true
 		})
 	}
 	for _, op := range doc.Operations() {
@@ -176,6 +195,22 @@ func TestProblemsKeepTheirShapeAndCatalogue(t *testing.T) {
 			t.Errorf("%s: type = %v", ex.name, body["type"])
 		}
 	}
+	for _, op := range derivedOperations(t) {
+		if slices.Contains(op.Roles, "anonymous") {
+			continue
+		}
+		smp, err := sampleOf(op)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+		r := h.send(smp, false)
+		body := r.json(t)
+		code, _ := body["code"].(string)
+		if r.status != 401 || !known[code] || r.header.Get("Content-Type") != "application/problem+json" || body["trace_id"] != r.header.Get("X-Trace-Id") {
+			t.Errorf("%s %s without a login: %d %s", op.Method, op.Path, r.status, r.body)
+		}
+	}
 	if r := h.do(http.MethodGet, "/v1/roles", false); r.header.Get("WWW-Authenticate") != "Bearer" {
 		t.Errorf("a 401 must carry WWW-Authenticate: Bearer, has %q", r.header.Get("WWW-Authenticate"))
 	}
@@ -183,14 +218,17 @@ func TestProblemsKeepTheirShapeAndCatalogue(t *testing.T) {
 
 // [REQ-148]
 func TestEveryOperationAsksForTheRoleItDeclares(t *testing.T) {
-	doc, _ := contract.ParseDocument(contract.OpenAPI())
-	ingester := newHarness(t, access.RoleIngester)
-	viewer := newHarness(t, access.RoleViewer)
-	for _, op := range doc.Operations() {
-		path := sampleURL(op.Path)
-		anonymous := viewer.do(http.MethodGet, path, false)
-		asIngester := ingester.do(http.MethodGet, path, true)
-		asViewer := viewer.do(http.MethodGet, path, true)
+	ingester := newSampleHarness(t, access.RoleIngester)
+	viewer := newSampleHarness(t, access.RoleViewer)
+	for _, op := range derivedOperations(t) {
+		smp, err := sampleOf(op)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
+		anonymous := viewer.send(smp, false)
+		asIngester := ingester.send(smp, true)
+		asViewer := viewer.send(smp, true)
 		switch {
 		case slices.Contains(op.Roles, "anonymous"):
 			if anonymous.status == 401 || anonymous.status == 403 {
@@ -208,13 +246,6 @@ func TestEveryOperationAsksForTheRoleItDeclares(t *testing.T) {
 	}
 }
 
-// sampleURL fills the path parameters of a template with ids of the standard model.
-func sampleURL(template string) string {
-	r := strings.NewReplacer("{type_id}", "ot.site", "{link_type_id}", "lt.located_in", "{action_type_id}", "ac.acknowledge_alarm",
-		"{trait_id}", "tr.common", "{scheme_id}", "is.array_system_id", "{code}", "auth.token_missing")
-	return r.Replace(template)
-}
-
 // [REQ-148]
 func TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer(t *testing.T) {
 	reg, err := model.LoadStandard()
@@ -230,14 +261,17 @@ func TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer(t *testing.T) {
 	}
 	srv.MarkStarted()
 	h := &harness{t: t, server: srv, handler: srv.Handler(), logs: &bytes.Buffer{}}
-	doc, _ := contract.ParseDocument(contract.OpenAPI())
 	open := map[string]bool{}
-	for _, op := range doc.Operations() {
-		path := sampleURL(op.Path)
+	for _, op := range derivedOperations(t) {
+		smp, err := sampleOf(op)
+		if err != nil {
+			t.Error(err)
+			continue
+		}
 		anonymous := slices.Contains(op.Roles, "anonymous")
 		open[op.Path] = anonymous
 		for _, withToken := range []bool{false, true} {
-			r := h.do(http.MethodGet, path, withToken)
+			r := h.send(smp, withToken)
 			if anonymous {
 				if r.status == 401 || r.status == 403 {
 					t.Errorf("%s is open but answered %d", op.Path, r.status)

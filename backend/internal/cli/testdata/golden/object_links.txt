@@ -1,0 +1,7 @@
+obj_0e54625b65d5501a4bdb9af739ac1907  PhysicalServer  Server SN-010100
+
+LINK_TYPE   MEANING       DIRECTION  PEER_TYPE  COUNT
+MOUNTED_IN  contained_in  out        Rack       1
+
+STEP  LINK_TYPE   DIRECTION  PEER_OBJECT_ID                        PEER_TYPE  PEER_DISPLAY_NAME  GRADE
+1     MOUNTED_IN  out        obj_49638889332e87c76b2adad24dcdfd22  Rack       Rack R01           fact

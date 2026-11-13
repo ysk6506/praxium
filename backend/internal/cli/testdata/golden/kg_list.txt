@@ -1,0 +1,2 @@
+KG_ID                NAME     ALIAS  ROLE        STATE    GENERATION  HEAD_CHANGE_SEQ  READABLE_THROUGH
+kg-63033b0ca389c35a  main-kg  main   production  serving  1           1                1

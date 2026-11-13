@@ -193,7 +193,7 @@
             "description": "The source with the oldest data."
           },
           "oldest_age_seconds": {
-            "type": "integer",
+            "type": ["integer", "null"],
             "description": "The age of that data in seconds."
           },
           "state": {
@@ -208,7 +208,7 @@
         "description": "The grade of the facts behind an answer (KG answers only).",
         "properties": {
           "min_grade": {
-            "type": "string",
+            "type": ["string", "null"],
             "description": "The lowest grade used: fact, assumed or unknown."
           },
           "counts": {
@@ -217,6 +217,18 @@
             "additionalProperties": {
               "type": "integer"
             }
+          },
+          "kinds": {
+            "type": "array",
+            "description": "The kinds of evidence behind the facts.",
+            "items": {
+              "type": "string",
+              "description": "configured, observed, declared and so on."
+            }
+          },
+          "observation_age_seconds": {
+            "type": ["integer", "null"],
+            "description": "The age in seconds of the oldest observation."
           }
         },
         "required": ["min_grade"]
@@ -228,6 +240,22 @@
           "has_hidden": {
             "type": "boolean",
             "description": "Whether something was hidden."
+          },
+          "hidden_passed": {
+            "type": "boolean",
+            "description": "Whether the path went through something hidden."
+          },
+          "hidden_reached": {
+            "type": "boolean",
+            "description": "Whether something hidden was a match."
+          },
+          "hidden_passed_count": {
+            "type": ["integer", "null"],
+            "description": "How many hidden objects the path went through, when the caller may know."
+          },
+          "hidden_reached_count": {
+            "type": ["integer", "null"],
+            "description": "How many hidden objects matched, when the caller may know."
           }
         },
         "required": ["has_hidden"]

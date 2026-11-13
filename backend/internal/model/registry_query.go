@@ -180,6 +180,28 @@ func (r *Registry) matches(e Endpoint, id ObjectTypeID) bool {
 	return false
 }
 
+// BindingFor returns the binding of the link type that lets a link run from an object of type from to an object
+// of type to: the first by binding id, which is the one BindingsFor lists first for that link type. It reads one
+// link type, so it costs far less than BindingsFor, which copies them all.
+func (r *Registry) BindingFor(from, to ObjectTypeID, lt LinkTypeID) (Binding, bool) {
+	i, ok := r.links[lt]
+	if !ok {
+		return Binding{}, false
+	}
+	var best *Binding
+	bindings := r.defs.LinkTypes[i].Bindings
+	for j := range bindings {
+		b := &bindings[j]
+		if r.matches(b.From, from) && r.matches(b.To, to) && (best == nil || b.ID.String() < best.ID.String()) {
+			best = b
+		}
+	}
+	if best == nil {
+		return Binding{}, false
+	}
+	return best.Clone(), true
+}
+
 // BindingsFor returns the bindings that let a link run from an object of type
 // from to an object of type to, in the order of the link type numbers and
 // then of the binding ids. A binding on a parent type applies to its subtypes.

@@ -18,11 +18,19 @@ const Usage = `client commands (flags before the command, then the command's own
   praxium [flags] types list [--kind object|link|action|trait|scheme] [--filter field.op=value]... [--limit N] [--all]
   praxium [flags] types get [--kind K] [--include a,b] <id-or-name>
   praxium [flags] catalog [link-meanings|channels|error-codes|reason-codes|roles|value-types|layers]
+  praxium [flags] kg list [--role R] [--state S] [--limit N] [--all]
+  praxium [flags] kg get [KG]
+  praxium [flags] object get [--kg main] [--include a,b] [read flags] <object-id>
+  praxium [flags] object links [--kg main] [--direction in|out|both] [--link-type T]... [--steps N] [read flags] <object-id>
+  praxium [flags] query find [--kg main] [--type T] [--no-subtypes] [--trait T] [--text X] [--identifier scheme:value] [--attr name.op=value]... [read flags]
+  praxium [flags] query get [--kg main] [--include a,b] [read flags] <object-id> | --identifier scheme:value
+  praxium [flags] query neighbors [--kg main] [--direction D] [--link-type T]... [--meaning M]... [--peer-type T]... [--steps N] [read flags] <object-id>
+read flags: --at-seq N | --version ID (an older state), --view as_observed|as_designed, --min-seq N --wait PT5S, --limit N, --all (every page), --summary
 `
 
 // IsClientCommand says whether the first word of the command line is a client command.
 func IsClientCommand(word string) bool {
-	return word == "health" || word == "types" || word == "catalog"
+	return word == "health" || word == "types" || word == "catalog" || word == "kg" || word == "object" || word == "query"
 }
 
 // IsClientFlag says whether a word is one of the flags that may open a client command line.
@@ -87,6 +95,12 @@ func run(args []string, env Env, stdout io.Writer, httpClient *http.Client) erro
 		return runTypes(ctx, client, opts, stdout)
 	case "catalog":
 		return runCatalog(ctx, client, opts, stdout)
+	case "kg":
+		return runKG(ctx, client, opts, stdout)
+	case "object":
+		return runObject(ctx, client, opts, stdout)
+	case "query":
+		return runQuery(ctx, client, opts, stdout)
 	}
 	return usageError{msg: fmt.Sprintf("unknown command %q", opts.rest[0])}
 }

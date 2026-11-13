@@ -32,6 +32,10 @@
     {
       "name": "type-registry",
       "description": "The read side of the type registry: object, link and action types, traits and identifier schemes."
+    },
+    {
+      "name": "kg",
+      "description": "Reads of a KG: the KGs, objects, their links and the closed queries."
     }
   ]
 }

@@ -1,0 +1,77 @@
+{
+  "data": {
+    "groups": [
+      {
+        "count": 1,
+        "direction": "out",
+        "link_type": "MOUNTED_IN",
+        "meaning": "contained_in",
+        "peer_type": "Rack"
+      }
+    ],
+    "items": [
+      {
+        "basis": "configured",
+        "direction": "out",
+        "grade": "fact",
+        "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+        "link_type": "MOUNTED_IN",
+        "meaning": "contained_in",
+        "peer_display_name": "Rack R01",
+        "peer_object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+        "peer_type": "Rack",
+        "step": 1,
+        "via_object_id": null
+      }
+    ],
+    "object": {
+      "display_name": "Server SN-010100",
+      "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+      "object_type": "PhysicalServer"
+    }
+  },
+  "meta": {
+    "as_of": {
+      "change_seq": 1,
+      "generation": 1,
+      "kg": "kg-63033b0ca389c35a",
+      "sealed_version": null,
+      "volatile_as_of": "current"
+    },
+    "evidence": {
+      "counts": {
+        "assumed": 0,
+        "fact": 1,
+        "unknown": 0
+      },
+      "kinds": ["configured"],
+      "min_grade": "fact",
+      "observation_age_seconds": null
+    },
+    "freshness": {
+      "oldest_age_seconds": null,
+      "state": "no_expected_period",
+      "worst_source_id": null
+    },
+    "hidden": {
+      "has_hidden": false,
+      "hidden_passed": false,
+      "hidden_passed_count": 0,
+      "hidden_reached": false,
+      "hidden_reached_count": 0
+    },
+    "model_limits": [],
+    "result_complete": {
+      "next_cursor": null,
+      "reason": null,
+      "returned": 1,
+      "total": 1,
+      "truncated": false
+    },
+    "served_by": {
+      "role": "api_sql"
+    },
+    "trace_id": "tr-0123456789abcdef",
+    "warnings": []
+  }
+}

@@ -539,22 +539,6 @@
     },
     {
       "method": "GET",
-      "path": "/v1/kgs",
-      "feature": "KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리",
-      "adr": "ADR-0009",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
-      "path": "/v1/kgs/{kg}",
-      "feature": "KG 자원(운영, 후보, 시험, 시스템), 세대, 읽는 자리",
-      "adr": "ADR-0009",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
       "path": "/v1/kgs/{kg}/changes",
       "feature": "변경의 이어짐을 번호로 가져가기",
       "adr": "ADR-0009",
@@ -644,22 +628,6 @@
     {
       "method": "GET",
       "path": "/v1/kgs/{kg}/links/{link_id}",
-      "feature": "객체 찾기와 한 객체, 링크, 이웃",
-      "adr": "ADR-0010",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
-      "path": "/v1/kgs/{kg}/objects",
-      "feature": "객체 찾기와 한 객체, 링크, 이웃",
-      "adr": "ADR-0010",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
-      "path": "/v1/kgs/{kg}/objects/{object_id}",
       "feature": "객체 찾기와 한 객체, 링크, 이웃",
       "adr": "ADR-0010",
       "phase": "alpha-1",

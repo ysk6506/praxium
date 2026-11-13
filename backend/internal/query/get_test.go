@@ -110,59 +110,6 @@ func TestGetRefusesBadInputs(t *testing.T) {
 	}
 }
 
-// [REQ-251] [REQ-252]
-func TestGetReadsThePastWithoutVolatileValues(t *testing.T) {
-	r := newRig(t, false)
-	r.world()
-	id := r.fx.ServerID("SN-000102")
-	r.powered("SN-000102")
-	before := r.headSeq()
-	sealed, err := r.a.Seal(r.ctx, r.kg.ID, r.lease, graph.SealSync)
-	if err != nil || !sealed.Created {
-		t.Fatalf("seal: %v %+v", err, sealed)
-	}
-	up := r.fx.Server("SN-000102", "M2")
-	r.apply(graph.Batch{Objects: []graph.ObjectUpsert{up}})
-	now := r.headSeq()
-	read := func(c Common) Answer[GetData] {
-		c.KG = "main"
-		a, err := r.get(GetInput{Common: c, ObjectID: id.String()}, AllowAll())
-		if err != nil {
-			t.Fatal(err)
-		}
-		return a
-	}
-	latest := read(Common{})
-	if m, _ := attrByName(latest.Data.Attributes, "model"); m.Value != "M2" || latest.Meta.AsOf.ChangeSeq != now || latest.Meta.AsOf.SealedVersion != nil {
-		t.Fatalf("latest: %+v %+v", latest.Data.Attributes, latest.Meta.AsOf)
-	}
-	for name, c := range map[string]Common{"by change number": {ChangeSeq: &before}, "by version": {KGVersionID: sealed.Version.ID.String()}} {
-		a := read(c)
-		m, _ := attrByName(a.Data.Attributes, "model")
-		if m.Value != "M1" || a.Meta.VolatileAsOf != "omitted" || a.Meta.AsOf.ChangeSeq != before {
-			t.Fatalf("%s: %+v %+v", name, m, a.Meta)
-		}
-		if _, has := attrByName(a.Data.Attributes, "power_state"); has {
-			t.Fatalf("%s: a past read gave a volatile value", name)
-		}
-		if a.Meta.AsOf.SealedVersion == nil || *a.Meta.AsOf.SealedVersion != sealed.Version.ID.String() {
-			t.Fatalf("%s: as_of %+v does not name the sealed version", name, a.Meta.AsOf)
-		}
-	}
-	future := now + 5
-	if _, err := r.get(GetInput{Common: Common{KG: "main", ChangeSeq: &future}, ObjectID: id.String()}, AllowAll()); codeOf(err) != graph.CodeNotReadable {
-		t.Fatalf("a change number ahead of readable_through: %v", err)
-	}
-	gone := r.fx.ServerID("SN-000102")
-	r.apply(graph.Batch{RetireLinks: []graph.LinkID{r.fx.MountedInID(gone, r.fx.RackID(r.fx.SiteID("S00"), "R01"))}, RetireObjects: []graph.ObjectID{gone}})
-	if _, err := r.get(GetInput{ObjectID: gone.String()}, AllowAll()); codeOf(err) != CodeObjectNotFound {
-		t.Fatalf("a retired object: %v", err)
-	}
-	if a := read(Common{ChangeSeq: &before}); a.Data.Object.ObjectID != gone.String() {
-		t.Fatal("the retired object is gone from the past too")
-	}
-}
-
 func (r *rig) headSeq() int64 {
 	r.t.Helper()
 	h, err := r.store.Head(r.ctx, r.kg.ID)

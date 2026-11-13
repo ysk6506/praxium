@@ -37,6 +37,8 @@ type Applier struct {
 	opts  Options
 	owner string
 	v     *validator
+	// objTypeIDs and linkTypeIDs give the id of a type by its number without copying the type.
+	objTypeIDs, linkTypeIDs map[int]string
 }
 
 // NewApplier builds an applier. Its lease owner name comes from the id generator.
@@ -50,8 +52,9 @@ func NewApplier(store Store, reg *model.Registry, keys KeyProvider, clock kernel
 	if opts.LeaseTTL <= 0 {
 		opts.LeaseTTL = DefaultLeaseTTL
 	}
+	objs, links := typeIDs(reg)
 	return &Applier{store: store, reg: reg, keys: keys, clock: clock, ids: ids, opts: opts,
-		owner: ids.Next("worker"), v: newValidator(reg)}, nil
+		owner: ids.Next("worker"), v: newValidator(reg), objTypeIDs: objs, linkTypeIDs: links}, nil
 }
 
 // Acquire takes the lease of a KG for this applier.

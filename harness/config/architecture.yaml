@@ -49,12 +49,16 @@ go:
     core.graph:     {path: backend/internal/graph, may_import: [core.kernel, core.model]}
     adapter.memstore: {path: backend/internal/memstore, may_import: [core.kernel, core.graph]}
     adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph, adapter.memstore]}
-    # The first three closed queries over the storage port (ADR-0026). Production code imports kernel, model and graph only; its tests build a world in adapter.memstore.
-    core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph, adapter.memstore]}
+    # The first three closed queries over the storage port (ADR-0026). The core imports no adapter (ADR-0027): its tests run on graph.ScratchStore.
+    core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph]}
     # Adapters sit outside the core and never import each other: only the composition root joins them.
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
-    adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access]}
+    adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
+    # Checks of the read path that need a store with history (ADR-0027); a unit of tests only, so the units above the port stay free of adapters.
+    # The development loader of the generator's ground truth (ADR-0027): a developer convenience and test path, not the ingestion pipeline.
+    adapter.devload: {path: backend/internal/devload, may_import: [core.kernel, core.model, core.graph, core.worldgen, core.query]}
+    adapter.readcheck: {path: backend/internal/readcheck, may_import: [core.kernel, core.model, core.graph, core.query, core.access, core.contract, core.worldgen, adapter.memstore, adapter.http, adapter.devload]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium

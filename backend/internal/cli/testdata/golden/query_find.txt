@@ -1,0 +1,8 @@
+OBJECT_TYPE  COUNT
+Rack         4
+
+OBJECT_ID                             OBJECT_TYPE  DISPLAY_NAME
+obj_49638889332e87c76b2adad24dcdfd22  Rack         Rack R01
+obj_9ecd2b96c13b741151179326057c4e5c  Rack         Rack R00
+
+2 shown of 4; --all reads every page
