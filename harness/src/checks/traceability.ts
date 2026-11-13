@@ -4,6 +4,11 @@
  *
  * TRACE001 requirement with no test   TRACE002 test cites an unknown requirement
  * TRACE003 spec test file without any requirement link   TRACE004 requirement id defined twice
+ * TRACE007 a requirement tag in a Go test file that links no test
+ *
+ * Go tests (ADR-0023) link the same way: `// [REQ-NNN] [REQ-MMM]` in the doc comment directly above the test function,
+ * and `[REQ-NNN]` in a string literal inside the test (a subtest name or a table row's name). Everything below treats
+ * them like the tags in TypeScript titles.
  *
  * A requirement that is decided but not built yet starts its text with `**예정(ADR-NNNN)**` (TD-0003). It
  * needs no test and is listed as "예정" instead of failing, but the ADR must exist (TRACE005), and the
@@ -13,6 +18,8 @@ import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { findRoot, finish, flag, isMain, parseArgs, type Violation, violation } from "../common";
 import { lineOf, parse, ts, walk } from "../ts-ast";
+import { loadGoConfig } from "./go-config";
+import { goCitations, strayTagViolations } from "./go-test-units";
 import { testApi, testFiles } from "./test-units";
 import { loadTestsConfig } from "./testguard";
 
@@ -77,6 +84,26 @@ export function citations(root: string, file: string): Array<[string, number]> {
   return found;
 }
 
+/** The tags of the Go tests: they cover requirements like the TypeScript ones; an unknown id is TRACE002. */
+function goLinks(root: string, ids: readonly string[], covered: Set<string>): Violation[] {
+  const out: Violation[] = [];
+  for (const [id, file, line] of goCitations(root)) {
+    covered.add(id);
+    if (!ids.includes(id))
+      out.push(
+        violation(
+          "TRACE002",
+          file,
+          line,
+          `${id} is not a requirement`,
+          `Use an id from ${REQUIREMENTS}.`,
+        ),
+      );
+  }
+  const config = loadGoConfig(root);
+  return config ? [...out, ...strayTagViolations(root, config)] : out;
+}
+
 /** The verdict plus, apart from it, the planned (예정) requirements that still have no test. */
 export function report(root: string): { violations: Violation[]; planned: string[] } {
   const { ids, violations } = requirementIds(root);
@@ -109,6 +136,7 @@ export function report(root: string): { violations: Violation[]; planned: string
       );
     }
   }
+  violations.push(...goLinks(root, ids, covered));
   const planned = plannedRequirements(root);
   for (const [id, adr] of planned) {
     if (!adrExists(root, adr))

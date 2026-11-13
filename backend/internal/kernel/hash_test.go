@@ -12,6 +12,7 @@ import (
 // the encoding written in hash.go (a short Python script), not by this
 // package. A failing golden test means the encoding changed: fix the code, or
 // introduce a new encoding version; never edit the expected value.
+// [REQ-001]
 func TestEncodeGolden(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -49,6 +50,7 @@ func TestEncodeGolden(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestContentHashGolden(t *testing.T) {
 	nested := map[string]any{
 		"name": "rack-01",

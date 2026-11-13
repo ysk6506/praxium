@@ -7,6 +7,7 @@ import (
 )
 
 // Reference values of splitmix64, computed independently of this package.
+// [REQ-001]
 func TestSeededRngGolden(t *testing.T) {
 	tests := []struct {
 		seed uint64
@@ -28,6 +29,7 @@ func TestSeededRngGolden(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestSeededRngIsReproducible(t *testing.T) {
 	a, b, other := kernel.NewSeededRng(7), kernel.NewSeededRng(7), kernel.NewSeededRng(8)
 	same, differs := true, false

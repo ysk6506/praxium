@@ -42,7 +42,7 @@ kind: decision
 status: active          # active | superseded
 enforced_by: [ARCH010]  # 규칙 코드 또는 테스트 경로. 못 하면 [none] + no_enforcement_reason
 touches_protected: []   # 이 ADR로 바꾸는 보호 경로 (harness/**, package.json ...)
-amends_tests: []        # 요구사항 변경으로 바꾸는 잠긴 테스트 키
+amends_tests: []        # 요구사항 변경으로 바꾸는 잠긴 테스트 키 (Go는 go:<디렉터리>::<함수>)
 test_change_reason: ""  # amends_tests를 쓸 때: 왜 요구사항이 바뀌었는지 (40자 이상)
 updates_docs: [docs/design-docs/product-design.md]  # 이 결정이 바꾸는 문서. 같은 변경에서 실제로 고쳐야 한다 (DOC090)
 # updates_docs: []      # 바꾸는 문서가 없으면 빈 목록과
@@ -55,6 +55,15 @@ amends:                 # 앞선 결정의 일부를 바꿀 때 (전체를 대�
 4. 앞선 결정의 일부를 바꾸면 `pnpm tsx harness/src/checks/docs.ts link-amends docs/design-docs/adr/NNNN-....md`로 대상 ADR의 앞부분에 `amended_by`를 남기고 같은 `what`을 옮겨 적는다. 결정 목록은 이것을 "일부 고침: 0001 (고친 부분)"으로 보인다. `what`은 대상 ADR의 어느 부분이 바뀌었는지를 말한다. 새 ADR이 `what` 없이 `amends`를 쓰면 `DOC091`이 실패하고, 옛 ADR의 파일 이름만 적은 항목은 그대로 읽는다. (`DOC091`은 양쪽이 맞는지도 본다.) 대상 ADR도 보호 경로이므로 이 ADR의 `touches_protected`에 대상 파일을 적는다.
 5. 봉인: `pnpm tsx harness/src/checks/docs.ts seal-adr docs/design-docs/adr/NNNN-....md`
 6. 색인에는 줄을 더하지 않는다. [색인](../index.md)의 문서 목록은 하네스가 문서의 `title`에서 만들고(`docs.ts generate`), 결정 기록은 폴더를 가리킬 뿐이다. 결정 목록도 하네스가 만든다: `pnpm tsx harness/src/checks/docs.ts decisions`가 [결정 목록](../generated/decisions.md)을 쓴다. 이 파일들은 정리 작업이 main에서 새로 만들고, 변경은 커밋하지 않는다 (낡았으면 `DOC098`, `DOC102` 알림만 나오고, 손으로 고치면 `DOC099`로 실패한다, ADR-0002). [제품 설계 한 장](product-design.md)을 고쳐야 하는 결정이면 `updates_docs`에 적는다.
+
+## 잠긴 Go 시험을 바꿔야 할 때 (ADR-0023)
+
+잠긴 단위는 Go에서는 최상위 시험 함수 하나이고 키는 `go:<패키지 디렉터리>::<함수 이름>`이다(예: `go:backend/internal/worldgen::TestGoldenTinyWorld`). TypeScript 키(`파일 경로::시험 이름`)와 겹치지 않는다. 지우거나 이름을 바꾸거나 본문, 본문이 쓰는 도우미·표·상수·골든 값, `testdata/`의 파일이 바뀌면 그 키가 잠금을 깬다(`TLOCK001`, `TLOCK002`). 서식과 주석만 바뀐 것은 깨지 않는다.
+
+1. 어느 키가 걸렸는지는 `pnpm check`가 알려 준다. 이름을 바꾸면 옛 키 하나(`TLOCK002`)와 새 키 하나(`TLOCK003`)가 걸리니 옛 키만 `amends_tests`에 적고, 새 키는 `pnpm lock-tests`가 더한다.
+2. 새 ADR의 `amends_tests`에 걸린 키를 모두 적고 `test_change_reason`에 요구사항이 왜 바뀌었는지 40자 이상으로 적는다. 바뀌는 값이 있으면 옛 값과 새 값을 표로 적는다(ADR-0022처럼).
+3. 봉인한 뒤 `pnpm lock-tests --amend docs/design-docs/adr/NNNN-....md`로 잠금 파일의 지문을 새로 쓴다. 본문이 쓰는 도우미를 고쳤다면 그 도우미를 쓰는 모든 시험이 걸리니 모두 적어야 한다.
+4. 약화는 허용이 아니다: 요구사항이 바뀐 것이 아니라면 시험이 아니라 코드를 고친다.
 
 ## 봉인된 ADR은 수정 금지
 

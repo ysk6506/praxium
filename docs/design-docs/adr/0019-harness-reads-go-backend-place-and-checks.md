@@ -29,6 +29,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: f8c7ad079fc7579f
+amended_by:
+  - adr: "0023"
+    what: Go 시험 잠금과 추적과 등급표
 ---
 # ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 자리와 검사
 

@@ -89,11 +89,11 @@ func TestRulesOfIdsAndNames(t *testing.T) {
 		{"[REQ-100] two actions with one name", model.CodeNameDuplicate, func(d *model.Definitions) { actionType(d, "ac.power_on").Name = "power_off" }},
 		{"[REQ-100] a value type named like a base kind", model.CodeNameDuplicate, func(d *model.Definitions) { d.ValueTypes[0].Name = "string" }},
 		{"[REQ-100] two traits with one name", model.CodeNameDuplicate, func(d *model.Definitions) { d.Traits[1].Name = "Powered" }},
-		{"[REQ-107] ext type takes a std name", model.CodeNameReserved, func(d *model.Definitions) { objectType(d, "ot.acme_server").Name = "Rack" }},
-		{"[REQ-107] ext link type takes a std name", model.CodeNameReserved, func(d *model.Definitions) {
+		{"ext type takes a std name", model.CodeNameReserved, func(d *model.Definitions) { objectType(d, "ot.acme_server").Name = "Rack" }},
+		{"ext link type takes a std name", model.CodeNameReserved, func(d *model.Definitions) {
 			d.LinkTypes = append(d.LinkTypes, model.LinkType{ID: ltID("lt.ext_runs_on"), Name: "RUNS_ON", Namespace: model.NamespaceExt, Meaning: model.MeaningRecordOnly})
 		}},
-		{"[REQ-107] sys type takes an ext name", model.CodeNameReserved, func(d *model.Definitions) {
+		{"sys type takes an ext name", model.CodeNameReserved, func(d *model.Definitions) {
 			d.ObjectTypes = append(d.ObjectTypes, model.ObjectType{ID: otID("ot.sys_acme"), Name: "AcmeServer", Namespace: model.NamespaceSys, Layer: model.LayerSystem})
 		}},
 	})
@@ -101,21 +101,21 @@ func TestRulesOfIdsAndNames(t *testing.T) {
 
 func TestRulesOfPlacement(t *testing.T) {
 	runRuleCases(t, []ruleCase{
-		{"[REQ-107] namespace outside the four", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Namespace = "team" }},
-		{"[REQ-105] layer outside the ten", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Layer = "wireless" }},
-		{"[REQ-105] tier outside core and extension", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Tier = "draft" }},
+		{"namespace outside the four", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Namespace = "team" }},
+		{"layer outside the ten", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Layer = "wireless" }},
+		{"tier outside core and extension", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Tier = "draft" }},
 		{"[REQ-100] status outside the three", model.CodeClosedList, func(d *model.Definitions) { objectType(d, "ot.rack").Status = "retired" }},
-		{"[REQ-107] sys type outside the system layer", model.CodeLayerNamespace, func(d *model.Definitions) { objectType(d, "ot.rack").Namespace = model.NamespaceSys }},
-		{"[REQ-107] std type in the system layer", model.CodeLayerNamespace, func(d *model.Definitions) { objectType(d, "ot.rack").Layer = model.LayerSystem }},
-		{"[REQ-107] ext type in another layer than its parent", model.CodeLayerNotInherited, func(d *model.Definitions) { objectType(d, "ot.acme_server").Layer = model.LayerNetwork }},
-		{"[REQ-107] org type in another layer than its parent", model.CodeLayerNotInherited, func(d *model.Definitions) {
+		{"sys type outside the system layer", model.CodeLayerNamespace, func(d *model.Definitions) { objectType(d, "ot.rack").Namespace = model.NamespaceSys }},
+		{"std type in the system layer", model.CodeLayerNamespace, func(d *model.Definitions) { objectType(d, "ot.rack").Layer = model.LayerSystem }},
+		{"ext type in another layer than its parent", model.CodeLayerNotInherited, func(d *model.Definitions) { objectType(d, "ot.acme_server").Layer = model.LayerNetwork }},
+		{"org type in another layer than its parent", model.CodeLayerNotInherited, func(d *model.Definitions) {
 			objectType(d, "ot.acme_server").Namespace = model.NamespaceOrg
 			objectType(d, "ot.acme_server").Layer = model.LayerStorage
 		}},
 		{"[REQ-100] parent that does not exist", model.CodeParentUnknown, func(d *model.Definitions) { objectType(d, "ot.server").Parent = otID("ot.nothing") }},
 		{"[REQ-100] parents that form a cycle", model.CodeParentCycle, func(d *model.Definitions) { objectType(d, "ot.asset").Parent = otID("ot.acme_server") }},
-		{"[REQ-107] std type on an ext parent", model.CodeParentNamespace, func(d *model.Definitions) { objectType(d, "ot.cluster").Parent = otID("ot.acme_server") }},
-		{"[REQ-107] ext type on a sys parent", model.CodeParentNamespace, func(d *model.Definitions) {
+		{"std type on an ext parent", model.CodeParentNamespace, func(d *model.Definitions) { objectType(d, "ot.cluster").Parent = otID("ot.acme_server") }},
+		{"ext type on a sys parent", model.CodeParentNamespace, func(d *model.Definitions) {
 			d.ObjectTypes = append(d.ObjectTypes, model.ObjectType{ID: otID("ot.sys_part"), Name: "SysPart", Namespace: model.NamespaceSys, Layer: model.LayerSystem})
 			objectType(d, "ot.acme_server").Parent = otID("ot.sys_part")
 		}},
@@ -152,16 +152,16 @@ func TestRulesOfProperties(t *testing.T) {
 			property(objectType(d, "ot.redundancy_group"), "pr.group.min_capacity").Unit = ""
 		}},
 		{"[REQ-100] unit on a property that is not a quantity", model.CodeUnit, func(d *model.Definitions) { asset(d).Properties[0].Unit = "w" }},
-		{"[REQ-108] change class outside the three", model.CodeClosedList, func(d *model.Definitions) { asset(d).Properties[0].ChangeClass = "fast" }},
-		{"[REQ-108] history kind outside the two", model.CodeClosedList, func(d *model.Definitions) { asset(d).Properties[0].HistoryKind = "forever" }},
+		{"change class outside the three", model.CodeClosedList, func(d *model.Definitions) { asset(d).Properties[0].ChangeClass = "fast" }},
+		{"history kind outside the two", model.CodeClosedList, func(d *model.Definitions) { asset(d).Properties[0].HistoryKind = "forever" }},
 		{"[REQ-100] sensitivity outside the three", model.CodeClosedList, func(d *model.Definitions) { asset(d).Properties[0].Sensitivity = "secret" }},
-		{"[REQ-165] scope key that is not a short text or a reference", model.CodeScopeKeyType, func(d *model.Definitions) {
+		{"scope key that is not a short text or a reference", model.CodeScopeKeyType, func(d *model.Definitions) {
 			asset(d).Properties[0].ValueType = vtID("vt.integer")
 			asset(d).Properties[0].ScopeKey = true
 		}},
-		{"[REQ-165] scope key that is dynamic", model.CodeScopeKeyVolatile, func(d *model.Definitions) { property(asset(d), "pr.asset.site").ChangeClass = model.ChangeDynamic }},
-		{"[REQ-165] scope key with volatile history", model.CodeScopeKeyVolatile, func(d *model.Definitions) { property(asset(d), "pr.asset.site").HistoryKind = model.HistoryVolatile }},
-		{"[REQ-165] more than four scope keys", model.CodeScopeKeyLimit, func(d *model.Definitions) {
+		{"scope key that is dynamic", model.CodeScopeKeyVolatile, func(d *model.Definitions) { property(asset(d), "pr.asset.site").ChangeClass = model.ChangeDynamic }},
+		{"scope key with volatile history", model.CodeScopeKeyVolatile, func(d *model.Definitions) { property(asset(d), "pr.asset.site").HistoryKind = model.HistoryVolatile }},
+		{"more than four scope keys", model.CodeScopeKeyLimit, func(d *model.Definitions) {
 			for _, name := range []string{"a", "b", "c", "d"} {
 				key := prop("pr.asset.scope_"+name, "scope_"+name, "vt.string", model.ChangeSlow)
 				key.ScopeKey = true
@@ -187,70 +187,70 @@ func TestRulesOfProperties(t *testing.T) {
 func TestRulesOfIdentityAndNeeds(t *testing.T) {
 	asset := func(d *model.Definitions) *model.ObjectType { return objectType(d, "ot.asset") }
 	runRuleCases(t, []ruleCase{
-		{"[REQ-104] identity key on an unknown property", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"identity key on an unknown property", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys[0].Components[0].Property = prID("pr.nothing")
 		}},
-		{"[REQ-104] identity key on a property of another type", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"identity key on a property of another type", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys[0].Components[0].Property = prID("pr.server.hostname")
 		}},
-		{"[REQ-104] two identity keys that are the same", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"two identity keys that are the same", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys = append(asset(d).IdentityKeys, asset(d).IdentityKeys[0])
 		}},
-		{"[REQ-104] identity key that uses a component twice", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"identity key that uses a component twice", model.CodeIdentityKey, func(d *model.Definitions) {
 			key := &asset(d).IdentityKeys[0]
 			key.Components = append(key.Components, key.Components[0])
 		}},
-		{"[REQ-104] identity key with no component and no scheme", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"identity key with no component and no scheme", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys[2].Scheme = model.IdentifierSchemeID{}
 		}},
-		{"[REQ-104] identity key with a context and nothing else", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"identity key with a context and nothing else", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys[1].Components = asset(d).IdentityKeys[1].Components[:1]
 		}},
-		{"[REQ-104] component that is a property and a context", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"component that is a property and a context", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys[0].Components[0].Context = ltID("lt.part_of")
 		}},
-		{"[REQ-104] component that is neither", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"component that is neither", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).IdentityKeys[0].Components = append(asset(d).IdentityKeys[0].Components, model.KeyComponent{})
 		}},
-		{"[REQ-104] identity key on a confidential property", model.CodeIdentityKey, func(d *model.Definitions) {
+		{"identity key on a confidential property", model.CodeIdentityKey, func(d *model.Definitions) {
 			asset(d).Properties[0].Sensitivity = model.SensitivityConfidential
 		}},
-		{"[REQ-104] identity key on a volatile property", model.CodeIdentityKeyVolatile, func(d *model.Definitions) {
+		{"identity key on a volatile property", model.CodeIdentityKeyVolatile, func(d *model.Definitions) {
 			asset(d).IdentityKeys[0].Components[0].Property = prID("pr.asset.power_state")
 		}},
-		{"[REQ-104] identity key in the context of a link type that does not exist", model.CodeIdentityContext, func(d *model.Definitions) {
+		{"identity key in the context of a link type that does not exist", model.CodeIdentityContext, func(d *model.Definitions) {
 			asset(d).IdentityKeys[1].Components[0].Context = ltID("lt.nothing")
 		}},
-		{"[REQ-104] identity key in the context of a link with no binding from the type", model.CodeIdentityContext, func(d *model.Definitions) {
+		{"identity key in the context of a link with no binding from the type", model.CodeIdentityContext, func(d *model.Definitions) {
 			asset(d).IdentityKeys[1].Components[0].Context = ltID("lt.runs_on")
 		}},
-		{"[REQ-104] identity key in the context of a binding that is many to many", model.CodeIdentityContext, func(d *model.Definitions) {
+		{"identity key in the context of a binding that is many to many", model.CodeIdentityContext, func(d *model.Definitions) {
 			linkType(d, "lt.part_of").Bindings[0].Cardinality = model.CardManyToMany
 		}},
-		{"[REQ-104] identity key in the context of a binding that points the wrong way", model.CodeIdentityContext, func(d *model.Definitions) {
+		{"identity key in the context of a binding that points the wrong way", model.CodeIdentityContext, func(d *model.Definitions) {
 			b := &linkType(d, "lt.part_of").Bindings[0]
 			b.From, b.To = b.To, b.From
 		}},
-		{"[REQ-104] identity key with an identifier scheme that does not exist", model.CodeSchemeUnknown, func(d *model.Definitions) {
+		{"identity key with an identifier scheme that does not exist", model.CodeSchemeUnknown, func(d *model.Definitions) {
 			asset(d).IdentityKeys[2].Scheme = schID("is.nothing")
 		}},
-		{"[REQ-104] identity strength outside strong and weak", model.CodeClosedList, func(d *model.Definitions) { asset(d).IdentityKeys[0].Strength = "firm" }},
-		{"[REQ-107] ext type changes the identity keys of its parent", model.CodeIdentityKeyChanged, func(d *model.Definitions) {
+		{"identity strength outside strong and weak", model.CodeClosedList, func(d *model.Definitions) { asset(d).IdentityKeys[0].Strength = "firm" }},
+		{"ext type changes the identity keys of its parent", model.CodeIdentityKeyChanged, func(d *model.Definitions) {
 			objectType(d, "ot.acme_server").IdentityKeys = []model.IdentityKey{{Components: []model.KeyComponent{{Property: prID("pr.acme_server.owner")}}, Strength: model.IdentityWeak}}
 		}},
-		{"[REQ-107] ext type reorders the identity keys of its parent", model.CodeIdentityKeyChanged, func(d *model.Definitions) {
+		{"ext type reorders the identity keys of its parent", model.CodeIdentityKeyChanged, func(d *model.Definitions) {
 			keys := objectType(d, "ot.asset").IdentityKeys
 			objectType(d, "ot.acme_server").IdentityKeys = []model.IdentityKey{keys[1], keys[0], keys[2]}
 		}},
-		{"[REQ-104] identifier scheme with a name that is not snake_case", model.CodeNameInvalid, func(d *model.Definitions) { d.Schemes[0].Name = "Vendor-Id" }},
-		{"[REQ-104] identifier scheme with no name", model.CodeRequiredField, func(d *model.Definitions) { d.Schemes[0].Name = "" }},
-		{"[REQ-104] identifier scheme with a normaliser that is not a value type", model.CodeSchemeUnknown, func(d *model.Definitions) {
+		{"identifier scheme with a name that is not snake_case", model.CodeNameInvalid, func(d *model.Definitions) { d.Schemes[0].Name = "Vendor-Id" }},
+		{"identifier scheme with no name", model.CodeRequiredField, func(d *model.Definitions) { d.Schemes[0].Name = "" }},
+		{"identifier scheme with a normaliser that is not a value type", model.CodeSchemeUnknown, func(d *model.Definitions) {
 			d.Schemes[0].Normalizer = vtID("vt.nothing")
 		}},
-		{"[REQ-104] identifier scheme with a namespace outside the four", model.CodeClosedList, func(d *model.Definitions) { d.Schemes[0].Namespace = "team" }},
-		{"[REQ-104] identifier scheme id used twice", model.CodeDuplicateID, func(d *model.Definitions) { d.Schemes = append(d.Schemes, d.Schemes[0]) }},
-		{"[REQ-104] identifier scheme with no id", model.CodeRequiredField, func(d *model.Definitions) { d.Schemes[0].ID = model.IdentifierSchemeID{} }},
-		{"[REQ-104] identifier scheme name used by an ext scheme and a std one", model.CodeNameReserved, func(d *model.Definitions) {
+		{"identifier scheme with a namespace outside the four", model.CodeClosedList, func(d *model.Definitions) { d.Schemes[0].Namespace = "team" }},
+		{"identifier scheme id used twice", model.CodeDuplicateID, func(d *model.Definitions) { d.Schemes = append(d.Schemes, d.Schemes[0]) }},
+		{"identifier scheme with no id", model.CodeRequiredField, func(d *model.Definitions) { d.Schemes[0].ID = model.IdentifierSchemeID{} }},
+		{"identifier scheme name used by an ext scheme and a std one", model.CodeNameReserved, func(d *model.Definitions) {
 			d.Schemes = append(d.Schemes, model.IdentifierScheme{ID: schID("is.other"), Name: "vendor_id", Namespace: model.NamespaceExt, Normalizer: vtID("vt.string")})
 		}},
 		{"[REQ-100] title property that is not a property", model.CodeTitleProperty, func(d *model.Definitions) { asset(d).TitleProperty = prID("pr.server.hostname") }},
@@ -311,10 +311,10 @@ func TestRulesOfLinks(t *testing.T) {
 		{"[REQ-101] resource that is the service channel", model.CodeLinkMeaning, func(d *model.Definitions) {
 			linkType(d, "lt.powered_by").MeaningParams["resource"] = "service"
 		}},
-		{"[REQ-108] link property that is volatile by its class", model.CodeLinkVolatile, func(d *model.Definitions) {
+		{"link property that is volatile by its class", model.CodeLinkVolatile, func(d *model.Definitions) {
 			linkType(d, "lt.powered_by").Properties[0].ChangeClass = model.ChangeDynamic
 		}},
-		{"[REQ-108] link property that is volatile by its history", model.CodeLinkVolatile, func(d *model.Definitions) {
+		{"link property that is volatile by its history", model.CodeLinkVolatile, func(d *model.Definitions) {
 			linkType(d, "lt.powered_by").Properties[0].HistoryKind = model.HistoryVolatile
 		}},
 		{"[REQ-100] binding end that is an unknown type", model.CodeBindingEndpoint, func(d *model.Definitions) {
@@ -390,24 +390,24 @@ func TestWhatIsAllowed(t *testing.T) {
 		name   string
 		repair func(d *model.Definitions)
 	}{
-		{"[REQ-107] an ext type that keeps the identity keys of its parent", func(d *model.Definitions) {
+		{"an ext type that keeps the identity keys of its parent", func(d *model.Definitions) {
 			objectType(d, "ot.acme_server").IdentityKeys = objectType(d, "ot.asset").IdentityKeys
 		}},
-		{"[REQ-107] an ext type that adds a property and keeps nothing else", func(d *model.Definitions) {
+		{"an ext type that adds a property and keeps nothing else", func(d *model.Definitions) {
 			objectType(d, "ot.acme_server").Properties = append(objectType(d, "ot.acme_server").Properties,
 				prop("pr.acme_server.rack_row", "rack_row", "vt.string", model.ChangeSlow))
 		}},
 		{"[REQ-101] the management need without a strength", func(d *model.Definitions) {
 			objectType(d, "ot.server").Needs = append(objectType(d, "ot.server").Needs, model.Need{Channel: model.ChannelManagement})
 		}},
-		{"[REQ-108] a dynamic property that says it is versioned", func(d *model.Definitions) {
+		{"a dynamic property that says it is versioned", func(d *model.Definitions) {
 			property(objectType(d, "ot.asset"), "pr.asset.power_state").HistoryKind = model.HistoryVersioned
 		}},
-		{"[REQ-107] a deprecated type that points at its successor", func(d *model.Definitions) {
+		{"a deprecated type that points at its successor", func(d *model.Definitions) {
 			objectType(d, "ot.rack").Status = model.StatusDeprecated
 			objectType(d, "ot.rack").SupersededBy = otID("ot.asset")
 		}},
-		{"[REQ-107] exactly four scope keys", func(d *model.Definitions) {
+		{"exactly four scope keys", func(d *model.Definitions) {
 			for _, name := range []string{"a", "b", "c"} {
 				key := prop("pr.asset.scope_"+name, "scope_"+name, "vt.string", model.ChangeSlow)
 				key.ScopeKey = true

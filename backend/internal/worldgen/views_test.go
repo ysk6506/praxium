@@ -236,6 +236,7 @@ func TestOverlapBetweenSources(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestViewsAreDeterministicAndOptional(t *testing.T) {
 	w := smallWorld(t, 25, 10000, nil)
 	_, a := runAll(t, w)

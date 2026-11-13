@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/internal/worldgen/world_prop_test.go"
-hash: "db4721be748e11c0"
+hash: "3a4e908326b05a14"
 date: "2026-11-13"
-note: "ADR-0022: keys with sets and 1:1 context, redundancy groups as objects, DEPENDS_ON between application services; counts and golden values updated"
+note: "생성기 시험 파일의 바뀐 것은 요구사항 태그 주석과 이름뿐이고 코드와 값은 그대로다. 문서가 말하는 것과 어긋나지 않아 고칠 것 없다"
 text_changed: true
 doc_hash: "5705221fe69d08d6"

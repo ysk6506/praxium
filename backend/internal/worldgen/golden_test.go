@@ -16,6 +16,7 @@ const (
 	goldenManifestHash = "cd5f56fb86006bf1bd59b5ec13c44f1806b42347000d1ef79e5e20623994017a"
 )
 
+// [REQ-001]
 func TestGoldenTinyWorld(t *testing.T) {
 	w := smallWorld(t, 1, 3000, func(p *Params) { p.Changes.Events = 20 })
 	m, st := runAll(t, w)

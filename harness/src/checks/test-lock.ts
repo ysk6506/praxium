@@ -5,6 +5,8 @@
  * TLOCK001 locked item changed   TLOCK002 locked item removed   TLOCK003 new item not locked
  * TLOCK004 amendment ADR missing/unsealed/does not list the item
  * TLOCK005 (with --base) the lock differs from the base ref without a new amendment ADR
+ *
+ * Go tests (ADR-0023) are units too, keyed `go:<package folder>::<function>`; the codes and the amendment path are the same.
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -25,6 +27,8 @@ export interface LockEntry {
   literals: string[];
   precision: number[];
   skips: number;
+  /** Requirement ids tagged on a Go test (absent on TypeScript entries). */
+  reqs?: string[];
   added: string;
   amended_by: string | null;
 }
@@ -63,6 +67,7 @@ export function entryFor(unit: Unit, now: string, amendedBy: string | null = nul
     literals: [...unit.literals],
     precision: [...unit.precision],
     skips: unit.skips,
+    ...(unit.reqs ? { reqs: [...unit.reqs] } : {}),
     added: now,
     amended_by: amendedBy,
   };
@@ -80,6 +85,8 @@ export function describeChange(entry: LockEntry, unit: Unit): string {
       unit.precision.length < entry.precision.length;
     if (looser) notes.push("toBeCloseTo precision loosened");
     if (unit.skips > entry.skips) notes.push("skip/todo/fails added");
+    if (unit.reqs && unit.reqs.join(",") !== (entry.reqs ?? []).join(","))
+      notes.push("requirement tags changed");
   }
   return notes.join("; ") || "body changed";
 }

@@ -18,8 +18,9 @@ func loadStd(t *testing.T) *model.Registry {
 	return r
 }
 
+// [REQ-100]
 func TestStandardCounts(t *testing.T) {
-	// [REQ-100] The data files are the source of truth, and these are the counts they hold: the documents repeat them.
+	// The data files are the source of truth, and these are the counts they hold: the documents repeat them.
 	r := loadStd(t)
 	core := map[model.Layer]int{}
 	ext := map[model.Layer]int{}
@@ -58,8 +59,9 @@ func TestStandardCounts(t *testing.T) {
 	}
 }
 
+// [REQ-100] [REQ-101]
 func TestStandardSpotChecks(t *testing.T) {
-	// [REQ-100, REQ-101, REQ-102] A handful of facts from the documents, read back through the registry.
+	// A handful of facts from the documents, read back through the registry.
 	r := loadStd(t)
 	server, ok := r.ObjectTypeByName("PhysicalServer")
 	if !ok || server.Namespace != model.NamespaceStd || server.Layer != model.LayerHardware {
@@ -116,8 +118,9 @@ func TestStandardSpotChecks(t *testing.T) {
 	}
 }
 
+// [REQ-101]
 func TestEveryBindingUsesAnAllowedMeaningAndChannel(t *testing.T) {
-	// [REQ-101] A link spreads along a channel only if its meaning says which; supplied_by names one of the four resources.
+	// A link spreads along a channel only if its meaning says which; supplied_by names one of the four resources.
 	r := loadStd(t)
 	used := map[model.Meaning]bool{}
 	for _, lt := range r.LinkTypes() {
@@ -148,8 +151,9 @@ func TestEveryBindingUsesAnAllowedMeaningAndChannel(t *testing.T) {
 	}
 }
 
+// [REQ-001] [REQ-233]
 func TestStandardIsDeterministic(t *testing.T) {
-	// [REQ-233] Two loads give the same numbers and the same hash; the hash is a fixed 64-digit value.
+	// Two loads give the same numbers and the same hash; the hash is a fixed 64-digit value.
 	a, b := loadStd(t), loadStd(t)
 	if a.Hash() != b.Hash() {
 		t.Fatalf("two loads give different hashes")
@@ -171,8 +175,9 @@ func TestStandardIsDeterministic(t *testing.T) {
 	}
 }
 
+// [REQ-233]
 func TestStandardNumbersAreUniqueAndStable(t *testing.T) {
-	// [REQ-233] No two types share a number, and the numbers run without a gap from 1.
+	// No two types share a number, and the numbers run without a gap from 1.
 	r := loadStd(t)
 	seen := map[int]bool{}
 	for _, ot := range r.ObjectTypes() {
@@ -188,8 +193,9 @@ func TestStandardNumbersAreUniqueAndStable(t *testing.T) {
 	}
 }
 
+// [REQ-100]
 func TestReadDefinitionsErrors(t *testing.T) {
-	// [REQ-100] A data file that cannot be read stops the load with a stable code.
+	// A data file that cannot be read stops the load with a stable code.
 	good, err := model.StandardDefinitions()
 	if err != nil {
 		t.Fatal(err)
@@ -226,7 +232,7 @@ func TestReadDefinitionsErrors(t *testing.T) {
 }
 
 func TestStandardIdentityAndRules(t *testing.T) {
-	// [REQ-104, REQ-101] Identity keys, the folded and left-out links, and the stated required flags.
+	// Identity keys, the folded and left-out links, and the stated required flags.
 	r := loadStd(t)
 	propName := func(id model.PropertyID) string {
 		ref, ok := r.Property(id)
@@ -296,7 +302,7 @@ func TestStandardIdentityAndRules(t *testing.T) {
 }
 
 func TestStandardIdentityKeysResolve(t *testing.T) {
-	// [REQ-104] Every key of the standard model names things that exist, and every scheme loads.
+	// Every key of the standard model names things that exist, and every scheme loads.
 	r := loadStd(t)
 	if len(r.IdentifierSchemes()) != 37 {
 		t.Errorf("%d identifier schemes, want 37", len(r.IdentifierSchemes()))
@@ -341,7 +347,7 @@ func TestStandardIdentityKeysResolve(t *testing.T) {
 }
 
 func TestStandardEveryTypeHasAKey(t *testing.T) {
-	// [REQ-104] Every standard type has an identity key of its own (TD-0009 is closed): a type without one is a regression.
+	// Every standard type has an identity key of its own (TD-0009 is closed): a type without one is a regression.
 	r := loadStd(t)
 	var got []string
 	for _, ot := range r.Definitions().ObjectTypes {
@@ -355,7 +361,7 @@ func TestStandardEveryTypeHasAKey(t *testing.T) {
 }
 
 func TestStandardGroupsCanHaveMembersAndConsumers(t *testing.T) {
-	// [REQ-104] Redundancy groups are real structure: each group type of a domain has a member type that can join it
+	// Redundancy groups are real structure: each group type of a domain has a member type that can join it
 	// (MEMBER_OF) and a consumer type that can depend on the group (supplied_by, requires or realized_by), so that
 	// no consumer has to point at one member.
 	r := loadStd(t)
@@ -392,8 +398,9 @@ func TestStandardGroupsCanHaveMembersAndConsumers(t *testing.T) {
 	}
 }
 
+// [REQ-101]
 func TestStandardMountingAndServiceDependencies(t *testing.T) {
-	// [REQ-101] Mounting in a rack is containment (MOUNTED_IN has the meaning contained_in, with no second location link
+	// Mounting in a rack is containment (MOUNTED_IN has the meaning contained_in, with no second location link
 	// for the same fact), and an application service can depend on another one (DEPENDS_ON).
 	r := loadStd(t)
 	mounted, ok := r.LinkTypeByName("MOUNTED_IN")

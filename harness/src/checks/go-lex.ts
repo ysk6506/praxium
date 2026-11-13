@@ -176,7 +176,7 @@ const OPEN = new Set(["(", "[", "{"]);
 const CLOSE = new Set([")", "]", "}"]);
 
 /** Index of the token that closes the group opened at `open`, or -1. */
-function closeOf(code: readonly GoTok[], open: number): number {
+export function closeOf(code: readonly GoTok[], open: number): number {
   let depth = 0;
   for (let k = open; k < code.length; k++) {
     const tok = code[k] as GoTok;
@@ -207,7 +207,7 @@ function countEntries(code: readonly GoTok[], open: number, close: number): numb
 }
 
 /** The type name of a receiver group such as `(s *Store)`, `(Clock)` or `(id ID[K])`. */
-function receiverType(code: readonly GoTok[], open: number, close: number): string {
+export function receiverType(code: readonly GoTok[], open: number, close: number): string {
   let k = open + 1;
   const named =
     code[k]?.kind === "ident" && (code[k + 1]?.kind === "ident" || isPunct(code[k + 1], "*"));

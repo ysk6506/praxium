@@ -73,6 +73,7 @@ func TestIDJSON(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestSequentialIDs(t *testing.T) {
 	ids := kernel.NewSequentialIDs()
 	got := []string{ids.Next("obj"), ids.Next("obj"), ids.Next("lnk"), ids.Next("obj")}
@@ -108,6 +109,7 @@ func TestSequentialIDsAreUniqueUnderConcurrency(t *testing.T) {
 	}
 }
 
+// [REQ-001]
 func TestRandomIDsFollowTheRng(t *testing.T) {
 	a := kernel.NewRandomIDs(kernel.NewSeededRng(0))
 	b := kernel.NewRandomIDs(kernel.NewSeededRng(0))

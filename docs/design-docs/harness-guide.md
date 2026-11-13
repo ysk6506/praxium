@@ -16,9 +16,9 @@ covers:
 | 제3자 라이선스 (함께 나가는 npm 패키지와 자료는 허용 목록 안의 라이선스여야 한다) | `harness/src/checks/licenses.ts` | `LIC*` |
 | 기술 부채 (REQ-022) | `harness/src/checks/debt.ts` | `DEBT*` |
 | 검사 끄기 금지 (끄기 주석·건너뛴 시험·CI `continue-on-error`는 이유와 근거 번호가 있어야 하고 수는 늘 수 없다) | `harness/src/checks/ignores.ts` | `IGN*` |
-| 테스트 변조 방지 (REQ-023) | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` |
+| 테스트 변조 방지 (REQ-023) | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` (Go 시험 함수도) |
 | 커버리지 (REQ-023) | `harness/src/checks/coverage.ts` | `COV*` |
-| 요구사항 추적 (`**예정(ADR-NNNN)**` 요구는 따로 나열) | `harness/src/checks/traceability.ts` | `TRACE*` |
+| 요구사항 추적 (`**예정(ADR-NNNN)**` 요구는 따로 나열, Go 시험은 `Test` 함수 위 `// [REQ-NNN]` 주석을 읽는다) | `harness/src/checks/traceability.ts` | `TRACE*` |
 | 화면의 말 (한 가지 뜻에 한 가지 말) | `harness/src/checks/ui-words.ts` | `WORD*` |
 | 품질 등급표 (REQ-024, 단위별 등급 A~D, 하네스가 만드는 생성물) | `harness/src/checks/quality.ts` | `QUAL*` |
 | 가드레일 보호 | `harness/src/checks/protected.ts` | `PROT*` |
@@ -33,7 +33,16 @@ covers:
 - import는 `go list`가 아니라 소스에서 읽는다(`go-lex.ts`). 시험 파일, 빌드 태그가 붙은 파일, 별칭, 줄 번호를 한 번에 보려는 것이다. 컴파일러가 아는 것(타입 오류, 없는 패키지)은 `go vet`이 본다.
 - Go가 설치돼 있어야 한다(`GOTOOL000`). 하네스는 `GOTOOLCHAIN=local`로 다른 Go를 내려받지 않고, 모듈 파일을 고치지 않는다.
 - 커버리지 하한은 `harness/config/coverage-floor.json`에 `go:<단위>`로 있고, `pnpm ratchet`이 올린다.
-- 아직 보지 않는 것은 ADR-0019에 적혀 있다(시험 잠금, 품질 등급표, 시험 제목의 요구사항 추적. 부채 TD-0008).
+- 시험 잠금, 요구사항 추적, 품질 등급표도 Go를 읽는다(ADR-0023, 부채 TD-0008을 닫았다). 아래 절에 있다.
+
+## Go 시험의 잠금, 요구사항 추적, 품질 등급표 (ADR-0023)
+
+- **잠금 단위.** 최상위 `TestXxx`, `FuzzXxx`, `ExampleXxx` 함수 하나다. 키는 `go:<패키지 디렉터리>::<함수 이름>`(예: `go:backend/internal/model::TestStandardCounts`)이라 TypeScript 키와 겹치지 않는다. `harness/config/test-lock.json`에 다른 시험과 같은 모양으로 들어간다.
+- **지문.** 함수 본문과, 본문이 이름으로 이어서 닿는 같은 패키지의 시험 전용 도우미, 표, 상수, 골든 값, `testdata/` 아래 파일과 `go:embed`한 파일의 내용, 달린 `[REQ-NNN]` 태그다. 서식, 주석, 후행 쉼표는 지문에 들지 않는다. 시험을 더하는 것은 잠금을 깨지 않는다(`pnpm lock-tests`가 새 항목으로 적는다). 지우거나 이름을 바꾸거나 바꾸면 `TLOCK001`, `TLOCK002`이고, 결정 기록의 `amends_tests`에 그 키가 있어야 풀린다.
+- **약화.** TypeScript의 규칙을 Go로 옮긴 것이다: 실패를 부르는 호출(`t.Fatal`, `t.Error`와 그 가족, 그리고 그것을 부르는 도우미)의 수가 줄거나, 건너뛰기(`t.Skip` 가족)가 늘거나, 본문이 비면 지문이 달라지므로 `TLOCK001`이 이유를 밝힌다. 새 시험이 실패를 부를 길이 없으면 `GOTEST003`이다.
+- **요구사항 추적.** `Test` 함수 바로 위 주석 줄 `// [REQ-001] [REQ-002]`과 `t.Run`에 넘긴 부분 시험 이름의 `[REQ-NNN]`이 시험과 요구사항을 잇는다(`TRACE001`, `TRACE002`, `TRACE006`이 TypeScript와 같이 본다). 어디에도 잇지 못하는 태그(몸체 주석, 한 괄호에 여러 id)는 `TRACE007`이다.
+- **품질 등급표.** Go 단위는 `go:<단위>` 행이다. 같은 기준표로 등급이 나오고 Go 쪽 입력은 `go test`의 문장 커버리지(`pnpm quality record`가 기록 파일에 적는다), 크기와 복잡도, 끄기 수, 열린 부채다. 재지 못한 입력은 "모름"이다.
+- **한계.** 함수 이름으로 닿는 곳을 넓게 잡아 지문은 너그럽지 않고 오히려 깐깐하다: 시험이 쓰는 도우미의 본문을 고쳐도 그 도우미를 쓰는 모든 시험이 걸린다. 다른 패키지의 도우미와 컴파일러가 아는 타입 해석은 보지 않는다. `testdata/`가 아닌 곳의 파일은 `go:embed`로 닿을 때만 본다.
 
 ## 명령
 
@@ -48,7 +57,7 @@ covers:
 - `pnpm tsx harness/src/checks/docs.ts link-amends <ADR>` — 새 ADR의 `amends`가 가리키는 ADR에 `amended_by`를 남긴다 (`DOC091`).
 - `pnpm tsx harness/src/checks/docs.ts audit-queue` — 본문이 그대로인 채 다시 확인만 된 문서를 오래 감사 못 받은 순으로 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`.
 - `pnpm tsx harness/src/checks/licenses.ts write` — 제3자 고지 파일(`THIRD_PARTY_NOTICES.md`)을 새로 만든다. 손으로 고치지 않는다.
-- `pnpm lock-tests` — 새 테스트를 잠금 파일에 추가한다. 기존 항목은 바꾸지 않는다.
+- `pnpm lock-tests` — 새 테스트(Go 시험 함수 포함)를 잠금 파일에 추가한다. 기존 항목은 바꾸지 않는다. 잠긴 Go 시험을 바꿔야 하면 결정 기록의 `amends_tests`에 `go:<디렉터리>::<함수>`를 적고 봉인한 뒤 `pnpm lock-tests --amend <ADR 파일>` ([ADR 절차](adr-process.md)).
 
 ## CI
 

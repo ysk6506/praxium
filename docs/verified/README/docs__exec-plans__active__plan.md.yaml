@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "f806a90408798bf3"
+hash: "2d48db5ffcf47a72"
 date: "2026-11-13"
-note: "plan.md row 5 mentions the ADR-0022 correction; README claims unchanged"
+note: "계획 문서의 바뀐 것은 Go 시험 잠금 한 줄이다. README와 어긋나지 않아 고칠 것 없다"
 text_changed: false
 doc_hash: "129d40a3a854fd63"
