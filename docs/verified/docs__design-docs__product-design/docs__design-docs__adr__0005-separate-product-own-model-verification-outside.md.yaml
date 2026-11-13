@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
-hash: "0a5542b1b8b7c8c7"
+hash: "1140a12760ae3546"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
-text_changed: true
-doc_hash: "21d54c87111f1d83"
+note: "product-design 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+text_changed: false
+doc_hash: "70b794278472f4b3"

@@ -33,7 +33,7 @@ covers:
 ## 만드는 법
 
 1. `docs/design-docs/adr/NNNN-짧은-이름.md` 생성. 다음 번호를 쓴다.
-2. 본문은 쉬운 말로 **맥락 → 결정 → 이유 → 대안과 버린 이유 → 결과**.
+2. 본문은 [용어집](glossary.md)의 표준 용어로 **맥락 → 결정 → 이유 → 대안과 버린 이유 → 결과**.
 3. 앞부분(front matter)에 아래를 적는다.
 
 ```yaml
@@ -49,7 +49,7 @@ updates_docs: [docs/design-docs/product-design.md]  # 이 결정이 바꾸는 �
 # updates_docs_reason: "..."
 amends:                 # 앞선 결정의 일부를 바꿀 때 (전체를 대체하면 아래 superseded)
   - adr: "0001"         #   그 ADR 번호
-    what: 목표의 둘째 부분   #   고친 부분을 20자쯤의 쉬운 말로 (새 ADR은 꼭 적는다)
+    what: 목표의 둘째 부분   #   고친 부분을 20자쯤의 짧은 문장으로 (새 ADR은 꼭 적는다)
 ```
 
 4. 앞선 결정의 일부를 바꾸면 `pnpm tsx harness/src/checks/docs.ts link-amends docs/design-docs/adr/NNNN-....md`로 대상 ADR의 앞부분에 `amended_by`를 남기고 같은 `what`을 옮겨 적는다. 결정 목록은 이것을 "일부 고침: 0001 (고친 부분)"으로 보인다. `what`은 대상 ADR의 어느 부분이 바뀌었는지를 말한다. 새 ADR이 `what` 없이 `amends`를 쓰면 `DOC091`이 실패하고, 옛 ADR의 파일 이름만 적은 항목은 그대로 읽는다. (`DOC091`은 양쪽이 맞는지도 본다.) 대상 ADR도 보호 경로이므로 이 ADR의 `touches_protected`에 대상 파일을 적는다.

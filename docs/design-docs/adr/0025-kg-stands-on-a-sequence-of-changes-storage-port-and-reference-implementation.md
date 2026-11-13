@@ -27,7 +27,7 @@ touches_protected:
 amends:
   - adr: "0009"
     what: 링크의 내용 해시에 등급과 근거의 종류가 들고, 반쯤 든 배치는 되감아 포기한다
-decision_hash: a90e7f3846abeae3
+decision_hash: 17e1b4cb4439675c
 amended_by:
   - adr: "0028"
     what: 적합성 테스트 단위가 기준 구현을 import하는 범위

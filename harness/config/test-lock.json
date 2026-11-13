@@ -8297,20 +8297,20 @@
   },
   "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > the generated list shows the phrase beside the amending ADR": {
    "kind": "test",
-   "hash": "03c93402e3c2cb3c",
+   "hash": "2b85bbb311e0cba9",
    "asserts": 2,
    "literals": [
     "\"0001\"",
     "\"0001-old.md\"",
     "\"\\n\"",
     "\"the generated list shows the phrase beside the amending ADR\"",
-    "\"일부 고침: [0002](\"",
-    "\"일부 고침: [0002](\""
+    "\"일부 수정: [0002](\"",
+    "\"일부 수정: [0002](\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/doc-amends.test.ts::link-amends copies the phrase to the amended ADR [REQ-020] > the phrase lands in amended_by, once, and a bare entry is upgraded": {
    "kind": "test",
@@ -8499,24 +8499,24 @@
   },
   "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > =table": {
    "kind": "support",
-   "hash": "8fcf3d06039d9f73",
+   "hash": "4d410940a3ec45fb",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
-  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > a table with a 시험 파일 column is judged by that column, with brace paths expanded": {
+  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > a table with a 테스트 파일 column is judged by that column, with brace paths expanded": {
    "kind": "test",
-   "hash": "b83f56b519c6c93b",
+   "hash": "223a6fd81d2c961d",
    "asserts": 1,
    "literals": [
     "\"(1/2)\"",
     "\"(1/2)\"",
     "\"0\"",
     "\"0\"",
-    "\"a table with a 시험 파일 column is judged by that column, with brace paths expanded\"",
+    "\"a table with a 테스트 파일 column is judged by that column, with brace paths expanded\"",
     "\"apps/x/a-1.test.ts\"",
     "\"apps/x/a-2.test.ts\"",
     "\"docs/guide.md\"",
@@ -8527,7 +8527,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > rows of a test section without an existing test path are counted; planned rows are not": {
@@ -8892,7 +8892,7 @@
   },
   "harness/src/checks/doc-decisions.test.ts::the decisions table is made from ADR front matter [REQ-020] > one line per ADR in number order with status and who changed it": {
    "kind": "test",
-   "hash": "d13f24dc622c6287",
+   "hash": "1991072f42e0dc6e",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -8916,15 +8916,15 @@
     "\"대체: [0003]\"",
     "\"대체됨\"",
     "\"대체됨\"",
-    "\"일부 고침: [0002]\"",
-    "\"일부 고침: [0002]\"",
+    "\"일부 수정: [0002]\"",
+    "\"일부 수정: [0002]\"",
     "\"중간 \\\\| 결정\"",
     "\"중간 \\\\| 결정\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/doc-decisions.test.ts::the decisions table is made from ADR front matter [REQ-020] > the file is a notice when behind and quiet when current": {
    "kind": "test",
@@ -10913,6 +10913,483 @@
     "\"read it\"",
     "\"read it\"",
     "\"the same words on another target or another document are fine\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::<import:732c99f3>": {
+   "kind": "support",
+   "hash": "732c99f333549fdc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::<import:cdb55d46>": {
+   "kind": "support",
+   "hash": "cdb55d46c42aa9ba",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::<import:e43dc2a3>": {
+   "kind": "support",
+   "hash": "e43dc2a35c678754",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::=CONFIG": {
+   "kind": "support",
+   "hash": "89d6aa8090b6deb6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::=GLOSSARY": {
+   "kind": "support",
+   "hash": "0caf7dd002dcbb5b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::=old": {
+   "kind": "support",
+   "hash": "cfc8e56172319f54",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::=terms": {
+   "kind": "support",
+   "hash": "1843105de39a943e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > =files": {
+   "kind": "support",
+   "hash": "035784ef11a25c71",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > a glossary without a dictionary table is a WORD004 failure": {
+   "kind": "test",
+   "hash": "c0c265cbbbce9dcd",
+   "asserts": 1,
+   "literals": [
+    "\"# 용어집\\n\"",
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"a glossary without a dictionary table is a WORD004 failure\"",
+    "\"docs/glossary.md\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > report mode gives a notice and no failure; fail mode gives one WORD003 per place": {
+   "kind": "test",
+   "hash": "2e778848cf177184",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"WORD003 README.md:1\"",
+    "\"WORD003 README.md:1\"",
+    "\"WORD003 docs/a.md:1\"",
+    "\"WORD003 docs/a.md:1\"",
+    "\"WORD003 docs/a.md:2\"",
+    "\"WORD003 docs/a.md:2\"",
+    "\"WORD003 docs/b.md:1\"",
+    "\"WORD003 docs/b.md:1\"",
+    "\"\\\"테스트\\\"\"",
+    "\"\\\"테스트\\\"\"",
+    "\"fail\"",
+    "\"report mode gives a notice and no failure; fail mode gives one WORD003 per place\"",
+    "\"옛 표기 4곳(문서 3개, 보고 모드)\"",
+    "\"옛 표기 4곳(문서 3개, 보고 모드)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > the config is checked: an unknown mode and a missing dictionary": {
+   "kind": "test",
+   "hash": "7e4743d13e6c998f",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"apps\"",
+    "\"the config is checked: an unknown mode and a missing dictionary\"",
+    "\"warn\"",
+    "\"warn\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > the documents are counted per document, worst first; skipped and unlisted files are left out": {
+   "kind": "test",
+   "hash": "43fa810359c4dc0e",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"README.md\"",
+    "\"README.md\"",
+    "\"docs/a.md\"",
+    "\"docs/a.md\"",
+    "\"docs/b.md\"",
+    "\"docs/b.md\"",
+    "\"the documents are counted per document, worst first; skipped and unlisted files are left out\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::a whole repository: report mode counts, fail mode fails [REQ-003] > the real repository: the glossary parses, the config is sound and the check reports": {
+   "kind": "test",
+   "hash": "e1d4d15e5ad6b2ba",
+   "asserts": 5,
+   "literals": [
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"docs/design-docs/glossary.md\"",
+    "\"docs/design-docs/glossary.md\"",
+    "\"glossary\"",
+    "\"glossary\"",
+    "\"harness/config/ui-words.yaml\"",
+    "\"the real repository: the glossary parses, the config is sound and the check reports\"",
+    "\"길\"",
+    "\"길\"",
+    "\"뜻\"",
+    "\"뜻\"",
+    "\"묶음\"",
+    "\"묶음\"",
+    "\"자리\"",
+    "\"자리\"",
+    "\"쪽\"",
+    "\"쪽\"",
+    "\"칸\"",
+    "\"칸\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > %s": {
+   "kind": "test",
+   "hash": "ffa210c05a828e31",
+   "asserts": 1,
+   "literals": [
+    "\"# 시험 절\"",
+    "\"%s\"",
+    "\"| 표 | 시험 |\"",
+    "\"시험 결과가 나왔다.\"",
+    "\"시험 파일 하나\"",
+    "\"시험 파일\"",
+    "\"시험\"",
+    "\"시험\"",
+    "\"시험\"",
+    "\"으뜸 열쇠\"",
+    "\"쪽 넘김\"",
+    "\"쪽 넘김과 으뜸 열쇠\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > %s#2": {
+   "kind": "test",
+   "hash": "8c5e149b84ef10f2",
+   "asserts": 1,
+   "literals": [
+    "\"%s\"",
+    "\"<!-- 시험 -->\"",
+    "\"> 인용 속의 시험\"",
+    "\"[링크](docs/시험.md)\"",
+    "\"``시험 `x` 시험``\"",
+    "\"`시험` 은 코드\"",
+    "\"https://example.com/시험\"",
+    "\"읽는 자리와 길은 뜻이 여럿이라 적지 않는다\"",
+    "\"테스트와 개요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > a standard word that holds an old spelling can be kept": {
+   "kind": "test",
+   "hash": "7a7bcbb79521d72c",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"a standard word that holds an old spelling can be kept\"",
+    "\"d.md\"",
+    "\"d.md\"",
+    "\"d.md\"",
+    "\"d.md\"",
+    "\"g.md\"",
+    "\"공급\"",
+    "\"공급망\"",
+    "\"공급망\"",
+    "\"공급망과 공급\"",
+    "\"공급망과 공급\"",
+    "\"공급망과 공급\"",
+    "\"공급망과 공급\"",
+    "\"피드\"",
+    "false",
+    "false",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > code blocks, comments over several lines and front matter keys are skipped; title and reasons are read": {
+   "kind": "test",
+   "hash": "eea6023fca2dd5d8",
+   "asserts": 1,
+   "literals": [
+    "\"  - docs/시험.md\"",
+    "\"---\"",
+    "\"---\"",
+    "\"-->\"",
+    "\"13\"",
+    "\"13\"",
+    "\"2\"",
+    "\"2\"",
+    "\"5\"",
+    "\"5\"",
+    "\"<!--\"",
+    "\"\\n\"",
+    "\"```\"",
+    "\"```\"",
+    "\"code blocks, comments over several lines and front matter keys are skipped; title and reasons are read\"",
+    "\"covers:\"",
+    "\"d.md\"",
+    "\"d.md\"",
+    "\"title: 시험 제목\"",
+    "\"updates_docs_reason: 시험 때문이다\"",
+    "\"본문 시험\"",
+    "\"시험\"",
+    "\"시험\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > the glossary's own old-spelling column and the list of everyday words are not read": {
+   "kind": "test",
+   "hash": "1d00c6f63696162e",
+   "asserts": 2,
+   "literals": [
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"g.md\"",
+    "\"g.md\"",
+    "\"the glossary's own old-spelling column and the list of everyday words are not read\"",
+    "\"자리\"",
+    "\"자리\"",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::only prose is read [REQ-003] > the longest spelling wins and each place counts once": {
+   "kind": "test",
+   "hash": "121d6a613881329c",
+   "asserts": 1,
+   "literals": [
+    "\"the longest spelling wins and each place counts once\"",
+    "\"시험 파일\"",
+    "\"시험 파일\"",
+    "\"시험 파일과 시험\"",
+    "\"시험 파일과 시험\"",
+    "\"시험\"",
+    "\"시험\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::the dictionary is the glossary tables [REQ-003] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::the dictionary is the glossary tables [REQ-003] > a table of another shape is not read, and a standard term is never an entry": {
+   "kind": "test",
+   "hash": "430719c7137e65af",
+   "asserts": 2,
+   "literals": [
+    "\"a table of another shape is not read, and a standard term is never an entry\"",
+    "\"자리\"",
+    "\"자리\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::the dictionary is the glossary tables [REQ-003] > an everyday word, a spelling that is also a standard term and two answers for one spelling are refused": {
+   "kind": "test",
+   "hash": "d042f5a05859fa16",
+   "asserts": 1,
+   "literals": [
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"WORD004\"",
+    "\"an everyday word, a spelling that is also a standard term and two answers for one spelling are refused\"",
+    "\"g.md\"",
+    "\"g.md\"",
+    "\"g.md\"",
+    "\"g.md\"",
+    "\"검사\"",
+    "\"검증\"",
+    "\"시험\"",
+    "\"시험\"",
+    "\"위치\"",
+    "\"자리\"",
+    "\"테스트\"",
+    "\"테스트\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-terms.test.ts::the dictionary is the glossary tables [REQ-003] > old spellings come from the second column of the glossary tables only": {
+   "kind": "test",
+   "hash": "479ee064f86af2ec",
+   "asserts": 1,
+   "literals": [
+    "\"old spellings come from the second column of the glossary tables only\"",
+    "\"시험 파일>테스트\"",
+    "\"시험 파일>테스트\"",
+    "\"시험>테스트\"",
+    "\"시험>테스트\"",
+    "\"으뜸 열쇠>마스터 키\"",
+    "\"으뜸 열쇠>마스터 키\"",
+    "\"쪽 넘김>페이지네이션\"",
+    "\"쪽 넘김>페이지네이션\""
    ],
    "precision": [],
    "skips": 0,
@@ -14421,13 +14898,13 @@
   },
   "harness/src/checks/go-deps.test.ts::=table": {
    "kind": "support",
-   "hash": "2832186a5f9135ef",
+   "hash": "d7d30b7c4eba989c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/go-deps.test.ts::Go modules: go.mod against the table and the contract [REQ-239] > <suite>": {
    "kind": "support",
@@ -14714,7 +15191,7 @@
   },
   "harness/src/checks/go-deps.test.ts::Go modules: go.mod is read [REQ-239] > table rows are the ones under the module, licence, reason header": {
    "kind": "test",
-   "hash": "0f8866b977b2ca7e",
+   "hash": "1659b56941f97c30",
    "asserts": 1,
    "literals": [
     "\"\"",
@@ -14731,7 +15208,7 @@
     "\"| `example.test/one` | MIT | parses a format | `core.kernel` |\"",
     "\"| `example.test/outside` | MIT | not in the table | |\"",
     "\"| 구분 | 무엇 | 없을 때 |\"",
-    "\"| 모듈 | 라이선스 | 까닭 | 쓰는 단위 |\"",
+    "\"| 모듈 | 라이선스 | 이유 | 쓰는 단위 |\"",
     "\"| 필수 | `not-a-module` | x |\"",
     "\"|---|---|---|\"",
     "\"|---|---|---|---|\""
@@ -14739,7 +15216,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/go-ignores.test.ts::<import:1173b9b4>": {
    "kind": "support",
@@ -19969,7 +20446,7 @@
   },
   "harness/src/checks/quality-go.test.ts::Go units in the quality table [REQ-024] > a Go unit with no recorded coverage is unmeasured, not zero": {
    "kind": "test",
-   "hash": "2755194141e4c2b1",
+   "hash": "82414369beee29d4",
    "asserts": 4,
    "literals": [
     "\"90\"",
@@ -19978,13 +20455,13 @@
     "\"B\"",
     "\"a Go unit with no recorded coverage is unmeasured, not zero\"",
     "\"go:core.model\"",
-    "\"모름\"",
-    "\"모름\""
+    "\"알 수 없음\"",
+    "\"알 수 없음\""
    ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/quality-go.test.ts::Go units in the quality table [REQ-024] > a recorded Go coverage below the floor is D, at or above it is A": {
    "kind": "test",
@@ -20409,7 +20886,7 @@
   },
   "harness/src/checks/quality.test.ts::quality grades follow from measured values [REQ-024] > the reasons name what to fix, worst class first; an A has none": {
    "kind": "test",
-   "hash": "92b32f1fc470f553",
+   "hash": "2516ef1ecbd163c4",
    "asserts": 4,
    "literals": [
     "\"1\"",
@@ -20429,16 +20906,16 @@
     "\"90\"",
     "\"90\"",
     "\"the reasons name what to fix, worst class first; an A has none\"",
-    "\"끄기 1\"",
-    "\"끄기 1\"",
-    "\"끄기 12\"",
-    "\"끄기 12\"",
+    "\"무시 주석 1\"",
+    "\"무시 주석 1\"",
+    "\"무시 주석 12\"",
+    "\"무시 주석 12\"",
     "\"열린 고위험 부채 1\"",
     "\"열린 고위험 부채 1\"",
     "\"열린 부채 3\"",
     "\"열린 부채 3\"",
-    "\"커버리지 모름\"",
-    "\"커버리지 모름\"",
+    "\"커버리지 알 수 없음\"",
+    "\"커버리지 알 수 없음\"",
     "\"커버리지가 하한 아래\"",
     "\"커버리지가 하한 아래\"",
     "\"한도 90% 넘음 6\"",
@@ -20448,12 +20925,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
-  "harness/src/checks/quality.test.ts::quality grades follow from measured values [REQ-024] > the table prints the rule above the rows, and `모름` for a unit without a record": {
+  "harness/src/checks/quality.test.ts::quality grades follow from measured values [REQ-024] > the table prints the rule above the rows, and `알 수 없음` for a unit without a record": {
    "kind": "test",
-   "hash": "4665d0f921f6ce4f",
+   "hash": "8b7e4647e50bb84a",
    "asserts": 8,
    "literals": [
     "\"## 등급 규칙\"",
@@ -20469,25 +20946,25 @@
     "\"biome-ignore\"",
     "\"core.world\"",
     "\"docs/a/guide.md\"",
-    "\"the table prints the rule above the rows, and `모름` for a unit without a record\"",
+    "\"the table prints the rule above the rows, and `알 수 없음` for a unit without a record\"",
     "\"| 1 (2026-12-08) | 2026-11-01 (guide.md) |\"",
     "\"| 1 (2026-12-08) | 2026-11-01 (guide.md) |\"",
     "\"| core.world | B | 98.3 / 98.0 |\"",
     "\"| core.world | B | 98.3 / 98.0 |\"",
-    "\"| core.world | B | 모름 / 98.0 |\"",
-    "\"| core.world | B | 모름 / 98.0 |\"",
+    "\"| core.world | B | 알 수 없음 / 98.0 |\"",
+    "\"| core.world | B | 알 수 없음 / 98.0 |\"",
     "\"| core.world |\"",
     "\"| core.world |\"",
     "\"| — |\"",
     "\"| — |\"",
     "\"커버리지 기록: 2026-11-11\"",
     "\"커버리지 기록: 2026-11-11\"",
-    "\"커버리지 기록: 없음 (모든 단위가 \\\"모름\\\")\"",
-    "\"커버리지 기록: 없음 (모든 단위가 \\\"모름\\\")\""
+    "\"커버리지 기록: 없음 (모든 단위가 \\\"알 수 없음\\\")\"",
+    "\"커버리지 기록: 없음 (모든 단위가 \\\"알 수 없음\\\")\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
+   "added": "2026-11-13",
    "amended_by": null
   },
   "harness/src/checks/quality.test.ts::recorded coverage feeds the table, nothing is invented [REQ-024] > <hook:afterEach>": {
@@ -20637,7 +21114,7 @@
   },
   "harness/src/checks/quality.test.ts::recorded coverage feeds the table, nothing is invented [REQ-024] > the CLI writes, records and checks": {
    "kind": "test",
-   "hash": "4c4e0b5a761c3c55",
+   "hash": "e8c691503f131b90",
    "asserts": 14,
    "literals": [
     "\"--root\"",
@@ -20680,8 +21157,8 @@
     "\"1\"",
     "\"1\"",
     "\"1\"",
-    "\"NOTE quality [QUAL001] 낡음: pnpm quality write\"",
-    "\"NOTE quality [QUAL001] 낡음: pnpm quality write\"",
+    "\"NOTE quality [QUAL001] 오래됨: pnpm quality write\"",
+    "\"NOTE quality [QUAL001] 오래됨: pnpm quality write\"",
     "\"OK   quality\"",
     "\"OK   quality\"",
     "\"QUAL001\"",
@@ -20708,24 +21185,24 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/quality.test.ts::recorded coverage feeds the table, nothing is invented [REQ-024] > without a record every measured unit is unknown, units without a floor show a dash": {
    "kind": "test",
-   "hash": "7f9679fa860ff57a",
+   "hash": "71ec68ca20ae6fd7",
    "asserts": 2,
    "literals": [
     "\"without a record every measured unit is unknown, units without a floor show a dash\"",
     "\"| core.kernel | A | — |\"",
     "\"| core.kernel | A | — |\"",
-    "\"| core.world | B | 모름 / 98.0 |\"",
-    "\"| core.world | B | 모름 / 98.0 |\""
+    "\"| core.world | B | 알 수 없음 / 98.0 |\"",
+    "\"| core.world | B | 알 수 없음 / 98.0 |\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > <hook:afterEach>": {
    "kind": "support",
@@ -20749,13 +21226,13 @@
   },
   "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > =STALE": {
    "kind": "support",
-   "hash": "40cfc0ac33d22434",
+   "hash": "46c1e19fe783a4a6",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/quality.test.ts::the quality table is generated and kept fresh [REQ-024] > a debt item may only name units that exist (QUAL003)": {
    "kind": "test",
@@ -23096,7 +23573,7 @@
   },
   "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-003] > %s": {
    "kind": "test",
-   "hash": "69ef94906f466b52",
+   "hash": "a46782ca8a35d370",
    "asserts": 1,
    "literals": [
     "\"%s\"",
@@ -23105,43 +23582,30 @@
     "\":\"",
     "\":\"",
     "\"E2E로 가려면\"",
-    "\"const a = <Field unit=\\\"회\\\" />;\"",
-    "\"const a = <p>지금 {n}회 실행 중</p>;\"",
-    "\"const a = \\\"3회 실행\\\";\"",
-    "\"const a = \\\"5번째가 아니라 5회째예요\\\";\"",
     "\"const a = \\\"관계 종류를 골라요\\\";\"",
+    "\"const a = \\\"넘긴 일 2번\\\";\"",
     "\"const a = \\\"매핑하지 못한 라벨·관계\\\";\"",
     "\"const a = \\\"서비스 개체에 저장돼요\\\";\"",
-    "\"const a = \\\"에스컬레이션 처리\\\";\"",
+    "\"const a = \\\"알림 넘기기 처리\\\";\"",
     "\"const a = \\\"이 세계를 E2E로 가려면\\\";\"",
-    "\"const a = \\\"이미 돌린 시드예요\\\";\"",
-    "\"const a = \\\"툴 호출 횟수\\\";\"",
-    "\"const a = `$\"",
-    "\"const state = { 시드_번호: 3 };\"",
-    "\"const state = { 횟수: 3 };\"",
-    "\"{n}회 끝`;\"",
+    "\"const a = \\\"이미 돌린 씨앗이에요\\\";\"",
+    "\"const state = { 씨앗_번호: 3 };\"",
     "\"개체\"",
     "\"관계 종류\"",
+    "\"넘긴 일\"",
     "\"라벨·관계\"",
-    "\"시드\"",
-    "\"시드\"",
-    "\"에스컬레이션\"",
-    "\"회\"",
-    "\"회\"",
-    "\"회\"",
-    "\"회\"",
-    "\"회째\"",
-    "\"횟수\"",
-    "\"횟수\""
+    "\"씨앗\"",
+    "\"씨앗\"",
+    "\"알림 넘기기\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-003] > %s#2": {
    "kind": "test",
-   "hash": "8ef2f4d092e621da",
+   "hash": "c5cd868d471fbea3",
    "asserts": 1,
    "literals": [
     "\"%s\"",
@@ -23149,19 +23613,21 @@
     "\"const a = 3; // 3회 횟수 시드 개체 in a comment\"",
     "\"const a = \\\"3 states\\\";\"",
     "\"const a = \\\"3번 중 1번 합격했어요\\\";\"",
+    "\"const a = \\\"3회 실행하고 횟수를 세요\\\";\"",
     "\"const a = \\\"escalate 툴을 불러요\\\";\"",
     "\"const a = \\\"객체 종류와 링크 종류\\\";\"",
     "\"const a = \\\"관계없이 돌아가요\\\";\"",
     "\"const a = \\\"냉방 관계가 없는 랙이에요\\\";\"",
-    "\"const a = \\\"넘긴 일 2번\\\";\"",
+    "\"const a = \\\"시드를 고르세요\\\";\"",
+    "\"const a = \\\"에스컬레이션 처리\\\";\"",
     "\"const a = \\\"툴 호출 3번째\\\";\"",
     "\"const a = \\\"회사 회색 개회 회의\\\";\"",
     "\"import x from \\\"./시드\\\";\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-003] > <suite>": {
    "kind": "support",
@@ -23241,27 +23707,27 @@
   },
   "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-003] > it names the line, the found word and the word to use": {
    "kind": "test",
-   "hash": "6adaf10c0204dcd8",
+   "hash": "e30b16098217b4f1",
    "asserts": 3,
    "literals": [
     "\"2\"",
     "\"2\"",
     "\"WORD001\"",
     "\"WORD001\"",
-    "\"\\\"번\\\"\"",
-    "\"\\\"번\\\"\"",
-    "\"\\\"회\\\"\"",
-    "\"\\\"회\\\"\"",
+    "\"\\\"개체\\\"\"",
+    "\"\\\"개체\\\"\"",
+    "\"\\\"객체\\\"\"",
+    "\"\\\"객체\\\"\"",
     "\"apps/web/src/a.ts\"",
     "\"apps/web/src/a.ts\"",
     "\"apps/web/src/a.ts\"",
-    "\"const a = 1;\\nconst b = \\\"3회\\\";\\n\"",
+    "\"const a = 1;\\nconst b = \\\"개체\\\";\\n\"",
     "\"it names the line, the found word and the word to use\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
+   "added": "2026-11-13",
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-003] > only text a person can read is scanned: comments, imports and English strings are not": {
    "kind": "test",
@@ -24244,13 +24710,13 @@
   },
   "harness/src/test-support/go-repo.ts::=GO_ARCHITECTURE_DOC": {
    "kind": "support",
-   "hash": "d491c581943dc4df",
+   "hash": "bf6930c12c44a141",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0029-standard-terms-in-documents-and-screens.md"
   },
   "harness/src/test-support/go-repo.ts::=GO_DEBT": {
    "kind": "support",
@@ -25655,6 +26121,8 @@
   "go:backend/internal/query::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestNeighborsReadThePastAndTheView": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
-  "go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  "go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
+  "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > a table with a 시험 파일 column is judged by that column, with brace paths expanded": "0029-standard-terms-in-documents-and-screens.md",
+  "harness/src/checks/quality.test.ts::quality grades follow from measured values [REQ-024] > the table prints the rule above the rows, and `모름` for a unit without a record": "0029-standard-terms-in-documents-and-screens.md"
  }
 }

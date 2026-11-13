@@ -24,7 +24,7 @@ touches_protected:
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
 amends_tests: []
-decision_hash: e298d16edb9dab0d
+decision_hash: 83001386894ed401
 ---
 # ADR-0020 타입 등록부와 표준 모델의 데이터 파일이 선다
 

@@ -83,7 +83,7 @@ amends_tests:
   - go:backend/internal/query::TestNeighborsTableDriven
   - go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration
 test_change_reason: 길이 서른둘로 늘어 적합성 테스트가 계약의 길을 표에서 직접 도출하도록 네 테스트를 한 번 제대로 고치고(단언은 같거나 더 엄하다), 질의 테스트의 저장소를 핵심 단위 안의 `graph.ScratchStore`로 바꾸고 옛 자리를 읽는 다섯 테스트를 어댑터를 읽어도 되는 `adapter.readcheck`로 옮긴다. 나머지는 같은 이름의 도우미를 함께 쓰게 되어 지문만 바뀐 테스트이다. 계약의 경로 이름 테스트는 테스트의 경로 규칙이 ADR-0016의 `:action` 표기를 빠뜨려 설계 결정보다 좁았다. 결정에 맞게 고치고 POST 전용과 동사 조각 금지를 더했다.
-decision_hash: 29f3b66604ad7660
+decision_hash: ebb17d5971ee019a
 ---
 # ADR-0027 KG를 API와 명령줄로 읽는다
 

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "docs/design-docs/query-engine-shape.md"
-hash: "e133147b6c781f10"
+hash: "72f3fa30d9bc1588"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+note: "worldgen 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 58줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "774dc0e1b13d86d0"
+doc_hash: "a802263072e924a4"

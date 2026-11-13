@@ -1,5 +1,5 @@
 ---
-title: E2E 프로세스의 방향 — 조사해서 잡은 방향이고 결정이 아니다
+title: 엔드투엔드(E2E) 프로세스의 방향 — 조사해서 잡은 방향이고 결정이 아니다
 kind: guide
 status: active
 follows:

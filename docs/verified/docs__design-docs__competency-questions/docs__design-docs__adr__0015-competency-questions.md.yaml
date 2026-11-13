@@ -1,7 +1,7 @@
 doc: "docs/design-docs/competency-questions.md"
 target: "docs/design-docs/adr/0015-competency-questions.md"
-hash: "0741f04c93468685"
+hash: "01706a0b4e5b8db7"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
-text_changed: true
-doc_hash: "57190b274c8a4504"
+note: "competency-questions 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+text_changed: false
+doc_hash: "34cc7aab5d50dbe9"

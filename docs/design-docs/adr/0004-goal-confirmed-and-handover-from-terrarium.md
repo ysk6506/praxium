@@ -20,7 +20,10 @@ touches_protected:
   - AGENTS.md
   - docs/design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md
 amends_tests: []
-decision_hash: 8291f0fe49fe8b3a
+decision_hash: 4c7f2d951fc28c00
+amended_by:
+  - adr: "0029"
+    what: 목표 문장의 표기를 표준 용어로 고치고 사내를 뺀다. 결정은 그대로다
 ---
 # ADR-0004 제품 목표를 굳히고, 저장소는 공개로 두며, 테라리움에서 넘겨받은 것을 한 장으로 둔다
 

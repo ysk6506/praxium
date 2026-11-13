@@ -133,7 +133,7 @@ amends:
     what: "`core.kernel`이 `os`를 import하는 범위"
   - adr: "0025"
     what: 적합성 테스트 단위가 기준 구현을 import하는 범위
-decision_hash: 0fe67f92f2c39f85
+decision_hash: 6ab9c37a496b85ff
 ---
 # ADR-0028 감사에서 나온 검사 허점을 메운다
 

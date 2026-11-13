@@ -105,7 +105,7 @@ follows:
 | mutates, reversibility, disruption, physical | 위험의 축 넷 (12절) |
 | declared_effects, inverse | 선언한 효과(KG에서 관측할 수 있는 조건)와 되돌리는 액션 |
 
-지금은 목록과 뜻만 두어요. 실행과 툴 매핑은 E2E 프로세스를 구체화할 때 정해요.
+지금은 목록과 뜻만 두어요. 실행과 툴 매핑은 엔드투엔드(E2E) 프로세스를 구체화할 때 정해요.
 
 ### 3.7 상태와 이름 공간
 | 층 | 이름 공간 | 누가 고쳐요 | 승인 |

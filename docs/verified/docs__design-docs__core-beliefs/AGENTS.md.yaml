@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "d586ed641cb394ca"
+hash: "e697a638621bc065"
 date: "2026-11-13"
-note: "AGENTS.md와 adr-process.md의 바뀐 곳이 신념 6과 7(잠긴 시험, 부채 래칫)과 맞는지 읽었고 고칠 곳이 없었다"
-text_changed: false
-doc_hash: "c68185f5b10e5ba0"
+note: "core-beliefs 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 4줄), 결정과 숫자는 그대로"
+text_changed: true
+doc_hash: "b6dbe9997ada99ae"

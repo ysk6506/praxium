@@ -1,7 +1,7 @@
 doc: "docs/design-docs/definitions-lineage.md"
 target: "docs/design-docs/adr/0014-definitions-branches-revert.md"
-hash: "0b4edc6c17aa9602"
+hash: "f2d527be2b10f242"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
-text_changed: true
-doc_hash: "db5cf81843397509"
+note: "definitions-lineage 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+text_changed: false
+doc_hash: "316a5ca0d09319ca"

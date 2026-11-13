@@ -22,7 +22,7 @@ touches_protected:
   - docs/product-specs/requirements.md
   - AGENTS.md
 amends_tests: []
-decision_hash: bb6c4cfdc46cfeb7
+decision_hash: 86f285b020e12bee
 amended_by:
   - adr: "0024"
     what: 계약의 자리와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 나눔

@@ -20,10 +20,12 @@ covers:
 | 테스트 변조 방지 (REQ-023) | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` (Go 테스트 함수도) |
 | 커버리지 (REQ-023) | `harness/src/checks/coverage.ts` | `COV*` |
 | 요구사항 추적 (`**예정(ADR-NNNN)**` 요구는 따로 나열, Go 테스트는 `Test` 함수 위 `// [REQ-NNN]` 주석을 읽는다) | `harness/src/checks/traceability.ts` | `TRACE*` |
-| 화면의 말 (한 가지 뜻에 한 가지 말) | `harness/src/checks/ui-words.ts` | `WORD*` |
+| 화면의 말과 문서의 표준 용어 (한 가지 뜻에 한 가지 말, 옛 표기 금지) | `harness/src/checks/ui-words.ts`, `doc-terms.ts` | `WORD*` |
 | 품질 등급표 (REQ-024, 단위별 등급 A~D, 하네스가 만드는 생성물) | `harness/src/checks/quality.ts` | `QUAL*` |
 | 가드레일 보호 | `harness/src/checks/protected.ts` | `PROT*` |
 | Go 코드(ADR-0019): 단위와 import, 공개 면, 시계·난수·환경, 모듈 표, 크기, 끄기, 테스트, 형식 | `harness/src/checks/go-*.ts` | `GOARCH*` `GODEP*` `GODEBT*` `GOIGN*` `GOTEST*` `GOCOV*` `GOTOOL*` |
+
+문서 용어 검사(ADR-0029): `WORD003`은 용어집 표의 옛 표기가 문서에 있으면, `WORD004`는 사전을 못 읽으면 난다. 설정은 `ui-words.yaml`의 `documents:`이고 `mode`가 `report`이면 개수만 알리고 `fail`이면 실패한다. 문서별 개수는 `pnpm tsx harness/src/checks/ui-words.ts --documents`, 줄까지는 `--detail`로 본다. 코드, 인용, 링크 대상, 참조 문서는 건너뛴다.
 
 설정은 `harness/config/`에 있고 보호 경로다. 바꾸려면 같은 변경에 확정된 결정 기록이 있어야 한다.
 

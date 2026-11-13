@@ -26,7 +26,10 @@ touches_protected:
   - harness/**
   - .github/**
 amends_tests: []
-decision_hash: 7a201f0cbd156538
+decision_hash: eb940a11078e1467
+amended_by:
+  - adr: "0029"
+    what: 화면의 말에 대한 작업 규칙을 용어집의 표준 용어로 바꾸고 문서 본문에도 적용한다
 ---
 # ADR-0002 구조와 하네스는 테라리움의 것을 가져온다 — 기계가 강제하는 규칙, 짧은 지도, 스스로 낡았음을 아는 문서
 

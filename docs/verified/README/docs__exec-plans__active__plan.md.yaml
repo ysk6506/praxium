@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "8af94103cdd6b1b8"
+hash: "d808a0ab9a34c69d"
 date: "2026-11-13"
-note: "ADR-0027의 읽기 길과 개발용 적재기를 현재 상태 문장에 더함"
+note: "README 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
 text_changed: true
-doc_hash: "3c15ec7b172901a9"
+doc_hash: "63d2e3e9b1b863d8"

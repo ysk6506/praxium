@@ -10,7 +10,7 @@ updates_docs:
 touches_protected:
   - AGENTS.md
 amends_tests: []
-decision_hash: 806e36eb8cfa5c6d
+decision_hash: ab3b3ffed62747dd
 ---
 # ADR-0003 저장소에는 공개된 사실만 둔다 — 내부에서 들은 사실, 실제 데이터, 시크릿은 넣지 않는다
 

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/harness-guide.md"
 target: "harness/src/run-all.ts"
-hash: "2c656aff5775d2ad"
+hash: "56f8ac958e4b87e1"
 date: "2026-11-13"
-note: "ADR-0024: REST 계약, API 검사, 새 단위를 문서에 맞춤"
+note: "harness-guide 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 56줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "510b03111574884d"
+doc_hash: "54042f1b353a5496"

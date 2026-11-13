@@ -66,66 +66,81 @@ const tableKind = (header: readonly string[]): Table =>
       ? "list"
       : null;
 
+const hole = (s: string): string => HOLE.repeat(s.length);
+const FRONT_TEXT = /^(\s*(?:-\s+)?(?:title|what|[a-z_]*_reason):\s*)(.*)$/;
+
+/** The front matter lines: only the text keys count as prose. `next` is the first body line. */
+function frontMatter(lines: readonly string[]): { out: string[]; next: number } {
+  if (lines[0]?.trim() !== "---") return { out: [], next: 0 };
+  let end = 1;
+  while (end < lines.length && lines[end]?.trim() !== "---") end++;
+  const out: string[] = [];
+  let block = false;
+  for (let k = 0; k <= Math.min(end, lines.length - 1); k++) {
+    const ln = lines[k] as string;
+    const m = FRONT_TEXT.exec(ln);
+    if (k === 0 || k === end) out.push(hole(ln));
+    else if (m) {
+      block = /^[>|][-+]?$/.test((m[2] as string).trim());
+      out.push(block ? hole(ln) : hole(m[1] as string) + inline(m[2] as string));
+    } else if (block && /^\s+\S/.test(ln)) out.push(inline(ln));
+    else {
+      block = false;
+      out.push(hole(ln));
+    }
+  }
+  return { out, next: end + 1 };
+}
+
+interface BodyState {
+  fence: boolean;
+  comment: boolean;
+  table: Table;
+  prevTable: boolean;
+}
+
+/** A line touched by a multi-line HTML comment, or null when the comment does not reach it. */
+function commentLine(ln: string, st: BodyState): string | null {
+  if (st.comment) {
+    const k = ln.indexOf("-->");
+    if (k < 0) return hole(ln);
+    st.comment = false;
+    return hole(ln.slice(0, k + 3)) + inline(ln.slice(k + 3));
+  }
+  const k = ln.indexOf("<!--");
+  if (k < 0 || ln.includes("-->", k)) return null;
+  st.comment = true;
+  return inline(ln.slice(0, k)) + hole(ln.slice(k));
+}
+
+/** One body line: code, quotes, comments and the old-spelling columns are hidden. */
+function bodyLine(ln: string, st: BodyState, hideListColumns: boolean): string {
+  if (/^\s*(```|~~~)/.test(ln)) {
+    st.fence = !st.fence;
+    return hole(ln);
+  }
+  if (st.fence || ln.trimStart().startsWith(">")) return hole(ln);
+  const inComment = commentLine(ln, st);
+  if (inComment !== null) return inComment;
+  let masked = inline(ln);
+  const isRow = ln.trimStart().startsWith("|");
+  if (!isRow) st.table = null;
+  else if (hideListColumns) {
+    if (!st.prevTable) st.table = tableKind(cells(ln));
+    else if (st.table !== null && !isSeparator(ln))
+      masked = hideColumn(ln, masked, st.table === "dictionary" ? 1 : 0);
+  }
+  st.prevTable = isRow;
+  return masked;
+}
+
 /** The text of each line with the parts that are not prose replaced by a placeholder of the same length. */
 export function proseLines(text: string, hideListColumns = false): string[] {
   const lines = text.split("\n");
-  const out: string[] = [];
-  let i = 0;
-  const hole = (s: string): string => HOLE.repeat(s.length);
-  if (lines[0]?.trim() === "---") {
-    let end = 1;
-    while (end < lines.length && lines[end]?.trim() !== "---") end++;
-    let block = false;
-    for (let k = 0; k <= Math.min(end, lines.length - 1); k++) {
-      const ln = lines[k] as string;
-      const m = /^(\s*(?:-\s+)?(?:title|what|[a-z_]*_reason):\s*)(.*)$/.exec(ln);
-      if (k === 0 || k === end) out.push(hole(ln));
-      else if (m) {
-        block = /^[>|][-+]?$/.test((m[2] as string).trim());
-        out.push(block ? hole(ln) : hole(m[1] as string) + inline(m[2] as string));
-      } else if (block && /^\s+\S/.test(ln)) out.push(inline(ln));
-      else {
-        block = false;
-        out.push(hole(ln));
-      }
-    }
-    i = end + 1;
-  }
-  let fence = false;
-  let comment = false;
-  let table: Table = null;
-  let prevTable = false;
-  for (; i < lines.length; i++) {
-    const ln = lines[i] as string;
-    if (/^\s*(```|~~~)/.test(ln)) {
-      fence = !fence;
-      out.push(hole(ln));
-    } else if (fence || ln.trimStart().startsWith(">")) out.push(hole(ln));
-    else if (comment) {
-      const k = ln.indexOf("-->");
-      if (k < 0) out.push(hole(ln));
-      else {
-        comment = false;
-        out.push(hole(ln.slice(0, k + 3)) + inline(ln.slice(k + 3)));
-      }
-    } else {
-      const k = ln.indexOf("<!--");
-      if (k >= 0 && !ln.includes("-->", k)) {
-        comment = true;
-        out.push(inline(ln.slice(0, k)) + hole(ln.slice(k)));
-        continue;
-      }
-      let masked = inline(ln);
-      if (!ln.trimStart().startsWith("|")) table = null;
-      else if (hideListColumns) {
-        if (!prevTable) table = tableKind(cells(ln));
-        else if (table !== null && !isSeparator(ln))
-          masked = hideColumn(ln, masked, table === "dictionary" ? 1 : 0);
-      }
-      prevTable = ln.trimStart().startsWith("|");
-      out.push(masked);
-    }
-  }
+  const { out, next } = frontMatter(lines);
+  const st: BodyState = { fence: false, comment: false, table: null, prevTable: false };
+  for (let i = next; i < lines.length; i++)
+    out.push(bodyLine(lines[i] as string, st, hideListColumns));
   return out;
 }
 
@@ -168,6 +183,16 @@ function inline(line: string): string {
     .replace(/<!--.*?-->/g, (m) => HOLE.repeat(m.length));
 }
 
+/** The terms of one dictionary row: the standard term and each old spelling in the second cell. */
+function rowTerms(file: string, row: readonly string[]): Term[] {
+  const standard = (row[0] ?? "").replace(/\*\*/g, "").trim();
+  return (row[1] ?? "")
+    .split(",")
+    .map((s) => s.trim().replace(/\*\*/g, ""))
+    .filter((old) => old && old !== "—" && old !== "-")
+    .map((old) => ({ old, standard, source: file }));
+}
+
 /** The dictionary of one glossary document: old spelling to standard term. */
 export function parseDictionary(file: string, text: string): Term[] {
   const terms: Term[] = [];
@@ -181,12 +206,8 @@ export function parseDictionary(file: string, text: string): Term[] {
     }
     const row = cells(line);
     if (header === null) header = row;
-    else if (!isSeparator(line) && tableKind(header) === "dictionary") {
-      const standard = (row[0] ?? "").replace(/\*\*/g, "").trim();
-      for (const old of (row[1] ?? "").split(",").map((s) => s.trim().replace(/\*\*/g, ""))) {
-        if (old && old !== "—" && old !== "-") terms.push({ old, standard, source: file });
-      }
-    }
+    else if (!isSeparator(line) && tableKind(header) === "dictionary")
+      terms.push(...rowTerms(file, row));
   }
   return terms;
 }

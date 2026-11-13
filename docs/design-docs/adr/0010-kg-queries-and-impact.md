@@ -13,7 +13,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 9c7a60c87efd2ba6
+decision_hash: b4f3ebf38a2f8ed6
 ---
 # ADR-0010 KG에 묻기 — 사전 정의 질의, 영향 범위의 뜻, 프로젝션과 엔진
 

@@ -1,7 +1,7 @@
 doc: "docs/references/from-terrarium.md"
 target: "docs/design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md"
-hash: "8291f0fe49fe8b3a"
-date: "2026-11-12"
-note: "처음 씀: 테라리움 커밋 0053386의 보관함 설계 여섯, 결정 기록 0144~0192, 요구사항 문서의 이력, 현실 연결 코드 목록에 대어 봄"
+hash: "4c7f2d951fc28c00"
+date: "2026-11-13"
+note: "from-terrarium 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 2줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "aa481662dfccf1ca"
+doc_hash: "fc479372178a2017"

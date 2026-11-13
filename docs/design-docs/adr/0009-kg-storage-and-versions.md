@@ -13,7 +13,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 1366bf985331a7c3
+decision_hash: e6553afe028c379c
 amended_by:
   - adr: "0025"
     what: 링크의 내용 해시에 등급과 근거의 종류가 들고, 반쯤 든 배치는 되감아 포기한다

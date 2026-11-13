@@ -30,7 +30,7 @@ amends_tests:
   - backend/internal/worldgen/golden_test.go::TestGoldenTinyWorld
   - backend/internal/worldgen/world_prop_test.go::TestEveryLayerAndStructure
 test_change_reason: 표준 모델의 데이터(키, 바인딩, 식별자 방식)와 생성기의 이중화 구조가 바뀌어 잠근 숫자와 해시와 목록이 달라진다. 값은 아래 표의 옛 값에서 새 값으로 의도해서 바꾼다. Go 테스트는 아직 테스트 잠금이 읽지 않아(TD-0008) 이 결정이 하나씩 적는다.
-decision_hash: 00f07f6b56cdd26d
+decision_hash: c230936b9e17246d
 ---
 # ADR-0022 표준 모델을 영향 범위에 맞게 보강한다
 

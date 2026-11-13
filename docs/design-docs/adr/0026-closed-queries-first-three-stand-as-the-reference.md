@@ -22,7 +22,7 @@ touches_protected:
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
   - docs/product-specs/requirements.md
-decision_hash: ee6b9966b5e42a61
+decision_hash: a35c0c758ce6fec4
 ---
 # ADR-0026 사전 정의 질의의 첫 셋이 기준 구현으로 선다
 

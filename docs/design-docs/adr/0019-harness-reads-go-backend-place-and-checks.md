@@ -28,7 +28,7 @@ touches_protected:
   - .github/**
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: f8c7ad079fc7579f
+decision_hash: d57e7a3207fda1fe
 amended_by:
   - adr: "0023"
     what: Go 테스트 잠금과 추적과 등급표

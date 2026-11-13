@@ -126,12 +126,17 @@ export function configProblems(config: WordsConfig): Violation[] {
       if (!a.reason || (!a.phrase && !a.path))
         bad(`rule ${rule.id}: an exception needs a phrase or a path, and a reason`);
   }
-  const docs = config.documents;
-  if (docs) {
-    if (docs.mode !== "report" && docs.mode !== "fail")
-      bad("documents.mode is neither report nor fail");
-    if (!docs.scan?.length || !docs.dictionary?.length) bad("documents needs scan and dictionary");
-  }
+  for (const message of documentsProblems(config.documents)) bad(message);
+  return out;
+}
+
+function documentsProblems(docs: WordsConfig["documents"]): string[] {
+  if (!docs) return [];
+  const out: string[] = [];
+  if (docs.mode !== "report" && docs.mode !== "fail")
+    out.push("documents.mode is neither report nor fail");
+  if (!docs.scan?.length || !docs.dictionary?.length)
+    out.push("documents needs scan and dictionary");
   return out;
 }
 
@@ -156,7 +161,10 @@ export function run(root: string): Violation[] {
 /** `--documents`: the old spellings per document, worst first; `--detail` lists each one. */
 function printDocuments(root: string, detail: boolean, out: (line: string) => void): void {
   const config = loadYaml<WordsConfig>(path.join(root, CONFIG_PATH)).documents;
-  if (!config) return out("no `documents` section in the config");
+  if (!config) {
+    out("no `documents` section in the config");
+    return;
+  }
   const { hits, problems } = scanDocuments(root, config);
   for (const p of problems) out(`${p.code} ${p.path}: ${p.message}`);
   out(`mode: ${config.mode}; old spellings: ${hits.length}`);

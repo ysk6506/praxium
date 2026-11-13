@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-storage.md"
 target: "docs/design-docs/adr/0009-kg-storage-and-versions.md"
-hash: "1366bf985331a7c3"
+hash: "e6553afe028c379c"
 date: "2026-11-13"
-note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+note: "kg-storage 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 252줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "4f01fcb9a3e1b9f1"
+doc_hash: "ae8d17bd3d122bf2"

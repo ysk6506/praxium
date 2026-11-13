@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-decisions.ts"
-hash: "4965a2213b6bc57b"
+hash: "2297a80f891b55e3"
 date: "2026-11-13"
-note: "doc-audit.ts의 같은 메모와 열 개 초과 거절, doc-decisions.ts의 머리말 문구 변경을 읽고 절차 설명과 잠긴 시험 절차 5항을 고쳤다"
+note: "adr-process 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 24줄), 결정과 숫자는 그대로"
 text_changed: true
-doc_hash: "8d4aa902e562a7cd"
+doc_hash: "96fb5112a5d05991"
