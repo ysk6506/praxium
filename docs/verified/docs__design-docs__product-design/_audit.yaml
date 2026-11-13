@@ -1,0 +1,4 @@
+doc: "docs/design-docs/product-design.md"
+date: "2026-11-13"
+note: "원칙·쟁점·순서·지도를 ADR-0005~0026, 계획, 넘겨받은 것, 방향 메모, 설계 문서의 follows와 대조했다. 코드 상태 두 곳만 낡아 고쳤고 나머지는 맞다"
+doc_hash: "e79b3679e9cbf39b"

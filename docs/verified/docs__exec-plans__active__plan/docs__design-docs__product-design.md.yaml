@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "21d54c87111f1d83"
+hash: "e79b3679e9cbf39b"
 date: "2026-11-13"
-note: "5단계 상태에 생성기 완료(ADR-0021)를 적고 읽어 맞춤"
+note: "제품 설계 한 장의 머리말과 1절이 코드 상태를 고쳐 적었다. 5절의 순서와 계획의 표를 줄마다 대조했고 계획은 변함없다"
 text_changed: true
-doc_hash: "c73f6496e74e9798"
+doc_hash: "702b1ac213f9b437"

@@ -14,17 +14,21 @@
 | [ADR-0006 백엔드는 Go, 자리에 맞는 언어와 저장소 — 클린 아키텍처, 역할 넷, 알파는 백엔드부터](../design-docs/adr/0006-go-backend-clean-architecture-backend-first.md) | 유효 |  |
 | [ADR-0007 KG의 모델: 열린 타입과 닫힌 링크의 뜻, 채널마다의 상태, 객체인 이중화 묶음, 근거 등급, 바뀌지 않는 ID, 넉넉한 표준 모델](../design-docs/adr/0007-kg-model.md) | 유효 |  |
 | [ADR-0008 현실 데이터 받기: 어댑터와 프리셋, 받는 방식 넷, 변경을 받아 변경을 내는 실행기 하나, 속성 단위로 객체를 짓는 공급, 읽기 전용 세 겹, 안전장치](../design-docs/adr/0008-ingestion.md) | 유효 |  |
-| [ADR-0009 KG의 저장과 버전 — 진실은 PostgreSQL에, 바뀌지 않는 버전, 차이와 적용](../design-docs/adr/0009-kg-storage-and-versions.md) | 유효 |  |
+| [ADR-0009 KG의 저장과 버전 — 진실은 PostgreSQL에, 바뀌지 않는 버전, 차이와 적용](../design-docs/adr/0009-kg-storage-and-versions.md) | 유효 | 일부 고침: [0025](../design-docs/adr/0025-kg-stands-on-a-sequence-of-changes-storage-port-and-reference-implementation.md) (링크의 내용 해시에 등급과 근거의 종류가 들고, 반쯤 든 배치는 되감아 포기한다) |
 | [ADR-0010 KG에 묻기 — 닫힌 질의, 영향 범위의 뜻, 투영과 엔진](../design-docs/adr/0010-kg-queries-and-impact.md) | 유효 |  |
 | [ADR-0011 KG를 운영한다: 문제는 규칙으로 풀고, 묻기는 멈추지 않고, 흐름이 멈춰도 잃지 않는다](../design-docs/adr/0011-kg-operations.md) | 유효 |  |
 | [ADR-0012 권한: 사내 SSO의 사람과 무리에, 제품에 든 역할을, 범위와 함께, 관리자가 준다](../design-docs/adr/0012-access-control.md) | 유효 |  |
 | [ADR-0013 데이터 관측성: 실행기가 신호를 내고, 건강이 계보를 따라 흐르고, 사람과 에이전트가 함께 묻는다](../design-docs/adr/0013-data-observability.md) | 유효 |  |
 | [ADR-0014 정의의 버전과 브랜치: 바뀌지 않는 정의 묶음, 제안과 검사, 한 줄로 들이는 병합, 앞으로 나아가는 되돌리기, 정의의 계보](../design-docs/adr/0014-definitions-branches-revert.md) | 유효 |  |
 | [ADR-0015 역량 질문과 충족률: KG가 답해야 하는 물음을 정의로 적고, 객체마다 저절로 따져 비율로 낸다](../design-docs/adr/0015-competency-questions.md) | 유효 |  |
-| [ADR-0016 화면은 다른 저장소에 두고, REST API의 계약이 유일한 이음매다: 계약이 먼저, 큰 버전, 한결같은 모양](../design-docs/adr/0016-frontend-separate-rest-api-contract.md) | 유효 |  |
+| [ADR-0016 화면은 다른 저장소에 두고, REST API의 계약이 유일한 이음매다: 계약이 먼저, 큰 버전, 한결같은 모양](../design-docs/adr/0016-frontend-separate-rest-api-contract.md) | 유효 | 일부 고침: [0024](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) (계약의 자리와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 나눔) |
 | [ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 볼 수 있고, 진단할 수 있고, 정해진 행위로 돌볼 수 있게 만든다](../design-docs/adr/0017-self-observability-and-operability.md) | 유효 |  |
 | [ADR-0018 비밀 값과 암호화 — 평문으로 두지 않고, 쓰는 자리에서만 풀고, 다시 나오지 않고, 쓴 기록이 남는다](../design-docs/adr/0018-secrets-and-encryption.md) | 유효 |  |
-| [ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 자리와 검사](../design-docs/adr/0019-harness-reads-go-backend-place-and-checks.md) | 유효 |  |
+| [ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 자리와 검사](../design-docs/adr/0019-harness-reads-go-backend-place-and-checks.md) | 유효 | 일부 고침: [0023](../design-docs/adr/0023-harness-locks-go-tests-and-links-them-to-requirements.md) (Go 시험 잠금과 추적과 등급표), [0024](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) (코어 단위 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)) |
 | [ADR-0020 타입 등록부와 표준 모델의 데이터 파일이 선다](../design-docs/adr/0020-type-registry-and-standard-model-data.md) | 유효 |  |
 | [ADR-0021 지어낸 세계 생성기가 core.worldgen 단위로 선다](../design-docs/adr/0021-synthetic-world-generator.md) | 유효 |  |
 | [ADR-0022 표준 모델을 영향 범위에 맞게 보강한다](../design-docs/adr/0022-standard-model-fitted-to-impact-scope.md) | 유효 |  |
+| [ADR-0023 하네스가 Go 시험을 잠그고 요구사항에 잇는다](../design-docs/adr/0023-harness-locks-go-tests-and-links-them-to-requirements.md) | 유효 |  |
+| [ADR-0024 REST 계약이 기계가 지키는 문서가 된다](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) | 유효 |  |
+| [ADR-0025 KG가 변경의 이어짐으로 선다 — 저장소 포트와 기준 구현](../design-docs/adr/0025-kg-stands-on-a-sequence-of-changes-storage-port-and-reference-implementation.md) | 유효 |  |
+| [ADR-0026 닫힌 질의의 첫 셋이 기준 구현으로 선다](../design-docs/adr/0026-closed-queries-first-three-stand-as-the-reference.md) | 유효 |  |

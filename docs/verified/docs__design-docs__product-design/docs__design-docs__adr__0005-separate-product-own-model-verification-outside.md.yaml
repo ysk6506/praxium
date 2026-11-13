@@ -2,6 +2,6 @@ doc: "docs/design-docs/product-design.md"
 target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
 hash: "0a5542b1b8b7c8c7"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
+note: "머리말과 1절의 '코드는 이제 시작', '코드 없음'이 낡았다. 계획과 ADR-0019~0026에 맞춰 들어간 코드를 적고 계획을 가리키게 했다"
 text_changed: true
-doc_hash: "21d54c87111f1d83"
+doc_hash: "e79b3679e9cbf39b"
