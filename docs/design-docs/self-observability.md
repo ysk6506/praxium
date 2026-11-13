@@ -217,14 +217,14 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 | `run_archive_now`, `run_purge_now` | 보존 기한이 지난 데이터를 콜드 스토리지로 아카이브 / 삭제 | 예 · reversible · none / irreversible · data_loss | 현재 스토리지의 크기가 줄어요(아카이브한 데이터도 읽을 수 있어요) / 삭제한 만큼 줄어요 | 필요 없음 / 없음 | `operator`(전체) / `admin` | 아니요 / 예 |
 | 스토리지 액션(부하 감소, 보류, 백필 중지, 장기 트랜잭션 종료, 질의 패턴 차단, 테이블 정리) | 스토리지 신호가 가리킬 때 PostgreSQL을 관리해요. 이름과 축은 구현하는 변경이 목록에 추가해요 | 예 · 액션마다 | 신호(`storage.*`)에 나타나요 | 액션마다 | `operator`(전체), 범위가 넓으면 `admin` | 위험 축을 따라요 |
 | `run_connection_check_now` | 소스에 접속해 보고 결과만 기록(소스 보호 장치를 거쳐요) | 아니요 · reversible · none | 소스의 연결 헬스 상태가 새로 산출돼요 | 필요 없음 | `operator`(소스) | 아니요 |
-| `pause_sources_by_secret` | 시크릿이 유출됐다고 의심될 때 그 값을 쓰는 소스를 한 번에 중지하고 값에 `suspected`를 표시해요 | 예 · reversible · none(수집만 중지하고 질의는 가능해요. 사람 손은 필요 없어요) | 그 값을 쓰는 소스가 모두 `paused`가 되고 새 연결이 없어요 | `resume_source`(값의 이전 버전으로 되돌린 뒤 소스마다) | `operator`(그 소스들을 모두 범위에 가진), 범위가 넓으면 `admin` | 아니요(되돌릴 수 있는 보호 액션이에요. 설정으로 켤 수 있어요) |
+| `pause_sources_by_secret` | 시크릿이 유출됐다고 의심될 때 그 값을 쓰는 소스를 한 번에 중지하고 값에 `suspected`를 표시해요 | 예 · reversible · none(수집만 중지하고 질의는 가능해요. 사람 손은 필요 없어요) | 그 값을 쓰는 소스가 모두 `paused`가 되고 새 연결이 없어요 | `resume_source`(값의 버전을 폐기한 뒤 소스마다) | `operator`(그 소스들을 모두 범위에 가진), 범위가 넓으면 `admin` | 아니요(되돌릴 수 있는 보호 액션이에요. 설정으로 켤 수 있어요) |
 | `rotate_system_token` | 서비스 계정의 토큰을 교체해요 | 예 · irreversible · service_affecting | 기존 토큰은 병행 사용 기간이 끝나면 차단돼 그 토큰을 쓰던 시스템의 접속이 끊겨요. 스토리지가 정상이면 회수는 30초 안에 전파돼요 | 없음 | `admin` | 예 |
 | `rewrap_master_key` | 데이터 키를 새 마스터 키로 다시 래핑해요(ADR-0018) | 예 · reversible · none | 기존 마스터 키를 폐기해도 되는 시점이 와요. 값은 다시 암호화하지 않아요 | 기존 마스터 키로 다시 래핑해요 | `admin` | 예 |
 | `redact_raw_record` | 원본 레코드의 내용을 제거해요(해시, 위치, 이유만 남겨요) | 예 · irreversible · data_loss | 그 레코드를 다시 처리하면 값은 제거된 것으로 취급해요 | 없음 | `admin` | 예 |
 | `enter_maintenance_mode`, `exit_maintenance_mode` | 수정 요청(정의 수정, 제안, 병합)을 받지 않기 / 수정 요청 수신 재개. 질의와 수집·적용은 그대로 | 예 · reversible · service_affecting / none | 수정 요청이 `blocked.maintenance_mode`로 차단돼요 / 해제돼요 | 서로 | `admin` | 예 / 아니요 |
 | `update_setting`, `revert_setting` | 설정을 변경하고 되돌려요(8절) | 예 · reversible · none | 새 버전이 만들어지고 역할이 다음에 읽을 때 적용해요 | 서로 | `admin` | 설정 항목의 위험 축을 따라요 |
 
-토큰 값과 시크릿은 어느 액션의 결과에도 포함되지 않아요. 스토리지 액션은 알파에서 이름과 위험 축만 계약으로 두고, 구현은 클로즈드 베타에서 오픈 베타 사이에 해요(13절). `pause_sources_by_secret`은 값의 버전을 되돌리고 값을 교체하는 일, 복호화 사용 이력을 조회하는 일(ADR-0018)에 앞서 하는 첫 조치예요. 새 토큰은 계정을 관리하는 `admin`의 경로로 발급해요(access-control 11절).
+토큰 값과 시크릿은 어느 액션의 결과에도 포함되지 않아요. 스토리지 액션은 알파에서 이름과 위험 축만 계약으로 두고, 구현은 클로즈드 베타에서 오픈 베타 사이에 해요(13절). `pause_sources_by_secret`은 값의 버전을 폐기하고 값을 교체하는 일, 복호화 사용 이력을 조회하는 일(ADR-0018)에 앞서 하는 첫 조치예요. 새 토큰은 계정을 관리하는 `admin`의 경로로 발급해요(access-control 11절).
 
 ### 7.2 미리 실행
 상태를 바꾸는 액션은 실제로 실행하지 않고 무엇이 일어날지만 응답해요(`POST /v1/ops/actions/{action}:dry-run`, 안전함). 응답은 계산한 영향을 선언한 효과와 나란히 적고, 선언한 축보다 무거운 영향이 계산되면 무거운 쪽을 따라요(`raised_by`에 이유). 마지막 인스턴스 하나를 드레인하거나 소스가 소스 커서 위치부터 다시 보낼 수 없는 스트림을 중지하면 위험 축이 올라 승인이 필요해져요. 필드: `dry_run_id`와 `expires_at`(`ops.dry_run_ttl_s`. 실행을 생성할 때까지의 유효 시간이에요. 그 사이 대상이 바뀌면 `stale.dry_run_outdated`로 거절하고, 승인을 기다리는 동안에는 대상이 바뀌었는지만 다시 확인해요), `would_do`(실행할 단계), `effects`(`declared` 선언한 효과, `computed` 무엇이 중단되고 무엇이 영향받는지 집계한 값), `risk`와 `raised_by`, `blocked_by`(중복 실행, 점검 모드, 권한, 범위 초과), `requires`(필요한 역할, 승인 필요 여부와 이유), `reverse_action`, `verification_plan`(사후 확인에서 볼 신호와 기대값).
