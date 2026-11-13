@@ -1,0 +1,1516 @@
+{
+  "layer": "network",
+  "types": [
+    {
+      "id": "ot.network_device",
+      "type_no": 58,
+      "name": "NetworkDevice",
+      "traits": [
+        "tr.common",
+        "tr.serialized",
+        "tr.locatable",
+        "tr.rack_mountable",
+        "tr.powered",
+        "tr.cooled",
+        "tr.manageable",
+        "tr.addressable",
+        "tr.schedulable",
+        "tr.has_firmware",
+        "tr.network_attached"
+      ],
+      "description": "네트워크 장비(스위치·라우터·방화벽·LB 어플라이언스의 상위)",
+      "standard_ref": "RFC 8345 node; NetBox Device; OpenConfig platform",
+      "properties": [
+        {
+          "id": "pr.network_device.device_role",
+          "attr_no": 263,
+          "name": "device_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["switch", "router", "firewall", "load_balancer", "other"]
+        },
+        {
+          "id": "pr.network_device.os_family",
+          "attr_no": 264,
+          "name": "os_family",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.network_device.os_version",
+          "attr_no": 265,
+          "name": "os_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.network_device.management_address",
+          "attr_no": 266,
+          "name": "management_address",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.network_device.hostname",
+          "attr_no": 267,
+          "name": "hostname",
+          "value_type": "vt.fqdn",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.network_device.fabric_role",
+          "attr_no": 268,
+          "name": "fabric_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "access",
+            "tor",
+            "leaf",
+            "spine",
+            "super_spine",
+            "aggregation",
+            "core",
+            "border",
+            "edge",
+            "none"
+          ]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.lldp_chassis_id"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.network_device.hostname"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.switch",
+      "type_no": 59,
+      "name": "Switch",
+      "parent": "ot.network_device",
+      "traits": [],
+      "description": "스위치",
+      "properties": [
+        {
+          "id": "pr.switch.switching_layer",
+          "attr_no": 269,
+          "name": "switching_layer",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["l2", "l3"]
+        },
+        {
+          "id": "pr.switch.supports_mlag",
+          "attr_no": 270,
+          "name": "supports_mlag",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.switch.stack_capable",
+          "attr_no": 271,
+          "name": "stack_capable",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.router",
+      "type_no": 60,
+      "name": "Router",
+      "parent": "ot.network_device",
+      "traits": [],
+      "description": "라우터",
+      "properties": [
+        {
+          "id": "pr.router.routing_role",
+          "attr_no": 272,
+          "name": "routing_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["edge", "core", "pe", "ce", "wan", "internet_gateway"]
+        },
+        {
+          "id": "pr.router.router_id",
+          "attr_no": 273,
+          "name": "router_id",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.router.router_id"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.firewall",
+      "type_no": 61,
+      "name": "Firewall",
+      "parent": "ot.network_device",
+      "traits": [],
+      "description": "방화벽",
+      "properties": [
+        {
+          "id": "pr.firewall.ha_mode",
+          "attr_no": 274,
+          "name": "ha_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["none", "active_standby", "active_active", "cluster"]
+        },
+        {
+          "id": "pr.firewall.inspection",
+          "attr_no": 275,
+          "name": "inspection",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["stateful", "ngfw", "waf"]
+        },
+        {
+          "id": "pr.firewall.policy_engine_version",
+          "attr_no": 276,
+          "name": "policy_engine_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.load_balancer_appliance",
+      "type_no": 62,
+      "name": "LoadBalancerAppliance",
+      "parent": "ot.network_device",
+      "traits": [],
+      "description": "물리/가상 LB 어플라이언스(장비 자체)",
+      "properties": [
+        {
+          "id": "pr.load_balancer_appliance.lb_function",
+          "attr_no": 277,
+          "name": "lb_function",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["l4", "l7", "gslb", "adc"]
+        },
+        {
+          "id": "pr.load_balancer_appliance.ha_mode",
+          "attr_no": 278,
+          "name": "ha_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["none", "active_standby", "active_active"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.line_card",
+      "type_no": 63,
+      "name": "LineCard",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.serialized", "tr.has_firmware"],
+      "description": "모듈형 섀시의 라인카드/패브릭카드",
+      "standard_ref": "OpenConfig LINECARD; NetBox Module",
+      "properties": [
+        {
+          "id": "pr.line_card.slot",
+          "attr_no": 279,
+          "name": "slot",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.line_card.port_count",
+          "attr_no": 280,
+          "name": "port_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.line_card.slot"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.transceiver",
+      "type_no": 64,
+      "name": "Transceiver",
+      "traits": ["tr.common", "tr.serialized", "tr.sensed"],
+      "description": "광/구리 트랜시버(SFP/QSFP 등)",
+      "standard_ref": "OpenConfig TRANSCEIVER",
+      "properties": [
+        {
+          "id": "pr.transceiver.form_factor",
+          "attr_no": 281,
+          "name": "form_factor",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": [
+            "sfp",
+            "sfp_plus",
+            "sfp28",
+            "qsfp_plus",
+            "qsfp28",
+            "qsfp_dd",
+            "osfp",
+            "other"
+          ]
+        },
+        {
+          "id": "pr.transceiver.media",
+          "attr_no": 282,
+          "name": "media",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["sr", "lr", "er", "zr", "dac", "aoc", "base_t", "other"]
+        },
+        {
+          "id": "pr.transceiver.wavelength_nm",
+          "attr_no": 283,
+          "name": "wavelength_nm",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "nm"
+        },
+        {
+          "id": "pr.transceiver.reach_m",
+          "attr_no": 284,
+          "name": "reach_m",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "m"
+        },
+        {
+          "id": "pr.transceiver.vendor_part",
+          "attr_no": 285,
+          "name": "vendor_part",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.interface",
+      "type_no": 65,
+      "name": "Interface",
+      "traits": ["tr.common", "tr.interface_like", "tr.sensed"],
+      "description": "L2/L3 종단(물리 포트·서브인터페이스·SVI·루프백 등). FC/IB 포트도 `link_layer`로 표현",
+      "standard_ref": "RFC 8345 TP; RFC 8944 TP 속성; NetBox Interface",
+      "properties": [
+        {
+          "id": "pr.interface.interface_kind",
+          "attr_no": 286,
+          "name": "interface_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "physical",
+            "breakout_channel",
+            "subinterface",
+            "svi",
+            "loopback",
+            "tunnel_endpoint",
+            "management",
+            "other"
+          ],
+          "required": true
+        },
+        {
+          "id": "pr.interface.link_layer",
+          "attr_no": 287,
+          "name": "link_layer",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ethernet", "fibre_channel", "infiniband", "other"]
+        },
+        {
+          "id": "pr.interface.if_name",
+          "attr_no": 288,
+          "name": "if_name",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.interface.if_index",
+          "attr_no": 289,
+          "name": "if_index",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.interface.speed_mbps",
+          "attr_no": 290,
+          "name": "speed_mbps",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "Mbps"
+        },
+        {
+          "id": "pr.interface.mtu",
+          "attr_no": 291,
+          "name": "mtu",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.interface.admin_state",
+          "attr_no": 292,
+          "name": "admin_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["up", "down"]
+        },
+        {
+          "id": "pr.interface.mac_address",
+          "attr_no": 293,
+          "name": "mac_address",
+          "value_type": "vt.mac_address",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.interface.wwpn",
+          "attr_no": 294,
+          "name": "wwpn",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.interface.wwnn",
+          "attr_no": 295,
+          "name": "wwnn",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.interface.breakout_channel_id",
+          "attr_no": 296,
+          "name": "breakout_channel_id",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.interface.encapsulation",
+          "attr_no": 297,
+          "name": "encapsulation",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ethernet", "vlan", "qinq", "vxlan", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.interface.wwpn"
+            }
+          ],
+          "strength": "strong",
+          "scheme": "is.wwpn"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.interface.mac_address"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.cable",
+      "type_no": 66,
+      "name": "Cable",
+      "traits": ["tr.common"],
+      "description": "물리 케이블(양 끝 N 터미네이션)",
+      "standard_ref": "Redfish Cables 링크",
+      "properties": [
+        {
+          "id": "pr.cable.cable_kind",
+          "attr_no": 298,
+          "name": "cable_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["utp", "fiber_mm", "fiber_sm", "dac", "aoc", "power", "console", "other"]
+        },
+        {
+          "id": "pr.cable.length_m",
+          "attr_no": 299,
+          "name": "length_m",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "m"
+        },
+        {
+          "id": "pr.cable.color",
+          "attr_no": 300,
+          "name": "color",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cable.status",
+          "attr_no": 301,
+          "name": "status",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["connected", "planned", "decommissioning"]
+        },
+        {
+          "id": "pr.cable.label",
+          "attr_no": 302,
+          "name": "label",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.cable.label"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.patch_panel",
+      "type_no": 67,
+      "name": "PatchPanel",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.rack_mountable", "tr.serialized"],
+      "description": "패치 패널",
+      "standard_ref": "NetBox Front/Rear Port",
+      "properties": [
+        {
+          "id": "pr.patch_panel.port_count",
+          "attr_no": 303,
+          "name": "port_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.patch_panel.medium",
+          "attr_no": 304,
+          "name": "medium",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["copper", "fiber"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.mounted_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.patch_port",
+      "type_no": 68,
+      "name": "PatchPort",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "패치 패널 포트",
+      "properties": [
+        {
+          "id": "pr.patch_port.port_name",
+          "attr_no": 305,
+          "name": "port_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.patch_port.face",
+          "attr_no": 306,
+          "name": "face",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["front", "rear"],
+          "required": true
+        },
+        {
+          "id": "pr.patch_port.position",
+          "attr_no": 307,
+          "name": "position",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.patch_port.port_name"
+            },
+            {
+              "property": "pr.patch_port.face"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.lag",
+      "type_no": 69,
+      "name": "Lag",
+      "parent": "ot.redundancy_group",
+      "traits": ["tr.interface_like"],
+      "description": "링크 어그리게이션/본딩/티밍 (RedundancyGroup 서브타입)",
+      "standard_ref": "OpenConfig min-links/lag-type/lag-speed; RFC 8944 lag,member-link-tp; NetBox Interface.lag",
+      "properties": [
+        {
+          "id": "pr.lag.lag_kind",
+          "attr_no": 308,
+          "name": "lag_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["lacp", "static", "active_backup", "host_teaming"]
+        },
+        {
+          "id": "pr.lag.lacp_mode",
+          "attr_no": 309,
+          "name": "lacp_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["active", "passive", "none"]
+        },
+        {
+          "id": "pr.lag.hash_policy",
+          "attr_no": 310,
+          "name": "hash_policy",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.lag.system_id",
+          "attr_no": 311,
+          "name": "system_id",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.lag.configured_min_links",
+          "attr_no": 312,
+          "name": "configured_min_links",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.lag.lacp_rate",
+          "attr_no": 313,
+          "name": "lacp_rate",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["fast", "slow"]
+        },
+        {
+          "id": "pr.lag.member_ports_config",
+          "attr_no": 314,
+          "name": "member_ports_config",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.lag.lag_id",
+          "attr_no": 315,
+          "name": "lag_id",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.mlag_domain",
+      "type_no": 70,
+      "name": "MlagDomain",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "두 스위치가 하나의 LAG 상대로 보이게 하는 쌍(MC-LAG/vPC/MLAG)",
+      "properties": [
+        {
+          "id": "pr.mlag_domain.domain_id",
+          "attr_no": 316,
+          "name": "domain_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.mlag_domain.peer_address",
+          "attr_no": 317,
+          "name": "peer_address",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.mlag_domain.peer_link_name",
+          "attr_no": 318,
+          "name": "peer_link_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.mlag_domain.keepalive_address",
+          "attr_no": 319,
+          "name": "keepalive_address",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.mlag_domain.keepalive_state",
+          "attr_no": 320,
+          "name": "keepalive_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["up", "down", "unknown"]
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_chassis",
+      "type_no": 71,
+      "name": "VirtualChassis",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "스택/가상 섀시(여러 장비를 단일 제어면으로)",
+      "standard_ref": "NetBox Virtual Chassis",
+      "properties": [
+        {
+          "id": "pr.virtual_chassis.stack_protocol",
+          "attr_no": 321,
+          "name": "stack_protocol",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_chassis.master_device",
+          "attr_no": 322,
+          "name": "master_device",
+          "value_type": "vt.ref",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.vlan",
+      "type_no": 72,
+      "name": "Vlan",
+      "traits": ["tr.common"],
+      "description": "VLAN",
+      "standard_ref": "RFC 8944 outer/inner-tag",
+      "properties": [
+        {
+          "id": "pr.vlan.vid",
+          "attr_no": 323,
+          "name": "vid",
+          "value_type": "vt.integer",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.vlan.vlan_name",
+          "attr_no": 324,
+          "name": "vlan_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.vlan.vlan_kind",
+          "attr_no": 325,
+          "name": "vlan_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["customer", "infrastructure", "management", "storage", "native", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.vlan.vid"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.network_instance",
+      "type_no": 73,
+      "name": "NetworkInstance",
+      "traits": ["tr.common"],
+      "description": "라우팅/포워딩 인스턴스(VRF·L2 도메인)",
+      "properties": [
+        {
+          "id": "pr.network_instance.instance_type",
+          "attr_no": 326,
+          "name": "instance_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["default", "l3_vrf", "l2_vsi", "l2_l3", "evpn"]
+        },
+        {
+          "id": "pr.network_instance.route_distinguisher",
+          "attr_no": 327,
+          "name": "route_distinguisher",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.network_instance.route_targets",
+          "attr_no": 328,
+          "name": "route_targets",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.network_instance.route_distinguisher"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.prefix",
+      "type_no": 74,
+      "name": "Prefix",
+      "traits": ["tr.common"],
+      "description": "IP 프리픽스/서브넷",
+      "standard_ref": "RFC 8346 prefix",
+      "properties": [
+        {
+          "id": "pr.prefix.cidr",
+          "attr_no": 329,
+          "name": "cidr",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.prefix.family",
+          "attr_no": 330,
+          "name": "family",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ipv4", "ipv6"]
+        },
+        {
+          "id": "pr.prefix.prefix_role",
+          "attr_no": 331,
+          "name": "prefix_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["subnet", "p2p", "loopback_pool", "anycast", "management", "other"]
+        },
+        {
+          "id": "pr.prefix.vlan_ref",
+          "attr_no": 332,
+          "name": "vlan_ref",
+          "value_type": "vt.ref",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.prefix.cidr"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.ip_address",
+      "type_no": 75,
+      "name": "IpAddress",
+      "traits": ["tr.common"],
+      "description": "IP 주소",
+      "standard_ref": "RFC 8346 TP ip",
+      "properties": [
+        {
+          "id": "pr.ip_address.address",
+          "attr_no": 333,
+          "name": "address",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.ip_address.ip_role",
+          "attr_no": 334,
+          "name": "ip_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["primary", "secondary", "vip", "anycast", "loopback", "management"]
+        },
+        {
+          "id": "pr.ip_address.dns_name",
+          "attr_no": 335,
+          "name": "dns_name",
+          "value_type": "vt.fqdn",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.routing_session",
+      "type_no": 76,
+      "name": "RoutingSession",
+      "traits": ["tr.common"],
+      "description": "라우팅 프로토콜 세션/인접(BGP 피어, OSPF/IS-IS 인접, BFD)",
+      "properties": [
+        {
+          "id": "pr.routing_session.protocol",
+          "attr_no": 336,
+          "name": "protocol",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["bgp", "ospf", "isis", "bfd", "other"],
+          "required": true
+        },
+        {
+          "id": "pr.routing_session.session_type",
+          "attr_no": 337,
+          "name": "session_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ibgp", "ebgp", "igp_adjacency", "bfd"],
+          "required": true
+        },
+        {
+          "id": "pr.routing_session.local_as",
+          "attr_no": 338,
+          "name": "local_as",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.peer_as",
+          "attr_no": 339,
+          "name": "peer_as",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.address_families",
+          "attr_no": 340,
+          "name": "address_families",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.session_state",
+          "attr_no": 341,
+          "name": "session_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": [
+            "established",
+            "idle",
+            "active",
+            "connect",
+            "opensent",
+            "openconfirm",
+            "unknown"
+          ]
+        },
+        {
+          "id": "pr.routing_session.hold_time_s",
+          "attr_no": 342,
+          "name": "hold_time_s",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "s"
+        },
+        {
+          "id": "pr.routing_session.multipath_eligible",
+          "attr_no": 343,
+          "name": "multipath_eligible",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.bfd_enabled",
+          "attr_no": 344,
+          "name": "bfd_enabled",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.update_source",
+          "attr_no": 345,
+          "name": "update_source",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.ebgp_multihop",
+          "attr_no": 346,
+          "name": "ebgp_multihop",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_session.local_address",
+          "attr_no": 347,
+          "name": "local_address",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.routing_session.remote_address",
+          "attr_no": 348,
+          "name": "remote_address",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "ot.routing_process",
+      "type_no": 77,
+      "name": "RoutingProcess",
+      "traits": ["tr.common", "tr.manageable"],
+      "description": "장치의 라우팅 프로토콜 프로세스 설정(BGP/OSPF/IS-IS 인스턴스; 멀티패스 설정 보유)",
+      "properties": [
+        {
+          "id": "pr.routing_process.protocol",
+          "attr_no": 349,
+          "name": "protocol",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["bgp", "ospf", "isis", "static", "other"],
+          "required": true
+        },
+        {
+          "id": "pr.routing_process.local_as",
+          "attr_no": 350,
+          "name": "local_as",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_process.router_id",
+          "attr_no": 351,
+          "name": "router_id",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_process.maximum_paths",
+          "attr_no": 352,
+          "name": "maximum_paths",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.routing_process.multipath_relax",
+          "attr_no": 353,
+          "name": "multipath_relax",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_process.bfd_default",
+          "attr_no": 354,
+          "name": "bfd_default",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_process.graceful_restart",
+          "attr_no": 355,
+          "name": "graceful_restart",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.routing_process.process_id",
+          "attr_no": 356,
+          "name": "process_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.routing_process.protocol"
+            },
+            {
+              "property": "pr.routing_process.process_id"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.static_route",
+      "type_no": 78,
+      "name": "StaticRoute",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "설정된 정적 경로(넥스트홉 집합)",
+      "properties": [
+        {
+          "id": "pr.static_route.destination_cidr",
+          "attr_no": 357,
+          "name": "destination_cidr",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.static_route.next_hops",
+          "attr_no": 358,
+          "name": "next_hops",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.static_route.distance",
+          "attr_no": 359,
+          "name": "distance",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.static_route.tracked_by_bfd",
+          "attr_no": 360,
+          "name": "tracked_by_bfd",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.static_route.destination_cidr"
+            },
+            {
+              "property": "pr.static_route.distance"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.ecmp_group",
+      "type_no": 79,
+      "name": "EcmpGroup",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "동일 비용 다중 경로 집합 (RedundancyGroup 서브타입)",
+      "properties": [
+        {
+          "id": "pr.ecmp_group.hash_policy",
+          "attr_no": 361,
+          "name": "hash_policy",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.ecmp_group.configured_max_paths",
+          "attr_no": 362,
+          "name": "configured_max_paths",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.ecmp_group.destination_scope",
+          "attr_no": 363,
+          "name": "destination_scope",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.tunnel",
+      "type_no": 80,
+      "name": "Tunnel",
+      "traits": ["tr.common"],
+      "description": "점대점 터널(GRE·IPsec·VTEP 쌍·LSP 등)",
+      "standard_ref": "RFC 8944 encapsulation-type vxlan",
+      "properties": [
+        {
+          "id": "pr.tunnel.tunnel_kind",
+          "attr_no": 364,
+          "name": "tunnel_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["gre", "ipsec", "vxlan_vtep_pair", "wireguard", "mpls_lsp", "other"]
+        },
+        {
+          "id": "pr.tunnel.encapsulation",
+          "attr_no": 365,
+          "name": "encapsulation",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.overlay_segment",
+      "type_no": 81,
+      "name": "OverlaySegment",
+      "traits": ["tr.common"],
+      "description": "오버레이 세그먼트(VNI 등)",
+      "standard_ref": "RFC 8944 vxlan/vni-id",
+      "properties": [
+        {
+          "id": "pr.overlay_segment.segment_kind",
+          "attr_no": 366,
+          "name": "segment_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["vxlan", "geneve", "nvgre", "evpn_vpws", "other"],
+          "required": true
+        },
+        {
+          "id": "pr.overlay_segment.vni",
+          "attr_no": 367,
+          "name": "vni",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.overlay_segment.mapped_vlan_id",
+          "attr_no": 368,
+          "name": "mapped_vlan_id",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.fabric",
+      "type_no": 82,
+      "name": "Fabric",
+      "traits": ["tr.common", "tr.is_failure_domain"],
+      "description": "패브릭/네트워크 도메인(데이터센터 패브릭·SAN 패브릭·IB 패브릭·WAN)",
+      "standard_ref": "RFC 8345 network 컨테이너; SIMAP 개념",
+      "properties": [
+        {
+          "id": "pr.fabric.fabric_kind",
+          "attr_no": 369,
+          "name": "fabric_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["clos_leaf_spine", "campus", "wan", "fc_san", "ib", "management", "other"]
+        },
+        {
+          "id": "pr.fabric.underlay_protocol",
+          "attr_no": 370,
+          "name": "underlay_protocol",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.fabric.overlay_protocol",
+          "attr_no": 371,
+          "name": "overlay_protocol",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.fc_fabric_wwn"
+        }
+      ]
+    },
+    {
+      "id": "ot.fabric_pod",
+      "type_no": 83,
+      "name": "FabricPod",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.is_failure_domain"],
+      "description": "패브릭 내 pod(스파인 블록) — K8s `Pod`와 무관",
+      "properties": [
+        {
+          "id": "pr.fabric_pod.pod_index",
+          "attr_no": 372,
+          "name": "pod_index",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.fabric_pod.pod_index"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.circuit",
+      "type_no": 84,
+      "name": "Circuit",
+      "traits": ["tr.common", "tr.serialized"],
+      "description": "외부 회선(ISP·전용선·다크파이버·파장)",
+      "properties": [
+        {
+          "id": "pr.circuit.circuit_id",
+          "attr_no": 373,
+          "name": "circuit_id",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.circuit.circuit_type",
+          "attr_no": 374,
+          "name": "circuit_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["internet", "mpls", "dark_fiber", "wavelength", "point_to_point", "other"]
+        },
+        {
+          "id": "pr.circuit.bandwidth_mbps",
+          "attr_no": 375,
+          "name": "bandwidth_mbps",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "Mbps"
+        },
+        {
+          "id": "pr.circuit.a_side_site",
+          "attr_no": 376,
+          "name": "a_side_site",
+          "value_type": "vt.ref",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.circuit.z_side_site",
+          "attr_no": 377,
+          "name": "z_side_site",
+          "value_type": "vt.ref",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.autonomous_system",
+      "type_no": 85,
+      "name": "AutonomousSystem",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "자율 시스템",
+      "standard_ref": "RFC 8346 개념",
+      "properties": [
+        {
+          "id": "pr.autonomous_system.asn",
+          "attr_no": 378,
+          "name": "asn",
+          "value_type": "vt.integer",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.autonomous_system.asn"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}

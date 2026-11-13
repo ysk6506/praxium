@@ -1,0 +1,2315 @@
+{
+  "layer": "facility",
+  "types": [
+    {
+      "id": "ot.region",
+      "type_no": 1,
+      "name": "Region",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable"],
+      "description": "지리 권역(재해복구 단위)",
+      "properties": [
+        {
+          "id": "pr.region.code",
+          "attr_no": 37,
+          "name": "code",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.region.country",
+          "attr_no": 38,
+          "name": "country",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.region.code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.site",
+      "type_no": 2,
+      "name": "Site",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable"],
+      "description": "부지/캠퍼스",
+      "standard_ref": "Redfish Facility(Site)",
+      "properties": [
+        {
+          "id": "pr.site.site_code",
+          "attr_no": 39,
+          "name": "site_code",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.site.address",
+          "attr_no": 40,
+          "name": "address",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.site.latitude",
+          "attr_no": 41,
+          "name": "latitude",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.site.longitude",
+          "attr_no": 42,
+          "name": "longitude",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.site.timezone",
+          "attr_no": 43,
+          "name": "timezone",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.site.tier_rating",
+          "attr_no": 44,
+          "name": "tier_rating",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["tier_1", "tier_2", "tier_3", "tier_4", "unrated"]
+        },
+        {
+          "id": "pr.site.utility_count",
+          "attr_no": 45,
+          "name": "utility_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.site.site_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.building",
+      "type_no": 3,
+      "name": "Building",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable"],
+      "description": "건물",
+      "standard_ref": "Facility(Building)",
+      "properties": [
+        {
+          "id": "pr.building.floors_count",
+          "attr_no": 46,
+          "name": "floors_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.building.construction_year",
+          "attr_no": 47,
+          "name": "construction_year",
+          "value_type": "vt.integer",
+          "change_class": "static"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.floor",
+      "type_no": 4,
+      "name": "Floor",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable"],
+      "description": "층",
+      "standard_ref": "Facility(Floor)",
+      "properties": [
+        {
+          "id": "pr.floor.level",
+          "attr_no": 48,
+          "name": "level",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.floor.floor_load_kg_m2",
+          "attr_no": 49,
+          "name": "floor_load_kg_m2",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kg/m²"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.room",
+      "type_no": 5,
+      "name": "Room",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable", "tr.cooled"],
+      "description": "실(데이터홀·전기실·기계실 등)",
+      "standard_ref": "Facility(Room)",
+      "properties": [
+        {
+          "id": "pr.room.room_type",
+          "attr_no": 50,
+          "name": "room_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "data_hall",
+            "electrical_room",
+            "mechanical_room",
+            "battery_room",
+            "telecom_entry",
+            "network_room",
+            "storage",
+            "office",
+            "other"
+          ]
+        },
+        {
+          "id": "pr.room.area_m2",
+          "attr_no": 51,
+          "name": "area_m2",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "m²"
+        },
+        {
+          "id": "pr.room.raised_floor_height_mm",
+          "attr_no": 52,
+          "name": "raised_floor_height_mm",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "mm"
+        },
+        {
+          "id": "pr.room.design_it_load_kw",
+          "attr_no": 53,
+          "name": "design_it_load_kw",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kW"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.room_zone",
+      "type_no": 6,
+      "name": "RoomZone",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable", "tr.cooled"],
+      "description": "룸 안의 임의 구획(냉각 구역·케이지·보안 구역)",
+      "standard_ref": "Redfish ChassisType Zone 열거값",
+      "properties": [
+        {
+          "id": "pr.room_zone.zone_kind",
+          "attr_no": 54,
+          "name": "zone_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["cooling", "cage", "security", "pod_area", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.row",
+      "type_no": 7,
+      "name": "Row",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable", "tr.cooled"],
+      "description": "랙 열",
+      "standard_ref": "Redfish ChassisType Row",
+      "properties": [
+        {
+          "id": "pr.row.orientation_deg",
+          "attr_no": 55,
+          "name": "orientation_deg",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.row.rack_capacity",
+          "attr_no": 56,
+          "name": "rack_capacity",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.aisle",
+      "type_no": 8,
+      "name": "Aisle",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.locatable", "tr.cooled"],
+      "description": "냉/열 통로",
+      "standard_ref": "223P Zone/공기 매질 개념",
+      "properties": [
+        {
+          "id": "pr.aisle.aisle_kind",
+          "attr_no": 57,
+          "name": "aisle_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["cold", "hot"]
+        },
+        {
+          "id": "pr.aisle.length_m",
+          "attr_no": 58,
+          "name": "length_m",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "m"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.rack",
+      "type_no": 9,
+      "name": "Rack",
+      "traits": ["tr.common", "tr.is_failure_domain", "tr.locatable", "tr.cooled", "tr.sensed"],
+      "description": "랙(캐비닛)",
+      "standard_ref": "Redfish ChassisType Rack",
+      "properties": [
+        {
+          "id": "pr.rack.total_u",
+          "attr_no": 59,
+          "name": "total_u",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.rack.u_numbering",
+          "attr_no": 60,
+          "name": "u_numbering",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["bottom_up", "top_down"]
+        },
+        {
+          "id": "pr.rack.form_factor",
+          "attr_no": 61,
+          "name": "form_factor",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": ["post_2", "post_4", "cabinet", "open_frame", "open_rack"]
+        },
+        {
+          "id": "pr.rack.width_mm",
+          "attr_no": 62,
+          "name": "width_mm",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "mm"
+        },
+        {
+          "id": "pr.rack.depth_mm",
+          "attr_no": 63,
+          "name": "depth_mm",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "mm"
+        },
+        {
+          "id": "pr.rack.max_weight_kg",
+          "attr_no": 64,
+          "name": "max_weight_kg",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kg"
+        },
+        {
+          "id": "pr.rack.power_budget_w",
+          "attr_no": 65,
+          "name": "power_budget_w",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "W"
+        },
+        {
+          "id": "pr.rack.asset_tag",
+          "attr_no": 66,
+          "name": "asset_tag",
+          "value_type": "vt.string",
+          "change_class": "static"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.rack.asset_tag"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.rack_unit",
+      "type_no": 10,
+      "name": "RackUnit",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.locatable"],
+      "description": "랙의 U 슬롯(점유 모델링이 필요할 때만 물질화)",
+      "standard_ref": "NetBox Device.position/face",
+      "properties": [
+        {
+          "id": "pr.rack_unit.u_index",
+          "attr_no": 67,
+          "name": "u_index",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.rack_unit.face",
+          "attr_no": 68,
+          "name": "face",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["front", "rear"],
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "ot.utility_feed",
+      "type_no": 11,
+      "name": "UtilityFeed",
+      "traits": ["tr.common", "tr.power_source", "tr.is_failure_domain", "tr.locatable"],
+      "description": "전력회사 인입(외부 급전)",
+      "properties": [
+        {
+          "id": "pr.utility_feed.voltage_kv",
+          "attr_no": 69,
+          "name": "voltage_kv",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kV"
+        },
+        {
+          "id": "pr.utility_feed.contracted_kva",
+          "attr_no": 70,
+          "name": "contracted_kva",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kVA"
+        },
+        {
+          "id": "pr.utility_feed.supplier_ref",
+          "attr_no": 71,
+          "name": "supplier_ref",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.generator",
+      "type_no": 12,
+      "name": "Generator",
+      "traits": ["tr.common", "tr.power_source", "tr.powered", "tr.locatable", "tr.manageable"],
+      "description": "비상 발전기",
+      "properties": [
+        {
+          "id": "pr.generator.rated_kva",
+          "attr_no": 72,
+          "name": "rated_kva",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kVA"
+        },
+        {
+          "id": "pr.generator.fuel_type",
+          "attr_no": 73,
+          "name": "fuel_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["diesel", "gas", "other"]
+        },
+        {
+          "id": "pr.generator.start_time_s",
+          "attr_no": 74,
+          "name": "start_time_s",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "s"
+        },
+        {
+          "id": "pr.generator.fuel_autonomy_h",
+          "attr_no": 75,
+          "name": "fuel_autonomy_h",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "h"
+        },
+        {
+          "id": "pr.generator.manufacturer",
+          "attr_no": 76,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.generator.serial_number",
+          "attr_no": 77,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.generator.manufacturer"
+            },
+            {
+              "property": "pr.generator.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.fuel_tank",
+      "type_no": 13,
+      "name": "FuelTank",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.locatable"],
+      "description": "발전기 연료 탱크",
+      "properties": [
+        {
+          "id": "pr.fuel_tank.capacity_l",
+          "attr_no": 78,
+          "name": "capacity_l",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "L"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.transformer",
+      "type_no": 14,
+      "name": "Transformer",
+      "traits": ["tr.common", "tr.powered", "tr.power_source", "tr.locatable"],
+      "description": "변압기",
+      "standard_ref": "223P ElectricEnergyTransformer",
+      "properties": [
+        {
+          "id": "pr.transformer.primary_v",
+          "attr_no": 79,
+          "name": "primary_v",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "V"
+        },
+        {
+          "id": "pr.transformer.secondary_v",
+          "attr_no": 80,
+          "name": "secondary_v",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "V"
+        },
+        {
+          "id": "pr.transformer.rated_kva",
+          "attr_no": 81,
+          "name": "rated_kva",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kVA"
+        },
+        {
+          "id": "pr.transformer.manufacturer",
+          "attr_no": 82,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.transformer.serial_number",
+          "attr_no": 83,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.transformer.manufacturer"
+            },
+            {
+              "property": "pr.transformer.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.switchgear",
+      "type_no": 15,
+      "name": "Switchgear",
+      "traits": ["tr.common", "tr.powered", "tr.power_source", "tr.locatable", "tr.manageable"],
+      "description": "수배전반·개폐기",
+      "standard_ref": "Redfish PowerEquipmentType Switchgear",
+      "properties": [
+        {
+          "id": "pr.switchgear.voltage_class",
+          "attr_no": 84,
+          "name": "voltage_class",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["lv", "mv", "hv"]
+        },
+        {
+          "id": "pr.switchgear.rated_a",
+          "attr_no": 85,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.switchgear.manufacturer",
+          "attr_no": 86,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.switchgear.serial_number",
+          "attr_no": 87,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.switchgear.manufacturer"
+            },
+            {
+              "property": "pr.switchgear.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.transfer_switch",
+      "type_no": 16,
+      "name": "TransferSwitch",
+      "traits": ["tr.common", "tr.powered", "tr.power_source", "tr.locatable", "tr.manageable"],
+      "description": "절체 스위치(ATS/MTS/STS)",
+      "standard_ref": "Redfish AutomaticTransferSwitch/ManualTransferSwitch; TransferCriteria 속성",
+      "properties": [
+        {
+          "id": "pr.transfer_switch.switch_kind",
+          "attr_no": 88,
+          "name": "switch_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["automatic", "manual", "static"]
+        },
+        {
+          "id": "pr.transfer_switch.transfer_time_ms",
+          "attr_no": 89,
+          "name": "transfer_time_ms",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "ms"
+        },
+        {
+          "id": "pr.transfer_switch.rated_a",
+          "attr_no": 90,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.transfer_switch.manufacturer",
+          "attr_no": 91,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.transfer_switch.serial_number",
+          "attr_no": 92,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.transfer_switch.manufacturer"
+            },
+            {
+              "property": "pr.transfer_switch.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.ups",
+      "type_no": 17,
+      "name": "Ups",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.power_source",
+        "tr.locatable",
+        "tr.rack_mountable",
+        "tr.manageable",
+        "tr.serialized"
+      ],
+      "description": "무정전 전원장치",
+      "properties": [
+        {
+          "id": "pr.ups.topology",
+          "attr_no": 93,
+          "name": "topology",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "online_double_conversion",
+            "line_interactive",
+            "standby",
+            "rotary",
+            "other"
+          ]
+        },
+        {
+          "id": "pr.ups.rated_kva",
+          "attr_no": 94,
+          "name": "rated_kva",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kVA"
+        },
+        {
+          "id": "pr.ups.rated_kw",
+          "attr_no": 95,
+          "name": "rated_kw",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kW",
+          "required": true
+        },
+        {
+          "id": "pr.ups.runtime_at_load_s",
+          "attr_no": 96,
+          "name": "runtime_at_load_s",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "s"
+        },
+        {
+          "id": "pr.ups.load_pct",
+          "attr_no": 97,
+          "name": "load_pct",
+          "value_type": "vt.number",
+          "change_class": "dynamic"
+        },
+        {
+          "id": "pr.ups.bypass_state",
+          "attr_no": 98,
+          "name": "bypass_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["normal", "on_bypass"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.battery_bank",
+      "type_no": 18,
+      "name": "BatteryBank",
+      "traits": ["tr.common", "tr.locatable", "tr.sensed"],
+      "description": "배터리 뱅크/스트링",
+      "standard_ref": "Redfish BatteryShelf; 223P Battery",
+      "properties": [
+        {
+          "id": "pr.battery_bank.chemistry",
+          "attr_no": 99,
+          "name": "chemistry",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["vrla", "li_ion", "nicd", "flywheel", "other"]
+        },
+        {
+          "id": "pr.battery_bank.capacity_kwh",
+          "attr_no": 100,
+          "name": "capacity_kwh",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kWh"
+        },
+        {
+          "id": "pr.battery_bank.runtime_at_load_s",
+          "attr_no": 101,
+          "name": "runtime_at_load_s",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "s"
+        },
+        {
+          "id": "pr.battery_bank.install_date",
+          "attr_no": 102,
+          "name": "install_date",
+          "value_type": "vt.time",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.battery_bank.manufacturer",
+          "attr_no": 103,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.battery_bank.serial_number",
+          "attr_no": 104,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.battery_bank.manufacturer"
+            },
+            {
+              "property": "pr.battery_bank.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.power_panel",
+      "type_no": 19,
+      "name": "PowerPanel",
+      "traits": ["tr.common", "tr.powered", "tr.power_source", "tr.locatable"],
+      "description": "분전반(배전 패널)",
+      "standard_ref": "NetBox PowerPanel",
+      "properties": [
+        {
+          "id": "pr.power_panel.rated_a",
+          "attr_no": 105,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.power_panel.circuits_count",
+          "attr_no": 106,
+          "name": "circuits_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.busway",
+      "type_no": 20,
+      "name": "Busway",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.powered", "tr.power_source", "tr.locatable"],
+      "description": "버스웨이/버스바",
+      "standard_ref": "Redfish Bus",
+      "properties": [
+        {
+          "id": "pr.busway.rated_a",
+          "attr_no": 107,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.busway.length_m",
+          "attr_no": 108,
+          "name": "length_m",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "m"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.rpp",
+      "type_no": 21,
+      "name": "Rpp",
+      "traits": ["tr.common", "tr.powered", "tr.power_source", "tr.locatable"],
+      "description": "원격 전원 패널",
+      "properties": [
+        {
+          "id": "pr.rpp.rated_a",
+          "attr_no": 109,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.rpp.poles",
+          "attr_no": 110,
+          "name": "poles",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.floor_pdu",
+      "type_no": 22,
+      "name": "FloorPdu",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.power_source",
+        "tr.locatable",
+        "tr.manageable",
+        "tr.addressable"
+      ],
+      "description": "플로어 PDU/PDU 캐비닛",
+      "standard_ref": "Redfish FloorPDU",
+      "properties": [
+        {
+          "id": "pr.floor_pdu.rated_a",
+          "attr_no": 111,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.floor_pdu.outlet_count",
+          "attr_no": 112,
+          "name": "outlet_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.floor_pdu.metered",
+          "attr_no": 113,
+          "name": "metered",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.floor_pdu.manufacturer",
+          "attr_no": 114,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.floor_pdu.serial_number",
+          "attr_no": 115,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.floor_pdu.manufacturer"
+            },
+            {
+              "property": "pr.floor_pdu.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.rack_pdu",
+      "type_no": 23,
+      "name": "RackPdu",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.power_source",
+        "tr.rack_mountable",
+        "tr.manageable",
+        "tr.addressable"
+      ],
+      "description": "랙 PDU",
+      "standard_ref": "Redfish RackPDU",
+      "properties": [
+        {
+          "id": "pr.rack_pdu.rated_a",
+          "attr_no": 116,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.rack_pdu.input_voltage_v",
+          "attr_no": 117,
+          "name": "input_voltage_v",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "V"
+        },
+        {
+          "id": "pr.rack_pdu.outlet_count",
+          "attr_no": 118,
+          "name": "outlet_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.rack_pdu.metered",
+          "attr_no": 119,
+          "name": "metered",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.rack_pdu.switched",
+          "attr_no": 120,
+          "name": "switched",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.rack_pdu.manufacturer",
+          "attr_no": 121,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.rack_pdu.serial_number",
+          "attr_no": 122,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.rack_pdu.manufacturer"
+            },
+            {
+              "property": "pr.rack_pdu.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.pdu_outlet",
+      "type_no": 24,
+      "name": "PduOutlet",
+      "traits": ["tr.common", "tr.power_source", "tr.sensed"],
+      "description": "PDU 콘센트",
+      "standard_ref": "Redfish Outlets 컬렉션; NetBox PowerOutlet",
+      "properties": [
+        {
+          "id": "pr.pdu_outlet.outlet_name",
+          "attr_no": 123,
+          "name": "outlet_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.pdu_outlet.connector_type",
+          "attr_no": 124,
+          "name": "connector_type",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.pdu_outlet.phase_leg",
+          "attr_no": 125,
+          "name": "phase_leg",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["l1", "l2", "l3", "l1_l2", "l2_l3", "l1_l3", "n_a"]
+        },
+        {
+          "id": "pr.pdu_outlet.rated_a",
+          "attr_no": 126,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.pdu_outlet.switched",
+          "attr_no": 127,
+          "name": "switched",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.pdu_outlet.power_state",
+          "attr_no": 128,
+          "name": "power_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["on", "off", "unknown"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.pdu_outlet.outlet_name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.power_circuit",
+      "type_no": 25,
+      "name": "PowerCircuit",
+      "traits": ["tr.common", "tr.power_source"],
+      "description": "분기 회로",
+      "standard_ref": "Redfish Branches/Feeders/Subfeeds",
+      "properties": [
+        {
+          "id": "pr.power_circuit.circuit_id",
+          "attr_no": 129,
+          "name": "circuit_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.power_circuit.rated_a",
+          "attr_no": 130,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.power_circuit.phase",
+          "attr_no": 131,
+          "name": "phase",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["single", "three"]
+        }
+      ]
+    },
+    {
+      "id": "ot.circuit_breaker",
+      "type_no": 26,
+      "name": "CircuitBreaker",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "차단기",
+      "standard_ref": "223P ElectricityBreaker",
+      "properties": [
+        {
+          "id": "pr.circuit_breaker.rated_a",
+          "attr_no": 132,
+          "name": "rated_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.circuit_breaker.trip_curve",
+          "attr_no": 133,
+          "name": "trip_curve",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.circuit_breaker.state",
+          "attr_no": 134,
+          "name": "state",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["closed", "open", "tripped"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.power_feed",
+      "type_no": 27,
+      "name": "PowerFeed",
+      "traits": ["tr.common", "tr.power_source"],
+      "description": "랙·장비로 가는 급전선(A/B 측)",
+      "standard_ref": "NetBox PowerFeed",
+      "properties": [
+        {
+          "id": "pr.power_feed.feed_side",
+          "attr_no": 135,
+          "name": "feed_side",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["a", "b", "c", "d", "single"],
+          "required": true
+        },
+        {
+          "id": "pr.power_feed.feed_type",
+          "attr_no": 136,
+          "name": "feed_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["primary", "redundant"]
+        },
+        {
+          "id": "pr.power_feed.supply",
+          "attr_no": 137,
+          "name": "supply",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ac", "dc"]
+        },
+        {
+          "id": "pr.power_feed.phase",
+          "attr_no": 138,
+          "name": "phase",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["single", "three"]
+        },
+        {
+          "id": "pr.power_feed.amperage_a",
+          "attr_no": 139,
+          "name": "amperage_a",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "A"
+        },
+        {
+          "id": "pr.power_feed.max_utilization_pct",
+          "attr_no": 140,
+          "name": "max_utilization_pct",
+          "value_type": "vt.number",
+          "change_class": "dynamic"
+        }
+      ]
+    },
+    {
+      "id": "ot.power_shelf",
+      "type_no": 28,
+      "name": "PowerShelf",
+      "tier": "extension",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.power_source",
+        "tr.rack_mountable",
+        "tr.manageable"
+      ],
+      "description": "파워 셸프(OCP 등 랙 공용 PSU 선반)",
+      "standard_ref": "Redfish PowerShelf",
+      "properties": [
+        {
+          "id": "pr.power_shelf.rated_kw",
+          "attr_no": 141,
+          "name": "rated_kw",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kW"
+        },
+        {
+          "id": "pr.power_shelf.psu_slots",
+          "attr_no": 142,
+          "name": "psu_slots",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.power_shelf.manufacturer",
+          "attr_no": 143,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.power_shelf.serial_number",
+          "attr_no": 144,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.power_shelf.manufacturer"
+            },
+            {
+              "property": "pr.power_shelf.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.chiller",
+      "type_no": 29,
+      "name": "Chiller",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.cooling_source",
+        "tr.cooled",
+        "tr.locatable",
+        "tr.manageable"
+      ],
+      "description": "칠러",
+      "standard_ref": "223P Chiller",
+      "properties": [
+        {
+          "id": "pr.chiller.cooling_type",
+          "attr_no": 145,
+          "name": "cooling_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["water_cooled", "air_cooled", "free_cooling"]
+        },
+        {
+          "id": "pr.chiller.cop",
+          "attr_no": 146,
+          "name": "cop",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.chiller.refrigerant",
+          "attr_no": 147,
+          "name": "refrigerant",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.chiller.manufacturer",
+          "attr_no": 148,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.chiller.serial_number",
+          "attr_no": 149,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.chiller.manufacturer"
+            },
+            {
+              "property": "pr.chiller.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.cooling_tower",
+      "type_no": 30,
+      "name": "CoolingTower",
+      "traits": ["tr.common", "tr.powered", "tr.cooling_source", "tr.locatable"],
+      "description": "냉각탑",
+      "standard_ref": "223P CoolingTower",
+      "properties": [
+        {
+          "id": "pr.cooling_tower.heat_rejection_kw",
+          "attr_no": 150,
+          "name": "heat_rejection_kw",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kW"
+        },
+        {
+          "id": "pr.cooling_tower.tower_type",
+          "attr_no": 151,
+          "name": "tower_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["open", "closed_circuit", "hybrid"]
+        },
+        {
+          "id": "pr.cooling_tower.manufacturer",
+          "attr_no": 152,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.cooling_tower.serial_number",
+          "attr_no": 153,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.cooling_tower.manufacturer"
+            },
+            {
+              "property": "pr.cooling_tower.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.dry_cooler",
+      "type_no": 31,
+      "name": "DryCooler",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.powered", "tr.cooling_source", "tr.locatable"],
+      "description": "드라이쿨러",
+      "properties": [
+        {
+          "id": "pr.dry_cooler.heat_rejection_kw",
+          "attr_no": 154,
+          "name": "heat_rejection_kw",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kW"
+        },
+        {
+          "id": "pr.dry_cooler.manufacturer",
+          "attr_no": 155,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.dry_cooler.serial_number",
+          "attr_no": 156,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.dry_cooler.manufacturer"
+            },
+            {
+              "property": "pr.dry_cooler.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.crah",
+      "type_no": 32,
+      "name": "Crah",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.cooling_source",
+        "tr.cooled",
+        "tr.locatable",
+        "tr.manageable"
+      ],
+      "description": "공조기(냉수식, CRAH)",
+      "standard_ref": "223P AirHandlingUnit 근접",
+      "properties": [
+        {
+          "id": "pr.crah.airflow_cfm",
+          "attr_no": 157,
+          "name": "airflow_cfm",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "cfm"
+        },
+        {
+          "id": "pr.crah.supply_setpoint_c",
+          "attr_no": 158,
+          "name": "supply_setpoint_c",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "°C"
+        },
+        {
+          "id": "pr.crah.fan_count",
+          "attr_no": 159,
+          "name": "fan_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.crah.manufacturer",
+          "attr_no": 160,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.crah.serial_number",
+          "attr_no": 161,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.crah.manufacturer"
+            },
+            {
+              "property": "pr.crah.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.crac",
+      "type_no": 33,
+      "name": "Crac",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.cooling_source",
+        "tr.cooled",
+        "tr.locatable",
+        "tr.manageable"
+      ],
+      "description": "공조기(직팽식, CRAC)",
+      "properties": [
+        {
+          "id": "pr.crac.airflow_cfm",
+          "attr_no": 162,
+          "name": "airflow_cfm",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "cfm"
+        },
+        {
+          "id": "pr.crac.supply_setpoint_c",
+          "attr_no": 163,
+          "name": "supply_setpoint_c",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "°C"
+        },
+        {
+          "id": "pr.crac.fan_count",
+          "attr_no": 164,
+          "name": "fan_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.crac.compressor_count",
+          "attr_no": 165,
+          "name": "compressor_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.crac.manufacturer",
+          "attr_no": 166,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.crac.serial_number",
+          "attr_no": 167,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.crac.manufacturer"
+            },
+            {
+              "property": "pr.crac.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.in_row_cooler",
+      "type_no": 34,
+      "name": "InRowCooler",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.cooling_source",
+        "tr.cooled",
+        "tr.locatable",
+        "tr.rack_mountable",
+        "tr.manageable"
+      ],
+      "description": "열간(In-Row) 쿨러",
+      "properties": [
+        {
+          "id": "pr.in_row_cooler.coolant",
+          "attr_no": 168,
+          "name": "coolant",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["chilled_water", "refrigerant", "glycol"]
+        },
+        {
+          "id": "pr.in_row_cooler.manufacturer",
+          "attr_no": 169,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.in_row_cooler.serial_number",
+          "attr_no": 170,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.in_row_cooler.manufacturer"
+            },
+            {
+              "property": "pr.in_row_cooler.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.rear_door_cooler",
+      "type_no": 35,
+      "name": "RearDoorCooler",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.cooling_source", "tr.locatable"],
+      "description": "후면 도어 열교환기",
+      "standard_ref": "Redfish ChassisType HeatExchanger; CoolingUnit HeatExchanger",
+      "properties": [
+        {
+          "id": "pr.rear_door_cooler.has_fans",
+          "attr_no": 171,
+          "name": "has_fans",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.rear_door_cooler.manufacturer",
+          "attr_no": 172,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.rear_door_cooler.serial_number",
+          "attr_no": 173,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.rear_door_cooler.manufacturer"
+            },
+            {
+              "property": "pr.rear_door_cooler.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.cdu",
+      "type_no": 36,
+      "name": "Cdu",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.cooling_source",
+        "tr.locatable",
+        "tr.manageable",
+        "tr.rack_mountable"
+      ],
+      "description": "냉각수 분배 장치(액냉 CDU)",
+      "standard_ref": "Redfish CoolingUnit CDU",
+      "properties": [
+        {
+          "id": "pr.cdu.coolant",
+          "attr_no": 174,
+          "name": "coolant",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cdu.pump_count",
+          "attr_no": 175,
+          "name": "pump_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cdu.leak_detection",
+          "attr_no": 176,
+          "name": "leak_detection",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cdu.manufacturer",
+          "attr_no": 177,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.cdu.serial_number",
+          "attr_no": 178,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.cdu.manufacturer"
+            },
+            {
+              "property": "pr.cdu.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.heat_exchanger",
+      "type_no": 37,
+      "name": "HeatExchanger",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.cooling_source", "tr.locatable"],
+      "description": "열교환기(플레이트 등)",
+      "standard_ref": "Redfish CoolingUnit HeatExchanger",
+      "properties": [
+        {
+          "id": "pr.heat_exchanger.capacity_kw",
+          "attr_no": 179,
+          "name": "capacity_kw",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "kW"
+        },
+        {
+          "id": "pr.heat_exchanger.manufacturer",
+          "attr_no": 180,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.heat_exchanger.serial_number",
+          "attr_no": 181,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.heat_exchanger.manufacturer"
+            },
+            {
+              "property": "pr.heat_exchanger.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.immersion_tank",
+      "type_no": 38,
+      "name": "ImmersionTank",
+      "tier": "extension",
+      "traits": [
+        "tr.common",
+        "tr.powered",
+        "tr.cooling_source",
+        "tr.cooled",
+        "tr.locatable",
+        "tr.manageable"
+      ],
+      "description": "액침 냉각 탱크",
+      "standard_ref": "Redfish CoolingUnit ImmersionUnit; Chassis ImmersionTank",
+      "properties": [
+        {
+          "id": "pr.immersion_tank.coolant",
+          "attr_no": 182,
+          "name": "coolant",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.immersion_tank.volume_l",
+          "attr_no": 183,
+          "name": "volume_l",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "L"
+        },
+        {
+          "id": "pr.immersion_tank.manufacturer",
+          "attr_no": 184,
+          "name": "manufacturer",
+          "value_type": "vt.string",
+          "change_class": "static",
+          "required": true
+        },
+        {
+          "id": "pr.immersion_tank.serial_number",
+          "attr_no": 185,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.immersion_tank.manufacturer"
+            },
+            {
+              "property": "pr.immersion_tank.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.cooling_loop",
+      "type_no": 39,
+      "name": "CoolingLoop",
+      "traits": ["tr.common", "tr.cooling_source", "tr.is_failure_domain"],
+      "description": "냉각 루프(냉수·냉각수·냉매·유전액 배관 계통)",
+      "standard_ref": "Redfish Facility.Links.CoolingLoops / Chassis.Links.ConnectedCoolingLoops; 223P 매질(Fluid-Water 등)",
+      "properties": [
+        {
+          "id": "pr.cooling_loop.loop_role",
+          "attr_no": 186,
+          "name": "loop_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["primary", "secondary", "condenser"]
+        },
+        {
+          "id": "pr.cooling_loop.supply_temp_c",
+          "attr_no": 187,
+          "name": "supply_temp_c",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "°C"
+        },
+        {
+          "id": "pr.cooling_loop.return_temp_c",
+          "attr_no": 188,
+          "name": "return_temp_c",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "°C"
+        },
+        {
+          "id": "pr.cooling_loop.flow_lpm",
+          "attr_no": 189,
+          "name": "flow_lpm",
+          "value_type": "vt.quantity",
+          "change_class": "dynamic",
+          "unit": "L/min"
+        }
+      ]
+    },
+    {
+      "id": "ot.containment",
+      "type_no": 40,
+      "name": "Containment",
+      "traits": ["tr.common", "tr.locatable"],
+      "description": "통로 격리(콜드/핫 컨테인먼트)",
+      "properties": [
+        {
+          "id": "pr.containment.containment_kind",
+          "attr_no": 190,
+          "name": "containment_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["cold_aisle", "hot_aisle", "chimney", "rack_level"]
+        },
+        {
+          "id": "pr.containment.has_doors",
+          "attr_no": 191,
+          "name": "has_doors",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.fire_suppression_system",
+      "type_no": 41,
+      "name": "FireSuppressionSystem",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.locatable", "tr.is_failure_domain"],
+      "description": "소화 설비",
+      "properties": [
+        {
+          "id": "pr.fire_suppression_system.agent",
+          "attr_no": 192,
+          "name": "agent",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["pre_action_water", "clean_agent", "water_mist", "inert_gas", "other"]
+        },
+        {
+          "id": "pr.fire_suppression_system.zone_count",
+          "attr_no": 193,
+          "name": "zone_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}

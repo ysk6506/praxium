@@ -1,0 +1,635 @@
+{
+  "layer": "service",
+  "types": [
+    {
+      "id": "ot.business_capability",
+      "type_no": 145,
+      "name": "BusinessCapability",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "비즈니스 역량(분류용, 선택)",
+      "standard_ref": "CSDM business capability 언급; Backstage Domain",
+      "properties": [
+        {
+          "id": "pr.business_capability.capability_level",
+          "attr_no": 602,
+          "name": "capability_level",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.business_capability.capability_code",
+          "attr_no": 603,
+          "name": "capability_code",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.business_capability.capability_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.business_service",
+      "type_no": 146,
+      "name": "BusinessService",
+      "traits": ["tr.common", "tr.schedulable"],
+      "description": "소비자 대상 비즈니스 서비스(단일 레벨)",
+      "standard_ref": "CSDM Business Service",
+      "properties": [
+        {
+          "id": "pr.business_service.criticality",
+          "attr_no": 604,
+          "name": "criticality",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["mission_critical", "business_critical", "important", "normal"],
+          "required": true
+        },
+        {
+          "id": "pr.business_service.service_hours",
+          "attr_no": 605,
+          "name": "service_hours",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.business_service.consumer_kind",
+          "attr_no": 606,
+          "name": "consumer_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["internal", "external"]
+        },
+        {
+          "id": "pr.business_service.service_code",
+          "attr_no": 607,
+          "name": "service_code",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.business_service.service_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.technical_service",
+      "type_no": 147,
+      "name": "TechnicalService",
+      "traits": ["tr.common", "tr.schedulable"],
+      "description": "서비스 소유자에게 제공되는 기반 서비스(컴퓨트·스토리지·네트워크 등)",
+      "standard_ref": "CSDM Technical Service",
+      "properties": [
+        {
+          "id": "pr.technical_service.tech_service_kind",
+          "attr_no": 608,
+          "name": "tech_service_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "compute",
+            "storage",
+            "network",
+            "platform",
+            "security",
+            "observability",
+            "other"
+          ]
+        },
+        {
+          "id": "pr.technical_service.catalog_orderable",
+          "attr_no": 609,
+          "name": "catalog_orderable",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.technical_service.service_code",
+          "attr_no": 610,
+          "name": "service_code",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.technical_service.service_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.application_service",
+      "type_no": 148,
+      "name": "ApplicationService",
+      "traits": ["tr.common", "tr.schedulable"],
+      "description": "배포된 애플리케이션 스택의 논리 표현(환경별)",
+      "standard_ref": "CSDM Application Service",
+      "properties": [
+        {
+          "id": "pr.application_service.tier",
+          "attr_no": 611,
+          "name": "tier",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["tier_0", "tier_1", "tier_2", "tier_3"]
+        },
+        {
+          "id": "pr.application_service.user_facing",
+          "attr_no": 612,
+          "name": "user_facing",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.application_service.service_code",
+          "attr_no": 613,
+          "name": "service_code",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.application_service.service_code"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.service_offering",
+      "type_no": 149,
+      "name": "ServiceOffering",
+      "traits": ["tr.common"],
+      "description": "서비스의 티어/가용성/지원 시간 단위",
+      "standard_ref": "CSDM Service Offering / Technical Service Offering",
+      "properties": [
+        {
+          "id": "pr.service_offering.availability_target_pct",
+          "attr_no": 614,
+          "name": "availability_target_pct",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.service_offering.support_hours",
+          "attr_no": 615,
+          "name": "support_hours",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.service_offering.location_scope",
+          "attr_no": 616,
+          "name": "location_scope",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.application",
+      "type_no": 150,
+      "name": "Application",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "배포 가능한 소프트웨어 단위(카탈로그 항목)",
+      "standard_ref": "Backstage Component(type, lifecycle); CSDM Business Application",
+      "properties": [
+        {
+          "id": "pr.application.app_kind",
+          "attr_no": 617,
+          "name": "app_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["service", "website", "library", "batch", "other"]
+        },
+        {
+          "id": "pr.application.app_lifecycle",
+          "attr_no": 618,
+          "name": "app_lifecycle",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["experimental", "production", "deprecated"]
+        },
+        {
+          "id": "pr.application.repo_ref",
+          "attr_no": 619,
+          "name": "repo_ref",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.application.app_code",
+          "attr_no": 620,
+          "name": "app_code",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.application.app_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.environment",
+      "type_no": 151,
+      "name": "Environment",
+      "parent": "ot.logical_group",
+      "traits": [],
+      "description": "배포 환경(운영·스테이징·개발·DR) (LogicalGroup)",
+      "standard_ref": "CSDM Business Application 환경(dev/test/prod)",
+      "properties": [
+        {
+          "id": "pr.environment.env_kind",
+          "attr_no": 621,
+          "name": "env_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["production", "staging", "test", "development", "dr", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.tenant",
+      "type_no": 152,
+      "name": "Tenant",
+      "traits": ["tr.common"],
+      "description": "테넌트/프로젝트/계정(소유·격리 경계)",
+      "properties": [
+        {
+          "id": "pr.tenant.tenant_kind",
+          "attr_no": 622,
+          "name": "tenant_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["organization_unit", "project", "account", "subscription"]
+        },
+        {
+          "id": "pr.tenant.quota",
+          "attr_no": 623,
+          "name": "quota",
+          "value_type": "vt.map",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.tenant_id"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.team",
+      "type_no": 153,
+      "name": "Team",
+      "parent": "ot.logical_group",
+      "traits": [],
+      "description": "담당 조직(팀·부서) (LogicalGroup)",
+      "standard_ref": "Backstage Group",
+      "properties": [
+        {
+          "id": "pr.team.team_kind",
+          "attr_no": 624,
+          "name": "team_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["team", "department", "vendor_team", "chapter"]
+        },
+        {
+          "id": "pr.team.contact_channel",
+          "attr_no": 625,
+          "name": "contact_channel",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.team.team_code",
+          "attr_no": 626,
+          "name": "team_code",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.team.team_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.person",
+      "type_no": 154,
+      "name": "Person",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "담당자(개인 정보 최소화: 불투명 참조)",
+      "standard_ref": "Backstage User",
+      "properties": [
+        {
+          "id": "pr.person.person_ref",
+          "attr_no": 627,
+          "name": "person_ref",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.directory_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.on_call_schedule",
+      "type_no": 155,
+      "name": "OnCallSchedule",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "대기 근무 일정/에스컬레이션",
+      "properties": [
+        {
+          "id": "pr.on_call_schedule.schedule_name",
+          "attr_no": 628,
+          "name": "schedule_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.on_call_schedule.timezone",
+          "attr_no": 629,
+          "name": "timezone",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.on_call_schedule.rotation",
+          "attr_no": 630,
+          "name": "rotation",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.on_call_schedule.escalation_levels",
+          "attr_no": 631,
+          "name": "escalation_levels",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.organization",
+      "type_no": 156,
+      "name": "Organization",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "외부/내부 조직(벤더·고객·파트너)",
+      "properties": [
+        {
+          "id": "pr.organization.org_kind",
+          "attr_no": 632,
+          "name": "org_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["vendor", "customer", "partner", "internal", "supplier"]
+        },
+        {
+          "id": "pr.organization.org_code",
+          "attr_no": 633,
+          "name": "org_code",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.organization.org_code"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.contract",
+      "type_no": 157,
+      "name": "Contract",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "계약/지원 권리(유지보수·SLA·리스)",
+      "properties": [
+        {
+          "id": "pr.contract.contract_kind",
+          "attr_no": 634,
+          "name": "contract_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["support", "maintenance", "lease", "sla"]
+        },
+        {
+          "id": "pr.contract.start_date",
+          "attr_no": 635,
+          "name": "start_date",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.contract.end_date",
+          "attr_no": 636,
+          "name": "end_date",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.contract.coverage",
+          "attr_no": 637,
+          "name": "coverage",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["round_the_clock", "business_hours", "next_business_day", "other"]
+        },
+        {
+          "id": "pr.contract.response_time_h",
+          "attr_no": 638,
+          "name": "response_time_h",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "h"
+        },
+        {
+          "id": "pr.contract.contract_number",
+          "attr_no": 639,
+          "name": "contract_number",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "ot.maintenance_window",
+      "type_no": 158,
+      "name": "MaintenanceWindow",
+      "traits": ["tr.common"],
+      "description": "유지보수/동결 창 — 객체로 모델링",
+      "properties": [
+        {
+          "id": "pr.maintenance_window.window_kind",
+          "attr_no": 640,
+          "name": "window_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["planned_change", "freeze", "recurring_maintenance"]
+        },
+        {
+          "id": "pr.maintenance_window.starts_at",
+          "attr_no": 641,
+          "name": "starts_at",
+          "value_type": "vt.time",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.maintenance_window.ends_at",
+          "attr_no": 642,
+          "name": "ends_at",
+          "value_type": "vt.time",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.maintenance_window.recurrence",
+          "attr_no": 643,
+          "name": "recurrence",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.maintenance_window.suppress_alerts",
+          "attr_no": 644,
+          "name": "suppress_alerts",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.maintenance_window.approval_state",
+          "attr_no": 645,
+          "name": "approval_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["draft", "approved", "cancelled"]
+        },
+        {
+          "id": "pr.maintenance_window.window_id",
+          "attr_no": 646,
+          "name": "window_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.maintenance_window.window_id"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}

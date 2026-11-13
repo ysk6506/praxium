@@ -24,10 +24,10 @@
 
 ## 단위별
 
-단위 수 등급별: D 0, C 1, B 2, A 0. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 0, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 0.
+단위 수 등급별: D 0, C 3, B 0, A 0. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 0, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 0.
 
 | 단위 | 등급 | 커버리지 (값 / 하한) | 끄기 | 한도 90% 넘음 (초과) | 열린 부채 (가장 이른 기한) | 가장 오래된 문서 | 이유 |
 |---|---|---|---|---|---|---|---|
-| harness | C | 모름 / 96.0 | 0 | 15 (0) | 2 (2027-02-01) | 2026-11-12 (adr-process.md) | 열린 부채 2, 한도 90% 넘음 15 |
-| core.kernel | B | 모름 / 98.0 | 0 | 0 (0) | 0 | 2026-11-12 (ARCHITECTURE.md) | 커버리지 모름 |
-| (단위 밖) | B | — | 0 | 0 (0) | 1 (2027-02-01) | 2026-11-12 (README.md) | 열린 부채 1 |
+| core.kernel | C | 모름 / 98.0 | 0 | 0 (0) | 2 (2027-02-01) | 2026-11-13 (ARCHITECTURE.md) | 열린 부채 2 |
+| harness | C | 모름 / 96.0 | 0 | 18 (0) | 3 (2027-02-01) | 2026-11-12 (adr-process.md) | 열린 부채 3, 한도 90% 넘음 18 |
+| (단위 밖) | C | — | 0 | 0 (0) | 2 (2027-02-01) | 2026-11-12 (adr-process.md) | 열린 부채 2 |

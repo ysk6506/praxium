@@ -1,0 +1,218 @@
+[
+  {
+    "id": "is.redfish_chassis_uuid",
+    "name": "redfish_chassis_uuid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:redfish.chassis.uuid. 유효한 테두리: bmc"
+  },
+  {
+    "id": "is.bmc_mac",
+    "name": "bmc_mac",
+    "normalizer": "vt.mac_address",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:bmc.mac"
+  },
+  {
+    "id": "is.redfish_system_id",
+    "name": "redfish_system_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:redfish.system.id. 유효한 테두리: bmc"
+  },
+  {
+    "id": "is.redfish_manager_uuid",
+    "name": "redfish_manager_uuid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:redfish.manager.uuid. 유효한 테두리: bmc"
+  },
+  {
+    "id": "is.lldp_chassis_id",
+    "name": "lldp_chassis_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:lldp.chassis_id"
+  },
+  {
+    "id": "is.wwpn",
+    "name": "wwpn",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:wwpn"
+  },
+  {
+    "id": "is.fc_fabric_wwn",
+    "name": "fc_fabric_wwn",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:fc.fabric_wwn"
+  },
+  {
+    "id": "is.array_system_id",
+    "name": "array_system_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:array.system_id. 유효한 테두리: mgmt"
+  },
+  {
+    "id": "is.wwn",
+    "name": "wwn",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:wwn"
+  },
+  {
+    "id": "is.endpoint",
+    "name": "endpoint",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:endpoint"
+  },
+  {
+    "id": "is.fc_switch_wwn",
+    "name": "fc_switch_wwn",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:fc.switch_wwn"
+  },
+  {
+    "id": "is.manager_instance_id",
+    "name": "manager_instance_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:manager.instance_id"
+  },
+  {
+    "id": "is.cluster_id",
+    "name": "cluster_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:cluster.id. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.host_id",
+    "name": "host_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:host.id. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.vm_instance_uuid",
+    "name": "vm_instance_uuid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:vm.instance_uuid. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.vm_native_id",
+    "name": "vm_native_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:vm.native_id. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.disk_backing_id",
+    "name": "disk_backing_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:disk.backing_id"
+  },
+  {
+    "id": "is.vswitch_uuid",
+    "name": "vswitch_uuid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:vswitch.uuid"
+  },
+  {
+    "id": "is.network_id",
+    "name": "network_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:network.id. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.datastore_uuid",
+    "name": "datastore_uuid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:datastore.uuid. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.template_id",
+    "name": "template_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:template.id. 유효한 테두리: manager"
+  },
+  {
+    "id": "is.k8s_cluster_uid",
+    "name": "k8s_cluster_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.cluster.uid"
+  },
+  {
+    "id": "is.k8s_node_uid",
+    "name": "k8s_node_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.node.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.k8s_workload_uid",
+    "name": "k8s_workload_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.workload.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.k8s_pod_uid",
+    "name": "k8s_pod_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.pod.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.k8s_service_uid",
+    "name": "k8s_service_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.service.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.k8s_gateway_uid",
+    "name": "k8s_gateway_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.gateway.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.k8s_persistentvolume_uid",
+    "name": "k8s_persistentvolume_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.persistentvolume.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.k8s_persistentvolumeclaim_uid",
+    "name": "k8s_persistentvolumeclaim_uid",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:k8s.persistentvolumeclaim.uid. 유효한 테두리: cluster"
+  },
+  {
+    "id": "is.otel_host_id",
+    "name": "otel_host_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:otel.host.id"
+  },
+  {
+    "id": "is.machine_id",
+    "name": "machine_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:machine_id"
+  },
+  {
+    "id": "is.otel_service_instance_id",
+    "name": "otel_service_instance_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:otel.service.instance.id"
+  },
+  {
+    "id": "is.dns_zone_id",
+    "name": "dns_zone_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:dns.zone_id. 유효한 테두리: provider"
+  },
+  {
+    "id": "is.tenant_id",
+    "name": "tenant_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:tenant.id. 유효한 테두리: platform"
+  },
+  {
+    "id": "is.directory_id",
+    "name": "directory_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:directory.id. 유효한 테두리: directory"
+  },
+  {
+    "id": "is.sensor_id",
+    "name": "sensor_id",
+    "normalizer": "vt.string",
+    "description": "외부 식별자의 방식. 초안의 이름은 ext:sensor.id. 유효한 테두리: source"
+  }
+]

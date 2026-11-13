@@ -1,0 +1,444 @@
+{
+  "layer": "cross_cutting",
+  "types": [
+    {
+      "id": "ot.redundancy_group",
+      "type_no": 159,
+      "name": "RedundancyGroup",
+      "traits": ["tr.common"],
+      "description": "중복 그룹(추상). k-of-n 평가 단위",
+      "standard_ref": "OpenConfig min-links",
+      "properties": [
+        {
+          "id": "pr.redundancy_group.min_alive",
+          "attr_no": 647,
+          "name": "min_alive",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.redundancy_group.mode",
+          "attr_no": 648,
+          "name": "mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "active_active",
+            "active_standby",
+            "n_plus_1",
+            "n_plus_k",
+            "two_n",
+            "load_shared",
+            "quorum",
+            "raid_parity",
+            "stack",
+            "replicated",
+            "ha_pool"
+          ],
+          "required": true
+        },
+        {
+          "id": "pr.redundancy_group.threshold_kind",
+          "attr_no": 649,
+          "name": "threshold_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["count", "capacity_sum"]
+        },
+        {
+          "id": "pr.redundancy_group.min_capacity",
+          "attr_no": 650,
+          "name": "min_capacity",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.redundancy_group.failover_time_s",
+          "attr_no": 651,
+          "name": "failover_time_s",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "s"
+        },
+        {
+          "id": "pr.redundancy_group.ride_through_s",
+          "attr_no": 652,
+          "name": "ride_through_s",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "s"
+        },
+        {
+          "id": "pr.redundancy_group.derived_from",
+          "attr_no": 653,
+          "name": "derived_from",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["config", "observation", "manual", "rule"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.logical_group",
+      "type_no": 160,
+      "name": "LogicalGroup",
+      "traits": ["tr.common"],
+      "description": "비전파 논리 그룹(추상): 집합·소속만 표현",
+      "standard_ref": "OpenStack host aggregate; Backstage Group",
+      "properties": [
+        {
+          "id": "pr.logical_group.group_kind",
+          "attr_no": 654,
+          "name": "group_kind",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.power_redundancy_group",
+      "type_no": 161,
+      "name": "PowerRedundancyGroup",
+      "parent": "ot.redundancy_group",
+      "traits": ["tr.power_source"],
+      "description": "전력 이중화(서버 PSU 그룹·UPS 병렬·급전 A/B·utility+generator)",
+      "standard_ref": "Redfish PowerSupplyRedundancy/MainsRedundancy/PowerDistributionRedundancy 속성명; NetBox feed primary/redundant",
+      "properties": [
+        {
+          "id": "pr.power_redundancy_group.redundancy_level",
+          "attr_no": 655,
+          "name": "redundancy_level",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.cooling_redundancy_group",
+      "type_no": 162,
+      "name": "CoolingRedundancyGroup",
+      "parent": "ot.redundancy_group",
+      "traits": ["tr.cooling_source"],
+      "description": "냉각 이중화(CRAH N+1, 칠러 병렬, CDU 펌프)",
+      "standard_ref": "Redfish CoolingUnitRedundancy/PumpRedundancy 속성명",
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.ha_pair",
+      "type_no": 163,
+      "name": "HaPair",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "능동/대기(또는 능동/능동) 2노드 쌍",
+      "properties": [
+        {
+          "id": "pr.ha_pair.ha_protocol",
+          "attr_no": 656,
+          "name": "ha_protocol",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.quorum_group",
+      "type_no": 164,
+      "name": "QuorumGroup",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "과반 정족수 그룹(etcd류·합의 클러스터·증인)",
+      "properties": [
+        {
+          "id": "pr.quorum_group.witness_count",
+          "attr_no": 657,
+          "name": "witness_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.failure_domain",
+      "type_no": 165,
+      "name": "FailureDomain",
+      "traits": ["tr.common", "tr.is_failure_domain"],
+      "description": "논리 장애 도메인(AZ, 전력 도메인, 냉각 도메인, 네트워크 도메인, 커스텀)",
+      "standard_ref": "OpenStack AZ",
+      "properties": [
+        {
+          "id": "pr.failure_domain.domain_kind",
+          "attr_no": 658,
+          "name": "domain_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "availability_zone",
+            "power_domain",
+            "cooling_domain",
+            "network_domain",
+            "region",
+            "custom"
+          ],
+          "required": true
+        },
+        {
+          "id": "pr.failure_domain.scope",
+          "attr_no": 659,
+          "name": "scope",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.failure_domain.domain_kind"
+            },
+            {
+              "property": "pr.common.name"
+            },
+            {
+              "property": "pr.failure_domain.scope"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.sensor",
+      "type_no": 166,
+      "name": "Sensor",
+      "traits": ["tr.common"],
+      "description": "센서/계측점(온도·습도·누수·전류·진동·도어 …)",
+      "standard_ref": "OpenConfig SENSOR",
+      "properties": [
+        {
+          "id": "pr.sensor.sensor_kind",
+          "attr_no": 660,
+          "name": "sensor_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "temperature",
+            "humidity",
+            "pressure",
+            "differential_pressure",
+            "airflow",
+            "power",
+            "current",
+            "voltage",
+            "energy",
+            "leak",
+            "smoke",
+            "door",
+            "vibration",
+            "other"
+          ],
+          "required": true
+        },
+        {
+          "id": "pr.sensor.unit",
+          "attr_no": 661,
+          "name": "unit",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.sensor.last_value",
+          "attr_no": 662,
+          "name": "last_value",
+          "value_type": "vt.number",
+          "change_class": "dynamic"
+        },
+        {
+          "id": "pr.sensor.threshold_warn",
+          "attr_no": 663,
+          "name": "threshold_warn",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.sensor.threshold_crit",
+          "attr_no": 664,
+          "name": "threshold_crit",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.sensor.sensor_name",
+          "attr_no": 665,
+          "name": "sensor_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.sensor.sensor_kind"
+            },
+            {
+              "property": "pr.sensor.sensor_name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "strong",
+          "scheme": "is.sensor_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.metric_source",
+      "type_no": 167,
+      "name": "MetricSource",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "계측/모니터링 소스(프로브·익스포터·수집 대상) — **record_only 전용**",
+      "properties": [
+        {
+          "id": "pr.metric_source.source_kind",
+          "attr_no": 666,
+          "name": "source_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["snmp", "redfish", "exporter", "agent", "api", "probe", "other"],
+          "required": true
+        },
+        {
+          "id": "pr.metric_source.endpoint",
+          "attr_no": 667,
+          "name": "endpoint",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.metric_source.source_kind"
+            },
+            {
+              "property": "pr.metric_source.endpoint"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.unknown_object",
+      "type_no": 168,
+      "name": "UnknownObject",
+      "traits": ["tr.common"],
+      "description": "참조되었으나 아직 보지 못한 객체의 자리표시자",
+      "standard_ref": "ServiceNow IRE 부분 페이로드(식별 불충분 보류) 패턴",
+      "properties": [
+        {
+          "id": "pr.unknown_object.expected_type",
+          "attr_no": 668,
+          "name": "expected_type",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.unknown_object.hint",
+          "attr_no": 669,
+          "name": "hint",
+          "value_type": "vt.map",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.unknown_object.referenced_by",
+          "attr_no": 670,
+          "name": "referenced_by",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.unknown_object.first_seen",
+          "attr_no": 671,
+          "name": "first_seen",
+          "value_type": "vt.time",
+          "change_class": "dynamic"
+        }
+      ]
+    }
+  ]
+}

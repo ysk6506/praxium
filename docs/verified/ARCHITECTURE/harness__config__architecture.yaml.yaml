@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "a8442eff1c95d71e"
+hash: "3da5961f239ec621"
 date: "2026-11-13"
-note: "main을 합친 뒤 단위 표와 구조 계약(go 절 포함)을 다시 맞춰 읽었다"
+note: "core.model 단위 등록(ADR-0020)과 plan 상태 갱신을 읽고 맞는지 확인했다"
 text_changed: true
-doc_hash: "bd34f8a215c4e2f7"
+doc_hash: "de4cffe8806efa9f"

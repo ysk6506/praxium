@@ -40,6 +40,7 @@ go:
   module: github.com/ysk6506/praxium/backend
   units:
     core.kernel:    {path: backend/internal/kernel, may_import: []}
+    core.model:     {path: backend/internal/model, may_import: [core.kernel]}
     core.contract:  {path: backend/internal/contract, may_import: [core.kernel]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.

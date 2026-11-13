@@ -1,0 +1,26 @@
+[
+  {
+    "id": "vt.ipv4_address",
+    "name": "ipv4_address",
+    "base": "string",
+    "description": "점 넷, 각 0~255. 앞의 0을 없앤다"
+  },
+  {
+    "id": "vt.mac_address",
+    "name": "mac_address",
+    "base": "string",
+    "description": "16진수 12자리. 구분자를 없애고 소문자로"
+  },
+  {
+    "id": "vt.serial_number",
+    "name": "serial_number",
+    "base": "string",
+    "description": "비어 있지 않음. 식별 키를 맞출 때 앞뒤 공백을 없애고 대문자로 본다. 저장하는 값은 받은 그대로"
+  },
+  {
+    "id": "vt.fqdn",
+    "name": "fqdn",
+    "base": "string",
+    "description": "라벨 길이와 허용 글자를 본다. 소문자로, 끝의 점을 없앤다"
+  }
+]

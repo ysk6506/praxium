@@ -1,0 +1,813 @@
+{
+  "layer": "virtualization",
+  "types": [
+    {
+      "id": "ot.virtualization_manager",
+      "type_no": 100,
+      "name": "VirtualizationManager",
+      "traits": [
+        "tr.common",
+        "tr.manageable",
+        "tr.addressable",
+        "tr.has_firmware",
+        "tr.schedulable"
+      ],
+      "description": "가상화 관리 서버(중앙 관리면)",
+      "properties": [
+        {
+          "id": "pr.virtualization_manager.product",
+          "attr_no": 423,
+          "name": "product",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtualization_manager.version",
+          "attr_no": 424,
+          "name": "version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtualization_manager.api_endpoint",
+          "attr_no": 425,
+          "name": "api_endpoint",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtualization_manager.ha_mode",
+          "attr_no": 426,
+          "name": "ha_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["none", "active_standby", "clustered"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.manager_instance_id"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.virtualization_manager.api_endpoint"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_datacenter",
+      "type_no": 101,
+      "name": "VirtualDatacenter",
+      "traits": ["tr.common"],
+      "description": "논리 데이터센터(관리 범위·이름공간) — 시설 `Site`와 무관",
+      "properties": [
+        {
+          "id": "pr.virtual_datacenter.datacenter_name",
+          "attr_no": 427,
+          "name": "datacenter_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.compute_cluster",
+      "type_no": 102,
+      "name": "ComputeCluster",
+      "parent": "ot.redundancy_group",
+      "traits": ["tr.is_failure_domain"],
+      "description": "호스트 풀(HA/스케줄러 단위) (RedundancyGroup 서브타입, mode=ha_pool)",
+      "properties": [
+        {
+          "id": "pr.compute_cluster.ha_enabled",
+          "attr_no": 428,
+          "name": "ha_enabled",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.compute_cluster.scheduler_enabled",
+          "attr_no": 429,
+          "name": "scheduler_enabled",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.compute_cluster.failover_capacity_hosts",
+          "attr_no": 430,
+          "name": "failover_capacity_hosts",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.compute_cluster.admission_control",
+          "attr_no": 431,
+          "name": "admission_control",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["none", "slot_policy", "percentage", "dedicated_failover_host"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.cluster_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.hypervisor_host",
+      "type_no": 103,
+      "name": "HypervisorHost",
+      "traits": [
+        "tr.common",
+        "tr.hosts",
+        "tr.schedulable",
+        "tr.manageable",
+        "tr.addressable",
+        "tr.network_attached"
+      ],
+      "description": "하이퍼바이저가 설치된 호스트(관리 객체)",
+      "properties": [
+        {
+          "id": "pr.hypervisor_host.hypervisor_family",
+          "attr_no": 432,
+          "name": "hypervisor_family",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.hypervisor_host.hypervisor_version",
+          "attr_no": 433,
+          "name": "hypervisor_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.hypervisor_host.connection_state",
+          "attr_no": 434,
+          "name": "connection_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["connected", "disconnected", "not_responding"]
+        },
+        {
+          "id": "pr.hypervisor_host.cpu_capacity_mhz",
+          "attr_no": 435,
+          "name": "cpu_capacity_mhz",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "MHz"
+        },
+        {
+          "id": "pr.hypervisor_host.memory_capacity_gib",
+          "attr_no": 436,
+          "name": "memory_capacity_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.hypervisor_host.vm_count",
+          "attr_no": 437,
+          "name": "vm_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.hypervisor_host.hostname",
+          "attr_no": 438,
+          "name": "hostname",
+          "value_type": "vt.fqdn",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.host_id"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.hypervisor_host.hostname"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.resource_pool",
+      "type_no": 104,
+      "name": "ResourcePool",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "자원 풀(예약·한도 계층)",
+      "properties": [
+        {
+          "id": "pr.resource_pool.cpu_reservation_mhz",
+          "attr_no": 439,
+          "name": "cpu_reservation_mhz",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "MHz"
+        },
+        {
+          "id": "pr.resource_pool.memory_reservation_gib",
+          "attr_no": 440,
+          "name": "memory_reservation_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.resource_pool.cpu_limit_mhz",
+          "attr_no": 441,
+          "name": "cpu_limit_mhz",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "MHz"
+        },
+        {
+          "id": "pr.resource_pool.shares",
+          "attr_no": 442,
+          "name": "shares",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_machine",
+      "type_no": 105,
+      "name": "VirtualMachine",
+      "traits": [
+        "tr.common",
+        "tr.hosts",
+        "tr.schedulable",
+        "tr.manageable",
+        "tr.addressable",
+        "tr.network_attached",
+        "tr.has_firmware"
+      ],
+      "description": "가상 머신",
+      "standard_ref": "libvirt domain; OTel host(가상)",
+      "properties": [
+        {
+          "id": "pr.virtual_machine.power_state",
+          "attr_no": 443,
+          "name": "power_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["on", "off", "suspended", "unknown"],
+          "required": true
+        },
+        {
+          "id": "pr.virtual_machine.vcpu_count",
+          "attr_no": 444,
+          "name": "vcpu_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_machine.memory_gib",
+          "attr_no": 445,
+          "name": "memory_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.virtual_machine.guest_os_family",
+          "attr_no": 446,
+          "name": "guest_os_family",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_machine.guest_tools_state",
+          "attr_no": 447,
+          "name": "guest_tools_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["running", "not_running", "not_installed", "unknown"]
+        },
+        {
+          "id": "pr.virtual_machine.ha_protected",
+          "attr_no": 448,
+          "name": "ha_protected",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_machine.ha_restart_priority",
+          "attr_no": 449,
+          "name": "ha_restart_priority",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["disabled", "low", "medium", "high"]
+        },
+        {
+          "id": "pr.virtual_machine.boot_firmware",
+          "attr_no": 450,
+          "name": "boot_firmware",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["bios", "uefi"]
+        },
+        {
+          "id": "pr.virtual_machine.bios_uuid",
+          "attr_no": 451,
+          "name": "bios_uuid",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.vm_instance_uuid"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.vm_native_id"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.virtual_machine.bios_uuid"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_disk",
+      "type_no": 106,
+      "name": "VirtualDisk",
+      "traits": ["tr.common"],
+      "description": "가상 디스크",
+      "standard_ref": "libvirt devices/disk",
+      "properties": [
+        {
+          "id": "pr.virtual_disk.capacity_gb",
+          "attr_no": 452,
+          "name": "capacity_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.virtual_disk.provisioning",
+          "attr_no": 453,
+          "name": "provisioning",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["thick", "thin", "eager_zeroed", "other"]
+        },
+        {
+          "id": "pr.virtual_disk.disk_mode",
+          "attr_no": 454,
+          "name": "disk_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["persistent", "independent", "other"]
+        },
+        {
+          "id": "pr.virtual_disk.controller_type",
+          "attr_no": 455,
+          "name": "controller_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["scsi", "sata", "nvme", "ide", "virtio"],
+          "required": true
+        },
+        {
+          "id": "pr.virtual_disk.unit_number",
+          "attr_no": 456,
+          "name": "unit_number",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.virtual_disk.unit_number"
+            },
+            {
+              "property": "pr.virtual_disk.controller_type"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.disk_backing_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_nic",
+      "type_no": 107,
+      "name": "VirtualNic",
+      "traits": ["tr.common", "tr.interface_like"],
+      "description": "가상 NIC",
+      "standard_ref": "libvirt devices/interface",
+      "properties": [
+        {
+          "id": "pr.virtual_nic.mac_address",
+          "attr_no": 457,
+          "name": "mac_address",
+          "value_type": "vt.mac_address",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.virtual_nic.nic_model",
+          "attr_no": 458,
+          "name": "nic_model",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_nic.connected",
+          "attr_no": 459,
+          "name": "connected",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_nic.wwpn",
+          "attr_no": 460,
+          "name": "wwpn",
+          "value_type": "vt.string",
+          "change_class": "static"
+        },
+        {
+          "id": "pr.virtual_nic.device_index",
+          "attr_no": 461,
+          "name": "device_index",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.virtual_nic.device_index"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.virtual_nic.mac_address"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_switch",
+      "type_no": 108,
+      "name": "VirtualSwitch",
+      "traits": ["tr.common"],
+      "description": "가상 스위치(표준=호스트 로컬, 분산=관리자 범위)",
+      "properties": [
+        {
+          "id": "pr.virtual_switch.switch_kind",
+          "attr_no": 462,
+          "name": "switch_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["standard", "distributed"]
+        },
+        {
+          "id": "pr.virtual_switch.mtu",
+          "attr_no": 463,
+          "name": "mtu",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_switch.uplink_policy",
+          "attr_no": 464,
+          "name": "uplink_policy",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["active_active", "active_standby", "lacp", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.vswitch_uuid"
+        }
+      ]
+    },
+    {
+      "id": "ot.virtual_network",
+      "type_no": 109,
+      "name": "VirtualNetwork",
+      "traits": ["tr.common"],
+      "description": "가상 네트워크 세그먼트(포트 그룹·논리 네트워크)",
+      "properties": [
+        {
+          "id": "pr.virtual_network.network_kind",
+          "attr_no": 465,
+          "name": "network_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["portgroup", "overlay", "bridge", "nat", "other"]
+        },
+        {
+          "id": "pr.virtual_network.vlan_id",
+          "attr_no": 466,
+          "name": "vlan_id",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.virtual_network.mtu",
+          "attr_no": 467,
+          "name": "mtu",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.network_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.datastore",
+      "type_no": 110,
+      "name": "Datastore",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "VM 디스크가 놓이는 저장 단위(호스트 공유 가능)",
+      "properties": [
+        {
+          "id": "pr.datastore.datastore_kind",
+          "attr_no": 468,
+          "name": "datastore_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["block_fs", "nfs", "hci", "object", "local"]
+        },
+        {
+          "id": "pr.datastore.capacity_gb",
+          "attr_no": 469,
+          "name": "capacity_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.datastore.free_gb",
+          "attr_no": 470,
+          "name": "free_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.datastore.accessible_host_count",
+          "attr_no": 471,
+          "name": "accessible_host_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.datastore_uuid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.vm_template",
+      "type_no": 111,
+      "name": "VmTemplate",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "VM 템플릿/이미지",
+      "properties": [
+        {
+          "id": "pr.vm_template.guest_os_family",
+          "attr_no": 472,
+          "name": "guest_os_family",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.vm_template.template_version",
+          "attr_no": 473,
+          "name": "template_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.template_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.vm_snapshot",
+      "type_no": 112,
+      "name": "VmSnapshot",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "VM 스냅샷",
+      "properties": [
+        {
+          "id": "pr.vm_snapshot.snapshot_name",
+          "attr_no": 474,
+          "name": "snapshot_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.vm_snapshot.includes_memory",
+          "attr_no": 475,
+          "name": "includes_memory",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.vm_snapshot.created_at",
+          "attr_no": 476,
+          "name": "created_at",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.vm_snapshot.snapshot_id",
+          "attr_no": 477,
+          "name": "snapshot_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.vm_snapshot.snapshot_id"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.placement_rule",
+      "type_no": 113,
+      "name": "PlacementRule",
+      "parent": "ot.logical_group",
+      "traits": [],
+      "description": "배치/친화 규칙(affinity·anti-affinity)",
+      "properties": [
+        {
+          "id": "pr.placement_rule.rule_kind",
+          "attr_no": 478,
+          "name": "rule_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "vm_vm_affinity",
+            "vm_vm_anti_affinity",
+            "vm_host_affinity",
+            "vm_host_anti_affinity"
+          ]
+        },
+        {
+          "id": "pr.placement_rule.enforcement",
+          "attr_no": 479,
+          "name": "enforcement",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["must", "should"]
+        }
+      ]
+    },
+    {
+      "id": "ot.host_aggregate",
+      "type_no": 114,
+      "name": "HostAggregate",
+      "tier": "extension",
+      "parent": "ot.logical_group",
+      "traits": [],
+      "description": "호스트의 임의 그룹(관리용 속성 부착)",
+      "standard_ref": "Nova host aggregate",
+      "properties": [
+        {
+          "id": "pr.host_aggregate.metadata",
+          "attr_no": 480,
+          "name": "metadata",
+          "value_type": "vt.map",
+          "change_class": "slow"
+        }
+      ]
+    }
+  ]
+}

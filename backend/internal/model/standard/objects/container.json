@@ -1,0 +1,819 @@
+{
+  "layer": "container",
+  "types": [
+    {
+      "id": "ot.container_cluster",
+      "type_no": 115,
+      "name": "ContainerCluster",
+      "traits": ["tr.common", "tr.manageable", "tr.schedulable", "tr.is_failure_domain"],
+      "description": "컨테이너 오케스트레이션 클러스터",
+      "standard_ref": "OTel k8s.cluster",
+      "properties": [
+        {
+          "id": "pr.container_cluster.distribution",
+          "attr_no": 481,
+          "name": "distribution",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_cluster.version",
+          "attr_no": 482,
+          "name": "version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_cluster.api_endpoint",
+          "attr_no": 483,
+          "name": "api_endpoint",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_cluster.pod_cidr",
+          "attr_no": 484,
+          "name": "pod_cidr",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_cluster.service_cidr",
+          "attr_no": 485,
+          "name": "service_cidr",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_cluster_uid"
+        }
+      ]
+    },
+    {
+      "id": "ot.control_plane",
+      "type_no": 116,
+      "name": "ControlPlane",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "제어면(API 서버·etcd 정족수) (RedundancyGroup 서브타입, mode=quorum)",
+      "properties": [
+        {
+          "id": "pr.control_plane.etcd_member_count",
+          "attr_no": 486,
+          "name": "etcd_member_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.cluster_node",
+      "type_no": 117,
+      "name": "ClusterNode",
+      "traits": ["tr.common", "tr.hosts", "tr.schedulable", "tr.addressable"],
+      "description": "워커/컨트롤 노드",
+      "standard_ref": "OTel k8s.node",
+      "properties": [
+        {
+          "id": "pr.cluster_node.node_roles",
+          "attr_no": 487,
+          "name": "node_roles",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.kubelet_version",
+          "attr_no": 488,
+          "name": "kubelet_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.container_runtime",
+          "attr_no": 489,
+          "name": "container_runtime",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.os_image",
+          "attr_no": 490,
+          "name": "os_image",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.schedulable",
+          "attr_no": 491,
+          "name": "schedulable",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.taints",
+          "attr_no": 492,
+          "name": "taints",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.ready",
+          "attr_no": 493,
+          "name": "ready",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_node.provider_id",
+          "attr_no": 494,
+          "name": "provider_id",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_node_uid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.cluster_node.provider_id"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.node_pool",
+      "type_no": 118,
+      "name": "NodePool",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "노드 그룹/머신 풀",
+      "properties": [
+        {
+          "id": "pr.node_pool.instance_type",
+          "attr_no": 495,
+          "name": "instance_type",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.node_pool.min_size",
+          "attr_no": 496,
+          "name": "min_size",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.node_pool.max_size",
+          "attr_no": 497,
+          "name": "max_size",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.node_pool.autoscaling",
+          "attr_no": 498,
+          "name": "autoscaling",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.namespace",
+      "type_no": 119,
+      "name": "Namespace",
+      "traits": ["tr.common"],
+      "description": "네임스페이스",
+      "properties": [
+        {
+          "id": "pr.namespace.resource_quota",
+          "attr_no": 499,
+          "name": "resource_quota",
+          "value_type": "vt.map",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.workload",
+      "type_no": 120,
+      "name": "Workload",
+      "parent": "ot.redundancy_group",
+      "traits": ["tr.hosts"],
+      "description": "워크로드 추상(Deployment/StatefulSet/DaemonSet/Job/CronJob) (RedundancyGroup 서브타입, mode=replicated)",
+      "standard_ref": "OTel deployment/statefulset/daemonset/job/cronjob",
+      "properties": [
+        {
+          "id": "pr.workload.workload_kind",
+          "attr_no": 500,
+          "name": "workload_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "deployment",
+            "statefulset",
+            "daemonset",
+            "replicaset",
+            "job",
+            "cronjob",
+            "other"
+          ],
+          "required": true
+        },
+        {
+          "id": "pr.workload.desired_replicas",
+          "attr_no": 501,
+          "name": "desired_replicas",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.workload.ready_replicas",
+          "attr_no": 502,
+          "name": "ready_replicas",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.workload.update_strategy",
+          "attr_no": 503,
+          "name": "update_strategy",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_workload_uid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.workload.workload_kind"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.pod",
+      "type_no": 121,
+      "name": "Pod",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "파드",
+      "standard_ref": "OTel k8s.pod",
+      "properties": [
+        {
+          "id": "pr.pod.pod_phase",
+          "attr_no": 504,
+          "name": "pod_phase",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["pending", "running", "succeeded", "failed", "unknown"],
+          "required": true
+        },
+        {
+          "id": "pr.pod.pod_ip",
+          "attr_no": 505,
+          "name": "pod_ip",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.pod.qos_class",
+          "attr_no": 506,
+          "name": "qos_class",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["guaranteed", "burstable", "best_effort"]
+        },
+        {
+          "id": "pr.pod.restart_count",
+          "attr_no": 507,
+          "name": "restart_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.pod.node_name",
+          "attr_no": 508,
+          "name": "node_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_pod_uid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.container",
+      "type_no": 122,
+      "name": "Container",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "컨테이너(파드 내)",
+      "standard_ref": "OTel k8s.container",
+      "properties": [
+        {
+          "id": "pr.container.container_name",
+          "attr_no": 509,
+          "name": "container_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.container.image_ref",
+          "attr_no": 510,
+          "name": "image_ref",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container.restart_count",
+          "attr_no": 511,
+          "name": "restart_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container.state",
+          "attr_no": 512,
+          "name": "state",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["waiting", "running", "terminated"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.container.container_name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.container_image",
+      "type_no": 123,
+      "name": "ContainerImage",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "이미지",
+      "properties": [
+        {
+          "id": "pr.container_image.registry",
+          "attr_no": 513,
+          "name": "registry",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_image.repository",
+          "attr_no": 514,
+          "name": "repository",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_image.tag",
+          "attr_no": 515,
+          "name": "tag",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.container_image.digest",
+          "attr_no": 516,
+          "name": "digest",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.container_image.digest"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.cluster_service",
+      "type_no": 124,
+      "name": "ClusterService",
+      "traits": ["tr.common", "tr.addressable"],
+      "description": "서비스(안정 가상 IP/로드밸런싱) — 7절 서비스 계층과 구분",
+      "properties": [
+        {
+          "id": "pr.cluster_service.service_type",
+          "attr_no": 517,
+          "name": "service_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["cluster_ip", "node_port", "load_balancer", "external_name", "headless"]
+        },
+        {
+          "id": "pr.cluster_service.cluster_ip",
+          "attr_no": 518,
+          "name": "cluster_ip",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_service.ports",
+          "attr_no": 519,
+          "name": "ports",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.cluster_service.selector",
+          "attr_no": 520,
+          "name": "selector",
+          "value_type": "vt.map",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "weak",
+          "scheme": "is.k8s_service_uid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.gateway",
+      "type_no": 125,
+      "name": "Gateway",
+      "traits": ["tr.common", "tr.addressable"],
+      "description": "클러스터 진입점(Ingress 컨트롤러/Gateway)",
+      "standard_ref": "Gateway API Gateway/Listener",
+      "properties": [
+        {
+          "id": "pr.gateway.gateway_kind",
+          "attr_no": 521,
+          "name": "gateway_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ingress_controller", "gateway_api"]
+        },
+        {
+          "id": "pr.gateway.gateway_class",
+          "attr_no": 522,
+          "name": "gateway_class",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.gateway.listeners",
+          "attr_no": 523,
+          "name": "listeners",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_gateway_uid"
+        }
+      ]
+    },
+    {
+      "id": "ot.gateway_route",
+      "type_no": 126,
+      "name": "GatewayRoute",
+      "traits": ["tr.common"],
+      "description": "라우팅 규칙(Ingress rule/HTTPRoute 등)",
+      "standard_ref": "Gateway API Routes(HTTP, GRPC, TLS, TCP, UDP)",
+      "properties": [
+        {
+          "id": "pr.gateway_route.route_kind",
+          "attr_no": 524,
+          "name": "route_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["ingress_rule", "http", "grpc", "tls", "tcp", "udp"]
+        },
+        {
+          "id": "pr.gateway_route.hostnames",
+          "attr_no": 525,
+          "name": "hostnames",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.gateway_route.path_prefixes",
+          "attr_no": 526,
+          "name": "path_prefixes",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.persistent_volume",
+      "type_no": 127,
+      "name": "PersistentVolume",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "영속 볼륨",
+      "standard_ref": "OTel k8s.persistentvolume",
+      "properties": [
+        {
+          "id": "pr.persistent_volume.capacity_gb",
+          "attr_no": 527,
+          "name": "capacity_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.persistent_volume.access_modes",
+          "attr_no": 528,
+          "name": "access_modes",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.persistent_volume.reclaim_policy",
+          "attr_no": 529,
+          "name": "reclaim_policy",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["retain", "delete", "recycle"]
+        },
+        {
+          "id": "pr.persistent_volume.volume_source",
+          "attr_no": 530,
+          "name": "volume_source",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["csi", "nfs", "local", "other"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_persistentvolume_uid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.persistent_volume_claim",
+      "type_no": 128,
+      "name": "PersistentVolumeClaim",
+      "traits": ["tr.common"],
+      "description": "영속 볼륨 클레임",
+      "standard_ref": "OTel k8s.persistentvolumeclaim",
+      "properties": [
+        {
+          "id": "pr.persistent_volume_claim.requested_gb",
+          "attr_no": 531,
+          "name": "requested_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.persistent_volume_claim.phase",
+          "attr_no": 532,
+          "name": "phase",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["pending", "bound", "lost"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.k8s_persistentvolumeclaim_uid"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.storage_class",
+      "type_no": 129,
+      "name": "StorageClass",
+      "traits": ["tr.common"],
+      "description": "스토리지 클래스",
+      "properties": [
+        {
+          "id": "pr.storage_class.provisioner",
+          "attr_no": 533,
+          "name": "provisioner",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.storage_class.volume_binding_mode",
+          "attr_no": 534,
+          "name": "volume_binding_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["immediate", "wait_for_first_consumer"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.disruption_budget",
+      "type_no": 130,
+      "name": "DisruptionBudget",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "중단 예산(PDB) — 유지보수 차단 정책",
+      "properties": [
+        {
+          "id": "pr.disruption_budget.min_available",
+          "attr_no": 535,
+          "name": "min_available",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.disruption_budget.max_unavailable",
+          "attr_no": 536,
+          "name": "max_unavailable",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}

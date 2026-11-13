@@ -28,19 +28,51 @@ covers:
 
 ### 설계
 
+- [권한 설계 — 사내 SSO, 역할 여덟, 범위, 읽기와 가림, 승인, 감사](design-docs/access-control.md)
 - [ADR 작성 절차](design-docs/adr-process.md)
+- [역량 질문의 예시 — 패턴으로 끝까지 적은 지어낸 물음](design-docs/competency-examples.md)
+- [역량 질문과 충족률 — KG가 답해야 하는 물음을 정의로 적고 객체마다 따진다](design-docs/competency-questions.md)
 - [핵심 신념](design-docs/core-beliefs.md)
+- [데이터 관측성 — 신호, 건강, 목표, 알림, 실행 들여다보기](design-docs/data-observability.md)
+- [기본값 표 — 제품이 싣는 숫자는 여기에 한 번만 적는다](design-docs/defaults.md)
+- [에이전트가 정의를 쓸 때의 버전 관리 — 누가, 왜, 얼마나 빨리, 어디까지 저절로](design-docs/definitions-at-agent-scale.md)
+- [정의의 계보 — 항목, 컬럼, 속성 단위로 따라가기와 "무엇이 걸리나"](design-docs/definitions-lineage.md)
+- [정의의 버전과 브랜치 — 항목과 판, 정의 묶음, 제안과 검사, 병합의 줄, 되돌리기, 계보](design-docs/definitions.md)
 - [용어집 — 화면과 문서에 쓰는 말은 여기서 정한다](design-docs/glossary.md)
 - [품질 하네스 사용법](design-docs/harness-guide.md)
-- [제품 설계 한 장 — 프락시움의 값, 원칙, 넘겨받은 숙제, 순서](design-docs/product-design.md)
+- [받기를 넓히는 길 — 밀어 넣기, 지정해서 다시 받기, 기대와 견주기, 매핑을 돕는 길, 문서에서 줄까지](design-docs/ingestion-extensions.md)
+- [현실 데이터 받기 설계 — 소스, 받는 방식, 수집, 원본 기록, 읽기 전용, 안전장치](design-docs/ingestion.md)
+- [KG의 모델 설계 — 타입 등록부, 링크의 뜻과 채널, 이중화 묶음, 근거, 식별](design-docs/kg-model.md)
+- [KG 운영 — 문제 목록, 가용성, 동기화와 흐름의 실패 처리, 백업과 복구](design-docs/kg-operations.md)
+- [영향 범위를 손으로 따라가기 — 지어낸 예시 다섯](design-docs/kg-queries-examples.md)
+- [KG에 묻기 — 닫힌 질의, 영향 범위, 투영과 엔진](design-docs/kg-queries.md)
+- [KG의 적용 — 세 걸음, 큰 적용, 차례, 점유, 세대, 보관](design-docs/kg-storage-apply.md)
+- [KG의 저장과 버전 — 무엇이 어디에 저장되고, 어떻게 봉해지는가](design-docs/kg-storage.md)
+- [파이프라인 설계 — 변경을 받아 변경을 내는 실행기, 정제, 공급, 식별, 링크 정의](design-docs/pipeline.md)
+- [저장소의 운영 수준 — PostgreSQL을 쓰기 중심으로 오픈 베타까지, 메시지 기록 저장소는 붙기만 한다](design-docs/postgres-operations.md)
+- [E2E 프로세스의 방향 — 조사해서 잡은 방향이고 결정이 아니다](design-docs/process-direction.md)
+- [제품 설계 한 장 — 프락시움의 값, 원칙, 쟁점의 답, 순서, 설계 문서의 지도](design-docs/product-design.md)
+- [질의 엔진의 언어와 모양 — Go로 직접 만들고, 측정이 드러낸 것을 설계에 넣는다](design-docs/query-engine-shape.md)
+- [REST API 기능마다의 길 — 결정이 낸 기능에 `/v1`의 길이 있는가](design-docs/rest-api-feature-routes.md)
+- [REST API의 자원과 길 (3) — 목록과 해 보기, 에이전트 시대의 정의, 밀어 넣기, 비밀 값과 운영](design-docs/rest-api-resources-additions.md)
+- [REST API 자원과 길 (1) — 모델, 받기, 실행, 정의](design-docs/rest-api-resources-data.md)
+- [REST API 자원과 길 (2) — KG, 관측, 역량 질문, 권한, 바탕](design-docs/rest-api-resources-graph.md)
+- [REST API 예시 셋 — 묻기, 정의 고치기, 붙잡힌 흐름 풀기를 끝까지](design-docs/rest-api-walkthroughs.md)
+- [REST API 설계 — 계약이 먼저, 한결같은 모양, 로그인, 계약을 지키는 장치, 명령줄 클라이언트](design-docs/rest-api.md)
+- [비밀 값과 암호화 — 넣으면 다시 나오지 않고, 쓰는 자리에서만 풀리고, 쓴 기록이 남아요](design-docs/secrets-and-encryption.md)
+- [프락시움 자신의 관측성과 운영 가능성 — 신호, 진단, 운영 행위, 권한과 기록](design-docs/self-observability.md)
+- [표준 모델의 요약 — 층 아홉의 타입, 링크, 액션](design-docs/standard-model.md)
+- [임시 콘솔 — 클로즈 베타까지 기능을 눌러 보는, 지우기 쉬운 시험용 화면](design-docs/temporary-console.md)
 
 ### 계획
 
-- [지금의 순서 — 구조를 세우고, 목표를 굳히고, 설계를 가져온다](exec-plans/active/plan.md)
+- [지금의 순서 — KG 기반의 설계를 끝내고, 뼈대부터 끝까지 한 줄로 짓는다](exec-plans/active/plan.md)
 
 ### 그 밖의 문서
 
+- [설계 조사 — 결정의 근거가 된 조사의 요약과 한계](references/design-research.md)
 - [테라리움에서 넘겨받은 것 — 요구사항, 설계 결정, 풀리지 않은 쟁점](references/from-terrarium.md)
+- [테라리움에 남아 있던 제품 책임자의 요구 — KG 기반의 출발 요구](references/owner-requirements-from-terrarium.md)
 
 <!-- docs-list:end -->
 

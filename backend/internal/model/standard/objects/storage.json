@@ -1,0 +1,696 @@
+{
+  "layer": "storage",
+  "types": [
+    {
+      "id": "ot.storage_array",
+      "type_no": 86,
+      "name": "StorageArray",
+      "traits": [
+        "tr.common",
+        "tr.serialized",
+        "tr.locatable",
+        "tr.rack_mountable",
+        "tr.powered",
+        "tr.cooled",
+        "tr.manageable",
+        "tr.addressable",
+        "tr.network_attached",
+        "tr.has_firmware",
+        "tr.hosts"
+      ],
+      "description": "스토리지 어레이/시스템(블록·파일·통합·SDS 클러스터)",
+      "standard_ref": "Swordfish StorageService",
+      "properties": [
+        {
+          "id": "pr.storage_array.array_kind",
+          "attr_no": 379,
+          "name": "array_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["block", "file", "unified", "object", "hci", "sds_cluster"]
+        },
+        {
+          "id": "pr.storage_array.protocols",
+          "attr_no": 380,
+          "name": "protocols",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.storage_array.raw_capacity_tb",
+          "attr_no": 381,
+          "name": "raw_capacity_tb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "TB"
+        },
+        {
+          "id": "pr.storage_array.usable_capacity_tb",
+          "attr_no": 382,
+          "name": "usable_capacity_tb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "TB"
+        },
+        {
+          "id": "pr.storage_array.controller_count",
+          "attr_no": 383,
+          "name": "controller_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "strong",
+          "scheme": "is.array_system_id"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.located_in"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.array_controller",
+      "type_no": 87,
+      "name": "ArrayController",
+      "traits": ["tr.common", "tr.serialized", "tr.powered", "tr.has_firmware", "tr.hosts"],
+      "description": "어레이 컨트롤러/노드",
+      "standard_ref": "Swordfish storage controllers",
+      "properties": [
+        {
+          "id": "pr.array_controller.controller_role",
+          "attr_no": 384,
+          "name": "controller_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["active", "standby", "active_active"]
+        },
+        {
+          "id": "pr.array_controller.cache_gib",
+          "attr_no": 385,
+          "name": "cache_gib",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GiB"
+        },
+        {
+          "id": "pr.array_controller.slot",
+          "attr_no": 386,
+          "name": "slot",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.storage_pool",
+      "type_no": 88,
+      "name": "StoragePool",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "용량 풀",
+      "standard_ref": "Swordfish StoragePool",
+      "properties": [
+        {
+          "id": "pr.storage_pool.pool_kind",
+          "attr_no": 387,
+          "name": "pool_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["raid_pool", "thin_pool", "tier", "erasure_coded", "dedupe_pool", "other"]
+        },
+        {
+          "id": "pr.storage_pool.capacity_tb",
+          "attr_no": 388,
+          "name": "capacity_tb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "TB"
+        },
+        {
+          "id": "pr.storage_pool.allocated_tb",
+          "attr_no": 389,
+          "name": "allocated_tb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "TB"
+        },
+        {
+          "id": "pr.storage_pool.data_reduction_ratio",
+          "attr_no": 390,
+          "name": "data_reduction_ratio",
+          "value_type": "vt.number",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.raid_group",
+      "type_no": 89,
+      "name": "RaidGroup",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "RAID/이레이저 코딩 그룹 (RedundancyGroup 서브타입)",
+      "standard_ref": "Redfish VolumeType(Mirrored, StripedWithParity …)",
+      "properties": [
+        {
+          "id": "pr.raid_group.raid_level",
+          "attr_no": 391,
+          "name": "raid_level",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "raid0",
+            "raid1",
+            "raid5",
+            "raid6",
+            "raid10",
+            "raid_dp",
+            "erasure_coded",
+            "other"
+          ]
+        },
+        {
+          "id": "pr.raid_group.parity_count",
+          "attr_no": 392,
+          "name": "parity_count",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.storage_volume",
+      "type_no": 90,
+      "name": "StorageVolume",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "볼륨/LUN/NVMe 네임스페이스",
+      "standard_ref": "Swordfish Volume; Redfish Volume",
+      "properties": [
+        {
+          "id": "pr.storage_volume.volume_kind",
+          "attr_no": 393,
+          "name": "volume_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["block", "nvme_namespace", "virtual_volume"]
+        },
+        {
+          "id": "pr.storage_volume.capacity_gb",
+          "attr_no": 394,
+          "name": "capacity_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB",
+          "required": true
+        },
+        {
+          "id": "pr.storage_volume.thin",
+          "attr_no": 395,
+          "name": "thin",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.storage_volume.wwn",
+          "attr_no": 396,
+          "name": "wwn",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.storage_volume.state",
+          "attr_no": 397,
+          "name": "state",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["online", "offline", "degraded", "unknown"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.storage_volume.wwn"
+            }
+          ],
+          "strength": "strong",
+          "scheme": "is.wwn"
+        },
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.initiator_group",
+      "type_no": 91,
+      "name": "InitiatorGroup",
+      "tier": "extension",
+      "parent": "ot.logical_group",
+      "traits": [],
+      "description": "호스트 이니시에이터 집합(마스킹 그룹)",
+      "standard_ref": "Swordfish StorageGroup(deprecated→Connections)",
+      "properties": [
+        {
+          "id": "pr.initiator_group.initiator_ids",
+          "attr_no": 398,
+          "name": "initiator_ids",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        }
+      ]
+    },
+    {
+      "id": "ot.file_system",
+      "type_no": 92,
+      "name": "FileSystem",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "파일시스템",
+      "standard_ref": "Swordfish FileSystem",
+      "properties": [
+        {
+          "id": "pr.file_system.fs_kind",
+          "attr_no": 399,
+          "name": "fs_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["nas", "parallel", "distributed", "local"]
+        },
+        {
+          "id": "pr.file_system.capacity_gb",
+          "attr_no": 400,
+          "name": "capacity_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.file_system.quota_gb",
+          "attr_no": 401,
+          "name": "quota_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.file_share",
+      "type_no": 93,
+      "name": "FileShare",
+      "traits": ["tr.common"],
+      "description": "NFS/SMB 공유(익스포트)",
+      "properties": [
+        {
+          "id": "pr.file_share.protocol",
+          "attr_no": 402,
+          "name": "protocol",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["nfs", "smb", "other"]
+        },
+        {
+          "id": "pr.file_share.export_path",
+          "attr_no": 403,
+          "name": "export_path",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.file_share.access_mode",
+          "attr_no": 404,
+          "name": "access_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["rw", "ro"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.file_share.export_path"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.object_store",
+      "type_no": 94,
+      "name": "ObjectStore",
+      "tier": "extension",
+      "traits": ["tr.common", "tr.hosts", "tr.addressable"],
+      "description": "오브젝트 스토어(S3 호환 클러스터)",
+      "properties": [
+        {
+          "id": "pr.object_store.api",
+          "attr_no": 405,
+          "name": "api",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["s3", "swift", "other"]
+        },
+        {
+          "id": "pr.object_store.endpoint",
+          "attr_no": 406,
+          "name": "endpoint",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.endpoint"
+        }
+      ]
+    },
+    {
+      "id": "ot.object_bucket",
+      "type_no": 95,
+      "name": "ObjectBucket",
+      "traits": ["tr.common"],
+      "description": "오브젝트 버킷",
+      "properties": [
+        {
+          "id": "pr.object_bucket.versioning",
+          "attr_no": 407,
+          "name": "versioning",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.object_bucket.quota_tb",
+          "attr_no": 408,
+          "name": "quota_tb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "TB"
+        },
+        {
+          "id": "pr.object_bucket.replication_enabled",
+          "attr_no": 409,
+          "name": "replication_enabled",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.san_switch",
+      "type_no": 96,
+      "name": "SanSwitch",
+      "parent": "ot.network_device",
+      "traits": [],
+      "description": "SAN(FC) 스위치",
+      "properties": [
+        {
+          "id": "pr.san_switch.fc_domain_id",
+          "attr_no": 410,
+          "name": "fc_domain_id",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.san_switch.max_speed_gbps",
+          "attr_no": 411,
+          "name": "max_speed_gbps",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "Gbps"
+        },
+        {
+          "id": "pr.san_switch.vsan_capable",
+          "attr_no": 412,
+          "name": "vsan_capable",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.serialized.manufacturer"
+            },
+            {
+              "property": "pr.serialized.serial_number"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "strong",
+          "scheme": "is.fc_switch_wwn"
+        }
+      ]
+    },
+    {
+      "id": "ot.san_zone",
+      "type_no": 97,
+      "name": "SanZone",
+      "tier": "extension",
+      "parent": "ot.logical_group",
+      "traits": [],
+      "description": "FC 존",
+      "properties": [
+        {
+          "id": "pr.san_zone.zone_kind",
+          "attr_no": 413,
+          "name": "zone_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["single_initiator", "peer", "other"]
+        },
+        {
+          "id": "pr.san_zone.zoning_mode",
+          "attr_no": 414,
+          "name": "zoning_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["wwpn", "port", "mixed"]
+        }
+      ]
+    },
+    {
+      "id": "ot.storage_snapshot",
+      "type_no": 98,
+      "name": "StorageSnapshot",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "스냅샷/복제본 지점",
+      "properties": [
+        {
+          "id": "pr.storage_snapshot.snapshot_kind",
+          "attr_no": 415,
+          "name": "snapshot_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["crash_consistent", "app_consistent"]
+        },
+        {
+          "id": "pr.storage_snapshot.created_at",
+          "attr_no": 416,
+          "name": "created_at",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.storage_snapshot.retention_days",
+          "attr_no": 417,
+          "name": "retention_days",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.storage_snapshot.source",
+          "attr_no": 418,
+          "name": "source",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.storage_snapshot.snapshot_id",
+          "attr_no": 419,
+          "name": "snapshot_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.storage_snapshot.source"
+            },
+            {
+              "property": "pr.storage_snapshot.snapshot_id"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.replication_group",
+      "type_no": 99,
+      "name": "ReplicationGroup",
+      "tier": "extension",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "볼륨/파일시스템 복제 쌍·일관성 그룹 (RedundancyGroup 서브타입)",
+      "properties": [
+        {
+          "id": "pr.replication_group.replication_mode",
+          "attr_no": 420,
+          "name": "replication_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["sync", "async", "active_active_metro"]
+        },
+        {
+          "id": "pr.replication_group.rpo_s",
+          "attr_no": 421,
+          "name": "rpo_s",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "s"
+        },
+        {
+          "id": "pr.replication_group.direction",
+          "attr_no": 422,
+          "name": "direction",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["one_way", "bidirectional"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}

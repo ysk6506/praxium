@@ -1,0 +1,878 @@
+{
+  "layer": "platform",
+  "types": [
+    {
+      "id": "ot.operating_system",
+      "type_no": 131,
+      "name": "OperatingSystem",
+      "traits": [
+        "tr.common",
+        "tr.hosts",
+        "tr.manageable",
+        "tr.addressable",
+        "tr.schedulable",
+        "tr.network_attached"
+      ],
+      "description": "실행 중인 OS 인스턴스(하드웨어/VM 위의 소프트웨어 호스트)",
+      "standard_ref": "OTel host 엔티티(host.id)",
+      "properties": [
+        {
+          "id": "pr.operating_system.os_family",
+          "attr_no": 537,
+          "name": "os_family",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["linux", "windows", "bsd", "unix", "other"]
+        },
+        {
+          "id": "pr.operating_system.os_name",
+          "attr_no": 538,
+          "name": "os_name",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.operating_system.os_version",
+          "attr_no": 539,
+          "name": "os_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.operating_system.kernel_version",
+          "attr_no": 540,
+          "name": "kernel_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.operating_system.hostname",
+          "attr_no": 541,
+          "name": "hostname",
+          "value_type": "vt.fqdn",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.operating_system.fqdn",
+          "attr_no": 542,
+          "name": "fqdn",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.operating_system.architecture",
+          "attr_no": 543,
+          "name": "architecture",
+          "value_type": "vt.enum",
+          "change_class": "static",
+          "enum_values": ["x86_64", "aarch64", "other"]
+        },
+        {
+          "id": "pr.operating_system.boot_time",
+          "attr_no": 544,
+          "name": "boot_time",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.operating_system.system_uuid",
+          "attr_no": 545,
+          "name": "system_uuid",
+          "value_type": "vt.string",
+          "change_class": "static"
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "scheme": "is.otel_host_id"
+        },
+        {
+          "strength": "strong",
+          "scheme": "is.machine_id"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.operating_system.system_uuid"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.operating_system.hostname"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.os_service",
+      "type_no": 132,
+      "name": "OsService",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "OS 서비스 유닛/프로세스(선택)",
+      "properties": [
+        {
+          "id": "pr.os_service.unit_name",
+          "attr_no": 546,
+          "name": "unit_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.os_service.service_manager",
+          "attr_no": 547,
+          "name": "service_manager",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["systemd", "windows_scm", "sysv", "launchd", "other"]
+        },
+        {
+          "id": "pr.os_service.state",
+          "attr_no": 548,
+          "name": "state",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["active", "inactive", "failed", "unknown"]
+        },
+        {
+          "id": "pr.os_service.enabled",
+          "attr_no": 549,
+          "name": "enabled",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.os_service.unit_name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.software_instance",
+      "type_no": 133,
+      "name": "SoftwareInstance",
+      "traits": ["tr.common", "tr.hosts", "tr.manageable"],
+      "description": "미들웨어/애플리케이션 런타임 인스턴스(웹/앱 서버, 브로커, 캐시, 디렉터리, DNS/NTP 서버, 에이전트 등)",
+      "standard_ref": "CSDM 배포 스택 개념",
+      "properties": [
+        {
+          "id": "pr.software_instance.software_kind",
+          "attr_no": 550,
+          "name": "software_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": [
+            "web_server",
+            "app_server",
+            "message_broker",
+            "cache",
+            "directory_service",
+            "dns_server",
+            "ntp_server",
+            "container_runtime",
+            "monitoring_agent",
+            "other"
+          ],
+          "required": true
+        },
+        {
+          "id": "pr.software_instance.product",
+          "attr_no": 551,
+          "name": "product",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.software_instance.version",
+          "attr_no": 552,
+          "name": "version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.software_instance.instance_name",
+          "attr_no": 553,
+          "name": "instance_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.software_instance.software_kind"
+            },
+            {
+              "property": "pr.software_instance.instance_name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.otel_service_instance_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.database_instance",
+      "type_no": 134,
+      "name": "DatabaseInstance",
+      "traits": ["tr.common", "tr.hosts", "tr.manageable"],
+      "description": "DB 엔진 인스턴스",
+      "properties": [
+        {
+          "id": "pr.database_instance.engine",
+          "attr_no": 554,
+          "name": "engine",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.database_instance.engine_version",
+          "attr_no": 555,
+          "name": "engine_version",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.database_instance.instance_role",
+          "attr_no": 556,
+          "name": "instance_role",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["primary", "replica", "standalone", "witness"]
+        },
+        {
+          "id": "pr.database_instance.port",
+          "attr_no": 557,
+          "name": "port",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.database_instance.instance_name",
+          "attr_no": 558,
+          "name": "instance_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.database_instance.engine"
+            },
+            {
+              "property": "pr.database_instance.instance_name"
+            },
+            {
+              "property": "pr.database_instance.port"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.database_cluster",
+      "type_no": 135,
+      "name": "DatabaseCluster",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "DB 복제/클러스터 (RedundancyGroup 서브타입)",
+      "properties": [
+        {
+          "id": "pr.database_cluster.cluster_kind",
+          "attr_no": 559,
+          "name": "cluster_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["primary_standby", "replica_set", "shared_nothing", "shared_storage"]
+        },
+        {
+          "id": "pr.database_cluster.replication_mode",
+          "attr_no": 560,
+          "name": "replication_mode",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["sync", "async", "semi_sync"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "weak",
+          "scheme": "is.cluster_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.database",
+      "type_no": 136,
+      "name": "Database",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "논리 데이터베이스/스키마",
+      "properties": [
+        {
+          "id": "pr.database.db_name",
+          "attr_no": 561,
+          "name": "db_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.database.size_gb",
+          "attr_no": 562,
+          "name": "size_gb",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "GB"
+        },
+        {
+          "id": "pr.database.charset",
+          "attr_no": 563,
+          "name": "charset",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.database.db_name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.endpoint",
+      "type_no": 137,
+      "name": "Endpoint",
+      "traits": ["tr.common", "tr.addressable"],
+      "description": "소비자가 접속하는 네트워크 종단(주소+포트+프로토콜)",
+      "properties": [
+        {
+          "id": "pr.endpoint.endpoint_kind",
+          "attr_no": 564,
+          "name": "endpoint_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["tcp", "udp", "http", "https", "grpc", "ssh", "sql", "other"]
+        },
+        {
+          "id": "pr.endpoint.port",
+          "attr_no": 565,
+          "name": "port",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.endpoint.hostname",
+          "attr_no": 566,
+          "name": "hostname",
+          "value_type": "vt.fqdn",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.endpoint.path",
+          "attr_no": 567,
+          "name": "path",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.endpoint.tls",
+          "attr_no": 568,
+          "name": "tls",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.endpoint.address_or_hostname",
+          "attr_no": 569,
+          "name": "address_or_hostname",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.endpoint.protocol",
+          "attr_no": 570,
+          "name": "protocol",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "ot.lb_virtual_server",
+      "type_no": 138,
+      "name": "LbVirtualServer",
+      "traits": ["tr.common", "tr.addressable", "tr.manageable"],
+      "description": "LB 가상 서버(리스너: VIP+포트)",
+      "properties": [
+        {
+          "id": "pr.lb_virtual_server.vip_address",
+          "attr_no": 571,
+          "name": "vip_address",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.lb_virtual_server.port",
+          "attr_no": 572,
+          "name": "port",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.lb_virtual_server.protocol",
+          "attr_no": 573,
+          "name": "protocol",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["tcp", "udp", "http", "https", "tls", "other"]
+        },
+        {
+          "id": "pr.lb_virtual_server.persistence",
+          "attr_no": 574,
+          "name": "persistence",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.lb_virtual_server.ssl_offload",
+          "attr_no": 575,
+          "name": "ssl_offload",
+          "value_type": "vt.boolean",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.runs_on"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.lb_virtual_server.vip_address"
+            },
+            {
+              "property": "pr.lb_virtual_server.port"
+            },
+            {
+              "property": "pr.lb_virtual_server.protocol"
+            }
+          ],
+          "strength": "weak"
+        }
+      ]
+    },
+    {
+      "id": "ot.lb_pool",
+      "type_no": 139,
+      "name": "LbPool",
+      "parent": "ot.redundancy_group",
+      "traits": [],
+      "description": "LB 백엔드 풀 (RedundancyGroup 서브타입, mode=load_shared)",
+      "properties": [
+        {
+          "id": "pr.lb_pool.lb_method",
+          "attr_no": 576,
+          "name": "lb_method",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["round_robin", "least_connections", "hash", "weighted", "other"]
+        },
+        {
+          "id": "pr.lb_pool.health_monitor",
+          "attr_no": 577,
+          "name": "health_monitor",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.lb_pool_member",
+      "type_no": 140,
+      "name": "LbPoolMember",
+      "traits": ["tr.common"],
+      "description": "풀 멤버(백엔드 주소·포트와 상태)",
+      "properties": [
+        {
+          "id": "pr.lb_pool_member.member_address",
+          "attr_no": 578,
+          "name": "member_address",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.lb_pool_member.member_port",
+          "attr_no": 579,
+          "name": "member_port",
+          "value_type": "vt.integer",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.lb_pool_member.member_state",
+          "attr_no": 580,
+          "name": "member_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["enabled", "disabled", "draining"]
+        },
+        {
+          "id": "pr.lb_pool_member.monitor_state",
+          "attr_no": 581,
+          "name": "monitor_state",
+          "value_type": "vt.enum",
+          "change_class": "dynamic",
+          "enum_values": ["up", "down", "unknown"]
+        },
+        {
+          "id": "pr.lb_pool_member.weight",
+          "attr_no": 582,
+          "name": "weight",
+          "value_type": "vt.integer",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.member_of"
+            },
+            {
+              "property": "pr.lb_pool_member.member_address"
+            },
+            {
+              "property": "pr.lb_pool_member.member_port"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.dns_zone",
+      "type_no": 141,
+      "name": "DnsZone",
+      "traits": ["tr.common", "tr.hosts"],
+      "description": "DNS 존",
+      "properties": [
+        {
+          "id": "pr.dns_zone.zone_name",
+          "attr_no": 583,
+          "name": "zone_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.dns_zone.zone_kind",
+          "attr_no": 584,
+          "name": "zone_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["primary", "secondary", "forward", "stub", "reverse"]
+        },
+        {
+          "id": "pr.dns_zone.visibility",
+          "attr_no": 585,
+          "name": "visibility",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["internal", "external"],
+          "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.dns_zone.zone_name"
+            },
+            {
+              "property": "pr.dns_zone.visibility"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "strength": "weak",
+          "scheme": "is.dns_zone_id"
+        }
+      ]
+    },
+    {
+      "id": "ot.dns_record",
+      "type_no": 142,
+      "name": "DnsRecord",
+      "traits": ["tr.common"],
+      "description": "DNS 레코드",
+      "properties": [
+        {
+          "id": "pr.dns_record.record_name",
+          "attr_no": 586,
+          "name": "record_name",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.dns_record.record_type",
+          "attr_no": 587,
+          "name": "record_type",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["a", "aaaa", "cname", "mx", "txt", "srv", "ptr", "ns", "other"],
+          "required": true
+        },
+        {
+          "id": "pr.dns_record.value",
+          "attr_no": 588,
+          "name": "value",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.dns_record.ttl_s",
+          "attr_no": 589,
+          "name": "ttl_s",
+          "value_type": "vt.quantity",
+          "change_class": "slow",
+          "unit": "s"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.dns_record.record_name"
+            },
+            {
+              "property": "pr.dns_record.record_type"
+            },
+            {
+              "property": "pr.dns_record.value"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.certificate",
+      "type_no": 143,
+      "name": "Certificate",
+      "traits": ["tr.common"],
+      "description": "인증서",
+      "properties": [
+        {
+          "id": "pr.certificate.subject",
+          "attr_no": 590,
+          "name": "subject",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.certificate.san",
+          "attr_no": 591,
+          "name": "san",
+          "value_type": "vt.list",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.certificate.issuer",
+          "attr_no": 592,
+          "name": "issuer",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.certificate.not_before",
+          "attr_no": 593,
+          "name": "not_before",
+          "value_type": "vt.time",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.certificate.not_after",
+          "attr_no": 594,
+          "name": "not_after",
+          "value_type": "vt.time",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.certificate.key_algorithm",
+          "attr_no": 595,
+          "name": "key_algorithm",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.certificate.fingerprint_sha256",
+          "attr_no": 596,
+          "name": "fingerprint_sha256",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.certificate.serial_number",
+          "attr_no": 597,
+          "name": "serial_number",
+          "value_type": "vt.serial_number",
+          "change_class": "static"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.certificate.fingerprint_sha256"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.certificate.issuer"
+            },
+            {
+              "property": "pr.certificate.serial_number"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    },
+    {
+      "id": "ot.certificate_authority",
+      "type_no": 144,
+      "name": "CertificateAuthority",
+      "tier": "extension",
+      "traits": ["tr.common"],
+      "description": "인증기관(내부/외부 CA)",
+      "properties": [
+        {
+          "id": "pr.certificate_authority.ca_kind",
+          "attr_no": 598,
+          "name": "ca_kind",
+          "value_type": "vt.enum",
+          "change_class": "slow",
+          "enum_values": ["root", "intermediate", "issuing"]
+        },
+        {
+          "id": "pr.certificate_authority.subject",
+          "attr_no": 599,
+          "name": "subject",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        },
+        {
+          "id": "pr.certificate_authority.subject_key_id",
+          "attr_no": 600,
+          "name": "subject_key_id",
+          "value_type": "vt.string",
+          "change_class": "slow",
+          "required": true
+        },
+        {
+          "id": "pr.certificate_authority.fingerprint_sha256",
+          "attr_no": 601,
+          "name": "fingerprint_sha256",
+          "value_type": "vt.string",
+          "change_class": "slow"
+        }
+      ],
+      "identity_keys": [
+        {
+          "components": [
+            {
+              "property": "pr.certificate_authority.subject_key_id"
+            }
+          ],
+          "strength": "strong"
+        },
+        {
+          "components": [
+            {
+              "property": "pr.certificate_authority.fingerprint_sha256"
+            }
+          ],
+          "strength": "strong"
+        }
+      ]
+    }
+  ]
+}

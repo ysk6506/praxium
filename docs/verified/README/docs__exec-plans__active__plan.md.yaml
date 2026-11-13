@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "f9e3f949e08447e7"
+hash: "344ed007de6c0b3a"
 date: "2026-11-13"
-note: "계획 변경 반영"
-text_changed: false
-doc_hash: "5f43a736e2379c57"
+note: "core.model 추가 반영"
+text_changed: true
+doc_hash: "fa2a4202fe8922ff"
