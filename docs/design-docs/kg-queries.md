@@ -59,6 +59,16 @@ HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/kgs/{kg}/questions/
 
 `impact`와 `exposure`와 `paths`는 비용이 큰 질의예요. 질의마다 **비용 등급**(낮음: `get`, `find`, `versions`, `quality`, `health`, `scopes` / 중간: `neighbors`, `containment`, `changes`, `paths`, `competency` / 높음: `impact`, `exposure`)과 시간 예산을 선언하고, 넘기면 잘라서 `truncated`로 알려요. 숫자는 재서 정해요. 수를 내는 모든 칸(`counts_*`, `total`, `groups_touched`, `link_counts`, `subtree_size`)은 **가려진 것을 뺀 수**예요(11절).
 
+### 첫 셋의 기준 구현이 정한 읽기 (ADR-0026)
+
+`find`, `get`, `neighbors`는 `core.query`에 기준 구현이 있고, 위 표가 비워 둔 곳은 이렇게 읽는다.
+
+- **읽는 자리**: 커서 > `kg_version_id` > `change_seq`(덧붙임) > 최신 순이고, 버전과 변경 번호를 함께 주면 거절한다. 커서는 처음 읽은 변경 번호로 이어서 읽는다.
+- **`shape`**: `summary`는 수와 묶음만, `items`는 항목도 준다. **보는 기준**: `as_designed`는 `configured`와 `declared` 값만 본다. `max_staleness`보다 묵은 속성은 `stale`이고 값이 없다.
+- **`get`의 `include`**: 안 주면 `attributes`. 속성은 항상 `grade`, `basis`, `seen_at`, `stale`을 단다. `evidence`는 등급 수와 가장 묵은 속성(`worst_freshness`)을 더한다.
+- **`neighbors`**: 걷기는 전체 그래프에서 하고 가려진 객체의 너머로도 가며, `max_steps`번째 걸음에서 만난 가려진 객체는 `hidden_reached`, 앞 걸음에서 지난 것은 `hidden_passed`다. 항목은 (걸음, 링크 ID) 순서다.
+- **거절**: 가려진 속성, `volatile` 속성, `scope_id`를 조건으로 쓰면 거절한다(아직 서비스하지 않는다).
+
 ## 4. 모든 답에 붙는 봉투
 
 | 칸 | 뜻 |

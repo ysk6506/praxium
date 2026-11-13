@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "c97cb41c2b94cd1a"
+hash: "60d906c9bd1374ca"
 date: "2026-11-13"
-note: "architecture.yaml에 adapter.graphcheck 단위를 더했다. 문서의 내용은 그대로다"
+note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
 text_changed: false
 doc_hash: "59c91679fee1f90d"

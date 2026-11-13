@@ -49,6 +49,8 @@ go:
     core.graph:     {path: backend/internal/graph, may_import: [core.kernel, core.model]}
     adapter.memstore: {path: backend/internal/memstore, may_import: [core.kernel, core.graph]}
     adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph, adapter.memstore]}
+    # The first three closed queries over the storage port (ADR-0026). Production code imports kernel, model and graph only; its tests build a world in adapter.memstore.
+    core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph, adapter.memstore]}
     # Adapters sit outside the core and never import each other: only the composition root joins them.
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access]}

@@ -240,3 +240,21 @@ func (sn *snapshot) IdentityEvents(context.Context) ([]graph.IdentityEvent, erro
 	}
 	return out, nil
 }
+
+var _ graph.IdentifierLister = (*snapshot)(nil)
+
+// IdentifiersOf implements graph.IdentifierLister.
+func (sn *snapshot) IdentifiersOf(_ context.Context, id graph.ObjectID) ([]graph.IdentifierRecord, error) {
+	sn.s.mu.RLock()
+	defer sn.s.mu.RUnlock()
+	if err := sn.check(); err != nil {
+		return nil, err
+	}
+	var out []graph.IdentifierRecord
+	for _, r := range sn.st.idents {
+		if r.Object == id && r.SeqFrom <= sn.info.Seq && (r.SeqTo == 0 || sn.info.Seq < r.SeqTo) {
+			out = append(out, r)
+		}
+	}
+	return out, nil
+}

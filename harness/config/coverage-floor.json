@@ -11,6 +11,7 @@
   "go:core.graph": 90,
   "go:core.kernel": 98,
   "go:core.model": 98,
+  "go:core.query": 90,
   "go:core.worldgen": 96.5,
   "harness": 96
 }

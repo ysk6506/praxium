@@ -21,6 +21,7 @@ covers:
 | `core.model` | Go | `backend/internal/model` | 타입 등록부(객체·링크·액션 타입, 속성, 특성, 값 타입)의 도메인 타입과 검증, 표준 모델의 JSON 데이터 파일(`go:embed`), 번호를 매기고 내용 해시를 내는 불변 등록부. 오류 코드는 `model_`로 시작하는 자기 목록을 가진다 | `core.kernel` |
 | `core.access` | Go | `backend/internal/access` | 역할, 능력(ability), 주체(`Subject`), 인증기(`Authenticator`)와 권한 판정기(`Authorizer`)의 포트, 역할표. 어느 역할이 무엇을 할 수 있는지의 한 곳 | `core.kernel` |
 | `core.graph` | Go | `backend/internal/graph` | KG의 중심. 객체와 링크의 행(번호로 가리키고 해시에는 바뀌지 않는 ID), 변경 묶음, 등록부에 대한 검증, 변경 번호를 매기며 쪽으로 나눠 적용하는 적용기, 이어서 고치는 그래프 해시, 봉한 버전, 식별 이력, 점유와 세대. 저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)와 지어낸 세계의 도구(`Fixture`)를 함께 가진다 | `core.kernel`, `core.model` |
+| `core.query` | Go | `backend/internal/query` | 닫힌 질의의 첫 셋(`find`, `get`, `neighbors`)의 기준 구현. 저장소 포트의 스냅숏 하나를 읽어 모든 답에 봉투(`as_of`, `volatile_as_of`, 신선도, 근거, `result_complete`, `hidden`)를 달고, 읽기 권한 포트(`ReadFilter`)로 거른다. 시험에서만 `adapter.memstore`에 세계를 짓는다(ADR-0026) | `core.kernel`, `core.model`, `core.graph` |
 | `adapter.memstore` | Go | `backend/internal/memstore` | 저장소 포트의 메모리 구현. 적합 시험(`adapter.graphcheck`)을 모두 통과하는 기준 구현이고 시험과 개발 모드의 저장소다. 운영용이 아니다. 뒤에 올 PostgreSQL 어댑터가 이것을 본보기로 삼는다(ADR-0025) | `core.kernel`, `core.graph` |
 | `adapter.graphcheck` | Go | `backend/internal/graphcheck` | 저장소 포트의 적합 시험(`Cases()`, 31사례). 어댑터가 통과해야 하는 일을 `TB` 인터페이스 위에 적고, 어댑터의 시험이 `t.Run`으로 돌린다(ADR-0025) | `core.kernel`, `core.model`, `core.graph` |
 | `core.contract` | Go | `backend/internal/contract` | 밖으로 내는 모양. OpenAPI 3.1 계약을 조각(`openapi/parts`)으로 두고 기계가 합쳐(`openapi.json`) `go:embed`로 내장한다. 아직 없는 길의 등록부(`planned/routes.json`), JSON Schema 부분집합 검증기, 문제 코드 목록을 함께 가진다. MCP 툴과 파일 형식은 이후 | `core.kernel` |
@@ -60,7 +61,7 @@ Go 코드는 `backend/` 한 모듈에 있다. 단위는 `internal/<단위>` 패�
 
 ## 정해진 구조 (ADR-0006). 코드가 생길 때 구조 계약에 등록한다
 
-원칙은 "하나만 쓴다"가 아니라 "자리에 맞는 것을 쓴다"이고, 지킬 것은 **진실의 자리는 하나**와 **뜻의 구현은 하나**다. 백엔드의 중심(정의, 실행기, API)은 Go, 구조 검사는 TypeScript다. 이 저장소는 백엔드다. 화면은 다른 저장소에서 TypeScript로 만든다(ADR-0016). 질의 엔진도 Go로 직접 만든다(기성 그래프 엔진은 쓰지 않는다. ADR-0006, ADR-0010). 수집 봉투의 클라이언트 라이브러리는 여러 언어(Go, Python, TypeScript부터)로 낸다. 이 절은 정해진 방향이다. 지금 코드가 있는 것은 `core.kernel`, `core.model`, `core.worldgen`(지어낸 세계 생성기, ADR-0021), `core.graph`, `adapter.memstore`, `adapter.graphcheck`(ADR-0025), `core.contract`, 시작점이다. 나머지 단위는 코드가 생기는 변경에서 `harness/config/architecture.yaml`에 등록하고, 폴더의 자리도 구현하는 변경에서 정한다. Go용 구조 검사는 ADR-0019가 만들었다.
+원칙은 "하나만 쓴다"가 아니라 "자리에 맞는 것을 쓴다"이고, 지킬 것은 **진실의 자리는 하나**와 **뜻의 구현은 하나**다. 백엔드의 중심(정의, 실행기, API)은 Go, 구조 검사는 TypeScript다. 이 저장소는 백엔드다. 화면은 다른 저장소에서 TypeScript로 만든다(ADR-0016). 질의 엔진도 Go로 직접 만든다(기성 그래프 엔진은 쓰지 않는다. ADR-0006, ADR-0010). 수집 봉투의 클라이언트 라이브러리는 여러 언어(Go, Python, TypeScript부터)로 낸다. 이 절은 정해진 방향이다. 지금 코드가 있는 것은 `core.kernel`, `core.model`, `core.worldgen`(지어낸 세계 생성기, ADR-0021), `core.graph`, `adapter.memstore`, `adapter.graphcheck`(ADR-0025), `core.query`(ADR-0026), `core.contract`, 시작점이다. 나머지 단위는 코드가 생기는 변경에서 `harness/config/architecture.yaml`에 등록하고, 폴더의 자리도 구현하는 변경에서 정한다. Go용 구조 검사는 ADR-0019가 만들었다.
 
 ### 백엔드(Go)의 단위 방향
 

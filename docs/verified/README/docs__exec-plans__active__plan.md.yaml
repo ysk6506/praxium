@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "5fdb23174f76a282"
+hash: "702b1ac213f9b437"
 date: "2026-11-13"
-note: "plan.md의 7행 문장을 고쳤다. README는 그대로다"
-text_changed: false
-doc_hash: "8ba4585bbcca7f02"
+note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
+text_changed: true
+doc_hash: "03c0d080e0dd8234"

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "a2603084ba3fa8be"
+hash: "63d0041a63b26678"
 date: "2026-11-13"
-note: "ADR-0025의 변경(단위 core.graph, adapter.memstore, 요구사항 나눔)과 대조해 확인"
+note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
 text_changed: false
 doc_hash: "21d54c87111f1d83"

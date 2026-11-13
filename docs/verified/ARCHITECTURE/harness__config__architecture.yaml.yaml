@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "c97cb41c2b94cd1a"
+hash: "60d906c9bd1374ca"
 date: "2026-11-13"
-note: "adapter.graphcheck 행과 문장을 더했다"
+note: "core.query 단위와 ADR-0026, REQ-250~254를 대조했다"
 text_changed: true
-doc_hash: "08b5e304a97b81ba"
+doc_hash: "74a42218d7a0ad49"

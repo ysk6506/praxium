@@ -201,6 +201,14 @@ type Snapshot interface {
 	IdentityEvents(ctx context.Context) ([]IdentityEvent, error)
 }
 
+// IdentifierLister is an optional capability of a Snapshot: the identifiers a
+// live object holds at the read point. The port has no reverse lookup because
+// the first queries did not need one; get does (ADR-0026). An adapter that
+// keeps an index by object offers it by implementing this interface.
+type IdentifierLister interface {
+	IdentifiersOf(ctx context.Context, id ObjectID) ([]IdentifierRecord, error)
+}
+
 // Reader reads.
 type Reader interface {
 	Head(ctx context.Context, kg KGID) (Head, error)
