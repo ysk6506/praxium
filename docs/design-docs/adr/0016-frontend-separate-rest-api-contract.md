@@ -19,6 +19,7 @@ touches_protected:
   - docs/product-specs/requirements.md
   - AGENTS.md
 amends_tests: []
+decision_hash: 21c43561b56b4262
 ---
 # ADR-0016 화면은 다른 저장소에 두고, REST API의 계약이 유일한 이음매다: 계약이 먼저, 큰 버전, 한결같은 모양
 

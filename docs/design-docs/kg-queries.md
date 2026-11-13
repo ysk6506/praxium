@@ -35,7 +35,7 @@ HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/questions/<질의 �
 | `kg_version_id` | 물을 KG 버전의 ID("그 버전 때"). 없으면 "지금"(변경의 맨 끝). 어느 자리까지 반영했는지가 봉투에 적힌다 |
 | `view` | 보는 기준. `as_designed`(`configured`와 `declared`만) 또는 `as_observed`(관측이 있으면 관측, 없으면 설계. 기본) |
 | `max_staleness` | 이보다 오래된 속성 값과 관측은 쓰지 말라는 한도. 영향 범위는 넘은 관측을 **모름으로 읽고** 설계 기준(`as_designed`)으로 물러나며, 그렇게 했다고 답에 표시한다(5.7절) |
-| `limit`, `cursor` | 쪽 넘김. `limit`의 기본 50, 상한 500은 가정이다. `cursor`는 `change_seq`와 정렬 키를 품어서, 쪽 도중에 변경이 들어와도 같은 자리로 이어진다 |
+| `limit`, `cursor` | 쪽 넘김. `limit`의 기본 100, 상한 1천은 기본값(설정)이다. `cursor`는 `change_seq`와 정렬 키를 품어서, 쪽 도중에 변경이 들어와도 같은 자리로 이어진다 |
 | `shape` | `summary`(수와 묶음 먼저, 기본) 또는 `items`. MCP에서는 `detail`로 `brief`와 `full`을 고른다 |
 
 ### 질의마다
@@ -48,9 +48,9 @@ HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/questions/<질의 �
 | `containment` | `object_id`, `direction`(`up`, `down`), `depth`, `child_types` | `ancestors`(건물, 방, 랙의 차례), `children_summary`(타입별 수), `subtree_size`, `items` | 깊이 기본 1. 자식은 쪽 넘김 |
 | `paths` | `from_object_id`, `to_object_id`, `via_meanings`(기본 `connected_to`), `link_types`, `max_steps`, `top_k`, `dead`, `dead_links` | `reachable`(`yes`, `no`, `unknown`), `paths`(`steps`, `length`, `weakest_grade`), `found_count` | `top_k` 기본 3, 상한 10, `max_steps` 상한은 가정. 시간 예산을 넘기면 `truncated` |
 | `impact` | `dead`, `dead_links`, `site_failure`, `dead_scope_id`, `mode`(`both`, `facts_only`, `with_assumptions`), `shape` | 5.7절 | 시드 수 상한 1,000은 가정. 결과는 요약을 먼저 주고 `items`는 쪽 넘김 |
-| `exposure` | `dead`(없어도 된다), `scope_id`, `target_object_id`, `cut_order_max` | `tight_groups`, `cut_sets` | 차수 기본 2, 상한 3은 가정. `target_object_id`가 있을 때만 `cut_sets`를 센다 |
+| `exposure` | `dead`(없어도 된다), `scope_id`, `target_object_id`, `cut_order_max` | `tight_groups`, `cut_sets` | 차수 기본 2(기본값(설정)), 상한 3은 가정. `target_object_id`가 있을 때만 `cut_sets`를 센다 |
 | `changes` | `from_version`/`to_version`(버전 ID) 또는 `from_change_seq`/`to_change_seq`, `object_types`, `source_id`, `scope_id`, `change_kinds`(`added`, `changed`, `retired`) | 타입별·종류별 수, 그다음 `items`(`object_id`나 `link_id`, `change_kind`, `changed_fields`, `change_seq`) | 변경의 기록에서 바로 읽는다. 쪽 넘김 |
-| `versions` | `since_version`(버전 ID), `limit` | 봉한 버전들(`kg_version_id`, `change_seq`, `created_at`, `definition_version`, `raw_record_set_id`, `change_counts`, `is_head`, `projection_state`: `ready`, `building`, `none`) | 쪽 넘김 |
+| `versions` | `since_version`(버전 ID), `limit` | 봉한 버전들(`kg_version_id`, `change_seq`, `created_at`, `definition_version`, `input_digest`, `change_counts`, `is_head`, `projection_state`: `ready`, `building`, `none`) | 쪽 넘김 |
 | `quality` | `scope_id`, `source_id`, `metric`, `kg_version_id` | 지표와 목표. 자세한 칸은 ADR-0013이 정한다([데이터 관측성](data-observability.md)) | 지표 수가 적다 |
 | `health` | `resource`(소스, 데이터셋, 공급, 타입, 속성, 링크 타입, 파이프라인), `scope_id` | 자원의 건강과 까닭. 자세한 칸은 ADR-0013이 정한다 | 낮은 비용 |
 | `scopes` | `scope_id`(없으면 목록) | 저장해 둔 범위(타입, 포함 뿌리, 거름), 만든 무리, 이 버전에서의 `count` | 쪽 넘김. 읽기만 한다. 만드는 길은 10절 |
@@ -66,14 +66,14 @@ HTTP 길은 [REST API 설계](rest-api.md)가 정하고(`/v1/questions/<질의 �
 | `served_by` | 어느 역할이 답했나(`role`: `api_sql`, `engine`), 엔진이면 투영의 `built_at` |
 | `freshness` | 그 답에 쓰인 소스 중 **가장 나쁜 값**: `worst_source_id`, `oldest_age_seconds`, `state`(`fresh`, `stale`, `no_expected_period`). `stale`은 기대 주기의 두 배를 넘긴 것(ADR-0011, 가정) |
 | `evidence` | `min_grade`(쓰인 입력 중 가장 낮은 등급), `counts`(`fact`, `assumed`, `unknown`), `kinds`(쓰인 근거의 종류: `configured`, `observed`, `declared`, `derived`), `observation_age_seconds` |
-| `completeness` | `total`, `returned`, `truncated`, `reason`(`limit`, `time_budget`, `size_budget`), `next_cursor` |
+| `result_complete` | `total`, `returned`, `truncated`, `reason`(`limit`, `time_budget`, `size_budget`), `next_cursor` |
 | `hidden` | `hidden_passed_count`(답이 지난 가려진 객체의 수)와 `hidden_reached_count`(답이 닿은 끝에 있는 가려진 객체의 수). 내용은 없다 |
 | `health_hint` | 이 답에 쓰인 것 가운데 건강이 나쁜 것의 수와 목록(ADR-0013) |
 | `model_limits` | 이 답이 모르는 것의 문구(14절) |
 | `warnings` | 예: `capacity_group_unknown`(용량 묶음을 아직 따지지 않아 모름으로 줬다) |
 | `data` | 질의마다의 본문 |
 
-**고정.** 나쁜 데이터가 들어왔을 때 `operator`(전체 범위)나 `admin`이 "물음은 버전 V로 답하라"고 고정할 수 있어요(`serving_pin`, ADR-0014). 데이터를 되감지 않고 읽는 쪽만 고정하고, 답의 `as_of.pinned`에 표시돼요.
+**고정.** 나쁜 데이터가 들어왔을 때 `operator`(전체 범위)나 `admin`이 "물음은 버전 V로 답하라"고 고정할 수 있어요(`serving_pin`, ADR-0014). 데이터를 되감지 않고 읽는 쪽만 고정하고, 답의 `as_of.pinned`에 표시돼요. 고정하면 질의 엔진이 그 버전을 올려요. 다 올라올 때까지 고정은 `pending`이고, 그동안은 지금 것으로 답하며 `as_of.pinned`에 `pending`이라고 표시해요. 올라온 뒤에 고정이 서요(`active`).
 
 지어낸 예시예요. 6.1절의 `impact` 봉투예요.
 
@@ -82,7 +82,7 @@ as_of: {change_seq: 90417, sealed_version: null}
 served_by: {role: engine, built_at: "2031-03-04T02:14:30Z"}
 freshness: {worst_source_id: "src-facility-sheet", oldest_age_seconds: 5400, state: fresh}
 evidence: {min_grade: assumed, counts: {fact: 41, assumed: 1, unknown: 0}, kinds: [configured, declared], observation_age_seconds: null}
-completeness: {total: 3, returned: 3, truncated: false, reason: null, next_cursor: null}
+result_complete: {total: 3, returned: 3, truncated: false, reason: null, next_cursor: null}
 hidden: {hidden_passed_count: 0, hidden_reached_count: 0}
 health_hint: {unhealthy_inputs: 0}
 model_limits: ["전원이 끊긴 뒤 UPS 배터리가 버티는 시간은 따지지 않는다"]
@@ -289,7 +289,7 @@ data:
 | 뜻별 이웃 배열 | 링크의 뜻(`runs_on`과 `failover_to`, `requires`의 `hard`/`soft`, `supplied_by`의 채널별, `realized_by`, `part_of`와 `whole_needs_part`, `member_of`, `contained_in`, `connected_to`, `managed_by`)마다 정방향과 역방향. 링크마다 근거 등급, 근거의 종류, 본 때, `delay_class` |
 | 묶음의 표 | 묶음 ID, 구성원, 방식(`count`, `capacity`), `min_alive`와 그 등급, 무게, 기대는 링크의 `demand` |
 | 특성 표 | 객체의 특성(`Powered`, `NetworkAnchor` 등)과 필요로 하는 채널의 강도 |
-| 읽기 권한용 표 | 객체의 타입, 속성의 민감 등급. API가 답을 거를 때 쓴다(ADR-0012) |
+| 읽기 권한용 표 | 객체의 타입, 객체마다 `scope_keys` 속성의 값, 속성의 민감 등급. API가 답을 거를 때 쓴다(ADR-0012) |
 | 목록 머리 | 소스마다 `last_complete_at`과 기대 주기(신선도를 엔진 혼자 계산하려고) |
 
 **파일 형식의 요구.** 특정 언어의 직렬화에 묶이지 않아요. 평평한 배열과 머리(형식 버전, 반영한 `change_seq`, 그래프 해시, 섹션 표, 섹션마다와 전체의 내용 해시)로 이루어져요. 해시는 정규 바이너리 인코딩 위의 SHA-256이에요(ADR-0006). 순서는 모두 정해진 순서로 정렬해요. **자리(사이트) 단위로 나눠 올릴 수 있어야 해요.** 조각마다 해시가 있고, 조각 사이를 건너는 간선은 따로 섹션을 둬요. 열 형식은 구현하는 변경에서 정해요.
@@ -312,7 +312,7 @@ ADR-0006의 역할 넷(API, 일꾼, 질의 엔진, 수집기) 중 하나예요. 
 | 엔진 → API | 봉투와 본문(객체 ID, 타입, 등급을 담아서 API가 읽기 권한으로 거를 수 있게), 또는 오류(`version_not_loaded`+들고 있는 범위, `budget_exceeded`+좁히는 법, `too_many_seeds`) |
 | 엔진 → 조율 | 반영한 `change_seq`, 준비 상태, 투영의 `built_at` |
 
-- **엔진이 올려 두는 버전.** 지금 것과 고정된(`serving_pin`) 버전만이에요. 그 밖의 옛 버전의 `impact`는 요청하면 따로 올려 답하고, 올리는 동안은 `version_not_loaded`(들고 있는 범위 포함)로 답해요. `find`, `get`, `changes` 같은 SQL 질의는 옛 버전도 바로 읽어요.
+- **엔진이 올려 두는 버전.** 지금 것과 고정된(`serving_pin`) 버전만이에요. 그 밖의 옛 버전의 `impact`는 요청하면 따로 올려 답하고, 올리는 동안은 `version_not_loaded`(들고 있는 범위 포함)로 답해요. 고정을 건 버전은 따로 요청하지 않아도 엔진이 올려요. `find`, `get`, `changes` 같은 SQL 질의는 옛 버전도 바로 읽어요.
 - **무엇이 SQL로 가고 무엇이 엔진으로 가나.** 기본 갈래는 이래요. `find`, `get`, `changes`, `versions`, `quality`, `health`, `scopes`, `containment`, `competency`(표시를 세는 것)는 SQL, `neighbors`는 1~3걸음까지 SQL, `paths`, `impact`, `exposure`는 엔진이에요. 어디까지가 SQL로 되는지는 지어낸 규모에서 SQL(재귀)로도 구현해 재서 가려요. SQL이 목표를 맞추면 엔진의 범위가 줄 수 있어요. 개발 환경에서는 한 프로세스에 역할을 함께 띄워도 포트를 거쳐요.
 
 ## 10. 면 셋
@@ -347,11 +347,11 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 ## 11. 읽기 권한과 가려진 것
 
-권한의 규칙은 [읽기 권한과 역할](access-control.md)과 ADR-0012가 정해요. 읽기는 권한 부여의 범위(객체 타입, 민감 등급의 한도)예요. 여기서는 영향 범위에만 닿는 것만 적어요.
+권한의 규칙은 [읽기 권한과 역할](access-control.md)과 ADR-0012가 정해요. 읽기는 권한 부여의 범위(객체 타입, 민감 등급의 한도, 클로즈 베타 전에는 객체의 조건)예요. 조건에 맞지 않는 객체는 가려진 객체와 같이 다뤄요. 여기서는 영향 범위에만 닿는 것만 적어요.
 
 - **계산은 전체 그래프에서 한다.** 부르는 쪽에 따라 계산이 달라지면 결과가 틀려요. **엔진의 답을 API가 거르는 것**이 읽기 권한이에요(투영의 읽기 권한용 표를 써서요).
 - 영향 범위가 읽을 수 없는 객체를 지나면 `hidden.hidden_passed_count`에, 영향받는 끝에 닿으면 `hidden.hidden_reached_count`에 **수로만** 잡혀요. 그 객체는 결과 목록에 나오지 않고 내용도 타입도 주지 않아요. `via`는 "가려진 객체"로 적혀요.
-- **거른 뒤의 쪽은 거른 수로 채워요.** API가 엔진의 쪽을 거르고 남은 것이 `limit`보다 적으면 엔진에 더 물어 `limit`까지 채워 돌려줘요(`completeness.total`은 거른 뒤의 값).
+- **거른 뒤의 쪽은 거른 수로 채워요.** API가 엔진의 쪽을 거르고 남은 것이 `limit`보다 적으면 엔진에 더 물어 `limit`까지 채워 돌려줘요(`result_complete.total`은 거른 뒤의 값).
 - `paths`가 가려진 객체를 지나면 그 걸음은 "가려진 객체 하나"로 보여요.
 - 가려진 속성은 "가려짐"으로 보이고, 그것을 찾는 조건으로 쓰면 거절해요. 읽을 수 없는 객체의 ID를 `dead`에 넣으면 "찾을 수 없음"과 같은 모양으로 답해요.
 

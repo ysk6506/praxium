@@ -39,7 +39,7 @@ POST /v1/questions/impact
           "served_by": {"role": "engine"},
           "freshness": {"worst_source_id": "src_switch_inventory", "oldest_age_seconds": 97200, "state": "stale"},
           "evidence": {"min_grade": "assumed", "counts": {"fact": 5, "assumed": 7, "unknown": 0}},
-          "completeness": {"total": 12, "returned": 2, "truncated": true, "reason": "limit", "next_cursor": "c_71Kd"},
+          "result_complete": {"total": 12, "returned": 2, "truncated": true, "reason": "limit", "next_cursor": "c_71Kd"},
           "hidden": {"hidden_passed_count": 2, "hidden_reached_count": 0},
           "health_hint": {"has_unhealthy_inputs": true, "worst_state": "affected_upstream", "total": 1},
           "trace_id": "tr_0a9"}}
@@ -49,14 +49,14 @@ POST /v1/questions/impact
 - `freshness.state: stale`: 스위치 소스의 마지막 수신이 27시간 전이에요. 화면은 "묵은 구성 기준"이라고 쓰고, 이 문구는 화면의 말이에요.
 - `evidence.counts`: 사실 5, 가정 7이에요. 사실만으로는 하나만 죽고, 가정을 넣으면 셋이 죽어요.
 - `hidden.hidden_passed_count: 2`(`hidden_reached_count`는 닿은 수예요): 번지는 길에 `user_a`이 못 읽는 객체 둘이 있어요. 내용은 안 줘요.
-- `completeness.truncated: true`: 12개 중 2개만 왔어요. `next_cursor`로 이어 받아요.
+- `result_complete.truncated: true`: 12개 중 2개만 왔어요. `next_cursor`로 이어 받아요.
 
 **3) 다음 쪽.** 같은 입력에 `cursor`를 더해요.
 
 ```
 POST /v1/questions/impact
 {"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "items", "limit": 50, "cursor": "c_71Kd"}
-→ 200 {"data": {...나머지 10개...}, "meta": {..., "completeness": {"total": 12, "returned": 10, "truncated": false, "next_cursor": null}}}
+→ 200 {"data": {...나머지 10개...}, "meta": {..., "result_complete": {"total": 12, "returned": 10, "truncated": false, "next_cursor": null}}}
 ```
 
 `cursor`는 `change_seq` 88231을 품고 있어서, 그사이 KG가 바뀌어도 같은 자리에서 이어져요. 새 변경을 보려면 `cursor` 없이 다시 물어요.

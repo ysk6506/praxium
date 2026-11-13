@@ -34,7 +34,7 @@ follows:
 | `/v1/traits` | GET | 특성과 그 특성이 요구하는 속성 | 읽기 | - | kg-model |
 | `/v1/layers` | GET | 표준 모델의 아홉 층(`site_facility`, `compute_hardware`, `network`, `storage`, `virtualization`, `container`, `platform`, `service_org`, `cross_cutting`)과 층마다의 타입 수 | 읽기 | - | kg-model |
 | `/v1/object-types/{type_id}/usage` | GET | 타입의 쓰임: 정의의 `what_depends`(12-4)와 같은 답을 이 타입에서 시작해 줘요 | 읽기(정의를 읽는 범위) | - | definitions |
-| `/v1/type-usage` | GET | 타입별 쓰임의 보고(몇 객체, 몇 공급, 마지막으로 쓰인 때). 올리기와 합치기를 가리는 근거 | `model_steward` | - | kg-model 13.3 |
+| `/v1/type-usage` | GET | 타입별 쓰임의 보고(몇 객체, 몇 공급, 마지막으로 쓰인 때). 올리기와 합치기를 가리는 근거 | 그 타입을 범위에 가진 `viewer`(`model_steward`는 전체) | - | kg-model 13.3 |
 | `/v1/similar-type-pairs` | GET | 겹치는 타입의 짝(주기로 계산한 목록) | `model_steward` | - | kg-model 13.3 |
 | `/v1/type-similarity-checks` | POST | 만들려는 타입의 초안(이름, 속성, 식별 키, 매핑될 데이터셋)을 받아 비슷한 타입을 찾아 줘요. 상태를 바꾸지 않아요(안전함) | 읽기 | - | kg-model 13.3 |
 
@@ -58,7 +58,7 @@ POST /v1/type-similarity-checks
 | `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 비밀 값은 `credential_ref`(참조)만 | 읽기 | - | ingestion |
 | `/v1/sources/{source_id}/introspections` | POST | 소스를 들여다봐요(어떤 표와 컬럼이 있나). 읽기 전용 요청만 나가요 | 그 소스를 범위에 가진 `editor`나 `operator` | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}/checks` | POST | 점검(연결, 인증, 읽기 전용의 세 겹이 확인되나) | 그 소스를 범위에 가진 `editor`나 `operator` |
-| `/v1/sources/{source_id}/uploads`, `/v1/sources/{source_id}/upload-template` | POST, GET | 엑셀·CSV 소스의 파일 올리기와 칸 견본 내려받기. 원본 기록으로 쌓여요 | `operator`(가정) | 작업 | ingestion | 작업 | ingestion 8.1 |
+| `/v1/sources/{source_id}/uploads`, `/v1/sources/{source_id}/upload-template` | POST, GET | 엑셀·CSV 소스의 파일 올리기와 칸 견본 내려받기. 원본 기록으로 쌓여요 | 그 소스를 범위에 가진 `operator`나 `editor` | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}/pause`, `.../resume` | POST | 일시 정지(`reason`을 받아요)와 다시 켜기. 건강에 보여요 | `operator` | - | ingestion 5 |
 | `/v1/datasets`, `/v1/datasets/{dataset_id}` | GET | 데이터셋: `kind`, `receive_mode`, `natural_key`, `event_time`, `marker`, `deletion`, `columns`(`sensitivity`), `redact`, `expectations` | 읽기 | - | ingestion |
 | `/v1/datasets/{dataset_id}/previews` | POST | 받아 둔 원본 기록에서 몇 행을 보여 줘요. 비밀 값은 지워지고 컬럼마다 민감 등급 한도를 따라 "가려짐"이 나와요. 안전함 | 그 소스를 범위에 가진 `editor`나 `operator` | - | ingestion 7 |
@@ -161,7 +161,7 @@ POST /v1/branches/br_12/items    Idempotency-Key: 31c9...
 | `/v1/definition-imports` | POST | 파일을 들여요. 언제나 새 브랜치와 제안(`origin: import`). 본줄기를 덮어쓰지 않아요 | `editor` | - | definitions 13 |
 
 - **되돌리기의 상태 흐름.** 되돌리기는 새 제안이에요. 이후는 `draft` 이후의 보통의 흐름(검토, 승인, 줄)이에요. 급한 되돌리기는 `admin`이나 그 제안이 고친 자리 전부를 범위에 가진 `approver`가 하고(`operator`는 못 해요), 감사 기록에 `admin_override`가 남고 사후 검토가 붙어요(`post_review_state: pending`).
-- **타입 합치기와 올리기**는 브랜치 안의 도우미예요: `POST /v1/branches/{branch_id}/type-merges`(A를 B로), `POST /v1/branches/{branch_id}/type-promotions`(`ext`를 `org`로, `keep_ids`). 새 제안의 항목을 만들어요(`editor`, 승인은 ADR-0012). definitions 11.
+- **타입 합치기와 올리기**는 브랜치 안의 도우미예요: `POST /v1/branches/{branch_id}/type-merges`(A를 B로), `POST /v1/branches/{branch_id}/type-promotions`(`ext`를 `org`로, `keep_ids`). 새 제안의 항목을 만들어요. `editor`가 제안하고 `model_steward`가 승인해요(ADR-0012). definitions 11.
 - 묻는 쪽의 고정(`/v1/serving-pins`)은 KG 무리에 있어요([다음 문서](rest-api-resources-graph.md)).
 - 내보낸 파일은 작업의 `result.href`로 받고 감사 기록에 남아요.
 - 정의 항목마다의 정의의 시험(`item_tests`)은 항목의 본문에 든 견본이라 별도의 길이 없어요. 검사 길로 돌려요.
@@ -179,7 +179,7 @@ POST /v1/branches/br_12/items    Idempotency-Key: 31c9...
 
 ## 7. 알고 가는 한계와 물어 둘 것
 - 들여다보기·미리보기·점검은 그 소스를 범위에 가진 `editor`나 `operator`, 시험 수집은 `operator`로 정해졌어요.
-- 엑셀 올리기의 역할(`operator`), 타입 쓰임·겹침 보고의 역할(`model_steward`)은 원천이 따로 말하지 않아 가정이에요.
+- 엑셀 올리기는 그 소스를 범위에 가진 `operator`나 `editor`, 타입 쓰임 보고는 그 타입을 범위에 가진 `viewer`(`model_steward`는 전체), 타입의 합치기와 올리기는 `editor`가 제안하고 `model_steward`가 승인하는 것으로 정해졌어요. 겹치는 타입의 짝(`/v1/similar-type-pairs`)을 읽는 역할은 `model_steward`로 두었어요(정해진 것이 아니라 설계 담당 확인이 필요해요).
 - 제안 만들기(`POST /v1/proposals`)가 `editor`인 것은 브랜치를 열고 고치는 것이 `editor`여서예요.
 - 정의의 시험(견본)을 고치는 길, 수집기의 만들기와 토큰 교체(시스템 계정 무리)는 이 문서에 따로 적지 않았어요.
 - 이 문서의 모든 목록의 거르는 칸은 표에 적은 것이 처음 후보예요. OpenAPI 문서에서 닫아요.

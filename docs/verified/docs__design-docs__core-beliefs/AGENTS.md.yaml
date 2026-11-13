@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "6130e446360b400a"
-date: "2026-11-12"
-note: "따라가는 AGENTS.md의 바뀐 곳은 시작하기의 다섯째 줄(넘겨받은 것). 신념과 어긋나지 않는다"
+hash: "2f4ef022b8a333f2"
+date: "2026-11-13"
+note: "ADR-0005~0016 봉인과 맞춘 통합 때 본문을 다시 읽고 확인함"
 text_changed: false
 doc_hash: "c68185f5b10e5ba0"

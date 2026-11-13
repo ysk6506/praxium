@@ -1,0 +1,7 @@
+doc: "docs/design-docs/glossary.md"
+target: "docs/design-docs/adr/0014-definitions-branches-revert.md"
+hash: "c1d09ebcf6751aaf"
+date: "2026-11-13"
+note: "ADR-0005~0016 봉인과 맞춘 통합 때 본문을 다시 읽고 확인함"
+text_changed: true
+doc_hash: "f2052a101818c8b0"

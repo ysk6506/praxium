@@ -12,7 +12,7 @@ follows:
 > **길과 칸은 다음 변경의 OpenAPI 문서에서 굳어요. 그때 바뀔 수 있어요.** 길은 `/v1/...`이고 이름은 이 문서가 정한 가정이에요.
 
 ## 1. KG
-KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 길은 모두 3-2의 봉투(`as_of`, `freshness`, `evidence`, `completeness`, `hidden`(`hidden_passed_count`, `hidden_reached_count`), `health_hint`)를 달고, 읽을 수 없는 타입의 객체는 나오지 않고 `hidden.hidden_passed_count`에 수로만 잡혀요(ADR-0012).
+KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 길은 모두 3-2의 봉투(`as_of`, `freshness`, `evidence`, `result_complete`, `hidden`(`hidden_passed_count`, `hidden_reached_count`), `health_hint`)를 달고, 읽을 수 없는 타입의 객체는 나오지 않고 `hidden.hidden_passed_count`에 수로만 잡혀요(ADR-0012).
 
 ### 1-1. 객체와 링크
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
@@ -26,7 +26,7 @@ KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 
 공통 입력: `kg_version_id`(없으면 지금), `view`(`as_designed`, `as_observed`), `max_staleness`, `limit`, `cursor`, `shape`.
 
 ### 1-2. 닫힌 질의 열셋
-모두 `POST /v1/questions/<이름>`이에요. 상태를 바꾸지 않아요(계약에 안전함 표시). 큰 입력(객체 목록, 거름)을 본문으로 받아요. 답은 바로 와요: 시간 예산을 넘기면 202가 아니라 `meta.completeness.truncated: true`와 `reason: time_budget`이에요(ADR-0010). 길게 걸릴 큰 읽기는 `bulk-reads`(1-4)를 써요. 모든 역할이 자기 범위의 읽기를 포함하므로 역할은 `읽기`예요. 입력과 출력의 칸은 [KG에 묻기](kg-queries.md)가 정해요.
+모두 `POST /v1/questions/<이름>`이에요. 상태를 바꾸지 않아요(계약에 안전함 표시). 큰 입력(객체 목록, 거름)을 본문으로 받아요. 답은 바로 와요: 시간 예산을 넘기면 202가 아니라 `meta.result_complete.truncated: true`와 `reason: time_budget`이에요(ADR-0010). 길게 걸릴 큰 읽기는 `bulk-reads`(1-4)를 써요. 모든 역할이 자기 범위의 읽기를 포함하므로 역할은 `읽기`예요. 입력과 출력의 칸은 [KG에 묻기](kg-queries.md)가 정해요.
 
 | 질의 | 길 | 주 입력 | 답의 `data` | 짝이 되는 GET |
 |---|---|---|---|---|
@@ -48,7 +48,7 @@ KG는 변경의 이어짐이고 버전은 봉한 자리예요(ADR-0009). 읽는 
 POST /v1/questions/paths
 {"from_object_id": "obj_srv_a", "to_object_id": "obj_sw_1", "via_meanings": ["connected_to"], "max_steps": 6, "top_k": 3, "dead": ["obj_sw_2"]}
 → {"data": {"reachable": "yes", "found_count": 2, "paths": [{"length": 3, "weakest_grade": "assumed", "steps": [...]}]},
-   "meta": {"as_of": {"change_seq": 88231}, "served_by": {"role": "engine"}, "completeness": {"truncated": false}}}
+   "meta": {"as_of": {"change_seq": 88231}, "served_by": {"role": "engine"}, "result_complete": {"truncated": false}}}
 ```
 
 - `impact`, `paths`, `exposure`은 질의 엔진이 답할 수 있어요. 투영이 아직 안 만들어졌으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 답했는지 보여 줘요.
@@ -58,10 +58,10 @@ POST /v1/questions/paths
 | 길 | 메서드 | 하는 일 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
 | `/v1/graph-versions` | GET | 봉한 버전의 목록(`versions`) | 읽기 | - | kg-queries, kg-storage |
-| `/v1/graph-versions/{kg_version_id}` | GET | 한 버전: `change_seq`, `created_at`, `definition_version`, `raw_record_set_id`, `change_counts`, `projection_state`, `seal_kind` | 읽기 | - | kg-storage |
+| `/v1/graph-versions/{kg_version_id}` | GET | 한 버전: `change_seq`, `created_at`, `definition_version`, `input_digest`, `change_counts`, `projection_state`, `seal_kind` | 읽기 | - | kg-storage |
 | `/v1/changes` | GET | 변경의 목록(`changes`의 짧은 모양): `from_change_seq`, `to_change_seq`, `filter[object_type]`, `filter[change_kind]` | 읽기 | - | kg-queries |
 | `/v1/scopes`, `/v1/scopes/{scope_id}` | GET, POST, DELETE | 저장해 둔 범위(타입, 포함 뿌리, 거름)를 읽고 만들고 지워요. 만든 사람의 무리의 것이고 정의가 아니에요. KG를 바꾸지 않아요 | 읽기, 만들기와 지우기는 `viewer`부터 | - | kg-queries 10 |
-| `/v1/serving-pins` | GET, POST | 묻는 쪽을 옛 KG 버전에 고정(`kg_version_id`, 까닭). 봉투의 `as_of.pinned`에 보여요 | 전체 범위의 `operator`나 `admin` | - | ADR-0010, data-observability |
+| `/v1/serving-pins` | GET, POST | 묻는 쪽을 옛 KG 버전에 고정(`kg_version_id`, 까닭). 봉투의 `as_of.pinned`에 보여요. 상태는 `pending`(엔진이 그 버전을 올리는 중이라 지금 것으로 답하고 그렇게 표시해요)에서 `active`로 가요 | 전체 범위의 `operator`나 `admin` | - | ADR-0010, data-observability |
 | `/v1/serving-pins/{pin_id}` | DELETE | 고정 풀기 | 전체 범위의 `operator`나 `admin` | - | ADR-0010 |
 
 ### 1-4. 대량 읽기
@@ -150,6 +150,12 @@ POST /v1/questions/competency
 | `/v1/events/stream` | GET | 사건의 흐름(서버 전송 이벤트). `kinds`, `resource`로 거르고 `Last-Event-ID`로 이어 받아요 | 읽기(사건마다 읽기 권한을 따라요) | - | rest-api 3-10 |
 | `/v1/events` | GET | 같은 사건을 번호로: `since=<event_id>`, `kinds`, `resource`, `limit`. 너무 옛것이면 `stale.since_too_old` | 읽기 | - | rest-api 3-10 |
 | `/v1/settings` | GET, PATCH | 제품의 설정(SSO 연결, 허용할 출처의 목록, 한도의 기본값). 비밀 값은 참조만. `If-Match` 필요 | `admin` | - | access-control |
+| `/v1/settings/{setting_name}/revisions` | GET, POST | 운영의 설정(한도, 문턱, 보관 기한, 동시 수)의 바뀜의 이력과 되돌리기. 값의 범위를 검사하고 다시 띄워야 먹는 설정은 표시돼요 | `admin` | - | ADR-0017(만드는 중) |
+| `/v1/diagnoses` | POST | 진단(`diagnose`): 지금 아픈 것, 까닭, 근거 신호, 할 수 있는 운영 행위. 저장소 없이도 답해요. 상태를 바꾸지 않아요(안전함) | `operator` | - | ADR-0017(만드는 중) |
+| `/v1/event-codes`, `/v1/event-codes/{code}` | GET | 사건 코드와 오류 코드의 목록(뜻, 심각도, 살펴볼 것, 할 수 있는 운영 행위). 버전이 있어요 | 로그인한 누구나 | - | ADR-0017(만드는 중) |
+| `/v1/operations`, `/v1/operations/{operation_name}` | GET | 운영 행위의 목록(위험의 축 넷, 선언한 효과, 되돌리는 행위, 승인 필요 여부) | `operator` | - | ADR-0017(만드는 중) |
+| `/v1/operations/{operation_name}/previews` | POST | 미리 해 보기: 하지 않고 무엇이 멈추고 무엇이 걸리는지 답해요(안전함) | `operator` | - | ADR-0017(만드는 중) |
+| `/v1/operations/{operation_name}/executions` | POST | 운영 행위를 해요. `Idempotency-Key`를 받고 오래 걸리면 작업을 줘요. 결과에 효과가 신호에 나타났는지 적혀요. 넓은 행위(일꾼을 전부 비우기, 모든 소스를 멈추기)는 `admin`만 | `operator`(넓은 것은 `admin`) | 작업 | ADR-0017(만드는 중) |
 | `/v1/contract` | GET | 계약 문서(OpenAPI) 자체 | 인증 없이 읽을 수 있는지는 정하지 않았어요(rest-api 7절) | - | rest-api 5-4 |
 | `/v1/capabilities` | GET | 서버의 버전과 켜진 기능(`api_version`, `features`) | 로그인한 누구나 | - | rest-api 5-4 |
 | `/v1/problems/{code}` | GET | 오류 `code`의 설명(`type`이 가리키는 길). 계약의 오류 코드 목록과 같아요 | 로그인 없이 | - | rest-api 3-9 |
@@ -162,8 +168,9 @@ POST /v1/questions/competency
 - `/v1/directory/subjects`를 `editor`가 쓰는 범위(담당자 고르기)는 가정이에요.
 - 알림의 확인과 넘기기의 길 이름(`acknowledge`, `snooze`, `hand-over`)은 상태 이름을 따라 지었어요.
 - 설정에서 어떤 칸이 고칠 수 있는 설정인지는 정하지 않았어요.
+- 진단, 운영 행위, 사건 코드, 운영 설정의 길은 ADR-0017(만드는 중)의 이름을 따라 지은 가정이에요. 설계 문서 프락시움 자신의 관측성 설계 문서(만드는 중)과 맞는지 OpenAPI 문서에서 닫아요.
 - 한 객체를 직접 고치는 길은 없어요. KG는 정의와 원본 기록의 결과예요(ADR-0009).
 
 ## 7. 관련 결정과 요구사항
-- ADR-0016. 원천: ADR-0009(저장), ADR-0010(질의), ADR-0011(운영), ADR-0012(권한), ADR-0013(관측), ADR-0015(역량 질문).
+- ADR-0016. 원천: ADR-0009(저장), ADR-0010(질의), ADR-0011(운영), ADR-0012(권한), ADR-0013(관측), ADR-0015(역량 질문), ADR-0017(만드는 중, 프락시움 자신의 운영).
 - REQ-143, REQ-147, REQ-148, REQ-149.

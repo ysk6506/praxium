@@ -64,7 +64,7 @@ follows:
 | `served_by` | 어느 역할이 답했나(`api_sql`, `engine`) |
 | `freshness` | 쓰인 소스 중 가장 나쁜 값: `worst_source_id`, `oldest_age_seconds`, `state` |
 | `evidence` | `min_grade`, `counts`(`fact`, `assumed`, `unknown`), `kinds`, `observation_age_seconds` |
-| `completeness` | `total`, `returned`, `truncated`, `reason`, `next_cursor` |
+| `result_complete` | `total`, `returned`, `truncated`, `reason`, `next_cursor` |
 | `hidden` | `hidden_passed_count`(지나간 수), `hidden_reached_count`(닿은 수). 가려진 객체의 수만 있고 내용은 없어요 |
 | `health_hint` | 쓰인 것 가운데 건강이 나쁜 것의 수와 목록(ADR-0013) |
 | `model_limits`, `warnings` | 이 답이 모르는 것, 경고 |
@@ -76,7 +76,7 @@ follows:
           "served_by": {"role": "api_sql"},
           "freshness": {"worst_source_id": "src_inventory", "oldest_age_seconds": 5400, "state": "fresh"},
           "evidence": {"min_grade": "assumed", "counts": {"fact": 11, "assumed": 1, "unknown": 0}},
-          "completeness": {"total": 12, "returned": 12, "truncated": false, "next_cursor": null},
+          "result_complete": {"total": 12, "returned": 12, "truncated": false, "next_cursor": null},
           "hidden": {"hidden_passed_count": 0, "hidden_reached_count": 0}, "health_hint": {"has_unhealthy_inputs": false, "total": 0},
           "trace_id": "tr_5c1e"}}
 ```
@@ -84,12 +84,12 @@ follows:
 KG와 상관없는 자원(예: 작업)의 `meta`에는 `as_of`와 `freshness` 같은 KG의 칸이 없어요. 칸이 없다는 것과 값이 비었다는 것은 달라요.
 
 ### 3-3. 쪽 넘김
-**규칙.** 목록은 열쇠 기반이에요. 요청에 `limit`(기본 50, 상한 500은 가정)과 `cursor`, 응답의 `meta.completeness.next_cursor`가 다음 쪽의 열쇠예요. 쪽 번호와 건너뛰기(offset)는 없어요. `cursor`는 뜻을 읽지 않는 글자열이고 `change_seq`와 정렬 키를 품어서, 쪽 도중에 변경이 들어와도 같은 자리로 이어져요. 큰 답은 수와 묶음을 먼저 주고(`shape=summary`가 기본) 낱개는 `shape=items`로 받아요.
+**규칙.** 목록은 열쇠 기반이에요. 요청에 `limit`(기본 100, 상한 1천은 기본값(설정))과 `cursor`, 응답의 `meta.result_complete.next_cursor`가 다음 쪽의 열쇠예요. 쪽 번호와 건너뛰기(offset)는 없어요. `cursor`는 뜻을 읽지 않는 글자열이고 `change_seq`와 정렬 키를 품어서, 쪽 도중에 변경이 들어와도 같은 자리로 이어져요. 큰 답은 수와 묶음을 먼저 주고(`shape=summary`가 기본) 낱개는 `shape=items`로 받아요.
 **까닭.** 변경이 계속 들어오는 KG에서 offset은 항목을 빠뜨리거나 겹쳐요.
 
 ```
 GET /v1/issues?limit=2&filter[status][in]=open,in_progress
-→ {"data": [{"issue_id": "iss_01"}, {"issue_id": "iss_02"}], "meta": {"completeness": {"returned": 2, "next_cursor": "c_9aF2"}}}
+→ {"data": [{"issue_id": "iss_01"}, {"issue_id": "iss_02"}], "meta": {"result_complete": {"returned": 2, "next_cursor": "c_9aF2"}}}
 GET /v1/issues?limit=2&cursor=c_9aF2&filter[status][in]=open,in_progress   (같은 거르기와 정렬을 다시 보내요)
 ```
 
@@ -309,7 +309,7 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 - 이름 규칙(길은 복수형과 하이픈, 칸과 고르기 값은 `snake_case`).
 - **모든 응답에 예시**가 있어요. 오류 응답도요.
 - **모든 오류 `code`의 목록**이 계약에 있고 응답이 그 안의 것만 써요.
-- 쪽 넘김의 모양(`limit`, `cursor`, `meta.completeness`)과 오류의 모양(문제의 세부)이 모든 길에서 같아요.
+- 쪽 넘김의 모양(`limit`, `cursor`, `meta.result_complete`)과 오류의 모양(문제의 세부)이 모든 길에서 같아요.
 - 닫힌 질의에 "안전함" 표시가 있고 만들기와 행위의 POST에 `Idempotency-Key`가, 바꾸는 길에 `If-Match`가 있어요.
 - 모든 길에 필요한 역할(`x-required-role`), 상태를 바꾸지 않는 길의 표시(`x-safe`)와 "오래 걸리나" 표시가 있어요.
 
@@ -372,13 +372,13 @@ MCP 서버는 같은 쓰임 위의 얇은 층이에요. 읽기만 하고 쓰는 
 
 ## 7. 알고 가는 한계와 아직 정하지 않은 것
 **한계(가정).**
-- 쪽 크기(50, 상한 500), 겹침 방지 열쇠를 남기는 기간, 작업과 사건을 남기는 기간, 한도의 숫자는 가정이고 재서 정해요.
+- 쪽 크기(기본 100, 상한 1천은 기본값 표의 값), 겹침 방지 열쇠를 남기는 기간, 작업과 사건을 남기는 기간, 한도의 숫자는 가정이고 재서 정해요.
 - 이 문서의 길과 칸은 OpenAPI 문서에서 굳어요. 그때까지는 길의 이름과 칸의 수가 바뀔 수 있어요.
 - 같은 큰 버전 안에서 더하기만 하는 규칙은 서버가 지키는 것이 아니라 검사가 지켜요. 검사가 모든 깨는 변경을 잡는다는 보장은 없어요.
 
 **아직 정하지 않은 것.**
 - 길에 큰 버전을 두는 것과 별개로 깨지 않는 선택 기능(켜진 기능)을 알리는 방법의 세부(`capabilities`의 칸).
-- 물러난 큰 버전을 함께 내는 기간은 설정이고 기본값은 가정이에요(재서 정해요).
+- 물러난 큰 버전을 함께 내는 기간은 설정이고 기본값은 12달이에요([기본값 표](defaults.md)).
 - 안 보이는 것과 없는 것을 404로 같게 하는 규칙과 쓰기 권한 부족(`permission.*`)이 존재를 알려 주는 정도. 읽을 수 있는 자원에만 `permission.*`를 주는 것으로 시작해요.
 - `QUERY` 메서드와 OpenAPI 3.2로 갈지.
 - 화면의 `BFF`가 필요한지. 필요하면 화면 저장소가 둬요(ADR-0016).

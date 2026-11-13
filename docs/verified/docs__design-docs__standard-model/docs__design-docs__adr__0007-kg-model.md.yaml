@@ -1,0 +1,7 @@
+doc: "docs/design-docs/standard-model.md"
+target: "docs/design-docs/adr/0007-kg-model.md"
+hash: "c0032f8c521b8b1a"
+date: "2026-11-13"
+note: "ADR-0005~0016 봉인과 맞춘 통합 때 본문을 다시 읽고 확인함"
+text_changed: true
+doc_hash: "09d98a80bffc27c1"
