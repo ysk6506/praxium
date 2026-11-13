@@ -104,7 +104,7 @@ follows:
 | `event_kind` | 내용 | 발생 주체 |
 |---|---|---|
 | `source_change` | 소스에서 수집한 원본 변경 배치 | 수집 |
-| `clock_event` | 시계가 발행한 틱. 미관측 객체의 기한, `pending_value`의 기한, 주기적 확정 요청이 이것을 기준으로 센다 | 시계 |
+| `clock_event` | 시계가 발행한 틱. 연속 미관측 횟수의 기준 시점, `pending_value`의 기한, 주기적 확정 요청이 이것을 기준으로 센다 | 시계 |
 | `seal` | 확정이 일어난 시점 | 확정 |
 | `held_release` | 보류된 스트림의 해제 | 운영 조작 |
 | `held_discard` | 보류된 스트림의 폐기 | 운영 조작 |

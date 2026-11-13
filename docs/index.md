@@ -7,16 +7,16 @@ covers:
 ---
 # 문서 색인
 
-모든 문서는 여기서 도달 가능해야 한다 (`DOC040`). 아래 "문서 목록"은 하네스가 문서의 `title`에서 만든다: 새 문서를 만들어도 여기에 줄을 더하지 않는다. 정리 작업이 `pnpm tsx harness/src/checks/docs.ts generate`로 새로 만든다.
+모든 문서는 여기서 도달 가능해야 한다 (`DOC040`). 아래 "문서 목록"은 하네스가 문서의 `title`에서 생성한다: 새 문서를 만들어도 여기에 줄을 더하지 않는다. 정리 작업이 `pnpm tsx harness/src/checks/docs.ts generate`로 다시 생성한다.
 
 ## 먼저 읽기
 
 - [AGENTS.md](../AGENTS.md) — 에이전트 진입점, 절대 규칙
-- [ARCHITECTURE.md](../ARCHITECTURE.md) — 단위와 의존 방향
+- [ARCHITECTURE.md](../ARCHITECTURE.md) — 유닛과 의존 방향
 - [요구사항](product-specs/requirements.md) — 목표와 `REQ-NNN`의 단일 출처
-- [제품 설계 한 장](design-docs/product-design.md) — 값, 원칙, 넘겨받은 숙제, 순서
-- [테라리움에서 넘겨받은 것](references/from-terrarium.md) — 그때의 요구사항, 설계 결정, 풀리지 않은 쟁점 (출발 자료)
-- [품질 등급표](generated/quality.md) — 단위별 등급 A~D (하네스가 만든 생성물)
+- [제품 설계 한 장](design-docs/product-design.md) — 값, 원칙, 넘겨받은 과제, 순서
+- [테라리움에서 넘겨받은 것](references/from-terrarium.md) — 그때의 요구사항, 설계 결정, 해결되지 않은 쟁점 (출발 자료)
+- [품질 등급표](generated/quality.md) — 유닛별 등급 A~D (하네스가 생성한 문서)
 
 ## 문서 목록
 
@@ -81,7 +81,7 @@ covers:
 
 ## 결정 기록
 
-결정 기록(ADR)은 [docs/design-docs/adr/](design-docs/adr/)에 있다. 손으로 쓰는 목록은 없다: 번호 순 목록과 어느 결정이 어느 결정을 고쳤는지는 하네스가 만든 [결정 목록](generated/decisions.md)에서 본다.
+결정 기록(ADR)은 [docs/design-docs/adr/](design-docs/adr/)에 있다. 손으로 쓰는 목록은 없다: 번호 순 목록과 어느 결정이 어느 결정을 수정했는지는 하네스가 생성한 [결정 목록](generated/decisions.md)에서 본다.
 
 ## 계획과 부채
 
