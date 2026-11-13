@@ -79,6 +79,14 @@
             }
           ],
           "strength": "strong"
+        },
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            }
+          ]
         }
       ]
     },

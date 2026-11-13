@@ -337,6 +337,19 @@
           "value_type": "vt.list",
           "change_class": "slow"
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
+        }
       ]
     },
     {
@@ -580,6 +593,19 @@
           "value_type": "vt.enum",
           "change_class": "slow",
           "enum_values": ["wwpn", "port", "mixed"]
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.part_of"
+            },
+            {
+              "property": "pr.common.name"
+            }
+          ]
         }
       ]
     },

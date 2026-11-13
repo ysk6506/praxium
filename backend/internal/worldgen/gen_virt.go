@@ -99,6 +99,8 @@ func (g *gen) workload(a rackAddr) ref {
 	if g.podSeq < g.p.Workloads {
 		g.obj(tWorkload, id).set(kS("name", "wl"+itoa(w)), kS("workload_kind", "deployment"), kI("min_alive", 1), kS("mode", "n_plus_k"),
 			kI("desired_replicas", 3)).in(lPartOf, refOf(tNamespace, mkid("ns", a.s, a.hall))).emit()
+		g.link(lRunsOn, refOf(tWorkload, id), refOf(tControlPlane, mkid("cp", a.s, a.hall)))
+		g.link(lRealizedBy, refOf(tTechService, mkid("tsvc", a.s, a.hall)), refOf(tWorkload, id))
 	}
 	g.podSeq++
 	return refOf(tWorkload, id)

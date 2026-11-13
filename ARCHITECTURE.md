@@ -59,7 +59,7 @@ Go 코드는 `backend/` 한 모듈에 있다. 단위는 `internal/<단위>` 패�
 
 ```
 core.kernel
-  └─ core.model        타입 등록부, 링크의 뜻, 근거 등급, 식별 키, 표준 모델
+  └─ core.model        타입 등록부, 링크의 뜻, 근거 등급, 식별 키(속성, 문맥, 집합), 표준 모델
        ├─ core.worldgen     지어낸 세계 생성기: 정답, 소스 보기, 변경 스트림, 모양 카드 (kernel과 model만 읽는다)
        ├─ core.definitions  정의의 저장, 브랜치, 제안, 병합
        ├─ core.ingest       소스 설정, 프리셋, 원본 기록, 정제, 매핑, 식별, 링크 정의 (어댑터 포트)

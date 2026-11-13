@@ -232,6 +232,42 @@
           "ref": "ot.row"
         },
         "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.cooling_loop.room",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.power_circuit.building",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_circuit"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.located_in.power_feed.building",
+        "from": {
+          "kind": "type",
+          "ref": "ot.power_feed"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "cardinality": "N:1"
       }
     ]
   },
@@ -882,6 +918,18 @@
         "to": {
           "kind": "type",
           "ref": "ot.software_instance"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.runs_on.workload.control_plane",
+        "from": {
+          "kind": "type",
+          "ref": "ot.workload"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.control_plane"
         },
         "cardinality": "N:1"
       }
@@ -2019,6 +2067,18 @@
           "ref": "ot.cooling_loop"
         },
         "cardinality": "N:M"
+      },
+      {
+        "id": "bd.cooled_by.cooling_loop.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.cooling_loop"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:M"
       }
     ]
   },
@@ -2588,7 +2648,7 @@
           "kind": "type",
           "ref": "ot.interface"
         },
-        "cardinality": "N:1",
+        "cardinality": "1:1",
         "param_constraints": {
           "whole_needs_part": ["hard"]
         }
@@ -3324,6 +3384,102 @@
           "ref": "ot.pdu_outlet"
         },
         "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.host_aggregate.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.host_aggregate"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.placement_rule.virtualization_manager",
+        "from": {
+          "kind": "type",
+          "ref": "ot.placement_rule"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.virtualization_manager"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.initiator_group.storage_array",
+        "from": {
+          "kind": "type",
+          "ref": "ot.initiator_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.storage_array"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.san_zone.fabric",
+        "from": {
+          "kind": "type",
+          "ref": "ot.san_zone"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.fabric"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.rack_unit.rack",
+        "from": {
+          "kind": "type",
+          "ref": "ot.rack_unit"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.rack"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.redundancy_group.room",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.room"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.redundancy_group.application_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.part_of.redundancy_group.building",
+        "from": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.building"
+        },
+        "cardinality": "N:1"
       }
     ]
   },
@@ -3788,6 +3944,42 @@
           "ref": "ot.team"
         },
         "cardinality": "N:M"
+      },
+      {
+        "id": "bd.member_of.crah.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.crah"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.chiller.cooling_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.chiller"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.cooling_redundancy_group"
+        },
+        "cardinality": "N:1"
+      },
+      {
+        "id": "bd.member_of.ups.power_redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.ups"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.power_redundancy_group"
+        },
+        "cardinality": "N:1"
       }
     ]
   },
@@ -4434,6 +4626,54 @@
           "ref": "ot.interface"
         },
         "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.physical_server.mlag_domain",
+        "from": {
+          "kind": "type",
+          "ref": "ot.physical_server"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.mlag_domain"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.network_device.mlag_domain",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.mlag_domain"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.hypervisor_host.mlag_domain",
+        "from": {
+          "kind": "type",
+          "ref": "ot.hypervisor_host"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.mlag_domain"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.uplinked_via.network_device.ha_pair",
+        "from": {
+          "kind": "type",
+          "ref": "ot.network_device"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.ha_pair"
+        },
+        "cardinality": "N:M"
       }
     ]
   },
@@ -4930,6 +5170,18 @@
         "to": {
           "kind": "type",
           "ref": "ot.redundancy_group"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.realized_by.technical_service.workload",
+        "from": {
+          "kind": "type",
+          "ref": "ot.technical_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.workload"
         },
         "cardinality": "N:M"
       }
@@ -6767,6 +7019,30 @@
         "to": {
           "kind": "type",
           "ref": "ot.dns_zone"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application_service.application_service",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "cardinality": "N:M"
+      },
+      {
+        "id": "bd.depends_on.application_service.redundancy_group",
+        "from": {
+          "kind": "type",
+          "ref": "ot.application_service"
+        },
+        "to": {
+          "kind": "type",
+          "ref": "ot.redundancy_group"
         },
         "cardinality": "N:M"
       }

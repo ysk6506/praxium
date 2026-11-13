@@ -83,6 +83,8 @@ const (
 	tPowerGroup
 	tRedundancy
 	tHaPair
+	tCoolGroup
+	tMlag
 	nTypes
 )
 
@@ -105,7 +107,7 @@ var typeNames = [nTypes]string{
 	tLbServer: "LbVirtualServer", tLbPool: "LbPool", tLbMember: "LbPoolMember",
 	tBizService: "BusinessService", tTechService: "TechnicalService", tAppService: "ApplicationService",
 	tTeam: "Team", tEnv: "Environment", tPowerGroup: "PowerRedundancyGroup",
-	tRedundancy: "RedundancyGroup", tHaPair: "HaPair",
+	tRedundancy: "RedundancyGroup", tHaPair: "HaPair", tCoolGroup: "CoolingRedundancyGroup", tMlag: "MlagDomain",
 }
 
 // typePrefix gives the short id prefix of each type.
@@ -122,7 +124,7 @@ var typePrefix = [nTypes]string{
 	tNode: "node", tNamespace: "ns", tWorkload: "wl", tPod: "pod", tContainer: "ctr", tOS: "os",
 	tSoftware: "swi", tDbCluster: "dbc", tDbInstance: "dbi", tDatabase: "db", tLbServer: "lbv",
 	tLbPool: "lbp", tLbMember: "lbm", tBizService: "bsvc", tTechService: "tsvc", tAppService: "asvc",
-	tTeam: "team", tEnv: "env", tPowerGroup: "pgrp", tRedundancy: "rgrp", tHaPair: "hapr",
+	tTeam: "team", tEnv: "env", tPowerGroup: "pgrp", tRedundancy: "rgrp", tHaPair: "hapr", tCoolGroup: "cgrp", tMlag: "mlag",
 }
 
 // The link types the generator makes.
@@ -196,6 +198,11 @@ type propSpec struct {
 type keyComp struct {
 	prop int
 	ctx  int
+	// set is a set component over the link type ctx: the sorted ids of the
+	// objects at the other end, incoming when the links arrive at the
+	// object, with size members when size is more than 0.
+	set, incoming bool
+	size          int
 }
 
 // keySpec is an identity key as the generator can satisfy it. A key that
@@ -217,7 +224,10 @@ type typeSpec struct {
 	byName map[string]int
 	keys   []keySpec
 	ingest bool // an identity key exists in the standard model
-	basis  model.Basis
+	// setOut and setIn are the link types some key reads as a set, by the
+	// links that leave the object and the links that arrive at it.
+	setOut, setIn uint32
+	basis         model.Basis
 }
 
 type linkSpec struct {
@@ -298,16 +308,27 @@ func (s *schema) addType(i int) error {
 			ts.keys = append(ts.keys, ks)
 		}
 	}
-	for _, k := range ts.keys {
-		for _, c := range k.comps {
-			if c.prop >= 0 {
-				ts.props[c.prop].keyPart = true
-			}
-		}
-	}
+	ts.markKeyParts()
 	s.types[i] = ts
 	s.byID[ts.id] = ts
 	return nil
+}
+
+// markKeyParts marks the properties some key uses and the link types some key
+// reads as a set, from the keys of the type.
+func (ts *typeSpec) markKeyParts() {
+	for _, k := range ts.keys {
+		for _, c := range k.comps {
+			switch {
+			case c.prop >= 0:
+				ts.props[c.prop].keyPart = true
+			case c.set && c.incoming:
+				ts.setIn |= 1 << uint(c.ctx)
+			case c.set:
+				ts.setOut |= 1 << uint(c.ctx)
+			}
+		}
+	}
 }
 
 func (s *schema) keySpecOf(ts *typeSpec, k model.IdentityKey, names map[model.PropertyID]string) (keySpec, bool) {
@@ -334,7 +355,7 @@ func (s *schema) keySpecOf(ts *typeSpec, k model.IdentityKey, names map[model.Pr
 		if found < 0 {
 			return ks, false
 		}
-		ks.comps = append(ks.comps, keyComp{prop: -1, ctx: found})
+		ks.comps = append(ks.comps, keyComp{prop: -1, ctx: found, set: c.Set, incoming: c.Incoming, size: c.Size})
 	}
 	return ks, true
 }

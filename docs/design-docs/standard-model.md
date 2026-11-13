@@ -9,7 +9,7 @@ follows:
 
 **이 문서는 요약이에요.** 표준 모델의 실체(진실의 자리)는 `backend/internal/model/standard/`의 JSON 데이터 파일이에요(ADR-0020). 여기서는 층별 요약과 대표 타입, 규칙만 적고, 둘이 다르면 데이터 파일이 맞아요. 모델의 칸과 규칙은 [KG의 모델](kg-model.md), 결정은 [ADR-0007](adr/0007-kg-model.md)이에요.
 
-- **수는 데이터 파일이 굳힌 수예요.** 객체 타입 168개(핵심 122, 확장 46), 링크 타입 이름 55개와 바인딩 528개(출발과 도착의 한 쌍이 하나), 액션 타입 112개, 특성 19개예요. 조사 담당의 초안은 이름 58개와 바인딩 표의 줄 157개였어요. 이름이 셋 줄어든 까닭은 `INSTALLED_IN`과 `REQUIRES_PART`가 `PART_OF`(`whole_needs_part`)로 합쳐지고, `SUPPLIED_BY`(`fuel`)는 닫힌 채널 밖이라 빠진 것이에요. 바인딩은 표의 줄 157개를 쌍마다 하나로 풀어 528개예요. 식별 키는 213개를 담았고 못 담은 35개와 키가 없는 타입 20개는 ADR-0020에 있어요. 수는 시험이 잠가요.
+- **수는 데이터 파일이 굳힌 수예요.** 객체 타입 168개(핵심 122, 확장 46), 링크 타입 이름 55개와 바인딩 551개(출발과 도착의 한 쌍이 하나), 액션 타입 112개, 특성 19개예요. 조사 담당의 초안은 이름 58개와 바인딩 표의 줄 157개였어요. 이름이 셋 줄어든 까닭은 `INSTALLED_IN`과 `REQUIRES_PART`가 `PART_OF`(`whole_needs_part`)로 합쳐지고, `SUPPLIED_BY`(`fuel`)는 닫힌 채널 밖이라 빠진 것이에요. 바인딩은 표의 줄 157개를 쌍마다 하나로 풀어 528개였고 ADR-0022가 23개를 더해 551개예요(키의 부모 바인딩, 이중화 묶음의 구성원과 쓰는 쪽, `DEPENDS_ON`). 식별 키는 235개이고 모든 타입이 자기 키를 가져요(ADR-0022, 스키마 37개). 번호와 ID는 그대로예요. 수는 시험이 잠가요.
 - **핵심**은 영향 범위의 계산에 필요한 타입이고 **확장**은 소스가 흔히 주거나 운영에 흔히 필요한 타입이에요. 표의 타입은 모두 핵심이고, 확장 타입은 표 아래에 이름만 적어요.
 - **빌린 표준**에는 조사로 확인한 것만 표준 이름을 적어요. 확인하지 못한 것은 "프락시움이 정함"이에요. 표준에서는 이름, 골격, 식별자, 고르기 값만 빌리고 링크의 뜻, 번짐, 근거, 시간은 프락시움이 정해요. 223P(건물 설비의 개념 모델)는 승인되지 않은 초안이라 개념만 참고해요.
 - 모든 항목의 이름 공간은 `std`예요. 링크의 뜻은 [KG의 모델](kg-model.md) 5절의 열하나, 액션의 축은 `mutates`·`reversibility`·`disruption`·`physical` 순이에요(kg-model의 12절).
@@ -291,7 +291,7 @@ OS, 미들웨어, 데이터베이스, 접속 종단, 부하 분산 설정, 이�
 | 링크 | 출발 → 도착 | 뜻 |
 |---|---|---|
 | `REALIZED_BY` | `BusinessService` → `ServiceOffering` → `ApplicationService` → `Workload`, `SoftwareInstance` | `realized_by` |
-| `DEPENDS_ON` | 서비스 → 서비스, `DatabaseInstance`, `Endpoint` | `requires` |
+| `DEPENDS_ON` | 서비스 → 응용 서비스(ADR-0022), `DatabaseInstance`, `Endpoint`, 이중화 묶음 | `requires` |
 | `MEMBER_OF` | `ApplicationService` → `Environment` | `member_of` |
 | `OWNED_BY` | 아무 객체 → `Team`, `Tenant` | `owned_by` |
 

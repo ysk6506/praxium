@@ -440,6 +440,22 @@
           "change_class": "slow",
           "required": true
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "weak",
+          "components": [
+            {
+              "property": "pr.endpoint.address_or_hostname"
+            },
+            {
+              "property": "pr.endpoint.port"
+            },
+            {
+              "property": "pr.endpoint.protocol"
+            }
+          ]
+        }
       ]
     },
     {

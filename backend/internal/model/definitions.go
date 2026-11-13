@@ -112,13 +112,21 @@ type Property struct {
 	Description  string      `json:"description,omitempty"`
 }
 
-// KeyComponent is one part of an identity key: a property of the type, whose
-// value type tidies the value, or a context, the link type that leads to the
-// object this one is identified inside (a port name inside its device,
-// kg-model.md 10.2). Exactly one of the two is set.
+// KeyComponent is one part of an identity key. It is exactly one of three
+// kinds. A property of the type, whose value type tidies the value. A
+// context, the link type that leads to the object this one is identified
+// inside (a port name inside its device, kg-model.md 10.2). A set, a link
+// type whose far objects together name this one (a pair of switches names
+// their domain): the key uses the sorted internal ids of those objects, so
+// the order they arrive in does not matter. A set reads the links that leave
+// this object, or with Incoming the links that arrive at it, and may demand an
+// exact number of members with Size (0 means any number).
 type KeyComponent struct {
 	Property PropertyID `json:"property,omitempty"`
 	Context  LinkTypeID `json:"context,omitempty"`
+	Set      bool       `json:"set,omitempty"`
+	Incoming bool       `json:"incoming,omitempty"`
+	Size     int        `json:"size,omitempty"`
 }
 
 // IdentityKey is one way to recognise an object, in priority order in the

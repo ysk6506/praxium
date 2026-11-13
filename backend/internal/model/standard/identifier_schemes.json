@@ -214,5 +214,11 @@
     "name": "sensor_id",
     "normalizer": "vt.string",
     "description": "외부 식별자의 방식. 초안의 이름은 ext:sensor.id. 유효한 테두리: source"
+  },
+  {
+    "id": "is.hint_hash",
+    "name": "hint_hash",
+    "normalizer": "vt.string",
+    "description": "식별자를 모르는 객체(UnknownObject)를 알아보는 방식. 값은 받은 단서(기대한 타입, 단서 글, 가리킨 곳)를 다듬어 섞은 해시이고, 같은 단서는 늘 같은 값이 된다."
   }
 ]

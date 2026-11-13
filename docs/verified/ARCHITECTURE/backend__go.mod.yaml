@@ -2,6 +2,6 @@ doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
 hash: "56f4aade43eda700"
 date: "2026-11-13"
-note: "Go 단위 표와 go: 절, backend/go.mod, 규칙 코드와 모듈 표 형식을 구조 계약과 하네스 소스와 대조"
+note: "identity keys now have set components (ADR-0022); units and dependency directions unchanged"
 text_changed: true
-doc_hash: "acdda11cd5c611a4"
+doc_hash: "b67b04283ec99f40"

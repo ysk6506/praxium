@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/internal/worldgen/gen_rack.go"
-hash: "933fc8e05eac7a99"
+hash: "cc3733f7cc7bf275"
 date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+note: "ADR-0022: keys with sets and 1:1 context, redundancy groups as objects, DEPENDS_ON between application services; counts and golden values updated"
 text_changed: true
-doc_hash: "774dc0e1b13d86d0"
+doc_hash: "5705221fe69d08d6"

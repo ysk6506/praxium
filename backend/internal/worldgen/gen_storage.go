@@ -29,6 +29,7 @@ func (g *gen) storageArray(c *siteCtx, hc *hallCtx, a rackAddr, rk ref, pdu [2]r
 	for v := 0; v < volumesPerArray; v++ {
 		vol := g.obj(tVolume, volumeID(a, v)).set(kS("name", "vol-"+itoa(v)+"-"+arr.id)).in(lRunsOn, arr).emit()
 		g.link(lBackedBy, vol, pool)
+		g.link(lRunsOn, vol, pair)
 	}
 }
 

@@ -464,6 +464,20 @@
           "value_type": "vt.integer",
           "change_class": "slow"
         }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.owned_by",
+              "set": true
+            },
+            {
+              "property": "pr.on_call_schedule.schedule_name"
+            }
+          ]
+        }
       ]
     },
     {
@@ -555,6 +569,20 @@
           "value_type": "vt.string",
           "change_class": "slow",
           "required": true
+        }
+      ],
+      "identity_keys": [
+        {
+          "strength": "strong",
+          "components": [
+            {
+              "context": "lt.owned_by",
+              "set": true
+            },
+            {
+              "property": "pr.contract.contract_number"
+            }
+          ]
         }
       ]
     },

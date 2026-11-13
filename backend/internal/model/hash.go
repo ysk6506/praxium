@@ -169,9 +169,25 @@ func objectTypeTree(t ObjectType) map[string]any {
 func identityKeyTree(key IdentityKey) map[string]any {
 	parts := make([]any, len(key.Components))
 	for i, c := range key.Components {
-		parts[i] = map[string]any{"property": c.Property.String(), "context": c.Context.String()}
+		parts[i] = keyComponentTree(c)
 	}
 	return map[string]any{"components": parts, "strength": string(key.Strength), "scheme": key.Scheme.String()}
+}
+
+// keyComponentTree adds the set fields only when they are set, so the hash of
+// a key without a set is the one it always had (hash rule version 1).
+func keyComponentTree(c KeyComponent) map[string]any {
+	tree := map[string]any{"property": c.Property.String(), "context": c.Context.String()}
+	if c.Set {
+		tree["set"] = true
+	}
+	if c.Incoming {
+		tree["incoming"] = true
+	}
+	if c.Size != 0 {
+		tree["size"] = c.Size
+	}
+	return tree
 }
 
 func schemeTree(s IdentifierScheme) (string, any) {
