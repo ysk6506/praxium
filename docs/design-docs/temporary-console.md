@@ -56,7 +56,7 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 ## 4. 어디에 두고 어떻게 내주나
 - **폴더의 자리는 구현하는 변경에서 정해요.** 정해진 것은 "저장소의 따로 된 폴더 하나"라는 규칙뿐이에요.
 - **내주는 쪽은 API 역할이에요.** 켜는 설정은 시작할 때 읽는 배포의 값이에요(가정. 이 설정은 저장소가 뜨기 전에도 필요해서 ADR-0017의 "API로 바꾸는 설정"이 아니에요). 켜지면 API 역할이 설정이 가리키는 **디스크의 폴더**를 읽어 정적 파일로 내줘요.
-- **실행 파일에 넣지 않아요.** 넣으면 빌드가 콘솔 폴더에 기대게 돼 규칙 1이 깨져요. 그래서 콘솔은 실행 파일 옆의 폴더로 배포돼요. "실행 파일 하나로 배포된다"(ADR-0006)는 알파의 이 한 곳에서 예외예요(설계 담당에게 묻는 것에 적었어요).
+- **실행 파일에 넣지 않아요.** 넣으면 빌드가 콘솔 폴더에 기대게 돼 규칙 1이 깨져요. 그래서 콘솔은 실행 파일 옆의 폴더로 배포돼요. "실행 파일 하나로 배포된다"(ADR-0006)는 알파의 이 한 곳에서 예외예요. 폴더는 디스크로 내줘요(정해진 것).
 - **같은 출처에서 내줘요.** 콘솔과 API가 같은 주소에서 나오므로 교차 출처 허용이 필요 없고, API의 허용할 출처의 목록은 기본(막힘) 그대로예요.
 - **정적 파일에도 보안 머리를 달아요.** 틀 안에 넣기를 막고, 스크립트를 같은 출처의 파일로만 받게 하는 머리예요(6절의 까닭).
 - **`GET /v1/capabilities`의 `features`에 콘솔이 켜져 있다고 보이게 하는 것**을 권해요. 오픈 베타 전에 "프로덕션에 켜져 있지 않다"를 점검하려는 거예요(10절).
@@ -67,15 +67,16 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 | 화면 | 보이는 것과 단추 | 부르는 API |
 |---|---|---|
 | 계약 탐색기 | 계약 문서(OpenAPI)에서 저절로 나오는 길의 목록과 칸. 길을 골라 보내 봐요. 보내는 것은 읽기와 `x-safe`로 표시된 물음뿐이에요 | `GET /v1/contract`, `GET /v1/capabilities`, `GET /v1/me`, `GET /v1/problems/{code}` |
-| 소스와 일정과 실행 | 소스 목록과 상세, 일정, 실행 목록과 단계별 수, 흐름과 수집기. 단추: 지금 한 번, 일시 정지와 다시 켜기 | `GET /v1/sources`, `GET /v1/sources/{source_id}`, `GET /v1/schedules`, `POST /v1/schedules/{schedule_id}/run-now`, `POST /v1/sources/{source_id}/pause`, `POST /v1/sources/{source_id}/resume`, `GET /v1/sync-runs`, `GET /v1/sync-runs/{run_id}`, `GET /v1/sync-runs/{run_id}/stages`, `GET /v1/feed-flows`, `GET /v1/collectors`, `GET /v1/jobs/{job_id}` |
+| 소스와 일정과 실행 | 소스 목록과 상세, 일정, 실행 목록과 단계별 수, 흐름과 수집기. 단추: 지금 한 번, 일시 정지와 다시 켜기 | `GET /v1/sources`, `GET /v1/sources/{source_id}`, `GET /v1/schedules`, `POST /v1/schedules/{schedule_id}:run-now`, `POST /v1/sources/{source_id}:pause`, `POST /v1/sources/{source_id}:resume`, `GET /v1/sync-runs`, `GET /v1/sync-runs/{run_id}`, `GET /v1/sync-runs/{run_id}/stages`, `GET /v1/feed-flows`, `GET /v1/collectors`, `GET /v1/jobs/{job_id}` |
 | 비밀 값(메타 정보만) | 이름, 종류, 판의 상태, 만료, 마지막으로 쓴 때. 값을 넣는 칸이 없어요([비밀 값과 암호화](secrets-and-encryption.md)) | `GET /v1/secrets`, `GET /v1/secrets/{secret_id}` |
 | 브랜치와 제안과 후보 실행의 차이 | 열린 브랜치와 제안, 막는 까닭, 검사, 정의의 차이와 KG의 차이, 병합의 줄. 단추: 후보 실행 | `GET /v1/definitions-overview`, `GET /v1/branches`, `GET /v1/branches/{branch_id}/items`, `GET /v1/proposals`, `GET /v1/proposals/{proposal_id}`, `GET /v1/proposals/{proposal_id}/checks`, `POST /v1/proposals/{proposal_id}/candidate-runs`, `GET /v1/candidate-runs/{run_id}/diff`, `GET /v1/merge-queue` |
-| 객체 찾기와 이웃과 영향 범위 | 객체를 찾아 상세를 보고, 이웃과 영향 범위를 작은 그래프와 표로 | `POST /v1/questions/find`, `GET /v1/objects/{object_id}`, `POST /v1/questions/neighbors`, `POST /v1/questions/impact`, `GET /v1/graph-versions` |
-| 건강과 문제 목록 | 자원의 건강과 까닭, 문제 목록, 알림, 자원의 시간줄 | `GET /v1/health`, `GET /v1/health/{resource_kind}/{resource_id}`, `GET /v1/issues`, `GET /v1/issues/{issue_id}`, `GET /v1/alerts`, `GET /v1/resources/{resource_kind}/{resource_id}/timeline` |
-| 역량 질문과 충족률 | 역량 질문의 목록과 충족률, 속성으로 거른 충족률 | `GET /v1/competency-questions`, `POST /v1/questions/competency` |
-| 권한 부여의 표 | 권한 부여의 표, 역할 일곱, 감사 기록. 단추: 부여를 주고 거두기 | `GET /v1/grants`, `POST /v1/grants`, `POST /v1/grants/{grant_id}/revoke`, `GET /v1/roles`, `GET /v1/directory/subjects`, `GET /v1/audit-records` |
-| 프락시움 자신의 진단 | 지금 아픈 부품과 까닭, 사건 코드, 운영 행위의 목록과 미리 해 보기 | `POST /v1/diagnoses`, `GET /v1/event-codes`, `GET /v1/operations`, `POST /v1/operations/{operation_name}/previews` |
+| 객체 찾기와 이웃과 영향 범위 | 객체를 찾아 상세를 보고, 이웃과 영향 범위를 작은 그래프와 표로 | `POST /v1/kgs/{kg}/questions/find`, `GET /v1/kgs/{kg}/objects/{object_id}`, `POST /v1/kgs/{kg}/questions/neighbors`, `POST /v1/kgs/{kg}/questions/impact`, `GET /v1/kgs/{kg}/graph-versions` |
+| 건강과 문제 목록 | 자원의 건강과 까닭, 문제 목록, 알림, 자원의 시간줄 | `GET /v1/kgs/{kg}/health`, `GET /v1/kgs/{kg}/health/{resource_kind}/{resource_id}`, `GET /v1/issues`, `GET /v1/issues/{issue_id}`, `GET /v1/alerts`, `GET /v1/resources/{resource_kind}/{resource_id}/timeline` |
+| 역량 질문과 충족률 | 역량 질문의 목록과 충족률, 속성으로 거른 충족률 | `GET /v1/competency-questions`, `POST /v1/kgs/{kg}/questions/competency` |
+| 권한 부여의 표 | 권한 부여의 표, 역할 여덟, 감사 기록. 단추: 부여를 주고 거두기 | `GET /v1/grants`, `POST /v1/grants`, `POST /v1/grants/{grant_id}:revoke`, `GET /v1/roles`, `GET /v1/directory/subjects`, `GET /v1/audit-records` |
+| 프락시움 자신의 진단 | 지금 아픈 부품과 까닭, 사건 코드, 운영 행위의 목록과 미리 해 보기, 올리는 중의 상태. 운영 행위를 실행하는 단추는 없어요(명령줄로 해요) | `POST /v1/ops/diagnose`, `GET /v1/ops/event-codes`, `GET /v1/ops/actions`, `POST /v1/ops/actions/{action}:dry-run`, `GET /v1/ops/rollout` |
 
+- 보내는 길은 정해진 단추의 것과 `x-safe`(안전하다고 표시된 길)뿐이에요. 길의 `{kg}`는 기본 `main`이에요.
 - 권한이 없는 화면은 API가 `permission.*`나 `not_found.resource`로 답하고, 콘솔은 그것을 그대로 보여요. 단추를 켜고 끄는 데는 응답의 `meta.allowed_actions`를 써요(판단은 서버가 해요).
 - 화면의 목록은 상한이에요. 새 API가 생겼다고 화면을 더해야 하는 것은 아니에요(9절).
 
@@ -123,7 +124,7 @@ ADR-0016의 "화면의 코드는 이 저장소에 두지 않는다"에 **예외 
 **지워도 남는 것.** 콘솔이 부르던 API는 그대로예요. 계약이기 때문이에요. 콘솔이 보여 주던 "이 화면이 부른 API"의 기록은 화면 저장소가 같은 일을 할 때 참고할 수 있는 예시로 남겨도 돼요(저장소 밖으로).
 
 ## 9. 알파의 기준과의 관계
-- 알파의 기준은 그대로예요. **모든 기능이 API와 명령줄 클라이언트로 돼요**(ADR-0016, REQ-147). 콘솔은 그 위의 편의예요.
+- 콘솔은 알파 1(뼈대와 한 줄)에 서고 제품 책임자가 거기서부터 눌러 봐요. 알파의 기준은 그대로예요. **모든 기능이 API와 명령줄 클라이언트로 돼요**(ADR-0016, REQ-147). 콘솔은 그 위의 편의예요.
 - **콘솔에 없다고 기능이 없는 것이 아니에요.** 제품 책임자가 알파를 시험할 때 어떤 기능의 화면이 없으면 명령줄 클라이언트로 시험해요. 화면이 없다는 것이 그 기능의 알파 완료를 막지 않아요.
 - 거꾸로 콘솔에 있다고 기능이 끝난 것도 아니에요. 기능의 완료는 API의 계약과 시험이 정해요.
 - 알파가 끝난 뒤 클로즈 베타에서 화면 저장소가 UX와 UI를 설계하고, 콘솔의 화면 목록은 그때 요구의 출발 자료로만 쓰여요.
