@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "14d5ff56d2e56b8b"
+hash: "c97cb41c2b94cd1a"
 date: "2026-11-13"
-note: "ADR-0024: REST 계약, API 검사, 새 단위를 문서에 맞춤"
+note: "adapter.graphcheck 행과 문장을 더했다"
 text_changed: true
-doc_hash: "e8c51e90a13dfdf9"
+doc_hash: "08b5e304a97b81ba"

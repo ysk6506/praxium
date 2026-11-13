@@ -122,7 +122,7 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 | `change_batch` | `kg_id`, `change_seq`, `kind`(`sync`, `stream`, `merge`), `source_id`, `apply_id`, `chunk_no`, `chunk_count`, `ingest_seq_from`, `ingest_seq_to`, `definition_set_hash`, `applied_at`, `attempt`, `row_counts` | `(kg_id, change_seq)` | `change_seq` 구간으로 나눈다 |
 | `change_entry` | `kg_id`, `change_seq`, `entity_kind`(`object`, `link`), `entity_id`, `change_kind`(`added`, `changed`, `retired`), `old_hash`, `new_hash` | `(kg_id, change_seq, entity_kind, entity_id)` | `change_seq` 구간으로 나눈다 |
 | `kg_version` | `kg_id`, `version_no`, `kg_version_id`, `sealed_seq`, `generation`, `prev_kg_version_id`, `definition_set_hash`, `engine_semantic_version`, `hash_rule_version`, `input_digest`, `graph_hash`, `sealed_at`, `seal_kind`(`sync`, `merge`, `periodic`) | `(kg_id, version_no)` | `(kg_id, kg_version_id)`는 유일해야 한다 |
-| `kg_version_hash_part` | `kg_id`, `version_no`, `entity_kind`, `type_no`, `partial_sum`, `row_count` | `(kg_id, version_no, entity_kind, type_no)` | 작은 표 |
+| `kg_version_hash_part` | `kg_id`, `version_no`, `entity_kind`, `type_id`(바뀌지 않는 ID), `partial_sum`, `row_count` | `(kg_id, version_no, entity_kind, type_id)` | 작은 표 |
 
 적용된 변경의 기록(`change_batch`, `change_entry`)은 **언제나 PostgreSQL**에 있어요. `live`·`hist`와 한 트랜잭션으로 쓰이는 KG의 진실이기 때문이에요(오래된 것은 내려 둘 수 있어요). `version_no`는 정렬용 숫자, `kg_version_id`는 같은 입력이면 같은 값이 나오는 이름이에요. 버전의 머리에 **실행기의 의미 버전과 해시 규칙의 버전**이 적혀요. `sealed_seq`는 `readable_through`를 넘지 않아요.
 
@@ -202,8 +202,8 @@ object_hist 에서   seq_from <= S AND S < seq_to
 
 | 대상 | 입력 | 설명 |
 |---|---|---|
-| 객체 ID | 구별하는 글, `type_no`, 처음 본 식별 키의 값들(길이를 앞에 붙임) | SHA-256의 앞 128비트. 한번 정하면 바꾸지 않는다(ADR-0007) |
-| 링크 ID | 구별하는 글, `link_type_no`, 출발 ID, 도착 ID, `discriminator` | 같은 쌍 사이에 링크가 여럿이면 `discriminator`로 가른다. 합쳐질 때 바뀌는 ID는 `identity_event`가 잇는다(3.3) |
+| 객체 ID | 구별하는 글, 타입의 바뀌지 않는 ID(번호가 아니다), 처음 본 식별 키의 구성요소들(종류, 참조, 값 또는 객체 ID들, 길이를 앞에 붙임) | SHA-256의 앞 128비트. 한번 정하면 바꾸지 않는다(ADR-0007) |
+| 링크 ID | 구별하는 글, 링크 타입의 바뀌지 않는 ID, 출발 ID, 도착 ID, `discriminator` | 같은 쌍 사이에 링크가 여럿이면 `discriminator`로 가른다. 합쳐질 때 바뀌는 ID는 `identity_event`가 잇는다(3.3) |
 | 내용 해시 | 정규 인코딩한 내용(7.3의 닫힌 목록) | 같은 ID의 내용이 바뀌었는지 보는 값 |
 | `input_digest` | 앞 봉한 자리 뒤에 굳은 원본 변경을 `ingest_seq` 차례로 이은 해시 사슬 | 받은 차례가 다르면 값이 다르다 |
 | KG 버전 ID | 구별하는 글, 앞 버전의 ID, 정의 묶음의 해시, `input_digest`, 실행기의 의미 버전, 해시 규칙의 버전 | 이 입력이 같으면 같다(7.5) |
@@ -218,7 +218,7 @@ object_hist 에서   seq_from <= S AND S < seq_to
 | 규칙 | 내용 |
 |---|---|
 | 정렬 | 맵의 키는 UTF-8 바이트 순. 속성은 `attr_no` 순. 로케일이나 UTF-16 단위 순서를 쓰지 않는다. DB에서 정렬이 필요하면 바이트 비교(`C` 정렬)를 쓴다 |
-| 목록 | 속성이 "순서가 뜻을 갖는다"고 선언한 목록만 순서를 지킨다. 나머지는 인코딩한 바이트로 정렬한 뒤 해시한다 |
+| 목록 | 속성이 "순서가 뜻을 갖는다"고 선언한 목록만 순서를 지킨다(등록부에 그 선언이 아직 없어 지금은 모든 목록을 정렬한다, ADR-0025). 나머지는 인코딩한 바이트로 정렬한 뒤 해시한다 |
 | 정수 | 크기 제한 없는 가변 길이 정수. 식별자, 시리얼, 주소 같은 값은 숫자가 아니라 문자열이다 |
 | 소수 | 정규화한 십진 문자열(끝의 0과 지수 표기 없음, `-0`은 `0`). 이진 부동소수를 해시에 넣지 않는다. `NaN`과 무한대는 오류다 |
 | 글자 | UTF-8. 짝 없는 서로게이트는 오류. 유니코드 정규화나 대소문자 접기는 값 타입의 다듬기(ADR-0007)가 한다 |
@@ -229,12 +229,12 @@ object_hist 에서   seq_from <= S AND S < seq_to
 
 ### 7.3 내용 해시에 들어가는 것: 닫힌 목록
 
-원칙은 **뜻이 바뀌어야만 해시가 바뀐다**예요. 목록 밖의 것은 해시에 들지 않아요. 목록을 바꾸면 모든 해시가 바뀌므로 해시 규칙의 버전을 올리는 결정 기록이 있어야 해요. 이름이 아니라 **바뀌지 않는 번호**가 들어서 타입이나 속성의 이름을 바꿔도 해시는 그대로예요.
+원칙은 **뜻이 바뀌어야만 해시가 바뀐다**예요. 목록 밖의 것은 해시에 들지 않아요. 목록을 바꾸면 모든 해시가 바뀌므로 해시 규칙의 버전을 올리는 결정 기록이 있어야 해요. 이름이 아니라 **바뀌지 않는 ID**가 들어서 타입이나 속성의 이름을 바꿔도 해시는 그대로예요.
 
 | 대상 | 드는 것(이 순서) |
 |---|---|
-| 객체 | 구별하는 글과 해시 규칙의 버전, 종류 표지, `type_no`, `name`, `versioned` 속성마다 `(attr_no, 값, 근거 등급, 근거의 종류)`(`attr_no` 순) |
-| 링크 | 구별하는 글과 해시 규칙의 버전, 종류 표지, `link_type_no`, 출발 객체 ID, 도착 객체 ID, `discriminator`, `versioned` 속성마다 위와 같은 넷 |
+| 객체 | 구별하는 글과 해시 규칙의 버전, 종류 표지, 타입의 ID, `name`, `versioned` 속성마다 `(속성 ID, 값, 근거 등급, 근거의 종류)`(속성 ID 순) |
+| 링크 | 구별하는 글과 해시 규칙의 버전, 종류 표지, 링크 타입의 ID, 출발 객체 ID, 도착 객체 ID, `discriminator`, **링크의 근거 등급과 근거의 종류**(ADR-0025), `versioned` 속성마다 위와 같은 넷 |
 
 **들지 않는 것**: `volatile` 속성, `source_refs`, 관측한 시각과 신선도, 어느 공급이 쥐었는지(`feed_id`), 실행 번호, 처리 순서, 끌어낸 칸(`min_grade`, `scope_v1`~`scope_v4`), `seq_from`과 `content_hash` 자신.
 

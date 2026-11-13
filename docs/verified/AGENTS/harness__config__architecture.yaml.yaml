@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "14d5ff56d2e56b8b"
+hash: "c97cb41c2b94cd1a"
 date: "2026-11-13"
-note: "ADR-0024: REST 계약, API 검사, 새 단위를 문서에 맞춤"
-text_changed: true
+note: "architecture.yaml에 adapter.graphcheck 단위를 더했다. 문서의 내용은 그대로다"
+text_changed: false
 doc_hash: "59c91679fee1f90d"

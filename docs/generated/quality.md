@@ -25,17 +25,20 @@
 
 ## 단위별
 
-단위 수 등급별: D 0, C 2, B 10, A 0. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 0, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 0.
+단위 수 등급별: D 0, C 4, B 11, A 0. 커버리지 기록: 없음 (모든 단위가 "모름"). 끄기 종류별: biome-ignore 0, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 0.
 
 | 단위 | 등급 | 커버리지 (값 / 하한) | 끄기 | 한도 90% 넘음 (초과) | 열린 부채 (가장 이른 기한) | 가장 오래된 문서 | 이유 |
 |---|---|---|---|---|---|---|---|
 | core.kernel | C | 모름 / 98.0 | 0 | 0 (0) | 2 (2027-02-01) | 2026-11-13 (ARCHITECTURE.md) | 열린 부채 2 |
 | harness | C | 모름 / 96.0 | 0 | 24 (0) | 2 (2027-02-01) | 2026-11-12 (adr-process.md) | 열린 부채 2, 한도 90% 넘음 24 |
+| go:core.graph | C | 모름 / 90.0 | 0 | 6 (0) | 0 | — | 한도 90% 넘음 6 |
+| go:adapter.memstore | C | 모름 / 90.0 | 0 | 5 (0) | 0 | — | 한도 90% 넘음 5 |
 | go:core.kernel | B | 모름 / 98.0 | 0 | 1 (0) | 1 (2027-02-01) | — | 열린 부채 1, 한도 90% 넘음 1, 커버리지 모름 |
 | go:core.model | B | 모름 / 98.0 | 0 | 3 (0) | 0 | — | 한도 90% 넘음 3, 커버리지 모름 |
 | go:core.contract | B | 모름 / 91.5 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
 | go:core.worldgen | B | 모름 / 96.5 | 0 | 3 (0) | 0 | 2026-11-13 (worldgen.md) | 한도 90% 넘음 3, 커버리지 모름 |
 | go:core.access | B | 모름 / 90.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
+| go:adapter.graphcheck | B | 모름 / 90.0 | 0 | 2 (0) | 0 | — | 한도 90% 넘음 2, 커버리지 모름 |
 | go:adapter.devauth | B | 모름 / 90.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
 | go:adapter.http | B | 모름 / 92.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
 | go:adapter.cli | B | 모름 / 95.0 | 0 | 0 (0) | 0 | — | 커버리지 모름 |
