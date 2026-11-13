@@ -17,12 +17,13 @@ items:
     status: open
     units: [harness]
   - id: TD-0002
-    title: "UX 측정 하네스와 화면 도우미 검사를 가져오지 않았다. 화면이 없어서다. 첫 화면이 생기는 변경에서 가져와야 화면이 측정 없이 쌓이지 않는다"
+    title: "UX 측정 하네스와 화면 도우미 검사를 가져오지 않았다. 화면이 없어서였다. 화면은 다른 저장소가 만들게 되어(ADR-0016) 이 저장소의 일이 아니다"
     severity: low
-    cost: "테라리움의 UX 측정(여정, 일곱 면 점수, CI 조각)을 가져와 첫 화면의 여정 하나를 건다"
+    cost: "화면 저장소가 서면 그쪽에서 UX 측정을 건다"
     created: "2026-11-12"
     due: "2027-02-01"
-    status: open
+    status: wontfix
+    resolution: "화면은 다른 저장소의 일이 되었다(ADR-0016). 이 저장소의 알파는 모든 기능이 API와 명령줄 클라이언트로 되는 것이고, UX 측정은 화면 저장소가 정한다."
   - id: TD-0003
     title: "하네스 코드에 테라리움 제품에 묶인 조각이 남아 있다: 문서의 숫자 검사가 아는 이름(entity_kinds, tools 등), 서버 환경 변수와 API 길을 찾는 자리(apps/server, contract/routes). 지금은 쓰이지 않아 통과한다"
     severity: low
@@ -31,3 +32,34 @@ items:
     due: "2027-02-01"
     status: open
     units: [harness]
+  - id: TD-0004
+    title: "kernel의 해시가 JavaScript의 문자열 표현에 기댄다. 저장되거나 다른 언어와 나누는 값에는 UTF-8 SHA-256과 정규 인코딩을 써야 한다(ADR-0006)"
+    severity: medium
+    cost: "백엔드의 바탕 부품(Go)에서 정규 바이너리 인코딩 위의 SHA-256을 쓰고, 저장되거나 밖으로 나가는 값이 kernel의 해시를 쓰지 않게 한다"
+    created: "2026-11-13"
+    due: "2027-02-01"
+    status: open
+    units: [core.kernel]
+  - id: TD-0005
+    title: "하네스에 Go 코드를 읽는 검사가 없다(의존 방향, 공개 면, 복잡도와 크기, 시험 잠금과 커버리지, 라이선스, 검사 끄기 주석). 첫 Go 제품 코드가 들어가는 변경에서 함께 만들어야 한다(ADR-0006)"
+    severity: medium
+    cost: "하네스는 TypeScript 도구로 두고 Go 코드를 읽는 조각을 더한다. 그 전에는 Go 제품 코드를 합치지 않는다"
+    created: "2026-11-13"
+    due: "2027-02-01"
+    status: open
+    units: [harness]
+  - id: TD-0006
+    title: "core.kernel의 한국어 부품(조사, 시간 표기)과 REQ-002, REQ-003은 화면 저장소의 것이다. 화면 저장소가 서면 옮겨야 한다(ADR-0016)"
+    severity: low
+    cost: "화면 저장소로 옮기고 이 저장소에서 지운다. 그때까지 새 코드가 그것에 기대지 않는다"
+    created: "2026-11-13"
+    due: "2027-02-01"
+    status: open
+    units: [core.kernel]
+  - id: TD-0007
+    title: "임시 콘솔(클로즈 베타까지 기능을 눌러 보는 지울 수 있는 화면)이 이 저장소의 따로 된 폴더에 있다. 프런트엔드 저장소가 서거나 클로즈 베타가 끝나면 지워야 한다(ADR-0016)"
+    severity: low
+    cost: "폴더와 켜는 설정 하나를 지운다. 백엔드의 어떤 코드도 그것을 import하지 않으므로 다른 곳은 고치지 않는다"
+    created: "2026-11-13"
+    due: "2027-06-01"
+    status: open

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/definitions.md"
+target: "docs/design-docs/adr/0014-definitions-branches-revert.md"
+hash: "0b4edc6c17aa9602"
+date: "2026-11-13"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+text_changed: true
+doc_hash: "91507197d098ca18"

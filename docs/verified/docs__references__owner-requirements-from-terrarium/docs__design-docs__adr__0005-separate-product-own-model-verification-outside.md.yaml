@@ -1,0 +1,7 @@
+doc: "docs/references/owner-requirements-from-terrarium.md"
+target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
+hash: "0a5542b1b8b7c8c7"
+date: "2026-11-13"
+note: "ADR 봉인과 8-21~8-33의 반영 뒤 이어진 문서와 맞는지 다시 읽고 확인함"
+text_changed: false
+doc_hash: "dda90e7987ce95a7"

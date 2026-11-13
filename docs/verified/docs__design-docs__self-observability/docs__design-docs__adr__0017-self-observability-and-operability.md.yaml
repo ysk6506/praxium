@@ -1,0 +1,7 @@
+doc: "docs/design-docs/self-observability.md"
+target: "docs/design-docs/adr/0017-self-observability-and-operability.md"
+hash: "c2d5194616acbbaf"
+date: "2026-11-13"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+text_changed: true
+doc_hash: "611b88035b753683"

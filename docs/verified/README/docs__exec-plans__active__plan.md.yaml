@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "e8ed6ab8bc5e087d"
-date: "2026-11-12"
-note: "따라가는 계획의 바뀐 곳은 정리 작업 예약 한 줄. README와 어긋나지 않는다"
-text_changed: false
-doc_hash: "75f3201a453517d2"
+hash: "2317585ee4868973"
+date: "2026-11-13"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+text_changed: true
+doc_hash: "ae073d2edd0bc4f8"

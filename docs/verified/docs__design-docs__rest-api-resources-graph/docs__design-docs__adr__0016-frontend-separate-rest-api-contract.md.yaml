@@ -1,0 +1,7 @@
+doc: "docs/design-docs/rest-api-resources-graph.md"
+target: "docs/design-docs/adr/0016-frontend-separate-rest-api-contract.md"
+hash: "bb6c4cfdc46cfeb7"
+date: "2026-11-13"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+text_changed: true
+doc_hash: "04ed188dd3322ea7"

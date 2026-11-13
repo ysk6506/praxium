@@ -1,0 +1,7 @@
+doc: "docs/design-docs/data-observability.md"
+target: "docs/design-docs/adr/0013-data-observability.md"
+hash: "ba088ce1ea53ac96"
+date: "2026-11-13"
+note: "ADR 재봉인과 8-34/8-35 정렬 뒤에 다시 읽고 맞춤"
+text_changed: true
+doc_hash: "2e39becb6d6f67c8"
