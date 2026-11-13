@@ -26,3 +26,4 @@
 | [ADR-0018 비밀 값과 암호화 — 평문으로 두지 않고, 쓰는 자리에서만 풀고, 다시 나오지 않고, 쓴 기록이 남는다](../design-docs/adr/0018-secrets-and-encryption.md) | 유효 |  |
 | [ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 자리와 검사](../design-docs/adr/0019-harness-reads-go-backend-place-and-checks.md) | 유효 |  |
 | [ADR-0020 타입 등록부와 표준 모델의 데이터 파일이 선다](../design-docs/adr/0020-type-registry-and-standard-model-data.md) | 유효 |  |
+| [ADR-0021 지어낸 세계 생성기가 core.worldgen 단위로 선다](../design-docs/adr/0021-synthetic-world-generator.md) | 유효 |  |

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "5e4e3279fb8b859e"
+hash: "6f2bd0a351d4b6fe"
 date: "2026-11-13"
-note: "AGENTS.md의 변경(Go 규칙 행 추가)이 신념과 어긋나지 않음을 확인"
+note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
 text_changed: false
 doc_hash: "c68185f5b10e5ba0"

@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "82b8856ec2ac9a17"
+hash: "21d54c87111f1d83"
 date: "2026-11-13"
-note: "제품 설계의 코드 상태 문장 변경과 5단계 진행 상태를 ADR-0019 결과와 대조"
+note: "5단계 상태에 생성기 완료(ADR-0021)를 적고 읽어 맞춤"
 text_changed: true
-doc_hash: "f9e3f949e08447e7"
+doc_hash: "c73f6496e74e9798"

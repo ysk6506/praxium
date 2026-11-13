@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "3da5961f239ec621"
+hash: "3f6cf41f63800317"
 date: "2026-11-13"
-note: "core.model 단위 등록(ADR-0020)과 plan 상태 갱신을 읽고 맞는지 확인했다"
-text_changed: false
-doc_hash: "5e4e3279fb8b859e"
+note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+text_changed: true
+doc_hash: "6f2bd0a351d4b6fe"

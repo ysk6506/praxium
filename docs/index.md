@@ -63,6 +63,7 @@ covers:
 - [프락시움 자신의 관측성과 운영 가능성 — 신호, 진단, 운영 행위, 권한과 기록](design-docs/self-observability.md)
 - [표준 모델의 요약 — 층 아홉의 타입, 링크, 액션](design-docs/standard-model.md)
 - [임시 콘솔 — 클로즈 베타까지 기능을 눌러 보는, 지우기 쉬운 시험용 화면](design-docs/temporary-console.md)
+- [지어낸 세계 생성기 — 같은 씨앗이면 같은 데이터센터, 정답과 소스 보기와 변경 스트림과 모양 카드](design-docs/worldgen.md)
 
 ### 계획
 

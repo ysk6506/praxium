@@ -94,6 +94,7 @@ follows:
 | [현실 데이터 받기](ingestion.md), [파이프라인](pipeline.md), [받기를 넓히는 길](ingestion-extensions.md) | 소스와 어댑터, 받는 방식, 읽기 전용, 안전장치, 수집 봉투, 실행기와 정제·공급·식별·링크 정의, 밀어 넣기, 다시 받기, 매핑을 돕는 길 | ADR-0008 |
 | [KG의 저장과 버전](kg-storage.md), [적용](kg-storage-apply.md), [저장소의 운영](postgres-operations.md) | 저장, 변경 묶음, 봉한 버전, 적용, 쓰기 길과 복제와 신호 | ADR-0009 |
 | [KG에 묻기](kg-queries.md), [예시](kg-queries-examples.md), [엔진의 모양](query-engine-shape.md) | 닫힌 질의, 영향 범위, 투영과 질의 엔진, 엔진의 언어와 규모 검증 | ADR-0010 |
+| [지어낸 세계 생성기](worldgen.md) | 씨앗으로 짓는 데이터센터의 정답과 소스 보기와 변경 스트림과 모양 카드, 인자, 흠, 규모의 측정 | ADR-0021 |
 | [KG 운영](kg-operations.md) | 문제 목록, 가용성, 실패 처리 | ADR-0011 |
 | [권한](access-control.md) | SSO, 역할 여덟, 범위, 감사 | ADR-0012 |
 | [데이터 관측성](data-observability.md) | 신호, 건강, 목표, 알림 | ADR-0013 |

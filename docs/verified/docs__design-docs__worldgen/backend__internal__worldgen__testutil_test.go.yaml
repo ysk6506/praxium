@@ -1,0 +1,7 @@
+doc: "docs/design-docs/worldgen.md"
+target: "backend/internal/worldgen/testutil_test.go"
+hash: "98f75b4d452d6705"
+date: "2026-11-13"
+note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+text_changed: true
+doc_hash: "774dc0e1b13d86d0"

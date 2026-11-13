@@ -2,6 +2,6 @@ doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
 hash: "b308cb566cd77dc2"
 date: "2026-11-13"
-note: "요구사항의 Go 문구와 REQ-239 변경이 설계와 어긋나지 않음, 코드 상태 문장을 고침"
+note: "생성기 단위 추가(ADR-0021): 읽고 변함없음 확인, 지도에 한 줄"
 text_changed: true
-doc_hash: "82b8856ec2ac9a17"
+doc_hash: "21d54c87111f1d83"
