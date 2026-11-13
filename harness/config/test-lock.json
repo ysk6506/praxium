@@ -56,12 +56,12 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "go:backend/cmd/praxium::TestApiServeRefusesUnsafeOrBrokenConfiguration": {
+  "go:backend/cmd/praxium::TestApiServeInProductionAlwaysRefuses": {
    "kind": "test",
-   "hash": "c9772c30fbcbae4b",
-   "asserts": 1,
+   "hash": "ce2024f72d60fd17",
+   "asserts": 2,
    "literals": [
-    "62e8ae8cc0fea756"
+    "663cf3edcd1f047e"
    ],
    "precision": [],
    "skips": 0,
@@ -71,12 +71,12 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes": {
+  "go:backend/cmd/praxium::TestApiServeRefusesUnsafeOrBrokenConfiguration": {
    "kind": "test",
-   "hash": "f627879b2a41bdf2",
-   "asserts": 4,
+   "hash": "e588711e23c0b4cc",
+   "asserts": 1,
    "literals": [
-    "b6cfea93ad7c2534"
+    "478296e333e525af"
    ],
    "precision": [],
    "skips": 0,
@@ -84,7 +84,22 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
+  },
+  "go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes": {
+   "kind": "test",
+   "hash": "fe2c9b49d714e4ff",
+   "asserts": 6,
+   "literals": [
+    "ada753bf18e22177"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
   },
   "go:backend/cmd/praxium::TestApiUsageStaysForUnknownSubcommands": {
    "kind": "test",
@@ -1032,6 +1047,21 @@
    "asserts": 3,
    "literals": [
     "eb2b83c87da14140"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer": {
+   "kind": "test",
+   "hash": "516834f36abd0cdf",
+   "asserts": 11,
+   "literals": [
+    "6184247744fa6efe"
    ],
    "precision": [],
    "skips": 0,
@@ -4008,13 +4038,13 @@
   },
   "harness/src/checks/api-lint.test.ts::=MUTATIONS": {
    "kind": "support",
-   "hash": "7ef66423b19a9161",
+   "hash": "b94554b707cc2e98",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
   },
   "harness/src/checks/api-lint.test.ts::=op": {
    "kind": "support",
@@ -4173,6 +4203,117 @@
     "\"a message names the place and the way out\"",
     "\"get\"",
     "\"operationId\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::<import:7e958373>": {
+   "kind": "support",
+   "hash": "7e95837374c746e4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::<import:dd65e00f>": {
+   "kind": "support",
+   "hash": "dd65e00fafce2834",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::<import:e65b41ba>": {
+   "kind": "support",
+   "hash": "e65b41baa016e435",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::=PROGRAM": {
+   "kind": "support",
+   "hash": "777bf80c85ddc05e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::=tinyBackend": {
+   "kind": "support",
+   "hash": "4abccaa749a2ebbb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::the default io builds and runs the real program [REQ-143] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-real-go.test.ts::the default io builds and runs the real program [REQ-143] > assemble and routes come from one build of a small module": {
+   "kind": "test",
+   "hash": "0b0ff19f258e2a02",
+   "asserts": 2,
+   "literals": [
+    "\"/v1/things\"",
+    "\"/v1/things\"",
+    "\"20000\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"assemble and routes come from one build of a small module\"",
+    "\"read\"",
+    "\"read\"",
+    "\"{\\\"openapi\\\":\\\"3.1.0\\\"}\\n\"",
+    "\"{\\\"openapi\\\":\\\"3.1.0\\\"}\\n\""
    ],
    "precision": [],
    "skips": 0,
@@ -20614,13 +20755,13 @@
   },
   "harness/src/test-support/api-fixture.ts::=API_CONFIG": {
    "kind": "support",
-   "hash": "8a4bfddf2ce8ec0f",
+   "hash": "1794519a5876c34c",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
-   "amended_by": null
+   "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
   },
   "harness/src/test-support/api-fixture.ts::=apiRepo": {
    "kind": "support",

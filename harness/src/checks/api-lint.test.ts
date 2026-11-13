@@ -189,6 +189,20 @@ const MUTATIONS: Array<[code: string, what: string, change: Mutation]> = [
     "an open security on a protected operation",
     (d) => put(op(d, GETS, "get"), "security", []),
   ],
+  [
+    "API016",
+    "an anonymous operation off the allow-list",
+    (d) => {
+      const o = op(d, GETS, "get");
+      put(o, "x-required-role", ["anonymous"]);
+      put(o, "security", []);
+    },
+  ],
+  [
+    "API016",
+    "an allow-listed operation that needs a login",
+    (d) => put(op(d, "/v1/health/live", "get"), "x-required-role", ["authenticated"]),
+  ],
   ["API016", "no security scheme", (d) => put(asObject(d.components), "securitySchemes", {})],
   ["API017", "a GET that is not safe", (d) => put(op(d, GETS, "get"), "x-safe", false)],
   ["API017", "a PATCH that is safe", (d) => put(op(d, PATCHES, "patch"), "x-safe", true)],

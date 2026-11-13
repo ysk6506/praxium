@@ -25,6 +25,35 @@ export function lintOperations(ctx: LintContext, operations: readonly OperationR
   }
   lintComponentResponses(ctx);
   lintCatalogue(ctx);
+  lintAnonymousList(ctx, operations);
+}
+
+/** An operation needs no login only when the config says so, and the config names nothing else. */
+function lintAnonymousList(ctx: LintContext, operations: readonly OperationRef[]): void {
+  const allowed = new Set(ctx.config.anonymous_operations);
+  const open = new Set(
+    operations
+      .filter((op) => rolesOf(op).includes("anonymous"))
+      .map((op) => `${op.method} ${op.path}`),
+  );
+  for (const id of open)
+    if (!allowed.has(id))
+      add(
+        ctx,
+        "API016",
+        id,
+        "an operation without a login that is not on the allow-list",
+        "Give it a role, or add it to anonymous_operations in harness/config/api-contract.yaml with an ADR.",
+      );
+  for (const id of allowed)
+    if (!open.has(id))
+      add(
+        ctx,
+        "API016",
+        id,
+        "the allow-list names an operation that is not anonymous",
+        "Remove it from anonymous_operations, or make the operation anonymous.",
+      );
 }
 
 function lintIdentity(

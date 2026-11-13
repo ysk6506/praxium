@@ -33,12 +33,18 @@ touches_protected:
   - docs/product-specs/requirements.md
   - docs/design-docs/adr/0016-frontend-separate-rest-api-contract.md
   - docs/design-docs/adr/0019-harness-reads-go-backend-place-and-checks.md
+amends_tests:
+  - go:backend/cmd/praxium::TestApiServeRefusesUnsafeOrBrokenConfiguration
+  - go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes
+  - harness/src/checks/api-lint.test.ts::=MUTATIONS
+  - harness/src/test-support/api-fixture.ts::=API_CONFIG
+test_change_reason: 닫힌 쪽이 기본이 되어(`api serve`는 진짜 인증기가 없으면 운영 모드를 거부하고, 로그인 없이 부를 수 있는 길은 허용 목록에 있는 것뿐이다) 개발 서버를 `-mode development`로 띄우도록 시험을 고치고, 허용 목록의 린트 시험과 설정 견본을 더한다. 아직 합쳐지지 않은 이 변경이 처음 잠근 시험들이다.
 amends:
   - adr: "0016"
     what: 계약의 자리와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 나눔
   - adr: "0019"
     what: 코어 단위 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)
-decision_hash: 3e4f3b0a5f0910ab
+decision_hash: ee9ba83fca08db6f
 ---
 # ADR-0024 REST 계약이 기계가 지키는 문서가 된다
 
@@ -53,7 +59,7 @@ ADR-0016은 계약(OpenAPI)이 먼저라고 정했고 `rest-api.md`는 그 규�
 5. **린트**(`API001`~`API018`)가 `rest-api.md`의 규칙을 읽는다. 하네스의 검사 이름 목록은 `common.test.ts`가 잠그고 있어서 새 이름을 만들지 않고 `architecture` 안에서 돈다.
 6. **깨는 변경**은 기준 ref의 계약과 견줘 길, 역할, 매개변수, 응답, 필드, 문제 코드가 빠지거나 좁아지는 것이다(`API030`). 선언은 새 봉인된 ADR의 머리말 `breaks_contract`(열쇠 목록)와 `contract_break_reason`(40자 이상)이다. 시험의 `amends_tests`와 같은 뜻의 길이다. 깨짐이 아닌 선언은 낡은 것으로 실패한다(`API032`).
 7. **서버 골격**(`adapter.http`)은 `net/http`이고 길 24개를 낸다. 봉투와 `result_complete`, 문제 본문, 세대가 든 커서(모양이 틀리면 `invalid_input.cursor_invalid`, 다른 세대면 `conflict.generation_changed`), ETag, 추적 ID(`traceparent`), 이름과 옛 이름으로의 단건 읽기, 단건의 `meta.allowed_actions`(고치기만)와 모델 해시를 낸다. `/v1/contract`는 봉투 없이 계약 그대로 낸다. `API050`~`API052`가 서버의 길이 계약과 같은지 본다.
-8. **권한**은 포트다(`core.access`의 `Authenticator`, `Authorizer`, 역할표). 개발용 인증기(`adapter.devauth`)는 고정 토큰 하나를 받고 운영 모드, 16자 미만 토큰, 모르는 역할을 거부한다. `api serve`는 운영 모드가 기본이라 토큰 없이는 익명 길만 낸다. 부채 TD-0010이 OIDC로 바꿀 때까지의 임시다.
+8. **권한은 닫힌 쪽이 기본이다.** 권한은 포트다(`core.access`의 `Authenticator`, `Authorizer`, 역할표). 개발용 인증기(`adapter.devauth`)는 고정 토큰 하나를 받고 운영 모드, 16자 미만 토큰, 모르는 역할을 거부한다. 규칙은 셋이다. (1) `api serve`는 진짜(개발용이 아닌) 인증기가 설정되지 않으면 `-mode production`(기본값)과 모르는 모드를 시작 전에 거부한다. 지금은 진짜 인증기가 없으니 운영 모드는 늘 거부하고, 0이 아닌 종료 코드와 이유를 낸다. (2) 개발 모드에서 토큰이 없으면 서버는 뜨지만 인증기가 없어서 로그인이 필요한 길은 모두 `401`(`auth.token_missing` 또는 `auth.token_invalid`)이다. 데이터는 로그인 없이 나가지 않는다. (3) 로그인 없이 부를 수 있는 길은 `harness/config/api-contract.yaml`의 `anonymous_operations` 허용 목록에 있는 것뿐이다(상태 확인 셋과 `GET /v1/problems/{code}`, rest-api의 "로그인 없이"). 목록 밖의 익명 길과 익명이 아닌 길을 적은 목록은 `API016`이고, 서버 시험이 계약의 모든 길을 인증기 없는 서버에 대 본다. 부채 TD-0010이 OIDC로 바꿀 때까지의 임시다.
 9. **명령줄 클라이언트**(`adapter.cli`)는 같은 바이너리에 있고 공개된 `/v1`만 부른다. 종료 코드는 문제의 묶음에서 정한다(0~12). 클라이언트 플래그(`--endpoint`, `--token`, `--config`, `--json`)는 명령 앞에 둔다.
 10. **구조 계약.** 단위 `core.access`, `adapter.devauth`, `adapter.http`, `adapter.cli`를 더하고 `cmd.praxium`이 `adapter.*`를 import하게 했다. `net`과 `net/http`는 `adapter.http`(와 `net/http`는 `adapter.cli`)에 허용했다. `core.kernel`에 `os`를 허용했다: `entropy.go`가 `LookupEnv`로 환경을 읽는 하나뿐인 입구가 되어, 명령줄이 환경을 읽는 길이 `time.Now`와 같은 곳에 모인다(`GOARCH052`는 그대로다).
 11. **요구사항**은 아래 표와 같이 나눴다.

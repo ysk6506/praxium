@@ -24,6 +24,7 @@ export const API_CONFIG: ApiConfig = {
     "description",
     "example",
   ],
+  anonymous_operations: ["GET /v1/health/live"],
   roles: ["anonymous", "authenticated", "read", "viewer", "editor", "admin"],
   phases: ["alpha-1", "alpha-2"],
   singular_segments: ["health", "live", "catalog"],

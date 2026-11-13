@@ -8,6 +8,9 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
+// ModeDevelopment is the only mode a server with this authenticator may run in.
+const ModeDevelopment = "development"
+
 // ModeProduction is the mode this authenticator refuses to serve in.
 const ModeProduction = "production"
 

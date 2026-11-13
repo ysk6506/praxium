@@ -139,7 +139,7 @@ func TestApiServeRefusesUnsafeOrBrokenConfiguration(t *testing.T) {
 		{"an unknown role", []string{"-mode", "development", "-dev-token-file", "/dev-token", "-dev-roles", "root"}, nil, "root"},
 		{"an unknown flag", []string{"-colour"}, nil, "flag"},
 		{"a stray argument", []string{"extra"}, nil, "no arguments"},
-		{"an address that cannot be used", []string{"-addr", "256.256.256.256:99999"}, nil, "listen"},
+		{"an address that cannot be used", []string{"-mode", "development", "-addr", "256.256.256.256:99999"}, nil, "listen"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -159,7 +159,9 @@ func TestApiServeWithoutATokenServesOnlyAnonymousRoutes(t *testing.T) {
 	d, listeners, stop := apiDeps(nil, nil)
 	stderr, _ := logFile(t)
 	done := make(chan int, 1)
-	go func() { done <- execute([]string{"api", "serve", "-addr", "127.0.0.1:0"}, &bytes.Buffer{}, stderr, d) }()
+	go func() {
+		done <- execute([]string{"api", "serve", "-addr", "127.0.0.1:0", "-mode", "development"}, &bytes.Buffer{}, stderr, d)
+	}()
 	ln := <-listeners
 	endpoint := "http://" + ln.Addr().String()
 	healthy := false
@@ -174,6 +176,12 @@ func TestApiServeWithoutATokenServesOnlyAnonymousRoutes(t *testing.T) {
 	}
 	if code := execute([]string{"--endpoint", endpoint, "--token", fakeToken, "catalog", "roles"}, &bytes.Buffer{}, &bytes.Buffer{}, d); code != cli.ExitAuth {
 		t.Fatalf("a token without an authenticator: %d", code)
+	}
+	if code := execute([]string{"--endpoint", endpoint, "catalog", "roles"}, &bytes.Buffer{}, &bytes.Buffer{}, d); code != cli.ExitAuth {
+		t.Fatalf("no token and no authenticator: %d", code)
+	}
+	if code := execute([]string{"--endpoint", endpoint, "types", "list"}, &bytes.Buffer{}, &bytes.Buffer{}, d); code != cli.ExitAuth {
+		t.Fatalf("a data list without a login: %d", code)
 	}
 	stop()
 	if code := <-done; code != 0 {
@@ -282,5 +290,28 @@ func TestApiRoutesAndListenFailuresAreReported(t *testing.T) {
 	args := []string{"api", "serve", "-mode", "development", "-dev-token-file", "/dev-token", "-dev-roles", "viewer"}
 	if code := execute(args, &bytes.Buffer{}, &stderr, d); code != exitFailure || !strings.Contains(stderr.String(), "cannot listen") {
 		t.Fatalf("code %d, stderr %q", code, stderr.String())
+	}
+}
+
+// [REQ-148]
+func TestApiServeInProductionAlwaysRefuses(t *testing.T) {
+	for _, args := range [][]string{
+		{"api", "serve"},
+		{"api", "serve", "-mode", "production"},
+		{"api", "serve", "-mode", "Production "},
+		{"api", "serve", "-mode", "staging"},
+	} {
+		d, listeners, stop := apiDeps(nil, nil)
+		var stderr bytes.Buffer
+		code := execute(args, &bytes.Buffer{}, &stderr, d)
+		stop()
+		if code != exitFailure || !strings.Contains(stderr.String(), "-mode") && !strings.Contains(stderr.String(), "mode production") {
+			t.Fatalf("%v: code %d, stderr %q", args, code, stderr.String())
+		}
+		select {
+		case <-listeners:
+			t.Fatalf("%v: the server listened", args)
+		default:
+		}
 	}
 }

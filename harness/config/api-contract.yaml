@@ -40,6 +40,14 @@ schema_keywords:
   - deprecated
 
 # Values of x-required-role: three that are no role, and the eight roles of access-control.md.
+# The only operations that may be called without a login (x-required-role: anonymous, security: []).
+# Everything else answers 401 until a real authenticator vouches for the caller (ADR-0024).
+anonymous_operations:
+  - GET /v1/health/live
+  - GET /v1/health/ready
+  - GET /v1/health/started
+  - GET /v1/problems/{code}
+
 roles:
   - anonymous
   - authenticated

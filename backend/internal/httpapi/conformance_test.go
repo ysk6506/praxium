@@ -1,14 +1,20 @@
 package httpapi_test
 
 import (
+	"bytes"
+	"io"
+	"log/slog"
 	"net/http"
 	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/access"
 	"github.com/ysk6506/praxium/backend/internal/contract"
 	"github.com/ysk6506/praxium/backend/internal/httpapi"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
 // [REQ-143]
@@ -207,4 +213,50 @@ func sampleURL(template string) string {
 	r := strings.NewReplacer("{type_id}", "ot.site", "{link_type_id}", "lt.located_in", "{action_type_id}", "ac.acknowledge_alarm",
 		"{trait_id}", "tr.common", "{scheme_id}", "is.array_system_id", "{code}", "auth.token_missing")
 	return r.Replace(template)
+}
+
+// [REQ-148]
+func TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer(t *testing.T) {
+	reg, err := model.LoadStandard()
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv, err := httpapi.New(httpapi.Config{
+		Registry: reg, Clock: kernel.NewManualClock(time.Date(2030, 1, 2, 3, 4, 5, 0, time.UTC)), IDs: kernel.NewSequentialIDs(),
+		Logger: slog.New(slog.NewJSONHandler(io.Discard, nil)), Version: "test",
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	srv.MarkStarted()
+	h := &harness{t: t, server: srv, handler: srv.Handler(), logs: &bytes.Buffer{}}
+	doc, _ := contract.ParseDocument(contract.OpenAPI())
+	open := map[string]bool{}
+	for _, op := range doc.Operations() {
+		path := sampleURL(op.Path)
+		anonymous := slices.Contains(op.Roles, "anonymous")
+		open[op.Path] = anonymous
+		for _, withToken := range []bool{false, true} {
+			r := h.do(http.MethodGet, path, withToken)
+			if anonymous {
+				if r.status == 401 || r.status == 403 {
+					t.Errorf("%s is open but answered %d", op.Path, r.status)
+				}
+				continue
+			}
+			if r.status != 401 {
+				t.Errorf("%s answered %d without a login (token sent %v)", op.Path, r.status, withToken)
+				continue
+			}
+			if code := r.code(t); code != "auth.token_missing" && code != "auth.token_invalid" {
+				t.Errorf("%s: problem code %q", op.Path, code)
+			}
+		}
+	}
+	want := map[string]bool{"/v1/health/live": true, "/v1/health/ready": true, "/v1/health/started": true, "/v1/problems/{code}": true}
+	for path, isOpen := range open {
+		if isOpen != want[path] {
+			t.Errorf("%s: open = %v, want %v", path, isOpen, want[path])
+		}
+	}
 }

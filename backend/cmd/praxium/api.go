@@ -160,9 +160,26 @@ func devToken(o serveOptions, d wiring) (string, error) {
 	return strings.TrimSpace(token), nil
 }
 
+// requireRealAuthenticator is the fail-closed guard of the server (ADR-0024). Only a development server may
+// start, and only the development authenticator exists; production mode needs a real one (OIDC, TD-0010),
+// so it refuses whatever else is configured.
+func requireRealAuthenticator(o serveOptions) error {
+	switch strings.ToLower(strings.TrimSpace(o.mode)) {
+	case devauth.ModeDevelopment:
+		return nil
+	case devauth.ModeProduction:
+		return kernel.Errorf(kernel.CodeInvalidValue,
+			"mode production needs a real authenticator and none is configured yet (TD-0010); use -mode development for a development server")
+	}
+	return kernel.Errorf(kernel.CodeInvalidValue, "unknown -mode %q: use development or production", o.mode)
+}
+
 func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	o, err := parseServe(args)
 	if err != nil {
+		return err
+	}
+	if err := requireRealAuthenticator(o); err != nil {
 		return err
 	}
 	authn, err := authenticatorFor(o, d)

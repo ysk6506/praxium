@@ -17,6 +17,8 @@ export interface ApiConfig {
   readonly routes_args: readonly string[];
   readonly schema_keywords_source: string;
   readonly schema_keywords: readonly string[];
+  /** The only operations that may need no login (`METHOD /path`); every other one needs a token (ADR-0024). */
+  readonly anonymous_operations: readonly string[];
   readonly roles: readonly string[];
   readonly phases: readonly string[];
   readonly singular_segments: readonly string[];

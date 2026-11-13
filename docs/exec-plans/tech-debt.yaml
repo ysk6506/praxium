@@ -82,9 +82,9 @@ items:
     status: done
     resolution: "ADR-0022가 다섯을 모두 했다: 문맥 구성요소를 여럿 두고, 집합 구성요소(링크 타입, 나가는 쪽이나 들어오는 쪽, 정확한 크기 선택)를 더하고, 문맥만 있는 키는 1:1 링크일 때 허용하고, 부모 바인딩을 보통 바인딩으로 더하고, UnknownObject에 힌트 해시 방식(is.hint_hash)을 선언했다. 표준 타입 168개가 모두 자기 키를 가지고 키 없는 목록은 비었다(시험이 잠근다)."
   - id: TD-0010
-    title: "API의 인증은 개발용 인증기(고정 토큰 하나)뿐이다. 사내 로그인(OIDC)과 시스템 계정 토큰이 없어서 운영 모드의 서버는 익명 길만 낸다(ADR-0024)"
+    title: "API의 인증은 개발용 인증기(고정 토큰 하나)뿐이다. 사내 로그인(OIDC)과 시스템 계정 토큰이 없어서 `api serve -mode production`은 늘 시작을 거부하고(닫힌 쪽이 기본), 개발 모드의 서버도 토큰이 없으면 상태 확인과 오류 설명 말고는 모두 401이다(ADR-0024)"
     severity: medium
-    cost: "`access.Authenticator` 포트를 OIDC 어댑터와 시스템 계정 토큰 발급·검증으로 구현하고, `api serve`가 그것을 고르게 한 뒤 개발용 인증기를 지운다. 길과 계약은 바뀌지 않는다"
+    cost: "`access.Authenticator` 포트를 OIDC 어댑터와 시스템 계정 토큰 발급·검증으로 구현하고, `api serve`의 운영 모드 거부(`requireRealAuthenticator`)를 풀어 그것을 고르게 한 뒤 개발용 인증기를 지운다. 길과 계약은 바뀌지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
