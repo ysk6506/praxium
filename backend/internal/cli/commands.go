@@ -14,7 +14,7 @@ import (
 
 // IsClientCommand says whether the first word of the command line is a client command.
 func IsClientCommand(word string) bool {
-	return word == "health" || word == "types" || word == "catalog" || word == "kg" || word == "object" || word == "query"
+	return word == "health" || word == "types" || word == "catalog" || word == "kg" || word == "object" || word == "query" || word == "admin" || word == "whoami"
 }
 
 // IsClientFlag says whether a word is one of the flags that may open a client command line.
@@ -180,6 +180,10 @@ func run(opts options, stdout io.Writer, httpClient *http.Client) error {
 		return runObject(ctx, client, opts, stdout)
 	case "query":
 		return runQuery(ctx, client, opts, stdout)
+	case "whoami":
+		return runWhoami(ctx, client, opts, stdout)
+	case "admin":
+		return runAdmin(ctx, client, opts, stdout)
 	}
 	return usageError{msg: fmt.Sprintf("unknown command %q", opts.rest[0])}
 }
