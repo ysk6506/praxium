@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "b428d755995ea11d"
+hash: "1d26384a4625cd74"
 date: "2026-11-14"
-note: "인증(ADR-0044) 병합 뒤 유닛 6개와 REQ-307~341의 공존을 대조해 확인함"
+note: "영향 범위 질의(ADR-0043) 병합 뒤 REQ-300~341의 공존을 대조해 확인함"
 text_changed: true
 doc_hash: "019854b80cb4930e"

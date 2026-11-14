@@ -699,14 +699,6 @@
     },
     {
       "method": "POST",
-      "path": "/v1/kgs/{kg}/queries:impact",
-      "feature": "사전 정의 질의 13종",
-      "adr": "ADR-0010",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
       "path": "/v1/kgs/{kg}/queries:paths",
       "feature": "사전 정의 질의 13종",
       "adr": "ADR-0010",

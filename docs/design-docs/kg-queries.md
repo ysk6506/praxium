@@ -7,7 +7,7 @@ follows:
 ---
 # KG 질의
 
-KG에 질의하는 경로 전체의 설계예요. 사전 정의 질의 13종, 모든 응답에 붙는 엔벨로프, 영향 범위의 의미, 영향 범위를 계산하는 프로젝션과 질의 엔진, 외부에 공개하는 인터페이스 3가지를 정해요. 코드는 아직 없어요(백엔드는 Go로 정해졌어요. ADR-0006). 타입 이름은 영어이고, 표준 모델의 최종 이름은 ADR-0007의 표준 모델을 따라요. 이 문서의 이름은 예시예요. **질의는 KG 하나 안에서 실행돼요.** KG에 든 데이터를 조회하는 경로는 모두 `/v1/kgs/{kg}/...` 아래에 있고, KG 사이를 가로지르는 질의는 없어요.
+KG에 질의하는 경로 전체의 설계예요. 사전 정의 질의 13종, 모든 응답에 붙는 엔벨로프, 영향 범위의 의미, 영향 범위를 계산하는 프로젝션과 질의 엔진, 외부에 공개하는 인터페이스 3가지를 정해요. `impact`와 첫 3종은 Go로 구현돼 있어요(ADR-0006, ADR-0026, ADR-0043). 타입 이름은 영어이고, 표준 모델의 최종 이름은 ADR-0007의 표준 모델을 따라요. 이 문서의 이름은 예시예요. **질의는 KG 하나 안에서 실행돼요.** KG에 든 데이터를 조회하는 경로는 모두 `/v1/kgs/{kg}/...` 아래에 있고, KG 사이를 가로지르는 질의는 없어요.
 
 ## 1. 목적과 다루는 질문
 
@@ -48,7 +48,7 @@ HTTP 경로는 [REST API 설계](rest-api.md)가 정하고(`/v1/kgs/{kg}/queries
 | `neighbors` | `object_id`, `link_types`, `meanings`, `direction`(`out`, `in`, `both`), `max_steps`, `peer_types` | `groups`(`link_type`, `meaning`, `direction`, `peer_type`, `count`)를 먼저, 그다음 `items`(`link_id`, `link_type`, `peer_object_id`, `peer_type`, `grade`) | `max_steps` 기본 1, 상한 3은 가정. 허브는 `groups`만 반환하고 `items`는 `limit`로 자른다 |
 | `containment` | `object_id`, `direction`(`up`, `down`), `depth`, `child_types` | `ancestors`(건물, 방, 랙의 순서), `children_summary`(타입별 수), `subtree_size`, `items` | 깊이 기본 1. 자식은 페이지네이션 |
 | `paths` | `from_object_id`, `to_object_id`, `via_meanings`(기본 `connected_to`), `link_types`, `max_steps`, `top_k`, `dead`, `dead_links` | `reachable`(`yes`, `no`, `unknown`), `paths`(`steps`, `length`, `weakest_grade`), `found_count` | `top_k` 기본 3, 상한 10, `max_steps` 상한은 가정. 시간 예산을 넘기면 `truncated` |
-| `impact` | `dead`, `dead_links`, `site_failure`, `dead_scope_id`, `mode`(`both`, `facts_only`, `with_assumptions`), `shape` | 5.7절 | 시드 수 상한 1,000은 가정. 결과는 요약을 먼저 반환하고 `items`는 페이지네이션 |
+| `impact` | `dead`, `dead_links`, `site_failure`, `dead_scope_id`(아직 거절), `direction`(`downstream` 기본, `upstream`)과 `target_object_id`, `mode`(`both`, `facts_only`, `with_assumptions`), `max_hops`, `max_items`, `time_budget`, `shape` | 5.7절 | 시드 수 상한 1,000은 가정. 결과는 요약을 먼저 반환하고 `items`는 페이지네이션 |
 | `exposure` | `dead`(없어도 된다), `scope_id`, `target_object_id`, `cut_order_max` | `tight_groups`, `cut_sets` | 차수 기본 2(기본값(설정)), 상한 3은 가정. `target_object_id`가 있을 때만 `cut_sets`를 계산한다 |
 | `changes` | `from_version`/`to_version`(버전 ID) 또는 `from_change_seq`/`to_change_seq`, `object_types`, `source_id`, `scope_id`, `change_kinds`(`added`, `changed`, `retired`) | 타입별·종류별 수, 그다음 `items`(`object_id`나 `link_id`, `change_kind`, `changed_fields`, `change_seq`) | 변경 시퀀스에서 바로 읽는다. 페이지네이션 |
 | `versions` | `since_version`(버전 ID), `limit` | 확정 버전들(`kg_version_id`, `change_seq`, `created_at`, `definition_version`, `input_digest`, `change_counts`, `is_head`, `projection_state`: `ready`, `building`, `none`) | 페이지네이션 |
@@ -211,6 +211,15 @@ data:
 
 `exposed_direct`, `exposed_inherited`, `degraded`는 **시드 때문에 달라진 객체**에만 나와요. 원래 여유가 0인 그룹은 `exposure`가 담당해요. `max_staleness`를 넘은 관측은 **쓰지 않고** 그 입력을 알 수 없음으로 읽어요. 설계 기준(`as_designed`)에 입력이 있으면 그것으로 폴백해요. 응답의 `stale_inputs`와 `warnings`(`stale_observation_not_used`)가 그렇게 했다고 알려요. 영향 범위가 이상 상태인 데이터(소스 중단 등)에 의존하면 `data_health`로 알려요(ADR-0013).
 
+### 5.8 `impact`의 구현이 정한 해석 (ADR-0043)
+
+- **전파**: 링크 의미마다 넘기는 채널과 강도, 이중화 계산, 근거 등급의 읽기는 ADR-0043의 표가 정해요. 응답은 장애가 없을 때와의 차이예요. 연결성(`connected_to`)은 계산하지 않아요(`reachability`는 아직 없어요).
+- **약한 링크**(가정, 알 수 없음, `max_staleness`를 넘은 관측)는 장애를 넘기지 않고 알 수 없음만 넘겨요. 용량 모드 그룹은 구성원이 모두 정상일 때만 정상이고 아니면 알 수 없음과 경고 `capacity_group_unknown`이에요.
+- **빈 채널**: 타입이 필요로 하는데 `supplied_by` 링크가 없는 채널은 알 수 없음이 아니에요. 항목의 `unfilled_channels`와 요약의 `unfilled_channel_objects`로 알려요.
+- **한도**: `max_hops`, `max_items`(기본 5,000), `time_budget`(기본 30초)에 걸리면 `computation.complete`가 거짓이고 `result_complete.reason`이 `max_hops`나 `time_budget`이에요. 개수 요약은 전체를 세요.
+- **업스트림**: `direction: upstream`은 대상이 기대는 객체마다 그 하나만 실패시킨 결과(`effects`)와 `single_point_of_failure`를 줘요. 후보는 2,000개까지예요.
+- **경로**: 항목마다 원인까지의 `path`(링크의 의미, 등급, 근거)가 붙고, 읽을 수 없는 단계는 `hidden`이에요.
+
 ## 6. 손으로 따라가기
 
 전원, LAG, HA 클러스터, MLAG, N+1 냉방의 가상의 예시 5개는 [영향 범위를 손으로 따라가기](kg-queries-examples.md)에 있어요. 사실만 쓴 응답과 가정 포함 응답이 달라지는 지점, 의존만 쓰면 틀리는 지점, 직접 노출됨과 상속된 노출됨이 나뉘는 지점을 보여 줘요.
@@ -331,6 +340,8 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 **측정 결과.** 같은 엔진의 프로토타입을 합성 그래프(노드와 간선 1억 개까지, 2코어 8GB)에서 측정했어요. 그 이상은 추정이에요. 1홉 질의의 중앙값은 약 2ms이고, 응답 시간은 KG의 크기가 아니라 질의가 도달하는 노드 수에 비례해요. **이 수치에 포함되지 않은 것**(3가지 값, 2가지 응답, 연결성의 교대 계산, 링크별 근거와 관측 시각, 속성 필터링, 과거 버전, 읽기·쓰기 동시 처리, 입출력 등)과 메모리가 12바이트의 몇 배가 된다는 것은 [질의 엔진의 언어와 구조](query-engine-shape.md) 4절에 있어요. 그래서 위 숫자를 충족했다고 말하지 않아요.
 
+**`impact`의 측정(ADR-0043).** 합성 세계의 UPS 하나가 실패하면 규모 2만에서 0.4초(3,547개 변경), 20만에서 6초(약 3.5만개)예요. 시간은 대부분 요청마다 의존 그래프를 만드는 데 들어가요. 2만 규모는 1초 안이지만 20만 규모는 아니어서 REQ-142를 충족했다고 말하지 않고, 프로젝션이 다음 일이에요.
+
 **남은 측정.** 영향 범위 단계의 첫 작업은 설계의 의미를 모두 반영한 기준 구현이고(7절), 그 위에서 다시 측정해요.
 
 | 순서 | 측정 항목 |
@@ -349,6 +360,7 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 ## 14. 알려진 한계와 가정
 
+- `impact`는 연결성(`connected_to`)과 `exposure`를 계산하지 않아요. 합성 세계의 스토리지 어레이는 두 PDU에 직접 연결돼 있어(전원 이중화 그룹이 없어) 모델 의미상 PDU 하나로 어레이와 HA 쌍이 함께 내려가요(ADR-0043).
 - 시간은 계산하지 않아요(UPS와 냉방의 지속 시간, 페일오버 시간, 수렴 시간). `delay_class` 표시만 해요. 부하가 이동하는 연쇄 과부하, 부분 성능 저하, 해시로 분산되는 ECMP의 쏠림도 계산하지 않아요. 엔벨로프의 `model_limits`에 문구가 붙어요.
 - 구조와 상태는 KG에 있고 관측의 경과 시간이 응답에 붙어요. 수치 시계열은 KG에 쌓지 않아요. 소프트웨어 버그나 설정 오류는 모델링하지 않아요.
 - 엔진은 스토리지가 멈추면 소스의 최신 신선도를 알 수 없고 마지막으로 수신한 값으로 계산해요. 실제보다 최신으로 보일 수 있어요. 루프에서 임계값 계수가 낙관적으로 틀린다는 말은 추론이고, 기준 구현과의 대조가 이를 확인하는 방법이에요.
@@ -365,6 +377,6 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 ## 16. 관련 결정과 요구사항
 
-- ADR-0010(이 문서의 결정), ADR-0015(`competency`), ADR-0016(REST API), ADR-0006(역할 4종, 정규 인코딩 해시), ADR-0007(채널, 링크 의미, 이중화 그룹, 근거 등급), ADR-0009(변경 시퀀스, 확정 버전, 스토리지), ADR-0011(가용성의 등급), ADR-0012(읽기 권한, 감사), ADR-0013(헬스 상태, `quality`, `health`), ADR-0014(정의의 계보).
-- REQ-134(규모), REQ-140, REQ-141, REQ-142, REQ-143, REQ-144, REQ-145, REQ-146.
+- ADR-0010(이 문서의 결정), ADR-0043(`impact`의 구현), ADR-0015(`competency`), ADR-0016(REST API), ADR-0006(역할 4종, 정규 인코딩 해시), ADR-0007(채널, 링크 의미, 이중화 그룹, 근거 등급), ADR-0009(변경 시퀀스, 확정 버전, 스토리지), ADR-0011(가용성의 등급), ADR-0012(읽기 권한, 감사), ADR-0013(헬스 상태, `quality`, `health`), ADR-0014(정의의 계보).
+- REQ-134(규모), REQ-140, REQ-141, REQ-142, REQ-143, REQ-144, REQ-145, REQ-146, REQ-300부터 REQ-306까지.
 - 관련 문서: [질의 엔진의 언어와 구조](query-engine-shape.md), [영향 범위를 손으로 따라가기](kg-queries-examples.md), [REST API 설계](rest-api.md), [역량 질문](competency-questions.md), [KG의 모델](kg-model.md), [KG의 저장과 버전](kg-storage.md), [KG 운영](kg-operations.md), [데이터 관측성](data-observability.md), [읽기 권한과 역할](access-control.md).

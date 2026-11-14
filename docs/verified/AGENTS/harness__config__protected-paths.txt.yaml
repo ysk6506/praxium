@@ -2,6 +2,6 @@ doc: "AGENTS.md"
 target: "harness/config/protected-paths.txt"
 hash: "fac3d70375047f10"
 date: "2026-11-14"
-note: "x"
+note: "영향 범위 질의(ADR-0043) 병합 뒤 REQ-300~341의 공존을 대조해 확인함"
 text_changed: true
-doc_hash: "06b823911173696c"
+doc_hash: "62a1491d8bea5d16"

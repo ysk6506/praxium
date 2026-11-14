@@ -1,0 +1,290 @@
+{
+  "paths": {
+    "/v1/kgs/{kg}/queries:impact": {
+      "post": {
+        "operationId": "askImpact",
+        "summary": "Ask impact",
+        "description": "The closed query impact: what a failure reaches (direction downstream, the default) or what a target depends on (direction upstream). The answer gives the readings with facts only and with assumptions, each with its counts first.",
+        "tags": ["kg"],
+        "x-required-role": ["read"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "kg",
+            "in": "path",
+            "required": true,
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The input of the query.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ImpactRequest"
+              },
+              "example": {
+                "site_failure": ["obj_deeeeeb59579815a09a9a6a36dc75e26"],
+                "mode": "facts_only",
+                "shape": "items",
+                "limit": 100
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The objects a failure reaches, or the objects the target depends on.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactAnswer"
+                },
+                "example": {
+                  "data": {
+                    "direction": "downstream",
+                    "seeds": [
+                      {
+                        "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                        "object_type": "RackPdu",
+                        "display_name": "pdu-rack-1a"
+                      }
+                    ],
+                    "facts_only": {
+                      "counts_by_result": {
+                        "down": 1,
+                        "exposed_direct": 1
+                      },
+                      "counts_by_type": [
+                        {
+                          "object_type": "PhysicalServer",
+                          "count": 1
+                        },
+                        {
+                          "object_type": "PowerSupply",
+                          "count": 1
+                        }
+                      ],
+                      "counts_by_parent": [],
+                      "groups_touched": [
+                        {
+                          "group_id": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                          "group_type": "PowerRedundancyGroup",
+                          "display_name": "psu-rack-1-0",
+                          "mode": "count",
+                          "value": "up",
+                          "alive": 1,
+                          "unknown": 0,
+                          "n": 2,
+                          "min_alive": 1,
+                          "slack": 0
+                        }
+                      ],
+                      "unfilled_channel_objects": 0,
+                      "items": [
+                        {
+                          "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                          "object_type": "PowerSupply",
+                          "display_name": "psu-1-0a",
+                          "result": "down",
+                          "also": [],
+                          "lost_channels": ["power"],
+                          "unfilled_channels": [],
+                          "via": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                          "hops": 1,
+                          "assumption_based": false,
+                          "weakest_grade": "fact",
+                          "path": [
+                            {
+                              "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                              "object_type": "RackPdu",
+                              "display_name": "pdu-rack-1a"
+                            },
+                            {
+                              "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                              "object_type": "PowerSupply",
+                              "display_name": "psu-1-0a",
+                              "link": {
+                                "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "supply",
+                                "grade": "fact",
+                                "basis": "configured"
+                              }
+                            }
+                          ]
+                        },
+                        {
+                          "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                          "object_type": "PhysicalServer",
+                          "display_name": "srv-rack-1-0",
+                          "result": "exposed_direct",
+                          "also": [],
+                          "lost_channels": [],
+                          "unfilled_channels": [],
+                          "via": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                          "hops": 3,
+                          "assumption_based": false,
+                          "weakest_grade": "fact",
+                          "path": [
+                            {
+                              "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                              "object_type": "RackPdu",
+                              "display_name": "pdu-rack-1a"
+                            },
+                            {
+                              "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                              "object_type": "PowerSupply",
+                              "display_name": "psu-1-0a",
+                              "link": {
+                                "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "supply",
+                                "grade": "fact",
+                                "basis": "configured"
+                              }
+                            },
+                            {
+                              "object_id": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                              "object_type": "PowerRedundancyGroup",
+                              "display_name": "psu-rack-1-0",
+                              "link": {
+                                "link_id": "lnk_2024c62a22aa9a31db984b05bc682773",
+                                "link_type": "MEMBER_OF",
+                                "meaning": "member_of",
+                                "role": "group_member",
+                                "grade": "fact",
+                                "basis": "configured",
+                                "note": "min_alive 1 (fact)"
+                              }
+                            },
+                            {
+                              "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                              "object_type": "PhysicalServer",
+                              "display_name": "srv-rack-1-0",
+                              "link": {
+                                "link_id": "lnk_3034c62a22aa9a31db984b05bc682774",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "group_slack",
+                                "grade": "fact",
+                                "basis": "configured",
+                                "note": "failover group or group this object depends on lost members"
+                              }
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    "computation": {
+                      "complete": true,
+                      "stopped_by": null,
+                      "rounds": 3,
+                      "max_hops": 0,
+                      "max_items": 5000,
+                      "time_budget_seconds": 30,
+                      "weak_links": 0,
+                      "stale_inputs": 0,
+                      "items_over_cap": false
+                    }
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "kinds": ["configured"],
+                      "min_grade": "fact",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [
+                      "Links that mean connected_to are not followed: reachability to a network anchor is not calculated, so a network path that is lost without a member of a group failing is not found"
+                    ],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 2,
+                      "total": 2,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    }
+  }
+}
