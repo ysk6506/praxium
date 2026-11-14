@@ -1,4 +1,6 @@
 import { randomBytes } from "node:crypto";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { describe, expect, test } from "vitest";
 import { miniRepo } from "../test-support/mini-repo";
 import { loadWebConfig } from "./web";
@@ -231,5 +233,33 @@ describe("WEB045: the build is over its budget [REQ-318]", () => {
     const root = miniRepo({ "harness/config/web.yaml": CONFIG }, {});
     const rules = loadWebConfig(root).rules;
     expect(rules && budgetViolations(root, rules, true).map((v) => v.code)).toEqual(["WEB045"]);
+  });
+});
+
+describe("[REQ-319] the support floor is written down and the build targets it", () => {
+  const root = path.resolve(__dirname, "../../..");
+  const read = (file: string) => readFileSync(path.join(root, file), "utf8");
+
+  test("the build target names the browsers of the floor, not a language edition", () => {
+    const vite = read("apps/web/config/vite.config.ts");
+    for (const target of ["chrome111", "edge111", "firefox128", "safari16.4"])
+      expect(vite).toContain(`"${target}"`);
+    expect(vite).not.toMatch(/target:\s*"es\d+"/);
+  });
+
+  test("the rules document states the floor, the policy, what is not adopted and the license, and AGENTS.md leads to it", () => {
+    const doc = read("docs/design-docs/web-ui-rules.md");
+    for (const must of [
+      "Baseline Widely available",
+      "Newly available",
+      "크롬·엣지 111",
+      "파이어폭스 128",
+      "사파리 16.4",
+      "CC BY 4.0",
+      "5e5cd33",
+      "채택하지 않는 것",
+    ])
+      expect(doc).toContain(must);
+    expect(read("AGENTS.md")).toContain("docs/design-docs/web-ui-rules.md");
   });
 });

@@ -31,7 +31,7 @@ var uiHeaders = map[string]string{
 	"X-Content-Type-Options":     "nosniff",
 	"X-Frame-Options":            "DENY",
 	"Referrer-Policy":            "no-referrer",
-	"Permissions-Policy":         "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=(), bluetooth=()",
+	"Permissions-Policy":         "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()",
 	"Cross-Origin-Opener-Policy": "same-origin",
 }
 

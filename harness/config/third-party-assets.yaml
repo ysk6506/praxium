@@ -17,4 +17,12 @@ assets:
 
 # Data drawn by hand with outside material as a guide. Nothing is copied, so no license applies; the notices
 # file says so in a section of its own. Say only what is known; do not add who gave it or which service it was.
-references: []
+references:
+  - id: modern-web-guidance
+    name: Chrome 팀의 웹 플랫폼 가이드(modern-web-guidance-src)
+    paths:
+      - docs/design-docs/web-ui-rules.md
+    text: >
+      docs/design-docs/web-ui-rules.md는 GoogleChrome/modern-web-guidance-src의 guides/ (CC BY 4.0, 커밋 5e5cd33,
+      https://creativecommons.org/licenses/by/4.0/)를 바탕으로 프락시움에 맞게 추리고 한국어로 요약한 것이다.
+      가이드의 문장과 코드는 옮기지 않았고 규칙을 새로 썼다. 원 저작자가 이 문서를 보증하지 않는다.
