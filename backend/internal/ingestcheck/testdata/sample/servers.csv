@@ -1,0 +1,4 @@
+asset_id,serial_number,manufacturer,rack_asset_id,power_state
+SV-2001,SN-A100,Zorvane,RK-1001,on
+SV-2002,SN-A200,Zorvane,RK-1001,off
+SV-2003,SN-B300,Kelmar,RK-1002,on
