@@ -12051,6 +12051,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/pgstore::TestIdentityRecordsFailWithAnErrorWhenTheirTableIsGoneOrThePoolIsClosed": {
+   "kind": "test",
+   "hash": "1f66a5e95ab6f350",
+   "asserts": 6,
+   "literals": [
+    "f875894cdca4f536"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestIdentityRecordsSurviveReopeningTheDatabase": {
    "kind": "test",
    "hash": "b0535eb1d7c4d0a1",
