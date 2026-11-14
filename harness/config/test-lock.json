@@ -22046,6 +22046,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/readcheck::TestImpactAnArrayLosesRedundancyWithOnePduAndGoesDownWithBoth": {
+   "kind": "test",
+   "hash": "debc9557b318b3eb",
+   "asserts": 14,
+   "literals": [
+    "6a9a193ff3dfc192"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/readcheck::TestImpactBothRackPdusTakeTheServersDownAndItReachesHostsAndVMs": {
    "kind": "test",
    "hash": "a5bd89f7b3021c2c",
@@ -22132,22 +22148,6 @@
    "precision": [],
    "skips": 0,
    "reqs": [
-    "REQ-301"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/readcheck::TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries": {
-   "kind": "test",
-   "hash": "5347235169728072",
-   "asserts": 9,
-   "literals": [
-    "4e8cff423596c126"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-300",
     "REQ-301"
    ],
    "added": "2026-11-14",
@@ -22437,18 +22437,18 @@
   },
   "go:backend/internal/worldgen::TestGoldenTinyWorld": {
    "kind": "test",
-   "hash": "b5c95a631d3a3b93",
+   "hash": "35c162f2829f7b0c",
    "asserts": 6,
    "literals": [
-    "20e7fe74b64d9a2e"
+    "bc033f0886b6a7ab"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-001"
    ],
-   "added": "2026-11-13",
-   "amended_by": null
+   "added": "2026-11-14",
+   "amended_by": "0057-storage-array-power-redundancy-in-the-synthetic-world.md"
   },
   "go:backend/internal/worldgen::TestGroupRulesHaveFailingExamples": {
    "kind": "test",
@@ -22636,16 +22636,16 @@
   },
   "go:backend/internal/worldgen::TestScaleIsClose": {
    "kind": "test",
-   "hash": "109726d6f67bc4ca",
+   "hash": "11b7c4a9fc33a63a",
    "asserts": 3,
    "literals": [
-    "2bbba7149aec8b34"
+    "7f6b542378ab2c81"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-13",
-   "amended_by": null
+   "added": "2026-11-14",
+   "amended_by": "0057-storage-array-power-redundancy-in-the-synthetic-world.md"
   },
   "go:backend/internal/worldgen::TestSetEveryParameterKind": {
    "kind": "test",
@@ -46575,6 +46575,7 @@
   "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestNeighborsReadThePastAndTheView": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
+  "go:backend/internal/readcheck::TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries": "0057-storage-array-power-redundancy-in-the-synthetic-world.md",
   "harness/src/checks/doc-audit.test.ts::test rows [REQ-020] > a table with a 시험 파일 column is judged by that column, with brace paths expanded": "0029-standard-terms-in-documents-and-screens.md",
   "harness/src/checks/quality.test.ts::quality grades follow from measured values [REQ-024] > the table prints the rule above the rows, and `모름` for a unit without a record": "0029-standard-terms-in-documents-and-screens.md"
  }
