@@ -22,9 +22,15 @@ covers:
 
 ```
 pnpm install
+<<<<<<< HEAD
 pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사(Go의 gofmt, vet, 테스트 포함). 이것이 통과해야 완료다.
 cd backend && go test ./... && go vet ./...   # Go만 빠르게 확인할 때. Go 1.24 이상이 있어야 한다.
 go run ./backend/cmd/praxium worldgen -scale 100000   # 합성 세계(생성기). 인자는 docs/design-docs/worldgen.md
+=======
+pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사(Go의 gofmt, vet, 시험 포함). 이게 통과해야 끝난 것.
+cd backend && go test ./... && go vet ./...   # Go만 빨리 볼 때. Go 1.27.4 이상이 있어야 한다.
+go run ./backend/cmd/praxium worldgen -scale 100000   # 지어낸 세계(생성기). 인자는 docs/design-docs/worldgen.md
+>>>>>>> origin/main
 ```
 
 세계를 합성해 개발 모드 API에 적재하고 명령줄로 읽는 가장 짧은 절차(개발과 테스트의 편의이지 수집 파이프라인이 아니다. 토큰은 임의로 만든 값이다, [ADR-0027](docs/design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md)):

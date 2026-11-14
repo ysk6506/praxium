@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
-hash: "56f4aade43eda700"
-date: "2026-11-13"
-note: "identity keys now have set components (ADR-0022); units and dependency directions unchanged"
+hash: "ff1dd7042acee38a"
+date: "2026-11-14"
+note: "go.mod의 go 지시문만 1.27.4로 올라갔다. ARCHITECTURE.md는 Go 버전을 적지 않아 본문은 그대로 맞다"
 text_changed: true
-doc_hash: "b67b04283ec99f40"
+doc_hash: "8fcc1ce2cd448617"

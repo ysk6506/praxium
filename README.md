@@ -36,7 +36,7 @@ pnpm install
 pnpm check
 ```
 
-Go 1.24 이상이 있어야 해요. `pnpm check`가 Go의 `gofmt`, `go vet`, `go test`도 돌려요.
+Go 1.27.4 이상이 있어야 해요. `pnpm check`가 Go의 `gofmt`, `go vet`, `go test`도 돌려요.
 
 - 안내: [AGENTS.md](AGENTS.md)
 - 구조: [ARCHITECTURE.md](ARCHITECTURE.md)
