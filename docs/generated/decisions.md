@@ -55,5 +55,7 @@
 | [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 |  |
 | [ADR-0049 정의 저장소 — 종류를 모르는 저장, 브랜치와 제안, 파일 하나로 보관](../design-docs/adr/0049-definitions-store-kind-agnostic-with-branches-and-one-file.md) | 유효 |  |
 | [ADR-0050 조직 속성을 오버레이로 모델에 더한다](../design-docs/adr/0050-org-properties-as-overlays-in-the-model.md) | 유효 |  |
-| [ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)](../design-docs/adr/0051-impact-view-parts-svg-without-new-dependencies.md) | 유효 |  |
+| [ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)](../design-docs/adr/0051-impact-view-parts-svg-without-new-dependencies.md) | 유효 | 일부 수정: [0054](../design-docs/adr/0054-impact-screen-wired-to-the-api.md) (간접 노출 등급의 화면 이름) |
 | [ADR-0052 수집에서 조용히 틀리거나 한 실수가 크게 번지는 동작을 고친다 — 칸 하나의 오류, key_name, 걸러진 행, 행 수 한도, 공백, 링크 등급](../design-docs/adr/0052-ingestion-semantics-that-do-not-go-wrong-quietly.md) | 유효 |  |
+| [ADR-0054 영향 범위 화면의 연결 — 주소, 읽기 훅, 화면, 객체 상세의 입구](../design-docs/adr/0054-impact-screen-wired-to-the-api.md) | 유효 |  |
+| [ADR-0055 수집의 소음과 메시지를 고친다 — 키 없는 행을 건너뛰는 옵션, 걸러진 행의 칸 문제, 무엇을 고칠지 알려 주는 메시지](../design-docs/adr/0055-ingest-messages-and-options-for-a-first-time-user.md) | 유효 |  |
