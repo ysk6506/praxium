@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "e697a638621bc065"
-date: "2026-11-13"
-note: "core-beliefs 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 4줄), 결정과 숫자는 그대로"
-text_changed: true
+hash: "22ba52a1c91d01a2"
+date: "2026-11-14"
+note: "AGENTS.md에서 Go 요구 버전 한 줄만 바뀌었다. 핵심 신념과 관련 없어 본문은 그대로 맞다"
+text_changed: false
 doc_hash: "b6dbe9997ada99ae"
