@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "24f72c38c238ae80"
+hash: "71e114247ecf8d5b"
 date: "2026-11-14"
-note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
+note: "main에 병합한 뒤 다시 읽었다. main과의 차이는 목표 문장(ADR-0037)뿐이고 원칙, 순서, 설계 문서 지도는 그대로 맞다"
 text_changed: true
-doc_hash: "06412a77a9acc006"
+doc_hash: "019854b80cb4930e"

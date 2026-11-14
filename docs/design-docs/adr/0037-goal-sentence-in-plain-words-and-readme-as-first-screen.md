@@ -17,7 +17,7 @@ touches_protected:
   - AGENTS.md
   - docs/design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md
 amends_tests: []
-decision_hash: 7898d8f7219bbf81
+decision_hash: 66c530614b3947b0
 ---
 # ADR-0037 목표 문장을 쉬운 말로 다시 쓰고, README를 제품의 첫 화면으로 다룬다
 
@@ -32,7 +32,7 @@ decision_hash: 7898d8f7219bbf81
 2. 원본은 requirements.md의 "제품 목표" 아래 굵은 문장이고, README.md와 AGENTS.md의 첫 단락과 제품 설계 개요가 같은 문장을 쓴다(DOC093).
 3. 기존 구호 "인프라는 지식 그래프로, 운영은 에이전트에게."는 README에서 뺀다. 목표 문장과 내용이 겹치고, 지금 되는 일처럼 읽힌다.
 4. README는 제품의 첫 화면이다. 첫 화면에는 제목, 목표 문장, 상태 안내(초기 개발 단계, 운영 환경에 쓸 수 없음, 문서는 한국어)만 둔다. "지금 되는 것"은 main에서 실제로 실행해 확인한 것만 적고, 빠른 시작은 실제로 실행한 명령과 출력만 적는다. 구현하지 않은 것은 "아직 안 된다"에 구체적으로 적는다.
-5. README의 문체는 안내서의 한다체다(용어집 8번).
+5. README는 제품의 첫 화면이므로 합니다체를 쓴다. 조사한 한국어 README의 다수가 이 문체였다. 용어집 8번은 안내서에 한다체를 정하므로 README는 그 규칙의 예외다. 문체를 기계가 검사하지는 않아서 규칙과 설정은 바꾸지 않는다. 목표 문장만은 DOC093이 requirements.md의 문장을 README에서 글자 그대로 찾으므로 README 첫 단락에서도 한다체("~목표다.")로 둔다.
 6. 외부 서비스에 의존하는 배지는 넣지 않는다. CI 배지만 둔다.
 
 ## 이유
@@ -49,5 +49,6 @@ decision_hash: 7898d8f7219bbf81
 
 ## 결과
 
+- README의 문체는 합니다체이고, 첫 단락의 목표 문장만 한다체다. 이 한 줄의 어색함은 DOC093의 일치 조건에서 온다.
 - 목표 문장은 네 곳(requirements.md, README.md, AGENTS.md, 제품 설계 개요)에서 같다. 앞선 ADR의 본문에 인용된 옛 문장은 당시의 기록으로 남긴다.
 - ADR-0004의 목표 문장 표현이 바뀐다(`amends`). 목표의 내용은 그대로다.
