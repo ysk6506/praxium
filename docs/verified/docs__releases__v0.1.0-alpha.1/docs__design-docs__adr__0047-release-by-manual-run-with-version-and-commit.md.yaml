@@ -1,0 +1,7 @@
+doc: "docs/releases/v0.1.0-alpha.1.md"
+target: "docs/design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md"
+hash: "2e49f15853b60a19"
+date: "2026-11-14"
+note: "알려진 문제 첫 항목에 ingest-definitions.md 안내 추가, ADR-0047 변경 확인"
+text_changed: true
+doc_hash: "dd6053303b32758c"
