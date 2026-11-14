@@ -34,6 +34,9 @@ amends:
   - adr: "0010"
     what: 영향 범위 응답의 필드와 한도를 정하지 않은 부분
 decision_hash: f142cecd01c62691
+amended_by:
+  - adr: "0057"
+    what: 스토리지 어레이가 PDU 둘에 직렬이라 PDU 하나에 내려간다는 설명
 ---
 # ADR-0043 영향 범위 질의 impact — 전파 규칙, 이중화, 근거 등급, 한도와 업스트림
 

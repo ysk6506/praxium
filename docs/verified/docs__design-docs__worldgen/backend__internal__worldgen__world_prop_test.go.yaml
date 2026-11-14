@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/internal/worldgen/world_prop_test.go"
-hash: "3a4e908326b05a14"
-date: "2026-11-13"
-note: "생성기 시험 파일의 바뀐 것은 요구사항 태그 주석과 이름뿐이고 코드와 값은 그대로다. 문서가 말하는 것과 어긋나지 않아 고칠 것 없다"
+hash: "c66ec43efc26303f"
+date: "2026-11-14"
+note: "스토리지 어레이의 전원 이중화 그룹(ADR-0057)에 맞춰 하드웨어·스토리지·전원 행을 고치고 나머지를 생성기 코드와 대조"
 text_changed: true
-doc_hash: "5705221fe69d08d6"
+doc_hash: "1b9f8fd619bab09b"
