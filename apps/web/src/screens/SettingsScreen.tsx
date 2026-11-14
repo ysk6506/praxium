@@ -1,5 +1,13 @@
 import { type FormEvent, useState } from "react";
-import { forgetToken, routeHash, saveTypedToken, useEntryMode, useToken } from "../data";
+import {
+  forgetToken,
+  routeHash,
+  saveTypedToken,
+  titleOf,
+  useEntryMode,
+  useScreenTitle,
+  useToken,
+} from "../data";
 import { Button, ButtonLink, KeyValues, Mono, PageHeader, Section, TextField } from "../ui";
 
 const MODE_NAMES = {
@@ -44,6 +52,7 @@ function Ways() {
 /** Where the person gives the development token. The browser keeps it and every request carries it. */
 export function SettingsScreen() {
   const saved = useToken();
+  useScreenTitle(titleOf("접속 설정"));
   const mode = useEntryMode();
   const [draft, setDraft] = useState("");
 

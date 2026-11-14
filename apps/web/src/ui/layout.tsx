@@ -10,6 +10,8 @@ export interface AppShellProps {
   readonly banner?: ReactNode;
   /** Where the person is; when it changes, the folded menu closes (a link of the menu was followed). */
   readonly place?: string;
+  /** Said to a screen reader without being shown: where the person arrived after back or forward. */
+  readonly announcement?: string;
 }
 
 /**
@@ -17,7 +19,15 @@ export interface AppShellProps {
  * menu the person opens, so the page starts at the top of the screen. The first thing a keyboard reaches is a link
  * that skips to the page.
  */
-export function AppShell({ brand, nav, children, footer, banner, place }: AppShellProps) {
+export function AppShell({
+  brand,
+  nav,
+  children,
+  footer,
+  banner,
+  place,
+  announcement,
+}: AppShellProps) {
   // The menu is open for the place it was opened at: going somewhere else folds it.
   const [openedAt, setOpenedAt] = useState<string | undefined>(undefined);
   const here = place ?? "";
@@ -30,10 +40,11 @@ export function AppShell({ brand, nav, children, footer, banner, place }: AppShe
       <button
         type="button"
         onClick={() => main.current?.focus()}
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:cursor-pointer focus:rounded-md focus:border focus:border-line-strong focus:bg-surface focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:shadow-pop"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:cursor-pointer focus:rounded-md focus:border focus:border-control-line focus:bg-surface focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:shadow-pop"
       >
         본문으로 건너뛰기
       </button>
+      <output className="sr-only">{announcement}</output>
       {banner ? (
         <output className="block border-b border-line bg-warn-soft px-4 py-1.5 text-center text-sm font-medium text-warn">
           {banner}
@@ -48,7 +59,7 @@ export function AppShell({ brand, nav, children, footer, banner, place }: AppShe
               aria-expanded={open}
               aria-controls={menuId}
               onClick={() => setOpenedAt(open ? undefined : here)}
-              className="cursor-pointer rounded-md border border-line-strong px-3 py-1 text-sm font-medium text-fg hover:bg-sunken md:hidden"
+              className="cursor-pointer rounded-md border border-control-line px-3 py-1 text-sm font-medium text-fg hover:bg-sunken md:hidden"
             >
               {open ? "메뉴 닫기" : "메뉴"}
             </button>
@@ -63,7 +74,7 @@ export function AppShell({ brand, nav, children, footer, banner, place }: AppShe
             {footer ? <div className="mt-auto px-2 text-xs text-subtle">{footer}</div> : null}
           </div>
         </aside>
-        <main ref={main} tabIndex={-1} className="min-w-0 flex-1 px-4 py-5 outline-none md:px-8">
+        <main ref={main} tabIndex={-1} className="min-w-0 flex-1 px-4 py-5 md:px-8">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
@@ -118,27 +129,28 @@ export function PageHeader({ title, subtitle, trail, actions }: PageHeaderProps)
   return (
     <header className="mb-5">
       {trail && trail.length > 0 ? (
-        <nav
-          aria-label="현재 위치"
-          className="mb-1 flex flex-wrap items-center gap-1 text-xs text-muted"
-        >
-          {trail.map((step, index) => (
-            <span key={`${step.label}-${step.href ?? ""}`} className="flex items-center gap-1">
-              {index > 0 ? <span aria-hidden>/</span> : null}
-              {step.href ? (
-                <a href={step.href} className="text-muted hover:text-fg">
-                  {step.label}
-                </a>
-              ) : (
-                <span>{step.label}</span>
-              )}
-            </span>
-          ))}
+        <nav aria-label="현재 위치" className="mb-1 text-xs text-muted">
+          <ol className="m-0 flex list-none flex-wrap items-center gap-1 p-0">
+            {trail.map((step, index) => (
+              <li key={`${step.label}-${step.href ?? ""}`} className="flex items-center gap-1">
+                {index > 0 ? <span aria-hidden>/</span> : null}
+                {step.href ? (
+                  <a href={step.href} className="text-muted hover:text-fg">
+                    {step.label}
+                  </a>
+                ) : (
+                  <span>{step.label}</span>
+                )}
+              </li>
+            ))}
+          </ol>
         </nav>
       ) : null}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h1 className="text-xl font-semibold tracking-tight break-words">{title}</h1>
+          <h1 tabIndex={-1} className="text-xl font-semibold tracking-tight break-words">
+            {title}
+          </h1>
           {subtitle ? <div className="mt-0.5 text-sm text-muted">{subtitle}</div> : null}
         </div>
         {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}

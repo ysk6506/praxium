@@ -45,6 +45,11 @@ let active: ScrollMemory | undefined;
 /** A change of the address that the page makes itself (a button, not a link): call it just before. */
 export const forwardNavigation = (): void => active?.forward();
 
+let lastForward = false;
+
+/** Whether the last change of the address was one the person made on the page (a link, a button), not back or forward. */
+export const lastChangeWasForward = (): boolean => lastForward;
+
 export function watchScroll(win: ScrollWindow): ScrollMemory {
   const positions = new Map<string, number>();
   let intent = false;
@@ -72,6 +77,7 @@ export function watchScroll(win: ScrollWindow): ScrollMemory {
     const target = hashOfUrl(newURL);
     const before = hashOfUrl(oldURL);
     const fromLink = intent;
+    lastForward = fromLink;
     intent = false;
     if (parseEntryMode(target)) {
       restore(0);

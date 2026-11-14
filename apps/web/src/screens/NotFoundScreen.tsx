@@ -1,8 +1,9 @@
-import { routeHash } from "../data";
+import { routeHash, titleOf, useScreenTitle } from "../data";
 import { ButtonLink, EmptyState, PageHeader } from "../ui";
 
 /** An address that names no screen. The path is shown as it was written, so a typing mistake can be seen. */
 export function NotFoundScreen({ path }: { readonly path: string }) {
+  useScreenTitle(titleOf("페이지를 찾을 수 없습니다"));
   return (
     <>
       <PageHeader title="페이지를 찾을 수 없습니다" />

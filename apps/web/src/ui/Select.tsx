@@ -29,7 +29,7 @@ export function Select<V extends string | number>({
     >
       <BaseSelect.Trigger
         aria-label={label}
-        className="inline-flex h-8 min-w-24 cursor-pointer items-center justify-between gap-2 rounded-md border border-line-strong bg-surface px-2.5 text-sm text-fg hover:bg-sunken"
+        className="inline-flex min-h-8 min-w-24 cursor-pointer items-center justify-between gap-2 rounded-md border border-control-line bg-surface px-2.5 text-sm text-fg hover:bg-sunken"
       >
         <BaseSelect.Value />
         <span aria-hidden className="text-xs text-subtle">
