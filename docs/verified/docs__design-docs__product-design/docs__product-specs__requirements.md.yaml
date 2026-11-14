@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "f9d97c35116d2b1c"
+hash: "838b2366d333390a"
 date: "2026-11-14"
-note: "requirements gained REQ-263 to 269 (ingest) and REQ-270 (PostgreSQL); design text needs no change"
-text_changed: false
-doc_hash: "bea9303c5f968827"
+note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
+text_changed: true
+doc_hash: "06412a77a9acc006"

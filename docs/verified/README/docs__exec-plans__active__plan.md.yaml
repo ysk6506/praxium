@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "8633716ed44e3d3b"
+hash: "d2fa49caecd7ef8b"
 date: "2026-11-14"
-note: "code list holds both ingest and pgstore; plan.md row 7 lists both"
-text_changed: true
+note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
+text_changed: false
 doc_hash: "05fb2a0b817b0255"

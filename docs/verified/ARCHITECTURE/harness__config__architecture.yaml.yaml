@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "b9845e89beefebcf"
+hash: "112f87e356acf73e"
 date: "2026-11-14"
-note: "merged ingest units with pgstore row, module row and cmd.praxium text; checked against architecture.yaml"
+note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
 text_changed: true
-doc_hash: "5729f97cddcc7847"
+doc_hash: "70dbb7de18bc4e42"
