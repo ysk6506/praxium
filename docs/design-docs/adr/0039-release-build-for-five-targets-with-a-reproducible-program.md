@@ -11,7 +11,7 @@ touches_protected:
   - .github/workflows/ci.yml
   - .github/workflows/release.yml
   - docs/product-specs/requirements.md
-decision_hash: 7cffaab6de037a12
+decision_hash: c2d307a2bbea0868
 ---
 # ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다
 
@@ -28,7 +28,7 @@ decision_hash: 7cffaab6de037a12
 3. **버전 정보.** `praxium version`이 버전, 커밋, 빌드 날짜, Go 버전, 웹 UI 포함 여부를 출력한다. 앞의 셋은 빌드할 때 `-ldflags -X main.version=… -X main.commit=… -X main.buildDate=…`로 넣고, 넣지 않은 빌드(개발 빌드)는 버전이 `dev`, 커밋과 날짜가 `unknown`이다. 기존의 `--version`은 그대로 한 줄을 낸다. 빌드 날짜는 빌드한 시각이 아니라 **커밋 시각**(UTC)이다.
 4. **재현 가능한 빌드.** 같은 커밋, 같은 Go 버전, 같은 대상이면 같은 바이트가 나온다. `-trimpath`로 빌드한 경로를, `-buildvcs=false`로 버전 관리 정보를 실행 파일에서 뺀다. 시각은 커밋 시각만 쓴다. `-s -w`로 디버그 정보를 빼서 크기를 줄인다. 압축 파일도 같게 만든다: 파일 순서, 소유자, 권한, 파일 시각(커밋 시각)을 고정하고 gzip과 zip이 시각을 적지 않게 한다. 이 성질은 테스트가 같은 커밋을 두 번 빌드해 바이트가 같은지 확인한다. 실행 파일의 해시가 Go 버전에 따라 달라지는 것은 막지 않는다. 그래서 `go.mod`의 버전(ADR-0031)이 빌드 환경의 Go를 정한다.
 5. **압축 파일.** 대상마다 하나다: 리눅스와 맥은 `praxium_<버전>_<os>_<arch>.tar.gz`, 윈도우는 `.zip`. 안에 같은 이름의 폴더가 있고 그 안에 실행 파일(`praxium`, 윈도우는 `praxium.exe`), `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`가 있다. `NOTICE`는 Apache-2.0이 배포물에 함께 담으라고 요구하는 파일이라 더했다. 압축 파일의 SHA-256을 모은 `SHA256SUMS`(`sha256sum` 형식)를 함께 낸다.
-6. **릴리스 워크플로**(`.github/workflows/release.yml`). `v*` 태그를 푸시하거나 수동으로(`workflow_dispatch`) 실행한다. 단계는 체크아웃, 기존 설정 액션(`.github/actions/setup`), go.sum 대조(`scripts/verify-go-sum.sh`), 빌드와 압축과 체크섬(`scripts/release-build.sh`), 리눅스 amd64 압축 파일의 실행 확인(`scripts/release-smoke.sh`), 워크플로 아티팩트 업로드다. 태그 실행이면 이어서 `release` 작업이 아티팩트를 내려받아 체크섬을 확인하고 `gh release create --generate-notes --verify-tag`로 릴리스를 만든다. 태그에 `-`가 있으면 사전 릴리스로 표시한다. 수동 실행은 릴리스를 만들지 않고 아티팩트만 남기므로 태그를 만들기 전에 전체 경로를 시험할 수 있다.
+6. **릴리스 워크플로**(`.github/workflows/release.yml`). `v*` 태그를 푸시하거나 수동으로(`workflow_dispatch`) 실행한다. 단계는 체크아웃, 기존 설정 액션(`.github/actions/setup`), go.sum 대조(`scripts/verify-go-sum.sh`), 빌드와 압축과 체크섬(`scripts/release-build.sh`), 리눅스 amd64 압축 파일의 실행 확인(`scripts/release-smoke.sh`), 워크플로 아티팩트 업로드다. 태그 실행이면 이어서 `release` 작업이 아티팩트를 내려받아 체크섬을 확인하고 `gh release create --generate-notes --verify-tag`로 릴리스를 만든다. 태그에 `-`가 있으면 사전 릴리스로 표시한다. 수동 실행은 릴리스를 만들지 않고 아티팩트만 남기므로 태그를 만들기 전에 전체 경로를 테스트할 수 있다.
    - **권한은 최소로.** 워크플로의 기본은 `contents: read`이고 `contents: write`는 `release` 작업에만 준다. 빌드 작업은 의존성 설치 스크립트를 돌리므로 쓰기 권한 없이 돌리고, 체크아웃도 자격 증명을 남기지 않는다(`persist-credentials: false`). 프락시움 자신의 시크릿은 쓰지 않고 `GITHUB_TOKEN`만 쓴다.
    - **액션.** 이미 쓰는 액션(`actions/checkout`과 설정 액션 안의 것들) 외에 GitHub가 직접 내는 `actions/upload-artifact`와 `actions/download-artifact`를 더했다. 작업 사이로 파일을 넘기는 다른 방법이 없고, 빌드 작업과 쓰기 권한이 필요한 작업을 나누려면 둘 다 필요하다. 서드파티 액션은 더하지 않았다.
 7. **스크립트에 로직을 둔다.** 워크플로는 스크립트를 부르기만 하고, 같은 스크립트로 로컬에서도 같은 산출물을 만든다. `scripts/release-build.sh`가 빌드, 압축, 체크섬을 하고 `--compile-only`로 웹 없이 컴파일만 할 수도 있다. 이 스크립트는 임시 폴더를 `mktemp`로 만들고 끝날 때 지우며(ADR-0036), 웹 빌드가 임베드 폴더에 복사한 파일도 끝날 때 치운다. 작업 트리에 커밋하지 않은 변경이 있으면 거절한다. 커밋 해시를 적는 프로그램이 그 커밋에서 만든 것이 아니게 되기 때문이다.
@@ -41,7 +41,7 @@ decision_hash: 7cffaab6de037a12
 - 빌드 환경 없이 실행하는 것이 릴리스의 목적이다. 다섯 대상이면 개발자와 서버에서 쓰는 운영체제와 CPU를 대부분 덮는다. 정적 빌드는 내려받은 파일이 곧바로 도는 조건이다. 이 프로그램은 cgo가 필요 없는 의존성(`lib/pq`는 순수 Go)만 쓴다.
 - 웹 UI는 대상과 무관하므로 한 번만 빌드해야 시간이 줄고, 다섯 실행 파일이 같은 웹 빌드를 담는다는 것이 구조로 보장된다.
 - 재현 가능한 빌드는 "이 실행 파일이 이 소스에서 나왔다"를 누구나 확인하게 한다. 서명을 미루는 동안의 최소한의 신뢰 근거다. 값이 시각에 의존하지 않으니 같은 커밋을 다시 빌드해도 체크섬이 바뀌지 않아 재실행(re-run)이 안전하다.
-- 로직을 스크립트에 두면 워크플로를 실제로 돌려 보지 않고도 로컬에서 같은 경로를 시험할 수 있다. 워크플로 파일은 짧아지고, 첫 태그 전에 수동 실행으로 같은 스크립트가 러너에서 도는지 확인하면 된다.
+- 로직을 스크립트에 두면 워크플로를 실제로 돌려 보지 않고도 로컬에서 같은 경로를 테스트할 수 있다. 워크플로 파일은 짧아지고, 첫 태그 전에 수동 실행으로 같은 스크립트가 러너에서 도는지 확인하면 된다.
 - 쓰기 권한을 `release` 작업으로 좁히면, 의존성 설치와 빌드가 도는 작업이 탈취돼도 리포지토리에 쓸 수 없다.
 
 ## 버린 대안
