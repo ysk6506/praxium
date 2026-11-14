@@ -7498,7 +7498,7 @@
   },
   "go:backend/internal/definitions::TestAMergeThatChangesNothingOnTheHeadMakesNoSet": {
    "kind": "test",
-   "hash": "b418868784c61858",
+   "hash": "8a6ab1c89e68cbe2",
    "asserts": 5,
    "literals": [
     "252f6957afb9d0c3"
@@ -7679,6 +7679,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/definitions::TestBranchChangesHashFollowsTheChangesAndNotTheOrder": {
+   "kind": "test",
+   "hash": "cf0b06740f6f1024",
+   "asserts": 1,
+   "literals": [
+    "7ad062605f414503"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/definitions::TestBranchesThatDoNotOverlapBothMergeAndTheSameChangeTwiceIsStale": {
    "kind": "test",
    "hash": "cf94f6bdc3f2ee45",
@@ -7810,21 +7825,6 @@
    "skips": 0,
    "reqs": [
     "REQ-332"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/definitions::TestOverlayHashFollowsTheChangesAndNotTheOrder": {
-   "kind": "test",
-   "hash": "202a0f7768bd58c2",
-   "asserts": 1,
-   "literals": [
-    "7ad062605f414503"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-336"
    ],
    "added": "2026-11-14",
    "amended_by": null
