@@ -1,6 +1,7 @@
 package query
 
 import (
+	"errors"
 	"sort"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -62,4 +63,27 @@ func Codes() []kernel.Code {
 func CodeMeaning(code kernel.Code) (string, bool) {
 	m, ok := codeMeanings[code]
 	return m, ok
+}
+
+// fieldInput is an input error that also says which field of the request it is about (invalid_input.field).
+type fieldInput struct {
+	field string
+	err   *kernel.Error
+}
+
+func (e *fieldInput) Error() string { return e.err.Error() }
+func (e *fieldInput) Unwrap() error { return e.err }
+
+// inputf is a CodeInput error about one field of the question; the field is named as the API names it.
+func inputf(field, format string, args ...any) error {
+	return &fieldInput{field: field, err: kernel.Errorf(CodeInput, format, args...)}
+}
+
+// FieldOf is the request field an error is about, or "" when it names none.
+func FieldOf(err error) string {
+	var f *fieldInput
+	if errors.As(err, &f) {
+		return f.field
+	}
+	return ""
 }

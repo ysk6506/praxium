@@ -200,7 +200,7 @@ func parseInclude(names []string) (map[string]bool, error) {
 func (e *Engine) resolveObject(ctx context.Context, r *read, in GetInput) (graph.ObjectID, error) {
 	switch {
 	case in.ObjectID != "" && in.Identifier != nil:
-		return graph.ObjectID{}, kernel.Errorf(CodeInput, "give object_id or identifier, not both")
+		return graph.ObjectID{}, inputf("object_id", "give object_id or identifier, not both")
 	case in.ObjectID != "":
 		id, err := kernel.ParseID[graph.ObjectKind](in.ObjectID)
 		if err != nil {
@@ -210,7 +210,7 @@ func (e *Engine) resolveObject(ctx context.Context, r *read, in GetInput) (graph
 	case in.Identifier != nil:
 		scheme, ok := e.reg.IdentifierSchemeByName(in.Identifier.Scheme)
 		if !ok {
-			return graph.ObjectID{}, kernel.Errorf(CodeInput, "no identifier scheme %q", in.Identifier.Scheme)
+			return graph.ObjectID{}, inputf("identifier.scheme", "no identifier scheme %q", in.Identifier.Scheme)
 		}
 		recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), in.Identifier.Value)
 		if err != nil {
@@ -222,9 +222,9 @@ func (e *Engine) resolveObject(ctx context.Context, r *read, in GetInput) (graph
 		case 1:
 			return recs[0].Object, nil
 		}
-		return graph.ObjectID{}, kernel.Errorf(CodeInput, "%d objects hold that identifier in different scopes; give object_id", len(recs))
+		return graph.ObjectID{}, inputf("identifier", "%d objects hold that identifier in different scopes; give object_id", len(recs))
 	}
-	return graph.ObjectID{}, kernel.Errorf(CodeInput, "give object_id or identifier")
+	return graph.ObjectID{}, inputf("object_id", "give object_id or identifier")
 }
 
 func (e *Engine) attributes(ctx context.Context, r *read, info *typeInfo, v visible) ([]AttributeValue, error) {
