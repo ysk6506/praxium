@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "672bddbb6231c446"
+hash: "303098a5308533e2"
 date: "2026-11-14"
-note: "main의 파일 스토어(ADR-0034)와 웹 UI(ADR-0035) 병합 뒤 대조했다"
+note: "ADR-0040: checked against the xlsx source change (new unit adapter.xlsx, REQ-284~288, ingest inspect); this doc stays accurate"
 text_changed: true
-doc_hash: "915156070d56ed74"
+doc_hash: "49eacc4c42e7a6c8"

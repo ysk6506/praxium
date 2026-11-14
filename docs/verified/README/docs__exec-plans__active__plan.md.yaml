@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "2c675c3cd6092a9d"
+hash: "ebe41f7dac214c07"
 date: "2026-11-14"
-note: "용어 정리 후 다시 확인함(ADR-0034 반영)"
-text_changed: false
-doc_hash: "05fb2a0b817b0255"
+note: "ADR-0040: checked against the xlsx source change (new unit adapter.xlsx, REQ-284~288, ingest inspect); this doc stays accurate"
+text_changed: true
+doc_hash: "63f2152de7eb6009"

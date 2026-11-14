@@ -299,8 +299,11 @@ held ─(release)─▶ 쌓인 것을 한도 있는 배치로 나눠 순서대�
 - **양식**: 시트 하나 = 테이블 하나, 헤더 한 행. 고정 시트 이름과 양식 버전 필드. 숨은 행에 안정 컬럼 ID를 두어 표시 이름을 바꿔도 매핑이 유지돼요. 지어낸 위치 양식의 컬럼: `rack_id`, `u_start`, `u_height`, `device_name`.
 - **업로드**는 그 소스를 범위에 가진 `operator`나 `editor`가 해요. `manual_only` 소스의 전체 수집 한 번이에요. 파일의 해시가 같으면 다시 올려도 한 번만 수집하고, 지난 파일과의 차이가 변경으로 보여요. 같은 안전장치를 거쳐요.
 - **행의 문제**는 문제로 분류되고 나머지는 진행돼요([파이프라인 설계](pipeline.md) 7절). 파일이 열리지 않거나 상한을 넘거나 압축 검사에 걸리면 불완전한 수집이에요.
-- **안전 한도(가정)**: 파일 20MB, 압축 해제 후 200MB, 압축비 100:1, 시트 50개, 시트당 셀 100만. 수식은 계산하지 않고 값으로만 읽어요. 매크로 파일과 이전 형식은 수집하지 않아요.
-- 파서는 포트 뒤에 두고 버전을 고정해요(구현은 뒤 변경에서 고르고 라이선스를 확인해요). 엑셀의 값은 `declared`이고 등급은 기본 `fact`, 추정 표시가 있으면 `assumed`예요.
+- **안전 한도**: 파일 20MB는 파일 소스 어댑터가, 나머지는 소스 정의의 `limits`로 바꿀 수 있는 기본값이에요(압축 해제 256 MiB, 시트당 행 200,000과 열 1,024, 셀 한 칸 32,767자, 공유 문자열 2,000,000개). 넘으면 수집이 실패하고 어느 한도인지 알려요. 시트 수와 압축비의 한도는 두지 않았어요. 수식은 계산하지 않고 저장된 값으로만 읽어요. 매크로 파일(.xlsm)은 데이터만 읽고 매크로는 열지 않으며, 외부 링크는 따라가지 않아요. 옛 .xls, 암호가 걸린 파일, .xlsb, .ods, 깨진 파일은 이유를 밝혀 거절해요.
+- **구현(ADR-0040)**: 파서는 라이브러리 없이 표준 라이브러리의 ZIP과 XML로 읽어요. 읽기 어댑터(`adapter.xlsx`)가 워크북을 시트와 셀의 모델로 바꾸고, 시트를 행으로 만드는 일은 `core.ingest`가 해요. 데이터셋의 `sheet` 옵션은 시트(이름 또는 순번), 머리글 행과 머리글 행 수(여러 줄 머리글은 공백으로 이어 컬럼 이름 하나), 데이터 범위, 병합 셀(`first_only`, `fill`), 빈 행의 끝(`stop_after_blank_rows`), 숨긴 행의 제외(`skip_hidden_rows`)예요. 머리글은 앞뒤 공백과 줄바꿈을 정규화해서 비교해요. 행 집계는 CSV와 같고, 문제에는 시트 이름과 셀 주소(`'서버 목록'!F6`)가 붙어요. 오류 셀과 계산된 적 없는 수식은 읽는 컬럼에서만 문제로 보고해요. 날짜 셀은 숫자 서식으로 알아보고 1900과 1904 날짜 체계를 처리해 ISO 8601 글로 바꿔요.
+- **양식 이외의 파일도 읽어요**: 제목 줄, 병합 셀, 두 줄 머리글, 빈 행과 소계 행(정제의 `filter`로 제외)이 있는 파일을 위 옵션으로 읽어요. 격자 형태의 실장도는 여전히 읽지 않아요.
+- **파일을 먼저 살펴보기**: `praxium ingest inspect -input <파일>`이 CSV, JSON Lines, 엑셀의 프로파일(시트 목록, 추정한 머리글 행, 컬럼별 값의 형태와 빈 값 비율과 고유 값 수와 빈출 값, 처음 몇 행)을 내요. 4절의 "매핑을 만드는 사람을 돕는 API"의 첫 구현이에요([수집 확장](ingestion-extensions.md) 4절). 매핑 제안은 아직 없어요.
+- 엑셀의 값은 `declared`이고 등급은 기본 `fact`, 추정 표시가 있으면 `assumed`예요.
 
 ## 11. 테스트 자료
 - **합성 세계 생성기**: 시드가 같으면 같은 세계가 나와요. 세계를 먼저 만들고 **정답 KG**를 보유하며, 같은 세계에서 **배치 형식**(엑셀 양식, HTTP JSON, SQL 덤프)과 **스트림 형식**(같은 세계의 변화를 이벤트 열로: 교체, 이동, 상태 변화)을 함께 생성해요. 소스 사이의 키가 맞물려 식별과 병합을 테스트할 수 있어요. 시각, ID, 정렬은 주입해서 같은 입력이면 같은 결과예요.
@@ -317,4 +320,4 @@ held ─(release)─▶ 쌓인 것을 한도 있는 배치로 나눠 순서대�
 - 푸시 수집의 보낸 쪽 이벤트 ID는 `dedupe_window`(기본 7일) 안에서만 중복을 막아요. 그보다 늦은 재전송은 키와 내용 해시, 이벤트 시각이 막아요.
 
 ## 13. 관련 결정과 요구사항
-- [ADR-0005](adr/0005-separate-product-own-model-verification-outside.md) 별도 제품, [ADR-0006](adr/0006-go-backend-clean-architecture-backend-first.md) 언어와 역할 4종, [ADR-0007](adr/0007-kg-model.md) 모델, [ADR-0008](adr/0008-ingestion.md) 이 문서의 결정, [ADR-0009](adr/0009-kg-storage-and-versions.md) 저장, [ADR-0010](adr/0010-kg-queries-and-impact.md) 질의, [ADR-0011](adr/0011-kg-operations.md) 운영, [ADR-0012](adr/0012-access-control.md) 권한. ADR-0013은 관측, ADR-0014는 정의의 버전과 브랜치예요. 요구사항: REQ-110~REQ-118, REQ-120, REQ-121, REQ-123, REQ-124, REQ-127, REQ-170, REQ-173, REQ-174, REQ-175, REQ-224(푸시 수집), REQ-228(문서, 트리, 행). 뒤 문서: [파이프라인 설계](pipeline.md), [수집 확장](ingestion-extensions.md).
+- [ADR-0005](adr/0005-separate-product-own-model-verification-outside.md) 별도 제품, [ADR-0006](adr/0006-go-backend-clean-architecture-backend-first.md) 언어와 역할 4종, [ADR-0007](adr/0007-kg-model.md) 모델, [ADR-0008](adr/0008-ingestion.md) 이 문서의 결정, [ADR-0040](adr/0040-excel-workbook-source-read-with-the-standard-library.md) 엑셀 소스, [ADR-0009](adr/0009-kg-storage-and-versions.md) 저장, [ADR-0010](adr/0010-kg-queries-and-impact.md) 질의, [ADR-0011](adr/0011-kg-operations.md) 운영, [ADR-0012](adr/0012-access-control.md) 권한. ADR-0013은 관측, ADR-0014는 정의의 버전과 브랜치예요. 요구사항: REQ-110~REQ-118, REQ-120, REQ-121, REQ-123, REQ-124, REQ-127, REQ-170, REQ-173, REQ-174, REQ-175, REQ-224(푸시 수집), REQ-228(문서, 트리, 행), REQ-284~REQ-288(엑셀과 살펴보기). 뒤 문서: [파이프라인 설계](pipeline.md), [수집 확장](ingestion-extensions.md).

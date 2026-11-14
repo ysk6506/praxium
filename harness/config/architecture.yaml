@@ -75,6 +75,8 @@ go:
     adapter.filesource: {path: backend/internal/filesource, may_import: [core.kernel, core.ingest]}
     # The file journal of the built-in file store (ADR-0034): an append-only log and snapshots in one data folder, reached through a Disk interface that the composition root implements. It meets the in-memory store only through method signatures, never by import; its tests run the conformance suite on a store with this journal.
     adapter.filejournal: {path: backend/internal/filejournal, may_import: [core.kernel], test_may_import: [core.graph, adapter.graphcheck, adapter.memstore]}
+    # The Excel workbook reader (ADR-0040): ZIP and XML from the standard library, with the safety limits; it also holds the small workbook writer that the tests use. It knows the workbook model of core.ingest and nothing else.
+    adapter.xlsx:   {path: backend/internal/xlsx, may_import: [core.kernel, core.ingest]}
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
@@ -86,7 +88,7 @@ go:
     # A package of tests only: its production code (the package clause) imports nothing, everything below is for its _test.go files (ADR-0028).
     adapter.readcheck: {path: backend/internal/readcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.query, core.access, core.contract, core.worldgen, adapter.memstore, adapter.http, adapter.devload]}
     # A package of tests only: the acceptance of the slice, which runs the generator's source views through the pipeline and compares the KG with the development load of the truth (ADR-0033).
-    adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource]}
+    adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource, adapter.xlsx]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium

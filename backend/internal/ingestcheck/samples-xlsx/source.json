@@ -18,7 +18,12 @@
     {
       "id": "ds_servers",
       "parser": "xlsx",
-      "sheet": { "name": "서버 목록", "header_row": 3, "merged_cells": "fill", "stop_after_blank_rows": 2 },
+      "sheet": {
+        "name": "서버 목록",
+        "header_row": 3,
+        "merged_cells": "fill",
+        "stop_after_blank_rows": 2
+      },
       "natural_key": ["asset_id"],
       "columns": [
         { "name": "asset_id", "paths": ["자산번호"] },

@@ -47,38 +47,48 @@ func parseInspect(args []string) (inspectFlags, error) {
 }
 
 func (f *inspectFlags) set(flag, v string) error {
-	number := func(into *int, min int) error {
-		n, err := strconv.Atoi(v)
-		if err != nil || n < min {
-			return kernel.Errorf(kernel.CodeInvalidValue, "%s wants a number of %d or more, got %q", flag, min, v)
-		}
-		*into = n
-		return nil
-	}
 	switch flag {
 	case "-input":
 		f.input = v
-	case "-format":
-		if v != ingest.FormatCSV && v != ingest.FormatJSONLines && v != ingest.FormatXLSX {
-			return kernel.Errorf(kernel.CodeInvalidValue, "-format wants csv, jsonl or xlsx, got %q", v)
-		}
-		f.format = v
 	case "-sheet":
 		f.sheet = v
-	case "-o":
+	case "-format", "-o":
+		return f.choice(flag, v)
+	case "-header-row":
+		return count(flag, v, &f.headerRow)
+	case "-header-rows":
+		return count(flag, v, &f.headerRows)
+	case "-rows":
+		return count(flag, v, &f.rows)
+	default:
+		return kernel.Errorf(kernel.CodeInvalidValue, "unexpected argument %q", flag)
+	}
+	return nil
+}
+
+// choice sets a flag that takes one of a few words.
+func (f *inspectFlags) choice(flag, v string) error {
+	if flag == "-o" {
 		if v != "table" && v != "json" {
 			return kernel.Errorf(kernel.CodeInvalidValue, "-o wants table or json, got %q", v)
 		}
 		f.output = v
-	case "-header-row":
-		return number(&f.headerRow, 1)
-	case "-header-rows":
-		return number(&f.headerRows, 1)
-	case "-rows":
-		return number(&f.rows, 1)
-	default:
-		return kernel.Errorf(kernel.CodeInvalidValue, "unexpected argument %q", flag)
+		return nil
 	}
+	if v != ingest.FormatCSV && v != ingest.FormatJSONLines && v != ingest.FormatXLSX {
+		return kernel.Errorf(kernel.CodeInvalidValue, "-format wants csv, jsonl or xlsx, got %q", v)
+	}
+	f.format = v
+	return nil
+}
+
+// count reads a flag that takes a number of one or more.
+func count(flag, v string, into *int) error {
+	n, err := strconv.Atoi(v)
+	if err != nil || n < 1 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "%s wants a number of 1 or more, got %q", flag, v)
+	}
+	*into = n
 	return nil
 }
 

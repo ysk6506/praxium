@@ -8,13 +8,14 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/ysk6506/praxium/backend/internal/filesource"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/xlsx"
 )
 
-const bookDir = "../../internal/ingestcheck/testdata/xlsx/"
+const bookDir = "../../internal/ingestcheck/samples-xlsx/"
 
-// sampleWorkbook is the workbook the sample definitions in testdata/xlsx read: a Korean sheet name, a title above the
+// sampleWorkbook is the workbook the sample definitions in samples-xlsx read: a Korean sheet name, a title above the
 // header, a merged maker, a number cell for the asset number, a subtotal row, blank rows, a note, a hidden sheet.
 func sampleWorkbook(t *testing.T) string {
 	t.Helper()
@@ -208,5 +209,45 @@ func TestFormatIsToldByTheContentFirstThenTheNameThenTheFirstCharacter(t *testin
 		if got := detectFormat(c.name, []byte(c.data)); got != c.want {
 			t.Errorf("%s %q: %s, want %s", c.name, c.data, got, c.want)
 		}
+	}
+}
+
+// [REQ-288]
+func TestIngestInspectRefusesBadFlagsMissingAndTooLargeFiles(t *testing.T) {
+	path := sampleWorkbook(t)
+	for _, args := range [][]string{
+		{"-input", path, "-format", "ods"},
+		{"-input", path, "-o", "yaml"},
+		{"-input", path, "-rows", "0"},
+		{"-input", path, "-header-rows", "x"},
+		{"-input", path, "-nope", "1"},
+		{"-input", path, "-sheet"},
+		{"-format", "csv"},
+	} {
+		if code, _, errOut := runCLI(t, append([]string{"ingest", "inspect"}, args...)...); code != exitUsage || errOut == "" {
+			t.Errorf("%v: code %d, %q", args, code, errOut)
+		}
+	}
+	if code, _, errOut := runCLI(t, "ingest", "inspect", "-input", filepath.Join(t.TempDir(), "none.xlsx")); code != exitFailure || !strings.Contains(errOut, "cannot read") {
+		t.Errorf("a missing file: %d %q", code, errOut)
+	}
+	big := writeFile(t, "big.csv", bytes.Repeat([]byte("a,b\n"), filesource.DefaultMaxBytes/4+10))
+	if code, _, errOut := runCLI(t, "ingest", "inspect", "-input", big); code != exitFailure || !strings.Contains(errOut, "larger than the limit") {
+		t.Errorf("a file over the limit: %d %q", code, errOut)
+	}
+}
+
+// [REQ-288]
+func TestIngestInspectTableMarksHiddenColumnsAndUnreadableRows(t *testing.T) {
+	var out bytes.Buffer
+	printTable(&out, ingest.TableProfile{Name: "t", Rows: 1, HeaderRow: 2, HeaderRows: 2, Unreadable: 3,
+		Columns: []ingest.ColumnProfile{{Name: "n", Column: "B", Hidden: true, ValueType: "integer", ErrorCells: 2}}})
+	for _, want := range []string{"(2 rows)", "3 rows that cannot be read", "B (hidden)", "+2 error cells"} {
+		if !strings.Contains(out.String(), want) {
+			t.Errorf("the table lacks %q:\n%s", want, out.String())
+		}
+	}
+	if numberText(0) != "" || numberText(3) != "3" {
+		t.Error("numberText")
 	}
 }

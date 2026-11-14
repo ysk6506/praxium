@@ -65,6 +65,12 @@ D=internal/ingestcheck/testdata
   -input ds_hosts=$D/sample/hosts.jsonl -input ds_vms=$D/sample/vms.jsonl -input ds_vm_power=$D/sample/vm-power.csv
 ```
 
+엑셀 워크북은 같은 방식으로 읽는다(`parser: xlsx`, 샘플 정의는 `internal/ingestcheck/samples-xlsx/`, [ADR-0040](docs/design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md)). 먼저 `praxium ingest inspect -input 파일.xlsx`로 시트와 머리글 행과 컬럼을 살펴보고, 한 줄로 수집한다(워크북은 커밋하지 않으므로 시트 `랙`과 `서버 목록`이 있는 파일을 직접 만든다):
+
+```
+/tmp/praxium ingest run -source internal/ingestcheck/samples-xlsx/source.json -mapping internal/ingestcheck/samples-xlsx/mapping.json -input ds_racks=my.xlsx -input ds_servers=my.xlsx
+```
+
 CI가 병합 관문이다: main에는 풀 리퀘스트로만 반영되고, 필수 검사 `gate`가 통과할 때만 병합한다. 문서(`*.md`)만 변경한 풀 리퀘스트는 경량 경로를 거쳐 구조 검사만 실행된다([ADR-0002](docs/design-docs/adr/0002-harness-and-working-rules-from-terrarium.md)).
 
 실패 메시지는 `problem`과 `fix`를 알려 준다. 메시지를 따라 그대로 수정한다.
