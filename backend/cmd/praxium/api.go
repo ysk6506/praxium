@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"flag"
 	"fmt"
 	"io"
@@ -18,6 +19,8 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/cli"
 	"github.com/ysk6506/praxium/backend/internal/contract"
 	"github.com/ysk6506/praxium/backend/internal/devauth"
+	"github.com/ysk6506/praxium/backend/internal/devload"
+	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/httpapi"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
@@ -40,6 +43,8 @@ type wiring struct {
 	client *http.Client
 	// open opens a truth file for the development loader; nil means the whole file read through env.
 	open func(path string) (io.ReadCloser, error)
+	// webBuilt says whether the program has the web UI inside; nil means ask the embedded files.
+	webBuilt func() bool
 }
 
 // systemWiring is the wiring of the real process.
@@ -71,6 +76,8 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 	switch {
 	case args[0] == "api" && len(args) >= 2 && (args[1] == "serve" || args[1] == "routes"):
 		return runAPI(args[1:], stdout, stderr, w), true
+	case args[0] == "demo":
+		return runDemo(args[1:], stdout, stderr, w), true
 	case args[0] == "dev":
 		return runDev(args[1:], stdout, stderr, w), true
 	case args[0] == "ingest":
@@ -211,48 +218,122 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	if err != nil {
 		return err
 	}
+	return runServer(serverPlan{
+		opts: o, authn: authn,
+		load: func(ctx context.Context, store graph.Store, reg *model.Registry) (*devload.Report, error) {
+			return loadTruth(ctx, store, reg, d, o.truth, 0)
+		},
+	}, stderr, d)
+}
+
+// serverPlan is what one start of the server needs. `api serve` and `demo` both build one and share runServer, so
+// the store, the server and the shutdown are assembled in one place.
+type serverPlan struct {
+	opts  serveOptions
+	authn access.Authenticator
+	// load fills the store before the server answers; nil, or a nil report, loads nothing.
+	load func(ctx context.Context, store graph.Store, reg *model.Registry) (*devload.Report, error)
+	// listenFirst takes the address before the load, so a taken port fails at once; the default loads first.
+	listenFirst bool
+	// ready is called once the server listens and the load is done, with where it listens and what was loaded.
+	ready func(addr net.Addr, loaded *devload.Report)
+}
+
+// listenError says why the address cannot be used; the common case, a port in use, names the way out.
+func listenError(addr string, err error) error {
+	if errors.Is(err, syscall.EADDRINUSE) {
+		return kernel.Wrap(kernel.CodeInvalidValue, err, fmt.Sprintf("cannot listen on %s: the address is already in use; stop the program that uses it or choose another with -addr", addr))
+	}
+	return kernel.Wrap(kernel.CodeInvalidValue, err, "cannot listen")
+}
+
+func listenOn(d wiring, addr string) (net.Listener, error) {
+	ln, err := d.listen(addr)
+	if err != nil {
+		return nil, listenError(addr, err)
+	}
+	return ln, nil
+}
+
+// runServer opens the store, loads, takes the address and serves until the stop signal. A plan with listenFirst takes
+// the address before the load, so a taken port fails at once and not after a long load. The stop signal also ends a
+// load in progress.
+func runServer(p serverPlan, stderr io.Writer, d wiring) error {
 	reg, err := model.LoadStandard()
 	if err != nil {
 		return err
 	}
 	log := logger(stderr)
-	ctx := context.Background()
-	store, closeStore, err := openStoreLogged(ctx, o, d, log)
+	stopCtx, stop := d.signals()
+	defer stop()
+	store, closeStore, err := openStoreLogged(stopCtx, p.opts, d, log)
 	if err != nil {
 		return err
 	}
+	defer closeLogged(closeStore, log)
+	var ln net.Listener
+	serving := false
 	defer func() {
-		if err := closeStore(); err != nil {
-			log.Error("praxium store did not close cleanly", slog.String("error", err.Error()))
+		if ln != nil && !serving {
+			_ = ln.Close()
 		}
 	}()
-	rep, err := loadTruth(ctx, store, reg, d, o.truth, 0)
+	if p.listenFirst {
+		if ln, err = listenOn(d, p.opts.addr); err != nil {
+			return err
+		}
+	}
+	rep, err := loadFor(stopCtx, p, store, reg, log)
 	if err != nil {
 		return err
 	}
+	if ln == nil {
+		if ln, err = listenOn(d, p.opts.addr); err != nil {
+			return err
+		}
+	}
+	srv, err := newServer(p, d, log, store, reg)
+	if err != nil {
+		return err
+	}
+	log.Info("praxium api listening", slog.String("addr", ln.Addr().String()), slog.String("mode", p.opts.mode),
+		slog.Bool("dev_auth", p.authn != nil), slog.String("store", p.opts.store), slog.String("web_ui", uiState(p.opts)), slog.String("version", version))
+	if p.ready != nil {
+		p.ready(ln.Addr(), rep)
+	}
+	serving = true
+	return srv.Serve(stopCtx, ln)
+}
+
+// closeLogged closes the store; the file store takes its last snapshot here, so a failure is worth a line.
+func closeLogged(closeStore func() error, log *slog.Logger) {
+	if err := closeStore(); err != nil {
+		log.Error("praxium store did not close cleanly", slog.String("error", err.Error()))
+	}
+}
+
+// loadFor runs the plan's load and says what it loaded.
+func loadFor(ctx context.Context, p serverPlan, store graph.Store, reg *model.Registry, log *slog.Logger) (*devload.Report, error) {
+	if p.load == nil {
+		return nil, nil
+	}
+	rep, err := p.load(ctx, store, reg)
 	if rep != nil {
 		log.Info("praxium dev truth loaded", slog.Int64("objects", rep.Objects), slog.Int64("links", rep.Links), slog.String("version", rep.VersionID))
 	}
+	return rep, err
+}
+
+// newServer wires the API server over the store.
+func newServer(p serverPlan, d wiring, log *slog.Logger, store graph.Store, reg *model.Registry) (*httpapi.Server, error) {
 	queries, err := query.New(store, reg, d.clock)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	srv, err := httpapi.New(httpapi.Config{
-		Registry: reg, Authenticator: authn, Clock: d.clock, IDs: d.ids, Logger: log, Version: version,
-		Queries: queries, KGs: store, UI: uiFor(o),
+	return httpapi.New(httpapi.Config{
+		Registry: reg, Authenticator: p.authn, Clock: d.clock, IDs: d.ids, Logger: log, Version: version,
+		Queries: queries, KGs: store, UI: uiFor(p.opts),
 	})
-	if err != nil {
-		return err
-	}
-	ln, err := d.listen(o.addr)
-	if err != nil {
-		return kernel.Wrap(kernel.CodeInvalidValue, err, "cannot listen")
-	}
-	stopCtx, stop := d.signals()
-	defer stop()
-	log.Info("praxium api listening", slog.String("addr", ln.Addr().String()), slog.String("mode", o.mode),
-		slog.Bool("dev_auth", authn != nil), slog.String("store", o.store), slog.String("web_ui", uiState(o)), slog.String("version", version))
-	return srv.Serve(stopCtx, ln)
 }
 
 // runContract handles `praxium contract assemble|check`: the same assembly the

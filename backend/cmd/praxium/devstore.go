@@ -60,6 +60,11 @@ func loadTruth(ctx context.Context, store graph.Store, reg *model.Registry, w wi
 		return nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the truth file")
 	}
 	defer in.Close()
+	return loadTruthFrom(ctx, store, reg, w, in, batch)
+}
+
+// loadTruthFrom is loadTruth for truth that is already open: a file, or the generator's output in memory.
+func loadTruthFrom(ctx context.Context, store graph.Store, reg *model.Registry, w wiring, in io.Reader, batch int) (*devload.Report, error) {
 	kg, err := devload.NewKG(ctx, store, reg, w.ids, w.clock, devKGName)
 	if err != nil {
 		return nil, err

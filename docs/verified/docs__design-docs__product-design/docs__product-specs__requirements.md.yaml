@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "9921f6de8e5b9b8d"
+hash: "cf9685ed8d7eaf37"
 date: "2026-11-14"
-note: "main의 파일 스토어(ADR-0034)와 웹 UI(ADR-0035) 병합 뒤 대조했다"
+note: "요구사항에 REQ-280~281(데모 모드)이 더해졌다. 제품 설계의 원칙과 순서는 바뀌지 않아 본문은 그대로 둔다"
 text_changed: true
 doc_hash: "06412a77a9acc006"
