@@ -1,0 +1,39 @@
+---
+title: 프락시움 요구사항 — 웹 UI, 명령줄, 릴리스
+kind: spec
+status: active
+follows:
+  - docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md
+---
+# 요구사항 — 웹 UI, 명령줄, 릴리스
+
+임시 웹 UI(275번대, 296~299, 315~319), 명령줄, 데모, 릴리스 빌드(282~283)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
+
+| ID | 요구사항 |
+|---|---|
+| REQ-209 | **예정(ADR-0016)** 임시 콘솔(ADR-0035가 형태를 고쳤다)은 공개된 `/v1`만 쓰고, 이 리포지토리의 `apps/web` 한 폴더에 있고, 백엔드는 그것 없이 빌드되고 테스트되며(REQ-279), 삭제 조건(프런트엔드 리포지토리가 생기거나 클로즈드 베타가 끝남)이 정해져 있다. |
+| REQ-245 | CLI는 공개된 `/v1`만 쓰고, 같은 바이너리에 포함된다. 종료 코드는 문제 그룹(`group`)을 따르고, 서버는 `praxium api serve`로 기동하며 개발용 인증은 운영 모드에서 거부한다(ADR-0024). REQ-147에서 분리한 알파 1의 몫이다. |
+| REQ-257 | 명령줄이 KG를 읽는다: `kg list`, `kg get`, `object get`, `object links`, `query find`, `query get`, `query neighbors`. 테이블과 `--json`으로 출력하고, 페이지네이션의 `--all`과 `--summary`, 읽기 워터마크(`--at-seq`, `--version`), 조회 기준, `--min-seq`와 `--wait`를 받는다. 공개된 `/v1`만 호출한다. REQ-147에서 분리한 요구다(ADR-0027). |
+| REQ-275 | `praxium api serve`는 실행 파일에 담은 웹 UI를 `/v1` 밖의 GET과 HEAD로 낸다. 모르는 화면 주소는 `index.html`로, 확장자가 있는 없는 파일은 404로 답하고 `/v1` 아래는 화면으로 대체하지 않는다. 응답은 같은 출처만 허용하는 `Content-Security-Policy`, `X-Frame-Options`, `nosniff`를 달고, 화면이 없는 빌드는 그 사실을 알리는 자리표시자 페이지를 낸다. `-web=false`면 API만 낸다(ADR-0035). |
+| REQ-276 | 웹 UI의 API 호출 계층은 계약(OpenAPI)에서 생성한다. 생성 파일의 머리말에 계약과 본문의 해시가 있고, 계약이 바뀌었는데 다시 생성하지 않았거나 손으로 고치면 검사가 실패한다. 생성기는 의존성이 없다(ADR-0035). |
+| REQ-277 | 웹 UI의 계층은 위로만 의존한다(`api`, `data`, `ui`, `screens`). Base UI는 `ui` 계층에서만 import하고, 색은 토큰 파일에서만 쓰며(`#hex`, `rgb()`, `hsl()`, `oklch()`와 임의 값의 Tailwind 색은 실패), `apps/web`의 의존성은 허용 목록에 있어야 한다(ADR-0035). |
+| REQ-278 | 임시 화면의 데이터 동작은 다음과 같다. 접속 토큰은 브라우저에 저장해 API 호출에 싣는다. 조회는 로딩, 성공, 실패를 구분하고 API의 오류(`problem+json`)를 읽을 수 있는 한국어로 바꾼다. 객체 표는 커서로 앞뒤 페이지를 오가고 타입의 속성을 열로 고른다. 객체 상세와 이웃은 근거 등급과 출처를 보여 준다. 한국어 표시와 키보드 조작이 된다(ADR-0035). |
+| REQ-279 | 백엔드는 `apps/web` 없이 빌드되고 테스트된다. 임베드 폴더에는 자리표시자 페이지만 커밋하고 Go 코드는 `apps/web`을 가리키지 않는다. 임시 화면(`src/screens`)의 테스트는 잠금과 요구사항 추적에서 빠지고 정적 테스트 규칙은 그대로 받는다(ADR-0035). |
+| REQ-280 | `praxium demo`는 인자 없이 합성 세계를 프로세스 안에서 만들어 KG에 적재하고 127.0.0.1(기본 8080, `-addr`)에서 API와 웹 UI를 낸다. 세계 파일과 토큰 파일을 디스크에 쓰지 않는다. 기본은 메모리 스토리지이고 `-data-dir`이면 내장 파일 스토어로 KG를 남기며, 이미 KG가 있는 폴더는 다시 적재하지 않는다. 포트가 사용 중이면 적재 전에 `-addr`를 안내하며 실패하고, 루프백이 아닌 주소는 경고하며, 웹 UI가 없는 빌드는 빌드 방법과 토큰, API와 CLI 사용 예를 알린다. 시작 출력은 합성 데이터이고 실제 시스템과 연결되지 않으며 운영용이 아님을 밝히고, 종료 신호에 서버를 닫는다. 조립은 `api serve`의 개발 모드와 같은 코드를 쓴다(ADR-0038). |
+| REQ-281 | 데모의 토큰은 실행마다 커널 엔트로피로 새로 만들고(고정값 없음) 터미널에 출력하는 접속 주소의 프래그먼트(`#/connect?token=…&demo=1`)에만 있어 서버 로그와 응답에 남지 않는다. 웹 UI는 화면을 그리기 전에 프래그먼트의 토큰을 저장하고 주소를 첫 화면으로 바꾸며, 데모 표시는 그 토큰에 묶어 기억해 다른 토큰이나 토큰 삭제 뒤에는 보이지 않는다. 데모이면 안내 줄과 배지를 보인다(ADR-0038). |
+| REQ-282 | `praxium version`은 버전, 커밋, 빌드 날짜(커밋 시각, UTC), Go 버전, 웹 UI 포함 여부를 출력한다. 앞의 셋은 빌드할 때 `-ldflags -X`로 넣고, 넣지 않은 빌드는 버전이 `dev`, 커밋과 날짜가 `unknown`이다. 인자가 더 붙으면 사용법 오류다(ADR-0039). |
+| REQ-283 | 릴리스 빌드(`scripts/release-build.sh`)는 `linux/amd64`, `linux/arm64`, `darwin/arm64`, `darwin/amd64`, `windows/amd64`를 `CGO_ENABLED=0`으로 컴파일해 웹 UI를 담은 실행 파일을 만들고, 대상마다 압축 파일(실행 파일, `LICENSE`, `NOTICE`, `THIRD_PARTY_NOTICES.md`)과 `SHA256SUMS`를 낸다. 같은 커밋과 Go 버전이면 같은 바이트가 나오고, 시맨틱 버저닝이 아닌 버전은 거절한다. `v*` 태그의 푸시와, 메인 브랜치에서 버전을 입력해 실행한 수동 실행이 GitHub 릴리스를 만들고(`-`가 든 태그는 사전 릴리스), 수동 실행은 `commit`(메인 브랜치의 커밋, 비우면 실행한 브랜치의 끝)에 아직 없는 태그도 함께 만든다. 입력은 `scripts/release-plan.sh`가 검증하고 게시는 `scripts/release-publish.sh`가 하며, 릴리스 노트는 `docs/releases/<태그>.md`에서 읽는다. 버전을 비운 수동 실행은 아티팩트만 만든다. 서명, SBOM, 컨테이너 이미지는 오픈 베타 전의 일이다(ADR-0039, ADR-0047). |
+
+| ID | 요구사항 | 근거·테스트 |
+|---|---|---|
+| REQ-289 | `praxium`, `praxium help`, `praxium --help`, `praxium -h`는 같은 최상위 도움말을 낸다: 맨 위에 가장 빠른 시작(`praxium demo`), 모든 명령을 묶음(시작하기, 조회, 수집, 서버, 도구)별로 한 줄 설명과 함께, 전역 플래그의 위치 규칙. 모든 명령과 하위 명령은 `-h`와 `--help`로 사용법 한 줄, 설명, 플래그와 기본값, 예시를 낸다(종료 코드 0). 잘못된 명령줄은 오류 한 줄, 사용법 한 줄, 도움말 위치 한 줄만 낸다. 하는 일이 없는 역할(`worker`, `collector`)은 "not implemented yet"과 0이 아닌 종료 코드로 끝난다. 전역 플래그(`--endpoint`, `--token`, `--config`, `--json`)는 명령 앞뒤 어디에 놓아도 받는다 | ADR-0041, `backend/cmd/praxium/help_test.go`, `backend/internal/cli/cause_test.go` |
+| REQ-294 | `praxium local -data-dir <폴더>`는 그 폴더의 KG를 내장 파일 스토어로 열어 127.0.0.1(`-addr`)에서 API와 웹 UI를 낸다. 데모와 같은 접속 방식(실행마다 새 토큰, 프래그먼트 `#/connect?token=…&mode=local`)이고 합성 데이터를 넣지 않는다. 폴더나 KG가 없으면 먼저 `ingest run -data-dir`을 하라고 안내하며, 포트 검사와 루프백이 아닌 주소 경고는 데모와 같다. 시작 출력은 한 사람이 자기 컴퓨터에서 쓰는 용도이고 인증이 약하며 운영용이 아님을 밝힌다. 데모와 `local`의 시작은 오래 걸리면 몇 초마다 진행을 알린다 | ADR-0041, `backend/cmd/praxium/local_test.go`, `backend/cmd/praxium/help_test.go` |
+| REQ-296 | 웹 UI는 접속 방식 셋(데모 링크 `#/connect?token=…&demo=1`, 로컬 모드 링크 `…&mode=local`, 직접 입력한 접근 토큰)을 구분해 기억한다. 접속 링크는 첫 로드뿐 아니라 열려 있는 탭의 주소가 바뀔 때도 받아 토큰을 저장하고 주소에서 지우며, 이전 토큰으로 받은 화면 상태와 데이터는 비운다. 데모와 로컬 모드는 배너와 배지로 보이고, 토큰을 지우거나 다른 토큰을 입력하면 저장된 접속 표시도 지운다. 인증 오류는 데모와 로컬 모드이면 새 주소를 열라고, 직접 입력한 토큰이면 토큰을 다시 입력하라고 안내하고, 접속 설정 화면은 세 방식을 설명한다 | ADR-0042, `apps/web/src/data/access.test.tsx` |
+| REQ-297 | 웹 UI의 화면 이동은 새 화면을 맨 위에서 열고 뒤로 가기에서는 이전 위치를 되살린다. 객체 테이블의 페이지 위치, 페이지당 개수, 선택한 컬럼과 타입 목록의 검색어, 객체가 있는 타입만 보는 토글, 정렬은 주소의 쿼리에 담겨 뒤로 가기, 새로 고침, 링크 공유에서 유지된다. 모르는 경로는 "페이지를 찾을 수 없습니다"와 돌아갈 링크를 보이고, 모르는 `tab` 값은 기본 탭으로 가며 주소를 고쳐 쓴다 | ADR-0042, `apps/web/src/data/screenstate.test.tsx` |
+| REQ-298 | 웹 UI의 오류 화면은 서버 오류 응답이 싣는 원인(필드 이름, 메시지)을 바로 보이고, 찾을 수 없다는 오류는 무엇을 못 찾았는지(KG, 객체, 객체 타입의 이름이나 ID)를 문구에 넣는다. 오류 코드, HTTP 상태, 추적 ID와 나머지 값은 "자세히" 안에 접어 둔다 | ADR-0042, `apps/web/src/data/access.test.tsx`, `apps/web/src/ui/shell.test.tsx` |
+| REQ-299 | 웹 UI는 제품이 정한 닫힌 값(계층, 근거 등급과 종류, 신선도, KG의 상태와 역할, 링크 방향)을 한 곳의 사전에 둔 한국어 표시 이름으로 보이고 원래 값은 툴팁으로 둔다. 속성 이름과 값, 타입 이름은 모델의 데이터이므로 그대로 보인다. 화면은 본문으로 건너뛰기, 좁은 폭에서 접히는 메뉴, 타입 목록의 컬럼 정렬, 테이블과 같은 순서의 컬럼 선택, 넓은 테이블의 가로 스크롤 단서를 가진다. 페이지는 "N페이지"로 쓴다 | ADR-0042, `apps/web/src/data/screenstate.test.tsx`, `apps/web/src/ui/shell.test.tsx` |
+| REQ-315 | 웹 UI는 화면마다 `document.title`을 `<대상> · <종류> · 프락시움` 형식으로 갱신하고(객체 화면은 객체 이름과 타입, 읽기 전에는 경로로 정한 이름), 사용자가 링크나 버튼으로 화면을 옮기면 포커스를 새 화면의 `h1`로 옮긴다. 같은 화면 안의 쿼리 변경에서는 포커스를 옮기지 않고, 뒤로 가기와 앞으로 가기에서는 포커스를 두고 `aria-live` 영역으로 도착한 화면의 이름을 알린다 | ADR-0045, `apps/web/src/data/screen.test.tsx` |
+| REQ-316 | 웹 UI의 색 토큰은 글자와 배경의 쌍이 4.5:1 이상, 컨트롤의 테두리와 포커스 링이 3:1 이상이다(라이트와 다크 모두, WCAG 2.2 AA). 쌍의 목록은 설정에 선언하고 oklch를 sRGB로 바꾸는 계산을 의존성 없이 하네스가 한다. 기준에 못 미치면 검사가 `problem`과 `fix`를 알리며 실패한다(`WEB040`) | ADR-0045, `harness/src/checks/web-rules.test.ts` |
+| REQ-317 | 웹 UI는 움직임 줄이기를 존중한다: 움직이는 CSS가 있으면 `prefers-reduced-motion` 처리가 있어야 하고 Tailwind의 `animate-`는 `motion-safe:` 뒤에서만 쓴다(`WEB044`). 강제 색상 모드에서 현재 메뉴, 선택한 탭, 배지, 회전 표시가 구별되고, 글자가 든 컨트롤의 높이는 고정하지 않아 200% 확대와 글자 간격 조정에서 잘리지 않는다 | ADR-0045, `harness/src/checks/web-rules.test.ts` |
+| REQ-318 | 웹 UI의 소스는 위험한 삽입 함수(`innerHTML` 대입, `dangerouslySetInnerHTML`, `eval` 등, `WEB041`)와 절대 `http(s)://` 주소(`WEB042`)를 쓰지 않고, 포커스 표시를 대체 없이 지우지 않으며(`WEB043`), 빌드 결과는 gzip 예산 이하이다(`WEB045`). 화면 응답은 `script-src`, `connect-src`, `worker-src`, `object-src`를 명시한 CSP와 `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`을 가지고 `no-store`를 쓰지 않는다 | ADR-0045, `harness/src/checks/web-rules.test.ts`, `backend/internal/httpapi/ui_headers_test.go` |
+| REQ-319 | 웹 UI 규칙 문서가 지원 브라우저 기준(Baseline Widely available을 기본, Newly available은 기능 감지와 점진 향상일 때만, Limited와 오리진 트라이얼 금지, 하한은 Tailwind CSS v4의 최소 버전)과 채택하지 않는 것, 출처와 라이선스(CC BY 4.0)를 밝히고 AGENTS.md가 그 문서로 이끈다. 빌드 대상은 그 하한의 브라우저 목록이다 | ADR-0045, `harness/src/checks/web-rules.test.ts` |

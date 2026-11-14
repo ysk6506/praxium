@@ -4,7 +4,7 @@ import { run as architecture } from "./checks/architecture";
 import { run as coverage } from "./checks/coverage";
 import { run as debt } from "./checks/debt";
 import { report as docsDiff } from "./checks/doc-diff";
-import { run as docs } from "./checks/docs";
+import { report as docsReport } from "./checks/docs";
 import * as go from "./checks/go";
 import { report as ignores } from "./checks/ignores";
 import { report as licenses } from "./checks/licenses";
@@ -44,8 +44,9 @@ export function checks(
       "docs",
       () => {
         const { violations, notes: docNotes } = docsDiff(root, base);
-        notes.push(...docNotes);
-        return [...docs(root), ...violations];
+        const checked = docsReport(root);
+        notes.push(...docNotes, ...checked.notes);
+        return [...checked.violations, ...violations];
       },
     ],
     ["debt", () => [...debt(root, today(), base), ...go.debtOf(root)]],

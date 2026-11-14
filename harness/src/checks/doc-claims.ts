@@ -8,6 +8,7 @@ import path from "node:path";
 import { type Violation, violation } from "../common";
 import { listFiles } from "../files";
 import { harnessText } from "./doc-adr";
+import { requirementFiles } from "./requirement-files";
 
 const BUILTIN = new Set([
   "install",
@@ -178,10 +179,11 @@ export class ClaimContext {
         ),
     );
   reqText = (): string =>
-    this.once("req", () => {
-      const file = "docs/product-specs/requirements.md";
-      return existsSync(path.join(this.root, file)) ? this.read(file) : "";
-    });
+    this.once("req", () =>
+      requirementFiles(this.root)
+        .map((file) => this.read(file))
+        .join("\n"),
+    );
   /** The one source file a token names, or null when it is not a file or is ambiguous. */
   resolve(token: string): string | null {
     if (token.includes("/")) return existsSync(path.join(this.root, token)) ? token : null;

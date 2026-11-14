@@ -1,7 +1,7 @@
 doc: "docs/guides/release.md"
 target: ".github/workflows/release.yml"
-hash: "39287906809d576d"
+hash: "28a0a033cd9ae9bd"
 date: "2026-11-14"
-note: "메인 브랜치에서만 릴리스, 태그 확인 방식, 게시 뒤 확인을 가이드에 반영"
+note: "plan 작업에 Node와 pnpm install 단계가 게시하는 실행에만 더해짐. 안내서는 이 단계를 따로 말하지 않아도 맞음"
 text_changed: true
-doc_hash: "7b57d824dee1927e"
+doc_hash: "50cc4e220498dbe5"

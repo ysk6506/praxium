@@ -3,7 +3,8 @@ title: 제품 설계 개요 — 프락시움의 가치, 원칙, 쟁점별 답, �
 kind: guide
 status: active
 follows:
-  - docs/product-specs/requirements.md
+  - doc: docs/product-specs/requirements*.md
+    recheck: release
   - docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md
 ---
 # 제품 설계 개요

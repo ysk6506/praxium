@@ -1,0 +1,7 @@
+doc: "docs/product-specs/requirements-ingestion-usability.md"
+target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
+hash: "266ca1ec5f1a56b5"
+date: "2026-11-14"
+note: "ADR-0063: 요구사항 줄을 입구 문서에서 글자 그대로 옮겼다. ADR-0005의 경계(읽기만, 모델은 프락시움 소유)와 대조해 어긋나는 줄이 없다"
+text_changed: true
+doc_hash: "fea345456eb80eec"

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/product-design.md"
+target: "docs/product-specs/requirements-query-api.md"
+hash: "4114e5834cb2fa4d"
+date: "2026-11-14"
+note: "질의와 API(140대, 사전 정의 질의, 오류 응답)는 개요 지도의 REST와 질의 설계 항목과 일치. 이번에 문서를 나누며 줄을 그대로 옮겼고 어긋나는 곳이 없어 개요는 고치지 않았다"
+text_changed: true
+doc_hash: "019854b80cb4930e"

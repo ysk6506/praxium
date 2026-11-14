@@ -12,4 +12,5 @@
 /.github/** @ysk6506
 /docs/design-docs/adr/** @ysk6506
 /docs/product-specs/requirements.md @ysk6506
+/docs/product-specs/requirements-*.md @ysk6506
 /AGENTS.md @ysk6506

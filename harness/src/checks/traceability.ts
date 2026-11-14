@@ -1,6 +1,6 @@
 /**
- * Requirement traceability (REQ-023, REQ-025). docs/product-specs/requirements.md is the single source
- * of requirements; tests link to them by putting `[REQ-NNN]` in a describe or test title.
+ * Requirement traceability (REQ-023, REQ-025). docs/product-specs/requirements.md and the area documents next to it
+ * (requirements-*.md, ADR-0063) are the single source of requirements; tests link to them by putting `[REQ-NNN]` in a describe or test title.
  *
  * TRACE001 requirement with no test   TRACE002 test cites an unknown requirement
  * TRACE003 spec test file without any requirement link   TRACE004 requirement id defined twice
@@ -20,10 +20,10 @@ import { findRoot, finish, flag, isMain, parseArgs, type Violation, violation } 
 import { lineOf, parse, ts, walk } from "../ts-ast";
 import { loadGoConfig } from "./go-config";
 import { goCitations, strayTagViolations } from "./go-test-units";
+import { REQUIREMENTS, requirementLines } from "./requirement-files";
 import { lockedTestFiles, testApi } from "./test-units";
 import { loadTestsConfig } from "./testguard";
 
-const REQUIREMENTS = "docs/product-specs/requirements.md";
 const ROW_RE = /^\|\s*(REQ-\d{3})\s*\|/;
 const PLANNED_RE = /^\|\s*(REQ-\d{3})\s*\|\s*\*\*예정\((ADR-\d{4})\)\*\*/;
 const ADR_DIR = "docs/design-docs/adr";
@@ -33,31 +33,29 @@ const LINKED_DIRS = ["tests/spec/"];
 export function requirementIds(root: string): { ids: string[]; violations: Violation[] } {
   const ids: string[] = [];
   const violations: Violation[] = [];
-  readFileSync(path.join(root, REQUIREMENTS), "utf8")
-    .split("\n")
-    .forEach((line, index) => {
-      const id = ROW_RE.exec(line)?.[1];
-      if (!id) return;
-      if (ids.includes(id))
-        violations.push(
-          violation(
-            "TRACE004",
-            REQUIREMENTS,
-            index + 1,
-            `${id} defined twice`,
-            "Give each requirement a unique id.",
-          ),
-        );
-      ids.push(id);
-    });
+  for (const { file, line, text } of requirementLines(root)) {
+    const id = ROW_RE.exec(text)?.[1];
+    if (!id) continue;
+    if (ids.includes(id))
+      violations.push(
+        violation(
+          "TRACE004",
+          file,
+          line,
+          `${id} defined twice (all requirements documents share one numbering)`,
+          "Give each requirement a unique id.",
+        ),
+      );
+    ids.push(id);
+  }
   return { ids, violations };
 }
 
 /** Requirements marked 예정 (planned), with the ADR that plans them. */
 export function plannedRequirements(root: string): Map<string, string> {
   const planned = new Map<string, string>();
-  for (const line of readFileSync(path.join(root, REQUIREMENTS), "utf8").split("\n")) {
-    const match = PLANNED_RE.exec(line);
+  for (const { text } of requirementLines(root)) {
+    const match = PLANNED_RE.exec(text);
     if (match?.[1] && match[2]) planned.set(match[1], match[2]);
   }
   return planned;
