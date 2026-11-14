@@ -42,17 +42,24 @@ func checkFunc(op Op) error {
 	return kernel.Errorf(kernel.CodeUnsupported, "function %q is not in the closed list (trim, lower, upper, map)", op.Func)
 }
 
-// keep says whether a row passes the filter of an operation.
+// keep says whether a row passes the filter of an operation. The spaces at both ends of the cell and of the listed
+// values are of no account (as for not_empty and for the natural key), so "on " is in ["on"] (ADR-0052).
 func (op Op) keep(cell string) bool {
+	trimmed := strings.TrimSpace(cell)
 	switch {
-	case op.NotEmpty && strings.TrimSpace(cell) == "":
+	case op.NotEmpty && trimmed == "":
 		return false
-	case len(op.In) > 0 && !slices.Contains(op.In, cell):
+	case len(op.In) > 0 && !listed(op.In, trimmed):
 		return false
-	case len(op.NotIn) > 0 && slices.Contains(op.NotIn, cell):
+	case len(op.NotIn) > 0 && listed(op.NotIn, trimmed):
 		return false
 	}
 	return true
+}
+
+// listed tells whether a value is one of the listed values, the spaces at the ends of the listed ones set aside.
+func listed(list []string, trimmed string) bool {
+	return slices.ContainsFunc(list, func(v string) bool { return strings.TrimSpace(v) == trimmed })
 }
 
 // rewrite gives the cell after a fill or a replace.

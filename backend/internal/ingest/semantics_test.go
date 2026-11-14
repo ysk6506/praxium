@@ -198,3 +198,27 @@ func TestAKeyNameThatOneFeedGivesAndAnotherLacksStillFindsTheObject(t *testing.T
 		t.Fatalf("objects %d problems %v", rep.Objects, rep.ProblemCounts)
 	}
 }
+
+// [REQ-362]
+func TestInAndNotInSetAsideTheSpacesAtTheEnds(t *testing.T) {
+	for name, c := range map[string]struct {
+		op   Op
+		cell string
+		keep bool
+	}{
+		"in, space in the cell":      {Op{Op: OpFilter, Column: "c", In: []string{"on"}}, "on ", true},
+		"in, space in the list":      {Op{Op: OpFilter, Column: "c", In: []string{" on"}}, "on", true},
+		"in, a tab and a new line":   {Op{Op: OpFilter, Column: "c", In: []string{"on"}}, "\ton\n", true},
+		"in, another value":          {Op{Op: OpFilter, Column: "c", In: []string{"on"}}, " off ", false},
+		"in, spaces inside count":    {Op{Op: OpFilter, Column: "c", In: []string{"rack a"}}, "rack  a", false},
+		"in, case counts":            {Op{Op: OpFilter, Column: "c", In: []string{"on"}}, "ON", false},
+		"not_in, space in the cell":  {Op{Op: OpFilter, Column: "c", NotIn: []string{"45"}}, " 45 ", false},
+		"not_in, space in the list":  {Op{Op: OpFilter, Column: "c", NotIn: []string{"45 "}}, "45", false},
+		"not_in, another value":      {Op{Op: OpFilter, Column: "c", NotIn: []string{"45"}}, "46", true},
+		"not_in, an empty cell kept": {Op{Op: OpFilter, Column: "c", NotIn: []string{"45"}}, "  ", true},
+	} {
+		if got := c.op.keep(c.cell); got != c.keep {
+			t.Errorf("%s: keep(%q) = %t, want %t", name, c.cell, got, c.keep)
+		}
+	}
+}
