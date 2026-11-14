@@ -44,7 +44,6 @@ func (r Runner) batch(ctx context.Context, d *derivation, st *State, kg graph.KG
 			links[l.ID.String()] = true
 		}
 		b.RetireObjects = append(b.RetireObjects, id)
-		b.Identifiers = append(b.Identifiers, closeIdentifiers(st.Objects[id.String()], id)...)
 	}
 	return r.finishBatch(b, d, st, links, objects, retired)
 }
@@ -122,14 +121,6 @@ func staleIdentifiers(st *State, o desiredObject) []graph.IdentifierWrite {
 		if !now[e] {
 			out = append(out, closeOne(o.acc.id, e))
 		}
-	}
-	return out
-}
-
-func closeIdentifiers(info ObjectInfo, id graph.ObjectID) []graph.IdentifierWrite {
-	out := make([]graph.IdentifierWrite, 0, len(info.Idents))
-	for _, e := range info.Idents {
-		out = append(out, closeOne(id, e))
 	}
 	return out
 }

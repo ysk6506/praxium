@@ -303,3 +303,26 @@ func TestSameInputSameObjectIDs(t *testing.T) {
 	}
 	_ = kernel.CodeNotFound
 }
+
+// [REQ-267]
+func TestRetiredRowComesBackWithItsObject(t *testing.T) {
+	r := loaded(t)
+	r.run()
+	id := r.rows()["SV2"].ID
+	r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state\nSV1,sn100,Zorvane,RK1,on\n"
+	for i := 0; i < 3; i++ {
+		r.clock.Advance(10 * time.Hour)
+		r.run()
+	}
+	r.clock.Advance(10 * time.Hour)
+	r.run()
+	if _, ok := r.rows()["SV2"]; ok {
+		t.Fatal("not retired")
+	}
+	r.files["ds_servers"] = serversV1
+	rep := r.run()
+	back, ok := r.rows()["SV2"]
+	if !ok || back.ID != id || rep.ProblemCounts[ProblemIdentityConflict] != 0 {
+		t.Fatalf("back %v id %v problems %v", ok, back.ID == id, rep.ProblemCounts)
+	}
+}
