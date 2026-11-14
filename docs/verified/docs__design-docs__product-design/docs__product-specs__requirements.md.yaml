@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "eb83c583b1c17b3a"
+hash: "fe4ab018d1a4eb79"
 date: "2026-11-14"
-note: "ADR-0045 병합 후 요구사항을 다시 읽었다. REQ-300부터 306과 다른 요구가 겹치지 않고 개요와 어긋나지 않는다"
+note: "인증(ADR-0044) 병합 후 요구사항을 다시 읽었다. REQ-300부터 306과 REQ-307부터 314가 겹치지 않고 개요와 어긋나지 않는다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

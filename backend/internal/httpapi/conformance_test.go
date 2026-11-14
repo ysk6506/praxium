@@ -238,9 +238,14 @@ func TestEveryOperationAsksForTheRoleItDeclares(t *testing.T) {
 			if anonymous.status != 401 || asIngester.status != 403 || asViewer.status == 401 || asViewer.status == 403 {
 				t.Errorf("%s: anonymous %d, ingester %d, viewer %d", op.Path, anonymous.status, asIngester.status, asViewer.status)
 			}
+		case slices.Contains(op.Roles, "admin"):
+			if anonymous.status != 401 || asIngester.status != 403 || asViewer.status != 403 {
+				t.Errorf("%s: anonymous %d, ingester %d, viewer %d, and a role other than admin must be refused", op.Path, anonymous.status, asIngester.status, asViewer.status)
+			}
 		default:
-			if anonymous.status != 401 || asIngester.status != 200 {
-				t.Errorf("%s: anonymous %d, ingester %d", op.Path, anonymous.status, asIngester.status)
+			// Any logged-in caller gets what the sample says (200, or the 404 of a server without a directory).
+			if anonymous.status != 401 || asIngester.status != smp.status || asViewer.status != smp.status {
+				t.Errorf("%s: anonymous %d, ingester %d, viewer %d, the sample says %d", op.Path, anonymous.status, asIngester.status, asViewer.status, smp.status)
 			}
 		}
 	}

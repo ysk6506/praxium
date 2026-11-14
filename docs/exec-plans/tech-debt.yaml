@@ -87,7 +87,9 @@ items:
     cost: "`access.Authenticator` 포트를 OIDC 어댑터와 서비스 계정 토큰 발급·검증으로 구현하고, `api serve`의 운영 모드 거부(`requireRealAuthenticator`)를 풀어 그것을 고르게 한 뒤 개발용 인증기를 지운다. 길과 계약은 바뀌지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
-    status: open
+    status: done
+    resolution: "ADR-0044가 내장 인증을 만들었다. 접근 토큰, 첫 관리자의 오프라인 부트스트랩, 사용자와 서비스 계정, 파일·PostgreSQL·메모리 저장, 속도 제한과 감사 로그가 있고 `api serve -mode production`은 이것으로 시작한다. OIDC는 부채가 아니라 뒤에 붙일 기능이다"
+    units: [go:core.identity, go:adapter.http, go:cmd.praxium]
   - id: TD-0011
     title: "API의 저장소는 메모리 구현(`adapter.memstore`)뿐이다. 운영용 저장소(PostgreSQL 어댑터)가 없어서 `api serve -mode production`은 늘 시작을 거부하고, 개발 모드의 서버는 시작할 때마다 `-dev-truth`로 세계를 다시 적재한다. 서버가 끝나면 KG도 없어진다(ADR-0027)"
     severity: medium

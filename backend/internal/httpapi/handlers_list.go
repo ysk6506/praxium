@@ -13,14 +13,20 @@ func listHandler(pick func(*registryLists) *listDef) func(*call) {
 	return func(c *call) { listWith(c, pick(c.s.lists)) }
 }
 
-// listWith serves one list definition.
+// listWith serves one list definition of the registry.
 func listWith(c *call, def *listDef) {
+	c.serveList(def, c.s.lists.generation, c.registryETag(), map[string]any{"model_hash": c.s.lists.generation})
+}
+
+// serveList filters, sorts and cuts one page of def and writes it. An empty etag means the answer is not cached
+// (the lists of users and tokens). generation is what a cursor of this list must have been issued at.
+func (c *call) serveList(def *listDef, generation, etag string, extra map[string]any) {
 	lq, fail := parseListQuery(c.r.URL.Query(), def)
 	if fail != nil {
 		c.fail(fail.code, fail.params)
 		return
 	}
-	pg, fail, cerr := def.run(lq, c.s.lists.generation)
+	pg, fail, cerr := def.run(lq, generation)
 	if fail != nil {
 		c.fail(fail.code, fail.params)
 		return
@@ -33,7 +39,7 @@ func listWith(c *call, def *listDef) {
 		c.fail("conflict.generation_changed", nil)
 		return
 	}
-	if c.notModified(c.registryETag()) {
+	if etag != "" && c.notModified(etag) {
 		return
 	}
 	items := pg.items
@@ -44,12 +50,15 @@ func listWith(c *call, def *listDef) {
 	if pg.next != "" {
 		next = pg.next
 	}
-	c.ok(items, map[string]any{
+	meta := map[string]any{
 		"result_complete": map[string]any{
 			"total": pg.total, "returned": len(items), "truncated": false, "reason": nil, "next_cursor": next,
 		},
-		"model_hash": c.s.lists.generation,
-	})
+	}
+	for k, v := range extra {
+		meta[k] = v
+	}
+	c.ok(items, meta)
 }
 
 // getQuery reads the query of a single resource: only include, from a closed list.

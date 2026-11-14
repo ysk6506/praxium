@@ -286,17 +286,17 @@ func TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited(t *testing.T) {
 	edited := append([]migration(nil), steps...)
 	edited[0].checksum = "edited"
 	wantCode(t, "an edited step", migrate(ctx, sh, edited), kernel.CodeConflict)
-	more := append(append([]migration(nil), steps...), migration{version: 2, name: "extra", sql: "CREATE TABLE extra_table (kg_id text PRIMARY KEY)", checksum: "x", lockWait: time.Second, statement: time.Minute})
+	more := append(append([]migration(nil), steps...), migration{version: len(steps) + 1, name: "extra", sql: "CREATE TABLE extra_table (kg_id text PRIMARY KEY)", checksum: "x", lockWait: time.Second, statement: time.Minute})
 	noErr(t, "a new step", migrate(ctx, sh, more))
 	noErr(t, "a binary older than the database", migrate(ctx, sh, steps))
-	broken := append(append([]migration(nil), more...), migration{version: 3, name: "broken", sql: "SELECT * FROM no_such_table", checksum: "y"})
+	broken := append(append([]migration(nil), more...), migration{version: len(steps) + 2, name: "broken", sql: "SELECT * FROM no_such_table", checksum: "y"})
 	if err := migrate(ctx, sh, broken); err == nil {
 		t.Fatal("a broken step was recorded")
 	}
 	var n int
 	noErr(t, "count", sh.db.QueryRowContext(ctx, `SELECT count(*) FROM schema_migrations`).Scan(&n))
-	if n != 2 {
-		t.Fatalf("%d steps recorded, wanted 2: a broken step leaves no trace", n)
+	if n != len(steps)+1 {
+		t.Fatalf("%d steps recorded, wanted %d: a broken step leaves no trace", n, len(steps)+1)
 	}
 }
 

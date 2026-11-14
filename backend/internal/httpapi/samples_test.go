@@ -32,6 +32,7 @@ var pathSamples = map[string]string{
 	"type_id": "ot.site", "link_type_id": "lt.located_in", "action_type_id": "ac.acknowledge_alarm",
 	"trait_id": "tr.common", "scheme_id": "is.array_system_id", "code": "auth.token_missing",
 	"kg": "main", "object_id": sampleRackID,
+	"user_id": "ada", "account_id": "ingest-demo", "token_id": "pxm_0123456789abcdef",
 }
 
 // sampleSpec overrides what a sample would otherwise be.
@@ -48,6 +49,19 @@ var requestSamples = map[string]sampleSpec{
 	"POST /v1/kgs/{kg}/queries:get":       {Body: `{"object_id":"` + sampleRackID + `","include":["attributes","link_counts"]}`},
 	"POST /v1/kgs/{kg}/queries:neighbors": {Body: `{"object_id":"` + sampleRackID + `","direction":"in","max_steps":2,"shape":"items"}`},
 	"POST /v1/kgs/{kg}/queries:find":      {Body: `{"object_type":"Rack","limit":2,"shape":"items"}`},
+	// The management of users, service accounts and tokens (ADR-0044). The samples run as a viewer on a server with
+	// no directory: the routes for administrators answer 403, and the two that any caller may use answer 404 as
+	// there is nothing to manage. Their answers with a directory are in identity_test.go.
+	"GET /v1/users":                                 {Status: http.StatusForbidden},
+	"POST /v1/users":                                {Status: http.StatusForbidden},
+	"POST /v1/users/{user_id}:disable":              {Status: http.StatusForbidden},
+	"GET /v1/system-accounts":                       {Status: http.StatusForbidden},
+	"POST /v1/system-accounts":                      {Status: http.StatusForbidden},
+	"POST /v1/system-accounts/{account_id}:disable": {Status: http.StatusForbidden},
+	"POST /v1/tokens":                               {Status: http.StatusForbidden},
+	"GET /v1/tokens":                                {Status: http.StatusNotFound},
+	"GET /v1/tokens/{token_id}":                     {Status: http.StatusNotFound},
+	"POST /v1/tokens/{token_id}:revoke":             {Status: http.StatusNotFound},
 }
 
 // sample is one request for an operation.
