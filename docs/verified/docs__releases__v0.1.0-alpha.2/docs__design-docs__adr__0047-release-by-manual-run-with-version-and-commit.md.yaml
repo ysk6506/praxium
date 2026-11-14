@@ -1,0 +1,7 @@
+doc: "docs/releases/v0.1.0-alpha.2.md"
+target: "docs/design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md"
+hash: "2e49f15853b60a19"
+date: "2026-11-14"
+note: "알파 2 후보 실행 파일(linux amd64)로 본문의 명령, 플래그, 동작을 하나씩 돌려 확인"
+text_changed: true
+doc_hash: "57f16c6b0399eb27"
