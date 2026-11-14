@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "99ad67f2592051c5"
-date: "2026-11-13"
-note: "locked_support 항목 셋을 규칙 절의 설명과 대조하고 시험용 Fixture, ScratchStore를 적었다"
+hash: "28d5676923ef3dda"
+date: "2026-11-14"
+note: "Added the adapter.pgstore row, the lib/pq row of the Go module table, the memstore and cmd.praxium rows and the library line; checked go.mod and architecture.yaml against the tables"
 text_changed: true
-doc_hash: "4056ed03057d549e"
+doc_hash: "79e452cb64574da9"

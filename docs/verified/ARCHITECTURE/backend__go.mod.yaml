@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
-hash: "56f4aade43eda700"
-date: "2026-11-13"
-note: "identity keys now have set components (ADR-0022); units and dependency directions unchanged"
+hash: "576da5efdc323a0a"
+date: "2026-11-14"
+note: "Added the adapter.pgstore row, the lib/pq row of the Go module table, the memstore and cmd.praxium rows and the library line; checked go.mod and architecture.yaml against the tables"
 text_changed: true
-doc_hash: "b67b04283ec99f40"
+doc_hash: "79e452cb64574da9"

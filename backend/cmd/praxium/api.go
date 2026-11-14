@@ -85,7 +85,9 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 // token file flag is the safer way and wins over it.
 const envDevToken = "PRAXIUM_DEV_TOKEN"
 
-const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file]\n       praxium api routes --json\n"
+const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-store memory|postgres] [-store-dsn-file file]\n" +
+	"                          [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file]\n" +
+	"       praxium api routes --json\n"
 
 // runAPI handles `praxium api serve` and `praxium api routes`; runCommand sends nothing else here.
 func runAPI(args []string, stdout, stderr io.Writer, d wiring) int {
@@ -119,6 +121,8 @@ type serveOptions struct {
 	// truth is a developer convenience of development mode (production never starts): a truth file of the generator
 	// to load into the development store. It is not the ingestion pipeline (ADR-0027).
 	truth string
+	// store is "memory" (the default) or "postgres"; storeDSNFile is the file that holds the PostgreSQL DSN.
+	store, storeDSNFile string
 }
 
 func parseServe(args []string) (serveOptions, error) {
@@ -131,6 +135,8 @@ func parseServe(args []string) (serveOptions, error) {
 	fs.StringVar(&o.subject, "dev-subject", "dev-user", "")
 	fs.StringVar(&o.roles, "dev-roles", "viewer", "")
 	fs.StringVar(&o.truth, "dev-truth", "", "")
+	fs.StringVar(&o.store, "store", storeMemory, "")
+	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "")
 	if err := fs.Parse(args); err != nil {
 		return o, kernel.Wrap(kernel.CodeInvalidValue, err, "bad flags for api serve")
 	}
@@ -171,15 +177,17 @@ func devToken(o serveOptions, d wiring) (string, error) {
 }
 
 // requireRealAuthenticator is the fail-closed guard of the server (ADR-0024, ADR-0027). Only a development server
-// may start: only the development authenticator exists, so production mode needs a real one (OIDC, TD-0010),
-// and only the in-memory store exists, so it needs a production store (TD-0011). It refuses whatever else is configured.
+// may start: only the development authenticator exists, so production mode needs a real one (OIDC, TD-0010).
+// The production store exists (-store postgres, TD-0011 is closed) and works in development mode. It refuses
+// whatever else is configured.
 func requireRealAuthenticator(o serveOptions) error {
 	switch strings.ToLower(strings.TrimSpace(o.mode)) {
 	case devauth.ModeDevelopment:
 		return nil
 	case devauth.ModeProduction:
 		return kernel.Errorf(kernel.CodeInvalidValue,
-			"mode production needs a real authenticator (TD-0010) and a production store (TD-0011), and neither exists yet; use -mode development for a development server")
+			"mode production needs a real authenticator (TD-0010), which does not exist yet; the production store exists (-store postgres, TD-0011 is closed) "+
+				"but a server never starts in production mode without the authenticator; use -mode development for a development server")
 	}
 	return kernel.Errorf(kernel.CodeInvalidValue, "unknown -mode %q: use development or production", o.mode)
 }
@@ -201,7 +209,13 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 		return err
 	}
 	log := logger(stderr)
-	store, rep, err := loadDevStore(context.Background(), reg, d, o.truth, 0)
+	ctx := context.Background()
+	store, closeStore, err := openStore(ctx, o, d)
+	if err != nil {
+		return err
+	}
+	defer closeStore()
+	rep, err := loadTruth(ctx, store, reg, d, o.truth, 0)
 	if err != nil {
 		return err
 	}
@@ -223,11 +237,11 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	if err != nil {
 		return kernel.Wrap(kernel.CodeInvalidValue, err, "cannot listen")
 	}
-	ctx, stop := d.signals()
+	stopCtx, stop := d.signals()
 	defer stop()
 	log.Info("praxium api listening", slog.String("addr", ln.Addr().String()), slog.String("mode", o.mode),
-		slog.Bool("dev_auth", authn != nil), slog.String("version", version))
-	return srv.Serve(ctx, ln)
+		slog.Bool("dev_auth", authn != nil), slog.String("store", o.store), slog.String("version", version))
+	return srv.Serve(stopCtx, ln)
 }
 
 // runContract handles `praxium contract assemble|check`: the same assembly the

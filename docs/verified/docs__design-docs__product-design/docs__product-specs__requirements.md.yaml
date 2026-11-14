@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "5118723d5dc9d23b"
-date: "2026-11-13"
-note: "product-design 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+hash: "0fb83e010a323a52"
+date: "2026-11-14"
+note: "Read against REQ-260 and the new REQ-263: the document map and the stage table do not name the memory store or the missing production store, so nothing changed"
 text_changed: false
 doc_hash: "70b794278472f4b3"

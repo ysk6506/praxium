@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "99ad67f2592051c5"
-date: "2026-11-13"
-note: "locked_support에 fixture.go, scratch.go가 든 architecture.yaml을 다시 읽고 안내서가 여전히 맞음을 확인했다"
-text_changed: false
-doc_hash: "d586ed641cb394ca"
+hash: "28d5676923ef3dda"
+date: "2026-11-14"
+note: "Read against the new unit adapter.pgstore and the first third-party Go module in architecture.yaml: the rules about registering a unit (line 79) and external modules still hold, and ADR-0032 followed them; no text needed a change"
+text_changed: true
+doc_hash: "e697a638621bc065"
