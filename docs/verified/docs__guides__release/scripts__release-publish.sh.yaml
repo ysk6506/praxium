@@ -1,0 +1,7 @@
+doc: "docs/guides/release.md"
+target: "scripts/release-publish.sh"
+hash: "91acf531f89517d6"
+date: "2026-11-14"
+note: "메인 브랜치에서만 릴리스, 태그 확인 방식, 게시 뒤 확인을 가이드에 반영"
+text_changed: true
+doc_hash: "7b57d824dee1927e"

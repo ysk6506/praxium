@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"slices"
 	"sort"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -136,11 +137,11 @@ func (p *Plan) compileRefinements() error {
 func (p *Plan) compileFeed(f Feed, index int) (*feedPlan, error) {
 	cols, ok := p.columns[f.Dataset]
 	if !ok {
-		return nil, bad("feed %s reads %q, which is no dataset or refinement", f.ID, f.Dataset)
+		return nil, bad("feed %s reads %q, which is no dataset or refinement; those are: %s", f.ID, f.Dataset, strings.Join(p.datasetIDs(), ", "))
 	}
 	typ, ok := p.reg.ObjectTypeByName(f.ObjectType)
 	if !ok {
-		return nil, bad("feed %s: %q is no object type of the model", f.ID, f.ObjectType)
+		return nil, bad("feed %s: %q is no object type of the model%s", f.ID, f.ObjectType, p.didYouMean(f.ObjectType, objectTypeNames(p.reg)))
 	}
 	fp := &feedPlan{feed: f, index: index, typ: typ, grade: model.GradeFact}
 	fp.basis = model.Basis(f.Basis)
@@ -170,10 +171,10 @@ func (p *Plan) compileAttrs(fp *feedPlan, props map[string]model.Property, cols 
 	for _, a := range fp.feed.Attributes {
 		pr, ok := props[a.Attribute]
 		if !ok {
-			return bad("feed %s: type %s has no attribute %q", fp.feed.ID, fp.typ.Name, a.Attribute)
+			return bad("feed %s: type %s has no attribute %q; its attributes are: %s", fp.feed.ID, fp.typ.Name, a.Attribute, strings.Join(p.reg.PropertyNames(fp.typ.ID), ", "))
 		}
 		if !slices.Contains(cols, a.Column) {
-			return bad("feed %s: attribute %s reads column %q, which dataset %s does not have", fp.feed.ID, a.Attribute, a.Column, fp.feed.Dataset)
+			return bad("feed %s: attribute %s reads column %q, which dataset %s does not have; its columns are: %s", fp.feed.ID, a.Attribute, a.Column, fp.feed.Dataset, columnList(cols))
 		}
 		vt, ok := p.reg.ValueType(pr.ValueType)
 		if !ok || !supportedBase(vt.Base) {
@@ -223,8 +224,11 @@ func (p *Plan) keyFor(fp *feedPlan, im IdentityMap, registry []model.IdentityKey
 	parts := make([]keyPart, len(im.Components))
 	for i, c := range im.Components {
 		pr, ok := props[c.Property]
-		if !ok || !slices.Contains(cols, c.Column) {
-			return keyPlan{}, bad("feed %s: identity component %s/%s names a property the type lacks or a column the dataset lacks", fp.feed.ID, c.Property, c.Column)
+		if !ok {
+			return keyPlan{}, bad("feed %s: identity component names property %q, which type %s lacks; its properties are: %s", fp.feed.ID, c.Property, fp.typ.Name, strings.Join(p.reg.PropertyNames(fp.typ.ID), ", "))
+		}
+		if !slices.Contains(cols, c.Column) {
+			return keyPlan{}, bad("feed %s: identity component %s reads column %q, which the dataset lacks; its columns are: %s", fp.feed.ID, c.Property, c.Column, columnList(cols))
 		}
 		names[i] = c.Property
 		parts[i] = keyPart{kind: graph.PartProperty, ref: pr.ID.String(), vt: pr.ValueType, column: c.Column}
@@ -234,16 +238,16 @@ func (p *Plan) keyFor(fp *feedPlan, im IdentityMap, registry []model.IdentityKey
 			return keyPlan{name: keyName(im, fmt.Sprint(names)), priority: im.Priority, parts: parts}, nil
 		}
 	}
-	return keyPlan{}, bad("feed %s: type %s has no identity key made of the properties %v, in that order", fp.feed.ID, fp.typ.Name, names)
+	return keyPlan{}, bad("feed %s: type %s has no identity key made of the properties %v, in that order. %s", fp.feed.ID, fp.typ.Name, names, p.keysHint(fp))
 }
 
 func (p *Plan) schemeKey(fp *feedPlan, im IdentityMap, registry []model.IdentityKey, cols []string) (keyPlan, error) {
 	sch, ok := p.reg.IdentifierSchemeByName(im.Scheme)
 	if !ok {
-		return keyPlan{}, bad("feed %s: %q is no identifier scheme of the model", fp.feed.ID, im.Scheme)
+		return keyPlan{}, bad("feed %s: %q is no identifier scheme of the model. %s", fp.feed.ID, im.Scheme, p.schemesHint(fp))
 	}
 	if !slices.Contains(cols, im.Column) {
-		return keyPlan{}, bad("feed %s: identity %s reads column %q, which the dataset lacks", fp.feed.ID, im.Scheme, im.Column)
+		return keyPlan{}, bad("feed %s: identity %s reads column %q, which the dataset lacks; its columns are: %s", fp.feed.ID, im.Scheme, im.Column, columnList(cols))
 	}
 	for _, k := range registry {
 		if k.Scheme == sch.ID && len(k.Components) == 0 {
@@ -251,7 +255,7 @@ func (p *Plan) schemeKey(fp *feedPlan, im IdentityMap, registry []model.Identity
 				parts: []keyPart{{kind: graph.PartScheme, ref: sch.ID.String(), vt: sch.Normalizer, column: im.Column}}}, nil
 		}
 	}
-	return keyPlan{}, bad("feed %s: scheme %s is not an identity key of type %s", fp.feed.ID, im.Scheme, fp.typ.Name)
+	return keyPlan{}, bad("feed %s: scheme %s is not an identity key of type %s. %s", fp.feed.ID, im.Scheme, fp.typ.Name, p.keysHint(fp))
 }
 
 func keyName(im IdentityMap, fallback string) string {
@@ -281,8 +285,11 @@ func (p *Plan) sameProperties(k model.IdentityKey, names []string) bool {
 func (p *Plan) compileIdentifiers(fp *feedPlan, cols []string) error {
 	for _, im := range fp.feed.Identifiers {
 		sch, ok := p.reg.IdentifierSchemeByName(im.Scheme)
-		if !ok || !slices.Contains(cols, im.Column) {
-			return bad("feed %s: identifier %s/%s names a scheme the model lacks or a column the dataset lacks", fp.feed.ID, im.Scheme, im.Column)
+		if !ok {
+			return bad("feed %s: identifier names %q, which is no identifier scheme of the model. %s", fp.feed.ID, im.Scheme, p.schemesHint(fp))
+		}
+		if !slices.Contains(cols, im.Column) {
+			return bad("feed %s: identifier %s reads column %q, which the dataset lacks; its columns are: %s", fp.feed.ID, im.Scheme, im.Column, columnList(cols))
 		}
 		fp.idents = append(fp.idents, identPlan{scheme: sch.ID, vt: sch.Normalizer, column: im.Column})
 	}
@@ -303,7 +310,7 @@ func (p *Plan) compileLinks(feeds map[string]*feedPlan) error {
 func (p *Plan) compileLink(d LinkDef, feeds map[string]*feedPlan) (*linkPlan, error) {
 	lt, ok := p.reg.LinkTypeByName(d.LinkType)
 	if !ok {
-		return nil, bad("link definition %s: %q is no link type of the model", d.ID, d.LinkType)
+		return nil, bad("link definition %s: %q is no link type of the model%s", d.ID, d.LinkType, p.didYouMean(d.LinkType, linkTypeNames(p.reg)))
 	}
 	if d.Condition != ConditionSameKey {
 		return nil, kernel.Errorf(kernel.CodeUnsupported, "link definition %s: condition %q is not in this build (same_key)", d.ID, d.Condition)
@@ -354,4 +361,56 @@ func checkColumns(have, want []string, id string) error {
 		}
 	}
 	return nil
+}
+
+// keysHint lists the identity keys the model gives the type of a feed, for the message that refuses a key.
+func (p *Plan) keysHint(fp *feedPlan) string {
+	keys := p.reg.DescribeIdentityKeys(fp.typ.ID)
+	if len(keys) == 0 {
+		return fmt.Sprintf("Type %s has no identity key.", fp.typ.Name)
+	}
+	return fmt.Sprintf("The identity keys of %s are: %s. In a mapping a key is written as \"components\" (properties and the columns they read) or as \"scheme\" with a \"column\"; a key that has a link in it cannot be written in this build.", fp.typ.Name, strings.Join(keys, "; "))
+}
+
+// schemesHint lists the identifier schemes: those that are a key of the type first, then all of them.
+func (p *Plan) schemesHint(fp *feedPlan) string {
+	own := p.reg.SchemeKeyNames(fp.typ.ID)
+	out := "The schemes of the model are: " + strings.Join(p.reg.IdentifierSchemeNames(), ", ") + "."
+	if len(own) > 0 {
+		out = fmt.Sprintf("The schemes that are an identity key of %s: %s. ", fp.typ.Name, strings.Join(own, ", ")) + out
+	}
+	return out
+}
+
+func (p *Plan) datasetIDs() []string {
+	ids := make([]string, 0, len(p.columns))
+	for id := range p.columns {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
+}
+
+func objectTypeNames(reg *model.Registry) []string {
+	var out []string
+	for _, t := range reg.ObjectTypes() {
+		out = append(out, t.Name)
+	}
+	return out
+}
+
+func linkTypeNames(reg *model.Registry) []string {
+	var out []string
+	for _, t := range reg.LinkTypes() {
+		out = append(out, t.Name)
+	}
+	return out
+}
+
+// didYouMean is " (did you mean X, Y?)" for the names that are close to a word, and nothing when none is.
+func (p *Plan) didYouMean(word string, names []string) string {
+	if near := Similar(word, names); len(near) > 0 {
+		return " (did you mean " + strings.Join(near, ", ") + "?)"
+	}
+	return ""
 }
