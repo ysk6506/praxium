@@ -13,7 +13,7 @@ import { Button, ButtonLink, KeyValues, Mono, PageHeader, Section, TextField } f
 const MODE_NAMES = {
   demo: "데모(접속 링크)",
   local: "로컬 모드(접속 링크)",
-  direct: "개발용 토큰(직접 입력)",
+  direct: "접근 토큰(직접 입력)",
   none: "접속하지 않음",
 } as const;
 
@@ -39,17 +39,25 @@ function Ways() {
         </p>
       </li>
       <li>
-        <strong className="font-semibold">개발용 토큰 직접 입력</strong>
+        <strong className="font-semibold">개발 서버</strong>
         <p className="text-muted">
           개발 모드 서버(<Mono>api serve -mode development</Mono>)를 시작할 때{" "}
-          <Mono>-dev-token-file</Mono>로 지정한 토큰을 아래에 입력합니다.
+          <Mono>-dev-token-file</Mono>로 지정한 파일의 값을 아래에 입력합니다.
+        </p>
+      </li>
+      <li>
+        <strong className="font-semibold">운영 서버</strong>
+        <p className="text-muted">
+          관리자가 <Mono>praxium admin token create</Mono>로 만든 접근 토큰(<Mono>pxm_…</Mono>로
+          시작합니다)을 아래에 입력합니다. 만든 직후에만 값이 보이므로 받은 사람이 바로 보관해야
+          합니다.
         </p>
       </li>
     </ul>
   );
 }
 
-/** Where the person gives the development token. The browser keeps it and every request carries it. */
+/** Where the person gives the access token. The browser keeps it and every request carries it. */
 export function SettingsScreen() {
   const saved = useToken();
   useScreenTitle(titleOf("접속 설정"));
@@ -73,7 +81,7 @@ export function SettingsScreen() {
       <Section title="접속하는 방법">
         <Ways />
       </Section>
-      <Section title="개발용 토큰 입력">
+      <Section title="접근 토큰 입력">
         <form onSubmit={save} className="flex max-w-lg flex-col gap-3">
           <TextField
             label="토큰"
@@ -83,9 +91,9 @@ export function SettingsScreen() {
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
             placeholder={
-              saved ? "새 토큰으로 바꾸려면 입력하십시오" : "서버를 시작할 때 지정한 토큰"
+              saved ? "새 토큰으로 바꾸려면 입력하십시오" : "접근 토큰을 붙여 넣으십시오"
             }
-            description="서버를 시작할 때 -dev-token-file로 지정한 값입니다. 이 브라우저에 저장되며, 모든 API 요청의 Authorization 헤더에 실립니다."
+            description="개발 서버는 -dev-token-file로 지정한 값, 운영 서버는 관리자가 만든 pxm_… 토큰입니다. 이 브라우저에 저장되며, 모든 API 요청의 Authorization 헤더에 실립니다."
           />
           <div className="flex gap-2">
             <Button type="submit" variant="primary" disabled={draft.trim() === ""}>

@@ -47,7 +47,7 @@ describe("[REQ-354] a grade is a shape, a word and a color, never a color alone"
 
   it("calls the loss of redundancy by that name, and tells a dashed line from a solid one", () => {
     expect(impactGradeName("exposed_direct")).toBe("이중화 상실(직접)");
-    expect(impactGradeName("exposed_inherited")).toBe("이중화 상실(상속)");
+    expect(impactGradeName("exposed_inherited")).toBe("이중화 상실(간접)");
     expect(impactGradeName("down")).toBe("중단");
     expect(gradeStyle("unknown").dashed).toBe(true);
     expect(gradeStyle("down").dashed).toBe(false);
