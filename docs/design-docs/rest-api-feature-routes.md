@@ -111,6 +111,8 @@ follows:
 | 표준 모델에 포함된 질문 수정 | 브랜치의 항목(`kind: competency_question`) |
 | 예시 객체에서 역량 질문의 패턴 생성(REQ-195) | 없음. 경로를 정하지 않았어요 |
 | 사용 이력에서 도출되는 역량 질문의 제안 | 없음. 클로즈드 베타의 구현이고 계약상 위치도 정하지 않았어요 |
+| 내 토큰과 소유자(내장 인증, ADR-0044) | `GET /v1/tokens/{token_id}` |
+| 사용자, 접근 토큰의 발급·목록·폐기 | `GET, POST /v1/users`, `POST /v1/users/{user_id}:disable`, `GET, POST /v1/tokens`, `POST /v1/tokens/{token_id}:revoke` |
 | 내 정보, 역할, 사람과 그룹 검색 | `GET /v1/me`, `GET /v1/roles`, `GET /v1/directory/subjects` |
 | 권한 부여(KG, 객체 조건, 범위 한정 위임의 소속)와 회수 | `GET, POST /v1/grants`, `POST /v1/grants/{grant_id}:revoke` |
 | 서비스 계정(`ingester` 포함), 토큰 교체, 비활성화 | `GET, POST /v1/system-accounts`, `POST /v1/system-accounts/{account_id}:rotate-token`, `POST /v1/system-accounts/{account_id}:disable` |

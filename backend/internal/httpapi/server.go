@@ -31,6 +31,14 @@ type Config struct {
 	// Authenticator turns a bearer token into a subject. Nil means no one can
 	// authenticate: only the routes open to everyone answer.
 	Authenticator access.Authenticator
+	// Directory is the management of users, service accounts and tokens (ADR-0044). Nil means the server has none (the
+	// development authenticator): the management routes answer not_found.
+	Directory access.Directory
+	// Limiter slows down a caller that keeps presenting refused tokens; nil means no limit.
+	Limiter access.FailureLimiter
+	// TrustProxy says that a reverse proxy in front appends the caller's address to X-Forwarded-For, so the limiter
+	// counts that address and not the proxy's.
+	TrustProxy bool
 	// Authorizer judges abilities; nil means the role table.
 	Authorizer access.Authorizer
 	// Clock times the access log; IDs issue trace ids.
@@ -53,23 +61,27 @@ type Config struct {
 
 // Server serves the contract. Build it with New; it is safe for concurrent use.
 type Server struct {
-	reg      *model.Registry
-	authn    access.Authenticator
-	authz    access.Authorizer
-	clock    kernel.Clock
-	ids      kernel.IDGenerator
-	log      *slog.Logger
-	maxBody  int64
-	grace    time.Duration
-	version  string
-	mux      *http.ServeMux
-	handler  http.Handler
-	lists    *registryLists
-	queries  *query.Engine
-	kgs      KGSource
-	ui       fs.FS
-	started  atomic.Bool
-	draining atomic.Bool
+	reg        *model.Registry
+	authn      access.Authenticator
+	authz      access.Authorizer
+	dir        access.Directory
+	limiter    access.FailureLimiter
+	idem       *idemCache
+	trustProxy bool
+	clock      kernel.Clock
+	ids        kernel.IDGenerator
+	log        *slog.Logger
+	maxBody    int64
+	grace      time.Duration
+	version    string
+	mux        *http.ServeMux
+	handler    http.Handler
+	lists      *registryLists
+	queries    *query.Engine
+	kgs        KGSource
+	ui         fs.FS
+	started    atomic.Bool
+	draining   atomic.Bool
 }
 
 // New builds a server and registers every route of the route table.
@@ -80,7 +92,7 @@ func New(cfg Config) (*Server, error) {
 	s := &Server{
 		reg: cfg.Registry, authn: cfg.Authenticator, authz: cfg.Authorizer, clock: cfg.Clock,
 		ids: cfg.IDs, log: cfg.Logger, queries: cfg.Queries, kgs: cfg.KGs, ui: cfg.UI, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
-		mux: http.NewServeMux(),
+		mux: http.NewServeMux(), dir: cfg.Directory, limiter: cfg.Limiter, trustProxy: cfg.TrustProxy, idem: newIdemCache(cfg.Clock),
 	}
 	if s.authz == nil {
 		s.authz = access.RoleTable{}
@@ -93,7 +105,7 @@ func New(cfg Config) (*Server, error) {
 	}
 	s.lists = buildRegistryLists(s.reg)
 	for _, spec := range s.routeSpecs() {
-		s.mux.HandleFunc(spec.method+" "+spec.path, s.wrap(spec))
+		s.mux.HandleFunc(spec.method+" "+spec.muxPath(), s.wrap(spec))
 	}
 	s.handler = s.chain(http.HandlerFunc(s.dispatch))
 	return s, nil

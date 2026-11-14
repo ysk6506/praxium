@@ -923,6 +923,76 @@
         ],
         "type": "object"
       },
+      "CurrentSubject": {
+        "description": "Who the caller is: the subject the token stands for.",
+        "properties": {
+          "display_name": {
+            "description": "The name to show.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The principal id.",
+            "type": "string"
+          },
+          "kind": {
+            "description": "person or system_account.",
+            "enum": [
+              "person",
+              "system_account"
+            ],
+            "type": "string"
+          },
+          "roles": {
+            "description": "The roles the caller has in this request: the token's, narrowed to the owner's.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "display_name",
+          "roles"
+        ],
+        "type": "object"
+      },
+      "CurrentToken": {
+        "description": "An access token, and for the word current also who is calling with it.",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/CurrentSubject"
+          },
+          "token": {
+            "description": "The token of this request, as a TokenRecord; null when the server has no token records (a development server).",
+            "type": [
+              "object",
+              "null"
+            ]
+          }
+        },
+        "required": [
+          "token"
+        ],
+        "type": "object"
+      },
+      "CurrentTokenAnswer": {
+        "description": "An access token.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CurrentToken"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
       "Endpoint": {
         "description": "One end of a binding or one target of an action.",
         "properties": {
@@ -1354,6 +1424,70 @@
         },
         "type": "object"
       },
+      "GroupTouched": {
+        "description": "A redundancy group whose members were hit.",
+        "properties": {
+          "alive": {
+            "description": "Members that are up.",
+            "type": "integer"
+          },
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "group_id": {
+            "description": "The object id of the group.",
+            "type": "string"
+          },
+          "group_type": {
+            "description": "The type of the group.",
+            "type": "string"
+          },
+          "min_alive": {
+            "description": "The least number of members that must be up; null when it is not known.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "mode": {
+            "description": "count or capacity.",
+            "type": "string"
+          },
+          "n": {
+            "description": "Members in all.",
+            "type": "integer"
+          },
+          "slack": {
+            "description": "Members up above min_alive; null when min_alive is not known or the group is not up.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "unknown": {
+            "description": "Members whose state is not known.",
+            "type": "integer"
+          },
+          "value": {
+            "description": "up, unknown or down.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group_id",
+          "group_type",
+          "display_name",
+          "mode",
+          "value",
+          "alive",
+          "unknown",
+          "n",
+          "min_alive",
+          "slack"
+        ],
+        "type": "object"
+      },
       "HealthLive": {
         "description": "The answer of a liveness probe.",
         "properties": {
@@ -1603,6 +1737,512 @@
           "strength",
           "scheme",
           "components"
+        ],
+        "type": "object"
+      },
+      "IdentityListMeta": {
+        "description": "The meta of a list of users, service accounts or tokens. The answer is never cached.",
+        "properties": {
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          },
+          "trace_id": {
+            "description": "The trace id, the same as the X-Trace-Id header.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "trace_id",
+          "result_complete"
+        ],
+        "type": "object"
+      },
+      "ImpactAnswer": {
+        "description": "The answer of impact.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImpactData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ImpactComputation": {
+        "description": "Whether the calculation ran to its end and what limited it.",
+        "properties": {
+          "complete": {
+            "description": "Whether it ran to its end.",
+            "type": "boolean"
+          },
+          "items_over_cap": {
+            "description": "Whether a reading had more items than max_items.",
+            "type": "boolean"
+          },
+          "max_hops": {
+            "description": "The max_hops of the question; 0 means no limit.",
+            "type": "integer"
+          },
+          "max_items": {
+            "description": "The max_items of the question.",
+            "type": "integer"
+          },
+          "rounds": {
+            "description": "How many rounds the failure spread.",
+            "type": "integer"
+          },
+          "stale_inputs": {
+            "description": "How many observed links are older than max_staleness.",
+            "type": "integer"
+          },
+          "stopped_by": {
+            "description": "time_budget or max_hops when a limit stopped it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "time_budget_seconds": {
+            "description": "The time budget in seconds.",
+            "type": "number"
+          },
+          "weak_links": {
+            "description": "How many links are not believed in the facts.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "complete",
+          "stopped_by",
+          "rounds",
+          "max_hops",
+          "max_items",
+          "time_budget_seconds",
+          "weak_links",
+          "stale_inputs",
+          "items_over_cap"
+        ],
+        "type": "object"
+      },
+      "ImpactData": {
+        "description": "What impact returns.",
+        "properties": {
+          "computation": {
+            "$ref": "#/components/schemas/ImpactComputation"
+          },
+          "direction": {
+            "description": "downstream or upstream.",
+            "type": "string"
+          },
+          "facts_only": {
+            "$ref": "#/components/schemas/ImpactSection"
+          },
+          "seeds": {
+            "description": "The objects that were made to fail (downstream).",
+            "items": {
+              "$ref": "#/components/schemas/ObjectRef"
+            },
+            "type": "array"
+          },
+          "target": {
+            "$ref": "#/components/schemas/ObjectRef"
+          },
+          "upstream": {
+            "$ref": "#/components/schemas/UpstreamSection"
+          },
+          "with_assumptions": {
+            "$ref": "#/components/schemas/ImpactSection"
+          }
+        },
+        "required": [
+          "direction",
+          "computation"
+        ],
+        "type": "object"
+      },
+      "ImpactItem": {
+        "description": "One affected object with why.",
+        "properties": {
+          "also": {
+            "description": "The other results of the object.",
+            "items": {
+              "description": "A result.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "assumption_based": {
+            "description": "Whether the path stands on a link or a min_alive that is assumed.",
+            "type": "boolean"
+          },
+          "delay_class": {
+            "description": "delayed when a link on the path says the effect comes later.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "hops": {
+            "description": "How many links from the failed object.",
+            "type": "integer"
+          },
+          "lost_channels": {
+            "description": "What the object lost: power, cooling, network, storage, service or management.",
+            "items": {
+              "description": "A channel.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "object_id": {
+            "description": "The object id.",
+            "type": "string"
+          },
+          "object_type": {
+            "description": "The object type.",
+            "type": "string"
+          },
+          "path": {
+            "description": "From the failed object to this one.",
+            "items": {
+              "$ref": "#/components/schemas/PathStep"
+            },
+            "type": "array"
+          },
+          "result": {
+            "description": "The most severe result: down, interrupted, unknown, exposed_direct, exposed_inherited, degraded or unmanageable.",
+            "type": "string"
+          },
+          "unfilled_channels": {
+            "description": "Channels the type needs that no link supplies; they say nothing about this failure.",
+            "items": {
+              "description": "A channel.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "via": {
+            "description": "The object just before this one on the path; null when it is the seed.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "via_hidden": {
+            "description": "Whether that object is hidden from the caller.",
+            "type": "boolean"
+          },
+          "weakest_grade": {
+            "description": "The lowest grade on the path.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "result",
+          "also",
+          "lost_channels",
+          "via",
+          "hops",
+          "assumption_based",
+          "weakest_grade",
+          "path"
+        ],
+        "type": "object"
+      },
+      "ImpactRequest": {
+        "description": "The input of impact. Downstream takes dead, dead_links or site_failure; upstream takes target_object_id.",
+        "properties": {
+          "change_seq": {
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "cursor": {
+            "description": "The cursor of the previous page.",
+            "type": "string"
+          },
+          "dead": {
+            "description": "The objects that have failed (downstream). At most 1000.",
+            "items": {
+              "description": "An object id, obj_ and 32 hex digits.",
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "dead_links": {
+            "description": "Links that are cut (downstream). The objects at their ends do not fail; what depends on the link loses it. At most 1000.",
+            "items": {
+              "description": "A link id, lnk_ and 32 hex digits.",
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "dead_scope_id": {
+            "description": "A stored scope; not served yet, the answer is a refusal.",
+            "type": "string"
+          },
+          "direction": {
+            "description": "downstream (default) asks what a failure reaches; upstream asks what the target depends on.",
+            "enum": [
+              "downstream",
+              "upstream"
+            ],
+            "type": "string"
+          },
+          "kg_version_id": {
+            "description": "Read this sealed KG version (time travel).",
+            "type": "string"
+          },
+          "limit": {
+            "description": "The page size; default 100, at most 1000.",
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "max_hops": {
+            "description": "Stop the spread after this many rounds; 0 or absent means no limit.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "max_items": {
+            "description": "Keep at most this many items of each reading; default 5000, at most 100000.",
+            "maximum": 100000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "max_staleness": {
+            "description": "Refuse values older than this, an ISO 8601 duration.",
+            "type": "string"
+          },
+          "min_seq": {
+            "description": "Wait until this change number is readable.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "mode": {
+            "description": "both (default), facts_only or with_assumptions: which readings of the evidence are answered.",
+            "enum": [
+              "both",
+              "facts_only",
+              "with_assumptions"
+            ],
+            "type": "string"
+          },
+          "shape": {
+            "description": "summary (default) or items.",
+            "enum": [
+              "summary",
+              "items"
+            ],
+            "type": "string"
+          },
+          "site_failure": {
+            "description": "Objects that fail with everything that is contained in them (downstream). At most 1000.",
+            "items": {
+              "description": "An object id, obj_ and 32 hex digits.",
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "target_object_id": {
+            "description": "The object whose dependencies are listed (upstream).",
+            "type": "string"
+          },
+          "time_budget": {
+            "description": "Stop the calculation after this time, an ISO 8601 duration; default PT30S.",
+            "type": "string"
+          },
+          "view": {
+            "description": "as_observed (default) or as_designed.",
+            "enum": [
+              "as_observed",
+              "as_designed"
+            ],
+            "type": "string"
+          },
+          "wait_timeout": {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ImpactSection": {
+        "description": "The answer of one reading: the counts first, then the items.",
+        "properties": {
+          "counts_by_parent": {
+            "description": "The places the affected objects are contained in, the most affected first.",
+            "items": {
+              "$ref": "#/components/schemas/ParentCount"
+            },
+            "type": "array"
+          },
+          "counts_by_result": {
+            "additionalProperties": {
+              "description": "How many objects.",
+              "type": "integer"
+            },
+            "description": "How many objects have each result.",
+            "type": "object"
+          },
+          "counts_by_type": {
+            "description": "How many objects of each type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            },
+            "type": "array"
+          },
+          "groups_touched": {
+            "description": "The groups whose members were hit.",
+            "items": {
+              "$ref": "#/components/schemas/GroupTouched"
+            },
+            "type": "array"
+          },
+          "items": {
+            "description": "The affected objects of this page, the most severe first; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/ImpactItem"
+            },
+            "type": "array"
+          },
+          "unfilled_channel_objects": {
+            "description": "How many affected objects have a channel that no link supplies.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "counts_by_result",
+          "counts_by_type",
+          "counts_by_parent",
+          "groups_touched",
+          "unfilled_channel_objects"
+        ],
+        "type": "object"
+      },
+      "IssuedToken": {
+        "description": "A new access token with its secret.",
+        "properties": {
+          "created_at": {
+            "description": "When it was made, UTC.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_by": {
+            "description": "Who made it.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the token is for.",
+            "type": "string"
+          },
+          "expires_at": {
+            "description": "When it stops working, UTC. Every token expires.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "The token id: the start of the token before its secret, pxm_ and 16 hex characters. It names the token and is not secret.",
+            "type": "string"
+          },
+          "last_used_at": {
+            "description": "When it was last used, to the minute, UTC; null for a token never used.",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "owner": {
+            "description": "The id of the principal the token acts as.",
+            "type": "string"
+          },
+          "owner_kind": {
+            "description": "person or system_account.",
+            "enum": [
+              "person",
+              "system_account"
+            ],
+            "type": "string"
+          },
+          "revoked_at": {
+            "description": "When it was revoked, UTC.",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "revoked_by": {
+            "description": "Who revoked it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "roles": {
+            "description": "The roles the token carries. They only narrow the owner's: what a token may do is the roles it carries that the owner still holds.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "state": {
+            "description": "active, expired or revoked. Only an active token is accepted.",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ],
+            "type": "string"
+          },
+          "token": {
+            "description": "The whole token, pxm_<id>_<secret>. It is in this answer and in no other: it cannot be read again. Keep it as you keep a password.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "owner_kind",
+          "roles",
+          "description",
+          "state",
+          "created_at",
+          "created_by",
+          "expires_at",
+          "last_used_at",
+          "revoked_at",
+          "revoked_by",
+          "token"
+        ],
+        "type": "object"
+      },
+      "IssuedTokenAnswer": {
+        "description": "A new access token with its secret.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/IssuedToken"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
         ],
         "type": "object"
       },
@@ -2915,6 +3555,244 @@
         ],
         "type": "object"
       },
+      "ParentCount": {
+        "description": "How many affected objects are contained in one place.",
+        "properties": {
+          "count": {
+            "description": "How many affected objects.",
+            "type": "integer"
+          },
+          "display_name": {
+            "description": "The display name of the place.",
+            "type": "string"
+          },
+          "object_id": {
+            "description": "The object id of the place.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "display_name",
+          "count"
+        ],
+        "type": "object"
+      },
+      "PathLink": {
+        "description": "The link that carried a failure on to the next object of a path.",
+        "properties": {
+          "basis": {
+            "description": "The basis of the link.",
+            "type": "string"
+          },
+          "delay_class": {
+            "description": "delayed when the link says the effect comes later.",
+            "type": "string"
+          },
+          "grade": {
+            "description": "The grade of the link.",
+            "type": "string"
+          },
+          "link_id": {
+            "description": "The link id, lnk_ and 32 hex digits.",
+            "type": "string"
+          },
+          "link_type": {
+            "description": "The link type.",
+            "type": "string"
+          },
+          "meaning": {
+            "description": "The meaning of the link type.",
+            "type": "string"
+          },
+          "note": {
+            "description": "A note, such as what min_alive of a group stands on.",
+            "type": "string"
+          },
+          "role": {
+            "description": "How the failure went on: dependency, supply, management, group_member, failover, part_follows_whole, whole_needs_part, containment, exposure or group_slack.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "link_id",
+          "link_type",
+          "meaning",
+          "role",
+          "grade",
+          "basis"
+        ],
+        "type": "object"
+      },
+      "PathStep": {
+        "description": "One object of a path. The first step is the object that failed; the others say how the failure reached them.",
+        "properties": {
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "hidden": {
+            "description": "Whether the object is hidden from the caller.",
+            "type": "boolean"
+          },
+          "link": {
+            "$ref": "#/components/schemas/PathLink"
+          },
+          "object_id": {
+            "description": "The object id; null when the caller may not read the object.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "object_type": {
+            "description": "The object type.",
+            "type": "string"
+          },
+          "via_group": {
+            "$ref": "#/components/schemas/ObjectRef"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "type": "object"
+      },
+      "Principal": {
+        "description": "A user (a person) or a service account. Its id is its name: unique among all of them and never changed.",
+        "properties": {
+          "created_at": {
+            "description": "When it was made, UTC.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_by": {
+            "description": "Who made it: a principal id, or (local operator) for the bootstrap.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the account is for.",
+            "type": "string"
+          },
+          "disabled_at": {
+            "description": "When it was disabled, UTC; null while it is active.",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "display_name": {
+            "description": "The name to show.",
+            "type": "string"
+          },
+          "id": {
+            "description": "The name, lower-case letters, digits and . _ @ -, at most 64 characters.",
+            "type": "string"
+          },
+          "kind": {
+            "description": "person for a user, system_account for a service account.",
+            "enum": [
+              "person",
+              "system_account"
+            ],
+            "type": "string"
+          },
+          "roles": {
+            "description": "Role names (GET /v1/roles).",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "state": {
+            "description": "active or disabled. A disabled principal's tokens are refused at once.",
+            "enum": [
+              "active",
+              "disabled"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "display_name",
+          "description",
+          "roles",
+          "state",
+          "created_at",
+          "created_by",
+          "disabled_at"
+        ],
+        "type": "object"
+      },
+      "PrincipalAnswer": {
+        "description": "One user or service account.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Principal"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "PrincipalList": {
+        "description": "Users or service accounts.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Principal"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/IdentityListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "PrincipalRequest": {
+        "additionalProperties": false,
+        "description": "A new user or service account.",
+        "properties": {
+          "description": {
+            "description": "What it is for.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "The name to show; the id when empty.",
+            "type": "string"
+          },
+          "name": {
+            "description": "The id of the new principal: ^[a-z0-9][a-z0-9._@-]{0,63}$, unique among users and service accounts.",
+            "type": "string"
+          },
+          "roles": {
+            "description": "At least one role. A user cannot hold ingester, a service account cannot hold admin.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "roles"
+        ],
+        "type": "object"
+      },
       "Problem": {
         "description": "The standard error shape of every failure (RFC 9457, rest-api.md 3-9).",
         "properties": {
@@ -3535,6 +4413,165 @@
         ],
         "type": "object"
       },
+      "TokenAnswer": {
+        "description": "One access token.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TokenRecord"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "TokenList": {
+        "description": "Access tokens.",
+        "properties": {
+          "data": {
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/TokenRecord"
+            },
+            "type": "array"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/IdentityListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "TokenRecord": {
+        "description": "An access token as it is listed. It never holds the secret or its hash: both are only ever in the answer that makes the token, and the hash is nowhere.",
+        "properties": {
+          "created_at": {
+            "description": "When it was made, UTC.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "created_by": {
+            "description": "Who made it.",
+            "type": "string"
+          },
+          "description": {
+            "description": "What the token is for.",
+            "type": "string"
+          },
+          "expires_at": {
+            "description": "When it stops working, UTC. Every token expires.",
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "description": "The token id: the start of the token before its secret, pxm_ and 16 hex characters. It names the token and is not secret.",
+            "type": "string"
+          },
+          "last_used_at": {
+            "description": "When it was last used, to the minute, UTC; null for a token never used.",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "owner": {
+            "description": "The id of the principal the token acts as.",
+            "type": "string"
+          },
+          "owner_kind": {
+            "description": "person or system_account.",
+            "enum": [
+              "person",
+              "system_account"
+            ],
+            "type": "string"
+          },
+          "revoked_at": {
+            "description": "When it was revoked, UTC.",
+            "format": "date-time",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "revoked_by": {
+            "description": "Who revoked it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "roles": {
+            "description": "The roles the token carries. They only narrow the owner's: what a token may do is the roles it carries that the owner still holds.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "state": {
+            "description": "active, expired or revoked. Only an active token is accepted.",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ],
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "owner_kind",
+          "roles",
+          "description",
+          "state",
+          "created_at",
+          "created_by",
+          "expires_at",
+          "last_used_at",
+          "revoked_at",
+          "revoked_by"
+        ],
+        "type": "object"
+      },
+      "TokenRequest": {
+        "additionalProperties": false,
+        "description": "A new access token for a principal.",
+        "properties": {
+          "description": {
+            "description": "What the token is for.",
+            "type": "string"
+          },
+          "expires_in_days": {
+            "description": "The lifetime in days, 1 hour to 365 days; 0 or absent means 90 days.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "owner": {
+            "description": "The id of the principal the token acts as.",
+            "type": "string"
+          },
+          "roles": {
+            "description": "The roles of the token; they must be roles the owner holds. Empty means all of the owner's.",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "owner"
+        ],
+        "type": "object"
+      },
       "Trait": {
         "description": "A trait with the types that carry it.",
         "properties": {
@@ -3708,6 +4745,103 @@
         "required": [
           "id",
           "name"
+        ],
+        "type": "object"
+      },
+      "UpstreamItem": {
+        "description": "One object the target depends on, with what happens to the target when that object alone fails.",
+        "properties": {
+          "assumption_based": {
+            "description": "Whether the answer stands on an assumption.",
+            "type": "boolean"
+          },
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "effects": {
+            "additionalProperties": {
+              "description": "A result, or none.",
+              "type": "string"
+            },
+            "description": "The result for the target in each reading (none when nothing happens).",
+            "type": "object"
+          },
+          "hops": {
+            "description": "How many dependencies between it and the target.",
+            "type": "integer"
+          },
+          "object_id": {
+            "description": "The object id.",
+            "type": "string"
+          },
+          "object_type": {
+            "description": "The object type.",
+            "type": "string"
+          },
+          "path": {
+            "description": "From this object to the target.",
+            "items": {
+              "$ref": "#/components/schemas/PathStep"
+            },
+            "type": "array"
+          },
+          "single_point_of_failure": {
+            "description": "Whether the target goes down when this object alone fails.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "hops",
+          "effects",
+          "single_point_of_failure",
+          "assumption_based",
+          "path"
+        ],
+        "type": "object"
+      },
+      "UpstreamSection": {
+        "description": "What the target depends on: the counts first, then the items.",
+        "properties": {
+          "counts_by_effect": {
+            "additionalProperties": {
+              "description": "How many dependencies.",
+              "type": "integer"
+            },
+            "description": "How many dependencies have each effect.",
+            "type": "object"
+          },
+          "counts_by_type": {
+            "description": "How many dependencies of each type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            },
+            "type": "array"
+          },
+          "items": {
+            "description": "The dependencies of this page, single points of failure first; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/UpstreamItem"
+            },
+            "type": "array"
+          },
+          "single_points_of_failure": {
+            "description": "How many of them take the target down alone.",
+            "type": "integer"
+          },
+          "total": {
+            "description": "How many dependencies were tried.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "single_points_of_failure",
+          "counts_by_type",
+          "counts_by_effect"
         ],
         "type": "object"
       },
@@ -6810,6 +7944,302 @@
         "x-safe": true
       }
     },
+    "/v1/kgs/{kg}/queries:impact": {
+      "post": {
+        "description": "The closed query impact: what a failure reaches (direction downstream, the default) or what a target depends on (direction upstream). The answer gives the readings with facts only and with assumptions, each with its counts first.",
+        "operationId": "askImpact",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "limit": 100,
+                "mode": "facts_only",
+                "shape": "items",
+                "site_failure": [
+                  "obj_deeeeeb59579815a09a9a6a36dc75e26"
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ImpactRequest"
+              }
+            }
+          },
+          "description": "The input of the query.",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "computation": {
+                      "complete": true,
+                      "items_over_cap": false,
+                      "max_hops": 0,
+                      "max_items": 5000,
+                      "rounds": 3,
+                      "stale_inputs": 0,
+                      "stopped_by": null,
+                      "time_budget_seconds": 30,
+                      "weak_links": 0
+                    },
+                    "direction": "downstream",
+                    "facts_only": {
+                      "counts_by_parent": [],
+                      "counts_by_result": {
+                        "down": 1,
+                        "exposed_direct": 1
+                      },
+                      "counts_by_type": [
+                        {
+                          "count": 1,
+                          "object_type": "PhysicalServer"
+                        },
+                        {
+                          "count": 1,
+                          "object_type": "PowerSupply"
+                        }
+                      ],
+                      "groups_touched": [
+                        {
+                          "alive": 1,
+                          "display_name": "psu-rack-1-0",
+                          "group_id": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                          "group_type": "PowerRedundancyGroup",
+                          "min_alive": 1,
+                          "mode": "count",
+                          "n": 2,
+                          "slack": 0,
+                          "unknown": 0,
+                          "value": "up"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "also": [],
+                          "assumption_based": false,
+                          "display_name": "psu-1-0a",
+                          "hops": 1,
+                          "lost_channels": [
+                            "power"
+                          ],
+                          "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                          "object_type": "PowerSupply",
+                          "path": [
+                            {
+                              "display_name": "pdu-rack-1a",
+                              "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                              "object_type": "RackPdu"
+                            },
+                            {
+                              "display_name": "psu-1-0a",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "supply"
+                              },
+                              "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                              "object_type": "PowerSupply"
+                            }
+                          ],
+                          "result": "down",
+                          "unfilled_channels": [],
+                          "via": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                          "weakest_grade": "fact"
+                        },
+                        {
+                          "also": [],
+                          "assumption_based": false,
+                          "display_name": "srv-rack-1-0",
+                          "hops": 3,
+                          "lost_channels": [],
+                          "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                          "object_type": "PhysicalServer",
+                          "path": [
+                            {
+                              "display_name": "pdu-rack-1a",
+                              "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                              "object_type": "RackPdu"
+                            },
+                            {
+                              "display_name": "psu-1-0a",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "supply"
+                              },
+                              "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                              "object_type": "PowerSupply"
+                            },
+                            {
+                              "display_name": "psu-rack-1-0",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_2024c62a22aa9a31db984b05bc682773",
+                                "link_type": "MEMBER_OF",
+                                "meaning": "member_of",
+                                "note": "min_alive 1 (fact)",
+                                "role": "group_member"
+                              },
+                              "object_id": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                              "object_type": "PowerRedundancyGroup"
+                            },
+                            {
+                              "display_name": "srv-rack-1-0",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_3034c62a22aa9a31db984b05bc682774",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "note": "failover group or group this object depends on lost members",
+                                "role": "group_slack"
+                              },
+                              "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                              "object_type": "PhysicalServer"
+                            }
+                          ],
+                          "result": "exposed_direct",
+                          "unfilled_channels": [],
+                          "via": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                          "weakest_grade": "fact"
+                        }
+                      ],
+                      "unfilled_channel_objects": 0
+                    },
+                    "seeds": [
+                      {
+                        "display_name": "pdu-rack-1a",
+                        "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                        "object_type": "RackPdu"
+                      }
+                    ]
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "kinds": [
+                        "configured"
+                      ],
+                      "min_grade": "fact",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [
+                      "Links that mean connected_to are not followed: reachability to a network anchor is not calculated, so a network path that is lost without a member of a group failing is not found"
+                    ],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 2,
+                      "total": 2,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactAnswer"
+                }
+              }
+            },
+            "description": "The objects a failure reaches, or the objects the target depends on.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Ask impact",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
     "/v1/kgs/{kg}/queries:neighbors": {
       "post": {
         "description": "The closed query neighbors with its full input in the body.",
@@ -8329,6 +9759,862 @@
         "x-safe": true
       }
     },
+    "/v1/system-accounts": {
+      "get": {
+        "description": "The service accounts, active and disabled. For administrators only.",
+        "operationId": "listSystemAccounts",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "kind": {
+                  "description": "Filter on kind.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "role": {
+                  "description": "Filter on role.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "state": {
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name, created_at.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: created_at, created_by, description, disabled_at, display_name, id, kind, roles, state.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "description": "The demo ingester.",
+                      "disabled_at": null,
+                      "display_name": "ingest-demo",
+                      "id": "ingest-demo",
+                      "kind": "system_account",
+                      "roles": [
+                        "ingester"
+                      ],
+                      "state": "active"
+                    }
+                  ],
+                  "meta": {
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "List service accounts",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": true
+      },
+      "post": {
+        "description": "Makes a service account with the roles given. A service account holds any role but admin; ingester is for it. A principal is never deleted, only disabled. The Idempotency-Key is needed; the same key and body within ten minutes replay the first answer. For administrators only.",
+        "operationId": "createSystemAccount",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "display_name": "ingest-demo",
+                "name": "ingest-demo",
+                "roles": [
+                  "ingester"
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/PrincipalRequest"
+              }
+            }
+          },
+          "description": "The new service account.",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "description": "The demo ingester.",
+                    "disabled_at": null,
+                    "display_name": "ingest-demo",
+                    "id": "ingest-demo",
+                    "kind": "system_account",
+                    "roles": [
+                      "ingester"
+                    ],
+                    "state": "active"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                }
+              }
+            },
+            "description": "The new service account.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Make a service account",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": false
+      }
+    },
+    "/v1/system-accounts/{account_id}:disable": {
+      "post": {
+        "description": "Disables the service account: every token it owns is refused from now on, and the disabling cannot be undone. The last enabled administrator cannot be disabled. For administrators only.",
+        "operationId": "disableSystemAccount",
+        "parameters": [
+          {
+            "description": "The id of the service account.",
+            "in": "path",
+            "name": "account_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "description": "The demo ingester.",
+                    "disabled_at": "2030-01-03T00:00:00Z",
+                    "display_name": "ingest-demo",
+                    "id": "ingest-demo",
+                    "kind": "system_account",
+                    "roles": [
+                      "ingester"
+                    ],
+                    "state": "disabled"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                }
+              }
+            },
+            "description": "The disabled service account.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Disable a service account",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": false
+      }
+    },
+    "/v1/tokens": {
+      "get": {
+        "description": "The access tokens, with their state. An administrator sees all of them and may filter by owner; any other caller sees its own. The secret and the hash are never listed.",
+        "operationId": "listTokens",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "owner": {
+                  "description": "Filter on owner.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "owner_kind": {
+                  "description": "Filter on owner_kind.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "state": {
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: created_at, expires_at.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: created_at, created_by, description, expires_at, id, last_used_at, owner, owner_kind, revoked_at, revoked_by, roles, state.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "description": "read only",
+                      "expires_at": "2030-04-02T03:04:05Z",
+                      "id": "pxm_0123456789abcdef",
+                      "last_used_at": null,
+                      "owner": "ada",
+                      "owner_kind": "person",
+                      "revoked_at": null,
+                      "revoked_by": null,
+                      "roles": [
+                        "viewer"
+                      ],
+                      "state": "active"
+                    }
+                  ],
+                  "meta": {
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TokenList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "List access tokens",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      },
+      "post": {
+        "description": "Makes an access token for a principal. The answer holds the token itself, and no other call ever shows it again; the server keeps only a hash of its secret. The token expires, in 90 days unless a lifetime of 1 hour to 365 days is asked, and carries the roles asked or all of the owner's. The Idempotency-Key is needed; the key of this call cannot be used again, because the answer holds a secret that is shown once. For administrators only.",
+        "operationId": "createToken",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "description": "read only",
+                "expires_in_days": 90,
+                "owner": "ada",
+                "roles": [
+                  "viewer"
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              }
+            }
+          },
+          "description": "The new token.",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "description": "read only",
+                    "expires_at": "2030-04-02T03:04:05Z",
+                    "id": "pxm_0123456789abcdef",
+                    "last_used_at": null,
+                    "owner": "ada",
+                    "owner_kind": "person",
+                    "revoked_at": null,
+                    "revoked_by": null,
+                    "roles": [
+                      "viewer"
+                    ],
+                    "state": "active",
+                    "token": "pxm_0123456789abcdef_<64 hex characters, shown once>"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/IssuedTokenAnswer"
+                }
+              }
+            },
+            "description": "The new token with its secret.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Make an access token",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": false
+      }
+    },
+    "/v1/tokens/{token_id}": {
+      "get": {
+        "description": "Shows one access token and its state; never the secret or the hash. The id current stands for the token of this request, and then the answer also says who is calling (subject), which is the way to check a token. Any other id is answered to its owner and to an administrator; for anyone else it is not found.",
+        "operationId": "getToken",
+        "parameters": [
+          {
+            "description": "The id of the token (not the token itself), or the word current.",
+            "in": "path",
+            "name": "token_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "subject": {
+                      "display_name": "Ada Example",
+                      "id": "ada",
+                      "kind": "person",
+                      "roles": [
+                        "viewer"
+                      ]
+                    },
+                    "token": {
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "description": "read only",
+                      "expires_at": "2030-04-02T03:04:05Z",
+                      "id": "pxm_0123456789abcdef",
+                      "last_used_at": null,
+                      "owner": "ada",
+                      "owner_kind": "person",
+                      "revoked_at": null,
+                      "revoked_by": null,
+                      "roles": [
+                        "viewer"
+                      ],
+                      "state": "active"
+                    }
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentTokenAnswer"
+                }
+              }
+            },
+            "description": "The token.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Look at an access token",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/tokens/{token_id}:revoke": {
+      "post": {
+        "description": "Revokes the token: it is refused from now on. A token that is revoked or expired stays listed. An administrator may revoke any token; any other caller only its own.",
+        "operationId": "revokeToken",
+        "parameters": [
+          {
+            "description": "The id of the token (not the token itself).",
+            "in": "path",
+            "name": "token_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "description": "read only",
+                    "expires_at": "2030-04-02T03:04:05Z",
+                    "id": "pxm_0123456789abcdef",
+                    "last_used_at": null,
+                    "owner": "ada",
+                    "owner_kind": "person",
+                    "revoked_at": "2030-01-03T00:00:00Z",
+                    "revoked_by": "root",
+                    "roles": [
+                      "viewer"
+                    ],
+                    "state": "revoked"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/TokenAnswer"
+                }
+              }
+            },
+            "description": "The revoked token.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Revoke an access token",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "authenticated"
+        ],
+        "x-safe": false
+      }
+    },
     "/v1/traits": {
       "get": {
         "description": "The traits, their properties and needs.",
@@ -8697,6 +10983,388 @@
         "x-safe": true
       }
     },
+    "/v1/users": {
+      "get": {
+        "description": "The users, active and disabled. For administrators only.",
+        "operationId": "listUsers",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "explode": true,
+            "in": "query",
+            "name": "filter",
+            "required": false,
+            "schema": {
+              "properties": {
+                "kind": {
+                  "description": "Filter on kind.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "name": {
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "prefix": {
+                      "description": "Starts with this text.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "role": {
+                  "description": "Filter on role.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                },
+                "state": {
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "description": "Exactly this value.",
+                      "type": "string"
+                    },
+                    "in": {
+                      "description": "Any of these values, separated by commas.",
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              },
+              "type": "object"
+            },
+            "style": "deepObject"
+          },
+          {
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name, created_at.",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Comma-separated fields to keep in each item. Selectable: created_at, created_by, description, disabled_at, display_name, id, kind, roles, state.",
+            "in": "query",
+            "name": "fields",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": [
+                    {
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "description": "",
+                      "disabled_at": null,
+                      "display_name": "Ada Example",
+                      "id": "ada",
+                      "kind": "person",
+                      "roles": [
+                        "viewer"
+                      ],
+                      "state": "active"
+                    }
+                  ],
+                  "meta": {
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    },
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalList"
+                }
+              }
+            },
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "List users",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": true
+      },
+      "post": {
+        "description": "Makes a user with the roles given. A user holds any role but ingester. A principal is never deleted, only disabled. The Idempotency-Key is needed; the same key and body within ten minutes replay the first answer. For administrators only.",
+        "operationId": "createUser",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "display_name": "Ada Example",
+                "name": "ada",
+                "roles": [
+                  "viewer"
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/PrincipalRequest"
+              }
+            }
+          },
+          "description": "The new user.",
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "description": "",
+                    "disabled_at": null,
+                    "display_name": "Ada Example",
+                    "id": "ada",
+                    "kind": "person",
+                    "roles": [
+                      "viewer"
+                    ],
+                    "state": "active"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                }
+              }
+            },
+            "description": "The new user.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Make a user",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": false
+      }
+    },
+    "/v1/users/{user_id}:disable": {
+      "post": {
+        "description": "Disables the user: every token it owns is refused from now on, and the disabling cannot be undone. The last enabled administrator cannot be disabled. For administrators only.",
+        "operationId": "disableUser",
+        "parameters": [
+          {
+            "description": "The id of the user.",
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "description": "",
+                    "disabled_at": "2030-01-03T00:00:00Z",
+                    "display_name": "Ada Example",
+                    "id": "ada",
+                    "kind": "person",
+                    "roles": [
+                      "viewer"
+                    ],
+                    "state": "disabled"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                }
+              }
+            },
+            "description": "The disabled user.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Disable a user",
+        "tags": [
+          "identity"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "admin"
+        ],
+        "x-safe": false
+      }
+    },
     "/v1/value-types": {
       "get": {
         "description": "The value types a property can have.",
@@ -8902,6 +11570,10 @@
     {
       "description": "Reads of a KG: the KGs, objects, their links and the closed queries.",
       "name": "kg"
+    },
+    {
+      "description": "Users, service accounts and access tokens: who may call the API.",
+      "name": "identity"
     }
   ]
 }

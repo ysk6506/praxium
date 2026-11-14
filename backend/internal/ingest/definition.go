@@ -3,8 +3,10 @@ package ingest
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"slices"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
@@ -29,6 +31,9 @@ type Column struct {
 	Name     string   `json:"name"`
 	Paths    []string `json:"paths,omitempty"`
 	Optional bool     `json:"optional,omitempty"`
+	// Note is free text for the person who reads the definition (what `ingest inspect -emit-source` guessed the values
+	// to be); nothing reads it.
+	Note string `json:"note,omitempty"`
 }
 
 // Dataset is a table a source gives (ingestion.md 3.1). The slice has raw datasets that are received as a whole
@@ -42,6 +47,12 @@ type Dataset struct {
 	NaturalKey  []string `json:"natural_key"`
 	Deletion    string   `json:"deletion,omitempty"`
 	Columns     []Column `json:"columns"`
+	// Delimiter is the separator of the fields of a CSV file: a comma (default), a tab, a semicolon or a vertical
+	// bar, written as the character or as comma, tab, semicolon or pipe. Only the csv parser has it.
+	Delimiter string `json:"delimiter,omitempty"`
+	// IgnoreUndeclaredColumns leaves out the columns of the file that no column of the dataset reads, instead of
+	// reporting each as undeclared_column. A declared column that is gone is still reported.
+	IgnoreUndeclaredColumns bool `json:"ignore_undeclared_columns,omitempty"`
 	// Sheet says which sheet of a workbook the dataset is and how its rows are laid out. Only the xlsx parser has it.
 	Sheet *SheetOptions `json:"sheet,omitempty"`
 }
@@ -67,6 +78,11 @@ func decodeStrict(r io.Reader, what string, into any) error {
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(into); err != nil {
+		if name, ok := strings.CutPrefix(err.Error(), "json: unknown field "); ok {
+			if hint := unknownFieldHint(data, strings.Trim(name, `"`), into); hint != "" {
+				err = fmt.Errorf("%w; %s", err, hint)
+			}
+		}
 		return kernel.Wrap(kernel.CodeInvalidValue, err, "the "+what+" is not a valid definition")
 	}
 	if dec.More() {
@@ -142,15 +158,10 @@ func (d Dataset) normalized(source string) (Dataset, error) {
 	if d.Sheet, err = d.Sheet.normalized(d.Parser, where); err != nil {
 		return d, err
 	}
-	if len(d.NaturalKey) == 0 {
-		return d, kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key is empty, so the order of the rows would decide the result", where)
+	if d.Delimiter, err = normalizedDelimiter(d.Delimiter, d.Parser, where); err != nil {
+		return d, err
 	}
-	for _, k := range d.NaturalKey {
-		if !slices.Contains(cols, k) {
-			return d, kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key names column %q that the dataset does not have", where, k)
-		}
-	}
-	return d, nil
+	return d, d.checkNaturalKey(cols, where)
 }
 
 // checkSupported refuses what this build does not have.
@@ -184,4 +195,19 @@ func (d *Dataset) checkColumns(where string) ([]string, error) {
 		names = append(names, c.Name)
 	}
 	return names, nil
+}
+
+// checkNaturalKey checks that the natural key names columns of the dataset. The message lists the columns, so a key
+// that was left to be filled in (as `ingest inspect -emit-source` leaves it) tells what to put there.
+func (d Dataset) checkNaturalKey(cols []string, where string) error {
+	const what = "natural_key is the column, or the columns together, whose value tells one row from another"
+	if len(d.NaturalKey) == 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key is empty, so the order of the rows would decide the result; %s. The columns are: %s", where, what, columnList(cols))
+	}
+	for _, k := range d.NaturalKey {
+		if !slices.Contains(cols, k) {
+			return kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key names column %q that the dataset does not have; %s. The columns are: %s", where, k, what, columnList(cols))
+		}
+	}
+	return nil
 }

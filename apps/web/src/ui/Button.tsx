@@ -6,7 +6,7 @@ export type ButtonVariant = "primary" | "secondary" | "ghost";
 
 const VARIANTS: Readonly<Record<ButtonVariant, string>> = {
   primary: "bg-accent text-accent-fg border-accent hover:opacity-90",
-  secondary: "bg-surface text-fg border-line-strong hover:bg-sunken",
+  secondary: "bg-surface text-fg border-control-line hover:bg-sunken",
   ghost: "bg-transparent text-muted border-transparent hover:bg-sunken hover:text-fg",
 };
 
@@ -24,7 +24,7 @@ export function Button({
     <BaseButton
       type={type}
       className={cx(
-        "inline-flex h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-sm font-medium",
+        "inline-flex min-h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-sm font-medium",
         "cursor-pointer transition-colors data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         VARIANTS[variant],
         typeof className === "string" && className,
@@ -43,7 +43,7 @@ export function ButtonLink({
   return (
     <a
       className={cx(
-        "inline-flex h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-sm font-medium no-underline",
+        "inline-flex min-h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-sm font-medium no-underline",
         VARIANTS[variant],
         className,
       )}

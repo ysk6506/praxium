@@ -77,6 +77,12 @@ go:
     adapter.filejournal: {path: backend/internal/filejournal, may_import: [core.kernel], test_may_import: [core.graph, adapter.graphcheck, adapter.memstore]}
     # The Excel workbook reader (ADR-0040): ZIP and XML from the standard library, with the safety limits; it also holds the small workbook writer that the tests use. It knows the workbook model of core.ingest and nothing else.
     adapter.xlsx:   {path: backend/internal/xlsx, may_import: [core.kernel, core.ingest]}
+    # Built-in authentication (ADR-0044): access tokens, users and service accounts, the bootstrap, the audit log and the failure limiter. The stores sit behind a port of built-in types, so the core imports no adapter.
+    core.identity:  {path: backend/internal/identity, may_import: [core.kernel, core.access]}
+    # The file store of the identity data: one versioned file in the data folder, written atomically through a Disk interface that the composition root implements (mode 0600).
+    adapter.identityfile: {path: backend/internal/identityfile, may_import: [core.kernel]}
+    # The conformance suite of the identity store port, production code of its own for the same reason as the storage suite; only its tests import the three stores it is run on (ADR-0044).
+    adapter.identitycheck: {path: backend/internal/identitycheck, may_import: [core.kernel], test_may_import: [core.identity, adapter.identityfile, adapter.pgstore]}
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
@@ -111,4 +117,4 @@ go:
   nondeterminism_allowed: [backend/internal/kernel/entropy.go]
   dependency_table: ARCHITECTURE.md
   # Non-test code that locked tests lean on: the case table of the storage conformance suite, and the fixture and the latest-only store that other units tests run on. It is fingerprinted into every test that reaches it, so a case removed or weakened there breaks the lock of the test that runs it (ADR-0028).
-  locked_support: [backend/internal/graphcheck, backend/internal/graph/fixture.go, backend/internal/graph/scratch.go]
+  locked_support: [backend/internal/graphcheck, backend/internal/identitycheck, backend/internal/graph/fixture.go, backend/internal/graph/scratch.go]

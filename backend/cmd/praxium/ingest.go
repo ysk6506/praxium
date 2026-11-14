@@ -23,8 +23,9 @@ const ingestRunUsage = "usage: praxium ingest run -source <source.json> -mapping
 
 const ingestRunBody = `Reads files into a KG: capture, parse, raw record changes, refinement, feeds, identification, links and apply
 (ADR-0033). The files are only read. The source definition says which datasets there are and how each file is parsed
-(CSV, JSON Lines, or a sheet of an Excel workbook); the mapping definition says which objects and links they make
-(docs/design-docs/ingestion.md). Both are JSON files; "praxium ingest init" writes examples.
+(CSV, JSON Lines, or a sheet of an Excel workbook); the mapping definition says which objects and links they make.
+Both are JSON files. The format of both, field by field, is in docs/guides/ingest-definitions.md of the Praxium
+repository; "praxium ingest init" writes a copy of it as ingest-definitions.md. "praxium ingest inspect -input <file> -emit-source" drafts the source definition of a file.
 
 Without -data-dir the KG lives in memory only while this command runs. With -data-dir <folder> the KG is built in
 that folder (the built-in file store) and what the run learned (which rows it saw, how often a row was missing) is
@@ -45,7 +46,22 @@ Reading the output:
                         filtered (by a rule of the mapping) + problem + unused (no feed uses the row).
                         raw_added, raw_modified, raw_unchanged, raw_deleted, raw_unseen: what changed against the
                         previous run (unseen: not in the file this time, not yet retired).
+                        not_read="...": the file of this dataset was not read at all, and why (the workbook has no
+                        such sheet, or a column the dataset declares is not in the header); every count is then 0,
+                        and the same text is a shape_changed problem.
+                        For a workbook: sheet and sheet_state (visible, hidden, very_hidden); hidden_rows_read and
+                        hidden_columns_read: hidden rows and columns the mapping read; skipped_<reason>=N: rows that
+                        were passed over and are no part of the counts above:
+                          skipped_blank_row    the row has nothing in the columns that are read
+                          skipped_hidden_row   the row is hidden and the sheet says skip_hidden_rows
+                          skipped_after_end    the row is after the end of the data: stop_after_blank_rows blank
+                                               rows came first, so what follows is not read
   problems kind=N       how many problems of each kind; problem ... lines list the first 20 with the row and why.
+                        Kinds: shape_changed (see not_read), unreadable_line, duplicate_key, undeclared_column (a
+                        column of the file no dataset column reads; ignore_undeclared_columns turns it off),
+                        cell_error, formula_without_value (the cell has an error, or a formula never calculated),
+                        invalid_value, missing_identity, link_target_missing, link_target_ambiguous, cardinality,
+                        source_conflict, identity_conflict, incomplete_capture.
   last line             completed without problems, or completed with N problems (see "problem" lines above).
 
 Exit codes:
@@ -98,8 +114,11 @@ func newIngestRunFlags(f *ingestFlags) *flag.FlagSet {
 func ingestHelpEntries(out map[string]helpEntry) {
 	out["ingest"] = helpEntry{usage: "usage: praxium ingest init|inspect|run ...", body: `Bring in your data: files in, a KG out.
   init      write example definitions and sample files, to try the steps
-  inspect   look at a file before writing a mapping for it
+  inspect   look at a file before writing a mapping for it (-emit-source drafts its source definition)
   run       read files into a KG (-data-dir keeps the result)
+The two definition files (source.json: the datasets and how each file is read; mapping.json: the objects and links they
+make) are described field by field in docs/guides/ingest-definitions.md of the Praxium repository
+("praxium ingest init" writes a copy of it).
 Run "praxium ingest <command> --help" for the flags.
 `}
 	out["ingest run"] = helpEntry{usage: ingestRunUsage, body: ingestRunBody, flags: func() *flag.FlagSet { return newIngestRunFlags(&ingestFlags{inputs: inputList{}}) }}

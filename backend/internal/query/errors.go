@@ -68,7 +68,9 @@ func CodeMeaning(code kernel.Code) (string, bool) {
 // fieldInput is an input error that also says which field of the request it is about (invalid_input.field).
 type fieldInput struct {
 	field string
-	err   *kernel.Error
+	// param is the request parameter a refusal that is not an input error is about; id is the object a not-found error is about.
+	param, id string
+	err       *kernel.Error
 }
 
 func (e *fieldInput) Error() string { return e.err.Error() }
@@ -77,6 +79,24 @@ func (e *fieldInput) Unwrap() error { return e.err }
 // inputf is a CodeInput error about one field of the question; the field is named as the API names it.
 func inputf(field, format string, args ...any) error {
 	return &fieldInput{field: field, err: kernel.Errorf(CodeInput, format, args...)}
+}
+
+// MissingID is the id of the object a not-found error of a question is about, or "" when it names none.
+func MissingID(err error) string {
+	var f *fieldInput
+	if errors.As(err, &f) {
+		return f.id
+	}
+	return ""
+}
+
+// ParamOf is the request parameter a refusal such as query_scope_unsupported is about, or "" when it names none.
+func ParamOf(err error) string {
+	var f *fieldInput
+	if errors.As(err, &f) {
+		return f.param
+	}
+	return ""
 }
 
 // FieldOf is the request field an error is about, or "" when it names none.

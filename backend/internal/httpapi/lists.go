@@ -385,6 +385,7 @@ var catalogEntries = []struct{ name, href, about string }{
 	{"channels", "/v1/catalog/channels", "The six channels of state an object has."},
 	{"value-types", "/v1/value-types", "The value types a property can have."},
 	{"roles", "/v1/roles", "The eight roles and what each may do."},
+	{"layers", "/v1/layers", "The layers the object types are grouped in."},
 	{"error-codes", "/v1/catalog/error-codes", "The closed catalogue of error codes."},
 	{"reason-codes", "/v1/catalog/reason-codes", "The reasons an action in allowed_actions is refused."},
 }
