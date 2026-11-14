@@ -1,0 +1,7 @@
+doc: "docs/guides/ingest-definitions.md"
+target: "backend/internal/ingest/definition.go"
+hash: "b9e719628c89603b"
+date: "2026-11-14"
+note: "소스 정의와 매핑 정의의 모든 필드를 definition.go, mapping.go, sheetopts.go, refine.go, report.go와 대조하고, 문서의 예와 오류 메시지를 릴리스 형태의 실행 파일로 직접 실행해 확인했다"
+text_changed: true
+doc_hash: "9c2c575fb637d230"

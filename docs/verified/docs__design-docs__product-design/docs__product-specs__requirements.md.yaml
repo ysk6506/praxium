@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "33a781eb9e65676e"
+hash: "622225b636dd1b67"
 date: "2026-11-14"
-note: "REQ-296~299(웹 UI)가 REQ-289~295 뒤에 추가됐다. 이 문서의 내용과 충돌하지 않는다."
+note: "ADR-0042 병합 뒤 다시 읽었다. 이 문서와 main의 차이는 목표 문장(ADR-0037)뿐이고, requirements.md의 새 요구는 이 문서의 원칙과 순서에 영향이 없다"
 text_changed: true
-doc_hash: "06412a77a9acc006"
+doc_hash: "019854b80cb4930e"

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "a0ca76039b1ca3ed"
+hash: "63b5e3b264e34897"
 date: "2026-11-14"
-note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
+note: "main에 병합한 뒤 AGENTS.md를 다시 읽었다. main과의 차이는 첫 단락의 목표 문장뿐이고 이 문서의 신념과 줄 수 한도에 영향이 없다"
 text_changed: false
 doc_hash: "04b2f4f490642c38"
