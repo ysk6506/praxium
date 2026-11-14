@@ -204,10 +204,20 @@ func identifierBody(text string) (map[string]any, error) {
 	return map[string]any{"scheme": scheme, "value": value}, nil
 }
 
+// splitLast cuts name.op at its last dot, so a name that has a dot of its own (org.management_department) keeps it:
+// org.management_department.equals is the name org.management_department and the operation equals.
+func splitLast(key string) (name, op string, dotted bool) {
+	i := strings.LastIndex(key, ".")
+	if i < 0 {
+		return key, "", false
+	}
+	return key[:i], key[i+1:], true
+}
+
 // attributeBody reads name.op=value; for in and range the value is a comma list or from..to.
 func attributeBody(text string) (map[string]any, error) {
 	key, value, ok := strings.Cut(text, "=")
-	name, op, dotted := strings.Cut(key, ".")
+	name, op, dotted := splitLast(key)
 	if !ok || !dotted || name == "" || op == "" {
 		return nil, usageError{msg: fmt.Sprintf("--attr %q: write name.op=value, such as model.equals=M1", text)}
 	}

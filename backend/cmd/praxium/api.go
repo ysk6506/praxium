@@ -95,6 +95,8 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 		return runDev(args[1:], stdout, stderr, w), true
 	case args[0] == "ingest":
 		return runIngest(args[1:], stdout, stderr, w), true
+	case args[0] == "model":
+		return runModel(args[1:], stdout, stderr, w), true
 	case args[0] == "contract":
 		return runContract(args[1:], stdout, stderr), true
 	case cli.IsClientCommand(args[0]) || cli.IsClientFlag(args[0]):
@@ -331,10 +333,6 @@ func listenOn(d wiring, addr string) (net.Listener, error) {
 // the address before the load, so a taken port fails at once and not after a long load. The stop signal also ends a
 // load in progress.
 func runServer(p serverPlan, stderr io.Writer, d wiring) error {
-	reg, err := model.LoadStandard()
-	if err != nil {
-		return err
-	}
 	tlsCfg, err := tlsConfigFor(p.opts, d)
 	if err != nil {
 		return err
@@ -347,6 +345,12 @@ func runServer(p serverPlan, stderr io.Writer, d wiring) error {
 		return err
 	}
 	defer closeLogged(closeStore, log)
+	// The model is read once the store is open, so the folder is ours (its lock is held) and no change of the
+	// definitions can come between the read and the start. A PostgreSQL store has no definitions yet: standard only.
+	reg, err := loadModel(modelFolder(p.opts), d.deps)
+	if err != nil {
+		return err
+	}
 	kit, err := authFor(stopCtx, p, store, log)
 	if err != nil {
 		return err
@@ -382,6 +386,15 @@ func runServer(p serverPlan, stderr io.Writer, d wiring) error {
 	}
 	lease.serving = true
 	return srv.Serve(stopCtx, ln)
+}
+
+// modelFolder is the data folder whose definitions the server reads: that of the file store. The memory store and the
+// PostgreSQL store have none (ADR-0053), so they serve the standard model.
+func modelFolder(o serveOptions) string {
+	if o.store == storeFile {
+		return o.storeDataDir
+	}
+	return ""
 }
 
 // addrLease holds the listener from the moment the address is taken until the server serves on it, and gives the

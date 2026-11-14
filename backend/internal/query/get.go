@@ -237,10 +237,13 @@ func (e *Engine) attributes(ctx context.Context, r *read, info *typeInfo, v visi
 	var out []AttributeValue
 	for _, no := range nos {
 		a := v.row.Attrs[no]
-		if !r.designed(a.Basis) {
+		prop, known := info.byAttr[no]
+		if !known || !r.designed(a.Basis) {
+			// A number the model does not know: the model is older than the row (definitions applied after this
+			// server started). The value is passed over, not shown without a name.
 			continue
 		}
-		out = append(out, e.attribute(r, info.byAttr[no], v.dec, stored{a.Value, a.Grade, a.Basis, a.SourceTime, a.SourceRef, false}))
+		out = append(out, e.attribute(r, prop, v.dec, stored{a.Value, a.Grade, a.Basis, a.SourceTime, a.SourceRef, false}))
 	}
 	if r.info.Volatile != graph.VolatileLatest {
 		return out, nil

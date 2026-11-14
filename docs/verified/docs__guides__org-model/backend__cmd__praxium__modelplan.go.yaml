@@ -1,0 +1,7 @@
+doc: "docs/guides/org-model.md"
+target: "backend/cmd/praxium/modelplan.go"
+hash: "96ca8ff1264913cc"
+date: "2026-11-14"
+note: "모델 명령의 상태 읽기를 하나로 합친 뒤 안내서의 명령과 출력을 다시 대조했다. 동작 변화 없음"
+text_changed: true
+doc_hash: "e8519c8786fbaaa2"

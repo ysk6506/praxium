@@ -332,7 +332,7 @@ func listQuery(filters []string, limit int) (url.Values, error) {
 	query := url.Values{}
 	for _, f := range filters {
 		key, value, ok := strings.Cut(f, "=")
-		field, op, dotted := strings.Cut(key, ".")
+		field, op, dotted := splitLast(key)
 		if !ok || !dotted || field == "" || op == "" {
 			return nil, usageError{msg: fmt.Sprintf("--filter %q: write field.op=value, such as layer.equals=service", f)}
 		}

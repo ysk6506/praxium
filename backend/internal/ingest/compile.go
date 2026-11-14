@@ -154,10 +154,7 @@ func (p *Plan) compileFeed(f Feed, index int) (*feedPlan, error) {
 	if f.RetiresObjects && !f.CreatesObjects {
 		return nil, bad("feed %s retires objects it does not create", f.ID)
 	}
-	props := map[string]model.Property{}
-	for _, pr := range p.reg.EffectiveProperties(typ.ID) {
-		props[pr.Name] = pr
-	}
+	props := propertiesByName(p.reg, typ)
 	if err := p.compileAttrs(fp, props, cols); err != nil {
 		return nil, err
 	}
@@ -169,9 +166,9 @@ func (p *Plan) compileFeed(f Feed, index int) (*feedPlan, error) {
 
 func (p *Plan) compileAttrs(fp *feedPlan, props map[string]model.Property, cols []string) error {
 	for _, a := range fp.feed.Attributes {
-		pr, ok := props[a.Attribute]
-		if !ok {
-			return bad("feed %s: type %s has no attribute %q; its attributes are: %s", fp.feed.ID, fp.typ.Name, a.Attribute, strings.Join(p.reg.PropertyNames(fp.typ.ID), ", "))
+		pr, err := p.attributeFor(fp, props, a.Attribute)
+		if err != nil {
+			return err
 		}
 		if !slices.Contains(cols, a.Column) {
 			return bad("feed %s: attribute %s reads column %q, which dataset %s does not have; its columns are: %s", fp.feed.ID, a.Attribute, a.Column, fp.feed.Dataset, columnList(cols))
@@ -226,6 +223,9 @@ func (p *Plan) keyFor(fp *feedPlan, im IdentityMap, registry []model.IdentityKey
 		pr, ok := props[c.Property]
 		if !ok {
 			return keyPlan{}, bad("feed %s: identity component names property %q, which type %s lacks; its properties are: %s", fp.feed.ID, c.Property, fp.typ.Name, strings.Join(p.reg.PropertyNames(fp.typ.ID), ", "))
+		}
+		if err := p.checkKeyProperty(fp, pr); err != nil {
+			return keyPlan{}, err
 		}
 		if !slices.Contains(cols, c.Column) {
 			return keyPlan{}, bad("feed %s: identity component %s reads column %q, which the dataset lacks; its columns are: %s", fp.feed.ID, c.Property, c.Column, columnList(cols))

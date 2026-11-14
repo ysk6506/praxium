@@ -1,0 +1,7 @@
+doc: "docs/guides/org-model.md"
+target: "docs/design-docs/adr/0053-org-properties-command-line-and-start-wiring.md"
+hash: "203df888baf80387"
+date: "2026-11-14"
+note: "용어를 표준 용어로 고친 뒤 다시 확인"
+text_changed: true
+doc_hash: "e8519c8786fbaaa2"

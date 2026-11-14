@@ -262,7 +262,7 @@ func quoteAll(names []string) string {
 // problems and whether the result is kept. It returns the problems of the last run.
 func ingestRun(f ingestFlags, stdout, stderr io.Writer, w wiring) (int, error) {
 	ctx := context.Background()
-	reg, err := model.LoadStandard()
+	reg, err := loadModel(f.dataDir, w.deps)
 	if err != nil {
 		return 0, err
 	}
