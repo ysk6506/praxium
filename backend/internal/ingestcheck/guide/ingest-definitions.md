@@ -28,7 +28,7 @@ praxium ingest run -data-dir data -source source.json -mapping mapping.json -inp
 praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 ```
 
-정의 파일에 모르는 필드를 쓰면 `unknown field "…"`로 거절한다(철자 오류를 조용히 넘기지 않는다). 거절할 때 그 자리에서 허용되는 필드를 함께 알려 준다.
+정의 파일에 모르는 필드를 쓰면 `unknown field "…"`로 거절한다(철자 오류를 조용히 넘기지 않는다). 거절할 때 그 자리에서 허용되는 필드를 함께 알려 준다. 값의 종류가 틀려도(`"ignore_undeclared_columns": "yes"`) 거절하며, 필드 경로와 받아야 하는 값의 종류, 줄 번호를 말한다(`the field "datasets[0].ignore_undeclared_columns" must be true or false (no quotes), but the value given is text (line 5)`). 대괄호 안의 수는 목록의 몇 번째인지이고 첫째가 0이다.
 
 ## 2. 소스 정의 (source.json)
 
@@ -56,9 +56,10 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 | `name` | 아니오 | | 설명. 동작에 영향이 없다 |
 | `delimiter` | 아니오 | 쉼표 | CSV의 구분자. 쉼표(`comma`), 탭(`tab`), 세미콜론(`semicolon`), 세로선(`pipe`)만 되고, 이름 대신 글자(`,` `\t` `;` `\|`)도 된다. `csv`가 아닌 파서에 쓰면 거절한다 |
 | `ignore_undeclared_columns` | 아니오 | `false` | `true`면 선언하지 않은 컬럼을 무시하고 `undeclared_column`을 보고하지 않는다 |
+| `ignore_rows_without_key` | 아니오 | `false` | `true`면 자연 키 컬럼이 모두 빈 행(표 아래의 소계·합계 줄)을 문제로 알리지 않고 건너뛴다. 건너뛴 행 수는 결과 줄의 `skipped_no_key`에 나오고 `received`에 들어가지 않는다. 키 컬럼 일부만 빈 행은 계속 `unreadable_line`이다 |
 | `kind`, `receive_mode` | 아니오 | `raw`, `snapshot` | 지금은 이 값만 된다. 다른 값은 거절한다 |
 
-자연 키가 비어 있는 행은 읽을 수 없는 줄(`unreadable_line`, `missing_natural_key`)이다. 자연 키가 같은 행이 둘이면 나중 행을 쓰고 앞의 행은 `duplicate_key` 문제로 남는다.
+자연 키가 비어 있는 행은 읽을 수 없는 줄(`unreadable_line`, `missing_natural_key`)이다. 키 컬럼이 모두 빈 행이 소계·합계 줄이면 `ignore_rows_without_key`를 쓴다(그런 행의 첫 문제 줄이 옵션 이름을 알려 준다). 자연 키가 같은 행이 둘이면 나중 행을 쓰고 앞의 행은 `duplicate_key` 문제로 남는다.
 
 ### 2.3 컬럼 선언
 
@@ -69,7 +70,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 | `optional` | 아니오 | `false` | `true`면 파일에 없어도 된다(값은 빈 칸). 아니면 없을 때 데이터셋 전체를 쓰지 않는다(`shape_changed`). 메시지에 실제로 읽은 머리글 컬럼이 나온다 |
 | `note` | 아니오 | | 정의를 읽는 사람을 위한 메모. 동작에 영향이 없다 |
 
-선언하지 않은 컬럼이 파일 머리글에 있으면 `undeclared_column` 문제가 한 번씩 나온다. 쓰지 않을 컬럼도 선언해 두면 문제가 나오지 않는다. 컬럼이 많은 대장에서 일부만 쓸 때는 데이터셋에 `ignore_undeclared_columns: true`를 쓴다. 선언한 컬럼이 파일에서 사라진 것은 이 옵션과 상관없이 `shape_changed`로 계속 보고한다.
+선언하지 않은 컬럼이 파일 머리글에 있으면 `undeclared_column` 문제가 한 번씩 나오고, 첫 줄이 `ignore_undeclared_columns` 옵션을 알려 준다. 목록이 잘리면 "N more undeclared_column problems are not listed (M in all)" 줄이 전체 개수를 보여 준다. 쓰지 않을 컬럼도 선언해 두면 문제가 나오지 않는다. 컬럼이 많은 대장에서 일부만 쓸 때는 데이터셋에 `ignore_undeclared_columns: true`를 쓴다. 선언한 컬럼이 파일에서 사라진 것은 이 옵션과 상관없이 `shape_changed`로 계속 보고한다.
 
 ### 2.4 파일 종류별 읽는 규칙
 
@@ -77,7 +78,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 - **JSON Lines**: 한 줄에 JSON 객체 하나. 빈 줄은 건너뛰고, 객체가 아니거나 한 줄에 둘 이상이면 `invalid_json`이다. `paths`는 점으로 이은 경로이고(`hardware.serial`) 숫자는 배열의 위치다(`tags.0`). 값은 비어 있지 않은 문자열, 숫자, 불리언만 된다. `null`, 객체, 배열, 빈 문자열은 값이 없는 것으로 본다. 이름에 점이 든 키는 가리킬 수 없다.
 - **엑셀(`.xlsx`)**: 2.5. 머리글 이름은 앞뒤 공백을 없애고 연속한 공백을 하나로 줄여 맞춘다(대소문자는 구분한다). 수식은 파일에 저장된 계산 값을 읽는다. 날짜 칸은 `2026-03-14`, 날짜와 시각 칸은 `2026-03-14T09:30:00Z`, 정수는 `16`(`16.0` 아님), 불리언은 `true`와 `false` 글자로 바뀐다. 숫자 칸을 서식으로 `00123`처럼 보이게 한 경우 값은 `123`으로 읽으므로, 앞자리 0이 필요한 값은 칸을 텍스트로 저장한다.
 - **한 파일의 한도**: 20MB. 넘으면 그 데이터셋은 쓰지 않고 `incomplete_capture`가 나온다. CSV와 JSON Lines는 데이터셋당 행 수에도 한도가 있다(기본 200,000행, 2.7). 읽을 수 없는 줄도 센다. 넘으면 20MB를 넘었을 때와 같이 `incomplete_capture`이고 이유에 한도가 나온다. 행이 많은 파일은 메모리를 많이 쓴다(2.7).
-- **읽지 못하는 것**: `.xls`("old binary Excel format"), 깨진 파일, 이름만 `.xlsx`인 CSV는 실행이 오류로 멈춘다. UTF-8이 아닌 CSV(EUC-KR, UTF-16)는 `ingest inspect`와 `ingest run` 모두 원인과 해결 방법을 말하고 멈춘다. 글자를 바꿔 읽지는 않는다(ADR-0046). 구분자가 다른 파일은 `delimiter`를 쓰고, `inspect`에는 `-delimiter`를 준다. 쉼표로 읽었더니 컬럼이 하나뿐이고 탭이나 세미콜론이 반복되면 `inspect`가 구분자를 확인하라고 알려 준다. 엑셀에서 "CSV UTF-8"로 저장하거나 `.xlsx`를 그대로 쓴다.
+- **읽지 못하는 것**: `.xls`("old binary Excel format"), 깨진 파일, 이름만 `.xlsx`인 CSV는 실행이 오류로 멈춘다. UTF-8이 아닌 CSV(EUC-KR, UTF-16)는 `ingest inspect`와 `ingest run` 모두 원인과 해결 방법을 말하고 멈춘다. 바이트 순서 표시(BOM)가 없는 UTF-16도 NUL 바이트가 하나 걸러 하나씩 있는 규칙으로 알아보고 UTF-16이라고 말한다(EUC-KR로 추정하지 않는다). 글자를 바꿔 읽지는 않는다(ADR-0046). 구분자가 다른 파일은 `delimiter`를 쓰고, `inspect`에는 `-delimiter`를 준다. 쉼표로 읽었더니 컬럼이 하나뿐이고 탭이나 세미콜론이 반복되면 `inspect`가 구분자를 확인하라고 알려 준다. 엑셀에서 "CSV UTF-8"로 저장하거나 `.xlsx`를 그대로 쓴다.
 
 ### 2.5 엑셀 시트 옵션 (`sheet`)
 
@@ -100,7 +101,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 
 ### 2.6 소스 정의 초안 (`inspect -emit-source`)
 
-`praxium ingest inspect -input 파일 -emit-source`는 살펴본 파일에 맞는 소스 정의 초안을 표준 출력에 쓴다(시트, 머리글 행, 컬럼, 추측한 값 종류는 `note`). 자연 키는 추측하지 않고 `FILL IN:`으로 시작하는 자리표시자를 둔다. 이대로 `ingest run`을 하면 어느 컬럼이 있는지 알려 주며 멈추므로 하나를 골라 바꾼다. CSV에는 `-delimiter`를 줄 수 있다.
+`praxium ingest inspect -input 파일 -emit-source`는 살펴본 파일에 맞는 소스 정의 초안을 표준 출력에 쓴다(시트, 머리글 행, 컬럼, 추측한 값 종류는 `note`). 자연 키는 추측하지 않고 `FILL IN:`으로 시작하는 자리표시자를 둔다. 이대로 `ingest run`을 하면 멈추고, 그 데이터셋에 `-input`으로 준 파일에서 모든 행에 값이 있고 서로 다른 컬럼(초안을 만들 때 표준 오류로 알려 준 후보와 같다)을 먼저 말한 뒤 컬럼 전체를 나열하므로 하나를 골라 바꾼다. CSV에는 `-delimiter`를 줄 수 있다.
 
 ### 2.7 한도 (`limits`)
 
@@ -148,7 +149,7 @@ CSV와 JSON Lines에는 `max_rows_per_dataset`(기본 200000, 엑셀의 시트�
 |---|---|---|---|
 | `id` | 예 | | 피드 이름. 겹치면 안 된다 |
 | `dataset` | 예 | | 읽을 데이터셋이나 정제의 `id` |
-| `object_type` | 예 | | 객체 타입 이름(`Rack`, `PhysicalServer`). 목록은 4.3 |
+| `object_type` | 예 | | 객체 타입 이름(`Rack`, `PhysicalServer`). 목록은 4.3. 이름이 틀리면 비슷한 이름을 제안하고, 비슷한 것이 없으면 목록을 보는 명령(`praxium types list --all`)을 알려 준다. 링크 타입 이름(`--kind link`)도 같다 |
 | `basis` | 예 | | 값의 근거 종류. `configured`(설정, 설정에서 읽음), `observed`(관측, 수집한 순간에 그렇게 보임), `declared`(기재, 사람이나 문서가 적음), `derived`(파생, 규칙이 만듦). 엑셀 대장은 보통 `declared`이다 |
 | `attributes` | 예 | | 컬럼을 속성에 잇는 목록. `attribute`(속성 이름), `column`, 선택 `rank` |
 | `identity` | 예 | | 행이 어느 객체인지 알아보는 규칙(4절) |
@@ -225,7 +226,7 @@ praxium catalog value-types                 # 값 타입과 다듬는 규칙
 
 - `attribute`로 쓸 수 있는 속성은 (`--include effective_properties`를 준 `--json`의) `effective_properties`에 이름, 값 타입(`value_type`), 열거 값(`enum_values`), 필수 여부와 함께 있다. 표 출력은 `--include` 없이도 공통 속성(`name`, `lifecycle_state` 등)까지 모두 보인다. `--json`은 `--include effective_properties`를 줘야 공통 속성이 들어 있고, 주지 않으면 `properties`에 타입이 직접 가진 속성만 나온다.
 - `identity_keys`가 쓸 수 있는 식별 키이다. `ref`는 `pr.rack.asset_tag`처럼 `pr.<묶음>.<속성 이름>`이고 마지막 마디가 속성 이름이다. `scheme`이 있는 키가 `scheme` 방식이다. 구성 요소의 `kind`가 `context`인 키(Rack의 위치와 이름)는 파일 수집에서 쓸 수 없다. 이 키를 쓰려고 하면 `has no identity key made of the properties [name], in that order`가 나온다.
-- 링크 타입의 `bindings`가 허용하는 쪽(`from`)과 받는 쪽(`to`)을 `trait`이나 `type`으로 알려 준다. 객체 타입의 `traits`에 그 `trait`이 있으면 허용된다(`PhysicalServer`는 `tr.rack_mountable`이 있어서 `MOUNTED_IN`으로 `Rack`에 갈 수 있다).
+- 링크 타입의 `bindings`가 허용하는 쪽(`from`)과 받는 쪽(`to`)을 `trait`이나 `type`으로 알려 준다. 표 출력(`--json`이 아닌 것)은 `PhysicalServer -> Rack  cardinality N:1`처럼 양쪽 타입의 이름과 허용하는 수를 줄마다 보인다. 객체 타입의 `traits`에 그 `trait`이 있으면 허용된다(`PhysicalServer`는 `tr.rack_mountable`이 있어서 `MOUNTED_IN`으로 `Rack`에 갈 수 있다).
 
 ## 5. 실행 결과와 문제 코드
 
@@ -240,24 +241,25 @@ completed with 1 problem (see "problem" lines above)
 - `received`는 읽은 행(`read`)과 읽을 수 없는 줄(`unreadable`)의 합이고, `read`는 `used`(객체나 값이 된 행), `filtered`(정제가 거른 행), `problem`(문제로 빠진 행), `unused`(쓰는 피드가 없는 행)의 합이다.
 - **행이 빠진 문제와 속성만 빠진 문제는 다르게 센다.** `problem`은 행이 빠진 것이다(`missing_identity` 등. 그 행에서는 객체가 만들어지지 않았다). 틀린 칸 때문에 속성만 비운 행은 `used`이고 `used_with_problem`(문제가 있었던 `used`의 행 수, 합에 더하지 않는다)과 `cells_left_out`(비운 칸의 수)에 나온다.
 - `ingest` 줄의 `waiting_objects`는 닫히기를 기다리는 객체의 수이다. 파일에서 사라졌거나 정제로 걸러진 행만 남아 있는 객체이고, 연속 3번의 실행과 24시간이 지나면 닫혀서 `retired_objects`에 나온다(6절).
-- `skipped_blank_row`(빈 행), `skipped_hidden_row`(`skip_hidden_rows`로 뺀 숨은 행), `skipped_after_end`(`stop_after_blank_rows` 뒤라서 읽지 않은 행)은 문제가 아니고 `received`에 들어가지 않는다.
-- 문제는 코드별로 세고 앞의 20개를 줄마다 보여 준다. 문제가 있어도 실행은 끝나고 종료 코드는 0이다. 코드로 막으려면 `-fail-on-problem`(종료 코드 20)을 쓴다.
+- `skipped_no_key`(`ignore_rows_without_key`로 건너뛴 키 없는 행), `skipped_blank_row`(빈 행), `skipped_hidden_row`(`skip_hidden_rows`로 뺀 숨은 행), `skipped_after_end`(`stop_after_blank_rows` 뒤라서 읽지 않은 행)은 문제가 아니고 `received`에 들어가지 않는다.
+- 정제(`filter`)로 걸러진 행의 칸에서 나온 `cell_error`, `formula_without_value`, `invalid_value` 같은 칸 문제는 세지 않는다. 걸러진 행은 아무도 쓰지 않으므로 그 칸은 알릴 일이 아니다. 다른 피드가 쓰는 행이거나 걸러지지 않은 행의 칸 문제는 그대로 나오고, 
+- 문제는 코드별로 세고 앞의 20개를 줄마다 보여 준다(그 뒤는 "… N more listed in the report" 한 줄이고, 보고서에는 앞의 200개가 있다). 문제가 있어도 실행은 끝나고 종료 코드는 0이다. 코드로 막으려면 `-fail-on-problem`(종료 코드 20)을 쓴다.
 
 | 코드 | 뜻 | 해결 |
 |---|---|---|
 | `shape_changed` | 파일에 선언한 컬럼이나 시트가 없어서 데이터셋 전체를 쓰지 않았다. 이전 실행의 데이터는 그대로다 | 메시지의 컬럼 이름(선언한 `name`)과 `paths`, `header_row`, 시트 이름을 맞춘다 |
-| `undeclared_column` | 머리글에 있는데 선언하지 않은 컬럼 | 쓰지 않아도 `columns`에 선언하거나 `ignore_undeclared_columns`를 쓴다 |
-| `unreadable_line` | 행으로 읽지 못한 줄. 이유는 `missing_natural_key`(자연 키 칸이 빔, 메시지가 빈 컬럼 이름을 준다), `wrong_field_count`, `malformed_csv`, `invalid_json`, `unreadable_header` | 이유대로 파일을 고치거나 자연 키를 바꾼다. `where`가 칸 주소를 준다 |
+| `undeclared_column` | 머리글에 있는데 선언하지 않은 컬럼 | 쓰지 않아도 `columns`에 선언하거나 `ignore_undeclared_columns`를 쓴다(첫 줄이 안내한다) |
+| `unreadable_line` | 행으로 읽지 못한 줄. 이유는 `missing_natural_key`(자연 키 칸이 빔, 메시지가 빈 컬럼 이름을 준다), `wrong_field_count`, `malformed_csv`, `invalid_json`, `unreadable_header` | 이유대로 파일을 고치거나 자연 키를 바꾼다. `where`가 칸 주소를 준다. 키 컬럼이 모두 빈 줄이면 `ignore_rows_without_key`(2.2) |
 | `duplicate_key` | 같은 자연 키가 앞에도 있다. 나중 행을 썼다 | 키가 정말 유일한 컬럼을 `natural_key`로 쓴다 |
 | `incomplete_capture` | 파일이 20MB를 넘거나, CSV와 JSON Lines가 행 수 한도(`max_rows_per_dataset`)를 넘거나, 끝까지 읽지 못해 쓰지 않았다 | 파일을 나눈다. 행 수는 `limits`로 올릴 수 있다(2.7) |
 | `invalid_value` | 칸의 값이 속성 타입에 맞지 않아 그 속성만 비웠다(객체는 만들었다). 메시지에 허용 값이 있다 | 값을 `replace`의 `map`으로 바꾸거나 파일을 고친다 |
 | `missing_identity` | 어떤 식별 키도 만들 수 없다. 키의 일부인 칸이 비었거나 값이 틀려서 이 행의 객체를 만들지 못했다 | 칸을 고치거나 채우거나 `identity`에 다른 키를 더한다 |
 | `value_without_object` | 값만 더하는 피드의 행인데 같은 식별 키의 객체가 없다 | 만드는 피드의 키(속성과 순서)와 값을 맞춘다 |
-| `source_conflict` | 같은 속성의 값이 피드마다 다르다. `rank`가 낮은 쪽을 썼다 | 믿을 피드의 `rank`를 낮춘다 |
-| `identity_conflict` | 한 행의 키나 식별자가 서로 다른 객체를 가리킨다 | 원본의 중복이나 오타를 고친다 |
-| `link_target_missing` | 링크의 키와 같은 행이 `to`에 없다(소스가 어긋남) | 원본의 값을 고치거나 링크 정의의 컬럼을 확인한다 |
+| `source_conflict` | 같은 속성의 값이 피드마다 다르다. `rank`가 낮은 쪽을 썼다. 진 값이 있던 데이터셋과 행(엑셀이면 셀 범위), 객체의 이름과 ID, 이긴 값의 행을 말한다 | 믿을 피드의 `rank`를 낮춘다 |
+| `identity_conflict` | 한 행의 키나 식별자가 서로 다른 객체를 가리킨다. 메시지는 식별자 방식을 매핑에 쓰는 이름(`bmc_mac`)으로 말한다 | 원본의 중복이나 오타를 고친다 |
+| `link_target_missing` | 링크의 키와 같은 행이 `to`에 없다(소스가 어긋남). 메시지가 찾지 못한 값(`"R-Z99"`)과 이쪽 컬럼, 저쪽 컬럼을 말한다 | 값의 오타인지 저쪽 파일에 행이 없는지 보고, 원본의 값을 고치거나 링크 정의의 컬럼을 확인한다 |
 | `link_target_ambiguous` | 같은 키의 행이 서로 다른 객체 둘 이상이다 | `to` 컬럼을 유일한 값으로 바꾼다 |
-| `cardinality` | 링크 타입이 허용하는 수보다 많아 나중 링크를 버렸다 | 원본에서 한쪽에 하나만 남긴다 |
+| `cardinality` | 링크 타입이 허용하는 수보다 많아 나중 링크를 버렸다. 링크가 나온 데이터셋과 행, 링크 타입과 객체의 이름을 말한다 | 원본에서 한쪽에 하나만 남긴다 |
 | `cell_error` | 엑셀 칸이 `#N/A` 같은 오류다 | 엑셀에서 고친다 |
 | `formula_without_value` | 수식에 저장된 값이 없다(계산한 적 없음) | 엑셀에서 열어 저장한다 |
 

@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/cmd/praxium/ingestout.go"
-hash: "d7ec732ca372e8a4"
+hash: "779ebd9ef968676d"
 date: "2026-11-14"
-note: "ADR-0052에 맞춰 본문과 대상(코드, 요구사항)을 다시 읽고 확인했다"
+note: "ADR-0055: 칸 문제의 자연 키는 이번에 넣지 않은 것으로 문서를 맞춤"
 text_changed: true
-doc_hash: "9f51d394e70026fa"
+doc_hash: "140246e3d321420d"

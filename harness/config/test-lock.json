@@ -8709,6 +8709,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestACutListOfUndeclaredColumnsSaysHowManyThereAre": {
+   "kind": "test",
+   "hash": "51b3394153de2e6c",
+   "asserts": 2,
+   "literals": [
+    "b32b14330a882466"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-384"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerOnPostgresServesTheKgAndKeepsItAcrossRestarts": {
    "kind": "test",
    "hash": "a36d5800ca2c06ff",
@@ -8978,6 +8993,36 @@
    "reqs": [
     "REQ-309",
     "REQ-311"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAReportThatHoldsOnlyItsFirstProblemsSaysSo": {
+   "kind": "test",
+   "hash": "90e08cdaaa24c916",
+   "asserts": 1,
+   "literals": [
+    "a183dc3463ec0f5c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-384"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestARunOfTheDraftAsItIsNamesTheCandidatesOfTheKeyBeforeEveryColumn": {
+   "kind": "test",
+   "hash": "3bd8e0c0353a9aa6",
+   "asserts": 6,
+   "literals": [
+    "f7df71121746112e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-392"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -10181,6 +10226,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheCandidatesAreGivenForTheDatasetThatStillHasThePlaceholder": {
+   "kind": "test",
+   "hash": "69d9cd2e31a4a2a5",
+   "asserts": 4,
+   "literals": [
+    "d28837eb63abb99e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-392"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheCandidatesAreLeftOutWhenTheFileCannotTellOrTheErrorIsAnother": {
+   "kind": "test",
+   "hash": "fb1b9c39a80d3fae",
+   "asserts": 8,
+   "literals": [
+    "e757ed6e59706f6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-392"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheDefaultStoreStaysInMemory": {
    "kind": "test",
    "hash": "536a079dacf49d08",
@@ -10237,6 +10312,21 @@
    "skips": 0,
    "reqs": [
     "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheGuideThatInitWritesSpeaksOfTheMessageChanges": {
+   "kind": "test",
+   "hash": "e07f30cad096545f",
+   "asserts": 4,
+   "literals": [
+    "5fb0bae97ea5b8ad"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-393"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -10347,6 +10437,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheSummaryLineCountsTheRowsSkippedForHavingNoKey": {
+   "kind": "test",
+   "hash": "c9cd147bb40a48a4",
+   "asserts": 1,
+   "literals": [
+    "79edb47fdea756c8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-382"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheSummaryLineSaysHowManyHiddenRowsAndColumnsWereRead": {
+   "kind": "test",
+   "hash": "63ab1766e07a16c4",
+   "asserts": 1,
+   "literals": [
+    "0700179734bf3962"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-382"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheTableFormShowsNestedValuesAndTheJSONFormIsUnchanged": {
    "kind": "test",
    "hash": "8b9e6d7e6908777e",
@@ -10373,6 +10493,21 @@
    "skips": 0,
    "reqs": [
     "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestUndeclaredColumnsComeAfterTheProblemsAboutTheData": {
+   "kind": "test",
+   "hash": "d5ced2ef06b253f3",
+   "asserts": 1,
+   "literals": [
+    "de78d40099e343b5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-384"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -10963,6 +11098,21 @@
    "skips": 0,
    "reqs": [
     "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTypesGetOfALinkTypeNamesTheTypesAtBothEnds": {
+   "kind": "test",
+   "hash": "6c77c523166842ae",
+   "asserts": 4,
+   "literals": [
+    "62d2141fdc7aa58d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-388"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -14444,6 +14594,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestACellOfARowThatARuleFiltersOutIsNoProblem": {
+   "kind": "test",
+   "hash": "a34aade59e5f5a82",
+   "asserts": 5,
+   "literals": [
+    "2d52691975ec7480"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-383"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestACSVDelimiterIsTheDatasetsAndAFileThatNeedsAnotherIsSaid": {
    "kind": "test",
    "hash": "56e3dfaef2685071",
@@ -14639,6 +14804,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAMissingLinkTargetNamesTheValueAndTheColumns": {
+   "kind": "test",
+   "hash": "695d60effd80e6da",
+   "asserts": 3,
+   "literals": [
+    "2447e2f829af80bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-386"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAnEmptyNaturalKeyIsReportedWithTheColumnThatIsEmpty": {
    "kind": "test",
    "hash": "582679ad7341c93e",
@@ -14669,6 +14849,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAnIdentifierConflictNamesTheSchemeNotItsId": {
+   "kind": "test",
+   "hash": "c923d0b691521628",
+   "asserts": 2,
+   "literals": [
+    "257229a68d895a3a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-391"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAnInvalidValueIsReportedWithOneCodePrefix": {
    "kind": "test",
    "hash": "0def96f5a56ef2b4",
@@ -14680,6 +14875,21 @@
    "skips": 0,
    "reqs": [
     "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestARowIsPlacedByItsSheetRangeOrItsLine": {
+   "kind": "test",
+   "hash": "b52e8de0a890e6ba",
+   "asserts": 1,
+   "literals": [
+    "80eb7e04daacab1f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-390"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -14740,6 +14950,21 @@
    "skips": 0,
    "reqs": [
     "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAValueOfTheWrongKindIsSaidInPlainWords": {
+   "kind": "test",
+   "hash": "043221f06305c0a8",
+   "asserts": 3,
+   "literals": [
+    "cdf24b1ed1806bdb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-389"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -14834,6 +15059,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAWrongTypeNameSuggestsANearOneOrTheCommandThatListsThem": {
+   "kind": "test",
+   "hash": "3c3665544166f9d6",
+   "asserts": 6,
+   "literals": [
+    "ffd609b096a7cd85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-385"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestBadRowsAreQuarantined": {
    "kind": "test",
    "hash": "b52c864a183fb781",
@@ -14848,6 +15088,21 @@
    ],
    "added": "2026-11-14",
    "amended_by": "0052-ingestion-semantics-that-do-not-go-wrong-quietly.md"
+  },
+  "go:backend/internal/ingest::TestCardinalityAndSourceConflictProblemsSayWhereTheRowIs": {
+   "kind": "test",
+   "hash": "5f6507836fdb2acc",
+   "asserts": 5,
+   "literals": [
+    "96c55b3532596883"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-390"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/ingest::TestCellsOfEveryBaseKindAreConvertedOrReported": {
    "kind": "test",
@@ -15199,6 +15454,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestNaturalKeyCandidatesAreTheColumnsFilledInEveryRowAndDifferentInEach": {
+   "kind": "test",
+   "hash": "c6308f56fda9fcea",
+   "asserts": 8,
+   "literals": [
+    "e5126cfa6ecc9e5a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-392"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestOneChangedRowChangesOneObject": {
    "kind": "test",
    "hash": "281a86fdfa283831",
@@ -15365,6 +15635,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestRowsWithoutAKeyAreSkippedSilentlyWhenTheDatasetSaysSo": {
+   "kind": "test",
+   "hash": "1f69800d42319df6",
+   "asserts": 3,
+   "literals": [
+    "f32ff8f02eedb37a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-382"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestRowWithoutRetiringFeedStays": {
    "kind": "test",
    "hash": "1601dbbf68560c6e",
@@ -15515,6 +15800,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheKindsOfValueAreNamedInPlainWords": {
+   "kind": "test",
+   "hash": "b0834603e416f3bc",
+   "asserts": 3,
+   "literals": [
+    "886401629898e539"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-389"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas": {
    "kind": "test",
    "hash": "10d3d38a9be8eada",
@@ -15605,6 +15905,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestUTF16WithoutAByteOrderMarkIsRecognisedByItsNulBytes": {
+   "kind": "test",
+   "hash": "4e0fba60bcc6e43e",
+   "asserts": 4,
+   "literals": [
+    "7ee62ecb6594d46c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-387"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestVanishedRowRetiresAfterThreeRunsAndADay": {
    "kind": "test",
    "hash": "5ccf529f798522b1",
@@ -15631,6 +15946,21 @@
    "skips": 0,
    "reqs": [
     "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestWithoutTheOptionAnEmptyKeyIsReportedAndTheProblemNamesTheOption": {
+   "kind": "test",
+   "hash": "6791f16638977c6b",
+   "asserts": 2,
+   "literals": [
+    "acea25c21e45d2a1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-382"
    ],
    "added": "2026-11-14",
    "amended_by": null

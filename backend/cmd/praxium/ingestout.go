@@ -15,7 +15,7 @@ func printReport(out io.Writer, r ingest.Report) {
 	for _, d := range r.Datasets {
 		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d used_with_problem=%d cells_left_out=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d%s\n",
 			d.Dataset, d.Collected, d.Received, d.Unreadable, d.Read, d.Used, d.Filtered, d.Problem, d.Unused, d.UsedWithProblem, d.CellsLeftOut,
-			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen, notReadField(d)+sheetFields(d))
+			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen, notReadField(d)+sheetFields(d)+skippedFields(d))
 	}
 	kinds := make([]string, 0, len(r.ProblemCounts))
 	for k := range r.ProblemCounts {
@@ -25,12 +25,43 @@ func printReport(out io.Writer, r ingest.Report) {
 	for _, k := range kinds {
 		fmt.Fprintf(out, "  problems %s=%d\n", k, r.ProblemCounts[k])
 	}
-	for i, p := range r.Problems {
+	printed := map[string]int{}
+	for i, p := range undeclaredLast(r.Problems) {
 		if i == 20 {
 			fmt.Fprintf(out, "  ... %d more listed in the report\n", len(r.Problems)-i)
 			break
 		}
+		printed[p.Kind]++
 		fmt.Fprintf(out, "  problem %s dataset=%s key=%s line=%d%s: %s\n", p.Kind, p.Dataset, p.Key, p.Line, whereField(p), p.Reason)
+	}
+	printCut(out, r, printed)
+}
+
+// undeclaredLast puts the undeclared_column problems after the others, so that a header with many columns the mapping
+// does not read does not push the problems about the data out of the 20 lines that are shown.
+func undeclaredLast(problems []ingest.Problem) []ingest.Problem {
+	out := make([]ingest.Problem, 0, len(problems))
+	var extra []ingest.Problem
+	for _, p := range problems {
+		if p.Kind == ingest.ProblemExtraColumn {
+			extra = append(extra, p)
+			continue
+		}
+		out = append(out, p)
+	}
+	return append(out, extra...)
+}
+
+// printCut says what the list above left out when it was cut, for the kinds the person can do something about at
+// once: the columns of the file that no dataset column reads are counted in all and the option that ends them is
+// named again, so that a cut list does not hide how many there are. A report that holds only its first problems says so.
+func printCut(out io.Writer, r ingest.Report, printed map[string]int) {
+	if more := r.ProblemCounts[ingest.ProblemExtraColumn] - printed[ingest.ProblemExtraColumn]; more > 0 {
+		fmt.Fprintf(out, "  ... %d more undeclared_column problems are not listed (%d in all): columns of the file that no dataset column reads; ignore_undeclared_columns on the dataset leaves them all out\n",
+			more, r.ProblemCounts[ingest.ProblemExtraColumn])
+	}
+	if total := countProblems(r); total > len(r.Problems) {
+		fmt.Fprintf(out, "  ... %d problems in all; the report holds only the first %d (problems kind=N above counts them all)\n", total, len(r.Problems))
 	}
 }
 
@@ -61,11 +92,18 @@ func sheetFields(d ingest.DatasetReport) string {
 	if d.HiddenRowsRead > 0 || d.HiddenColsRead > 0 {
 		out += fmt.Sprintf(" hidden_rows_read=%d hidden_columns_read=%d", d.HiddenRowsRead, d.HiddenColsRead)
 	}
+	return out
+}
+
+// skippedFields is the rows that were passed over with their reasons (skipped_blank_row, skipped_no_key, ...). They
+// are no part of the rows received.
+func skippedFields(d ingest.DatasetReport) string {
 	reasons := make([]string, 0, len(d.Skipped))
 	for k := range d.Skipped {
 		reasons = append(reasons, k)
 	}
 	sort.Strings(reasons)
+	out := ""
 	for _, k := range reasons {
 		out += fmt.Sprintf(" skipped_%s=%d", k, d.Skipped[k])
 	}

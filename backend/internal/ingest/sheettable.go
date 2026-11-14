@@ -152,6 +152,8 @@ type sheetScan struct {
 	where1, where2 string
 	blankRun       int
 	stopped        bool
+	// pending is the cells of the row being read that gave no value.
+	pending []CellIssue
 }
 
 type mappedCol struct {
@@ -314,20 +316,24 @@ func (s *sheetScan) read(r *SheetRow) {
 		s.t.HiddenRowsRead++
 	}
 	fields := make(map[string]string, len(s.cols))
+	s.pending = nil
 	for _, c := range s.cols {
 		fields[c.name] = s.value(r.Number, c)
 	}
-	where := QualifiedRef(s.g.sh.Name, fmt.Sprintf("%s%d:%s%d", s.where1, r.Number, s.where2, r.Number))
-	parts := make([]string, len(s.d.NaturalKey))
-	for i, k := range s.d.NaturalKey {
-		parts[i] = strings.TrimSpace(fields[k])
-		if parts[i] == "" {
-			ref := QualifiedRef(s.g.sh.Name, CellRef(r.Number, s.colOf(k)))
-			s.t.Unreadable = append(s.t.Unreadable, Unreadable{Line: r.Number, Where: ref, Reason: "missing_natural_key", Column: k})
+	parts, empty, all := naturalKeyOf(s.d, fields)
+	if empty != "" {
+		if all && s.d.IgnoreRowsWithoutKey {
+			s.t.skip(SkipNoKey)
 			return
 		}
+		ref := QualifiedRef(s.g.sh.Name, CellRef(r.Number, s.colOf(empty)))
+		s.t.Unreadable = append(s.t.Unreadable, Unreadable{Line: r.Number, Where: ref, Reason: "missing_natural_key", Column: empty, AllEmpty: all})
+		s.t.CellIssues = append(s.t.CellIssues, s.pending...)
+		return
 	}
-	s.t.Rows = append(s.t.Rows, Row{Key: strings.Join(parts, keySep), Line: r.Number, Where: where, Fields: fields})
+	where := QualifiedRef(s.g.sh.Name, fmt.Sprintf("%s%d:%s%d", s.where1, r.Number, s.where2, r.Number))
+	s.t.CellIssues = append(s.t.CellIssues, s.pending...)
+	s.t.Rows = append(s.t.Rows, Row{Key: strings.Join(parts, keySep), Line: r.Number, Where: where, Fields: fields, Issues: s.pending})
 }
 
 // value is the text of the cell of a column in a row. A merged range gives its value to the cells it covers when the
@@ -345,11 +351,11 @@ func (s *sheetScan) value(row int, c mappedCol) string {
 	ref := QualifiedRef(s.g.sh.Name, CellRef(row, c.col))
 	switch {
 	case cell.Kind == CellError:
-		s.t.CellIssues = append(s.t.CellIssues, CellIssue{Kind: ProblemCellError, Where: ref, Row: row,
+		s.pending = append(s.pending, CellIssue{Kind: ProblemCellError, Where: ref, Row: row,
 			Reason: fmt.Sprintf("the cell of column %s shows the error %s", c.name, cell.Text)})
 		return ""
 	case cell.NoValue:
-		s.t.CellIssues = append(s.t.CellIssues, CellIssue{Kind: ProblemFormulaNoValue, Where: ref, Row: row,
+		s.pending = append(s.pending, CellIssue{Kind: ProblemFormulaNoValue, Where: ref, Row: row,
 			Reason: "the cell of column " + c.name + " is a formula the file stored no value for (it was never calculated)"})
 		return ""
 	}
