@@ -53,4 +53,5 @@
 | [ADR-0045 웹 UI 규칙을 Chrome 팀의 웹 가이드에서 추려 문서와 검사로 둔다](../design-docs/adr/0045-web-ui-rules-from-the-chrome-web-guidance.md) | 유효 |  |
 | [ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다 — 없는 시트와 컬럼, 키 오류, 인코딩, 구분자, 정의 초안](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) | 유효 |  |
 | [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 |  |
+| [ADR-0049 정의 저장소 — 종류를 모르는 저장, 브랜치와 제안, 파일 하나로 보관](../design-docs/adr/0049-definitions-store-kind-agnostic-with-branches-and-one-file.md) | 유효 |  |
 | [ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)](../design-docs/adr/0051-impact-view-parts-svg-without-new-dependencies.md) | 유효 |  |

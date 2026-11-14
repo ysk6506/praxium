@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "3e49edaec72cc3e8"
+hash: "70b03ce186def22b"
 date: "2026-11-14"
-note: "요구사항 350번대 문구(간선, 목록의 더 보기)가 바뀜. 제품 설계의 범위와 용어는 바뀌지 않아 그대로 둠"
+note: "요구사항 330번대(정의 저장소)와 350번대(영향 범위 화면의 부품)가 함께 들어감. 제품 설계의 범위와 용어는 바뀌지 않아 그대로 둠"
 text_changed: true
 doc_hash: "019854b80cb4930e"

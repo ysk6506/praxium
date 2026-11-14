@@ -11141,6 +11141,730 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/definitions::TestABranchKeepsOnlyWhatItChangesAndSavesAtEveryEdit": {
+   "kind": "test",
+   "hash": "b7e2b44b66c8f522",
+   "asserts": 11,
+   "literals": [
+    "12675742e79ff384"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestABranchOnAnEmptyMainLineAndItsLimits": {
+   "kind": "test",
+   "hash": "ae529ab53e723239",
+   "asserts": 10,
+   "literals": [
+    "d8b768c0522e88a7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestABranchThatTouchesAnItemTheMainLineChangedIsStale": {
+   "kind": "test",
+   "hash": "d3b309e192a96833",
+   "asserts": 6,
+   "literals": [
+    "fdcd6f63a5693077"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAFailingStoreIsReportedByEveryOperationAndNothingIsHalfDone": {
+   "kind": "test",
+   "hash": "e494fc23bb07b023",
+   "asserts": 4,
+   "literals": [
+    "55b0612e37d03c3e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAFirstProposalMergesIntoAMainLineWithoutASet": {
+   "kind": "test",
+   "hash": "930c7bb8528a9cf1",
+   "asserts": 2,
+   "literals": [
+    "12089e60ca16e2d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAMergeThatChangesNothingOnTheHeadMakesNoSet": {
+   "kind": "test",
+   "hash": "8a6ab1c89e68cbe2",
+   "asserts": 5,
+   "literals": [
+    "252f6957afb9d0c3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAnAuthorCannotApproveUnlessThePolicyAllowsItAndThenItIsRecorded": {
+   "kind": "test",
+   "hash": "63751d0f72132836",
+   "asserts": 6,
+   "literals": [
+    "1980e89dde6bdaa9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAnEditTakesTheProposalBackToDraftAndVoidsTheApprovals": {
+   "kind": "test",
+   "hash": "9b21497bf158aea3",
+   "asserts": 5,
+   "literals": [
+    "4d55c04d500f1deb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAnEmptyStartKeepsTheBaselineAsTheHash": {
+   "kind": "test",
+   "hash": "b8074145020a3af8",
+   "asserts": 4,
+   "literals": [
+    "2be0859c75d5a483"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-333"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestApplyIsRefusedForAnotherHeadAndLeavesNothing": {
+   "kind": "test",
+   "hash": "16e3def4c6783995",
+   "asserts": 4,
+   "literals": [
+    "e1bad0cb964de199"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-334"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestApplyMakesTheFirstSetAndTheNextOneOnlyForNewContent": {
+   "kind": "test",
+   "hash": "c119d31d57faa8e9",
+   "asserts": 8,
+   "literals": [
+    "570322cd005e0145"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332",
+    "REQ-333",
+    "REQ-334"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestApplyRefusesWhatIsNotSound": {
+   "kind": "test",
+   "hash": "eeeb19bb9f76f945",
+   "asserts": 4,
+   "literals": [
+    "649c0c2959d5b506"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332",
+    "REQ-334"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAProposalGoesDraftReviewApprovedAndNoOtherWay": {
+   "kind": "test",
+   "hash": "a8a7827f867c4a81",
+   "asserts": 18,
+   "literals": [
+    "7d8d221667505af0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAProposalThatChangesNothingIsNotSentToReview": {
+   "kind": "test",
+   "hash": "36b33d1b683abb19",
+   "asserts": 2,
+   "literals": [
+    "a6ef390cc45833d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestARemovedItemComesBackWithANewRevisionNumber": {
+   "kind": "test",
+   "hash": "ef4a4632596c2e99",
+   "asserts": 6,
+   "literals": [
+    "b22e255dc132dea8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAStoreOpenedFromItsExportIsTheSameStore": {
+   "kind": "test",
+   "hash": "7a5dfa42d29db278",
+   "asserts": 4,
+   "literals": [
+    "0480128eac2538a2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAWriteThatCannotBeKeptLeavesTheStoreAsItWasUnlessTheFileWasReplaced": {
+   "kind": "test",
+   "hash": "dfb15b9c911fa082",
+   "asserts": 5,
+   "literals": [
+    "5d0317c791fe1921"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestBranchChangesHashFollowsTheChangesAndNotTheOrder": {
+   "kind": "test",
+   "hash": "cf0b06740f6f1024",
+   "asserts": 1,
+   "literals": [
+    "7ad062605f414503"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestBranchesThatDoNotOverlapBothMergeAndTheSameChangeTwiceIsStale": {
+   "kind": "test",
+   "hash": "cf94f6bdc3f2ee45",
+   "asserts": 5,
+   "literals": [
+    "ae5892df07d37cff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestClosingIsFinalAndClosesTheBranch": {
+   "kind": "test",
+   "hash": "b7fbb0e2ae335816",
+   "asserts": 8,
+   "literals": [
+    "b2ed93dd9d2a1ebd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestDamagedDataIsRefusedWithAReason": {
+   "kind": "test",
+   "hash": "b308c5ce2e5b7aed",
+   "asserts": 2,
+   "literals": [
+    "aef23527f9ca6117"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestEditsThatUndoThemselvesLeaveNothing": {
+   "kind": "test",
+   "hash": "68981e0134b45972",
+   "asserts": 7,
+   "literals": [
+    "b4b24f74768a7f0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestIDsFromAGeneratorThatStartedAgainSkipTheOnesInUse": {
+   "kind": "test",
+   "hash": "0770bbc4fb19d6b1",
+   "asserts": 3,
+   "literals": [
+    "422f4dcff7e9966f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestMergingAnApprovedProposalMakesOneSetAndMarksBothMerged": {
+   "kind": "test",
+   "hash": "699fa160927dae67",
+   "asserts": 6,
+   "literals": [
+    "7b9bfd321b96e5ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestNewServiceNeedsItsParts": {
+   "kind": "test",
+   "hash": "0e353fd2ff17856c",
+   "asserts": 2,
+   "literals": [
+    "3ba519610fb74e18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestNormalizeBodyGivesOneFormToOneContent": {
+   "kind": "test",
+   "hash": "ab38a100c57c29d9",
+   "asserts": 2,
+   "literals": [
+    "2ae1c53f70ba44a4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestNormalizeBodyRefusesWhatIsNotOneObject": {
+   "kind": "test",
+   "hash": "fbe7859b1e9501c8",
+   "asserts": 1,
+   "literals": [
+    "2d1c779169ce44e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestRestoreOpensANewBranchThatBringsBackAnEarlierSetAndNeverRewinds": {
+   "kind": "test",
+   "hash": "691fce72f43c3a7f",
+   "asserts": 10,
+   "literals": [
+    "e36df4e23a9cbb00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-339"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestRestoreToAnEmptyMainLineRemovesEverything": {
+   "kind": "test",
+   "hash": "fda104dea8e8ef91",
+   "asserts": 4,
+   "literals": [
+    "a4fc8edc9614f2c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-339"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestSetHashIsTheBaselineWithoutItemsAndDoesNotDependOnOrder": {
+   "kind": "test",
+   "hash": "6a85b4b11609c353",
+   "asserts": 2,
+   "literals": [
+    "c7f3f75b55c1c888"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-333"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheCheckSeesTheWholeMergedSetAndAProblemStopsTheMerge": {
+   "kind": "test",
+   "hash": "18da130fd2c1fbd6",
+   "asserts": 7,
+   "literals": [
+    "54cc904b94cc9bfb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheLedgerRisesWithTheSetAndNeverFalls": {
+   "kind": "test",
+   "hash": "0306ff63998ee592",
+   "asserts": 11,
+   "literals": [
+    "706fc4717b562396"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-335"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheReadsOfTheStoreAreCopies": {
+   "kind": "test",
+   "hash": "4e120b52a74c3162",
+   "asserts": 3,
+   "literals": [
+    "70af799e57b40525"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheStoreKeepsTheLedgerAndVersionsOfBranchesAndProposals": {
+   "kind": "test",
+   "hash": "8a8f423b6a13b5a0",
+   "asserts": 7,
+   "literals": [
+    "67afebdede0e807d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-335",
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheStoreRefusesAWriteThatBreaksItsRulesAndKeepsWhatItHad": {
+   "kind": "test",
+   "hash": "20350256b8d543b6",
+   "asserts": 3,
+   "literals": [
+    "55139b29f4e9acb2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTwoEditorsOfOneBranchCannotOverwriteEachOther": {
+   "kind": "test",
+   "hash": "1fad203470780974",
+   "asserts": 4,
+   "literals": [
+    "03d2f7655dafcd5a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionscheck::TestTheFileStoreConformsToTheDefinitionsStorePort": {
+   "kind": "test",
+   "hash": "b591e83f13eee803",
+   "asserts": 1,
+   "literals": [
+    "55449285384a0376"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-341"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionscheck::TestTheMemoryStoreConformsToTheDefinitionsStorePort": {
+   "kind": "test",
+   "hash": "11e0db089e836d60",
+   "asserts": 1,
+   "literals": [
+    "212a49ff487cda9b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-341"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionscheck::TestTheSuiteCatchesEachFlawOfAStore": {
+   "kind": "test",
+   "hash": "7b59cd62e4475a7a",
+   "asserts": 2,
+   "literals": [
+    "800e09ac8bfffb74"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-341"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestABranchBodyThatIsNotJSONIsRefused": {
+   "kind": "test",
+   "hash": "b7b47c45a960e215",
+   "asserts": 4,
+   "literals": [
+    "f89ae3e3de281622"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestAFailureToSyncTheFolderKeepsTheNewStateAndSaysSo": {
+   "kind": "test",
+   "hash": "c073999318d70ae6",
+   "asserts": 6,
+   "literals": [
+    "0be9365700676fa8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestAFileThatIsNotUsableIsRefusedWithAReasonAndNothingIsOverwritten": {
+   "kind": "test",
+   "hash": "813df7e3acadc167",
+   "asserts": 6,
+   "literals": [
+    "07ad3c4e2a292280"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestAFolderWithoutTheFileIsEmptyAndNothingIsWrittenUntilTheFirstWrite": {
+   "kind": "test",
+   "hash": "752f0d444a9cedf6",
+   "asserts": 5,
+   "literals": [
+    "5c6642d1b98f094f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestOpeningNeedsTheDiskToAnswerAndRemovesTheLeftoverOfAnInterruptedWrite": {
+   "kind": "test",
+   "hash": "cf9e489eb2ae2261",
+   "asserts": 4,
+   "literals": [
+    "bde451f3ec559032"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheDiskFailingAtAnyStepLeavesTheOldFileAndTheOldState": {
+   "kind": "test",
+   "hash": "67cef764965a0965",
+   "asserts": 7,
+   "literals": [
+    "280660e6fe7ca3b7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheFileHasOneRecordToALineAndAReformattedFileIsStillRead": {
+   "kind": "test",
+   "hash": "05a1676f4e6b376f",
+   "asserts": 7,
+   "literals": [
+    "062a993306f699c5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheMemoryDiskBehavesLikeADisk": {
+   "kind": "test",
+   "hash": "7264d48b87df5753",
+   "asserts": 7,
+   "literals": [
+    "c32e25b34badcddf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheStateIsTheSameAfterTheFileIsOpenedAgain": {
+   "kind": "test",
+   "hash": "cc51e8ad345f0f92",
+   "asserts": 12,
+   "literals": [
+    "0baf490546b57f1e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/devauth::TestAuthenticateAcceptsExactlyOneToken": {
    "kind": "test",
    "hash": "ae284448e2f66f8a",
