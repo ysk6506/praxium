@@ -272,7 +272,7 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-293 | `praxium ingest init -out <폴더>`는 실행 파일에 담긴 예제를 쓴다: CSV와 JSON Lines의 소스 정의, 매핑 정의, 샘플 파일, 엑셀의 소스 정의와 매핑 정의와 샘플 워크북(그 자리에서 만든다). 이미 있는 파일은 덮어쓰지 않고 모두 쓰거나 하나도 쓰지 않는다. 다음에 칠 명령(`ingest inspect`, `ingest run -data-dir`, `local`)을 출력한다 | ADR-0041, `backend/cmd/praxium/ingestinit_test.go` |
 | REQ-294 | `praxium local -data-dir <폴더>`는 그 폴더의 KG를 내장 파일 스토어로 열어 127.0.0.1(`-addr`)에서 API와 웹 UI를 낸다. 데모와 같은 접속 방식(실행마다 새 토큰, 프래그먼트 `#/connect?token=…&mode=local`)이고 합성 데이터를 넣지 않는다. 폴더나 KG가 없으면 먼저 `ingest run -data-dir`을 하라고 안내하며, 포트 검사와 루프백이 아닌 주소 경고는 데모와 같다. 시작 출력은 한 사람이 자기 컴퓨터에서 쓰는 용도이고 인증이 약하며 운영용이 아님을 밝힌다. 데모와 `local`의 시작은 오래 걸리면 몇 초마다 진행을 알린다 | ADR-0041, `backend/cmd/praxium/local_test.go`, `backend/cmd/praxium/help_test.go` |
 | REQ-295 | `/v1`의 응답은 `X-Content-Type-Options: nosniff`와 `Referrer-Policy: no-referrer`를 가진다(JSON 응답이라 CSP는 두지 않는다). 릴리스의 `SHA256SUMS`는 파일 이름순으로 정렬하고, 릴리스 확인 스크립트는 `local`과 `ingest init → ingest run -data-dir → local` 흐름을 확인한다 | ADR-0041, `backend/internal/httpapi/errordetail_test.go` |
-| REQ-296 | 웹 UI는 접속 방식 셋(데모 링크 `#/connect?token=…&demo=1`, 로컬 모드 링크 `…&mode=local`, 직접 입력한 개발용 토큰)을 구분해 기억한다. 접속 링크는 첫 로드뿐 아니라 열려 있는 탭의 주소가 바뀔 때도 받아 토큰을 저장하고 주소에서 지우며, 이전 토큰으로 받은 화면 상태와 데이터는 비운다. 데모와 로컬 모드는 배너와 배지로 보이고, 토큰을 지우거나 다른 토큰을 입력하면 저장된 접속 표시도 지운다. 인증 오류는 데모와 로컬 모드이면 새 주소를 열라고, 직접 입력한 토큰이면 토큰을 다시 입력하라고 안내하고, 접속 설정 화면은 세 방식을 설명한다 | ADR-0042, `apps/web/src/data/access.test.tsx` |
+| REQ-296 | 웹 UI는 접속 방식 셋(데모 링크 `#/connect?token=…&demo=1`, 로컬 모드 링크 `…&mode=local`, 직접 입력한 접근 토큰)을 구분해 기억한다. 접속 링크는 첫 로드뿐 아니라 열려 있는 탭의 주소가 바뀔 때도 받아 토큰을 저장하고 주소에서 지우며, 이전 토큰으로 받은 화면 상태와 데이터는 비운다. 데모와 로컬 모드는 배너와 배지로 보이고, 토큰을 지우거나 다른 토큰을 입력하면 저장된 접속 표시도 지운다. 인증 오류는 데모와 로컬 모드이면 새 주소를 열라고, 직접 입력한 토큰이면 토큰을 다시 입력하라고 안내하고, 접속 설정 화면은 세 방식을 설명한다 | ADR-0042, `apps/web/src/data/access.test.tsx` |
 | REQ-297 | 웹 UI의 화면 이동은 새 화면을 맨 위에서 열고 뒤로 가기에서는 이전 위치를 되살린다. 객체 테이블의 페이지 위치, 페이지당 개수, 선택한 컬럼과 타입 목록의 검색어, 객체가 있는 타입만 보는 토글, 정렬은 주소의 쿼리에 담겨 뒤로 가기, 새로 고침, 링크 공유에서 유지된다. 모르는 경로는 "페이지를 찾을 수 없습니다"와 돌아갈 링크를 보이고, 모르는 `tab` 값은 기본 탭으로 가며 주소를 고쳐 쓴다 | ADR-0042, `apps/web/src/data/screenstate.test.tsx` |
 | REQ-298 | 웹 UI의 오류 화면은 서버 오류 응답이 싣는 원인(필드 이름, 메시지)을 바로 보이고, 찾을 수 없다는 오류는 무엇을 못 찾았는지(KG, 객체, 객체 타입의 이름이나 ID)를 문구에 넣는다. 오류 코드, HTTP 상태, 추적 ID와 나머지 값은 "자세히" 안에 접어 둔다 | ADR-0042, `apps/web/src/data/access.test.tsx`, `apps/web/src/ui/shell.test.tsx` |
 | REQ-299 | 웹 UI는 제품이 정한 닫힌 값(계층, 근거 등급과 종류, 신선도, KG의 상태와 역할, 링크 방향)을 한 곳의 사전에 둔 한국어 표시 이름으로 보이고 원래 값은 툴팁으로 둔다. 속성 이름과 값, 타입 이름은 모델의 데이터이므로 그대로 보인다. 화면은 본문으로 건너뛰기, 좁은 폭에서 접히는 메뉴, 타입 목록의 컬럼 정렬, 테이블과 같은 순서의 컬럼 선택, 넓은 테이블의 가로 스크롤 단서를 가진다. 페이지는 "N페이지"로 쓴다 | ADR-0042, `apps/web/src/data/screenstate.test.tsx`, `apps/web/src/ui/shell.test.tsx` |
@@ -308,6 +308,18 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-363 | 링크의 근거 등급은 링크 정의가 읽은 두 피드의 등급 가운데 낮은 쪽이다. 한쪽 피드에 `approximate`가 있으면 링크는 `assumed`이고 아니면 `fact`이다(파이프라인 설계 5.3의 "도출한 링크의 등급은 사용된 입력 중 가장 낮은 등급") | ADR-0052, `backend/internal/ingest/semantics_test.go` |
 | REQ-364 | 수집 정의 형식 안내서(docs/guides/ingest-definitions.md)와 실행 파일에 담는 사본이 새 동작(행이 빠지는 경우와 속성만 빠지는 경우, `key_name`의 뜻, 걸러진 행의 객체가 닫히는 규칙, 행 수 한도, 요약 줄의 새 항목)과 실제 출력에 맞고 서로 같다. `ingest run --help`가 새 요약 항목을 설명한다 | ADR-0052, `backend/cmd/praxium/ingestguide_test.go`, `backend/cmd/praxium/ingestkeep_test.go` |
 | REQ-365 | 이 변경 때문에 옛 정의 파일은 그대로 읽히고, 같은 입력이면 객체 ID와 `graph_hash`가 달라지지 않는다. 데이터 폴더의 수집 상태 안의 식별 색인(서명)만 바뀌므로 알파 2의 데이터 폴더는 다시 수집한다 | ADR-0052, `backend/internal/ingest/semantics_test.go`, `backend/internal/ingestcheck/accept_test.go` |
+| REQ-382 | 데이터셋의 `ignore_rows_without_key`(기본 꺼짐)를 켜면 자연 키 컬럼이 모두 빈 행(소계·합계 줄)을 문제 없이 건너뛰고 요약 줄의 `skipped_no_key`에 센다(`received`에 넣지 않는다). 켜지 않으면 지금처럼 `unreadable_line`이고 첫 문제 줄이 옵션 이름을 알려 준다. 키 컬럼 일부만 빈 행은 어느 쪽이든 `unreadable_line`이다 | ADR-0055, `backend/internal/ingest/messages_test.go`, `backend/cmd/praxium/ingestmessages_test.go` |
+| REQ-383 | 정제(`filter`)로 걸러진 행의 칸 문제(`cell_error`, `formula_without_value`)는 문제로 세지 않는다. 다른 피드가 쓰는 행이나 걸러지지 않은 행의 칸 문제는 그대로 나온다. 행 수의 식(`received = read + unreadable`, `read = used + filtered + problem + unused`)은 계속 맞는다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-384 | `undeclared_column`의 첫 문제 줄이 `ignore_undeclared_columns`를 알려 주고, 문제 목록이 잘리면 안 보인 `undeclared_column`의 수와 전체 개수를 한 줄로 보인다. 데이터에 관한 문제가 `undeclared_column`보다 먼저 보인다 | `backend/cmd/praxium/ingestmessages_test.go` |
+| REQ-385 | 매핑의 `object_type`이나 링크 타입 이름이 틀렸을 때 비슷한 이름이 있으면 제안하고, 없으면 타입 목록을 보는 명령(`praxium types list --all`, 링크는 `--kind link`)을 알려 준다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-386 | `link_target_missing`의 메시지는 찾지 못한 값과 그 값이 있는 컬럼(이쪽), 찾은 컬럼(저쪽 데이터셋)을 말한다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-387 | UTF-8이 아닌 파일의 원인을 추정할 때 NUL 바이트가 하나 걸러 하나씩 규칙적으로 있으면(BOM이 없는 UTF-16) UTF-16이라고 말한다. 해결 방법 안내는 그대로다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-388 | 링크 타입의 `types get` 표는 `bindings`를 양쪽 타입 이름과 허용하는 수가 있는 줄로 보인다(`PhysicalServer -> Rack  cardinality N:1`). `--json`은 서버의 답 그대로다 | `backend/internal/cli/linktypeview_test.go` |
+| REQ-389 | 정의 JSON의 값 종류가 틀리면(`"ignore_undeclared_columns": "yes"`) Go의 내부 오류 대신 필드 경로, 받아야 하는 값의 종류, 받은 값의 종류와 줄 번호를 사람의 말로 알려 준다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-390 | `cardinality`와 `source_conflict` 문제는 데이터셋과 행(엑셀이면 셀 범위)을 말한다. `cardinality`는 내부 ID 대신 링크 타입과 객체의 이름을 쓴다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-391 | `identity_conflict`의 메시지는 식별자 방식을 내부 ID가 아니라 매핑에 쓰는 이름으로 말한다. `source_conflict`의 메시지는 객체의 이름과 ID를 함께 말한다 | ADR-0055, `backend/internal/ingest/messages_test.go` |
+| REQ-392 | `-emit-source` 초안을 그대로 `ingest run`하면 나오는 자연 키 오류가 그 데이터셋에 `-input`으로 준 파일에서 모든 행에 값이 있고 서로 다른 컬럼(초안을 만들 때 알려 준 후보)을 컬럼 전체 목록보다 먼저 말한다. 그 데이터셋에 준 파일이 없으면 지금의 오류 그대로다 | `backend/cmd/praxium/ingestmessages_test.go` |
+| REQ-393 | 수집 정의 형식 안내서(docs/guides/ingest-definitions.md)와 실행 파일에 담는 사본이 새 옵션과 새 메시지에 맞고 서로 같다. `ingest run --help`가 `skipped_no_key`를 설명한다 | ADR-0055, `backend/cmd/praxium/ingestmessages_test.go`, `backend/cmd/praxium/ingestguide_test.go` |
 | REQ-307 | 접근 토큰은 `pxm_` + 토큰 ID + 운영체제 엔트로피에서 만든 256비트 비밀이다. 서버는 도메인 접두어를 붙인 SHA-256만 저장하고 상수 시간으로 비교한다. 모든 토큰은 만료하고(기본 90일, 1시간~365일) 폐기할 수 있으며, 폐기·만료·비활성화는 다음 요청부터 거부한다. 비밀번호와 기본 계정은 없다(ADR-0044). |
 | REQ-308 | 첫 관리자는 서버 기계에서 `praxium admin bootstrap`으로 만들고 토큰은 한 번만 출력한다. 활성 관리자가 있으면 거절하고, 동시에 둘이 성공할 수 없다. 잃은 토큰은 서버 기계의 `admin issue-token`으로 다시 받는다(ADR-0044). |
 | REQ-309 | 토큰이 가진 역할은 토큰의 역할과 소유자의 현재 역할의 교집합이다. 관리 경로(`/v1/users`, `/v1/system-accounts`, 토큰 발급)는 `admin`만, 사용자는 `ingester`를 서비스 계정은 `admin`을 가질 수 없고 마지막 활성 관리자는 비활성화할 수 없다(ADR-0044). |
@@ -318,7 +330,7 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-314 | 같은 주소에서 거절된 토큰이 쌓이면 그 주소의 거절된 토큰에 일정 시간 429와 `Retry-After`로 답하고 더 세지 않는다. 유효한 토큰은 차단 중인 주소에서도 통과하고 성공은 실패 횟수를 지우지 않는다. 인증 저장소가 응답하지 못하면 401이 아니라 503이다(ADR-0044). |
 
 ### 영향 범위 화면의 부품 (350번대)
-영향 범위를 보이는 화면에 연결하기 전의 순수 계산(`apps/web/src/data`)과 그래프·목록 부품(`apps/web/src/ui`)이다. 화면과 실제 API 호출은 엔진이 병합된 뒤의 일이다. 지금의 모양은 임시이고 남는 것은 동작, 계산, 부품의 구조, 접근성 규칙이다(ADR-0051).
+영향 범위를 보이는 화면에 연결하기 전의 순수 계산(`apps/web/src/data`)과 그래프·목록 부품(`apps/web/src/ui`)이다. 화면과 실제 API 호출은 아래 374번대가 이었다. 지금의 모양은 임시이고 남는 것은 동작, 계산, 부품의 구조, 접근성 규칙이다(ADR-0051).
 
 | ID | 요구사항 | 근거·테스트 |
 |---|---|---|
@@ -330,6 +342,20 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-355 | 그래프는 이름 있는 영역이고 안의 노드는 이름(이름, 타입, 층, 등급, 단계)을 가진 버튼이다. 탭 정지는 하나이고 방향키(오른쪽 자식, 왼쪽 부모, 위아래 같은 열, Home과 End)로 옮기며 Enter와 Space로 고르고 Esc로 푼다. 고른 노드는 재생 중이 아닐 때 알림 영역이 읽고, 목록으로 건너뛰는 단추가 있다 | ADR-0051, `apps/web/src/ui/impact-graph.test.tsx` |
 | REQ-356 | 움직임을 줄인 설정에서는 처음 열 때 재생하지 않고 끝 단계로 열리며 단계 사이의 전환이 없다. 재생·멈춤·다시 보기·슬라이더는 그대로 동작하고 재생하면 한 박자씩 즉시 바뀐다 | ADR-0051, `apps/web/src/data/impact-spread.test.ts`, `apps/web/src/data/impact-picture.test.tsx`, `apps/web/src/ui/impact-graph.test.tsx` |
 | REQ-357 | 영향 범위의 목록은 받은 항목 전부를 등급별 구역(심각한 순)과 정렬 가능한 열로 보이고, 구역마다 이름 있는 표와 개수("전체 M개 중 K개 표시")를 가진다. 구역은 처음 50개를 보이고 구역별 "더 보기"가 50개씩 이어서 보이며 쪽 번호와 펼침 상태의 주소 저장은 없다. 항목이 없을 때는 없다는 사실을 알린다 | ADR-0051, `apps/web/src/data/impact-rows.test.ts`, `apps/web/src/ui/impact-graph.test.tsx` |
+
+### 영향 범위 화면의 연결 (374~381)
+부품(350번대)을 실제 화면에 잇는다: 객체 상세의 입구, 주소, 실제 API를 부르는 데이터 훅, 화면. 모양은 임시이고 동작과 문구가 요구사항이다.
+
+| ID | 요구사항 | 근거·테스트 |
+|---|---|---|
+| REQ-374 | 객체 상세에서 영향 범위 화면(`#/kg/{kg}/impact?...`)을 세 방식으로 열 수 있다: "이 객체가 멈추면"(아래 방향), "이 객체가 의존하는 것"(위 방향, 단일 장애점 포함), 그리고 다른 객체를 담는 타입의 객체에는 "안에 든 것까지 멈추면"(`site_failure`). 어떤 타입이 담는 타입인지는 모델이 정한다(링크 타입의 의미가 `contained_in`인 바인딩의 안쪽 끝과 그 하위 타입). 화면은 타입 이름을 적어 두지 않는다. 주소가 가리키는 화면과 보기 상태는 새로 고침과 뒤로 가기에서 같은 화면이다 | ADR-0054, `apps/web/src/impact-screen.test.tsx`, `apps/web/src/data/impact-model.test.ts`, `apps/web/src/data/impact-route.test.ts` |
+| REQ-375 | 화면은 `POST /v1/kgs/{kg}/queries:impact`를 먼저 두 읽기의 개수 요약으로, 이어서 고른 읽기의 항목을 페이지마다(받는 항목 수 기본 2,000) 받는다. 화면을 떠나거나 질문이 바뀌거나 사람이 중지하면 진행 중인 요청을 중단하고, 중지하면 받은 항목까지로 그린다. 읽기만 바꾸면 요약은 다시 묻지 않는다 | ADR-0054, `apps/web/src/data/useImpact.test.tsx`, `apps/web/src/impact-screen.test.tsx` |
+| REQ-376 | 화면 머리는 무엇이 멈췄다고 가정했는지(객체 이름과 타입, 객체 상세로 가는 링크), 방향, 읽는 방식(사실만, 가정 포함)을 보이고 읽는 방식을 바꿀 수 있다. 바꾸면 새 질문으로 쳐서 뒤로 가기가 이전 읽기로 돌아간다 | ADR-0054, `apps/web/src/impact-screen.test.tsx` |
+| REQ-377 | 등급별 개수는 받은 항목 수가 아니라 서버가 센 전체 수이고, 모양과 글자가 있는 표지로 보인다. 받은 항목이 전체보다 적으면 그렇다고 말한다. 개수를 누르면 그 등급만 그래프와 목록에 보이고 다시 누르면 풀린다. 등급 이름은 "이중화 상실(직접)"과 "이중화 상실(간접)"이다 | ADR-0054, `apps/web/src/data/impact-notices.test.ts`, `apps/web/src/impact-screen.test.tsx` |
+| REQ-378 | 결과는 그래프(첫 탭)와 목록의 두 탭으로 보인다. 그래프에서 노드를 고르면 이름, 타입, 등급, 잃은 것, 시작 객체부터의 경로, 근거 등급과 객체 상세로 가는 링크를 보이고, 묶음 노드를 고르면 구성원을 100개까지 보인다. 읽을 수 없는 객체는 이름 없이 숨김 객체로 보이고 링크를 열지 않는다. 진입, 그래프 탐색, 노드 선택, 객체 상세로의 이동이 키보드만으로 된다 | ADR-0054, `apps/web/src/impact-screen.test.tsx` |
+| REQ-379 | 결과가 잘리면 이유를 구별해 알린다: 항목 수 한도(한도를 올려 다시 묻는 단추), 시간 한도, 단계 한도(한도 없이 다시 묻는 단추), 사람이 불러오기를 중지함(다시 받는 단추). 필요한 채널에 `supplied_by` 링크가 없는 객체 수(`unfilled_channel_objects`)와 그 뜻, 계산에 가정을 썼다는 사실, 서버의 계산 메모와 "이 계산이 보지 않는 것"을 함께 보인다 | ADR-0054, `apps/web/src/data/impact-notices.test.ts`, `apps/web/src/impact-screen.test.tsx` |
+| REQ-380 | 영향받는 객체가 없으면 "없음이 안전하다는 뜻은 아니다"를 말하고 계산이 보지 않는 것을 보인다. 오류는 다른 화면과 같은 방식으로 보인다. 위 방향의 결과는 단일 장애점을 서버가 센 수와 함께 따로 표시한다 | ADR-0054, `apps/web/src/impact-screen.test.tsx` |
+| REQ-381 | 접속 설정 화면은 "개발용 토큰"이 아니라 "접근 토큰"이라고 말하고, 데모, 로컬 모드, 개발 서버, 운영 서버 각각에서 토큰을 어디서 얻는지 한 줄씩 안내한다(운영 서버는 관리자가 `praxium admin token create`로 만든 `pxm_…` 토큰) | ADR-0054, `apps/web/src/impact-screen.test.tsx` |
 
 ### 정의 저장소 (330번대)
 

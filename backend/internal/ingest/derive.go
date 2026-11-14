@@ -22,6 +22,9 @@ type contrib struct {
 	basis  model.Basis
 	ref    string
 	feedID string
+	// dataset and row say where the value was read, for a problem about it.
+	dataset string
+	row     Row
 }
 
 // objAcc gathers everything the feeds say about one object in this run.
@@ -67,6 +70,9 @@ type derivation struct {
 type desiredLink struct {
 	up   graph.LinkUpsert
 	from graph.ObjectID
+	// dataset and row are where the link was made from, for a problem about it.
+	dataset string
+	row     Row
 }
 
 func newDerivation(p *Plan, st *State, rep *Report, now time.Time) *derivation {
@@ -206,6 +212,7 @@ func (d *derivation) attach(fp *feedPlan, acc *objAcc, formed []formedKey, contr
 	}
 	for _, c := range contribs {
 		c.ref = d.p.Source.ID + "/" + root + "/" + strings.ReplaceAll(row.Key, keySep, "|")
+		c.dataset, c.row = root, row
 		acc.contribs[c.attr.prop.AttrNo] = append(acc.contribs[c.attr.prop.AttrNo], c)
 	}
 	for _, fk := range formed {
@@ -228,11 +235,21 @@ func (d *derivation) attach(fp *feedPlan, acc *objAcc, formed []formedKey, contr
 func (d *derivation) claim(acc *objAcc, scheme, value string, fp *feedPlan, row Row, root string) {
 	k := scheme + keySep + value
 	if owner, ok := d.identOwner[k]; ok && owner != acc.id.String() {
-		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row, "identifier "+scheme+" "+value+" already names another object")
+		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row, "identifier "+d.schemeName(scheme)+" "+value+" already names another object")
 		return
 	}
 	d.identOwner[k] = acc.id.String()
 	acc.idents[scheme] = value
+}
+
+// schemeName is the name of an identifier scheme as the mapping writes it, for a message; the id when it is not found.
+func (d *derivation) schemeName(id string) string {
+	if sid, err := kernel.ParseID[model.IdentifierSchemeKind](id); err == nil {
+		if s, ok := d.p.reg.IdentifierScheme(sid); ok {
+			return s.Name
+		}
+	}
+	return id
 }
 
 // values converts the cells a feed maps. An empty cell gives no value: the feed does not hold the attribute then,

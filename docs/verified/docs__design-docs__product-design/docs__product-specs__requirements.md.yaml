@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "ca88f99ff5524f12"
+hash: "065187591aed13a6"
 date: "2026-11-14"
-note: "요구사항 REQ-366~373(조직 속성 명령과 시작 배선)을 추가한 뒤 설계 문서와 대조했다. 합치기 뒤 다시 확인"
+note: "요구사항 374~381(영향 범위 화면)과 382~393(수집의 메시지와 옵션)이 함께 들어감. 둘 다 제품 설계 개요가 이미 다루는 기능의 세부이고 개요의 범위와 용어는 바뀌지 않아 그대로 둠"
 text_changed: true
 doc_hash: "019854b80cb4930e"

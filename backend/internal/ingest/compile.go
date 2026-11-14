@@ -141,7 +141,7 @@ func (p *Plan) compileFeed(f Feed, index int) (*feedPlan, error) {
 	}
 	typ, ok := p.reg.ObjectTypeByName(f.ObjectType)
 	if !ok {
-		return nil, bad("feed %s: %q is no object type of the model%s", f.ID, f.ObjectType, p.didYouMean(f.ObjectType, objectTypeNames(p.reg)))
+		return nil, bad("feed %s: %q is no object type of the model%s", f.ID, f.ObjectType, p.didYouMean(f.ObjectType, objectTypeNames(p.reg), "praxium types list --all"))
 	}
 	fp := &feedPlan{feed: f, index: index, typ: typ, grade: model.GradeFact}
 	fp.basis = model.Basis(f.Basis)
@@ -310,7 +310,7 @@ func (p *Plan) compileLinks(feeds map[string]*feedPlan) error {
 func (p *Plan) compileLink(d LinkDef, feeds map[string]*feedPlan) (*linkPlan, error) {
 	lt, ok := p.reg.LinkTypeByName(d.LinkType)
 	if !ok {
-		return nil, bad("link definition %s: %q is no link type of the model%s", d.ID, d.LinkType, p.didYouMean(d.LinkType, linkTypeNames(p.reg)))
+		return nil, bad("link definition %s: %q is no link type of the model%s", d.ID, d.LinkType, p.didYouMean(d.LinkType, linkTypeNames(p.reg), "praxium types list --kind link --all"))
 	}
 	if d.Condition != ConditionSameKey {
 		return nil, kernel.Errorf(kernel.CodeUnsupported, "link definition %s: condition %q is not in this build (same_key)", d.ID, d.Condition)
@@ -407,10 +407,11 @@ func linkTypeNames(reg *model.Registry) []string {
 	return out
 }
 
-// didYouMean is " (did you mean X, Y?)" for the names that are close to a word, and nothing when none is.
-func (p *Plan) didYouMean(word string, names []string) string {
+// didYouMean is " (did you mean X, Y?)" for the names that are close to a word. When none is, it tells which command
+// lists the names there are.
+func (p *Plan) didYouMean(word string, names []string, listCommand string) string {
 	if near := Similar(word, names); len(near) > 0 {
 		return " (did you mean " + strings.Join(near, ", ") + "?)"
 	}
-	return ""
+	return " (no type of the model has a name like it; see the names there are with: " + listCommand + ")"
 }

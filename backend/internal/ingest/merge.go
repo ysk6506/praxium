@@ -3,6 +3,7 @@ package ingest
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -34,8 +35,8 @@ func (d *derivation) pick(acc *objAcc, no int, cs []contrib) contrib {
 	win := cs[0]
 	for _, c := range cs[1:] {
 		if c.text != win.text {
-			d.problem(ProblemSourceConflict, "", c.feedID, Row{Key: acc.id.String()},
-				fmt.Sprintf("attribute %s: %q from %s lost to %q from %s", c.attr.prop.Name, c.text, c.feedID, win.text, win.feedID))
+			d.problem(ProblemSourceConflict, c.dataset, c.feedID, c.row,
+				fmt.Sprintf("attribute %s of the object %s (%s): %q from %s lost to %q from %s (dataset %s, %s)", c.attr.prop.Name, acc.nameFall, acc.id.String(), c.text, c.feedID, win.text, win.feedID, win.dataset, rowPlace(win.row)))
 		}
 	}
 	return win
@@ -112,4 +113,16 @@ func identWrites(acc *objAcc) []graph.IdentifierWrite {
 		out = append(out, graph.IdentifierWrite{Object: acc.id, Scheme: id, Value: acc.idents[s]})
 	}
 	return out
+}
+
+// rowPlace is where a row stands for a message: its place on the sheet, or its line, and its key.
+func rowPlace(r Row) string {
+	key := strings.ReplaceAll(r.Key, keySep, "|")
+	switch {
+	case r.Where != "":
+		return "row " + key + " at " + r.Where
+	case r.Line > 0:
+		return "row " + key + " on line " + itoa(r.Line)
+	}
+	return "row " + key
 }

@@ -3,6 +3,7 @@ package ingest
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"slices"
@@ -53,6 +54,10 @@ type Dataset struct {
 	// IgnoreUndeclaredColumns leaves out the columns of the file that no column of the dataset reads, instead of
 	// reporting each as undeclared_column. A declared column that is gone is still reported.
 	IgnoreUndeclaredColumns bool `json:"ignore_undeclared_columns,omitempty"`
+	// IgnoreRowsWithoutKey passes over, without a problem, the rows whose natural key columns are all empty (the
+	// total line under a table, say). A row with only some of them empty is still reported as unreadable. The rows
+	// passed over are counted in the summary as skipped_no_key and are no part of the rows received.
+	IgnoreRowsWithoutKey bool `json:"ignore_rows_without_key,omitempty"`
 	// Sheet says which sheet of a workbook the dataset is and how its rows are laid out. Only the xlsx parser has it.
 	Sheet *SheetOptions `json:"sheet,omitempty"`
 }
@@ -82,6 +87,10 @@ func decodeStrict(r io.Reader, what string, into any) error {
 			if hint := unknownFieldHint(data, strings.Trim(name, `"`), into); hint != "" {
 				err = fmt.Errorf("%w; %s", err, hint)
 			}
+		}
+		var typeErr *json.UnmarshalTypeError
+		if errors.As(err, &typeErr) {
+			return kernel.Errorf(kernel.CodeInvalidValue, "the %s is not a valid definition: %s", what, wrongKindMessage(data, typeErr))
 		}
 		return kernel.Wrap(kernel.CodeInvalidValue, err, "the "+what+" is not a valid definition")
 	}

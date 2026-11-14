@@ -1,9 +1,11 @@
 package ingest
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"regexp"
 	"sort"
 	"strings"
 )
@@ -109,4 +111,69 @@ func containsString(list []string, s string) bool {
 		}
 	}
 	return false
+}
+
+// wrongKindMessage says in plain words that a value of a definition is of the wrong kind: which field, what kind of
+// value it takes and what kind it was given, and the line the value ends on.
+func wrongKindMessage(data []byte, e *json.UnmarshalTypeError) string {
+	field := e.Field
+	if field == "" {
+		field = "the document"
+	}
+	field = indexedPath(field)
+	line := 1 + bytes.Count(data[:min(max(int(e.Offset), 0), len(data))], []byte("\n"))
+	return fmt.Sprintf("the field %q must be %s, but the value given is %s (line %d)", field, kindWanted(e.Type), kindGiven(e.Value), line)
+}
+
+// kindWanted is what a value of a Go type looks like in JSON, as a person writes it.
+func kindWanted(t reflect.Type) string {
+	if t == nil {
+		return "another kind of value"
+	}
+	switch t.Kind() {
+	case reflect.Bool:
+		return "true or false (no quotes)"
+	case reflect.String:
+		return "text in quotes"
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		return "a whole number (no quotes)"
+	case reflect.Float32, reflect.Float64:
+		return "a number (no quotes)"
+	case reflect.Slice, reflect.Array:
+		return "a list in [ ]"
+	case reflect.Struct, reflect.Map, reflect.Pointer:
+		if t.Kind() == reflect.Pointer {
+			return kindWanted(t.Elem())
+		}
+		return "an object in { }"
+	}
+	return "another kind of value"
+}
+
+// kindGiven names the kind of the JSON value the decoder met.
+func kindGiven(v string) string {
+	switch {
+	case v == "string":
+		return "text"
+	case v == "bool":
+		return "true or false"
+	case v == "array":
+		return "a list"
+	case v == "object":
+		return "an object"
+	case strings.HasPrefix(v, "number"):
+		return "a number"
+	}
+	return v
+}
+
+var indexSegment = regexp.MustCompile(`\.(\d+)(\.|$)`)
+
+// indexedPath writes the places of a list in a path the way a person reads them: datasets.0.name is datasets[0].name
+// (the first of the list is 0).
+func indexedPath(p string) string {
+	for indexSegment.MatchString(p) {
+		p = indexSegment.ReplaceAllString(p, "[$1]$2")
+	}
+	return p
 }

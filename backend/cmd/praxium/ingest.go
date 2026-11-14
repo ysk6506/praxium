@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"flag"
@@ -56,13 +57,15 @@ Reading the output:
                         not_read="...": the file of this dataset was not read at all, and why (the workbook has no
                         such sheet, or a column the dataset declares is not in the header); every count is then 0,
                         and the same text is a shape_changed problem.
+                        skipped_<reason>=N: rows that were passed over and are no part of the counts above:
+                          skipped_no_key       every natural key column of the row is empty and the dataset says
+                                               ignore_rows_without_key (a total line under a table, say)
+                          skipped_blank_row    (workbook) the row has nothing in the columns that are read
+                          skipped_hidden_row   (workbook) the row is hidden and the sheet says skip_hidden_rows
+                          skipped_after_end    (workbook) the row is after the end of the data: stop_after_blank_rows
+                                               blank rows came first, so what follows is not read
                         For a workbook: sheet and sheet_state (visible, hidden, very_hidden); hidden_rows_read and
-                        hidden_columns_read: hidden rows and columns the mapping read; skipped_<reason>=N: rows that
-                        were passed over and are no part of the counts above:
-                          skipped_blank_row    the row has nothing in the columns that are read
-                          skipped_hidden_row   the row is hidden and the sheet says skip_hidden_rows
-                          skipped_after_end    the row is after the end of the data: stop_after_blank_rows blank
-                                               rows came first, so what follows is not read
+                        hidden_columns_read: hidden rows and columns the mapping read.
   problems kind=N       how many problems of each kind; problem ... lines list the first 20 with the row and why.
                         Kinds: shape_changed (see not_read), unreadable_line, duplicate_key, undeclared_column (a
                         column of the file no dataset column reads; ignore_undeclared_columns turns it off),
@@ -199,9 +202,13 @@ func loadPlan(reg *model.Registry, f ingestFlags, w wiring) (*ingest.Plan, error
 		return nil, err
 	}
 	defer sin.Close()
-	src, err := ingest.ParseSource(sin)
+	text, err := io.ReadAll(sin)
 	if err != nil {
-		return nil, err
+		return nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read "+f.source)
+	}
+	src, err := ingest.ParseSource(bytes.NewReader(text))
+	if err != nil {
+		return nil, withKeyCandidates(err, text, f, w)
 	}
 	min, err := readDefinition(w, f.mapping)
 	if err != nil {
