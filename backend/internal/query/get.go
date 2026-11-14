@@ -213,7 +213,7 @@ func (e *Engine) resolveObject(ctx context.Context, r *read, in GetInput) (graph
 		if !ok {
 			return graph.ObjectID{}, inputf("identifier.scheme", "no identifier scheme %q; the schemes are: %s", in.Identifier.Scheme, strings.Join(e.reg.IdentifierSchemeNames(), ", "))
 		}
-		recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), in.Identifier.Value)
+		recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), tidyIdentifier(scheme, in.Identifier.Value))
 		if err != nil {
 			return graph.ObjectID{}, err
 		}

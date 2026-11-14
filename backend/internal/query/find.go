@@ -253,7 +253,7 @@ func (e *Engine) planIdentifier(ctx context.Context, r *read, p *findPlan, id Id
 	if !ok {
 		return inputf("identifier.scheme", "no identifier scheme %q; the schemes are: %s", id.Scheme, strings.Join(e.reg.IdentifierSchemeNames(), ", "))
 	}
-	recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), id.Value)
+	recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), tidyIdentifier(scheme, id.Value))
 	if err != nil {
 		return err
 	}
