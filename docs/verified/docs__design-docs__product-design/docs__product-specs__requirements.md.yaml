@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "cb730939bdd0eb71"
+hash: "0546be4674972a57"
 date: "2026-11-14"
-note: "요구사항 209와 ADR-0035의 최종 문구에 맞춰 대조했다"
+note: "용어 정리 후 다시 확인함(ADR-0034 반영)"
 text_changed: true
 doc_hash: "06412a77a9acc006"

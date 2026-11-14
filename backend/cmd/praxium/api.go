@@ -87,7 +87,7 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 // token file flag is the safer way and wins over it.
 const envDevToken = "PRAXIUM_DEV_TOKEN"
 
-const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-store memory|postgres] [-store-dsn-file file]\n" +
+const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-store memory|postgres|file] [-store-dsn-file file] [-store-data-dir dir]\n" +
 	"                          [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file] [-web=false]\n" +
 	"       praxium api routes --json\n"
 
@@ -123,8 +123,9 @@ type serveOptions struct {
 	// truth is a developer convenience of development mode (production never starts): a truth file of the generator
 	// to load into the development store. It is not the ingestion pipeline (ADR-0027).
 	truth string
-	// store is "memory" (the default) or "postgres"; storeDSNFile is the file that holds the PostgreSQL DSN.
-	store, storeDSNFile string
+	// store is "memory" (the default), "postgres" or "file"; storeDSNFile is the file that holds the PostgreSQL DSN and
+	// storeDataDir the data folder of the file store.
+	store, storeDSNFile, storeDataDir string
 	// web is whether the server also serves the embedded web UI at / (ADR-0035).
 	web bool
 }
@@ -142,6 +143,7 @@ func parseServe(args []string) (serveOptions, error) {
 	fs.StringVar(&o.store, "store", storeMemory, "")
 	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "")
 	fs.BoolVar(&o.web, "web", true, "")
+	fs.StringVar(&o.storeDataDir, "store-data-dir", "", "")
 	if err := fs.Parse(args); err != nil {
 		return o, kernel.Wrap(kernel.CodeInvalidValue, err, "bad flags for api serve")
 	}
@@ -215,11 +217,15 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	}
 	log := logger(stderr)
 	ctx := context.Background()
-	store, closeStore, err := openStore(ctx, o, d)
+	store, closeStore, err := openStoreLogged(ctx, o, d, log)
 	if err != nil {
 		return err
 	}
-	defer closeStore()
+	defer func() {
+		if err := closeStore(); err != nil {
+			log.Error("praxium store did not close cleanly", slog.String("error", err.Error()))
+		}
+	}()
 	rep, err := loadTruth(ctx, store, reg, d, o.truth, 0)
 	if err != nil {
 		return err

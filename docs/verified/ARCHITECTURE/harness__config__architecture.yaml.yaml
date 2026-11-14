@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "16df4cf414519eea"
+hash: "112f87e356acf73e"
 date: "2026-11-14"
-note: "화면 문구 표준화에 맞춰 대조했다"
+note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
 text_changed: true
-doc_hash: "cf274009c38e2c2f"
+doc_hash: "70dbb7de18bc4e42"

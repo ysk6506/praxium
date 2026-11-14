@@ -2,6 +2,6 @@ doc: "docs/design-docs/kg-storage.md"
 target: "docs/design-docs/adr/0009-kg-storage-and-versions.md"
 hash: "f8b4df4d14a448b3"
 date: "2026-11-14"
-note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 중복 걸러내기 키를 소스와 오프셋으로 맞췄다."
+note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
 text_changed: true
-doc_hash: "3dc8d69105d80dbd"
+doc_hash: "cbd479ffe376bd07"
