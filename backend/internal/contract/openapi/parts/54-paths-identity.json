@@ -5,12 +5,8 @@
         "operationId": "getToken",
         "summary": "Look at an access token",
         "description": "Shows one access token and its state; never the secret or the hash. The id current stands for the token of this request, and then the answer also says who is calling (subject), which is the way to check a token. Any other id is answered to its owner and to an administrator; for anyone else it is not found.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "authenticated"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["authenticated"],
         "x-safe": true,
         "x-long-running": false,
         "parameters": [
@@ -43,17 +39,13 @@
                       "id": "ada",
                       "kind": "person",
                       "display_name": "Ada Example",
-                      "roles": [
-                        "viewer"
-                      ]
+                      "roles": ["viewer"]
                     },
                     "token": {
                       "id": "pxm_0123456789abcdef",
                       "owner": "ada",
                       "owner_kind": "person",
-                      "roles": [
-                        "viewer"
-                      ],
+                      "roles": ["viewer"],
                       "description": "read only",
                       "state": "active",
                       "created_at": "2030-01-02T03:04:05Z",
@@ -100,12 +92,8 @@
         "operationId": "listUsers",
         "summary": "List users",
         "description": "The users, active and disabled. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": true,
         "x-long-running": false,
         "parameters": [
@@ -223,9 +211,7 @@
                       "kind": "person",
                       "display_name": "Ada Example",
                       "description": "",
-                      "roles": [
-                        "viewer"
-                      ],
+                      "roles": ["viewer"],
                       "state": "active",
                       "created_at": "2030-01-02T03:04:05Z",
                       "created_by": "root",
@@ -276,12 +262,8 @@
         "operationId": "createUser",
         "summary": "Make a user",
         "description": "Makes a user with the roles given. A user holds any role but ingester. A principal is never deleted, only disabled. The Idempotency-Key is needed; the same key and body within ten minutes replay the first answer. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": false,
         "x-long-running": false,
         "parameters": [
@@ -300,9 +282,7 @@
               "example": {
                 "name": "ada",
                 "display_name": "Ada Example",
-                "roles": [
-                  "viewer"
-                ]
+                "roles": ["viewer"]
               }
             }
           }
@@ -326,9 +306,7 @@
                     "kind": "person",
                     "display_name": "Ada Example",
                     "description": "",
-                    "roles": [
-                      "viewer"
-                    ],
+                    "roles": ["viewer"],
                     "state": "active",
                     "created_at": "2030-01-02T03:04:05Z",
                     "created_by": "root",
@@ -385,12 +363,8 @@
         "operationId": "disableUser",
         "summary": "Disable a user",
         "description": "Disables the user: every token it owns is refused from now on, and the disabling cannot be undone. The last enabled administrator cannot be disabled. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": false,
         "x-long-running": false,
         "parameters": [
@@ -426,9 +400,7 @@
                     "kind": "person",
                     "display_name": "Ada Example",
                     "description": "",
-                    "roles": [
-                      "viewer"
-                    ],
+                    "roles": ["viewer"],
                     "state": "disabled",
                     "created_at": "2030-01-02T03:04:05Z",
                     "created_by": "root",
@@ -482,12 +454,8 @@
         "operationId": "listSystemAccounts",
         "summary": "List service accounts",
         "description": "The service accounts, active and disabled. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": true,
         "x-long-running": false,
         "parameters": [
@@ -605,9 +573,7 @@
                       "kind": "system_account",
                       "display_name": "ingest-demo",
                       "description": "The demo ingester.",
-                      "roles": [
-                        "ingester"
-                      ],
+                      "roles": ["ingester"],
                       "state": "active",
                       "created_at": "2030-01-02T03:04:05Z",
                       "created_by": "root",
@@ -658,12 +624,8 @@
         "operationId": "createSystemAccount",
         "summary": "Make a service account",
         "description": "Makes a service account with the roles given. A service account holds any role but admin; ingester is for it. A principal is never deleted, only disabled. The Idempotency-Key is needed; the same key and body within ten minutes replay the first answer. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": false,
         "x-long-running": false,
         "parameters": [
@@ -682,9 +644,7 @@
               "example": {
                 "name": "ingest-demo",
                 "display_name": "ingest-demo",
-                "roles": [
-                  "ingester"
-                ]
+                "roles": ["ingester"]
               }
             }
           }
@@ -708,9 +668,7 @@
                     "kind": "system_account",
                     "display_name": "ingest-demo",
                     "description": "The demo ingester.",
-                    "roles": [
-                      "ingester"
-                    ],
+                    "roles": ["ingester"],
                     "state": "active",
                     "created_at": "2030-01-02T03:04:05Z",
                     "created_by": "root",
@@ -767,12 +725,8 @@
         "operationId": "disableSystemAccount",
         "summary": "Disable a service account",
         "description": "Disables the service account: every token it owns is refused from now on, and the disabling cannot be undone. The last enabled administrator cannot be disabled. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": false,
         "x-long-running": false,
         "parameters": [
@@ -808,9 +762,7 @@
                     "kind": "system_account",
                     "display_name": "ingest-demo",
                     "description": "The demo ingester.",
-                    "roles": [
-                      "ingester"
-                    ],
+                    "roles": ["ingester"],
                     "state": "disabled",
                     "created_at": "2030-01-02T03:04:05Z",
                     "created_by": "root",
@@ -864,12 +816,8 @@
         "operationId": "listTokens",
         "summary": "List access tokens",
         "description": "The access tokens, with their state. An administrator sees all of them and may filter by owner; any other caller sees its own. The secret and the hash are never listed.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "authenticated"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["authenticated"],
         "x-safe": true,
         "x-long-running": false,
         "parameters": [
@@ -972,9 +920,7 @@
                       "id": "pxm_0123456789abcdef",
                       "owner": "ada",
                       "owner_kind": "person",
-                      "roles": [
-                        "viewer"
-                      ],
+                      "roles": ["viewer"],
                       "description": "read only",
                       "state": "active",
                       "created_at": "2030-01-02T03:04:05Z",
@@ -1029,12 +975,8 @@
         "operationId": "createToken",
         "summary": "Make an access token",
         "description": "Makes an access token for a principal. The answer holds the token itself, and no other call ever shows it again; the server keeps only a hash of its secret. The token expires, in 90 days unless a lifetime of 1 hour to 365 days is asked, and carries the roles asked or all of the owner's. The Idempotency-Key is needed; the key of this call cannot be used again, because the answer holds a secret that is shown once. For administrators only.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "admin"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
         "x-safe": false,
         "x-long-running": false,
         "parameters": [
@@ -1053,9 +995,7 @@
               "example": {
                 "owner": "ada",
                 "description": "read only",
-                "roles": [
-                  "viewer"
-                ],
+                "roles": ["viewer"],
                 "expires_in_days": 90
               }
             }
@@ -1079,9 +1019,7 @@
                     "id": "pxm_0123456789abcdef",
                     "owner": "ada",
                     "owner_kind": "person",
-                    "roles": [
-                      "viewer"
-                    ],
+                    "roles": ["viewer"],
                     "description": "read only",
                     "state": "active",
                     "created_at": "2030-01-02T03:04:05Z",
@@ -1143,12 +1081,8 @@
         "operationId": "revokeToken",
         "summary": "Revoke an access token",
         "description": "Revokes the token: it is refused from now on. A token that is revoked or expired stays listed. An administrator may revoke any token; any other caller only its own.",
-        "tags": [
-          "identity"
-        ],
-        "x-required-role": [
-          "authenticated"
-        ],
+        "tags": ["identity"],
+        "x-required-role": ["authenticated"],
         "x-safe": false,
         "x-long-running": false,
         "parameters": [
@@ -1183,9 +1117,7 @@
                     "id": "pxm_0123456789abcdef",
                     "owner": "ada",
                     "owner_kind": "person",
-                    "roles": [
-                      "viewer"
-                    ],
+                    "roles": ["viewer"],
                     "description": "read only",
                     "state": "revoked",
                     "created_at": "2030-01-02T03:04:05Z",

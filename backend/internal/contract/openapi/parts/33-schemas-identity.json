@@ -12,10 +12,7 @@
           "kind": {
             "type": "string",
             "description": "person for a user, system_account for a service account.",
-            "enum": [
-              "person",
-              "system_account"
-            ]
+            "enum": ["person", "system_account"]
           },
           "display_name": {
             "type": "string",
@@ -35,10 +32,7 @@
           "state": {
             "type": "string",
             "description": "active or disabled. A disabled principal's tokens are refused at once.",
-            "enum": [
-              "active",
-              "disabled"
-            ]
+            "enum": ["active", "disabled"]
           },
           "created_at": {
             "type": "string",
@@ -50,10 +44,7 @@
             "description": "Who made it: a principal id, or (local operator) for the bootstrap."
           },
           "disabled_at": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "When it was disabled, UTC; null while it is active.",
             "format": "date-time"
           }
@@ -85,10 +76,7 @@
           "owner_kind": {
             "type": "string",
             "description": "person or system_account.",
-            "enum": [
-              "person",
-              "system_account"
-            ]
+            "enum": ["person", "system_account"]
           },
           "roles": {
             "type": "array",
@@ -104,11 +92,7 @@
           "state": {
             "type": "string",
             "description": "active, expired or revoked. Only an active token is accepted.",
-            "enum": [
-              "active",
-              "expired",
-              "revoked"
-            ]
+            "enum": ["active", "expired", "revoked"]
           },
           "created_at": {
             "type": "string",
@@ -125,26 +109,17 @@
             "format": "date-time"
           },
           "last_used_at": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "When it was last used, to the minute, UTC; null for a token never used.",
             "format": "date-time"
           },
           "revoked_at": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "When it was revoked, UTC.",
             "format": "date-time"
           },
           "revoked_by": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Who revoked it."
           }
         },
@@ -178,10 +153,7 @@
           "owner_kind": {
             "type": "string",
             "description": "person or system_account.",
-            "enum": [
-              "person",
-              "system_account"
-            ]
+            "enum": ["person", "system_account"]
           },
           "roles": {
             "type": "array",
@@ -197,11 +169,7 @@
           "state": {
             "type": "string",
             "description": "active, expired or revoked. Only an active token is accepted.",
-            "enum": [
-              "active",
-              "expired",
-              "revoked"
-            ]
+            "enum": ["active", "expired", "revoked"]
           },
           "created_at": {
             "type": "string",
@@ -218,26 +186,17 @@
             "format": "date-time"
           },
           "last_used_at": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "When it was last used, to the minute, UTC; null for a token never used.",
             "format": "date-time"
           },
           "revoked_at": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "When it was revoked, UTC.",
             "format": "date-time"
           },
           "revoked_by": {
-            "type": [
-              "string",
-              "null"
-            ],
+            "type": ["string", "null"],
             "description": "Who revoked it."
           },
           "token": {
@@ -285,10 +244,7 @@
             }
           }
         },
-        "required": [
-          "name",
-          "roles"
-        ],
+        "required": ["name", "roles"],
         "additionalProperties": false
       },
       "TokenRequest": {
@@ -316,9 +272,7 @@
             "minimum": 0
           }
         },
-        "required": [
-          "owner"
-        ],
+        "required": ["owner"],
         "additionalProperties": false
       },
       "IdentityListMeta": {
@@ -333,10 +287,7 @@
             "$ref": "#/components/schemas/ResultComplete"
           }
         },
-        "required": [
-          "trace_id",
-          "result_complete"
-        ]
+        "required": ["trace_id", "result_complete"]
       },
       "PrincipalAnswer": {
         "type": "object",
@@ -349,10 +300,7 @@
             "$ref": "#/components/schemas/Meta"
           }
         },
-        "required": [
-          "data",
-          "meta"
-        ]
+        "required": ["data", "meta"]
       },
       "PrincipalList": {
         "type": "object",
@@ -369,10 +317,7 @@
             "$ref": "#/components/schemas/IdentityListMeta"
           }
         },
-        "required": [
-          "data",
-          "meta"
-        ]
+        "required": ["data", "meta"]
       },
       "TokenAnswer": {
         "type": "object",
@@ -385,10 +330,7 @@
             "$ref": "#/components/schemas/Meta"
           }
         },
-        "required": [
-          "data",
-          "meta"
-        ]
+        "required": ["data", "meta"]
       },
       "IssuedTokenAnswer": {
         "type": "object",
@@ -401,10 +343,7 @@
             "$ref": "#/components/schemas/Meta"
           }
         },
-        "required": [
-          "data",
-          "meta"
-        ]
+        "required": ["data", "meta"]
       },
       "TokenList": {
         "type": "object",
@@ -421,10 +360,7 @@
             "$ref": "#/components/schemas/IdentityListMeta"
           }
         },
-        "required": [
-          "data",
-          "meta"
-        ]
+        "required": ["data", "meta"]
       },
       "CurrentSubject": {
         "type": "object",
@@ -437,10 +373,7 @@
           "kind": {
             "type": "string",
             "description": "person or system_account.",
-            "enum": [
-              "person",
-              "system_account"
-            ]
+            "enum": ["person", "system_account"]
           },
           "display_name": {
             "type": "string",
@@ -454,12 +387,7 @@
             }
           }
         },
-        "required": [
-          "id",
-          "kind",
-          "display_name",
-          "roles"
-        ]
+        "required": ["id", "kind", "display_name", "roles"]
       },
       "CurrentToken": {
         "type": "object",
@@ -469,16 +397,11 @@
             "$ref": "#/components/schemas/CurrentSubject"
           },
           "token": {
-            "type": [
-              "object",
-              "null"
-            ],
+            "type": ["object", "null"],
             "description": "The token of this request, as a TokenRecord; null when the server has no token records (a development server)."
           }
         },
-        "required": [
-          "token"
-        ]
+        "required": ["token"]
       },
       "CurrentTokenAnswer": {
         "type": "object",
@@ -491,10 +414,7 @@
             "$ref": "#/components/schemas/Meta"
           }
         },
-        "required": [
-          "data",
-          "meta"
-        ]
+        "required": ["data", "meta"]
       }
     }
   }
