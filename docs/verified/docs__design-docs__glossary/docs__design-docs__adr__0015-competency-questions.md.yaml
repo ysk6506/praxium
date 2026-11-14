@@ -1,7 +1,7 @@
 doc: "docs/design-docs/glossary.md"
 target: "docs/design-docs/adr/0015-competency-questions.md"
-hash: "01706a0b4e5b8db7"
-date: "2026-11-13"
-note: "glossary 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
-text_changed: false
-doc_hash: "97ef572b72ab912d"
+hash: "71a21a51d5c4b930"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 리비전과 KG 질의 행을 추가하고 헬스 상태가 ADR-0013처럼 6종임을 적었다."
+text_changed: true
+doc_hash: "2b6706cd8bfb52f7"

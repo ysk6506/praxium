@@ -77,7 +77,7 @@ func (r *rig) snap(rp graph.ReadPoint) graph.Snapshot {
 	return s
 }
 
-// [REQ-132] [REQ-135] [REQ-263]
+// [REQ-132] [REQ-135] [REQ-270]
 func TestAnUnknownKGIsRefusedByEveryOperation(t *testing.T) {
 	s, ctx := pgstore.NewTestStore(t), context.Background()
 	ghost, err := kernel.ParseID[graph.KGKind]("kg-0123456789abcdef")
@@ -116,7 +116,7 @@ func TestAnUnknownKGIsRefusedByEveryOperation(t *testing.T) {
 	wantCode(t, "wait", err, graph.CodeKGNotFound)
 }
 
-// [REQ-132] [REQ-135] [REQ-263]
+// [REQ-132] [REQ-135] [REQ-270]
 func TestTheCatalogRefusesKGsThatConflictAndListsByCreation(t *testing.T) {
 	s, ctx := pgstore.NewTestStore(t), context.Background()
 	fx, err := graph.NewFixture()
@@ -166,7 +166,7 @@ func TestTheCatalogRefusesKGsThatConflictAndListsByCreation(t *testing.T) {
 	}
 }
 
-// [REQ-132] [REQ-135] [REQ-263]
+// [REQ-132] [REQ-135] [REQ-270]
 func TestLeasesRefuseBadInputAndStaleHolders(t *testing.T) {
 	s, ctx := pgstore.NewTestStore(t), context.Background()
 	fx, err := graph.NewFixture()
@@ -216,7 +216,7 @@ func TestLeasesRefuseBadInputAndStaleHolders(t *testing.T) {
 	}
 }
 
-// [REQ-132] [REQ-135] [REQ-248] [REQ-263]
+// [REQ-132] [REQ-135] [REQ-248] [REQ-270]
 func TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead(t *testing.T) {
 	r := newRig(t, graph.Options{})
 	r.apply(r.fx.World(1, 1, 1))
@@ -341,7 +341,7 @@ func checkOldReader(t *testing.T, r *rig, old graph.Snapshot) {
 	wantCode(t, "identifiers of an object, old generation", err, graph.CodeGenerationChanged)
 }
 
-// [REQ-251] [REQ-263]
+// [REQ-251] [REQ-270]
 func TestIdentifiersOfListsTheLiveIdentifiersOfOneObject(t *testing.T) {
 	r := newRig(t, graph.Options{})
 	r.apply(r.fx.World(1, 1, 2))
@@ -369,7 +369,7 @@ func TestIdentifiersOfListsTheLiveIdentifiersOfOneObject(t *testing.T) {
 	}
 }
 
-// [REQ-132] [REQ-249] [REQ-263]
+// [REQ-132] [REQ-249] [REQ-270]
 func TestRowsThatDoNotMatchTheHeadAreRefusedAndLeaveNothingBehind(t *testing.T) {
 	r := newRig(t, graph.Options{})
 	r.apply(r.fx.World(1, 1, 2))
@@ -414,7 +414,7 @@ func TestRowsThatDoNotMatchTheHeadAreRefusedAndLeaveNothingBehind(t *testing.T) 
 	}
 }
 
-// [REQ-132] [REQ-249] [REQ-263]
+// [REQ-132] [REQ-249] [REQ-270]
 func TestAChunkLargerThanOneStatementIsWrittenWhole(t *testing.T) {
 	r := newRig(t, graph.Options{ChunkRows: 20000})
 	r.apply(r.fx.World(1, 1, 5200))
@@ -442,7 +442,7 @@ func TestAChunkLargerThanOneStatementIsWrittenWhole(t *testing.T) {
 	}
 }
 
-// [REQ-135] [REQ-249] [REQ-263]
+// [REQ-135] [REQ-249] [REQ-270]
 func TestFeedsStopAtReadableThroughAndWaitsEndWhenTheyShould(t *testing.T) {
 	r := newRig(t, graph.Options{})
 	r.apply(r.fx.World(1, 1, 1))
@@ -467,7 +467,7 @@ func TestFeedsStopAtReadableThroughAndWaitsEndWhenTheyShould(t *testing.T) {
 	wantCode(t, "a cancelled wait", err, kernel.CodeInternal)
 }
 
-// [REQ-135] [REQ-263]
+// [REQ-135] [REQ-270]
 func TestVersionsCarryTheirPartsAndRestoreDropsTheLaterOnes(t *testing.T) {
 	r := newRig(t, graph.Options{})
 	r.apply(r.fx.World(1, 1, 1))

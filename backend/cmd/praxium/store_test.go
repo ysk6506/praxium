@@ -79,7 +79,7 @@ func servePG(t *testing.T, dsn string, extra ...string) (client func(args ...str
 	return nil, nil, nil
 }
 
-// [REQ-260] [REQ-263]
+// [REQ-260] [REQ-270]
 func TestADevelopmentServerOnPostgresServesTheKgAndKeepsItAcrossRestarts(t *testing.T) {
 	truth := writeWorld(t)
 	dsn := pgstore.NewTestDatabase(t)
@@ -104,7 +104,7 @@ func TestADevelopmentServerOnPostgresServesTheKgAndKeepsItAcrossRestarts(t *test
 	}
 }
 
-// [REQ-260] [REQ-263]
+// [REQ-260] [REQ-270]
 func TestTheStoreFlagsAreCheckedAndTheDSNNeverShows(t *testing.T) {
 	good := dsnFile(t, "host=/nonexistent-socket-dir user=u password=hunter2 dbname=x sslmode=disable connect_timeout=2")
 	tests := []struct {
@@ -143,7 +143,7 @@ func TestTheStoreFlagsAreCheckedAndTheDSNNeverShows(t *testing.T) {
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestOpenStoreClosesWhatItOpened(t *testing.T) {
 	d, _, stop := apiDeps(nil, nil)
 	defer stop()

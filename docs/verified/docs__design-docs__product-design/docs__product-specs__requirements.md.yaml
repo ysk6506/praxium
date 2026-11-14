@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "0fb83e010a323a52"
+hash: "42c601030a265b69"
 date: "2026-11-14"
-note: "Read against REQ-260 and the new REQ-263: the document map and the stage table do not name the memory store or the missing production store, so nothing changed"
+note: "requirements.md gained REQ-270 (PostgreSQL adapter); the product design text already covers the storage port and needs no change"
 text_changed: false
-doc_hash: "70b794278472f4b3"
+doc_hash: "bea9303c5f968827"

@@ -32,7 +32,7 @@ func noErr(t *testing.T, what string, err error) {
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestConfigFillsDefaultsAndRefusesWhatIsWrong(t *testing.T) {
 	_, err := Config{}.resolve()
 	wantCode(t, "no DSN", err, kernel.CodeInvalidValue)
@@ -56,7 +56,7 @@ func TestConfigFillsDefaultsAndRefusesWhatIsWrong(t *testing.T) {
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestConfigNeverPrintsItsDSN(t *testing.T) {
 	cfg := Config{DSN: "postgres://user:hunter2@host/db"}
 	for _, text := range []string{fmt.Sprint(cfg), fmt.Sprintf("%+v", cfg), fmt.Sprintf("%#v", cfg), cfg.String()} {
@@ -66,7 +66,7 @@ func TestConfigNeverPrintsItsDSN(t *testing.T) {
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestOpenFailuresDoNotShowThePassword(t *testing.T) {
 	ctx := context.Background()
 	for name, dsn := range map[string]string{
@@ -85,7 +85,7 @@ func TestOpenFailuresDoNotShowThePassword(t *testing.T) {
 	wantCode(t, "empty DSN", err, kernel.CodeInvalidValue)
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestStoredValuesRoundTripAndDamageIsRefused(t *testing.T) {
 	attrs := map[int]graph.Attr{
 		1: {Value: "text", Grade: "fact", Basis: "configured", SourceTime: "2030-01-01T00:00:00Z", SourceRef: "r1"},
@@ -173,7 +173,7 @@ func files(m map[string]string) fstest.MapFS {
 	return out
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestMigrationFilesAreNumberedWithoutGapsAndCarryKnownDirectives(t *testing.T) {
 	got, err := loadMigrations(files(map[string]string{
 		"0002_b.sql": "-- praxium:statement_timeout=5s\nSELECT 2;", "0001_a.sql": "-- comment\n\n-- praxium:lock_timeout=1s\nSELECT 1;",
@@ -202,7 +202,7 @@ func TestMigrationFilesAreNumberedWithoutGapsAndCarryKnownDirectives(t *testing.
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestDriverErrorsGetTheCodesOfThisBackend(t *testing.T) {
 	if dbErr(nil, "x") != nil {
 		t.Error("nil became an error")
@@ -223,7 +223,7 @@ func TestDriverErrorsGetTheCodesOfThisBackend(t *testing.T) {
 	wantCode(t, "no rows", notFound(sql.ErrNoRows, "x", graph.KGID{}), graph.CodeKGNotFound)
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestTestDatabasesNeedTheServerAndNeverSkip(t *testing.T) {
 	t.Setenv(TestDSNEnv, "")
 	f := &failRecorder{}
@@ -275,7 +275,7 @@ func shardOf(t *testing.T, st *Store) *shard {
 	return sh
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited(t *testing.T) {
 	ctx := context.Background()
 	st := NewTestStore(t)
@@ -310,7 +310,7 @@ func holdMigrationLock(t *testing.T, sh *shard) (release func()) {
 	return func() { _ = tx.Rollback() }
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns(t *testing.T) {
 	ctx := context.Background()
 	st := NewTestStoreWith(t, Config{Limits: map[Role]Limits{RoleMigration: {Statement: time.Minute, LockWait: 50 * time.Millisecond, IdleInTx: time.Minute}}})
@@ -340,7 +340,7 @@ func TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns(t *testing.T) {
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestTheLimitsOfARoleApplyToItsTransactionsOnly(t *testing.T) {
 	ctx := context.Background()
 	st := NewTestStoreWith(t, Config{Limits: map[Role]Limits{RoleAPIRead: {Statement: 150 * time.Millisecond, LockWait: time.Second, IdleInTx: time.Minute}}})
@@ -366,12 +366,26 @@ func TestTheLimitsOfARoleApplyToItsTransactionsOnly(t *testing.T) {
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestAStoreClosesItsPoolAndReportsTheFirstFailure(t *testing.T) {
 	st := NewTestStore(t)
 	calls := 0
 	st.closers = append(st.closers, func() error { calls++; return fmt.Errorf("first") }, func() error { calls++; return fmt.Errorf("second") })
 	if err := st.Close(); err == nil || err.Error() != "first" || calls != 2 {
 		t.Fatalf("close: %v after %d calls", err, calls)
+	}
+}
+
+// [REQ-270]
+func TestConfigDefaultsAndRoleOrder(t *testing.T) {
+	if orInt(0, 7) != 7 || orInt(3, 7) != 3 || orInt(-1, 7) != 7 {
+		t.Fatal("orInt does not keep a positive value and default the rest")
+	}
+	if orDuration(0, time.Second) != time.Second || orDuration(time.Minute, time.Second) != time.Minute || orDuration(-1, time.Second) != time.Second {
+		t.Fatal("orDuration does not keep a positive value and default the rest")
+	}
+	got := sortedRoles(map[Role]Limits{"z_role": {}, "a_role": {}, "m_role": {}})
+	if len(got) != 3 || got[0] != "a_role" || got[1] != "m_role" || got[2] != "z_role" {
+		t.Fatalf("roles are not sorted: %v", got)
 	}
 }

@@ -8,7 +8,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgstore"
 )
 
-// [REQ-132] [REQ-135] [REQ-246] [REQ-247] [REQ-248] [REQ-249] [REQ-263]
+// [REQ-132] [REQ-135] [REQ-246] [REQ-247] [REQ-248] [REQ-249] [REQ-270]
 func TestPostgresStorePassesTheSuite(t *testing.T) {
 	// Every case of the suite, in order, with the requirement it shows. The
 	// subtest name carries the tag, so each case answers for one requirement

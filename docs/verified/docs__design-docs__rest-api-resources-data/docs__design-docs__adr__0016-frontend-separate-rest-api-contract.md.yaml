@@ -1,7 +1,7 @@
 doc: "docs/design-docs/rest-api-resources-data.md"
 target: "docs/design-docs/adr/0016-frontend-separate-rest-api-contract.md"
-hash: "86f285b020e12bee"
-date: "2026-11-13"
-note: "rest-api-resources-data 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 144줄), 결정과 숫자는 그대로"
+hash: "8dd5278e9c156f74"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다."
 text_changed: true
-doc_hash: "099d18d5e96165b5"
+doc_hash: "59eddf194fa941b3"

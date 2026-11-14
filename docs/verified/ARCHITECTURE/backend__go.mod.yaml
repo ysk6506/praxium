@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
-hash: "576da5efdc323a0a"
+hash: "bb0c12bc6870bd05"
 date: "2026-11-14"
-note: "Added the adapter.pgstore row, the lib/pq row of the Go module table, the memstore and cmd.praxium rows and the library line; checked go.mod and architecture.yaml against the tables"
+note: "pgstore row, module row and go 1.27.4 toolchain re-read against ADR-0032 and go.mod"
 text_changed: true
-doc_hash: "79e452cb64574da9"
+doc_hash: "3eb0ff5423e5c733"

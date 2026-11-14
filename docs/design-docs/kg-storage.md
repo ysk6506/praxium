@@ -1,5 +1,5 @@
 ---
-title: KG의 저장과 버전 — 무엇이 어디에 저장되고, 어떻게 봉해지는가
+title: KG의 저장과 버전 — 무엇이 어디에 저장되고, 어떻게 확정되는가
 kind: guide
 status: active
 follows:
@@ -7,176 +7,176 @@ follows:
 ---
 # KG의 저장과 버전
 
-ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만 보고 데이터의 모양, 상태, 경계를 알 수 있게 썼어요. 변경이 KG에 들어가는 걸음, 차례, 리스, 세대, 보관은 [KG의 적용](kg-storage-apply.md)에 있어요.
-표의 **칸의 이름과 뜻**은 정한 것이고, 색인과 나눔과 크기는 **스케치**예요. 구현하는 변경에서 지어낸 객체로 측정해서 굳혀요(13절). 숫자는 "가정"이거나 "측정해서 정한다"이고, 측정한 값은 조건과 한계를 함께 적었어요.
+ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만 보고 데이터의 스키마, 상태, 경계를 알 수 있게 썼어요. 변경이 KG에 적용되는 단계, 순서, 리스, 세대, 보관은 [KG의 적용](kg-storage-apply.md)에 있어요.
+표에 적은 **컬럼의 이름과 의미**는 확정한 것이고, 인덱스와 파티셔닝과 크기는 **스케치**예요. 구현하는 변경에서 합성한 객체로 측정해서 확정해요(13절). 숫자는 "가정"이거나 "측정해서 정한다"이고, 측정한 값은 조건과 한계를 함께 적었어요.
 
 ## 1. 목적과 다루는 질문
 
-- KG와 그것을 만든 재료를 어디에 어떤 모양으로 저장하나. 무엇이 진실이고 무엇이 끌어낸 것인가.
+- KG와 그 재료를 어디에 어떤 스키마로 저장하나. 무엇이 기준 데이터이고 무엇이 파생 데이터인가.
 - KG가 여럿일 때 무엇이 KG의 단위이고, 계약은 어느 KG를 가리키나.
-- 같은 입력에서 같은 버전이 나오게 하는 ID와 해시에는 무엇이 들고 무엇이 안 드나.
-- 자주 바뀌는 값은 이력에 쌓지 않고 어떻게 두나. 그런데도 프로젝션과 변경 알림은 어떻게 그것을 따르나.
-- "지금"과 "그 버전 때"의 모습, 두 버전의 차이를 어떻게 읽나.
-- 수천만 객체에서 버티는지 저장소 쪽에서 무엇을 재나.
+- 같은 입력에서 같은 버전이 나오게 하는 ID와 해시에는 무엇이 포함되고 무엇이 제외되나.
+- 자주 바뀌는 값은 이력에 쌓지 않고 어떻게 저장하나. 그런데도 프로젝션과 변경 알림은 그 값을 어떻게 따라가나.
+- "지금"과 "그 버전 시점"의 모습, 두 버전의 차이를 어떻게 읽나.
+- 수천만 객체에서 버티는지 스토리지 측에서 무엇을 측정하나.
 
 질의와 프로젝션은 ADR-0010과 [kg-queries.md](kg-queries.md), 가용성은 ADR-0011과 [kg-operations.md](kg-operations.md), 권한은 ADR-0012와 [access-control.md](access-control.md), 정의의 저장은 ADR-0014와 [definitions.md](definitions.md), 지표의 저장은 ADR-0013과 [data-observability.md](data-observability.md)가 다뤄요.
 
 ## 2. 개요
 
-**진실은 PostgreSQL에 두고, 나머지는 자리에 맞게 둬요.** 단일 진실 공급원은 하나예요(같은 사실이 두 저장소에서 따로 고쳐지지 않아요). 아홉 묶음이 있고 마지막 하나만 끌어낸 것이에요.
+**기준 데이터는 PostgreSQL에 두고, 나머지는 용도에 맞게 둬요.** 단일 진실 공급원(single source of truth)은 하나예요(같은 사실이 두 스토리지에서 따로 수정되지 않아요). 데이터는 9개 분류로 나뉘고 마지막 하나만 파생 데이터예요.
 
-| 묶음 | 무엇 | 바뀌는 방식 | 잃으면 |
+| 분류 | 내용 | 바뀌는 방식 | 잃으면 |
 |---|---|---|---|
-| 정의 | 항목, 판, 정의 세트, 메인 브랜치의 끝(행 하나) | 바뀌지 않는 판이 쌓인다. 칸은 ADR-0014가 정한다 | 잃으면 안 됨 |
-| 수집 변경 로그 | 소스에서 받은 원본 변경을 적용 전에 쌓는 곳(포트, 어댑터 둘) | 추가만 | 잃으면 안 됨(기한까지) |
-| 원본 레코드 | 차례(`ingest_seq`)가 굳은 뒤의 원본 레코드 한 줄과 그 구간, 차례의 목록 | 추가만. 같으면 구간만 늘린다. `volatile`만 대는 흐름은 구간 없이 추가만 하는 줄 | 잃으면 안 됨(기한까지) |
-| KG | 객체와 링크. `live`(지금 유효)와 `hist`(지나감). 자주 바뀌는 속성은 따로 | 변경 배치가 적용될 때만 | 잃으면 안 됨 |
-| 적용된 변경의 기록과 버전 | 변경 배치(`change_seq`), 그 안의 더함·고침·물러남, 경량 변경 레코드, 확정 버전. **언제나 PostgreSQL** | 추가만 | 잃으면 안 됨 |
-| 식별의 이력 | 식별자 목록, 합침·가름, 안 보인 번수 | 추가와 구간 닫기 | 잃으면 안 됨. 진실의 일부 |
-| 실행기의 상태 | 소스에서 소스 커서, 키마다의 상태, 실행 기록 | 적용과 한 트랜잭션에서 | 잃으면 안 됨 |
-| 감사, 지표, 권한 부여 | 감사는 추가만. 지표와 권한 부여의 표는 ADR-0013과 ADR-0012가 정한다 | | 잃으면 안 됨 |
-| 객체마다의 충족 표시 | 역량 질문(ADR-0015)에 객체가 답할 수 있는지와 못 채운 필요 | 변경의 기록을 따르는 소비자가 적용 밖에서 고친다 | **끌어낸 것**. 다시 만든다 |
+| 정의 | 항목, 버전, 정의 세트, 메인 브랜치의 끝(행 하나) | 바뀌지 않는 버전이 쌓인다. 컬럼은 ADR-0014가 정한다 | 잃으면 안 됨 |
+| 수집 변경 로그 | 소스에서 받은 원본 변경을 적용 전에 쌓는 곳(포트, 어댑터 2종) | 추가 전용 | 잃으면 안 됨(보존 기한까지) |
+| 원본 레코드 | 순서(`ingest_seq`)가 확정된 뒤의 원본 레코드 한 행과 그 구간, 순서 목록 | 추가 전용. 같은 내용이면 구간만 늘린다. `volatile` 속성만 전달하는 스트림은 구간 없이 추가만 하는 행 | 잃으면 안 됨(보존 기한까지) |
+| KG | 객체와 링크. `live`(지금 유효)와 `hist`(과거). 자주 바뀌는 속성은 별도 테이블 | 변경 배치가 적용될 때만 | 잃으면 안 됨 |
+| 적용된 변경의 기록과 버전 | 변경 배치(`change_seq`), 그 안의 추가·수정·폐기, 경량 변경 레코드, 확정 버전. **언제나 PostgreSQL** | 추가 전용 | 잃으면 안 됨 |
+| 식별 이력 | 식별자 목록, 병합과 분리, 미관측 횟수 | 추가와 구간 닫기 | 잃으면 안 됨. 기준 데이터의 일부 |
+| 실행기의 상태 | 소스별 소스 커서, 키별 상태, 실행 이력 | 적용과 한 트랜잭션에서 | 잃으면 안 됨 |
+| 감사, 지표, 권한 부여 | 감사는 추가 전용. 지표와 권한 부여의 테이블은 ADR-0013과 ADR-0012가 정한다 | | 잃으면 안 됨 |
+| 객체별 충족 표시 | 역량 질문(ADR-0015)에 객체가 답할 수 있는지와 채우지 못한 요구 | 변경의 기록을 따르는 소비자가 적용과 별도로 수정한다 | **파생 데이터**. 다시 만든다 |
 
-**끌어낸 것**은 스테이징 영역(적재), 차이 계획, 프로젝션 파일, 검색 색인, 충족 표시, 분석용 저장소예요. 모두 진실에서 다시 만들 수 있어서 백업의 대상이 아니에요. 무엇이 진실이고 무엇이 끌어낸 것인지는 10절의 표가 정해요.
+**파생 데이터**는 스테이징 영역(적재), 차이 계획, 프로젝션 파일, 검색 인덱스, 충족 표시, 분석용 스토리지예요. 모두 기준 데이터에서 다시 만들 수 있어서 백업 대상이 아니에요. 무엇이 기준 데이터이고 무엇이 파생 데이터인지는 10절의 표가 정해요.
 
 ```
-소스 ─수집─> 받은 변경의 기록 ─차례 굳히기(ingest_seq)─> 정제·매핑·식별·링크 ─> 후보 (임시 자리)
-                                                          │ 차이 내기
+소스 ─수집─> 수집 변경 로그 ─순서 확정(ingest_seq)─> 정제·매핑·식별·링크 ─> 후보 (스테이징 영역)
+                                                          │ 차이 계산
                                                           ▼
- KG live ◄── 적용(쪽마다 트랜잭션 하나, change_seq 하나) ──► KG hist
+ KG live ◄── 적용(청크마다 트랜잭션 하나, change_seq 하나) ──► KG hist
     │                  │
-    │                  ├─► 적용된 변경의 기록 ─(봉하기)─► 버전
-    │                  └─► 가벼운 변경의 줄(volatile 속성의 바뀜)
-    └─► 투영(파생물)이 적용된 변경의 기록과 가벼운 줄을 함께 따라가며 고쳐진다
+    │                  ├─► 적용된 변경의 기록 ─(확정)─► 버전
+    │                  └─► 경량 변경 레코드(volatile 속성의 변경)
+    └─► 프로젝션(파생물)이 적용된 변경의 기록과 경량 변경 레코드를 함께 따라가며 갱신된다
 ```
 
-**KG는 변경 시퀀스이고, 버전은 그 위의 확정 버전이에요.** 배치 한 번도, 흐름의 작은 묶음도 모두 변경 배치이고 `change_seq`가 하나씩 올라요. 버전은 `change_seq`의 한 자리에 붙인 이름이에요. 읽는 쪽은 "지금"(읽을 수 있는 맨 끝)이나 "그 버전 때"를 물어요.
+**KG는 변경 시퀀스이고, 버전은 그 위의 확정 버전이에요.** 배치 한 번도, 스트림의 작은 배치도 모두 변경 배치이고 `change_seq`가 하나씩 올라요. 버전은 `change_seq`의 한 지점에 붙인 이름이에요. 읽기 측은 "지금"(읽을 수 있는 최신 지점)이나 "그 버전 시점"을 물어요.
 
 ### 2.1 KG는 계약의 자원이에요
 
-- KG에 딸린 모든 표의 기본 키와 색인은 `kg_id`로 시작해요. KG에 든 것을 다루는 모든 길은 `/v1/kgs/{kg}/...` 아래예요(객체, 링크, 질의, 변경, 버전, 충족률, 헬스 상태, 재수집). `{kg}`는 KG의 ID이고 운영 KG는 `main`이라는 이름으로도 가리켜요. 답의 `as_of`에 KG의 ID와 세대가 실려요.
-- **정의의 메인 브랜치는 배포에 하나예요.** KG는 그 메인 브랜치의 어느 정의 세트를 쓰는지 가리켜요(`kg.definition_set_hash`). 운영 KG, 후보 KG, 테스트 KG, 시스템 KG가 같은 메인 브랜치를 봐요. 시스템 KG는 `sys` 이름 공간의 항목만 써요.
-- **"KG 나누기"는 쓰기 한계를 푸는 수단이 아니에요.** 영향 범위와 프로젝션은 KG 하나 안에서만 돌아서, 설비에서 서비스까지 가로지르는 영향 범위를 나누면 끊겨요. 다른 KG가 될 수 있는 것은 서로 기대지 않는 자산 그룹(따로 운영되는 환경)뿐이에요. KG 사이를 가로지르는 트랜잭션도 질의도 없어요. `kg_id`로 저장소를 찾는 층(11절)은 KG를 저장소 사이에서 옮기는 데 써요. 규모의 요구는 한 KG에 수천만 개, 설계의 여유는 수억까지예요(엔진은 1억까지 측정했고 그 위는 추정).
+- KG에 속한 모든 테이블의 기본 키와 인덱스는 `kg_id`로 시작해요. KG에 든 것을 다루는 모든 API 경로는 `/v1/kgs/{kg}/...` 아래예요(객체, 링크, 질의, 변경, 버전, 충족률, 헬스 상태, 재수집). `{kg}`는 KG의 ID이고 운영 KG는 `main`이라는 이름으로도 가리켜요. 응답의 `as_of`에 KG의 ID와 세대가 실려요.
+- **정의의 메인 브랜치는 배포마다 하나예요.** KG는 그 메인 브랜치의 어느 정의 세트를 쓰는지 가리켜요(`kg.definition_set_hash`). 운영 KG, 후보 KG, 테스트 KG, 시스템 KG가 같은 메인 브랜치를 봐요. 시스템 KG는 `sys` 네임스페이스의 항목만 사용해요.
+- **"KG 나누기"는 쓰기 한계를 해소하는 수단이 아니에요.** 영향 범위와 프로젝션은 KG 하나 안에서만 계산하므로, 설비에서 서비스까지 가로지르는 영향 범위를 나누면 끊겨요. 다른 KG가 될 수 있는 것은 서로 의존하지 않는 자산 그룹(따로 운영되는 환경)뿐이에요. KG 사이를 가로지르는 트랜잭션도 질의도 없어요. `kg_id`로 스토리지를 찾는 계층(11절)은 KG를 스토리지 사이에서 옮기는 데 써요. 규모 요구는 한 KG에 수천만 개, 설계 여유는 수억까지예요(엔진은 1억까지 측정했고 그 위는 추정).
 
 ## 3. 스키마 초안
 
-`kg_id`로 시작하지 않는 기본 키는 **닫힌 예외 목록**뿐이에요: 감사 로그, 시크릿, 권한 부여, 설정. 모두 KG에 딸리지 않고 ADR-0012, ADR-0018 등이 칸을 정해요. 칸의 이름은 영어 snake_case예요.
+`kg_id`로 시작하지 않는 기본 키는 **고정된 예외 목록**뿐이에요: 감사 로그, 시크릿, 권한 부여, 설정. 모두 KG에 속하지 않고 ADR-0012, ADR-0018 등이 컬럼을 정해요. 컬럼 이름은 영어 snake_case예요.
 
-**타입은 이름이 아니라 번호로 가리켜요.** 타입 등록부(ADR-0007)가 객체 타입, 링크 타입, 속성마다 **바뀌지 않는 작은 정수**(`type_no`, `link_type_no`, `attr_no`)를 내줘요. 행과 `attrs`의 키와 나눔과 프로젝션이 번호를 쓰고 이름은 등록부에서 풀어요. 번호는 다시 쓰지 않아요(물러난 타입의 번호도 비워 두어요). **이름을 바꿔도 행은 그대로예요.** 타입 이름을 바꿔도 모든 행, 이력, 해시의 부분합이 바뀌지 않아요.
+**타입은 이름이 아니라 번호로 가리켜요.** 타입 등록부(ADR-0007)가 객체 타입, 링크 타입, 속성마다 **바뀌지 않는 작은 정수**(`type_no`, `link_type_no`, `attr_no`)를 발급해요. 행, `attrs`의 키, 파티셔닝, 프로젝션이 번호를 쓰고 이름은 등록부에서 조회해요. 번호는 재사용하지 않아요(폐기된 타입의 번호도 비워 두어요). **이름을 바꿔도 행은 그대로예요.** 타입 이름을 바꿔도 모든 행, 이력, 해시의 부분합이 바뀌지 않아요.
 
-### 3.1 KG의 머리
+### 3.1 KG 헤드
 
-| 표 | 칸 | 키 | 누가 쓰나 |
+| 테이블 | 컬럼 | 키 | 누가 쓰나 |
 |---|---|---|---|
-| `kg` | `kg_id`, `name`, `role`(`production`, `candidate`, `test`, `system`), `state`(`building`, `serving`), `base_kg_id`, `definition_set_hash`, `generation`, `created_at` | `kg_id` | 만들 때와 복구 때. 작은 표 |
+| `kg` | `kg_id`, `name`, `role`(`production`, `candidate`, `test`, `system`), `state`(`building`, `serving`), `base_kg_id`, `definition_set_hash`, `generation`, `created_at` | `kg_id` | 만들 때와 복구 때. 작은 테이블 |
 | `kg_head` | `kg_id`, `applied_seq`, `readable_through`, `applied_through`(수집 변경 로그에서 어디까지 적용했나), `running_graph_hash`, `apply_id`, `next_chunk_no`, `applied_semantic_version` | `kg_id` | **적용기만.** 적용이 이 행을 잠근다 |
 | `kg_apply_lease` | `kg_id`, `lease_owner`, `lease_until`, `attempt`, `semantic_version` | `kg_id` | 리스를 획득한 워커([적용](kg-storage-apply.md) 6절) |
-| `kg_maintenance` | `kg_id`, `sealed_version_no`, `last_sealed_at`, `min_readable_seq`, `last_cleanup_at` | `kg_id` | 확정과 정리. 적용기의 행과 다른 행이라 서로 기다리지 않는다 |
-| `kg_hash_key` | `kg_id`, `key_version`, `wrapped_key` | `(kg_id, key_version)` | KG를 만들 때. 마스터 키로 감싼 KG마다의 해시 키(7.3). 값은 아무도 못 읽는다(ADR-0018) |
+| `kg_maintenance` | `kg_id`, `sealed_version_no`, `last_sealed_at`, `min_readable_seq`, `last_cleanup_at` | `kg_id` | 확정과 정리. 적용기의 행과 다른 행이라 서로 대기하지 않는다 |
+| `kg_hash_key` | `kg_id`, `key_version`, `wrapped_key` | `(kg_id, key_version)` | KG를 만들 때. 마스터 키로 래핑한 KG별 해시 키(7.3). 값은 아무도 읽지 못한다(ADR-0018) |
 | `generation_event` | `kg_id`, `generation`, `restored_to_seq`, `at` | `(kg_id, generation)` | 시점 복구 때([적용](kg-storage-apply.md) 7절) |
 
-`readable_through`는 읽는 쪽이 볼 수 있는 맨 끝이고 배치 하나가 다 들어갔을 때만 올라요. 작은 묶음에서는 `applied_seq`와 같아요. 차례의 번호는 머리 행의 셈이고 시퀀스를 쓰지 않아요.
+`readable_through`는 읽기 측이 볼 수 있는 최신 지점이고 배치 하나가 모두 적용됐을 때만 올라요. 작은 배치에서는 `applied_seq`와 같아요. 순서 번호는 헤드 행의 카운터이고 시퀀스 객체를 쓰지 않아요.
 
 ### 3.2 원본 레코드와 소스 커서
 
-| 표 | 칸 | 키 | 색인과 나눔 |
+| 테이블 | 컬럼 | 키 | 인덱스와 파티셔닝 |
 |---|---|---|---|
-| `source_run` | `kg_id`, `source_id`, `run_no`, `method`(`snapshot`, `incremental`, `stream`), `started_at`, `finished_at`, `capture_complete`, `expected_count`, `received_count`, `ingest_seq_from`, `ingest_seq_to` | `(kg_id, source_id, run_no)` | `source_id`로 나눌 수 있다 |
-| `raw_record` | `kg_id`, `source_id`, `dataset_id`, `natural_key`, `content_hash`, `source_time`, `body`(JSONB. 걷어 내면 비어 있다), `redaction`(비어 있으면 안 걷었다. `{reason, at, audit_id}`), `from_ingest_seq`, `to_ingest_seq`, `branch_id`(브랜치의 트라이얼 수집만) | `(kg_id, source_id, dataset_id, natural_key, content_hash)` | `source_id`로 나눈다. 구간이 열린 행 색인 |
-| `raw_log` | `kg_id`, `source_id`, `dataset_id`, `natural_key`, `content_hash`, `source_time`, `body`, `redaction`, `ingest_seq`, `received_at` | `(kg_id, ingest_seq, dataset_id, natural_key)` | `ingest_seq` 구간으로 나눈다. 추가만 한다 |
-| `source_cursor` | `kg_id`, `source_id`, `position`(소스가 준 표지), `updated_at` | `(kg_id, source_id)` | 작은 표. 소스에서 어디까지 읽었나 |
-| `ingest_order` | `kg_id`, `order_no`, `event_kind`, `log_id`, `log_position_from`, `log_position_to`, `ingest_seq_from`, `ingest_seq_to`, `ordered_at` | `(kg_id, order_no)` | 작은 표. 차례의 목록 |
+| `source_run` | `kg_id`, `source_id`, `run_no`, `method`(`snapshot`, `incremental`, `stream`), `started_at`, `finished_at`, `capture_complete`, `expected_count`, `received_count`, `ingest_seq_from`, `ingest_seq_to` | `(kg_id, source_id, run_no)` | `source_id`로 파티셔닝할 수 있다 |
+| `raw_record` | `kg_id`, `source_id`, `dataset_id`, `natural_key`, `content_hash`, `source_time`, `body`(JSONB. 마스킹하면 비어 있다), `redaction`(비어 있으면 마스킹하지 않은 것. `{reason, at, audit_id}`), `from_ingest_seq`, `to_ingest_seq`, `branch_id`(브랜치의 트라이얼 수집만) | `(kg_id, source_id, dataset_id, natural_key, content_hash)` | `source_id`로 파티셔닝한다. 구간이 열린 행의 인덱스 |
+| `raw_log` | `kg_id`, `source_id`, `dataset_id`, `natural_key`, `content_hash`, `source_time`, `body`, `redaction`, `ingest_seq`, `received_at` | `(kg_id, ingest_seq, dataset_id, natural_key)` | `ingest_seq` 구간으로 파티셔닝한다. 추가 전용 |
+| `source_cursor` | `kg_id`, `source_id`, `position`(소스가 준 위치값), `updated_at` | `(kg_id, source_id)` | 작은 테이블. 소스에서 어디까지 읽었나 |
+| `ingest_order` | `kg_id`, `order_no`, `event_kind`, `log_id`, `log_position_from`, `log_position_to`, `ingest_seq_from`, `ingest_seq_to`, `ordered_at` | `(kg_id, order_no)` | 작은 테이블. 순서 목록 |
 
-- **소스 커서가 둘이에요.** `source_cursor`는 수집 변경 로그에 쓰는 것과 함께 나아가요. 기록이 PostgreSQL이면 한 트랜잭션이고, 메시지 기록 저장소면 쓴 뒤에 나아가서 겹쳐 받은 것을 `(소스, 자리)` 키로 걸러 내요. `applied_through`는 KG에 적용하는 트랜잭션에 묶여요.
-- **차례는 굳히는 걸음에서 정해져요.** KG마다 하나뿐인 적용기가 묶음을 읽을 때 `ingest_order`에 적고 `ingest_seq`를 매겨요. 다시 돌릴 때는 이 목록을 따라서, 수집 변경 로그가 어느 어댑터든 차례가 같아요. 목록에 드는 사건은 `event_kind`의 **닫힌 여덟 가지**예요(적용 문서 5절). 원본 변경이 아닌 사건은 `log_*` 칸이 비어요.
-- `raw_record`의 `to_ingest_seq`는 **열어 둬요**. 같은 기록을 다시 봐도 행을 고치지 않고, 안 보이거나 내용이 바뀌었을 때(또는 삭제 사건)만 닫아요.
-- **`volatile` 속성만 대는 흐름의 데이터셋**은 구간을 쓰지 않고 `raw_log`에 사건마다 한 줄을 추가만 해요. 초당 수만 건에서 옛 행을 닫고 새 행을 넣는 쓰기를 피해요. 짧게 보관해요(적용 문서 8절). 어느 데이터셋이 이 갈래인지는 정의의 계보에서 정해져요(그 데이터셋이 대는 속성이 전부 `volatile`).
-- **걷어 낸 표시.** 원본 레코드에 샌 값이나 지워야 할 값이 있으면 `admin`의 운영 액션으로 `body`를 지우고 `redaction`에 이유와 때와 감사 로그를 남겨요. `content_hash`와 자리(`natural_key`, 구간)는 남아요. 걷어 낸 기록을 다시 돌릴 때는 남은 해시로 "같은 입력"임을 보이고 값은 걷어 낸 것으로 다뤄요. 해시가 그대로라 `input_digest`는 안 바뀌어요. 이 칸은 처음부터 있어요. 나중에 더하면 이미 쌓인 기록의 모양을 고쳐야 해요.
+- **소스 커서는 2종이에요.** `source_cursor`는 수집 변경 로그에 쓰는 것과 함께 전진해요. 로그가 PostgreSQL이면 한 트랜잭션이고, 메시지 로그 스토리지이면 기록한 뒤에 전진해서 중복 수신된 것을 `(소스, 오프셋)` 키로 걸러 내요. `applied_through`는 KG에 적용하는 트랜잭션에 묶여요.
+- **순서는 확정 단계에서 정해져요.** KG마다 하나뿐인 적용기가 배치를 읽을 때 `ingest_order`에 기록하고 `ingest_seq`를 매겨요. 재실행할 때는 이 목록을 따르므로, 수집 변경 로그가 어느 어댑터든 순서가 같아요. 목록에 들어가는 이벤트는 `event_kind`의 **고정된 8종**이에요(적용 문서 5절). 원본 변경이 아닌 이벤트는 `log_*` 컬럼이 비어요.
+- `raw_record`의 `to_ingest_seq`는 **열어 둬요**. 같은 레코드를 다시 수집해도 행을 수정하지 않고, 관측되지 않거나 내용이 바뀌었을 때(또는 삭제 이벤트)만 닫아요.
+- **`volatile` 속성만 전달하는 스트림의 데이터셋**은 구간을 쓰지 않고 `raw_log`에 이벤트마다 한 행을 추가만 해요. 초당 수만 건에서 옛 행을 닫고 새 행을 넣는 쓰기를 피해요. 짧게 보관해요(적용 문서 8절). 어느 데이터셋이 이 유형인지는 정의의 계보에서 정해져요(그 데이터셋이 전달하는 속성이 전부 `volatile`).
+- **마스킹 표시.** 원본 레코드에 유출된 값이나 삭제해야 할 값이 있으면 `admin`의 운영 액션으로 `body`를 지우고 `redaction`에 이유와 시각과 감사 로그를 남겨요. `content_hash`와 위치(`natural_key`, 구간)는 남아요. 마스킹한 레코드를 재실행할 때는 남은 해시로 "같은 입력"임을 보이고 값은 마스킹된 것으로 다뤄요. 해시가 그대로라 `input_digest`는 바뀌지 않아요. 이 컬럼은 처음부터 있어요. 나중에 추가하면 이미 쌓인 레코드의 스키마를 수정해야 해요.
 
 ### 3.3 KG: 객체, 링크, 식별
 
-| 표 | 칸 | 키 | 색인과 나눔 |
+| 테이블 | 컬럼 | 키 | 인덱스와 파티셔닝 |
 |---|---|---|---|
-| `object_live` | `kg_id`, `object_id`(16바이트), `type_no`, `name`, `min_grade`, `attrs`(JSONB, 키는 `attr_no`, `versioned` 속성만), `scope_v1`~`scope_v4`, `source_refs`(JSONB), `content_hash`, `seq_from` | `(kg_id, object_id)` | `(kg_id, type_no, object_id)`, 범위 색인의 자리(아래). `(kg_id, 해시(object_id))`로 나눈다 |
-| `object_hist` | `object_live`의 칸 + `seq_to` | `(kg_id, object_id, seq_from)` | `seq_to` 구간으로 나눈다 |
-| `link_live` | `kg_id`, `link_id`(16바이트), `link_type_no`, `src_object_id`, `dst_object_id`, `discriminator`, `attrs`, `source_refs`, `content_hash`, `seq_from` | `(kg_id, link_id)` | `(kg_id, src_object_id, link_type_no)`, `(kg_id, dst_object_id, link_type_no)`. `(kg_id, 해시(link_id))`로 나눈다 |
-| `link_hist` | `link_live`의 칸 + `seq_to` | `(kg_id, link_id, seq_from)` | `seq_to` 구간으로 나눈다 |
-| `attr_volatile` | `kg_id`, `object_id`, `attr_no`, `value`, `grade`, `basis`, `seen_at`, `feed_id` | `(kg_id, object_id, attr_no)` | **보조 색인 없음**(8절). **객체의 속성만.** 링크는 `volatile`이 될 수 없다 |
-| `light_change` | `kg_id`, `change_seq`, `object_id`, `attr_no`, `value_mark`(새 값의 짧은 해시) | `(kg_id, change_seq, object_id, attr_no)` | `change_seq` 구간으로 나눈다. 짧게 보관 |
-| `pending_value` | `kg_id`, `feed_id`, `target_key`, `attr_no`, `value`, `received_ingest_seq`, `expires_tick` | `(kg_id, feed_id, target_key, attr_no)` | 작은 표. 붙을 객체를 기다리는 값 |
-| `object_identifier` | `kg_id`, `object_id`, `id_kind`, `id_value`, `scope`, `seq_from`, `seq_to` | `(kg_id, object_id, id_kind, id_value, seq_from)` | `(kg_id, id_kind, id_value)`로 찾는다 |
-| `identity_event` | `kg_id`, `change_seq`, `event_kind`(`merge`, `split`, `revive`), `retired_object_id`, `into_object_id`, `link_id_map`(합칠 때 옛 링크 ID와 새 링크 ID의 이음) | `(kg_id, change_seq, retired_object_id)` | `change_seq`로 나눌 수 있다 |
-| `unseen_object` | `kg_id`, `object_id`, `feed_id`, `unseen_runs`, `first_unseen_tick` | `(kg_id, object_id, feed_id)` | 작은 표. 안 보인 번수를 세는 **유일한 자리** |
+| `object_live` | `kg_id`, `object_id`(`text COLLATE "C"`, ADR-0032), `type_no`, `name`, `min_grade`, `attrs`(JSONB, 키는 `attr_no`, `versioned` 속성만), `scope_v1`~`scope_v4`(접근 제어 작업의 몫이라 PostgreSQL 어댑터에는 아직 없다), `source_refs`(JSONB), `content_hash`, `seq_from` | `(kg_id, object_id)` | `(kg_id, type_no, object_id)`, 범위 인덱스(아래). `(kg_id, 해시(object_id))`로 파티셔닝한다 |
+| `object_hist` | `object_live`의 컬럼 + `seq_to` | `(kg_id, object_id, seq_from)` | `seq_to` 구간으로 파티셔닝한다 |
+| `link_live` | `kg_id`, `link_id`(`text COLLATE "C"`), `link_type_no`, `src_object_id`, `dst_object_id`, `discriminator`, `attrs`, `source_refs`, `content_hash`, `seq_from` | `(kg_id, link_id)` | `(kg_id, src_object_id, link_type_no)`, `(kg_id, dst_object_id, link_type_no)`. `(kg_id, 해시(link_id))`로 파티셔닝한다 |
+| `link_hist` | `link_live`의 컬럼 + `seq_to` | `(kg_id, link_id, seq_from)` | `seq_to` 구간으로 파티셔닝한다 |
+| `attr_volatile` | `kg_id`, `object_id`, `attr_no`, `value`, `grade`, `basis`, `seen_at`, `feed_id` | `(kg_id, object_id, attr_no)` | **보조 인덱스 없음**(8절). **객체의 속성만.** 링크는 `volatile`이 될 수 없다 |
+| `light_change` | `kg_id`, `change_seq`, `object_id`, `attr_no`, `value_mark`(새 값의 짧은 해시) | `(kg_id, change_seq, object_id, attr_no)` | `change_seq` 구간으로 파티셔닝한다. 짧게 보관 |
+| `pending_value` | `kg_id`, `feed_id`, `target_key`, `attr_no`, `value`, `received_ingest_seq`, `expires_tick` | `(kg_id, feed_id, target_key, attr_no)` | 작은 테이블. 연결할 객체를 기다리는 값 |
+| `object_identifier` | `kg_id`, `object_id`, `id_kind`, `id_value`, `scope`, `seq_from`, `seq_to` | `(kg_id, object_id, id_kind, id_value, seq_from)` | `(kg_id, id_kind, id_value)`로 조회한다 |
+| `identity_event` | `kg_id`, `change_seq`, `event_kind`(`merge`, `split`, `revive`), `retired_object_id`, `into_object_id`, `link_id_map`(병합할 때 옛 링크 ID와 새 링크 ID의 매핑) | `(kg_id, change_seq, retired_object_id)` | `change_seq`로 파티셔닝할 수 있다 |
+| `unseen_object` | `kg_id`, `object_id`, `feed_id`, `unseen_runs`, `first_unseen_tick` | `(kg_id, object_id, feed_id)` | 작은 테이블. 미관측 횟수를 세는 **유일한 위치** |
 
-- `live`에는 지금 유효한 행만 있어서 `seq_to`가 없어요. 구간은 `seq_from <= S < seq_to`예요(왼쪽은 닫히고 오른쪽은 열려요). 구간을 버전이 아니라 `change_seq`로 적어서, 확정과 무관하게 어느 변경 사이의 모습이든 읽혀요.
-- **범위 필터링의 자리.** 타입 등록부에서 `scope_key: true`로 선언된 속성(타입 하나에 넷까지, 값은 짧은 글이나 참조, `volatile` 불가, 하위 타입이 물려받음)의 값을 `object_live`와 `object_hist`의 `scope_v1`~`scope_v4`에 **사본**으로 놓아요. 칸은 그 타입이 선언한 순서대로 쓰고, 칸 번호는 한번 주면 다시 쓰지 않아요. 원본은 `attrs`이고 사본은 해시에 안 들어요. API가 읽기 범위의 객체 조건을 SQL로 거르는 자리이고(access-control.md), 색인의 자리는 `(kg_id, type_no, scope_v1, object_id)` 같은 꼴이에요. 어떤 색인을 둘지는 측정해서 정해요. 프로젝션에도 같은 값이 객체마다 들어가요.
-- 끌어낸 링크와 묶음(`basis`가 `derived`)도 받을 때 만들어 보통의 행으로 저장해요(ADR-0007). 링크 타입의 바인딩, 값 타입, 특성은 타입 등록부의 일이고 링크 행은 `link_type_no`만 가져요.
-- `source_refs`는 만든 원본 레코드를 `(source_id, dataset_id, natural_key)`로 가리켜요. 어느 규칙 버전이 만들었는지는 확정 버전이 알고, 값 하나의 근거는 같은 규칙을 다시 돌려 보여 줘요(ADR-0008).
-- 합칠 때 흡수된 쪽의 링크는 `identity_event`에 옛 링크 ID와 새 링크 ID의 이음을 남겨요. 변경 알림과 충족률은 그것을 "물러남과 더함"이 아니라 이음으로 다뤄요. 물러난 객체가 옛 ID로 되살아나는 것은 강한 키로 맞았거나 정해진 기간 안일 때만이고, 아니면 새 ID를 주고 식별 후보로 올려요(`revive`는 되살린 기록).
-- `unseen_object`는 (피드, 객체)마다 "온전한 수집에 안 보인 번수"를 세요. 번수(가정: 3번)와 최소 기간(24시간)을 함께 넘으면 그 피드의 "보고 있음"을 회수하고, 보고 있는 피드가 없으면 물러나요. 흐름에서는 삭제 사건과 맞추기만 물러나게 해요(ADR-0008).
+- `live`에는 지금 유효한 행만 있어서 `seq_to`가 없어요. 구간은 `seq_from <= S < seq_to`예요(왼쪽은 닫히고 오른쪽은 열려요). 구간을 버전이 아니라 `change_seq`로 적어서, 확정과 무관하게 어느 변경 사이의 모습이든 읽을 수 있어요.
+- **범위 필터링용 컬럼.** 타입 등록부에서 `scope_key: true`로 선언된 속성(타입 하나에 4개까지, 값은 짧은 문자열이나 참조, `volatile` 불가, 하위 타입이 상속함)의 값을 `object_live`와 `object_hist`의 `scope_v1`~`scope_v4`에 **복사본**으로 놓아요. 컬럼은 그 타입이 선언한 순서대로 쓰고, 컬럼 번호는 한번 부여하면 재사용하지 않아요. 원본은 `attrs`이고 복사본은 해시에 포함되지 않아요. API가 읽기 범위의 객체 조건을 SQL로 거르는 데 쓰는 컬럼이고(access-control.md), 인덱스는 `(kg_id, type_no, scope_v1, object_id)` 같은 형태예요. 어떤 인덱스를 둘지는 측정해서 정해요. 프로젝션에도 같은 값이 객체마다 들어가요.
+- 파생된 링크와 그룹(`basis`가 `derived`)도 수집할 때 만들어 일반 행으로 저장해요(ADR-0007). 링크 타입의 바인딩, 값 타입, 특성은 타입 등록부의 몫이고 링크 행은 `link_type_no`만 가져요.
+- `source_refs`는 해당 객체를 만든 원본 레코드를 `(source_id, dataset_id, natural_key)`로 가리켜요. 어느 규칙 버전이 만들었는지는 확정 버전이 알고, 값 하나의 근거는 같은 규칙을 다시 실행해 보여 줘요(ADR-0008).
+- 병합할 때 흡수된 객체의 링크는 `identity_event`에 옛 링크 ID와 새 링크 ID의 매핑을 남겨요. 변경 알림과 충족률은 그것을 "폐기와 추가"가 아니라 ID 승계로 다뤄요. 폐기된 객체가 옛 ID로 되살아나는 것은 강한 키로 일치했거나 정해진 기간 안일 때만이고, 아니면 새 ID를 부여하고 식별 후보로 올려요(`revive`는 되살린 기록).
+- `unseen_object`는 (피드, 객체)마다 "온전한 수집에서 관측되지 않은 횟수"를 세요. 횟수(가정: 3회)와 최소 기간(24시간)을 함께 넘으면 그 피드의 "관측 중" 표시를 회수하고, 관측 중인 피드가 없으면 폐기해요. 스트림에서는 삭제 이벤트와 정합성 대조만 폐기를 일으켜요(ADR-0008).
 
 ### 3.4 변경의 기록과 버전
 
-| 표 | 칸 | 키 | 색인과 나눔 |
+| 테이블 | 컬럼 | 키 | 인덱스와 파티셔닝 |
 |---|---|---|---|
-| `change_batch` | `kg_id`, `change_seq`, `kind`(`sync`, `stream`, `merge`), `source_id`, `apply_id`, `chunk_no`, `chunk_count`, `ingest_seq_from`, `ingest_seq_to`, `definition_set_hash`, `applied_at`, `attempt`, `row_counts` | `(kg_id, change_seq)` | `change_seq` 구간으로 나눈다 |
-| `change_entry` | `kg_id`, `change_seq`, `entity_kind`(`object`, `link`), `entity_id`, `change_kind`(`added`, `changed`, `retired`), `old_hash`, `new_hash` | `(kg_id, change_seq, entity_kind, entity_id)` | `change_seq` 구간으로 나눈다 |
+| `change_batch` | `kg_id`, `change_seq`, `kind`(`sync`, `stream`, `merge`), `source_id`, `apply_id`, `chunk_no`, `chunk_count`, `ingest_seq_from`, `ingest_seq_to`, `definition_set_hash`, `applied_at`, `attempt`, `row_counts` | `(kg_id, change_seq)` | `change_seq` 구간으로 파티셔닝한다 |
+| `change_entry` | `kg_id`, `change_seq`, `entity_kind`(`object`, `link`), `entity_id`, `change_kind`(`added`, `changed`, `retired`), `old_hash`, `new_hash` | `(kg_id, change_seq, entity_kind, entity_id)` | `change_seq` 구간으로 파티셔닝한다 |
 | `kg_version` | `kg_id`, `version_no`, `kg_version_id`, `sealed_seq`, `generation`, `prev_kg_version_id`, `definition_set_hash`, `engine_semantic_version`, `hash_rule_version`, `input_digest`, `graph_hash`, `sealed_at`, `seal_kind`(`sync`, `merge`, `periodic`) | `(kg_id, version_no)` | `(kg_id, kg_version_id)`는 유일해야 한다 |
-| `kg_version_hash_part` | `kg_id`, `version_no`, `entity_kind`, `type_id`(바뀌지 않는 ID), `partial_sum`, `row_count` | `(kg_id, version_no, entity_kind, type_id)` | 작은 표 |
+| `kg_version_hash_part` | `kg_id`, `version_no`, `entity_kind`, `type_id`(바뀌지 않는 ID), `partial_sum`, `row_count` | `(kg_id, version_no, entity_kind, type_id)` | 작은 테이블 |
 
-적용된 변경의 기록(`change_batch`, `change_entry`)은 **언제나 PostgreSQL**에 있어요. `live`·`hist`와 한 트랜잭션으로 쓰이는 KG의 진실이기 때문이에요(오래된 것은 내려 둘 수 있어요). `version_no`는 정렬용 숫자, `kg_version_id`는 같은 입력이면 같은 값이 나오는 이름이에요. 버전의 머리에 **실행기의 의미 버전과 해시 규칙의 버전**이 적혀요. `sealed_seq`는 `readable_through`를 넘지 않아요.
+적용된 변경의 기록(`change_batch`, `change_entry`)은 **언제나 PostgreSQL**에 있어요. `live`·`hist`와 한 트랜잭션으로 기록되는 KG의 기준 데이터이기 때문이에요(오래된 것은 아카이브할 수 있어요). `version_no`는 정렬용 숫자, `kg_version_id`는 같은 입력이면 같은 값이 나오는 이름이에요. 버전 헤더에 **실행기의 의미 버전과 해시 규칙 버전**이 적혀요. `sealed_seq`는 `readable_through`를 넘지 않아요.
 
-### 3.5 실행 기록과 스테이징 영역
+### 3.5 실행 이력과 스테이징 영역
 
-| 표 | 칸 | 키 | 색인과 나눔 |
+| 테이블 | 컬럼 | 키 | 인덱스와 파티셔닝 |
 |---|---|---|---|
 | `sync_run` | `kg_id`, `sync_id`, `source_id`, `trigger`, `state`, `lease_owner`, `lease_until`, `attempt`, `started_at`, `finished_at`, `result_change_seq` | `(kg_id, sync_id)` | `(kg_id, source_id, state)` |
-| `sync_step_result` | `kg_id`, `sync_id`, `step`, `rows_in`, `rows_out`, `rows_dropped`, `drop_reasons`, `duration_ms` | `(kg_id, sync_id, step)` | 작은 표 |
-| `operator_state` | `kg_id`, `operator_id`, `state_key`, `state_value` | `(kg_id, operator_id, state_key)` | 실행기의 키 상태(조인 색인, 겹침 없애기, 내용 해시). 메모리에 캐시. 정의가 바뀐 연산의 상태는 드라이 런이 원본 레코드로 새로 짓고 적용 때 갈아 끼운다 |
-| `stage_object`, `stage_link` | `kg_id`, `apply_id`, `object_live`·`link_live`와 같은 칸 | `(kg_id, apply_id, id)` | 로그를 남기지 않는 보통 표. 적용마다 지운다 |
-| `plan_change` | `kg_id`, `apply_id`, `chunk_no`, `entity_kind`, `entity_id`, `change_kind`, `old_hash`, `new_hash` | `(kg_id, apply_id, entity_kind, entity_id)` | 적용마다 지운다 |
-| `audit_event` | `kg_id`(비어도 된다), `event_id`, `actor`, `action`, `target`, `at`, `detail`(JSONB) | `event_id` | 시각 구간으로 나눈다. 추가만 한다. 닫힌 예외 |
+| `sync_step_result` | `kg_id`, `sync_id`, `step`, `rows_in`, `rows_out`, `rows_dropped`, `drop_reasons`, `duration_ms` | `(kg_id, sync_id, step)` | 작은 테이블 |
+| `operator_state` | `kg_id`, `operator_id`, `state_key`, `state_value` | `(kg_id, operator_id, state_key)` | 실행기의 키 상태(조인 인덱스, 중복 제거, 내용 해시). 메모리에 캐시. 정의가 바뀐 연산의 상태는 드라이 런이 원본 레코드로 새로 구축하고 적용할 때 교체한다 |
+| `stage_object`, `stage_link` | `kg_id`, `apply_id`, `object_live`·`link_live`와 같은 컬럼 | `(kg_id, apply_id, id)` | `UNLOGGED` 테이블. 적용마다 삭제한다 |
+| `plan_change` | `kg_id`, `apply_id`, `chunk_no`, `entity_kind`, `entity_id`, `change_kind`, `old_hash`, `new_hash` | `(kg_id, apply_id, entity_kind, entity_id)` | 적용마다 삭제한다 |
+| `audit_event` | `kg_id`(비어도 된다), `event_id`, `actor`, `action`, `target`, `at`, `detail`(JSONB) | `event_id` | 시각 구간으로 파티셔닝한다. 추가 전용. 예외 목록에 포함 |
 
-연결 풀이 트랜잭션 단위라서 **세션 임시 표를 쓰지 않아요**. 문제 목록의 표는 ADR-0011이 칸을 정하고 그 표도 `kg_id`를 가져요.
+커넥션 풀이 트랜잭션 단위라서 **세션 임시 테이블을 쓰지 않아요**. 문제 목록의 테이블은 ADR-0011이 컬럼을 정하고 그 테이블도 `kg_id`를 가져요.
 
-표마다의 설계 필드(쓰기 부하, 보관, 파티션 키, 색인의 예산, 채움 비율, 자리 안 갱신의 규칙)은 [저장소의 운영](postgres-operations.md) 3절에 있어요(틀은 알파, 값은 클로즈드 베타). 추가만 하는 표는 구간으로 나누고 `live`는 `kg_id`와 해시로 나눠요.
+테이블별 설계 항목(쓰기 부하, 보관, 파티션 키, 인덱스 예산, 채움 비율, 제자리 갱신 규칙)은 [스토리지 운영](postgres-operations.md) 3절에 있어요(틀은 알파, 값은 클로즈드 베타). 추가 전용 테이블은 구간으로 파티셔닝하고 `live`는 `kg_id`와 해시로 파티셔닝해요.
 
 ## 4. 변경, 확정 버전, 지금: 가상의 예시
 
-서버 한 대가 생기고, 속성이 바뀌고, 물러나요. 지어낸 값이에요.
+서버 한 대가 생기고, 속성이 바뀌고, 폐기돼요. 합성한 값이에요.
 
 - 객체 `O1`: 타입 `PhysicalServer`(`type_no` 12). `firmware_version`은 `versioned`(`attr_no` 301), `power_state`는 `volatile`(`attr_no` 302).
 - 링크 `L1`: 타입 `INSTALLED_IN`(`link_type_no` 7), `O1` → 랙 `R1`. 링크는 `volatile`일 수 없다.
 
-| `change_seq` | 일어난 일 | `change_entry`와 가벼운 줄 |
+| `change_seq` | 일어난 일 | `change_entry`와 경량 변경 레코드 |
 |---|---|---|
-| 118 | 구성 소스의 배치(`snapshot`)가 서버를 처음 줬다. 펌웨어 `1.2` | `(118, object, O1, added, -, h1)`, `(118, link, L1, added, -, k1)` |
-| 120 | 이 배치를 적용한 직후 **봉했다**: 버전 3 = `sealed_seq` 120 | 없음 |
-| 121~300 | 상태 전이가 `power_state`를 수백 번 바꿨다 | `change_entry` **없음.** `attr_volatile`의 한 행을 덮어쓰고 값이 바뀔 때마다 `light_change`에 `(seq, O1, 302, 표지)` 한 줄. 한 묶음 안에서는 마지막 값만 쓴다 |
+| 118 | 구성 소스의 배치(`snapshot`)가 서버를 처음 전달했다. 펌웨어 `1.2` | `(118, object, O1, added, -, h1)`, `(118, link, L1, added, -, k1)` |
+| 120 | 이 배치를 적용한 직후 **확정했다**: 버전 3 = `sealed_seq` 120 | 없음 |
+| 121~300 | 상태 전이가 `power_state`를 수백 번 바꿨다 | `change_entry` **없음.** `attr_volatile`의 한 행을 덮어쓰고 값이 바뀔 때마다 `light_change`에 `(seq, O1, 302, 표지)` 레코드 하나. 한 배치 안에서는 마지막 값만 쓴다 |
 | 305 | 다른 배치가 펌웨어를 `1.3`으로 바꿨다 | `(305, object, O1, changed, h1, h2)` |
-| 310 | 정해진 주기에 봉했다: 버전 7 = `sealed_seq` 310 | 없음 |
-| 700 | 안 보인 수집이 3번 찼다. 객체와 링크가 물러났다 | `(700, object, O1, retired, h2, -)`, `(700, link, L1, retired, k1, -)` |
-| 705 | 봉했다: 버전 12 = `sealed_seq` 705 | 없음 |
+| 310 | 정해진 주기에 확정했다: 버전 7 = `sealed_seq` 310 | 없음 |
+| 700 | 미관측이 3회 쌓였다. 객체와 링크가 폐기됐다 | `(700, object, O1, retired, h2, -)`, `(700, link, L1, retired, k1, -)` |
+| 705 | 확정했다: 버전 12 = `sealed_seq` 705 | 없음 |
 
-`object_live`/`object_hist`에서 `O1`이 어디 있는지는 읽는 때에 따라 달라요(작은 묶음이라 `readable_through`가 맨 끝과 같아요).
+`object_live`/`object_hist`에서 `O1`이 어디 있는지는 읽는 시점에 따라 달라요(작은 배치라서 `readable_through`가 최신 지점과 같아요).
 
-| 맨 끝 | `object_live`의 `O1` | `object_hist`의 `O1` |
+| 최신 지점 | `object_live`의 `O1` | `object_hist`의 `O1` |
 |---|---|---|
 | 250 | `seq_from=118`, 펌웨어 `1.2` | 없음 |
 | 400 | `seq_from=305`, 펌웨어 `1.3` | `[118, 305)` 펌웨어 `1.2` |
 | 705 | 없음 | `[118, 305)` 펌웨어 `1.2`, `[305, 700)` 펌웨어 `1.3` |
 
-`L1`도 같고 `link_hist`에 `[118, 700)`이 생겨요. 맨 끝이 705일 때 "버전 7 때"를 물으면 `S = 310`으로 읽어 `O1`이 펌웨어 `1.3`으로 나와요(구간 `[305, 700)`). **이 답에는 `power_state`가 없어요.** 엔벨로프에 `volatile_as_of: omitted`가 실려요. 지금 값을 과거에 섞지 않기 위해서예요. "지금"을 물으면 `volatile_as_of: current`이고 지금 값과 본 때가 나와요. 프로젝션과 충족 표시와 변경 알림은 `light_change`의 줄을 따라가서 `power_state`가 바뀐 것을 알아요.
+`L1`도 같고 `link_hist`에 `[118, 700)`이 생겨요. 최신 지점이 705일 때 "버전 7 시점"을 물으면 `S = 310`으로 읽어 `O1`이 펌웨어 `1.3`으로 나와요(구간 `[305, 700)`). **이 응답에는 `power_state`가 없어요.** 엔벨로프에 `volatile_as_of: omitted`가 실려요. 현재 값을 과거에 섞지 않기 위해서예요. "지금"을 물으면 `volatile_as_of: current`이고 현재 값과 관측한 시각이 나와요. 프로젝션과 충족 표시와 변경 알림은 `light_change`의 레코드를 따라가서 `power_state`가 바뀐 것을 알아요.
 
 ## 5. 적용: 요약
 
-변경 배치 하나가 KG에 들어가는 길은 **순서 확정 → 1 적재 → 2 차이 내기 → 3 적용**이에요. 3걸음은 짧은 트랜잭션 하나로 머리 행을 잠가요. 큰 적용은 쪽(chunk)으로 자르고 `readable_through`를 배치가 끝날 때만 올려서, 읽는 쪽이 반쯤 든 배치를 보지 않게 해요. 초기 적재는 한 트랜잭션으로 하지 않아요("짓는 중"인 KG에 쪽으로 채우고 끝나면 `serving`이 돼요). 걸음마다 죽으면 어떻게 이어 가는지, 수집 순서에 드는 사건, 리스, 세대는 [KG의 적용](kg-storage-apply.md)이 정해요.
+변경 배치 하나가 KG에 들어가는 절차는 **순서 확정 → 1 적재 → 2 차이 계산 → 3 적용**이에요. 3단계는 짧은 트랜잭션 하나로 헤드 행을 잠가요. 큰 적용은 청크(chunk)로 나누고 `readable_through`를 배치가 끝날 때만 올려서, 읽기 측이 반만 적용된 배치를 보지 않게 해요. 초기 적재는 한 트랜잭션으로 하지 않아요("구축 중"인 KG에 청크 단위로 채우고 끝나면 `serving`이 돼요). 단계마다 실패했을 때 어떻게 이어 가는지, 수집 순서에 들어가는 이벤트, 리스, 세대는 [KG의 적용](kg-storage-apply.md)이 정해요.
 
-**읽는 쪽이 한 상태만 보는 법:** 읽기를 시작할 때 `readable_through`를 **한 번** 읽어 `S`를 정해요("그 버전 때"면 그 버전의 `sealed_seq`). 그 뒤의 모든 문장이 "`S` 때의 모습"을 구간으로 물어요(6절). `S`는 답과 페이지네이션 표지(커서)에 적혀요. 커서에는 엔진의 내부 번호가 아니라 객체 ID를 써요. `S` 이후에 적용이 있어도 `S`의 행은 `hist`에 남아 있어서(보존 기한 안에서) 읽기 격리가 없어도 돼요. 복제본에서 읽어도 같고, 뒤처질 수 있어서 묻는 쪽이 `min_seq`를 줄 수 있어요(11절).
+**읽기 측이 한 상태만 보는 방법:** 읽기를 시작할 때 `readable_through`를 **한 번** 읽어 `S`를 정해요("그 버전 시점"이면 그 버전의 `sealed_seq`). 이후의 모든 쿼리가 "`S` 시점의 모습"을 구간으로 조회해요(6절). `S`는 응답과 페이지네이션 커서에 적혀요. 커서에는 엔진의 내부 번호가 아니라 객체 ID를 써요. `S` 이후에 적용이 있어도 `S` 시점의 행은 `hist`에 남아 있어서(보존 기한 안에서) 읽기 격리가 없어도 돼요. 복제본에서 읽어도 같고, 복제본이 뒤처질 수 있어서 질의하는 측이 `min_seq`를 줄 수 있어요(11절).
 
-## 6. 차이와 어느 버전 때의 모습 읽기
+## 6. 차이와 특정 버전 시점의 모습 읽기
 
-**`S` 때의 객체**:
+**`S` 시점의 객체**:
 
 ```
 object_live 에서   seq_from <= S
@@ -184,217 +184,217 @@ UNION ALL
 object_hist 에서   seq_from <= S AND S < seq_to
 ```
 
-- `readable_through`가 `applied_seq`와 같고 `S`가 맨 끝이면 `live`만 보면 돼요(가장 흔한 읽기가 이력을 훑지 않아요). 큰 적용이 도는 동안은 이 지름길을 쓰지 않아요.
-- `S`가 `min_readable_seq`보다 작으면 읽을 수 없어요. "보존 기한이 지났다"라고 답해요.
+- `readable_through`가 `applied_seq`와 같고 `S`가 최신 지점이면 `live`만 보면 돼요(가장 흔한 읽기가 이력을 훑지 않아요). 큰 적용이 실행되는 동안은 이 단축 경로를 쓰지 않아요.
+- `S`가 `min_readable_seq`보다 작으면 읽을 수 없어요. "보존 기한이 지났다"라고 응답해요.
 - 버전 `V`는 `kg_version.sealed_seq`로 `S`가 돼요.
 
 **두 버전 `a`와 `b`의 차이** (`a < b`), 또는 두 `change_seq` 사이:
 
 1. `change_entry`에서 `sealed_seq(a) < change_seq <= sealed_seq(b)`인 행을 모아요.
-2. 같은 `(entity_kind, entity_id)`를 하나로 접어요. 가장 이른 행의 `old_hash`와 가장 늦은 행의 `new_hash`만 남겨요.
-3. 읽어요: 둘 다 비었으면(그 사이에 생겼다 사라짐) **없음**, `old_hash`만 비었으면 **더함**, `new_hash`만 비었으면 **물러남**, 둘 다 있고 다르면 **고침**, 같으면 **없음**.
+2. 같은 `(entity_kind, entity_id)`를 하나로 합쳐요. 가장 이른 행의 `old_hash`와 가장 늦은 행의 `new_hash`만 남겨요.
+3. 해석해요: 둘 다 비었으면(그 사이에 생겼다 사라짐) **없음**, `old_hash`만 비었으면 **추가**, `new_hash`만 비었으면 **폐기**, 둘 다 있고 다르면 **수정**, 같으면 **없음**.
 
-`volatile` 속성은 차이에 없어요. 성질로 테스트해요: 차이(`a`, `a`)는 비었다 / `a`에 차이(`a`, `b`)를 적용하면 `b`가 된다 / 차이(`a`, `c`)는 차이(`a`, `b`)와 (`b`, `c`)를 접은 것과 같다.
+`volatile` 속성은 차이에 포함되지 않아요. 프로퍼티 기반 테스트로 검증해요: 차이(`a`, `a`)는 비었다 / `a`에 차이(`a`, `b`)를 적용하면 `b`가 된다 / 차이(`a`, `c`)는 차이(`a`, `b`)와 (`b`, `c`)를 합친 것과 같다.
 
 ## 7. ID와 해시
 
-### 7.1 무엇에서 내나
+### 7.1 무엇에서 만드나
 
 | 대상 | 입력 | 설명 |
 |---|---|---|
-| 객체 ID | 구별하는 글, 타입의 바뀌지 않는 ID(번호가 아니다), 처음 본 식별 키의 구성요소들(종류, 참조, 값 또는 객체 ID들, 길이를 앞에 붙임) | SHA-256의 앞 128비트. 한번 정하면 바꾸지 않는다(ADR-0007) |
-| 링크 ID | 구별하는 글, 링크 타입의 바뀌지 않는 ID, 출발 ID, 도착 ID, `discriminator` | 같은 쌍 사이에 링크가 여럿이면 `discriminator`로 가른다. 합쳐질 때 바뀌는 ID는 `identity_event`가 잇는다(3.3) |
+| 객체 ID | 도메인 구분 문자열, 타입의 바뀌지 않는 ID(번호가 아니다), 처음 본 식별 키의 구성요소들(종류, 참조, 값 또는 객체 ID들, 길이를 앞에 붙임) | SHA-256의 앞 128비트. 한번 정하면 바꾸지 않는다(ADR-0007) |
+| 링크 ID | 도메인 구분 문자열, 링크 타입의 바뀌지 않는 ID, 출발 ID, 도착 ID, `discriminator` | 같은 쌍 사이에 링크가 여럿이면 `discriminator`로 구분한다. 병합될 때 바뀌는 ID는 `identity_event`가 매핑한다(3.3) |
 | 내용 해시 | 정규 인코딩한 내용(7.3의 고정 목록) | 같은 ID의 내용이 바뀌었는지 보는 값 |
-| `input_digest` | 앞 확정 버전 뒤에 굳은 원본 변경을 `ingest_seq` 차례로 이은 해시 사슬 | 수집 순서가 다르면 값이 다르다 |
-| KG 버전 ID | 구별하는 글, 앞 버전의 ID, 정의 세트의 해시, `input_digest`, 실행기의 의미 버전, 해시 규칙의 버전 | 이 입력이 같으면 같다(7.5) |
+| `input_digest` | 앞 확정 버전 이후에 확정된 원본 변경을 `ingest_seq` 순서로 이은 해시 체인 | 수집 순서가 다르면 값이 다르다 |
+| KG 버전 ID | 도메인 구분 문자열, 앞 버전의 ID, 정의 세트의 해시, `input_digest`, 실행기의 의미 버전, 해시 규칙 버전 | 이 입력이 같으면 같다(7.5) |
 | 그래프 해시 | 모든 행 해시의 합 | 7.4 |
 
-`input_digest`의 사슬은 `h(n) = SHA-256(h(n-1), ingest_seq, source_id, dataset_id, natural_key, content_hash)`예요(스케치). 소스를 다시 받아 같은 내용이 오면 `content_hash`가 같아 새 변경이 되지 않아요. 서로 다른 입력이 같은 KG를 낳을 수 있어서 `kg_version_id`와 `graph_hash`를 따로 두고, 봉할 때 그래프 해시가 앞 버전과 같으면 새 버전을 만들지 않아요.
+`input_digest`의 체인은 `h(n) = SHA-256(h(n-1), ingest_seq, source_id, dataset_id, natural_key, content_hash)`예요(스케치). 소스를 다시 수집해 같은 내용이 오면 `content_hash`가 같아 새 변경이 되지 않아요. 서로 다른 입력이 같은 KG를 만들 수 있어서 `kg_version_id`와 `graph_hash`를 따로 두고, 확정할 때 그래프 해시가 앞 버전과 같으면 새 버전을 만들지 않아요.
 
 ### 7.2 정규 인코딩의 규칙
 
-해시는 **프락시움이 정한 정규 바이너리 인코딩** 위의 SHA-256이에요. 앱이 계산해서 컬럼에 저장해요. JSONB의 글자에서 내지 않아요. JSONB는 저장 모양을 바꿀 수 있어서 기대면 안 돼요.
+해시는 **프락시움이 정한 정규 바이너리 인코딩** 위의 SHA-256이에요. 애플리케이션이 계산해서 컬럼에 저장해요. JSONB 문자열에서 만들지 않아요. JSONB는 저장 형태를 바꿀 수 있어서 의존하면 안 돼요.
 
 | 규칙 | 내용 |
 |---|---|
-| 정렬 | 맵의 키는 UTF-8 바이트 순. 속성은 `attr_no` 순. 로케일이나 UTF-16 단위 순서를 쓰지 않는다. DB에서 정렬이 필요하면 바이트 비교(`C` 정렬)를 쓴다 |
-| 목록 | 속성이 "순서가 뜻을 갖는다"고 선언한 목록만 순서를 지킨다(등록부에 그 선언이 아직 없어 지금은 모든 목록을 정렬한다, ADR-0025). 나머지는 인코딩한 바이트로 정렬한 뒤 해시한다 |
+| 정렬 | 맵의 키는 UTF-8 바이트 순. 속성은 `attr_no` 순. 로케일이나 UTF-16 코드 단위 순서를 쓰지 않는다. DB에서 정렬이 필요하면 바이트 비교(`C` collation)를 쓴다 |
+| 목록 | 속성이 "순서가 의미를 갖는다"고 선언한 목록만 순서를 유지한다(등록부에 그 선언이 아직 없어 지금은 모든 목록을 정렬한다, ADR-0025). 나머지는 인코딩한 바이트로 정렬한 뒤 해시한다 |
 | 정수 | 크기 제한 없는 가변 길이 정수. 식별자, 시리얼, 주소 같은 값은 숫자가 아니라 문자열이다 |
 | 소수 | 정규화한 십진 문자열(끝의 0과 지수 표기 없음, `-0`은 `0`). 이진 부동소수를 해시에 넣지 않는다. `NaN`과 무한대는 오류다 |
-| 글자 | UTF-8. 짝 없는 서로게이트는 오류. 유니코드 정규화나 대소문자 접기는 값 타입의 다듬기(ADR-0007)가 한다 |
-| 구별 | 값마다 종류 표지와 길이를 앞에 붙인다. `("ab", "c")`와 `("a", "bc")`가 다른 바이트다. `unknown`, 값 없음, 빈 문자열은 다른 표지다 |
-| 시각 | 시각은 UTC의 정해진 글자 모양으로 넣는다. 첫머리에 구별하는 글과 인코딩 버전을 넣고, 인코딩이 바뀌면 버전이 오른다 |
+| 문자열 | UTF-8. 짝 없는 서로게이트는 오류. 유니코드 정규화나 대소문자 접기는 값 타입의 정규화(ADR-0007)가 한다 |
+| 구분 | 값마다 종류 표지와 길이를 앞에 붙인다. `("ab", "c")`와 `("a", "bc")`가 다른 바이트다. `unknown`, 값 없음, 빈 문자열은 다른 표지다 |
+| 시각 | 시각은 UTC의 정해진 문자열 형식으로 넣는다. 맨 앞에 도메인 구분 문자열과 인코딩 버전을 넣고, 인코딩이 바뀌면 버전이 오른다 |
 
 정규 JSON(RFC 8785)은 2^53을 넘는 정수와 키 정렬에서 다른 언어와 어긋날 수 있어서 **내보내는 파일에만** 써요(ADR-0006).
 
-### 7.3 내용 해시에 들어가는 것: 고정 목록
+### 7.3 내용 해시에 포함되는 것: 고정 목록
 
-원칙은 **뜻이 바뀌어야만 해시가 바뀐다**예요. 목록 밖의 것은 해시에 들지 않아요. 목록을 바꾸면 모든 해시가 바뀌므로 해시 규칙의 버전을 올리는 결정 기록이 있어야 해요. 이름이 아니라 **바뀌지 않는 ID**가 들어서 타입이나 속성의 이름을 바꿔도 해시는 그대로예요.
+원칙은 **의미가 바뀌어야만 해시가 바뀐다**예요. 목록 밖의 것은 해시에 포함되지 않아요. 목록을 바꾸면 모든 해시가 바뀌므로 해시 규칙 버전을 올리는 결정 기록이 있어야 해요. 이름이 아니라 **바뀌지 않는 ID**가 포함돼서 타입이나 속성의 이름을 바꿔도 해시는 그대로예요.
 
-| 대상 | 드는 것(이 순서) |
+| 대상 | 포함되는 것(이 순서) |
 |---|---|
-| 객체 | 구별하는 글과 해시 규칙의 버전, 종류 표지, 타입의 ID, `name`, `versioned` 속성마다 `(속성 ID, 값, 근거 등급, 근거의 종류)`(속성 ID 순) |
-| 링크 | 구별하는 글과 해시 규칙의 버전, 종류 표지, 링크 타입의 ID, 출발 객체 ID, 도착 객체 ID, `discriminator`, **링크의 근거 등급과 근거의 종류**(ADR-0025), `versioned` 속성마다 위와 같은 넷 |
+| 객체 | 도메인 구분 문자열과 해시 규칙 버전, 종류 표지, 타입의 ID, `name`, `versioned` 속성마다 `(속성 ID, 값, 근거 등급, 근거 종류)`(속성 ID 순) |
+| 링크 | 도메인 구분 문자열과 해시 규칙 버전, 종류 표지, 링크 타입의 ID, 출발 객체 ID, 도착 객체 ID, `discriminator`, **링크의 근거 등급과 근거 종류**(ADR-0025), `versioned` 속성마다 위와 같은 4개 |
 
-**들지 않는 것**: `volatile` 속성, `source_refs`, 관측한 시각과 신선도, 어느 피드가 쥐었는지(`feed_id`), 실행 번호, 처리 순서, 끌어낸 칸(`min_grade`, `scope_v1`~`scope_v4`), `seq_from`과 `content_hash` 자신.
+**포함되지 않는 것**: `volatile` 속성, `source_refs`, 관측한 시각과 신선도, 어느 피드가 소유하는지(`feed_id`), 실행 번호, 처리 순서, 파생 컬럼(`min_grade`, `scope_v1`~`scope_v4`), `seq_from`과 `content_hash` 자신.
 
-- **`confidential` 값은 키를 단 해시로 들어요.** 값 자리에 `HMAC-SHA-256(KG의 해시 열쇠, 값의 정규 바이트)`를 넣어요. 같은 KG에서 같은 값이면 같은 해시이고, 키 없이는 값을 되짚을 수 없어요. 해시 키는 KG를 만들 때 하나 만들어 마스터 키로 감싸 `kg_hash_key`에 둬요(칸의 키와는 쓰임이 달라요, ADR-0018). **칸의 암호화는 오픈 베타지만 키를 단 해시는 알파부터 해요.** 나중에 바꾸면 모든 해시가 바뀌기 때문이에요. `confidential` 값은 프로젝션에 없고 식별 키가 될 수 없어요.
-- **암호화된 값의 엔벨로프.** 오픈 베타에 `attrs`의 값 모양이 `{"enc": ...}`로 바뀌어요. 알파의 읽기 코드는 이 모양을 알아보고 모르는 모양이면 오류로 멈춰요. 해시는 암호문이 아니라 원래 값(`confidential`이면 키를 단 해시)에서 내서, 칸의 키를 바꿔도 해시가 안 바뀌어요.
-- 마스터 키를 다시 감싸도(ADR-0018) 해시 키의 값은 그대로라 해시가 안 바뀌어요.
-- 이 번호들은 등록부(정의)의 일부라 같은 정의 세트이면 같은 번호예요. 다른 배포끼리 해시가 같다고는 약속하지 않아요.
+- **`confidential` 값은 키를 사용한 해시로 포함돼요.** 값 위치에 `HMAC-SHA-256(KG의 해시 키, 값의 정규 바이트)`를 넣어요. 같은 KG에서 같은 값이면 같은 해시이고, 키 없이는 값을 역산할 수 없어요. 해시 키는 KG를 만들 때 하나 만들어 마스터 키로 래핑해 `kg_hash_key`에 둬요(컬럼 암호화 키와는 용도가 달라요, ADR-0018). **컬럼 암호화는 오픈 베타지만 키를 사용한 해시는 알파부터 해요.** 나중에 바꾸면 모든 해시가 바뀌기 때문이에요. `confidential` 값은 프로젝션에 없고 식별 키가 될 수 없어요.
+- **암호화된 값의 엔벨로프.** 오픈 베타에 `attrs`의 값 형식이 `{"enc": ...}`로 바뀌어요. 알파의 읽기 코드는 이 형식을 알아보고 모르는 형식이면 오류로 중단해요. 해시는 암호문이 아니라 원래 값(`confidential`이면 키를 사용한 해시)에서 만들어서, 컬럼 암호화 키를 바꿔도 해시가 바뀌지 않아요.
+- 마스터 키를 다시 래핑해도(ADR-0018) 해시 키의 값은 그대로라 해시가 바뀌지 않아요.
+- 이 번호들은 등록부(정의)의 일부라 같은 정의 세트이면 같은 번호예요. 다른 배포끼리 해시가 같다고는 보장하지 않아요.
 
-### 7.4 그래프 해시를 바뀐 것만으로 고쳐 가기
+### 7.4 그래프 해시를 변경분만으로 갱신하기
 
 행마다 `row_hash = SHA-256(종류, ID, 내용 해시)`를 만들고, 그래프 해시는 모든 `row_hash`를 256비트 수로 보고 **더한 합**(2^256로 나눈 나머지)이에요.
 
-- 순서와 무관해요. `plan_change`만 있으면 고칠 수 있어요: `새 합 = 옛 합 + 더한 행들 + (고친 행의 새 − 옛) − 물러난 행들`. 쪽마다 `running_graph_hash`를 고치고, 봉할 때 `kg_version`에 복사해요. 타입별 부분합(`kg_version_hash_part`)도 같이 고쳐서 어느 타입이 달라졌는지 바로 보여요.
-- 합으로 하는 이유는 같은 행이 둘이면 서로 지워지는 방식(배타적 논리합)을 피하려는 것이에요. 변조가 아니라 순서와 실수를 잡는 검사예요. 주기적으로 전체를 다시 계산해 견주고, 다르면 확정을 막아요.
+- 순서와 무관해요. `plan_change`만 있으면 갱신할 수 있어요: `새 합 = 옛 합 + 추가한 행들 + (수정한 행의 새 값 − 옛 값) − 폐기한 행들`. 청크마다 `running_graph_hash`를 갱신하고, 확정할 때 `kg_version`에 복사해요. 타입별 부분합(`kg_version_hash_part`)도 같이 갱신해서 어느 타입이 달라졌는지 바로 보여요.
+- 합으로 하는 이유는 같은 행이 둘이면 서로 상쇄되는 방식(XOR)을 피하려는 것이에요. 변조를 막는 것이 아니라 순서 오류와 실수를 잡는 검사예요. 주기적으로 전체를 다시 계산해 비교하고, 다르면 확정을 차단해요.
 
 ### 7.5 결정성: 상태의 마이그레이션
 
-> 다음 KG 버전 = f(앞 버전, 받은 차례(`ingest_seq`)대로의 원본 변경, 정의 묶음, 실행기의 의미 버전)
+> 다음 KG 버전 = f(앞 버전, 수집 순서(`ingest_seq`)대로의 원본 변경, 정의 세트, 실행기의 의미 버전)
 
-- 같은 입력이면 같은 다음 버전이 나와요. 빈 KG에서 같은 순서로 다시 돌리면 같은 버전의 이어짐이 나와요. **"차례"에 드는 사건은 닫힌 여덟 가지**예요(시계 사건, 확정, 보류된 스트림의 풀기와 버리기, 안전장치의 확인, 원본 레코드 제외, 정의 세트의 바꿈이 원본 변경과 함께 든다. [적용](kg-storage-apply.md) 5절).
-- **실행기의 의미 버전**은 정제·매핑·식별·링크를 돌리는 코드의 뜻이 바뀔 때만 올리는 번호예요. 제품의 버전마다 오르지 않아요. 오르면 정의를 고친 것과 같이 다루고, 적용기를 낮은 버전의 워커가 쥐지 못해요(적용 6절). 버전의 머리에 적혀요.
-- 객체의 ID는 처음 본 식별 키에서 나온 뒤 고정이라, **식별의 이력은 진실의 일부**예요(10절). "지금의 원본 레코드만으로 처음부터 지은 KG"가 운영 KG와 ID까지 같다고는 약속하지 않아요. 내용은 같아야 해요.
+- 같은 입력이면 같은 다음 버전이 나와요. 빈 KG에서 같은 순서로 다시 실행하면 같은 버전 계열이 나와요. **"순서"에 들어가는 이벤트는 고정된 8종**이에요(시계 이벤트, 확정, 보류된 스트림의 해제와 폐기, 안전장치 확인, 원본 레코드 제외, 정의 세트 교체가 원본 변경과 함께 들어간다. [적용](kg-storage-apply.md) 5절).
+- **실행기의 의미 버전**은 정제·매핑·식별·링크를 실행하는 코드의 의미가 바뀔 때만 올리는 번호예요. 제품 버전마다 오르지 않아요. 오르면 정의를 수정한 것과 같이 다루고, 낮은 버전의 워커는 적용기의 리스를 획득하지 못해요(적용 6절). 버전 헤더에 적혀요.
+- 객체의 ID는 처음 본 식별 키에서 만들어진 뒤 고정이라, **식별 이력은 기준 데이터의 일부**예요(10절). "지금의 원본 레코드만으로 처음부터 구축한 KG"가 운영 KG와 ID까지 같다고는 보장하지 않아요. 내용은 같아야 해요.
 
-구현하는 변경에서 이렇게 걸어요.
+구현하는 변경에서 이렇게 검증해요.
 
-- **같은 입력이면 같은 버전**: 지어낸 작은 세계의 골든 값(정규 바이트, 행 해시, 그래프 해시, 버전 ID). 입력 순서(수집 순서 안에서 섞이는 것 말고), 워커 수, 배치 크기와 쪽의 한도, DB 로케일, 실행 환경, 병렬도를 흔들어도 같다. 타입의 이름을 바꿔도 같다.
-- **같은 순서로 다시 돌리면 같은 이어짐**: 빈 KG에서 같은 `ingest_order` 목록과 같은 정의로 되풀이하면 모든 `kg_version_id`가 같다.
-- **내용의 같음**: 지금의 원본으로 처음부터 지은 KG와 운영 KG는 ID를 빼고 타입, 속성, 링크의 모양이 같다.
-- **배치와 흐름의 같음**: 같은 원본을 한 번에 넣은 결과와 잘게 나눠 흘린 결과의 그래프 해시가 같다. 확정 버전은 달라서 버전의 이어짐은 같지 않아도 된다.
-- 고쳐 온 그래프 해시는 전체를 다시 계산한 값과 같고, 6절의 차이 성질이 선다.
+- **같은 입력이면 같은 버전**: 합성한 작은 세계의 골든 값(정규 바이트, 행 해시, 그래프 해시, 버전 ID). 입력 순서(수집 순서 안에서 섞이는 것 말고), 워커 수, 배치 크기와 청크 한도, DB 로케일, 실행 환경, 병렬도를 바꿔도 같다. 타입의 이름을 바꿔도 같다.
+- **같은 순서로 다시 실행하면 같은 계열**: 빈 KG에서 같은 `ingest_order` 목록과 같은 정의로 반복하면 모든 `kg_version_id`가 같다.
+- **내용의 일치**: 지금의 원본으로 처음부터 구축한 KG와 운영 KG는 ID를 빼고 타입, 속성, 링크의 스키마가 같다.
+- **배치와 스트림의 일치**: 같은 원본을 한 번에 넣은 결과와 잘게 나눠 스트림으로 넣은 결과의 그래프 해시가 같다. 확정 버전은 달라서 버전 계열은 같지 않아도 된다.
+- 증분 갱신한 그래프 해시는 전체를 다시 계산한 값과 같고, 6절의 차이 성질이 성립한다.
 
 ## 8. 속성의 저장
 
-타입이 열려 있어서 속성은 JSONB에 두어요. 키는 `attr_no`예요. 속성은 **이력의 종류**로 두 곳에 갈라요(ADR-0008, `change_class`가 기본값을 줘요).
+타입이 열려 있어서 속성은 JSONB에 두어요. 키는 `attr_no`예요. 속성은 **이력의 종류**에 따라 두 곳에 나눠 저장해요(ADR-0008, `change_class`가 기본값을 줘요).
 
-| 종류 | 어디에 | 이력·해시·차이 |
+| 종류 | 저장 위치 | 이력·해시·차이 |
 |---|---|---|
-| `versioned` | `object_live`의 `attrs`와 `hist` | 바뀔 때마다 이력에 남고 내용 해시와 차이에 든다 |
-| `volatile` | `attr_volatile`(지금 값, 본 때, 어느 피드). 바뀜의 표지는 `light_change` | 이력, 해시, 차이에 들지 않는다. 바뀜은 가벼운 줄로 흐른다 |
+| `versioned` | `object_live`의 `attrs`와 `hist` | 바뀔 때마다 이력에 남고 내용 해시와 차이에 포함된다 |
+| `volatile` | `attr_volatile`(현재 값, 관측한 시각, 어느 피드). 변경 표지는 `light_change` | 이력, 해시, 차이에 포함되지 않는다. 변경은 경량 변경 레코드로 전달된다 |
 
-흐름이 초마다 상태를 바꿔도 객체의 행과 이력은 늘지 않고, 배치의 적용과 서로 기다리지 않아요.
+스트림이 초마다 상태를 바꿔도 객체의 행과 이력은 늘지 않고, 배치 적용과 서로 대기하지 않아요.
 
-- **`volatile`의 바뀜도 흘러요.** 값이 바뀌면 `light_change`에 줄(객체, 속성, 새 값의 표지, `change_seq`)을 써요. 프로젝션, 충족 표시, 변경 알림, SSE가 적용된 변경의 기록과 함께 이 줄을 따라가요. 영향 범위의 `as_observed`가 읽는 관측 상태는 `volatile`이어도 되고 엔진이 가벼운 줄로 받아요. 줄은 `hist`와 버전의 해시에 들지 않고 짧게 보관해요.
-- **링크는 `volatile`이 될 수 없어요.** 자주 옮기는 `runs_on`도 보통의 변경이에요. 그 쓰기의 양은 측정해서 봐요. 영향 범위와 링크 정의와 `scope_keys`가 읽는 속성도 `volatile`이 될 수 없어요(검사로 막아요).
-- **쓰기 감소.** 한 묶음 안의 같은 키는 마지막 값만 써요. 값이 같으면 `seen_at`은 낡음을 따지는 간격의 절반이 지났을 때만 고쳐요. 같은 값이라 가벼운 줄도 없어요. 그만큼 신선도의 정밀함을 내줘요(낡음 판단의 오차가 간격의 절반까지).
-- **`attr_volatile`에는 보조 색인을 두지 않아요.** 바뀌는 열에 색인이 있으면 제자리 갱신이 안 돼요. 프로토타입에서 병합 속도가 대략 절반이 됐어요(11.1). 좁은 행과 낮춘 채움 비율로 제자리 갱신을 노려요(측정해서 정한다). 대신 `volatile` 값을 조건으로 찾는 일은 느릴 수 있어요. 필요하면 프로젝션이 맡는지 측정해서 봐요.
-- `versioned` 속성 하나는 값만이 아니라 근거도, 어느 피드가 쥐었는지도 가져요. 값 이름은 [kg-model.md](kg-model.md)가 정해요.
+- **`volatile`의 변경도 전달돼요.** 값이 바뀌면 `light_change`에 레코드(객체, 속성, 새 값의 표지, `change_seq`)를 기록해요. 프로젝션, 충족 표시, 변경 알림, SSE가 적용된 변경의 기록과 함께 이 레코드를 따라가요. 영향 범위의 `as_observed`가 읽는 관측 상태는 `volatile`이어도 되고 엔진이 경량 변경 레코드로 수신해요. 이 레코드는 `hist`와 버전의 해시에 포함되지 않고 짧게 보관해요.
+- **링크는 `volatile`이 될 수 없어요.** 자주 옮기는 `runs_on`도 일반 변경이에요. 그 쓰기량은 측정해서 확인해요. 영향 범위와 링크 정의와 `scope_keys`가 읽는 속성도 `volatile`이 될 수 없어요(검사로 차단해요).
+- **쓰기 감소.** 한 배치 안의 같은 키는 마지막 값만 기록해요. 값이 같으면 `seen_at`은 낡음 판정 간격의 절반이 지났을 때만 갱신해요. 같은 값이라 경량 변경 레코드도 없어요. 그만큼 신선도의 정밀도를 포기해요(낡음 판정의 오차가 간격의 절반까지).
+- **`attr_volatile`에는 보조 인덱스를 두지 않아요.** 바뀌는 컬럼에 인덱스가 있으면 제자리 갱신(HOT update)이 안 돼요. 프로토타입에서 병합 속도가 대략 절반이 됐어요(11.1). 좁은 행과 낮춘 채움 비율로 제자리 갱신을 노려요(측정해서 정한다). 대신 `volatile` 값을 조건으로 찾는 일은 느릴 수 있어요. 필요하면 프로젝션이 담당할지 측정해서 확인해요.
+- `versioned` 속성 하나는 값만이 아니라 근거도, 어느 피드가 소유하는지도 가져요. 필드 이름은 [kg-model.md](kg-model.md)가 정해요.
 
 ```
 "301": { "value": "1.3", "grade": "fact", "basis": "observed", "feed_id": "f-17" }
 ```
 
-- **속성 단위의 적용.** 피드는 자기가 매핑한 속성만 쥐어요. 2걸음은 행을 통째로 갈아 끼우지 않고 속성마다 견줘요. 배치의 전부 수집이 흐름 피드가 쥔 속성을 지우거나 덮지 않아요. 피드가 값을 안 주면 그 피드가 쥔 속성만 비워져요. 같은 속성을 두 피드가 매핑하면 이기는 순서로 정하고, 같은 순위에서는 소스가 말한 때가 늦은 것이 이겨요. 진 값은 어긋남으로 남아요.
-- 객체를 만들 수 없는 피드가 아직 없는 객체의 값을 주면 `pending_value`에 기한을 두고 기다려요. 기한이 지나면 문제 목록으로 가요.
-- 신선도는 속성마다 그것을 쥔 피드에서 와요(`volatile`은 `seen_at`, `versioned`는 그 피드의 소스 수집). 객체 행에 "마지막으로 본 때"를 쓰지 않아요.
-- 컬럼으로 두는 것은 `type_no`, `name`, `min_grade`, 범위 사본, 내용 해시, 구간이에요. 자주 찾는 속성은 `find`가 자주 거는 조건에 따라 컬럼으로 뽑아 색인해요(방식은 측정해서 골라요). 속성 덩어리는 수 KB 이하라고 **가정**해요(크면 고칠 때 통째로 다시 쓰여요). 속성마다 행을 만드는 방식(EAV)은 안 써요. 민감한 속성의 가림은 읽는 경로의 코드가 해요(ADR-0012).
+- **속성 단위의 적용.** 피드는 자기가 매핑한 속성만 소유해요. 2단계는 행을 통째로 교체하지 않고 속성마다 비교해요. 배치의 전체 수집이 스트림 피드가 소유한 속성을 지우거나 덮어쓰지 않아요. 피드가 값을 주지 않으면 그 피드가 소유한 속성만 비워져요. 같은 속성을 두 피드가 매핑하면 우선순위로 정하고, 같은 순위에서는 소스가 말한 시각이 늦은 것이 이겨요. 진 값은 불일치로 남아요.
+- 객체를 만들 수 없는 피드가 아직 없는 객체의 값을 주면 `pending_value`에 기한을 두고 대기시켜요. 기한이 지나면 문제 목록으로 가요.
+- 신선도는 속성마다 그것을 소유한 피드에서 와요(`volatile`은 `seen_at`, `versioned`는 그 피드의 소스 수집). 객체 행에 "마지막으로 관측한 시각"을 쓰지 않아요.
+- 컬럼으로 두는 것은 `type_no`, `name`, `min_grade`, 범위 복사본, 내용 해시, 구간이에요. 자주 찾는 속성은 `find`가 자주 쓰는 조건에 따라 컬럼으로 뽑아 인덱스를 만들어요(방식은 측정해서 골라요). 속성 덩어리는 수 KB 이하라고 **가정**해요(크면 수정할 때 통째로 다시 기록돼요). 속성마다 행을 만드는 방식(EAV)은 안 써요. 민감한 속성의 마스킹은 읽기 경로의 코드가 해요(ADR-0012).
 
-## 9. 줄 세우기, 일정, 잠금
+## 9. 작업 큐, 스케줄, 잠금
 
-일 줄세우기, 일정, 잠금은 기본으로 PostgreSQL 안에서 해요. 따로 도는 브로커는 필요 없어서 들이지 않아요. 쓸 라이브러리는 구현하는 변경에서 라이선스를 보고 정해요.
+작업 큐, 스케줄, 잠금은 기본적으로 PostgreSQL 안에서 해요. 별도로 실행되는 브로커는 필요 없어서 도입하지 않아요. 사용할 라이브러리는 구현하는 변경에서 라이선스를 보고 정해요.
 
-| 일 | 방법 |
+| 작업 | 방법 |
 |---|---|
-| 일 줄 세우기 | 일 하나가 행 하나. 워커는 상태가 "기다림"인 행을 하나씩 집어 간다. 이미 잠긴 행은 건너뛰며 집는 PostgreSQL의 기능으로 여러 워커가 같은 행을 집지 않게 한다 |
-| 깨우기 | 일정한 간격으로 표를 본다(가져가기). **알림 보내기(NOTIFY)는 쓰지 않는다.** 커밋을 줄 세운다는 보고가 있고 트랜잭션 단위 풀에서 깨진다. 듣기가 꼭 필요한 역할은 풀 밖의 전용 연결을 쓴다 |
-| 일정 | 소스마다 주기. 틱마다 `(소스, 시간 칸)`을 키로 일을 넣는다. 키가 겹치면 넣어지지 않아 서버 여럿이 틱을 돌려도 일이 하나다. 대표를 뽑지 않는다 |
-| 소스 하나에 동기화 하나 | `sync_run`의 임대(`lease_owner`, `lease_until`). 소스마다 동시 상한(기본 1)은 임대의 수로 지킨다 |
-| KG 하나에 적용 하나 | 3걸음에서 `kg_head` 행을 잠그고, 적용기는 `kg_apply_lease`의 리스로 하나만 있다. 실행기의 의미 버전이 낮은 워커는 리스를 못 쥔다 |
-| 죽은 일 이어받기 | 일하는 동안 `lease_until`을 밀어 준다. 지나면 다른 워커가 `attempt`를 올려 집어 간다. 처리기는 멱등이라 처음부터 해도 된다 |
-| 늦게 깨어난 워커, 같은 일 두 번 | 쓰기는 `attempt` 번호로, 같은 일은 키의 유일 제약으로 막는다 |
+| 작업 큐 | 작업 하나가 행 하나. 워커는 상태가 "대기"인 행을 하나씩 가져간다. 이미 잠긴 행을 건너뛰며 가져오는 PostgreSQL의 기능(`SKIP LOCKED`)으로 여러 워커가 같은 행을 가져가지 않게 한다 |
+| 깨우기 | 일정한 간격으로 테이블을 폴링한다. **알림 전송(NOTIFY)은 쓰지 않는다.** 커밋이 직렬화된다는 보고가 있고 트랜잭션 단위 풀에서 동작하지 않는다. 리스닝이 꼭 필요한 역할은 풀 밖의 전용 연결을 쓴다 |
+| 스케줄 | 소스마다 주기. 틱마다 `(소스, 시간 구간)`을 키로 작업을 넣는다. 키가 겹치면 넣어지지 않아 서버 여럿이 틱을 실행해도 작업이 하나다. 리더를 선출하지 않는다 |
+| 소스 하나에 동기화 하나 | `sync_run`의 리스(`lease_owner`, `lease_until`). 소스마다 동시 실행 상한(기본 1)은 리스의 수로 지킨다 |
+| KG 하나에 적용 하나 | 3단계에서 `kg_head` 행을 잠그고, 적용기는 `kg_apply_lease`의 리스로 하나만 있다. 실행기의 의미 버전이 낮은 워커는 리스를 획득하지 못한다 |
+| 중단된 작업 인계 | 작업하는 동안 `lease_until`을 연장한다. 만료되면 다른 워커가 `attempt`를 올려 가져간다. 처리기는 멱등이라 처음부터 다시 해도 된다 |
+| 늦게 깨어난 워커, 같은 작업 두 번 | 쓰기는 `attempt` 번호로, 같은 작업은 키의 유일 제약으로 차단한다 |
 
-병합의 직렬화와 적용기 하나임은 행 잠금과 트랜잭션 안의 잠금으로 해요. 세션 잠금은 쓰지 않아요. 잠금은 오래 쥐지 않아요. 머리 잠금은 트랜잭션이 끝나면, 임대는 만료로 풀려요.
+병합의 직렬화와 적용기 하나임은 행 잠금과 트랜잭션 안의 잠금으로 보장해요. 세션 잠금은 쓰지 않아요. 잠금은 오래 보유하지 않아요. 헤드 잠금은 트랜잭션이 끝나면, 리스는 만료되면 해제돼요.
 
-## 10. 보관과 삭제, 백업, 무엇이 진실인가
+## 10. 보관과 삭제, 백업, 무엇이 기준 데이터인가
 
 | 종류 | 예 | 잃으면 | 다시 만들 수 있나 |
 |---|---|---|---|
-| 진실(뜨거운 것) | 정의와 그 판, 최근 원본 레코드와 `ingest_order`, KG의 `live`·최근 `hist`·`attr_volatile`, 최근 적용된 변경의 기록과 가벼운 줄과 버전, 식별자와 식별의 이력, 소스 커서 둘, 실행기의 상태, 실행 기록, 감사. PostgreSQL에 있다 | 못 되찾는다 | 이론상 원본 레코드와 정의로 다시 돌릴 수 있지만 시간이 걸리고(측정하지 않음) 기한이 있다. KG도 진실로 둔다 |
-| 진실(내려 둔 것) | 오래된 원본 레코드, KG의 지나간 이력, 오래된 지표. 열린 형식의 컬럼형 파일로 객체 저장소에 있다 | 못 되찾는다 | 같은 사실의 자리를 옮긴 것이지 복사본이 아니다. 다시 돌리기와 감사는 여기서도 된다 |
-| 끌어낸 것 | 프로젝션 파일(파일 보관 포트 뒤. PostgreSQL에 넣지 않는다), 스테이징 영역, 차이 계획, 검색 색인, 엔진의 메모리, 충족 표시, 분석용 저장소 | 괜찮다 | 진실에서 다시 만든다. 따로 고쳐지지 않는다 |
+| 기준 데이터(핫) | 정의와 그 버전, 최근 원본 레코드와 `ingest_order`, KG의 `live`·최근 `hist`·`attr_volatile`, 최근 적용된 변경의 기록과 경량 변경 레코드와 버전, 식별자와 식별 이력, 소스 커서 2종, 실행기의 상태, 실행 이력, 감사. PostgreSQL에 있다 | 복구할 수 없다 | 이론상 원본 레코드와 정의로 다시 실행할 수 있지만 시간이 걸리고(측정하지 않음) 기한이 있다. KG도 기준 데이터로 둔다 |
+| 기준 데이터(아카이브) | 오래된 원본 레코드, KG의 과거 이력, 오래된 지표. 열린 형식의 컬럼형 파일로 오브젝트 스토리지에 있다 | 복구할 수 없다 | 같은 사실의 위치를 옮긴 것이지 복사본이 아니다. 재실행과 감사는 여기서도 된다 |
+| 파생 데이터 | 프로젝션 파일(파일 보관 포트 뒤. PostgreSQL에 넣지 않는다), 스테이징 영역, 차이 계획, 검색 인덱스, 엔진의 메모리, 충족 표시, 분석용 스토리지 | 괜찮다 | 기준 데이터에서 다시 만든다. 따로 수정되지 않는다 |
 
-- **수집 변경 로그**은 어댑터를 하나 고르면 진실이 그 어댑터에만 있어요(11.1). 적용된 변경의 기록은 언제나 PostgreSQL이에요. 그래프 전용 DB는 두지 않아요. 라이선스가 허용 목록에 들지 못하고 영향 범위의 뜻을 담지 못해서예요.
-- **복제는 백업이 아니에요.** 잘못 지운 것도 복제본에 번져요. 복제와 별도로 백업과 시점 복구가 있어야 해요. 백업은 저장소와 다른 장애 영역에 둬요. 복구 훈련을 정기적으로 해야 백업이 쓸 만한지 알아요.
-- 시점 복구로 `applied_seq`가 뒤로 가면 번호가 겹칠 수 있어요. 엔진은 번호가 아니라 **`kg_version_id`**로 알아봐요. 밖의 소비자와 `min_seq`를 쥔 에이전트를 위해 복구마다 오르는 **세대**를 두고 `as_of`, 커서, 이벤트 ID에 실어요(적용 7절).
-- **보존 기한**은 `hist`, `change_entry`, 원본 레코드, `light_change`, 스테이징 영역에 있어요. **원본 레코드는 닫힌 구간에만 걸어요**(열린 구간은 나이로 지우지 않아요). 기본값은 원본 90일, 지나간 이력 1년, 감사 3년이에요([기본값 표](defaults.md), 가정). 규칙의 전부는 [적용](kg-storage-apply.md) 8절이에요.
-- 지운 구간은 `kg_maintenance.min_readable_seq`로 알려요. 그보다 이른 `S`를 읽으려 하면 이유를 말해요. 고정(`serving_pin`)된 버전의 이력은 기한이 지나도 지우지 않아요.
+- **수집 변경 로그**는 어댑터를 하나 고르면 기준 데이터가 그 어댑터에만 있어요(11.1). 적용된 변경의 기록은 언제나 PostgreSQL이에요. 그래프 전용 DB는 두지 않아요. 라이선스가 허용 목록에 들지 못하고 영향 범위의 의미를 담지 못해서예요.
+- **복제는 백업이 아니에요.** 잘못 삭제한 것도 복제본에 전파돼요. 복제와 별도로 백업과 시점 복구가 있어야 해요. 백업은 스토리지와 다른 장애 영역에 둬요. 복구 훈련을 정기적으로 해야 백업이 쓸 만한지 알 수 있어요.
+- 시점 복구로 `applied_seq`가 되돌아가면 번호가 겹칠 수 있어요. 엔진은 번호가 아니라 **`kg_version_id`**로 식별해요. 외부 소비자와 `min_seq`를 보유한 에이전트를 위해 복구마다 오르는 **세대**를 두고 `as_of`, 커서, 이벤트 ID에 실어요(적용 7절).
+- **보존 기한**은 `hist`, `change_entry`, 원본 레코드, `light_change`, 스테이징 영역에 있어요. **원본 레코드는 닫힌 구간에만 적용해요**(열린 구간은 나이로 삭제하지 않아요). 기본값은 원본 90일, 과거 이력 1년, 감사 3년이에요([기본값 표](defaults.md), 가정). 규칙 전체는 [적용](kg-storage-apply.md) 8절이에요.
+- 삭제한 구간은 `kg_maintenance.min_readable_seq`로 알려요. 그보다 이른 `S`를 읽으려 하면 이유를 설명해요. 고정(`serving_pin`)된 버전의 이력은 기한이 지나도 삭제하지 않아요.
 
-## 11. 저장소를 제품이 함께 내놓는다는 것
+## 11. 스토리지를 제품이 함께 제공한다는 것
 
-- 제품을 설치하면 저장소도 올라와요. 남의 DB가 준비되기를 기다리지 않아요.
+- 제품을 설치하면 스토리지도 함께 올라와요. 다른 팀의 DB가 준비되기를 기다리지 않아요.
 - **배포 정의**에는 이런 것이 들어가요. 값은 환경마다 다르고 이 문서에 적지 않아요.
-  - 복제된 PostgreSQL(주와 복제본을 서로 다른 장애 영역에, 주가 멈추면 이어받는 절차)과 **정족수 방식의 동기 복제**: 후보 둘 이상 중 하나가 받으면 커밋해요. 동기 대상이 하나뿐이라 그것이 죽으면 쓰기가 서는 구성은 쓰지 않아요. 커밋 지연은 클로즈드 베타에서 재요.
-  - 백업과 쓰기 기록의 보관을 클러스터 밖에 두는 설정, 시점 복구, 복구 훈련의 절차.
-  - 접속 풀링(트랜잭션 단위), 역할별 접속 계정(읽기 전용 포함), 역할마다 문장·잠금 대기·놀고 있는 시간의 한도, 서버를 여럿 띄운 채 올릴 수 있는 앞뒤 호환 마이그레이션([저장소의 운영](postgres-operations.md)).
-- **쓰는 경로와 읽는 경로를 코드에서 갈라요.** 쓰는 경로(수집, 적용, 일정)은 항상 주에 연결해요. 읽는 경로는 읽기 전용 계정이고 쓰는 문장을 만들 수 없어요. 두 길은 포트가 다르고, 읽는 경로가 쓰는 포트를 가져오지 못하게 구조 검사로 걸어요.
-- **복제본 읽기의 계약(`min_seq`).** 묻는 쪽이 `min_seq`(적어도 이 변경 번호까지 본 답)를 줄 수 있고, 쓴 답에 그 번호가 실려요. 복제본의 `readable_through`가 거기에 못 미치면 주 저장소로 가거나 `wait_timeout` 안에서 기다리거나 거절해요. 에이전트가 쓰고 곧 읽는 흐름이 낡은 답을 근거로 삼지 않게 해요. 번호는 세대와 함께 와서 세대가 다르면 `conflict.generation_changed`로 답해요. (`max_staleness`는 이 일이 아니라 소스에서 본 값이 얼마나 낡아도 되는가만 뜻해요.) 대량 읽기와 API 읽기의 복제본을 가르는 것은 클로즈드 베타예요.
-- **모든 저장소 접근은 `kg_id`로 어느 저장소인지 찾는 층을 지나요.** 알파에서는 답이 언제나 하나예요. 이 층은 KG를 저장소 사이에서 옮기는 데 쓰고(옮기는 절차는 오픈 베타까지), 쓰기 한계를 풀려고 KG를 나누는 데는 쓰지 않아요(2.1).
-- 질의 엔진은 저장소가 멈춰도 올려 둔 프로젝션으로 답해요(ADR-0010, ADR-0011). 새로 뜨는 엔진이 올릴 프로젝션이 없으면 저장소에서 직접 지어요. 파일 보관은 빠르게 뜨기 위한 것이지 없으면 안 되는 것이 아니에요.
+  - 복제된 PostgreSQL(주와 복제본을 서로 다른 장애 영역에, 주가 중단되면 승격하는 절차)과 **정족수 방식의 동기 복제**: 후보 둘 이상 중 하나가 수신하면 커밋해요. 동기 대상이 하나뿐이라 그것이 장애 나면 쓰기가 중단되는 구성은 쓰지 않아요. 커밋 지연은 클로즈드 베타에서 측정해요.
+  - 백업과 WAL 보관을 클러스터 밖에 두는 설정, 시점 복구, 복구 훈련 절차.
+  - 커넥션 풀링(트랜잭션 단위), 역할별 접속 계정(읽기 전용 포함), 역할마다 쿼리 실행·잠금 대기·유휴 시간의 한도, 서버를 여럿 띄운 채 적용할 수 있는 하위 호환 마이그레이션([스토리지 운영](postgres-operations.md)).
+- **쓰기 경로와 읽기 경로를 코드에서 분리해요.** 쓰기 경로(수집, 적용, 스케줄)는 항상 주에 연결해요. 읽기 경로는 읽기 전용 계정이고 쓰기 쿼리를 만들 수 없어요. 두 경로는 포트가 다르고, 읽기 경로가 쓰기 포트를 가져오지 못하게 구조 검사로 차단해요.
+- **복제본 읽기의 계약(`min_seq`).** 질의하는 측이 `min_seq`(적어도 이 변경 번호까지 반영된 응답)를 줄 수 있고, 기록한 응답에 그 번호가 실려요. 복제본의 `readable_through`가 거기에 못 미치면 주 스토리지로 가거나 `wait_timeout` 안에서 대기하거나 거절해요. 에이전트가 쓰고 곧바로 읽는 시나리오에서 낡은 응답을 근거로 삼지 않게 해요. 번호는 세대와 함께 오고 세대가 다르면 `conflict.generation_changed`로 응답해요. (`max_staleness`는 이 용도가 아니라 소스에서 관측한 값이 얼마나 낡아도 되는가만 뜻해요.) 대량 읽기와 API 읽기의 복제본을 분리하는 것은 클로즈드 베타예요.
+- **모든 스토리지 접근은 `kg_id`로 어느 스토리지인지 찾는 계층을 거쳐요.** 알파에서는 응답이 언제나 하나예요. 이 계층은 KG를 스토리지 사이에서 옮기는 데 쓰고(이전 절차는 오픈 베타까지), 쓰기 한계를 해소하려고 KG를 나누는 데는 쓰지 않아요(2.1).
+- 질의 엔진은 스토리지가 중단돼도 올려 둔 프로젝션으로 응답해요(ADR-0010, ADR-0011). 새로 기동하는 엔진이 올릴 프로젝션이 없으면 스토리지에서 직접 구축해요. 파일 보관은 빠르게 기동하기 위한 것이지 없으면 안 되는 것이 아니에요.
 
 ### 11.1 포트와 어댑터
 
-"하나만 쓴다"가 아니라 **자리에 맞는 것을 쓰고**, 지킬 것은 둘이에요: 단일 진실 공급원은 하나, 뜻의 구현은 하나. 제품의 이름은 여기서 고르지 않아요. 구현하는 변경의 결정 기록이 재고 견줘 정해요(라이선스는 허용 목록 안에서).
+"하나만 쓴다"가 아니라 **용도에 맞는 것을 쓰고**, 지킬 것은 둘이에요: 단일 진실 공급원은 하나, 의미의 구현은 하나. 제품 이름은 여기서 고르지 않아요. 구현하는 변경의 결정 기록이 측정하고 비교해 정해요(라이선스는 허용 목록 안에서).
 
 | 포트 | 하는 일 | 어댑터 |
 |---|---|---|
-| 수집 변경 로그 | 소스에서 받은 원본 변경을 적용 전에 추가만 하며 쌓는다 | **둘 다 정식**: PostgreSQL(작은 배포와 알파), 메시지 기록 저장소. 메시지 기록 저장소 어댑터는 **클로즈드 베타**에서 만든다 |
-| 밖으로 내는 변경 알림 | 적용된 변경의 기록과 가벼운 줄과 확정 버전에서 끌어내 알림을 낸다 | 먼저 가져가기 방식의 목록, 뒤에 밀어 주기. 내보내는 경로에 메시지 기록 저장소를 쓸 수 있다 |
-| 오래된 것의 보관 | 오래된 원본 레코드, 지나간 `hist`, 오래된 지표를 열린 형식의 컬럼형 파일로 객체 저장소에 내린다 | 파일 시스템이나 객체 저장소 |
+| 수집 변경 로그 | 소스에서 받은 원본 변경을 적용 전에 추가 전용으로 쌓는다 | **둘 다 정식**: PostgreSQL(작은 배포와 알파), 메시지 로그 스토리지. 메시지 로그 스토리지 어댑터는 **클로즈드 베타**에서 만든다 |
+| 외부로 내보내는 변경 알림 | 적용된 변경의 기록과 경량 변경 레코드와 확정 버전에서 파생해 알림을 보낸다 | 먼저 폴링 방식의 목록, 뒤에 푸시. 내보내는 경로에 메시지 로그 스토리지를 쓸 수 있다 |
+| 오래된 데이터의 보관 | 오래된 원본 레코드, 과거의 `hist`, 오래된 지표를 열린 형식의 컬럼형 파일로 오브젝트 스토리지에 아카이브한다 | 파일 시스템이나 오브젝트 스토리지 |
 | 실행기의 키 상태 | `operator_state`를 두고 메모리에 캐시한다 | PostgreSQL |
-| 프로젝션으로 가는 변경 | 적용된 변경의 기록과 가벼운 줄에서 끌어내, 질의 엔진이 위치 뒤의 변경으로 프로젝션을 늘어난 만큼만 고친다. `readable_through`까지만 본다 | 내보내는 경로는 알림과 같다 |
+| 프로젝션으로 가는 변경 | 적용된 변경의 기록과 경량 변경 레코드에서 파생해, 질의 엔진이 특정 위치 이후의 변경으로 프로젝션을 증분 갱신한다. `readable_through`까지만 본다 | 내보내는 경로는 알림과 같다 |
 
-- 소비자는 위치 뒤의 변경을 끌어가요. 번호는 적용기 하나가 매겨 커밋 순서와 어긋나지 않아요.
-- **프락시움은 메시지 기록 저장소를 직접 띄우거나 운영하지 않아요.** 어댑터는 조직이 이미 운영하는 것에 붙고, 그런 것이 없는 배포는 PostgreSQL 어댑터로 가요. 그 저장소의 구성과 관리는 제품의 범위 밖이고, 제품은 붙는 데 필요한 조건(주제, 보관, 권한, 복제의 최소)을 문서로 내요.
-- **임계값은 셋으로 적어요.** "초당 2만~3만 행"은 *논리 변경 수*예요(가정). 물리적으로 쓰는 행 수와 WAL의 바이트를 따로 재고 갈아타는 판단은 셋을 함께 봐요(클로즈드 베타에서 재요).
-- **갈아타는 차례.** 임계값을 넘으면 먼저 쓰기를 줄이는 손질(`volatile` 쓰기 감소, 되밀기)을 쓰고, 그래도 안 되면 메시지 기록 저장소로 옮겨요. **"KG 나누기"는 이 차례에 없어요**(2.1). 바깥 소비자가 많아 같은 기록을 되감아 읽는 이유이면 바로 옮길 수 있어요.
-- **끊겼을 때.** KG와 묻기는 그대로예요(적용된 변경의 기록은 언제나 PostgreSQL). 수집이 밀려요. 수집기는 한도까지 쌓고 넘치면 소스를 멈추고 문제로 올려요. 보관 기간이 지나 되감지 못하면 그 소스를 전체 스냅샷 대조로 다시 맞춰요. 붙은 저장소도 닿음, 지연, 쓰기 실패, 보관까지 남은 여유를 관측해요.
-- 흐름 처리 엔진을 들여 실행기를 대신하지 않아요(뜻의 구현이 둘이 되고 결정성을 잃어요).
-- **측정한 값**(프로토타입, 약속이 아니에요): 코어 둘의 한 기계에서 지어낸 200만 행 표(기본 키 색인만)를 거의 다 바꾸는 최악의 병합으로 측정했어요. 묶음 1천 행에서 초당 약 7.5만, 1만 행에서 약 10만, 10만 행에서 약 13만 행이었어요. 바뀌는 열에 보조 색인을 두면 약 절반이었어요. 행당 쓰기 기록은 묶음이 1만 이상일 때 약 400바이트, 1천에서는 약 1.7KB였어요(작게 쪼갤수록 손해).
-- 한계: 연결이 하나였고, 복제와 커밋 방식 변형과 오래 도는 청소가 없었고, 합성 데이터예요. 내용 해시가 같은 변경은 DB에 닿기 전에 `operator_state`의 해시로 거르는 것이 이득이에요(합성에서 절반쯤).
+- 소비자는 특정 위치 이후의 변경을 가져가요(pull). 번호는 적용기 하나가 매겨 커밋 순서와 어긋나지 않아요.
+- **프락시움은 메시지 로그 스토리지를 직접 띄우거나 운영하지 않아요.** 어댑터는 조직이 이미 운영하는 것에 연결하고, 그런 것이 없는 배포는 PostgreSQL 어댑터를 써요. 그 스토리지의 구성과 관리는 제품의 범위 밖이고, 제품은 연결에 필요한 조건(토픽, 보관, 권한, 복제의 최소 조건)을 문서로 제공해요.
+- **임계값은 3가지 단위로 적어요.** "초당 2만~3만 행"은 *논리 변경 수*예요(가정). 물리적으로 쓰는 행 수와 WAL의 바이트를 따로 측정하고 전환 판단은 셋을 함께 봐요(클로즈드 베타에서 측정해요).
+- **전환 순서.** 임계값을 넘으면 먼저 쓰기를 줄이는 조치(`volatile` 쓰기 감소, 백프레셔)를 쓰고, 그래도 안 되면 메시지 로그 스토리지로 옮겨요. **"KG 나누기"는 이 순서에 없어요**(2.1). 외부 소비자가 많아 같은 로그를 되감아 읽어야 하는 이유라면 바로 옮길 수 있어요.
+- **연결이 끊겼을 때.** KG와 질의는 그대로예요(적용된 변경의 기록은 언제나 PostgreSQL). 수집이 지연돼요. 수집기는 한도까지 쌓고 넘치면 소스를 중단하고 문제로 올려요. 보관 기간이 지나 되감지 못하면 그 소스를 전체 스냅샷과의 정합성 대조로 다시 일치시켜요. 연결된 스토리지도 접속 가능 여부, 지연, 쓰기 실패, 보존 기한까지 남은 여유를 관측해요.
+- 스트림 처리 엔진을 도입해 실행기를 대체하지 않아요(의미의 구현이 둘이 되고 결정성을 잃어요).
+- **측정한 값**(프로토타입, 보장이 아니에요): 코어 2개의 한 머신에서 합성한 200만 행 테이블(기본 키 인덱스만)을 거의 다 바꾸는 최악의 병합으로 측정했어요. 배치 1천 행에서 초당 약 7.5만, 1만 행에서 약 10만, 10만 행에서 약 13만 행이었어요. 바뀌는 컬럼에 보조 인덱스를 두면 약 절반이었어요. 행당 WAL은 배치가 1만 이상일 때 약 400바이트, 1천에서는 약 1.7KB였어요(작게 쪼갤수록 손해).
+- 한계: 연결이 하나였고, 복제와 커밋 방식 변형과 장시간 실행되는 청소(vacuum)가 없었고, 합성 데이터예요. 내용 해시가 같은 변경은 DB에 도달하기 전에 `operator_state`의 해시로 걸러 내는 것이 이득이에요(합성 데이터에서 절반쯤).
 
 ## 12. 후보 KG는 어디에 두나
 
-KG마다 선형 이력이 하나씩이라 브랜치끼리 이력이 섞이지 않아요. 후보 KG와 테스트용 KG도 `kg_id`로 가르는 KG예요.
+KG마다 선형 이력이 하나씩이라 브랜치끼리 이력이 섞이지 않아요. 후보 KG와 테스트용 KG도 `kg_id`로 구분하는 KG예요.
 
-| 모습 | 무엇 | 비용 |
+| 유형 | 내용 | 비용 |
 |---|---|---|
-| 차이만 내는 드라이 런 | 후보를 스테이징 영역과 `plan_change`에만 둔다. `live`와 `hist`는 쓰지 않는다 | 낮다. 드라이 런의 기본 |
-| 통째로 만든 후보 KG | 후보도 `live`·`hist`·변경의 기록을 갖는다. 질의와 프로젝션까지 테스트해 볼 수 있다(`/v1/kgs/{kg}/...`로 묻는다) | 크다. 처음부터 싣는 비용이 든다 |
+| 차이만 계산하는 드라이 런 | 후보를 스테이징 영역과 `plan_change`에만 둔다. `live`와 `hist`는 쓰지 않는다 | 낮다. 드라이 런의 기본 |
+| 통째로 만든 후보 KG | 후보도 `live`·`hist`·변경의 기록을 갖는다. 질의와 프로젝션까지 테스트해 볼 수 있다(`/v1/kgs/{kg}/...`로 질의한다) | 크다. 처음부터 적재하는 비용이 든다 |
 
-**드라이 런을 주 저장소의 짐에서 떼어 내요**(클로즈드 베타에서 설계, 오픈 베타에서 구현). 드라이 런의 스테이징 영역과 결과는 진실이 아니므로 복제와 백업이 없는 따로 된 임시 저장소에 두거나 영향 범위만의 오버레이로 돌려요. **통째로 복사한 후보 KG를 기본으로 삼지 않아요.** 알파는 같은 PostgreSQL에서 스테이징 영역과 `plan_change`로 돌려요.
+**드라이 런을 주 스토리지의 부하에서 분리해요**(클로즈드 베타에서 설계, 오픈 베타에서 구현). 드라이 런의 스테이징 영역과 결과는 기준 데이터가 아니므로 복제와 백업이 없는 별도의 임시 스토리지에 두거나 영향 범위 전용 오버레이로 실행해요. **통째로 복사한 후보 KG를 기본으로 삼지 않아요.** 알파는 같은 PostgreSQL에서 스테이징 영역과 `plan_change`로 실행해요.
 
 운영과 섞이지 않게 하는 장치예요.
 
-- `kg.role`이 `candidate`나 `test`인 KG는 머리, 변경 알림, 운영의 프로젝션, 운영용 API에 나타나지 않아요. 운영 길의 코드는 `role = production`인 KG만 받고, 후보를 읽는 경로는 권한(ADR-0012)을 거쳐야 열려요.
-- 드라이 런은 `base_kg_id`의 **지금 상태와 식별 이력에서 출발**해서 차이가 ID로 맞물려요. 원본 레코드는 읽기만 해요. 후보를 닫으면 그 `kg_id`의 행을 한꺼번에(큰 후보는 구간째) 지워요.
+- `kg.role`이 `candidate`나 `test`인 KG는 헤드, 변경 알림, 운영의 프로젝션, 운영용 API에 나타나지 않아요. 운영 경로의 코드는 `role = production`인 KG만 받고, 후보를 읽는 경로는 권한(ADR-0012)을 거쳐야 열려요.
+- 드라이 런은 `base_kg_id`의 **현재 상태와 식별 이력에서 출발**해서 차이가 ID로 연결돼요. 원본 레코드는 읽기만 해요. 후보를 닫으면 그 `kg_id`의 행을 한꺼번에(큰 후보는 파티션째) 삭제해요.
 
-## 13. 재는 계획
+## 13. 측정 계획
 
-**엔진 쪽은 이미 측정했어요.** 질의 엔진은 지어낸 노드와 엣지 1억 개까지 측정했고 무엇을 측정했고 무엇을 못 측정했는지는 [kg-queries.md](kg-queries.md)와 [query-engine-shape.md](query-engine-shape.md)에 있어요. 여기서 남은 것은 **저장소 쪽**이에요. 검증의 길은 이래요. 합성 세계 생성기를 제품의 부분으로 두고(층의 갈래 수와 깊이와 사이트 간 교차의 비율이 인자), 느리지만 뻔히 옳은 기준 구현과 답을 견주는 테스트를 늘 돌려요. 규모를 바꿔 가며 재는 벤치는 정해진 장비의 CI에서 돌려 뒷걸음을 잡아요. 실제 소스를 붙이면 제품이 KG의 **분포 프로파일**를 내고 그 값으로 생성기를 다시 맞춰요(ADR-0008).
+**엔진 측은 이미 측정했어요.** 질의 엔진은 합성한 노드와 엣지 1억 개까지 측정했고 무엇을 측정했고 무엇을 측정하지 못했는지는 [kg-queries.md](kg-queries.md)와 [query-engine-shape.md](query-engine-shape.md)에 있어요. 여기서 남은 것은 **스토리지 측**이에요. 검증 방법은 이래요. 합성 세계 생성기를 제품의 일부로 두고(계층의 분기 수와 깊이와 사이트 간 교차 비율이 인자), 느리지만 명백히 옳은 기준 구현과 응답을 비교하는 테스트를 상시 실행해요. 규모를 바꿔 가며 측정하는 벤치마크는 정해진 장비의 CI에서 실행해 성능 퇴행을 잡아요. 실제 소스를 연결하면 제품이 KG의 **분포 프로파일**을 만들고 그 값으로 생성기를 다시 조정해요(ADR-0008).
 
-저장소 쪽 수천만 객체의 측정은 작은 장비로는 모자라서 **클로즈드 베타 앞에 빈 장비가 하나 필요해요**(가정). 알파는 100만까지 기능과 결정성을 테스트해요([기본값 표](defaults.md)). 링크 하나의 행 크기(수십~백 바이트)와 합계(수십 GB)는 **측정하지 않은 추정**이에요. 11.1의 값은 합성 프로토타입이라 이 세계에서 다시 재요.
+스토리지 측의 수천만 객체 측정은 작은 장비로는 부족해서 **클로즈드 베타 전에 빈 장비가 하나 필요해요**(가정). 알파는 100만까지 기능과 결정성을 테스트해요([기본값 표](defaults.md)). 링크 하나의 행 크기(수십~백 바이트)와 합계(수십 GB)는 **측정하지 않은 추정**이에요. 11.1의 값은 합성 프로토타입이라 이 세계에서 다시 측정해요.
 
-측정의 목록(적재, 적용, SQL 기준선, 프로젝션 만들기와 고치기, 결정성)은 [저장소의 운영](postgres-operations.md) 7절에 있어요. 큰 적용 중 흐름의 적용 지연과 가벼운 줄의 양, 쓰기 감소의 효과, 링크가 `volatile`이 아닐 때 `runs_on`의 쓰기량이 들어 있어요.
+측정 목록(적재, 적용, SQL 기준선, 프로젝션 구축과 갱신, 결정성)은 [스토리지 운영](postgres-operations.md) 7절에 있어요. 큰 적용 중 스트림의 적용 지연과 경량 변경 레코드의 양, 쓰기 감소의 효과, 링크가 `volatile`이 아닐 때 `runs_on`의 쓰기량이 들어 있어요.
 
-각 측정은 불합격 기준을 **미리** 적어 두어요(가정이에요). 불합격이면 구조보다 먼저 설정, 색인, 나눔을 조정해요. 측정한 값은 환경과 규모와 한계와 함께 적어요.
+각 측정은 불합격 기준을 **미리** 적어 두어요(가정이에요). 불합격이면 구조보다 먼저 설정, 인덱스, 파티셔닝을 조정해요. 측정한 값은 환경과 규모와 한계와 함께 적어요.
 
 ## 14. 알려진 한계와 가정
-- 선형 이력이에요(갈래는 후보 KG들로 표현해요). 옛 모습과 차이는 보존 기한 안에서만 읽어요(내려 둔 파일에서 읽는 경로는 구현하는 변경이 정해요).
-- `volatile` 값에는 이력이 없고 "그 버전 때"의 답에 주지 않아요. 그 값으로 찾기는 느릴 수 있어요. 값이 같을 때 `seen_at`을 간격의 절반마다만 고치므로 신선도의 정밀함이 그만큼 낮아요.
-- 진실의 쓰기는 주 하나에 모여요. 분산 SQL은 단일 쓰기 노드의 한계가 증명될 때까지 미뤄요. 쓰는 쪽이 KG마다 하나라 한 KG의 쓰기 속도가 그 한계이고, 이것을 **KG를 나눠서 풀 수는 없어요**(2.1). 푸는 경로는 쓰기 감소, 메시지 기록 저장소, 그다음 판단이에요.
-- 큰 적용 중에 같은 KG의 흐름이 기다려요(적용 4절). 다른 배포끼리 해시가 같다고는 약속하지 않아요(7.3). 여러 자리에 걸친 재해 복구는 범위 밖이에요.
-- 처음부터 지은 KG와 ID까지 같다고는 약속하지 않아요(7.5). 모든 숫자(행 크기, 수십 GB, 기한, 3번, 초당 2~3만 행, 쪽의 한도)는 가정이거나 합성 프로토타입의 값이에요.
+- 선형 이력이에요(브랜치는 후보 KG들로 표현해요). 과거의 모습과 차이는 보존 기한 안에서만 읽어요(아카이브한 파일에서 읽는 경로는 구현하는 변경이 정해요).
+- `volatile` 값에는 이력이 없고 "그 버전 시점"의 응답에 포함하지 않아요. 그 값으로 찾기는 느릴 수 있어요. 값이 같을 때 `seen_at`을 간격의 절반마다만 갱신하므로 신선도의 정밀도가 그만큼 낮아요.
+- 기준 데이터의 쓰기는 주 하나에 모여요. 분산 SQL은 단일 쓰기 노드의 한계가 증명될 때까지 미뤄요. 쓰는 주체가 KG마다 하나라 한 KG의 쓰기 속도가 그 한계이고, 이것을 **KG를 나눠서 해소할 수는 없어요**(2.1). 해소 방법은 쓰기 감소, 메시지 로그 스토리지, 그다음 판단이에요.
+- 큰 적용 중에 같은 KG의 스트림이 대기해요(적용 4절). 다른 배포끼리 해시가 같다고는 보장하지 않아요(7.3). 여러 사이트에 걸친 재해 복구는 범위 밖이에요.
+- 처음부터 구축한 KG와 ID까지 같다고는 보장하지 않아요(7.5). 모든 숫자(행 크기, 수십 GB, 기한, 3회, 초당 2~3만 행, 청크 한도)는 가정이거나 합성 프로토타입의 값이에요.
 
 ## 15. 미결 사항
-- 표의 색인, 파티션 키와 크기, 범위 색인의 꼴(13절의 측정 뒤). 인코딩의 바이트 모양, `input_digest` 사슬의 입력.
-- 확정의 주기, 변경 배치의 최소 크기와 쪽의 한도, 짧은 보관(`light_change`, `raw_log`)의 기한 값, 버전 기록을 얼마나 두는지.
-- 해시 키를 갈 때의 길(갈면 `confidential` 값이 든 모든 행의 해시가 바뀐다)과 후보 KG가 기준 KG의 해시 키를 쓰는지.
-- 확인을 기다리는 동안 닿지 않는 소스의 변경이 새 정의 세트로 적용될 때 `kg_version_id`의 입력인 "정의 세트의 해시"가 어느 것인지.
-- 줄 세우기와 일정에 쓸 라이브러리, 메시지 기록 저장소와 분석용 저장소의 제품(구현하는 변경이 재고 견줘 정한다). 초기 적재로 만든 KG가 `main`이라는 이름을 얻는 때.
+- 테이블의 인덱스, 파티션 키와 크기, 범위 인덱스의 형태(13절의 측정 뒤). 인코딩의 바이트 형식, `input_digest` 체인의 입력.
+- 확정 주기, 변경 배치의 최소 크기와 청크 한도, 짧은 보관(`light_change`, `raw_log`)의 기한 값, 버전 이력을 얼마나 두는지.
+- 해시 키를 교체하는 방법(교체하면 `confidential` 값이 든 모든 행의 해시가 바뀐다)과 후보 KG가 기준 KG의 해시 키를 쓰는지.
+- 확인을 기다리는 동안 접속할 수 없는 소스의 변경이 새 정의 세트로 적용될 때 `kg_version_id`의 입력인 "정의 세트의 해시"가 어느 것인지.
+- 작업 큐와 스케줄에 쓸 라이브러리, 메시지 로그 스토리지와 분석용 스토리지의 제품(구현하는 변경이 측정하고 비교해 정한다). 초기 적재로 만든 KG가 `main`이라는 이름을 얻는 시점.
 
 ## 16. 관련 결정과 요구사항
 - ADR-0009(이 문서가 풀어 쓴 결정), ADR-0006(해시와 구조), ADR-0007(식별, 타입 등록부), ADR-0008(수집과 안전장치), ADR-0010(질의와 프로젝션), ADR-0011(가용성), ADR-0012(권한), ADR-0013(지표의 저장), ADR-0014(정의의 저장), ADR-0018(해시 키와 암호화)
-- REQ-130~135(바뀌지 않는 버전과 차이, 같은 입력이면 같은 버전, 한순간의 적용과 한 상태만 보기, 잃지 않기와 제품이 함께 내놓기, 규모, 변경 시퀀스와 확정 버전), REQ-108(속성의 이력의 종류), REQ-191(충족 표시를 늘어난 만큼만 고침), REQ-222(초기 적재와 `min_seq`), REQ-223(저장소의 신호와 나누는 길)
+- REQ-130~135(바뀌지 않는 버전과 차이, 같은 입력이면 같은 버전, 한순간의 적용과 한 상태만 보기, 잃지 않기와 제품이 함께 제공하기, 규모, 변경 시퀀스와 확정 버전), REQ-108(속성의 이력 종류), REQ-191(충족 표시의 증분 갱신), REQ-222(초기 적재와 `min_seq`), REQ-223(스토리지의 신호와 확장 방법)

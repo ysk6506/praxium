@@ -11,7 +11,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgstore"
 )
 
-// [REQ-263]
+// [REQ-270]
 func TestAClosedPoolFailsEveryOperationWithAnError(t *testing.T) {
 	s, ctx := pgstore.NewTestStore(t), context.Background()
 	if err := s.Close(); err != nil {
@@ -71,7 +71,7 @@ func damaged(t *testing.T, admin *sql.DB, table string, ops map[string]func() er
 	}
 }
 
-// [REQ-263]
+// [REQ-270]
 func TestADamagedSchemaFailsEveryOperationInsteadOfAnsweringWrongly(t *testing.T) {
 	ctx := context.Background()
 	dsn := pgstore.NewTestDatabase(t)

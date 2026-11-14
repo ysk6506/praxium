@@ -19,7 +19,7 @@ type shard struct {
 	limits map[Role]Limits
 }
 
-// router finds the storage of a KG. Every access to storage goes through it (kg-storage.md 11, REQ-263): it is
+// router finds the storage of a KG. Every access to storage goes through it (kg-storage.md 11, REQ-270): it is
 // what lets a KG move from one database to another later. locate answers for one KG; all lists every shard, for
 // what has no KG id yet (looking a KG up by name, listing KGs). With one database the answer is always the same.
 type router interface {

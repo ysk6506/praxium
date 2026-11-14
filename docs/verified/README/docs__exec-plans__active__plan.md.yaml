@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "ffec322417953238"
+hash: "f70925cdaf477015"
 date: "2026-11-14"
-note: "Added the PostgreSQL adapter (adapter.pgstore, ADR-0032) to the list of what the code holds; the plan row it follows was updated in the same change"
+note: "code list names adapter.pgstore next to the in-memory reference; plan.md row 7 updated for TD-0011 closure"
 text_changed: true
-doc_hash: "7b3de382edacd984"
+doc_hash: "05fb2a0b817b0255"
