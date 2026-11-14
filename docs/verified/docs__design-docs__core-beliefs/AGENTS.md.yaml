@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "22ba52a1c91d01a2"
+hash: "f748a8e38d40b4a3"
 date: "2026-11-14"
-note: "AGENTS.md에서 Go 요구 버전 한 줄만 바뀌었다. 핵심 신념과 관련 없어 본문은 그대로 맞다"
+note: "main 병합 뒤 AGENTS.md를 다시 읽었다. Go 요구 버전 한 줄(1.27.4)과 이번 단계의 용어 정비만 바뀌었고 핵심 신념과 맞다"
 text_changed: false
-doc_hash: "b6dbe9997ada99ae"
+doc_hash: "04b2f4f490642c38"

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-model.md"
 target: "docs/design-docs/adr/0007-kg-model.md"
-hash: "5fcc8ee4259a2ee1"
-date: "2026-11-13"
-note: "kg-model 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
-text_changed: true
-doc_hash: "260215357dce1e2b"
+hash: "8401e824b9e38ded"
+date: "2026-11-14"
+note: "ADR-0007 5번과 70행의 링크 의미 표기를 원문과 용어집(피드)에 맞춰 다시 대조했고 이 문서의 설명과 어긋나지 않는다"
+text_changed: false
+doc_hash: "2db5d68f5cf1d8aa"
