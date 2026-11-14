@@ -6,10 +6,10 @@
  * GOTEST002 a unit has Go code but no test
  * The floors and their ratchet live in coverage.ts (GOCOV001, GOCOV002, and COV003 for a lowered floor).
  */
-import { mkdtempSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import { type Violation, violation } from "../common";
+import { openScratch } from "../scratch";
 import { type GoConfig, goFiles, unitOfPath } from "./go-config";
 import { funcsOf } from "./go-lex";
 import { runTool, tail } from "./go-run";
@@ -64,9 +64,9 @@ export interface GoTestRun {
 /** Run every Go test once and read the coverage profile. A failing test is GOTEST001 and yields no coverage. */
 export function runTests(root: string, config: GoConfig): GoTestRun {
   const cwd = path.join(root, config.root);
-  const dir = mkdtempSync(path.join(tmpdir(), "praxium-gocover-"));
+  const scratch = openScratch();
   try {
-    const profile = path.join(dir, "cover.out");
+    const profile = path.join(scratch.dir, "cover.out");
     const result = runTool(cwd, "go", ["test", "-count=1", `-coverprofile=${profile}`, "./..."]);
     if (result.missing) {
       return {
@@ -99,7 +99,7 @@ export function runTests(root: string, config: GoConfig): GoTestRun {
     }
     return { violations: [], units: unitCoverage(config, readFileSync(profile, "utf8")) };
   } finally {
-    rmSync(dir, { recursive: true, force: true });
+    scratch.dispose();
   }
 }
 
