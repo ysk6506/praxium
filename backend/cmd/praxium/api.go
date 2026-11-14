@@ -214,7 +214,7 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	}
 	log := logger(stderr)
 	ctx := context.Background()
-	store, closeStore, err := openStore(ctx, o, d)
+	store, closeStore, err := openStoreLogged(ctx, o, d, log)
 	if err != nil {
 		return err
 	}

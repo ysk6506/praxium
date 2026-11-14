@@ -19,6 +19,8 @@ type segScan struct {
 	torn bool
 	// bytes is the size of the good records that were handed to apply (the ones past the snapshot).
 	bytes int64
+	// dropped is the size of the bytes after the last good record that were left out (zero unless torn).
+	dropped int64
 }
 
 // scanner holds the state of the reading of one segment.
@@ -63,6 +65,7 @@ func scanSegment(name string, rc io.Reader, nameFirst, skip uint64, apply func([
 			return segScan{}, kernel.Errorf(CodeCorrupt, "%s has a damaged header but whole records after it", name)
 		}
 		sc.res.torn = true
+		sc.res.dropped = int64(n + len(rest))
 		return sc.res, nil
 	}
 	if first != nameFirst {
@@ -99,6 +102,7 @@ func (sc *scanner) broken(tail []byte) (segScan, error) {
 		return segScan{}, kernel.Errorf(CodeCorrupt, "record %d of %s is damaged, and whole records follow it: this is not a cut write", sc.res.next, sc.name)
 	}
 	sc.res.torn = true
+	sc.res.dropped = int64(len(tail) + len(rest))
 	return sc.res, nil
 }
 

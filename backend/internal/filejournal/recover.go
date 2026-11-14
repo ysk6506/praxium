@@ -16,6 +16,8 @@ type Report struct {
 	LastRecord uint64
 	// DroppedTail is true when a record cut by a crash was left out at the end of the log.
 	DroppedTail bool
+	// DroppedBytes is the size of what was left out at the end of the log.
+	DroppedBytes int64
 	// SkippedSnapshots names the snapshots that were damaged and passed over for an earlier one.
 	SkippedSnapshots []string
 }
@@ -174,6 +176,7 @@ func (j *Journal) replay(all []segInfo, base uint64, play func([]byte) error, re
 		next, last = max(next, res.next), res
 		if res.torn {
 			rep.DroppedTail = true
+			rep.DroppedBytes += res.dropped
 		}
 	}
 	rep.LastRecord = next - 1

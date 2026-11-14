@@ -433,6 +433,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
+   "kind": "test",
+   "hash": "25b25c5d1b2f841b",
+   "asserts": 9,
+   "literals": [
+    "e961a3323ca7d704"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
    "kind": "test",
    "hash": "74c14581e9651876",
@@ -722,6 +737,21 @@
    "skips": 0,
    "reqs": [
     "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheRecoveryLogWarnsOnlyWhenSomethingWasLost": {
+   "kind": "test",
+   "hash": "9a75923e405ecd0a",
+   "asserts": 2,
+   "literals": [
+    "1c4f5809b4d42049"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
    ],
    "added": "2026-11-14",
    "amended_by": null
