@@ -7,7 +7,7 @@
 | 결정 | 상태 | 수정 내용 |
 |---|---|---|
 | [ADR-0001 프락시움은 테라리움에서 나온 운영 측 제품이다 — 목표는 초안으로 두고, 테라리움과는 파일 2개로만 연결한다](../design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md) | 유효 | 일부 수정: [0004](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) (목표는 초안이 아니다), [0005](../design-docs/adr/0005-separate-product-own-model-verification-outside.md) (테라리움과의 연결, 같은 모델, 목표의 셋째 부분) |
-| [ADR-0002 구조와 하네스는 테라리움의 것을 가져온다 — 기계가 강제하는 규칙, 짧은 지도, 스스로 오래됐음을 감지하는 문서](../design-docs/adr/0002-harness-and-working-rules-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (화면 용어에 대한 작업 규칙을 용어집의 표준 용어로 변경하고 문서 본문에도 적용한다) |
+| [ADR-0002 구조와 하네스는 테라리움의 것을 가져온다 — 기계가 강제하는 규칙, 짧은 지도, 스스로 오래됐음을 감지하는 문서](../design-docs/adr/0002-harness-and-working-rules-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (화면 용어에 대한 작업 규칙을 용어집의 표준 용어로 변경하고 문서 본문에도 적용한다), [0056](../design-docs/adr/0056-overview-is-re-read-at-the-release-not-at-every-change.md) (문서가 따르는 문서의 재확인 시점(변경마다, 릴리스마다)) |
 | [ADR-0003 리포지토리에는 공개된 사실만 둔다 — 내부에서 들은 사실, 실제 데이터, 시크릿은 넣지 않는다](../design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md) | 유효 |  |
 | [ADR-0004 제품 목표를 굳히고, 리포지토리는 공개로 두며, 테라리움에서 인계받은 것을 문서 1개로 둔다](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (목표 문장의 표기를 표준 용어로 수정하고 사내를 뺀다. 결정은 그대로다), [0037](../design-docs/adr/0037-goal-sentence-in-plain-words-and-readme-as-first-screen.md) (목표 문장의 표현) |
 | [ADR-0005 프락시움은 별도 제품이다 — 모델은 프락시움이 소유하고, 위임 전의 검증은 제품 밖에 둔다](../design-docs/adr/0005-separate-product-own-model-verification-outside.md) | 유효 |  |
@@ -28,7 +28,7 @@
 | [ADR-0020 타입 등록부와 표준 모델의 데이터 파일을 도입한다](../design-docs/adr/0020-type-registry-and-standard-model-data.md) | 유효 |  |
 | [ADR-0021 합성 세계 생성기를 core.worldgen 단위로 둔다](../design-docs/adr/0021-synthetic-world-generator.md) | 유효 |  |
 | [ADR-0022 표준 모델을 영향 범위에 맞게 보강한다](../design-docs/adr/0022-standard-model-fitted-to-impact-scope.md) | 유효 |  |
-| [ADR-0023 하네스가 Go 테스트를 잠그고 요구사항에 잇는다](../design-docs/adr/0023-harness-locks-go-tests-and-links-them-to-requirements.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (Go 테스트 규칙의 이식과 잠금의 지문 범위) |
+| [ADR-0023 하네스가 Go 테스트를 잠그고 요구사항에 잇는다](../design-docs/adr/0023-harness-locks-go-tests-and-links-them-to-requirements.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (Go 테스트 규칙의 이식과 잠금의 지문 범위), [0063](../design-docs/adr/0063-requirements-are-split-into-area-documents.md) (요구사항의 단일 출처가 한 파일에서 입구와 영역별 문서로) |
 | [ADR-0024 REST 계약이 기계가 지키는 문서가 된다](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (`core.kernel`이 `os`를 import하는 범위), [0044](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) (운영 모드는 늘 시작을 거부하고 인증은 개발용 인증기뿐이라는 결과) |
 | [ADR-0025 KG를 변경 시퀀스 위에 구성한다 — 스토리지 포트와 기준 구현](../design-docs/adr/0025-kg-stands-on-a-sequence-of-changes-storage-port-and-reference-implementation.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (적합성 테스트 유닛이 기준 구현을 import하는 범위) |
 | [ADR-0026 사전 정의 질의의 첫 3개가 기준 구현이 된다](../design-docs/adr/0026-closed-queries-first-three-stand-as-the-reference.md) | 유효 |  |
@@ -52,7 +52,7 @@
 | [ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) | 유효 |  |
 | [ADR-0045 웹 UI 규칙을 Chrome 팀의 웹 가이드에서 추려 문서와 검사로 둔다](../design-docs/adr/0045-web-ui-rules-from-the-chrome-web-guidance.md) | 유효 |  |
 | [ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다 — 없는 시트와 컬럼, 키 오류, 인코딩, 구분자, 정의 초안](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) | 유효 |  |
-| [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 |  |
+| [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 | 일부 수정: [0056](../design-docs/adr/0056-overview-is-re-read-at-the-release-not-at-every-change.md) (릴리스를 만드는 실행의 plan 단계가 문서 확인을 한다) |
 | [ADR-0049 정의 저장소 — 종류를 모르는 저장, 브랜치와 제안, 파일 하나로 보관](../design-docs/adr/0049-definitions-store-kind-agnostic-with-branches-and-one-file.md) | 유효 |  |
 | [ADR-0050 조직 속성을 오버레이로 모델에 더한다](../design-docs/adr/0050-org-properties-as-overlays-in-the-model.md) | 유효 |  |
 | [ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)](../design-docs/adr/0051-impact-view-parts-svg-without-new-dependencies.md) | 유효 | 일부 수정: [0054](../design-docs/adr/0054-impact-screen-wired-to-the-api.md) (간접 노출 등급의 화면 이름) |
@@ -60,4 +60,6 @@
 | [ADR-0053 조직 속성의 명령줄과 시작 배선](../design-docs/adr/0053-org-properties-command-line-and-start-wiring.md) | 유효 |  |
 | [ADR-0054 영향 범위 화면의 연결 — 주소, 읽기 훅, 화면, 객체 상세의 입구](../design-docs/adr/0054-impact-screen-wired-to-the-api.md) | 유효 |  |
 | [ADR-0055 수집의 소음과 메시지를 고친다 — 키 없는 행을 건너뛰는 옵션, 걸러진 행의 칸 문제, 무엇을 고칠지 알려 주는 메시지](../design-docs/adr/0055-ingest-messages-and-options-for-a-first-time-user.md) | 유효 |  |
+| [ADR-0056 개요 문서의 재확인을 변경마다가 아니라 릴리스마다 한다 — follows의 재확인 시점(recheck)과 릴리스 검사](../design-docs/adr/0056-overview-is-re-read-at-the-release-not-at-every-change.md) | 유효 |  |
 | [ADR-0057 합성 세계의 스토리지 어레이에 전원 이중화 그룹을 둔다](../design-docs/adr/0057-storage-array-power-redundancy-in-the-synthetic-world.md) | 유효 |  |
+| [ADR-0063 요구사항 문서를 입구와 영역별 문서로 나눈다 — 번호는 전체에서 하나뿐](../design-docs/adr/0063-requirements-are-split-into-area-documents.md) | 유효 |  |
