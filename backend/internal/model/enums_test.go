@@ -191,6 +191,7 @@ func TestCodeCatalogueIsStable(t *testing.T) {
 		"model_data_invalid", "model_duplicate_id", "model_enum_values", "model_identity_context", "model_identity_key", "model_identity_key_changed", "model_identity_key_volatile", "model_identity_set",
 		"model_layer_namespace", "model_layer_not_inherited", "model_link_meaning", "model_link_volatile", "model_name_duplicate",
 		"model_name_invalid", "model_name_reserved", "model_need", "model_not_in_closed_list", "model_not_standard", "model_number",
+		"model_overlay_duplicate", "model_overlay_field", "model_overlay_limit", "model_overlay_name", "model_overlay_number", "model_overlay_target", "model_overlay_value_type",
 		"model_parent_cycle", "model_parent_namespace", "model_parent_unknown", "model_property_duplicate", "model_required_field",
 		"model_scheme_unknown", "model_scope_key_limit", "model_scope_key_type", "model_scope_key_volatile", "model_superseded", "model_title_property",
 		"model_trait_unknown", "model_unit", "model_value_invalid", "model_value_type_unknown",

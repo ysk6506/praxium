@@ -36,6 +36,7 @@ func cloneEach[T any](items []T, clone func(T) T) []T {
 func (p Property) clone() Property {
 	p.Aliases = slices.Clone(p.Aliases)
 	p.EnumValues = slices.Clone(p.EnumValues)
+	p.DisplayNames = maps.Clone(p.DisplayNames)
 	return p
 }
 
