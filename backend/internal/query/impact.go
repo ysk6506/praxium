@@ -48,7 +48,7 @@ func planImpact(in ImpactInput) (*impactPlan, error) {
 		return nil, err
 	}
 	if in.DeadScopeID != "" {
-		return nil, kernel.Errorf(CodeScopeUnsupported, "dead_scope_id needs stored scopes, which do not exist yet")
+		return nil, &fieldInput{param: "dead_scope_id", err: kernel.Errorf(CodeScopeUnsupported, "dead_scope_id needs stored scopes, which do not exist yet")}
 	}
 	return p, p.checkSeeds()
 }
@@ -187,11 +187,11 @@ func checkCut(p *impactPlan, g *depGraph) error {
 func (g *depGraph) objectIndex(field, id string) (int32, error) {
 	oid, err := kernel.ParseID[graph.ObjectKind](id)
 	if err != nil {
-		return 0, kernel.Errorf(CodeObjectNotFound, "no object %q", id)
+		return 0, &fieldInput{id: id, err: kernel.Errorf(CodeObjectNotFound, "no object %q", id)}
 	}
 	x, ok := g.byID[oid]
 	if !ok || !g.nodes[x].visible {
-		return 0, kernel.Errorf(CodeObjectNotFound, "no object %s", id)
+		return 0, &fieldInput{id: id, err: kernel.Errorf(CodeObjectNotFound, "no object %s", id)}
 	}
 	return x, nil
 }

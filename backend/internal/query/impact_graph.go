@@ -402,6 +402,15 @@ func (l *loader) wire(lt model.LinkType, src, dst, idx int32) {
 		if p.whole != "none" {
 			d.deps = append(d.deps, edge{kind: kWholeNeeds, soft: p.whole == "soft", to: src, link: idx})
 		}
+	default:
+		l.wireStructure(lt.Meaning, src, dst, idx)
+	}
+}
+
+// wireStructure wires the links that group and contain objects.
+func (l *loader) wireStructure(meaning model.Meaning, src, dst, idx int32) {
+	s, d := &l.g.nodes[src], &l.g.nodes[dst]
+	switch meaning {
 	case model.MeaningMemberOf:
 		if d.group {
 			d.members = append(d.members, member{node: src, link: idx})

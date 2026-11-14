@@ -340,14 +340,19 @@ func (s *solver) groupValue(nd *node, alive, unknown int32) (val, int32, bool) {
 		}
 		return vUnknown, 0, false
 	}
+	return unknownKValue(n, alive, unknown), 0, false
+}
+
+// unknownKValue is the value of a group whose min_alive is not known: a value only if every min_alive from 1 to n gives it.
+func unknownKValue(n, alive, unknown int32) val {
 	canUp, canDown, canUnknown := alive >= 1, alive+unknown < n, unknown > 0 && alive < n
 	switch {
 	case canUp && !canDown && !canUnknown:
-		return vUp, 0, false
+		return vUp
 	case canDown && !canUp && !canUnknown:
-		return vDown, 0, false
+		return vDown
 	}
-	return vUnknown, 0, false
+	return vUnknown
 }
 
 // evalRound works out the objects of the frontier from the states of the round

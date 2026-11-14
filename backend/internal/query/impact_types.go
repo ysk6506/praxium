@@ -87,7 +87,7 @@ type PathStep struct {
 	ObjectType  string     `json:"object_type,omitempty"`
 	DisplayName string     `json:"display_name,omitempty"`
 	Hidden      bool       `json:"hidden,omitempty"`
-	Link        *PathLink  `json:"link"`
+	Link        *PathLink  `json:"link,omitempty"`
 	ViaGroup    *ObjectRef `json:"via_group,omitempty"`
 }
 

@@ -4776,6 +4776,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestImpactCommandAsksTheRouteAndPrintsSummaryGroupsAndPaths": {
+   "kind": "test",
+   "hash": "6f3c25f918de53e4",
+   "asserts": 5,
+   "literals": [
+    "71e3e34de4d1b8e7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestImpactCommandUpstreamTakesATargetAndRefusesAMixedOrEmptyQuestion": {
+   "kind": "test",
+   "hash": "c90eedd01865ed5f",
+   "asserts": 4,
+   "literals": [
+    "9b124c336e38e79f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestKGCommandsAskTheRoutesTheyName": {
    "kind": "test",
    "hash": "7af15409cfa35689",
@@ -6358,6 +6388,36 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/httpapi::TestImpactOverHTTPAnswersASiteFailureAndAnUpstreamQuestion": {
+   "kind": "test",
+   "hash": "3d4637a917562514",
+   "asserts": 12,
+   "literals": [
+    "85913c0341881d4c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestImpactOverHTTPRefusesWhatItCannotAnswerWithAProblem": {
+   "kind": "test",
+   "hash": "8275e02f93e40b35",
+   "asserts": 8,
+   "literals": [
+    "28e4a81952960326"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/httpapi::TestKGAnswersFitTheContract": {
    "kind": "test",

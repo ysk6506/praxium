@@ -187,3 +187,45 @@ func (c *call) askNeighbors() {
 	c.runNeighbors(query.NeighborsInput{Common: common, ObjectID: b.ObjectID, LinkTypes: b.LinkTypes, Meanings: b.Meanings,
 		Direction: b.Direction, MaxSteps: b.MaxSteps, PeerTypes: b.PeerTypes})
 }
+
+type impactBody struct {
+	commonBody
+	Direction      string   `json:"direction"`
+	Dead           []string `json:"dead"`
+	DeadLinks      []string `json:"dead_links"`
+	SiteFailure    []string `json:"site_failure"`
+	DeadScopeID    string   `json:"dead_scope_id"`
+	TargetObjectID string   `json:"target_object_id"`
+	Mode           string   `json:"mode"`
+	MaxHops        int      `json:"max_hops"`
+	MaxItems       int      `json:"max_items"`
+	TimeBudget     string   `json:"time_budget"`
+}
+
+// askImpact serves POST /v1/kgs/{kg}/queries:impact.
+func (c *call) askImpact() {
+	var b impactBody
+	if !c.graphReady() || !c.readBody(&b) {
+		return
+	}
+	common, ok := b.common(c)
+	if !ok {
+		return
+	}
+	in := query.ImpactInput{Common: common, Direction: b.Direction, Dead: b.Dead, DeadLinks: b.DeadLinks, SiteFailure: b.SiteFailure,
+		DeadScopeID: b.DeadScopeID, TargetObjectID: b.TargetObjectID, Mode: b.Mode, MaxHops: b.MaxHops, MaxItems: b.MaxItems}
+	if b.TimeBudget != "" {
+		d, err := parseDuration(b.TimeBudget)
+		if err != nil {
+			c.fail("invalid_input.field", nil, field("/time_budget", "invalid_input.field_format", map[string]any{"expected": "iso8601_duration"}))
+			return
+		}
+		in.TimeBudget = d
+	}
+	ans, err := c.s.queries.Impact(c.r.Context(), in, c.readFilter())
+	if err != nil {
+		c.failErr(err)
+		return
+	}
+	c.kgOK(ans.Data, metaOf(ans.Meta))
+}
