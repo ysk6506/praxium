@@ -289,7 +289,7 @@ describe("[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the 
     expect(onPrevious).toHaveBeenCalledTimes(1);
     expect(onNext).not.toHaveBeenCalled();
     expect(view.container.textContent).toContain("26–40 / 40");
-    expect(view.container.textContent).toContain("2쪽");
+    expect(view.container.textContent).toContain("2페이지");
     await view.unmount();
   });
 });

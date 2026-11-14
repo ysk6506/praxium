@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useId, useRef, useState } from "react";
 import { cx } from "./cx";
 
 export interface AppShellProps {
@@ -6,28 +6,64 @@ export interface AppShellProps {
   readonly nav: ReactNode;
   readonly children: ReactNode;
   readonly footer?: ReactNode;
-  /** A strip above everything, for a state the person must not miss (the demo mode). */
+  /** A strip above everything, for a state the person must not miss (the demo mode, the local mode). */
   readonly banner?: ReactNode;
+  /** Where the person is; when it changes, the folded menu closes (a link of the menu was followed). */
+  readonly place?: string;
 }
 
-/** The frame of every screen: navigation on the left, the page on the right. Under 48rem the navigation goes on top. */
-export function AppShell({ brand, nav, children, footer, banner }: AppShellProps) {
+/**
+ * The frame of every screen: navigation on the left, the page on the right. Under 48rem the navigation folds into a
+ * menu the person opens, so the page starts at the top of the screen. The first thing a keyboard reaches is a link
+ * that skips to the page.
+ */
+export function AppShell({ brand, nav, children, footer, banner, place }: AppShellProps) {
+  // The menu is open for the place it was opened at: going somewhere else folds it.
+  const [openedAt, setOpenedAt] = useState<string | undefined>(undefined);
+  const here = place ?? "";
+  const open = openedAt === here;
+  const menuId = useId();
+  const main = useRef<HTMLElement>(null);
   return (
     <>
+      {/* A button, not a link: the address is the router's, and a link to a fragment would change it. */}
+      <button
+        type="button"
+        onClick={() => main.current?.focus()}
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:cursor-pointer focus:rounded-md focus:border focus:border-line-strong focus:bg-surface focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium focus:shadow-pop"
+      >
+        본문으로 건너뛰기
+      </button>
       {banner ? (
         <output className="block border-b border-line bg-warn-soft px-4 py-1.5 text-center text-sm font-medium text-warn">
           {banner}
         </output>
       ) : null}
       <div className="flex min-h-screen flex-col md:flex-row">
-        <aside className="flex shrink-0 flex-col gap-4 border-b border-line bg-surface p-3 md:sticky md:top-0 md:h-screen md:w-60 md:overflow-y-auto md:border-r md:border-b-0">
-          <div className="px-2 py-1 text-base font-bold tracking-tight text-fg">{brand}</div>
-          <nav aria-label="주 메뉴" className="flex flex-col gap-4">
-            {nav}
-          </nav>
-          {footer ? <div className="mt-auto px-2 text-xs text-subtle">{footer}</div> : null}
+        <aside className="flex shrink-0 flex-col gap-3 border-b border-line bg-surface p-3 md:sticky md:top-0 md:h-screen md:w-60 md:gap-4 md:overflow-y-auto md:border-r md:border-b-0">
+          <div className="flex items-center justify-between gap-2">
+            <div className="px-2 py-1 text-base font-bold tracking-tight text-fg">{brand}</div>
+            <button
+              type="button"
+              aria-expanded={open}
+              aria-controls={menuId}
+              onClick={() => setOpenedAt(open ? undefined : here)}
+              className="cursor-pointer rounded-md border border-line-strong px-3 py-1 text-sm font-medium text-fg hover:bg-sunken md:hidden"
+            >
+              {open ? "메뉴 닫기" : "메뉴"}
+            </button>
+          </div>
+          <div
+            id={menuId}
+            className={cx("flex-1 flex-col gap-4 md:flex md:h-full", open ? "flex" : "hidden")}
+          >
+            <nav aria-label="주 메뉴" className="flex flex-col gap-4">
+              {nav}
+            </nav>
+            {footer ? <div className="mt-auto px-2 text-xs text-subtle">{footer}</div> : null}
+          </div>
         </aside>
-        <main className="min-w-0 flex-1 px-4 py-5 md:px-8">
+        <main ref={main} tabIndex={-1} className="min-w-0 flex-1 px-4 py-5 outline-none md:px-8">
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
@@ -144,10 +180,13 @@ export function Section({
   title,
   children,
   aside,
+  note,
 }: {
   readonly title: string;
   readonly children: ReactNode;
   readonly aside?: ReactNode;
+  /** A line under the title that says what the section shows. */
+  readonly note?: ReactNode;
 }) {
   return (
     <section className="mb-6">
@@ -155,7 +194,24 @@ export function Section({
         <h2 className="text-base font-semibold">{title}</h2>
         {aside ? <div className="text-xs text-muted">{aside}</div> : null}
       </div>
+      {note ? <p className="mb-2 text-sm text-muted">{note}</p> : null}
       {children}
     </section>
+  );
+}
+
+/**
+ * A value the product defines, shown by its display name; the code it was made from is in the tooltip. For the
+ * values the screen translates (layer, freshness, state): the person reads Korean, whoever works with the API still
+ * finds the code.
+ */
+export function Coded({ code, children }: { readonly code: string; readonly children: ReactNode }) {
+  return (
+    <abbr
+      title={code}
+      className="cursor-help underline decoration-line-strong decoration-dotted underline-offset-4"
+    >
+      {children}
+    </abbr>
   );
 }

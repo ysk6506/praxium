@@ -22,6 +22,6 @@
   "go:core.worldgen": 96.5,
   "harness": 96.5,
   "web.api": 98,
-  "web.data": 96,
-  "web.ui": 96
+  "web.data": 97,
+  "web.ui": 98
 }

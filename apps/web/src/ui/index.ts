@@ -7,10 +7,19 @@ export { Badge, type BadgeTone } from "./Badge";
 export { Button, ButtonLink, type ButtonVariant } from "./Button";
 export { Checkbox } from "./Checkbox";
 export { Dialog } from "./Dialog";
-export { AppShell, KeyValues, Mono, NavLink, NavSection, PageHeader, Section } from "./layout";
+export {
+  AppShell,
+  Coded,
+  KeyValues,
+  Mono,
+  NavLink,
+  NavSection,
+  PageHeader,
+  Section,
+} from "./layout";
 export { Pagination } from "./Pagination";
 export { Select } from "./Select";
 export { EmptyState, ErrorState, LoadingState } from "./states";
-export { Table, TBody, Td, THead, Th, Tr } from "./Table";
+export { SortTh, Table, TBody, Td, THead, Th, Tr } from "./Table";
 export { type TabItem, Tabs } from "./Tabs";
 export { TextField } from "./TextField";
