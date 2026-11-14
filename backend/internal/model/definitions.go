@@ -94,22 +94,31 @@ type Trait struct {
 }
 
 // Property is one attribute of an object type, a trait or a link type.
+//
+// Namespace is empty for a property of its owner's own namespace, which is
+// every standard property. An organisation adds properties to standard types
+// and traits as overlays (overlay.go); those carry Namespace org, a name that
+// begins with "org." and a number from OrgNumberBase up. A standard name has
+// no dot, so the two never clash. DisplayNames are labels by language and, like
+// Name, stay out of the hash.
 type Property struct {
-	ID           PropertyID  `json:"id"`
-	AttrNo       int         `json:"attr_no,omitempty"`
-	Name         string      `json:"name"`
-	Aliases      []string    `json:"aliases,omitempty"`
-	ValueType    ValueTypeID `json:"value_type"`
-	Unit         string      `json:"unit,omitempty"`
-	EnumValues   []string    `json:"enum_values,omitempty"`
-	Required     bool        `json:"required,omitempty"`
-	ChangeClass  ChangeClass `json:"change_class"`
-	Sensitivity  Sensitivity `json:"sensitivity,omitempty"`
-	HistoryKind  HistoryKind `json:"history_kind,omitempty"`
-	ScopeKey     bool        `json:"scope_key,omitempty"`
-	Status       Status      `json:"status,omitempty"`
-	SupersededBy PropertyID  `json:"superseded_by,omitempty"`
-	Description  string      `json:"description,omitempty"`
+	ID           PropertyID        `json:"id"`
+	AttrNo       int               `json:"attr_no,omitempty"`
+	Name         string            `json:"name"`
+	Namespace    Namespace         `json:"namespace,omitempty"`
+	DisplayNames map[string]string `json:"display_names,omitempty"`
+	Aliases      []string          `json:"aliases,omitempty"`
+	ValueType    ValueTypeID       `json:"value_type"`
+	Unit         string            `json:"unit,omitempty"`
+	EnumValues   []string          `json:"enum_values,omitempty"`
+	Required     bool              `json:"required,omitempty"`
+	ChangeClass  ChangeClass       `json:"change_class"`
+	Sensitivity  Sensitivity       `json:"sensitivity,omitempty"`
+	HistoryKind  HistoryKind       `json:"history_kind,omitempty"`
+	ScopeKey     bool              `json:"scope_key,omitempty"`
+	Status       Status            `json:"status,omitempty"`
+	SupersededBy PropertyID        `json:"superseded_by,omitempty"`
+	Description  string            `json:"description,omitempty"`
 }
 
 // KeyComponent is one part of an identity key. It is exactly one of three
