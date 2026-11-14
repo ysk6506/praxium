@@ -13,7 +13,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 5364f60a404e4448
+decision_hash: 8401e824b9e38ded
 ---
 # ADR-0007 KG의 모델: 확장 가능한 타입과 고정된 링크 의미, 채널별 상태, 객체인 이중화 그룹, 근거 등급, 불변 ID, 충분한 표준 모델
 
@@ -33,7 +33,7 @@ KG는 현실의 IT 인프라를 객체와 링크로 적은 것이다(ADR-0005). 
    - **특성(trait)**: 여러 타입이 함께 갖는 성질이다. 속성을 가지고, 의존하는 채널을 선언한다(7번). 관리자가 추가한 타입도 특성을 지정하면 공통 동작(영향 범위, 공통 조회)에 포함된다.
 3. **이름 규칙**: 객체 타입은 단수 명사 `PascalCase`(`PhysicalServer`), 링크 타입은 출발에서 도착으로 읽는 동사구 `UPPER_SNAKE_CASE`(`HOSTED_ON`), 속성·액션 타입·열거형 값은 `snake_case`다. 표준 타입의 이름에 제품 이름을 넣지 않는다. 제품마다 다른 것은 속성이나 관리자가 추가하는 하위 타입에 둔다.
 4. **링크 타입은 이름 하나에 여러 바인딩을 가진다.** 바인딩은 (출발 타입이나 특성, 도착 타입이나 특성, 개수, 매개 값 제약)이다. 개수와 제약은 링크 타입이 아니라 바인딩에 붙는다. 그래서 `RUNS_ON`, `PART_OF`, `REALIZED_BY` 같은 일반 이름이 층을 가로질러 쓰이고, 같은 의미의 이름이 층마다 생기지 않는다. 링크 타입은 하나의 링크 의미와 그 매개 값을 가진다.
-5. **링크 의미는 고정 목록 11가지다.** `runs_on`, `requires`(`hard`/`soft`), `supplied_by`(자원), `realized_by`, `part_of`, `contained_in`, `connected_to`, `member_of`, `managed_by`, `owned_by`, `record_only`. 어떤 표준도 의존·공급·이중화가 전파되는 규칙을 정의하지 않으므로 프락시움이 정한다. 새 의미는 결정 기록으로만 추가한다. 논리 관계가 얼마든지 있다는 요구는 링크 타입을 확장할 수 있다는 것으로 충족한다.
+5. **링크 의미는 고정 목록 11가지다.** `runs_on`, `requires`(`hard`/`soft`), `supplied_by`(자원), `realized_by`, `part_of`, `contained_in`, `connected_to`, `member_of`, `managed_by`, `owned_by`, `record_only`. 어떤 표준도 의존·피드·이중화가 전파되는 규칙을 정의하지 않으므로 프락시움이 정한다. 새 의미는 결정 기록으로만 추가한다. 논리 관계가 얼마든지 있다는 요구는 링크 타입을 확장할 수 있다는 것으로 충족한다.
    - 부품이 전체의 일부인 것(`part_of`)과 위치에 놓인 것(`contained_in`)은 다른 의미다. 합치면 전파가 모호해진다.
 6. **상태는 하나가 아니라 채널별로 있다.** 채널은 `service`(서비스 제공), `power`, `cooling`, `network`, `storage`, `management` 6종이고, 채널마다 `up` / `down` / `unknown` 3가지 값이다. 링크 의미는 "출발의 어느 채널이 도착의 어느 채널에 의존하는가"로 정의한다. 계산과 결과의 종류는 ADR-0010이 정한다.
 7. **타입이 의존하는 채널을 선언한다.** `Powered`는 `power`를, `Cooled`는 `cooling`을, `NetworkAttached`는 `network`를, 스토리지를 쓰는 타입은 `storage`를 `hard`로 필요로 한다. 타입이 강도를 바꿀 수 있다. 망의 외곽이나 중심으로 선언한 객체에는 특성 `NetworkAnchor`를 지정한다.

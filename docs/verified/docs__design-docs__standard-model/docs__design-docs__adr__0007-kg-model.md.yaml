@@ -1,7 +1,7 @@
 doc: "docs/design-docs/standard-model.md"
 target: "docs/design-docs/adr/0007-kg-model.md"
-hash: "5364f60a404e4448"
+hash: "8401e824b9e38ded"
 date: "2026-11-14"
-note: "ADR-0007 5번과 70행을 원문과 대조했다. 링크 의미 표기는 원문의 자원과 용어집의 피드로 맞췄고 이 문서의 설명과 어긋나지 않는다"
+note: "ADR-0007 5번과 70행의 링크 의미 표기를 원문과 용어집(피드)에 맞춰 다시 대조했고 이 문서의 설명과 어긋나지 않는다"
 text_changed: false
 doc_hash: "7a5e88c78aa218c0"
