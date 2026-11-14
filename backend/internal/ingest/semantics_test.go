@@ -11,7 +11,7 @@ import (
 )
 
 // attrNo is the number of an attribute of a type, by name.
-func (r *rig) attrNo(typ, name string) int {
+func attrNo(r *rig, typ, name string) int {
 	r.t.Helper()
 	ot, ok := r.runner.Reg.ObjectTypeByName(typ)
 	if !ok {
@@ -27,7 +27,7 @@ func (r *rig) attrNo(typ, name string) int {
 }
 
 // linksOf is the live links of an object by name.
-func (r *rig) linksOf(name string) []graph.LinkRow {
+func linksOf(r *rig, name string) []graph.LinkRow {
 	r.t.Helper()
 	snap, err := r.store.Snapshot(context.Background(), graph.ReadPoint{KG: r.kg.ID, Kind: graph.ReadLatest})
 	if err != nil {
@@ -40,7 +40,7 @@ func (r *rig) linksOf(name string) []graph.LinkRow {
 	return links
 }
 
-func (r *rig) dataset(rep Report, id string) DatasetReport {
+func dataset(r *rig, rep Report, id string) DatasetReport {
 	r.t.Helper()
 	for _, d := range rep.Datasets {
 		if d.Dataset == id {
@@ -64,13 +64,13 @@ func TestAWrongCellLeavesOutTheValueAndKeepsTheObjectAndItsLinks(t *testing.T) {
 		t.Fatalf("problems %v", rep.ProblemCounts)
 	}
 	rack := r.rows()["rack-a"]
-	if _, ok := rack.Attrs[r.attrNo("Rack", "total_u")]; ok {
+	if _, ok := rack.Attrs[attrNo(r, "Rack", "total_u")]; ok {
 		t.Error("the wrong value was kept")
 	}
-	if _, ok := r.rows()["rack-b"].Attrs[r.attrNo("Rack", "total_u")]; !ok {
+	if _, ok := r.rows()["rack-b"].Attrs[attrNo(r, "Rack", "total_u")]; !ok {
 		t.Error("the good value of another row was lost")
 	}
-	if len(r.linksOf("rack-a")) != 1 {
+	if len(linksOf(r, "rack-a")) != 1 {
 		t.Error("the link to the rack with a wrong cell is not alive")
 	}
 	for _, p := range rep.Problems {
@@ -79,7 +79,7 @@ func TestAWrongCellLeavesOutTheValueAndKeepsTheObjectAndItsLinks(t *testing.T) {
 		}
 	}
 	for _, id := range []string{"ds_racks", "ds_servers"} {
-		d := r.dataset(rep, id)
+		d := dataset(r, rep, id)
 		if !d.Balanced() || d.Problem != 0 || d.UsedWithProblem != 1 || d.CellsLeftOut != 1 || d.Used != 2 {
 			t.Errorf("%s: %+v", id, d)
 		}
@@ -90,7 +90,7 @@ func TestAWrongCellLeavesOutTheValueAndKeepsTheObjectAndItsLinks(t *testing.T) {
 func TestAValueThatTurnsWrongIsAsIfTheCellWereEmpty(t *testing.T) {
 	r := loaded(t)
 	r.run()
-	no := r.attrNo("Rack", "total_u")
+	no := attrNo(r, "Rack", "total_u")
 	if _, ok := r.rows()["rack-a"].Attrs[no]; !ok {
 		t.Fatal("the first run gave no value")
 	}
@@ -125,7 +125,7 @@ func TestAWrongCellOfAnIdentityKeyStillMakesNoObject(t *testing.T) {
 			t.Errorf("the problem does not say the column is part of the identity key: %q", p.Reason)
 		}
 	}
-	if d := r.dataset(rep, "ds_servers"); !d.Balanced() || d.Problem != 1 || d.UsedWithProblem != 0 {
+	if d := dataset(r, rep, "ds_servers"); !d.Balanced() || d.Problem != 1 || d.UsedWithProblem != 0 {
 		t.Errorf("%+v", d)
 	}
 }
@@ -230,7 +230,7 @@ func serversFilteredBy(filter string) string {
 	return strings.Replace(mp, `"id":"f_server","dataset":"ds_servers"`, `"id":"f_server","dataset":"r_servers"`, 1)
 }
 
-func (r *rig) useMapping(mapping string) {
+func useMapping(r *rig, mapping string) {
 	r.t.Helper()
 	m, err := ParseMapping(strings.NewReader(mapping))
 	if err != nil {
@@ -251,17 +251,17 @@ func TestAFilterTypoDoesNotCloseObjectsAtOnceButAfterTheWaitOfAVanishedRow(t *te
 	r := newRig(t, sourceJSON, serversFilteredBy(keepAll))
 	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
 	r.run()
-	r.useMapping(serversFilteredBy(typoFilter))
+	useMapping(r, serversFilteredBy(typoFilter))
 	for i := 0; i < 2; i++ {
 		r.clock.Advance(time.Hour)
 		rep := r.run()
 		if rep.RetiredObjects != 0 || rep.RetiredLinks != 0 || rep.WaitingObjects != 2 {
 			t.Fatalf("run %d: retired %d objects %d links, waiting %d", i, rep.RetiredObjects, rep.RetiredLinks, rep.WaitingObjects)
 		}
-		if d := r.dataset(rep, "ds_servers"); d.Filtered != 2 || d.Used != 0 || !d.Balanced() {
+		if d := dataset(r, rep, "ds_servers"); d.Filtered != 2 || d.Used != 0 || !d.Balanced() {
 			t.Fatalf("run %d: %+v", i, d)
 		}
-		if len(r.linksOf("SV1")) != 1 {
+		if len(linksOf(r, "SV1")) != 1 {
 			t.Fatalf("run %d: the link of a waiting object was closed", i)
 		}
 	}
@@ -284,18 +284,18 @@ func TestMendingTheFilterInTimeKeepsEverythingAndRestartsTheCount(t *testing.T) 
 	r := newRig(t, sourceJSON, serversFilteredBy(keepAll))
 	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
 	first := r.run()
-	r.useMapping(serversFilteredBy(typoFilter))
+	useMapping(r, serversFilteredBy(typoFilter))
 	for i := 0; i < 2; i++ {
 		r.clock.Advance(time.Hour)
 		r.run()
 	}
-	r.useMapping(serversFilteredBy(keepAll))
+	useMapping(r, serversFilteredBy(keepAll))
 	r.clock.Advance(time.Hour)
 	rep := r.run()
 	if rep.RetiredObjects != 0 || rep.WaitingObjects != 0 || rep.GraphHash != first.GraphHash {
 		t.Fatalf("%+v", rep)
 	}
-	r.useMapping(serversFilteredBy(typoFilter))
+	useMapping(r, serversFilteredBy(typoFilter))
 	for i := 0; i < 5; i++ {
 		r.clock.Advance(time.Hour)
 		if rep := r.run(); rep.RetiredObjects != 0 && i < 2 {
@@ -320,7 +320,7 @@ func TestAFilteredRowIsNotRetiredWhereAVanishedRowIsNot(t *testing.T) {
 	r := newRig(t, src, serversFilteredBy(keepAll))
 	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
 	r.run()
-	r.useMapping(serversFilteredBy(typoFilter))
+	useMapping(r, serversFilteredBy(typoFilter))
 	for i := 0; i < 6; i++ {
 		r.clock.Advance(48 * time.Hour)
 		if rep := r.run(); rep.RetiredObjects != 0 {
@@ -366,7 +366,7 @@ func TestAFileWithMoreRowsThanTheLimitIsAnIncompleteCaptureAndUsesNothing(t *tes
 	if _, ok := r.rows()["rack-c"]; ok {
 		t.Error("rows of a file over the limit were used")
 	}
-	if d := r.dataset(rep, "ds_racks"); d.Read != 0 || !d.Collected || d.Applied {
+	if d := dataset(r, rep, "ds_racks"); d.Read != 0 || !d.Collected || d.Applied {
 		t.Errorf("%+v", d)
 	}
 }
@@ -410,7 +410,7 @@ func TestALinkIsAsCertainAsTheLowestFeedItWasMadeFrom(t *testing.T) {
 		r := newRig(t, sourceJSON, mp)
 		r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
 		r.run()
-		links := r.linksOf("SV1")
+		links := linksOf(r, "SV1")
 		if len(links) != 1 || links[0].Grade != c.want {
 			t.Errorf("%s: links %+v, want grade %s", name, links, c.want)
 		}
