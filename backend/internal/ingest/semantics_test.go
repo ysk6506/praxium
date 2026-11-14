@@ -155,3 +155,46 @@ func TestAWrongCellDoesNotRetireTheObjectOfARowThatWasGood(t *testing.T) {
 		}
 	}
 }
+
+// powerSheetRig is a second file for the servers that attaches the power state, with a key name of its own choice.
+func powerSheetRig(t *testing.T, keyName string) *rig {
+	t.Helper()
+	i := strings.LastIndex(sourceJSON, `]}`)
+	src := sourceJSON[:i] + `,
+ {"id":"ds_power","parser":"csv","natural_key":["serial"],"columns":[{"name":"serial"},{"name":"maker"},{"name":"state"}]}]}`
+	feed := `,{"id":"f_power","dataset":"ds_power","object_type":"PhysicalServer","basis":"observed",
+  "attributes":[{"attribute":"power_state","column":"state"}],
+  "identity":[{` + keyName + `"components":[{"property":"manufacturer","column":"maker"},{"property":"serial_number","column":"serial"}],"priority":1}]}`
+	mp := strings.Replace(mappingJSON, `],
+"links"`, feed+`],
+"links"`, 1)
+	r := newRig(t, src, mp)
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	r.files["ds_power"] = "serial,maker,state\nsn100,Zorvane,on\nsn200,Zorvane,off\n"
+	return r
+}
+
+// [REQ-359]
+func TestTheKeyNameTakesNoPartInWhichObjectARowIs(t *testing.T) {
+	var hashes []string
+	for _, name := range []string{``, `"key_name":"serial_key",`, `"key_name":"another",`} {
+		r := powerSheetRig(t, name)
+		rep := r.run()
+		if rep.ProblemCounts[ProblemOrphanValue] != 0 || len(rep.ProblemCounts) != 0 || rep.Objects != 6 {
+			t.Fatalf("key_name %q: objects %d problems %v", name, rep.Objects, rep.ProblemCounts)
+		}
+		hashes = append(hashes, rep.GraphHash)
+	}
+	if hashes[0] != hashes[1] || hashes[1] != hashes[2] {
+		t.Errorf("the key name moved the graph: %v", hashes)
+	}
+}
+
+// [REQ-359]
+func TestAKeyNameThatOneFeedGivesAndAnotherLacksStillFindsTheObject(t *testing.T) {
+	r := powerSheetRig(t, ``)
+	r.plan.feeds[1].keys[0].name = "renamed_after_the_fact"
+	if rep := r.run(); rep.ProblemCounts[ProblemOrphanValue] != 0 || rep.Objects != 6 {
+		t.Fatalf("objects %d problems %v", rep.Objects, rep.ProblemCounts)
+	}
+}
