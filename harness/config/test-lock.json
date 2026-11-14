@@ -13115,6 +13115,51 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestClassifyAddedAndGoneProperties": {
+   "kind": "test",
+   "hash": "52108842353450dc",
+   "asserts": 5,
+   "literals": [
+    "6c79e2465b88bdc5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-347"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestClassifyNamesTheValuesThatChange": {
+   "kind": "test",
+   "hash": "55902ae1b96c79e3",
+   "asserts": 1,
+   "literals": [
+    "1f0671cb9fb682d4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-347"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestClassifyOverlay": {
+   "kind": "test",
+   "hash": "142bceab1fd3be48",
+   "asserts": 3,
+   "literals": [
+    "b8bc750e42667c02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-347"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestClosedListsHaveTheDocumentedSizes": {
    "kind": "test",
    "hash": "1fa04a5ee27cbe8b",
@@ -13132,15 +13177,62 @@
   },
   "go:backend/internal/model::TestCodeCatalogueIsStable": {
    "kind": "test",
-   "hash": "5410f45ce6f5a029",
+   "hash": "574e68614c26d8ae",
    "asserts": 5,
    "literals": [
-    "b831ae364f48d60c"
+    "7d368fe55baf79b4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-13",
+   "added": "2026-11-14",
+   "amended_by": "0050-org-properties-as-overlays-in-the-model.md"
+  },
+  "go:backend/internal/model::TestComposeAddsOrgPropertiesToATypeAndATrait": {
+   "kind": "test",
+   "hash": "c3a479b23de4f408",
+   "asserts": 5,
+   "literals": [
+    "81b4e3781aff8d8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestComposeDoesNotChangeItsInput": {
+   "kind": "test",
+   "hash": "ae04c4d3adfd535c",
+   "asserts": 3,
+   "literals": [
+    "f5f05fcdb1ea2f6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestComposeRegistryReportsWhatTheOrdinaryChecksFind": {
+   "kind": "test",
+   "hash": "557f2dfde766b888",
+   "asserts": 2,
+   "literals": [
+    "f9c6966a448ed150"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestDefinitionsCloneSharesNothing": {
@@ -13169,6 +13261,22 @@
     "REQ-101"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestFillKeepsWhatIsStoredAndNeverGivesATakenId": {
+   "kind": "test",
+   "hash": "57c73d89f6ded64e",
+   "asserts": 9,
+   "literals": [
+    "b1be7e7e6133ab9e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-349"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestFQDNLimits": {
@@ -13372,6 +13480,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestNumbersOfTwoRanges": {
+   "kind": "test",
+   "hash": "3cf0c88481eaeba6",
+   "asserts": 4,
+   "literals": [
+    "05126bdd8b280e38"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-344"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestNumbersSkipReservedAndNeverReuse": {
    "kind": "test",
    "hash": "216d8483cb1e0f1a",
@@ -13387,6 +13510,255 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestOrgModelFileErrors": {
+   "kind": "test",
+   "hash": "d670632073b28d04",
+   "asserts": 3,
+   "literals": [
+    "725d36753584a6c0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOrgModelFileIsReadAndFilled": {
+   "kind": "test",
+   "hash": "e19fe27c79032b0a",
+   "asserts": 7,
+   "literals": [
+    "ceac7139e4d3eefc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-349"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOrgModelFileIsWrittenBack": {
+   "kind": "test",
+   "hash": "163297a0b4cfe4d4",
+   "asserts": 6,
+   "literals": [
+    "2feadd8c45259602"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOrgModelFileTargetsAndIds": {
+   "kind": "test",
+   "hash": "cdbd0bc123d3527f",
+   "asserts": 5,
+   "literals": [
+    "8717ebd0f7328e57"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOrgPropertyChangesTheModelHashButNotItsName": {
+   "kind": "test",
+   "hash": "0892f44ea852d0bf",
+   "asserts": 10,
+   "literals": [
+    "8cde0c68ab53421c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-346"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOrgPropertyIsRetiredWithoutASuccessor": {
+   "kind": "test",
+   "hash": "2e6286b5ebcfbee5",
+   "asserts": 2,
+   "literals": [
+    "301db1cb1337390e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-348"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayBodyIsCanonical": {
+   "kind": "test",
+   "hash": "100e056b4fa0169c",
+   "asserts": 5,
+   "literals": [
+    "ff146d4c41ba5ee3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-349"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayBodyKeepsASuccessorSoThatItCanBeRefused": {
+   "kind": "test",
+   "hash": "57f622a72f9f67b7",
+   "asserts": 2,
+   "literals": [
+    "5e49d84f726ae1ce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-349"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayBodyRoundTrips": {
+   "kind": "test",
+   "hash": "46b9aa174adf0718",
+   "asserts": 8,
+   "literals": [
+    "0e2d5cfe5ac57d88"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayCannotTargetSys": {
+   "kind": "test",
+   "hash": "53edcd8a4b44053d",
+   "asserts": 1,
+   "literals": [
+    "a4502b2d20107ca0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayErrors": {
+   "kind": "test",
+   "hash": "a41ad93c12e4a607",
+   "asserts": 1,
+   "literals": [
+    "e358161d77e89ba6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-344",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayLimitsAndRepeats": {
+   "kind": "test",
+   "hash": "a8f5147283b2b430",
+   "asserts": 5,
+   "literals": [
+    "52dd61c4e42e1985"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayNameClashesInOneLineage": {
+   "kind": "test",
+   "hash": "f02491ea77799168",
+   "asserts": 6,
+   "literals": [
+    "f7e90b072851b998"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayOnTheStandardModel": {
+   "kind": "test",
+   "hash": "cd375c40bc818e2a",
+   "asserts": 10,
+   "literals": [
+    "d79592ec271ac0c8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-345",
+    "REQ-346"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayRefusesWhatItDoesNotKnow": {
+   "kind": "test",
+   "hash": "c669823bd44888af",
+   "asserts": 1,
+   "literals": [
+    "c3b8e042203ca2d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-343"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayWarnings": {
+   "kind": "test",
+   "hash": "1d02fd20e4e206ec",
+   "asserts": 2,
+   "literals": [
+    "e0307f4cf554dbb3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-346",
+    "REQ-348"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestPropertyLookups": {
    "kind": "test",
    "hash": "7623f8fff480c907",
@@ -13400,6 +13772,38 @@
     "REQ-233"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestPropertyNamespaceRules": {
+   "kind": "test",
+   "hash": "062eb1313a16ded5",
+   "asserts": 5,
+   "literals": [
+    "7b6061a4666ec2a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-348"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestPropertyNamingErrors": {
+   "kind": "test",
+   "hash": "02496939f60a9aa8",
+   "asserts": 4,
+   "literals": [
+    "b50bb6cfb419ffd6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-348"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestReadDefinitionsErrors": {
@@ -13456,6 +13860,21 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestRowHashDoesNotSeeNames": {
+   "kind": "test",
+   "hash": "e4ac0e95a4947184",
+   "asserts": 3,
+   "literals": [
+    "acf1bf2a47f99ea3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-346"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestRulesOfActions": {
@@ -13607,6 +14026,22 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestStandardFilesAreRefusedAnOrganisationProperty": {
+   "kind": "test",
+   "hash": "c0d9b63f9abff09c",
+   "asserts": 3,
+   "literals": [
+    "3307d164b62a4b5b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestStandardGroupsCanHaveMembersAndConsumers": {
    "kind": "test",
    "hash": "de99e5ba91d25065",
@@ -13618,6 +14053,21 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestStandardHashIsTheSameWithNoOverlay": {
+   "kind": "test",
+   "hash": "c7cf6117a088cd0c",
+   "asserts": 3,
+   "literals": [
+    "83be3a583a0c1bd0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-346"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestStandardIdentityAndRules": {
@@ -13707,6 +14157,22 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestStandardPropertiesStayOutOfTheOrganisationSpace": {
+   "kind": "test",
+   "hash": "fc3f76868a4a58f6",
+   "asserts": 6,
+   "literals": [
+    "4491c714bed72c1a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-344"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestStandardSpotChecks": {
    "kind": "test",
    "hash": "a7a39cffbfee7b48",
@@ -13793,6 +14259,22 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestWarningsForATraitTarget": {
+   "kind": "test",
+   "hash": "dd828c48abfc38d8",
+   "asserts": 1,
+   "literals": [
+    "00fd34d1fbd04e53"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestWhatIsAllowed": {

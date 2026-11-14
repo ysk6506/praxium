@@ -114,8 +114,11 @@ func needsTree(needs []Need) []any {
 	})
 }
 
+// propertyTree adds the namespace only when the property has one, so the hash
+// of a standard property is the one it always had (hash rule version 1).
+// Names and display names are labels and stay out.
 func propertyTree(p Property) (string, any) {
-	return p.ID.String(), map[string]any{
+	tree := map[string]any{
 		"id":            p.ID.String(),
 		"value_type":    p.ValueType.String(),
 		"unit":          p.Unit,
@@ -128,6 +131,10 @@ func propertyTree(p Property) (string, any) {
 		"status":        string(statusOf(p.Status)),
 		"superseded_by": p.SupersededBy.String(),
 	}
+	if p.Namespace != "" {
+		tree["namespace"] = string(p.Namespace)
+	}
+	return p.ID.String(), tree
 }
 
 func traitTree(t Trait) map[string]any {
