@@ -30,7 +30,9 @@ export function SettingsScreen() {
             autoComplete="off"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder={saved ? "새 토큰으로 바꾸려면 입력하십시오" : "서버를 시작할 때 지정한 토큰"}
+            placeholder={
+              saved ? "새 토큰으로 바꾸려면 입력하십시오" : "서버를 시작할 때 지정한 토큰"
+            }
             description="서버를 시작할 때 -dev-token-file로 지정한 값입니다. 이 브라우저에 저장되며, 모든 API 요청의 Authorization 헤더에 실립니다."
           />
           <div className="flex gap-2">
