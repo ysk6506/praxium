@@ -2,6 +2,6 @@ doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
 hash: "303098a5308533e2"
 date: "2026-11-14"
-note: "ADR-0040: checked against the xlsx source change; this doc stays accurate"
+note: "x"
 text_changed: true
-doc_hash: "80f4987eb9e2a8ce"
+doc_hash: "06b823911173696c"

@@ -2,6 +2,6 @@ doc: "README.md"
 target: "package.json"
 hash: "3b9075e60b504834"
 date: "2026-11-14"
-note: "ADR-0040: checked against the xlsx source change; this doc stays accurate"
+note: "ADR-0040: checked; stays accurate"
 text_changed: false
 doc_hash: "63f2152de7eb6009"

@@ -2,6 +2,6 @@ doc: "ARCHITECTURE.md"
 target: "packages/core/src/kernel/index.ts"
 hash: "a0e635f3462c49c3"
 date: "2026-11-14"
-note: "ADR-0040: checked against the xlsx source change; this doc stays accurate"
-text_changed: true
+note: "ADR-0040: checked; stays accurate"
+text_changed: false
 doc_hash: "ecf4125be6eb6f58"
