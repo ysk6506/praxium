@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "7b441ee457819062"
+hash: "f9d97c35116d2b1c"
 date: "2026-11-14"
-note: "병합 후 확인: ADR-0033의 수집 슬라이스 추가분(AGENTS.md 실행 예, REQ-263~269, 계획 7번)이 문서와 맞는지 다시 읽었다"
+note: "requirements gained REQ-263 to 269 (ingest) and REQ-270 (PostgreSQL); design text needs no change"
 text_changed: false
 doc_hash: "bea9303c5f968827"

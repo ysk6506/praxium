@@ -333,7 +333,7 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 
 ### 5-5. CLI
 - **API를 그대로 호출해요.** 서버 안의 코드에 직접 접근하지 않아요. 그래서 화면 없이도 모든 기능을 테스트하고 운영할 수 있어요. 알파의 기준은 "모든 기능이 API와 CLI로 된다"(REQ-147)예요.
-- **명령 형식은 자원과 액션을 따라가요**: `<그룹> <자원> <액션> [인자]`. 도구 이름은 `praxium`이고 서버와 같은 바이너리에 있어요. 서버는 `praxium api serve`로 기동하고, 클라이언트 플래그(`--endpoint`, `--token`, `--config`, `--json`)는 명령 앞에 놓아요. 종료 코드는 오류 그룹을 따라요(ADR-0024).
+- **명령 형식은 자원과 액션을 따라가요**: `<그룹> <자원> <액션> [인자]`. 도구 이름은 `praxium`이고 서버와 같은 바이너리에 있어요. 서버는 `praxium api serve`로 기동하고(스토리지는 `-store memory|postgres`로 고르고, PostgreSQL이면 연결 문자열이 든 파일을 `-store-dsn-file`로 줘요. 시크릿이 인자와 로그에 남지 않게 파일로만 받아요), 클라이언트 플래그(`--endpoint`, `--token`, `--config`, `--json`)는 명령 앞에 놓아요. 종료 코드는 오류 그룹을 따라요(ADR-0024).
 
 ```
 praxium question impact --kg main --dead obj_sw0417 --view as_observed

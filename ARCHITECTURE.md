@@ -22,7 +22,8 @@ covers:
 | `core.access` | Go | `backend/internal/access` | 역할, 능력(ability), 주체(`Subject`), 인증기(`Authenticator`)와 권한 판정기(`Authorizer`)의 포트, 역할 표. 역할별로 무엇을 할 수 있는지를 정의하는 단일 위치 | `core.kernel` |
 | `core.graph` | Go | `backend/internal/graph` | KG의 중심. 객체와 링크의 행(번호로 참조하고 해시에는 영향을 주지 않는 ID), 변경 배치, 등록부 기준 검증, 변경 번호를 부여하며 청크로 나눠 적용하는 적용기, 증분 갱신하는 그래프 해시, 확정 버전, 식별 이력, 리스와 세대. 스토리지 포트(`Catalog`, `Writer`, `Reader`, `Feed`)와 합성 세계의 도구(`Fixture`), 최신 상태만 보유한 구현 `ScratchStore`(테스트 더블)를 함께 가진다. 차수(`1:1`, `N:1`)는 링크가 놓인 바인딩마다 계산한다(ADR-0027) | `core.kernel`, `core.model` |
 | `core.query` | Go | `backend/internal/query` | 사전 정의 질의 3종(`find`, `get`, `neighbors`)의 기준 구현. 스토리지 포트의 스냅샷 하나를 읽어 모든 응답에 엔벨로프(`as_of`, `volatile_as_of`, 신선도, 근거, `result_complete`, `hidden`)를 붙이고, 읽기 권한 포트(`ReadFilter`)로 필터링한다. 어댑터를 import하지 않는다. 테스트는 `graph.ScratchStore`에 세계를 구축한다(ADR-0027) | `core.kernel`, `core.model`, `core.graph` |
-| `adapter.memstore` | Go | `backend/internal/memstore` | 스토리지 포트의 인메모리 구현. 적합성 테스트(`adapter.graphcheck`)를 모두 통과하는 기준 구현이고 테스트와 개발 모드의 스토리지다. 운영용이 아니다. 이후 추가될 PostgreSQL 어댑터가 이것을 참고 구현으로 삼는다(ADR-0025) | `core.kernel`, `core.graph` |
+| `adapter.memstore` | Go | `backend/internal/memstore` | 스토리지 포트의 인메모리 구현. 적합성 테스트(`adapter.graphcheck`)를 모두 통과하는 기준 구현이고 테스트와 개발 모드의 스토리지다. 운영용이 아니다. PostgreSQL 어댑터(`adapter.pgstore`)가 이것을 참고 구현으로 삼았다(ADR-0025) | `core.kernel`, `core.graph` |
+| `adapter.pgstore` | Go | `backend/internal/pgstore` | 스토리지 포트의 PostgreSQL 구현(드라이버 `lib/pq`, ADR-0032). 적합성 테스트 31개 사례를 모두 통과한다. 쓰기는 `kg_head` 행을 잠그고 세대, 리스(lease), 엔진 의미 버전, 기대한 `applied_seq`를 차례로 검증한 뒤 행과 `kg_head`를 한 트랜잭션에서 쓴다. 변경 번호는 `kg_head` 행의 카운터다. 모든 기본키와 인덱스는 `kg_id`로 시작하고, 스토리지 접근은 `kg_id`를 키로 하는 라우팅 계층을 거친다(현재는 답이 하나다). 마이그레이션은 직접 만든 실행기와 내장 SQL 파일로 하고, 역할별 문 실행 시간 제한과 잠금 대기 제한을 둔다 | `core.kernel`, `core.model`, `core.graph` |
 | `adapter.graphcheck` | Go | `backend/internal/graphcheck` | 스토리지 포트의 적합성 테스트(`Cases()`, 31개 사례. 사례 이름과 순서는 테스트가 고정하고, 사례의 내용은 테스트 잠금이 지문에 포함한다, ADR-0028). 어댑터가 통과해야 하는 요건을 `TB` 인터페이스 기반으로 작성하고, 어댑터의 테스트가 `t.Run`으로 실행한다(ADR-0025) | `core.kernel`, `core.model`, `core.graph`. 테스트 파일만 `adapter.memstore`도 (`test_may_import`) |
 | `core.contract` | Go | `backend/internal/contract` | 외부에 공개하는 계약. OpenAPI 3.1 계약을 조각(`openapi/parts`)으로 두고 도구가 병합해(`openapi.json`) `go:embed`로 내장한다. 아직 구현되지 않은 경로의 등록부(`planned/routes.json`), JSON Schema 부분집합 검증기, 문제 코드 목록을 함께 가진다. MCP 툴과 파일 형식은 이후에 추가한다 | `core.kernel` |
 | `adapter.devauth` | Go | `backend/internal/devauth` | 개발용 인증기. 고정 토큰 하나와 역할 목록. 운영 모드, 16자 미만 토큰, 정의되지 않은 역할은 거부한다. OIDC로 대체되기 전의 임시 구현이다(ADR-0024, 부채 TD-0010) | `core.kernel`, `core.access` |
@@ -34,7 +35,7 @@ covers:
 | `adapter.filesource` | Go | `backend/internal/filesource` | 파일 소스 어댑터. 시작점이 전달한 open 함수로 데이터셋마다 파일 하나를 읽어 수집 결과(`Capture`)를 만든다. 쓰기 경로가 없고, 크기 한도를 넘거나 끝까지 읽지 못한 것은 불완전한 수집으로 표시한다 | `core.kernel`, `core.ingest` |
 | `adapter.ingestcheck` | Go | `backend/internal/ingestcheck` | 테스트 전용. 수집 슬라이스의 인수 검사: 생성기의 세계에서 형태가 다른 소스 파일을 만들어 파이프라인으로 인메모리 스토리지에 적재하고 개발용 적재기의 KG와 비교한다. 재수집, 한 행 변경, 사라진 행, 불량 행을 확인한다 | 없음. 테스트 파일만 `core.kernel`, `core.model`, `core.graph`, `core.worldgen`, `core.ingest`, `adapter.memstore`, `adapter.devload`, `adapter.filesource` (`test_may_import`) |
 | `core.worldgen` | Go | `backend/internal/worldgen` | 합성 세계 생성기. 시드와 인자로 표준 모델만 사용한 데이터센터의 정답(JSON Lines), 소스 뷰(CSV, JSON 페이지, 장치 설정, 고정 폭 테이블), 변경 스트림, 분포 프로파일을 스트리밍으로 생성하고, 정답을 등록부로 검증한다. 파일은 `Store`로 받는다(운영체제에 접근하지 않는다) | `core.kernel`, `core.model` |
-| `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 이름만 주면 커널을 조립하고 한 줄짜리 구조화 로그를 남긴 뒤 종료한다. `api serve`는 서버를 기동하고, `api routes`, `contract`, 클라이언트 명령(`health`, `types`, `catalog`, `kg`, `object`, `query`)과 개발용 `dev load-truth`, 파일 소스 한 번의 수집 `ingest run`을 가진다. `api serve -mode development`는 인메모리 스토리지를 만들고 `-dev-truth`로 세계를 적재한다. 운영 모드는 실제 인증기와 운영용 스토리지가 없어 거부한다. 환경 변수와 파일, 리스닝, 종료 신호는 `wiring`으로 묶어 테스트에서 대체한다 | `core.*`, `adapter.*` |
+| `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 이름만 주면 커널을 조립하고 한 줄짜리 구조화 로그를 남긴 뒤 종료한다. `api serve`는 서버를 기동하고, `api routes`, `contract`, 클라이언트 명령(`health`, `types`, `catalog`, `kg`, `object`, `query`)과 개발용 `dev load-truth`, 파일 소스 한 번의 수집 `ingest run`을 가진다. `api serve -mode development`는 기본으로 인메모리 스토리지를 만들고 `-dev-truth`로 세계를 적재한다. `-store postgres -store-dsn-file <파일>`을 주면 PostgreSQL 스토리지를 쓴다(연결 문자열은 파일에서만 읽는다). 운영 모드는 실제 인증기가 없어 거부한다. 환경 변수와 파일, 리스닝, 종료 신호는 `wiring`으로 묶어 테스트에서 대체한다 | `core.*`, `adapter.*` |
 
 TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 단위다. 구조 계약에서 Go 단위는 `go:` 절에 따로 적는다.
 
@@ -149,7 +150,7 @@ KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 
 | 선택 | 외부 시크릿 스토리지 | 제품에 내장된 엔벨로프 암호화 스토리지를 쓴다 |
 | 선택 | 파일 보관(S3 규약) | 보존 기한 안에서 PostgreSQL에 둔다 |
 | 선택 | 개방형 형식으로 관측 데이터를 수신하는 곳 | 제품 안의 신호와 `diagnose`만 쓴다 |
-| 도입하는 라이브러리 | 아직 없다. 질의 엔진의 핵심과 파서는 표준 라이브러리로 직접 구현한다. 도입한 Go 모듈은 아래 표에 있다 | |
+| 도입하는 라이브러리 | 질의 엔진의 핵심과 파서는 표준 라이브러리로 직접 구현한다. 도입한 Go 모듈은 아래 표에 있다(PostgreSQL 드라이버 하나) | |
 | 도입하는 라이브러리 | YAML 파싱(구현하는 변경이 정한다. 사용하는 부분집합을 직접 파싱하거나 허용 라이선스의 라이브러리 하나) | 부분집합을 직접 파싱한다 |
 
 기존 그래프 엔진은 도입하지 않는다(허용 라이선스, 메모리 상주, 증분 갱신, 과거 버전, 제품의 의미 체계를 함께 충족하는 것이 없다. ADR-0006).
@@ -160,4 +161,4 @@ KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 
 
 | 모듈 | 라이선스 | 이유 | 쓰는 단위 |
 |---|---|---|---|
-| (아직 없다) | | 백엔드는 표준 라이브러리만 쓴다 | |
+| `github.com/lib/pq` | MIT | PostgreSQL의 와이어 프로토콜과 인증(SCRAM-SHA-256 등)을 직접 구현하면 오래 안전하게 유지하기 어렵다. 순수 Go이고 다른 모듈에 의존하지 않는다(전이 의존 없음, ADR-0032) | `adapter.pgstore` |

@@ -48,6 +48,8 @@ go:
     # The KG as a sequence of applied changes and the storage port (ADR-0025); the conformance suite for its adapters is its own unit, apart so that each unit's tests reach the coverage floor.
     core.graph:     {path: backend/internal/graph, may_import: [core.kernel, core.model]}
     adapter.memstore: {path: backend/internal/memstore, may_import: [core.kernel, core.graph]}
+    # The PostgreSQL implementation of the storage port (ADR-0032). core.model is for the grade and basis types the rows carry; its tests run the conformance suite against a real server.
+    adapter.pgstore: {path: backend/internal/pgstore, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.graphcheck]}
     # The conformance suite is production code of its own (it cannot import "testing"), so it never imports the adapter it checks: only the test that runs it does (ADR-0028).
     adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.memstore]}
     # The first three closed queries over the storage port (ADR-0026). The core imports no adapter (ADR-0027): its tests run on graph.ScratchStore.
@@ -70,9 +72,10 @@ go:
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium
-  # Module path -> units allowed to import it. None yet: the backend uses the standard library only.
+  # Module path -> units allowed to import it. The backend uses the standard library and the one driver below.
   # Every module here also needs a row in the table of ARCHITECTURE.md (REQ-239) and an ADR.
-  third_party: {}
+  third_party:
+    github.com/lib/pq: [adapter.pgstore]
   # Standard-library packages that only the listed units may import: the core knows no operating system and no network.
   # An entry that ends in .go is one file: the environment is read through entropy.go and nowhere else in core.kernel (ADR-0028).
   restricted_stdlib:
