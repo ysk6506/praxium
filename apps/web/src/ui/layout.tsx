@@ -44,7 +44,9 @@ export function AppShell({
       >
         본문으로 건너뛰기
       </button>
-      <output className="sr-only">{announcement}</output>
+      <div aria-live="polite" aria-atomic="true" className="sr-only">
+        {announcement}
+      </div>
       {banner ? (
         <output className="block border-b border-line bg-warn-soft px-4 py-1.5 text-center text-sm font-medium text-warn">
           {banner}

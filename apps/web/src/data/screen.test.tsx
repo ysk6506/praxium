@@ -30,7 +30,7 @@ function Page() {
   const screen = useScreen(route);
   return (
     <ScreenReportsProvider value={screen.report}>
-      <output data-testid="said">{screen.announcement}</output>
+      <div data-said>{screen.announcement}</div>
       <button type="button" data-other>
         다른 곳
       </button>
@@ -71,7 +71,7 @@ describe("[REQ-315] each screen names the page, and a move moves the focus", () 
     expect(document.activeElement).toBe(document.body);
     await go("#/kg/main/types", true);
     expect(document.activeElement).toBe(document.querySelector("h1"));
-    expect(document.querySelector("output")?.textContent).toBe("");
+    expect(document.querySelector("[data-said]")?.textContent).toBe("");
     await view.unmount();
   });
 
@@ -84,7 +84,7 @@ describe("[REQ-315] each screen names the page, and a move moves the focus", () 
     expect(document.activeElement).toBe(other);
     await go("#/kgs", false);
     expect(document.activeElement).toBe(other);
-    expect(document.querySelector("output")?.textContent).toBe("KG 목록 · 프락시움");
+    expect(document.querySelector("[data-said]")?.textContent).toBe("KG 목록 · 프락시움");
     await view.unmount();
   });
 
