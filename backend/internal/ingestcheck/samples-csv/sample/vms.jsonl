@@ -1,0 +1,3 @@
+{"vm_id":"v-1","instance_uuid":"uuid-0001","name":"web-1","host":{"host_id":"hyp-01"}}
+{"vm_id":"v-2","instance_uuid":"uuid-0002","name":"web-2","host":{"host_id":"hyp-01"}}
+{"vm_id":"v-3","instance_uuid":"uuid-0003","name":"db-1","host":{"host_id":"hyp-02"}}

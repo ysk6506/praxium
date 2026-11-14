@@ -1,0 +1,2 @@
+{"host_id":"hyp-01","name":"hv-a.example.test","hardware":{"serial":"SN-A100"},"connection":"connected"}
+{"host_id":"hyp-02","name":"hv-b.example.test","hardware":{"serial":"SN-B300"},"connection":"connected"}
