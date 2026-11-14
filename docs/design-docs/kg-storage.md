@@ -97,9 +97,9 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 
 | 테이블 | 컬럼 | 키 | 인덱스와 파티셔닝 |
 |---|---|---|---|
-| `object_live` | `kg_id`, `object_id`(16바이트), `type_no`, `name`, `min_grade`, `attrs`(JSONB, 키는 `attr_no`, `versioned` 속성만), `scope_v1`~`scope_v4`, `source_refs`(JSONB), `content_hash`, `seq_from` | `(kg_id, object_id)` | `(kg_id, type_no, object_id)`, 범위 인덱스(아래). `(kg_id, 해시(object_id))`로 파티셔닝한다 |
+| `object_live` | `kg_id`, `object_id`(`text COLLATE "C"`, ADR-0032), `type_no`, `name`, `min_grade`, `attrs`(JSONB, 키는 `attr_no`, `versioned` 속성만), `scope_v1`~`scope_v4`(접근 제어 작업의 몫이라 PostgreSQL 어댑터에는 아직 없다), `source_refs`(JSONB), `content_hash`, `seq_from` | `(kg_id, object_id)` | `(kg_id, type_no, object_id)`, 범위 인덱스(아래). `(kg_id, 해시(object_id))`로 파티셔닝한다 |
 | `object_hist` | `object_live`의 컬럼 + `seq_to` | `(kg_id, object_id, seq_from)` | `seq_to` 구간으로 파티셔닝한다 |
-| `link_live` | `kg_id`, `link_id`(16바이트), `link_type_no`, `src_object_id`, `dst_object_id`, `discriminator`, `attrs`, `source_refs`, `content_hash`, `seq_from` | `(kg_id, link_id)` | `(kg_id, src_object_id, link_type_no)`, `(kg_id, dst_object_id, link_type_no)`. `(kg_id, 해시(link_id))`로 파티셔닝한다 |
+| `link_live` | `kg_id`, `link_id`(`text COLLATE "C"`), `link_type_no`, `src_object_id`, `dst_object_id`, `discriminator`, `attrs`, `source_refs`, `content_hash`, `seq_from` | `(kg_id, link_id)` | `(kg_id, src_object_id, link_type_no)`, `(kg_id, dst_object_id, link_type_no)`. `(kg_id, 해시(link_id))`로 파티셔닝한다 |
 | `link_hist` | `link_live`의 컬럼 + `seq_to` | `(kg_id, link_id, seq_from)` | `seq_to` 구간으로 파티셔닝한다 |
 | `attr_volatile` | `kg_id`, `object_id`, `attr_no`, `value`, `grade`, `basis`, `seen_at`, `feed_id` | `(kg_id, object_id, attr_no)` | **보조 인덱스 없음**(8절). **객체의 속성만.** 링크는 `volatile`이 될 수 없다 |
 | `light_change` | `kg_id`, `change_seq`, `object_id`, `attr_no`, `value_mark`(새 값의 짧은 해시) | `(kg_id, change_seq, object_id, attr_no)` | `change_seq` 구간으로 파티셔닝한다. 짧게 보관 |

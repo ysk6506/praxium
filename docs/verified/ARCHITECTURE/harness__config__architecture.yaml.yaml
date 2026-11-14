@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "7dee7cefbd834699"
+hash: "b9845e89beefebcf"
 date: "2026-11-14"
-note: "수집 슬라이스(ADR-0033)로 새 유닛 셋과 ingest run 예를 더했고 나머지 내용은 그대로 맞음을 확인했다"
+note: "merged ingest units with pgstore row, module row and cmd.praxium text; checked against architecture.yaml"
 text_changed: true
-doc_hash: "1f15718fd82e874f"
+doc_hash: "5729f97cddcc7847"

@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "077fe9b70584e790"
+hash: "8633716ed44e3d3b"
 date: "2026-11-14"
-note: "병합 후 확인: ADR-0033의 수집 슬라이스 추가분(AGENTS.md 실행 예, REQ-263~269, 계획 7번)이 문서와 맞는지 다시 읽었다"
+note: "code list holds both ingest and pgstore; plan.md row 7 lists both"
 text_changed: true
-doc_hash: "a2feadd6b4a108d6"
+doc_hash: "05fb2a0b817b0255"

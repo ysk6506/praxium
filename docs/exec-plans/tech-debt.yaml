@@ -94,8 +94,9 @@ items:
     cost: "저장소 포트(`Catalog`, `Writer`, `Reader`, `Feed`)를 PostgreSQL 어댑터로 구현해 적합성 테스트(`adapter.graphcheck`)을 통과시키고, 시작점이 운영 모드에서 그것을 고르게 하고(`requireRealAuthenticator`의 거부가 TD-0010과 함께 풀린다), 개발 모드의 메모리 저장소와 `-dev-truth`는 테스트와 개발의 길로 남긴다. 길과 계약은 바뀌지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
-    status: open
-    units: [go:adapter.memstore]
+    status: done
+    resolution: "ADR-0032가 저장소 포트를 PostgreSQL 어댑터(`adapter.pgstore`, 드라이버 `lib/pq`)로 구현했다. 적합성 테스트 31사례를 고치지 않고 통과하고, `api serve -store postgres -store-dsn-file`로 고르며(기본은 메모리 저장소), 다시 시작해도 KG가 남는다. 운영 모드의 거부는 인증기(TD-0010)만 남았다. 메모리 저장소와 `-dev-truth`는 테스트와 개발의 길로 남는다."
+    units: [go:adapter.pgstore]
   # TD-0013 and TD-0014 are not used: harness/config/ignores.yaml (basis_by_rule) holds those two numbers for Terrarium's items.
   - id: TD-0012
     title: "테스트 태그가 넓다. `memstore`의 `TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber`가 요구사항 여섯 개를 한꺼번에 달고, 보안 테스트(`TestApiServeInProductionAlwaysRefuses`와 `devauth`의 테스트)이 인증을 말하지 않는 REQ-148에 붙어 있다(조항은 REQ-245)"

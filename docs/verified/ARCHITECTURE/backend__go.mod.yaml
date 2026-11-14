@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
-hash: "ff1dd7042acee38a"
+hash: "bb0c12bc6870bd05"
 date: "2026-11-14"
-note: "go.mod의 go 지시문만 1.27.4로 올라갔다. ARCHITECTURE.md는 Go 버전을 적지 않아 본문은 그대로 맞다"
+note: "pgstore row, module row and go 1.27.4 toolchain re-read against ADR-0032 and go.mod"
 text_changed: true
-doc_hash: "8fcc1ce2cd448617"
+doc_hash: "3eb0ff5423e5c733"
