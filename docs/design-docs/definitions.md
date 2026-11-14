@@ -56,7 +56,7 @@ follows:
 | `kind` | 설명 | 소속 (access-control.md 9-1) |
 |---|---|---|
 | `type` | 객체·링크·액션 타입(`org`와 `ext`). 속성, 바인딩, 식별 키를 포함해요 | `ext`는 그 타입, `org`는 `model_steward` |
-| `type_overlay` | 제품 표준(`std`) 객체 타입이나 특성의 오버레이. 지금은 속성 추가만 구현했어요(본문은 아래). 바인딩 추가, 숨기기는 나중이에요 | `org`처럼 `model_steward` |
+| `type_overlay` | 제품 표준(`std`) 객체 타입이나 특성의 오버레이. 지금은 속성 추가만 구현했어요. 본문(`schema_version` 1, [ADR-0050](adr/0050-org-properties-as-overlays-in-the-model.md))은 `target`(`kind`가 `object_type`이나 `trait`, `id`)과 `properties`이고, `item_id`는 `ov.`와 대상 ID예요(대상 하나에 항목 하나라 다른 타입을 고치는 두 사람은 충돌하지 않아요). 속성은 `id`(`pr.org.`로 시작), `attr_no`(100000 이상, 저장소가 처음 저장할 때 발급), `name`(`org.snake_case`), `aliases`, `value_type`, `unit`, `enum_values`, `change_class`(`static`과 `slow`), `sensitivity`, `status`, `display_names`, `description`만 받아요. 본문은 정규화한 JSON(속성은 `id` 순서)이고 내용 해시는 저장소가 계산해요. 정의 세트의 `content_hash`는 표준 레지스트리의 해시를 기준 해시로 써서, 항목이 없으면 표준 모델의 해시와 같아요. 바인딩 추가, 숨기기는 나중이에요 | `org`처럼 `model_steward` |
 | `source` | 소스 설정(어댑터, 프리셋의 이름과 버전, 시크릿 참조) | 그 소스 |
 | `dataset`, `refinement` | 소스 안의 테이블 하나 / 고정된 연산 목록으로 데이터셋을 다듬는 정제 | 소속 소스 |
 | `feed` | 피드: 데이터셋 하나에서 객체 타입 하나로의 매핑(완전성 선언 `completeness_declaration` 포함) | 소스와 타입 둘 (5절) |
@@ -103,8 +103,6 @@ follows:
 | `guard_values` | 값 | 값의 이름 |
 
 그 밖의 항목은 통째로 하나로 봐요. 항목 안의 필드 단위 자동 병합은 하지 않아요.
-
-**`type_overlay`의 본문**(`schema_version` 1, [ADR-0050](adr/0050-org-properties-as-overlays-in-the-model.md))은 `target`(`kind`가 `object_type`이나 `trait`, `id`)과 `properties`예요. `item_id`는 `ov.`와 대상 ID이고 대상 하나에 항목 하나라서, 다른 타입을 고치는 두 사람은 충돌하지 않아요. 속성은 표준 속성과 같은 필드에서 `id`(`pr.org.`로 시작), `attr_no`(100000 이상, 저장소가 처음 저장할 때 발급), `name`(`org.snake_case`), `aliases`, `value_type`, `unit`, `enum_values`, `change_class`(`static`과 `slow`), `sensitivity`, `status`, `display_names`, `description`만 받아요. 본문은 이 모든 필드를 담는 정규화한 JSON이고(속성은 `id` 순서), 항목의 내용 해시는 저장소가 그 본문에서 계산해요. 정의 세트의 `content_hash`는 표준 레지스트리의 해시를 기준 해시로 써서 만들어서, 항목이 없으면 표준 모델의 해시와 같아요. 같은 속성을 이름이나 자료형을 바꾸어 다시 쓸 때의 분류는 11절의 표를 따라요.
 
 ## 4. 제안의 진행 절차
 
