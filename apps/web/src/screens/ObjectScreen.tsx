@@ -6,10 +6,13 @@ import {
   formatCount,
   formatQuantity,
   formatTimestamp,
+  freshnessName,
   type GetData,
   gradeLabel,
   gradeTone,
+  groupKey,
   groupNeighbors,
+  groupTotals,
   NEIGHBOR_STEPS,
   type ObjectDetail,
   type ObjectTab,
@@ -20,6 +23,7 @@ import {
 import {
   Badge,
   Button,
+  Coded,
   EmptyState,
   KeyValues,
   Mono,
@@ -118,6 +122,11 @@ function IdentifiersTab({ data }: { readonly data: GetData }) {
   );
 }
 
+/** The span of change numbers an object's state holds for: from the change that made it, to the one that replaced it. */
+function validRange(from: number, to: number | null | undefined): string {
+  return to == null ? `변경 번호 ${from}부터 현재까지` : `변경 번호 ${from}부터 ${to}까지`;
+}
+
 function EvidenceTab({ detail }: { readonly detail: ObjectDetail }) {
   const { data, meta } = detail;
   const evidence = data.evidence;
@@ -141,16 +150,24 @@ function EvidenceTab({ detail }: { readonly detail: ObjectDetail }) {
           ]}
         />
       </Section>
-      <Section title="읽은 시점">
+      <Section
+        title="읽은 시점"
+        note="이 화면이 읽은 KG의 상태입니다. 변경 번호는 KG에 변경이 적용될 때마다 하나씩 오르는 번호이고, 이 화면은 그 번호까지 적용된 상태를 읽었습니다."
+      >
         <KeyValues
           items={[
             ["KG", <Mono key="kg">{meta.as_of.kg}</Mono>],
-            ["변경 번호", String(meta.as_of.change_seq)],
+            ["읽은 변경 번호", String(meta.as_of.change_seq)],
             ["세대", String(meta.as_of.generation)],
-            ["신선도", meta.freshness.state],
+            [
+              "신선도",
+              <Coded key="f" code={meta.freshness.state}>
+                {freshnessName(meta.freshness.state)}
+              </Coded>,
+            ],
             [
               "이 객체 상태의 유효 구간",
-              `${data.valid.from_change_seq} ~ ${data.valid.to_change_seq ?? "현재"}`,
+              validRange(data.valid.from_change_seq, data.valid.to_change_seq),
             ],
           ]}
         />
@@ -185,9 +202,10 @@ function NeighborsTab({ kg, id }: { readonly kg: string; readonly id: string }) 
   const limit = NEIGHBOR_STEPS[step] ?? NEIGHBOR_STEPS[0];
   const neighbors = useNeighbors(kg, id, limit);
   return (
-    <Async result={neighbors} loadingLabel="이웃을 불러오는 중">
+    <Async result={neighbors} loadingLabel="이웃을 불러오는 중" names={{ kg, object: id }}>
       {({ data, page }) => {
         const groups = groupNeighbors(data);
+        const totals = groupTotals(data);
         if (page.total === 0) {
           return <EmptyState title="이웃이 없습니다">이 객체에 이어진 링크가 없습니다.</EmptyState>;
         }
@@ -196,53 +214,63 @@ function NeighborsTab({ kg, id }: { readonly kg: string; readonly id: string }) 
           <>
             <div className="mb-3 flex items-center justify-between gap-3 text-sm text-muted">
               <span>
-                링크 {formatCount(page.returned)} / 전체 {formatCount(page.total)}개를 링크 타입별로
-                봅니다.
+                {page.truncated
+                  ? `링크 ${formatCount(page.returned)}개를 불러왔습니다(전체 ${formatCount(page.total)}개). `
+                  : `링크 ${formatCount(page.total)}개를 `}
+                {page.truncated ? "불러온 링크를" : ""} 링크 타입과 방향별로 나눠 봅니다.
               </span>
               {more ? <Button onClick={() => setStep(step + 1)}>더 보기</Button> : null}
             </div>
-            {groups.map((group) => (
-              <Section
-                key={`${group.linkType}-${group.direction}`}
-                title={`${group.linkType} · ${directionLabel(group.direction)}`}
-                aside={`${group.items.length}개`}
-              >
-                <Table aria-label={`${group.linkType} ${directionLabel(group.direction)}`}>
-                  <THead>
-                    <Tr>
-                      <Th>이웃</Th>
-                      <Th>타입</Th>
-                      <Th>근거 등급</Th>
-                      <Th>근거 종류</Th>
-                    </Tr>
-                  </THead>
-                  <TBody>
-                    {group.items.map((item) => (
-                      <Tr key={item.link_id}>
-                        <Td>
-                          <a
-                            href={routeHash({
-                              page: "object",
-                              kg,
-                              id: item.peer_object_id,
-                              tab: "attributes",
-                            })}
-                            className="font-medium"
-                          >
-                            {item.peer_display_name}
-                          </a>
-                        </Td>
-                        <Td>{item.peer_type}</Td>
-                        <Td>
-                          <GradeBadge grade={item.grade} />
-                        </Td>
-                        <Td>{basisLabel(item.basis)}</Td>
+            {groups.map((group) => {
+              const total =
+                totals.get(groupKey(group.linkType, group.direction)) ?? group.items.length;
+              return (
+                <Section
+                  key={`${group.linkType}-${group.direction}`}
+                  title={`${group.linkType} · ${directionLabel(group.direction)}`}
+                  aside={
+                    total > group.items.length
+                      ? `${formatCount(total)}개 중 ${formatCount(group.items.length)}개 표시`
+                      : `${formatCount(group.items.length)}개`
+                  }
+                >
+                  <Table aria-label={`${group.linkType} ${directionLabel(group.direction)}`}>
+                    <THead>
+                      <Tr>
+                        <Th>이웃</Th>
+                        <Th>타입</Th>
+                        <Th>근거 등급</Th>
+                        <Th>근거 종류</Th>
                       </Tr>
-                    ))}
-                  </TBody>
-                </Table>
-              </Section>
-            ))}
+                    </THead>
+                    <TBody>
+                      {group.items.map((item) => (
+                        <Tr key={item.link_id}>
+                          <Td>
+                            <a
+                              href={routeHash({
+                                page: "object",
+                                kg,
+                                id: item.peer_object_id,
+                                tab: "attributes",
+                              })}
+                              className="font-medium"
+                            >
+                              {item.peer_display_name}
+                            </a>
+                          </Td>
+                          <Td>{item.peer_type}</Td>
+                          <Td>
+                            <GradeBadge grade={item.grade} />
+                          </Td>
+                          <Td>{basisLabel(item.basis)}</Td>
+                        </Tr>
+                      ))}
+                    </TBody>
+                  </Table>
+                </Section>
+              );
+            })}
           </>
         );
       }}
@@ -261,7 +289,12 @@ export interface ObjectScreenProps {
 export function ObjectScreen({ kg, id, tab, onTab }: ObjectScreenProps) {
   const object = useObject(kg, id);
   return (
-    <Async result={object} loadingLabel="객체를 불러오는 중">
+    <Async
+      result={object}
+      loadingLabel="객체를 불러오는 중"
+      names={{ kg, object: id }}
+      back={{ label: "객체 타입 목록으로", href: routeHash({ page: "types", kg }) }}
+    >
       {(detail) => {
         const { data } = detail;
         return (
@@ -269,7 +302,7 @@ export function ObjectScreen({ kg, id, tab, onTab }: ObjectScreenProps) {
             <PageHeader
               title={data.object.display_name}
               trail={[
-                { label: "KG 선택", href: routeHash({ page: "kgs" }) },
+                { label: "KG 목록", href: routeHash({ page: "kgs" }) },
                 { label: kg, href: routeHash({ page: "types", kg }) },
                 {
                   label: data.object.object_type,

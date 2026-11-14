@@ -13,13 +13,17 @@ const TONES: Readonly<Record<BadgeTone, string>> = {
 
 export function Badge({
   tone = "neutral",
+  title,
   children,
 }: {
   readonly tone?: BadgeTone;
+  /** What the badge stands for when the name is not enough, such as the code the name was made from. */
+  readonly title?: string;
   readonly children: ReactNode;
 }) {
   return (
     <span
+      title={title}
       className={cx(
         "inline-flex items-center whitespace-nowrap rounded-sm border px-1.5 text-xs font-medium",
         TONES[tone],

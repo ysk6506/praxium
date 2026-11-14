@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "24f72c38c238ae80"
+hash: "33a781eb9e65676e"
 date: "2026-11-14"
-note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
+note: "REQ-296~299(웹 UI)가 REQ-289~295 뒤에 추가됐다. 이 문서의 내용과 충돌하지 않는다."
 text_changed: true
 doc_hash: "06412a77a9acc006"
