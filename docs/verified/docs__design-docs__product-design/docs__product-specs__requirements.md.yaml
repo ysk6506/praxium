@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "8fbbf0fe8c3d99cf"
+hash: "80f57bfe1adceafa"
 date: "2026-11-14"
-note: "조직 속성 모델(REQ-342~349)이 더해진 뒤 REQ-300~365의 공존을 다시 대조해 확인함"
+note: "영향 범위 화면(ADR-0051) 병합 뒤 REQ-300~365의 공존을 다시 대조해 확인함"
 text_changed: true
 doc_hash: "019854b80cb4930e"

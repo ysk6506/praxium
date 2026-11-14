@@ -22,6 +22,8 @@ export type {
   GetData,
   GetRequest,
   IdentifierItem,
+  ImpactData,
+  ImpactItem,
   KG,
   LinkCounts,
   NeighborGroup,
