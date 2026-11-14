@@ -31,6 +31,13 @@ func normalizedDelimiter(v, parser, where string) (string, error) {
 	return "", kernel.Errorf(kernel.CodeInvalidValue, "%s: delimiter %q is none of comma, tab, semicolon, pipe (or the character , \\t ; |)", where, v)
 }
 
+// CheckDelimiter says whether a delimiter is one a CSV dataset can have: a comma, tab, semicolon or pipe, by name or as
+// the character. The empty one is the comma.
+func CheckDelimiter(v string) error {
+	_, err := normalizedDelimiter(v, ParserCSV, "the delimiter")
+	return err
+}
+
 // comma is the delimiter a csv dataset reads with.
 func (d Dataset) comma() rune {
 	if d.Delimiter == "" {
