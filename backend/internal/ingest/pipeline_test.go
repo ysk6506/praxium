@@ -428,3 +428,117 @@ func TestCSVOdditiesAreReadOrReported(t *testing.T) {
 		t.Errorf("problems %v", rep.ProblemCounts)
 	}
 }
+
+// [REQ-265] [REQ-268]
+func TestIdentifiersOfAFeedAreBoundAndAClashIsReported(t *testing.T) {
+	src := strings.Replace(sourceJSON, `{"name":"vcpu","paths":["cpu"]}`, `{"name":"vcpu","paths":["cpu"]},{"name":"native","paths":["id"]}`, 1)
+	mp := strings.Replace(mappingJSON, `"identity":[{"scheme":"vm_instance_uuid","column":"uuid","priority":1}]`, `"identity":[{"scheme":"vm_instance_uuid","column":"uuid","priority":1}],"identifiers":[{"scheme":"vm_native_id","column":"native"}]`, 1)
+	r := newRig(t, src, mp)
+	r.files["ds_racks"], r.files["ds_servers"] = racksV1, serversV1
+	r.files["ds_vms"] = `{"instance_uuid":"vm-1","name":"vm-one","cpu":4,"id":"n-1"}` + "\n" + `{"instance_uuid":"vm-2","name":"vm-two","cpu":2,"id":"n-1"}` + "\n"
+	rep := r.run()
+	if rep.ProblemCounts[ProblemIdentityConflict] != 1 {
+		t.Fatalf("problems %v", rep.ProblemCounts)
+	}
+	if again := r.run(); again.Changed {
+		t.Error("the second run changed the KG")
+	}
+	r.files["ds_vms"] = `{"instance_uuid":"vm-1","name":"vm-one","cpu":4,"id":"n-9"}` + "\n" + `{"instance_uuid":"vm-2","name":"vm-two","cpu":2,"id":"n-1"}` + "\n"
+	if moved := r.run(); !moved.Changed || moved.ProblemCounts[ProblemIdentityConflict] != 0 {
+		t.Errorf("a changed identifier was not applied: %+v", moved.ProblemCounts)
+	}
+}
+
+// [REQ-265]
+func TestSecondLinkThatBreaksCardinalityIsSetAside(t *testing.T) {
+	src := strings.Replace(sourceJSON, `{"name":"power_state"}]}`, `{"name":"power_state"},{"name":"alt_rack"}]}`, 1)
+	mp := strings.Replace(mappingJSON, `"links":[`, `"links":[{"id":"l_alt","link_type":"MOUNTED_IN","from":{"feed":"f_server","columns":["alt_rack"]},"to":{"feed":"f_rack","columns":["asset_id"]},"condition":"same_key"},`, 1)
+	r := newRig(t, src, mp)
+	r.files["ds_racks"], r.files["ds_vms"] = racksV1, vmsV1
+	r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state,alt_rack\nSV1,sn100,Zorvane,RK1,on,RK2\nSV2,sn200,Zorvane,RK2,off,\n"
+	rep := r.run()
+	if rep.ProblemCounts[ProblemCardinality] != 1 || rep.Links != 2 {
+		t.Fatalf("links %d problems %v", rep.Links, rep.ProblemCounts)
+	}
+}
+
+// [REQ-263]
+func TestLinkKeyTypeAndFilterTestsAreChecked(t *testing.T) {
+	reg := newRig(t, sourceJSON, mappingJSON).runner.Reg
+	src, _ := ParseSource(strings.NewReader(sourceJSON))
+	for name, text := range map[string]string{
+		"a key type of the model": strings.Replace(mappingJSON, `"condition":"same_key","basis":"declared"`, `"condition":"same_key","key_type":"serial_number"`, 1),
+		"a filter with in":        strings.Replace(mappingJSON, `{"feeds":[`, `{"refinements":[{"id":"r","input":"ds_racks","ops":[{"op":"filter","column":"total_u","in":["42"]}]}],"feeds":[`, 1),
+	} {
+		m, err := ParseMapping(strings.NewReader(text))
+		if err == nil {
+			_, err = Compile(reg, src, m)
+		}
+		if err != nil {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+	for name, text := range map[string]string{
+		"an unknown key type":     strings.Replace(mappingJSON, `"condition":"same_key","basis":"declared"`, `"condition":"same_key","key_type":"nope"`, 1),
+		"a condition not built":   strings.Replace(mappingJSON, `"condition":"same_key"`, `"condition":"contains"`, 1),
+		"an unknown link feed":    strings.Replace(mappingJSON, `"from":{"feed":"f_server"`, `"from":{"feed":"f_none"`, 1),
+		"an unknown link column":  strings.Replace(mappingJSON, `"columns":["rack_asset_id"]`, `"columns":["nope"]`, 1),
+		"an unknown identifier":   strings.Replace(mappingJSON, `"identity":[{"scheme":"vm_instance_uuid","column":"uuid","priority":1}]`, `"identity":[{"scheme":"vm_instance_uuid","column":"uuid","priority":1}],"identifiers":[{"scheme":"nope","column":"uuid"}]`, 1),
+		"a feed of no dataset":    strings.Replace(mappingJSON, `"dataset":"ds_vms"`, `"dataset":"ds_none"`, 1),
+		"an identity of no key":   strings.Replace(mappingJSON, `"components":[{"property":"asset_tag","column":"asset_id"}]`, `"components":[{"property":"name","column":"asset_id"}]`, 1),
+		"an identity of no cell":  strings.Replace(mappingJSON, `"column":"uuid","priority":1`, `"column":"nope","priority":1`, 1),
+		"a base kind not handled": strings.Replace(mappingJSON, `{"attribute":"vcpu_count","column":"vcpu"}`, `{"attribute":"labels","column":"vcpu"}`, 1),
+	} {
+		m, err := ParseMapping(strings.NewReader(text))
+		if err == nil {
+			_, err = Compile(reg, src, m)
+		}
+		if err == nil {
+			t.Errorf("%s: accepted", name)
+		}
+	}
+}
+
+// [REQ-263]
+func TestSourceDefinitionRefusesWhatThisBuildLacks(t *testing.T) {
+	for name, text := range map[string]string{
+		"a stream":           strings.Replace(sourceJSON, `"id":"ds_racks"`, `"id":"ds_racks","receive_mode":"stream"`, 1),
+		"a derived dataset":  strings.Replace(sourceJSON, `"id":"ds_racks"`, `"id":"ds_racks","kind":"refined"`, 1),
+		"another deletion":   strings.Replace(sourceJSON, `"id":"ds_racks"`, `"id":"ds_racks","deletion":"tombstone"`, 1),
+		"two documents":      sourceJSON + sourceJSON,
+		"a repeated id":      strings.Replace(sourceJSON, `"id":"ds_servers"`, `"id":"ds_racks"`, 1),
+		"a key not a column": strings.Replace(sourceJSON, `"natural_key":["asset_id"],"columns":[{"name":"asset_id"},{"name":"rack_name"}`, `"natural_key":["nope"],"columns":[{"name":"asset_id"},{"name":"rack_name"}`, 1),
+		"no columns":         strings.Replace(sourceJSON, `"columns":[{"name":"asset_id"},{"name":"rack_name"},{"name":"total_u"}]`, `"columns":[]`, 1),
+	} {
+		if _, err := ParseSource(strings.NewReader(text)); err == nil {
+			t.Errorf("%s: accepted", name)
+		}
+	}
+}
+
+// [REQ-263] [REQ-265]
+func TestHostsLinkToServersByNormalisedSerial(t *testing.T) {
+	i := strings.LastIndex(sourceJSON, `]}`)
+	src := sourceJSON[:i] + `,{"id":"ds_hosts","parser":"json_lines","natural_key":["host_id"],"columns":[
+ {"name":"host_id"},{"name":"hostname","paths":["name"]},{"name":"serial","paths":["hardware.serial","hw.0.serial"]},{"name":"state","paths":["connection"],"optional":true}]}]}`
+	host := `,{"id":"f_host","dataset":"ds_hosts","object_type":"HypervisorHost","creates_objects":true,"basis":"observed",
+  "attributes":[{"attribute":"name","column":"hostname"},{"attribute":"hostname","column":"hostname"}],
+  "identity":[{"scheme":"host_id","column":"host_id","priority":1}]}`
+	mp := strings.Replace(mappingJSON, `],
+"links"`, host+`],
+"links"`, 1)
+	mp = strings.Replace(mp, `"links":[`, `"links":[{"id":"l_hs","link_type":"RUNS_ON","from":{"feed":"f_host","columns":["serial"]},"to":{"feed":"f_server","columns":["serial"]},"condition":"same_key","key_type":"serial_number"},`, 1)
+	r := newRig(t, src, mp)
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	r.files["ds_hosts"] = `{"host_id":"h1","name":"hv-a","hardware":{"serial":" SN100 "}}` + "\n" +
+		`{"host_id":"h2","name":"hv-b","hw":[{"serial":"sn200"}]}` + "\n" +
+		`{"host_id":"h3","name":"hv-c","hardware":{"serial":null}}` + "\n" +
+		`{"host_id":7,"name":true,"hardware":{"serial":"sn100"}}` + "\n"
+	rep := r.run()
+	if rep.Links < 4 {
+		t.Fatalf("links %d, problems %v", rep.Links, rep.ProblemCounts)
+	}
+	if _, ok := r.rows()["hv-c"]; !ok {
+		t.Error("a host without a serial was lost")
+	}
+}
