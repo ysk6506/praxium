@@ -35,6 +35,8 @@ type objAcc struct {
 	creates  bool
 	watched  bool
 	retires  bool
+	// live is true when a row of the file that no rule filtered out and that is not on its way out shows the object.
+	live     bool
 	nameFall string
 }
 
@@ -45,11 +47,14 @@ type fate struct{ used, problem, filtered bool }
 // refine, feed, identify and link. It reads the state and the plan and gives the desired objects; it writes the
 // identity index of the state, which the caller saves only when the batch was applied.
 type derivation struct {
-	p       *Plan
-	st      *State
-	rep     *Report
-	now     time.Time
-	rows    map[string][]Row
+	p    *Plan
+	st   *State
+	rep  *Report
+	now  time.Time
+	rows map[string][]Row
+	// held is, by refinement, the rows a rule filtered out of it (or out of an earlier refinement it reads) whose
+	// object is still waited for: only those of an object that already exists and whose time is not up are fed.
+	held    map[string][]Row
 	fates   map[string]map[string]*fate
 	objects map[string]*objAcc
 	// rowObj is the object of every row, by feed and natural key.
@@ -65,7 +70,7 @@ type desiredLink struct {
 }
 
 func newDerivation(p *Plan, st *State, rep *Report, now time.Time) *derivation {
-	return &derivation{p: p, st: st, rep: rep, now: now, rows: map[string][]Row{}, fates: map[string]map[string]*fate{},
+	return &derivation{p: p, st: st, rep: rep, now: now, rows: map[string][]Row{}, held: map[string][]Row{}, fates: map[string]map[string]*fate{},
 		objects: map[string]*objAcc{}, rowObj: map[string]map[string]string{}, identOwner: map[string]string{}, links: map[string]desiredLink{}}
 }
 
@@ -92,12 +97,13 @@ func (d *derivation) materialize() {
 		d.rows[ds.ID] = rows
 	}
 	for _, r := range d.p.refs {
-		kept, dropped := refineRows(r, d.rows[r.Input])
-		d.rows[r.ID] = kept
+		kept, held, dropped := refineRows(r, d.rows[r.Input], d.held[r.Input])
+		d.rows[r.ID], d.held[r.ID] = kept, held
 		for k := range dropped {
 			d.fates[d.p.roots[r.ID]][k].filtered = true
 		}
 	}
+	d.settleFiltered()
 }
 
 // feeds runs the feeds that create objects first, then those that only attach values, so that a value finds its
@@ -111,6 +117,11 @@ func (d *derivation) feeds() error {
 			d.rowObj[fp.feed.ID] = map[string]string{}
 			for _, row := range d.rows[fp.feed.Dataset] {
 				if err := d.feedRow(fp, row); err != nil {
+					return err
+				}
+			}
+			for _, row := range d.held[fp.feed.Dataset] {
+				if err := d.feedHeld(fp, row); err != nil {
 					return err
 				}
 			}
@@ -161,6 +172,7 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 	d.attach(fp, acc, formed, contribs, row)
 	d.rowObj[fp.feed.ID][row.Key] = res.id.String()
 	f.used = true
+	acc.live = acc.live || d.st.dataset(root).Unseen[row.Key].Runs == 0
 	return nil
 }
 

@@ -39,7 +39,10 @@ does not define is an error.
 Reading the output:
   ingest ...            one line per run. objects, links: what the run made or kept alive. volatile: values of
                         attributes that change all the time and keep no history. retired_objects, retired_links:
-                        closed in this run. changed: whether the KG changed; new_version: whether a version was
+                        closed in this run. waiting_objects: objects that no row shows any
+                        more, or that only rows a filter of the mapping sets aside show: they wait to be closed, since
+                        a row that is gone or filtered out closes its object only after 3 complete runs in a row and
+                        24 hours. changed: whether the KG changed; new_version: whether a version was
                         sealed. version, graph_hash: the sealed version and a hash of the whole graph; the same
                         files give the same hash.
   dataset ...           one line per dataset: the rows of the file. received = read + unreadable. read = used +

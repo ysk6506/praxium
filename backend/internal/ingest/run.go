@@ -71,6 +71,7 @@ func (r Runner) Run(ctx context.Context, plan *Plan, kg graph.KGID) (Report, err
 		return *rep, err
 	}
 	d.checkCardinality()
+	d.rep.WaitingObjects = d.waitingObjects()
 	objects, err := d.objectsDone(seenText(now))
 	if err != nil {
 		return *rep, err

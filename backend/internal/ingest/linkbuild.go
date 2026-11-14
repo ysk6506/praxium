@@ -1,6 +1,7 @@
 package ingest
 
 import (
+	"slices"
 	"sort"
 	"strings"
 
@@ -36,7 +37,7 @@ func (d *derivation) buildLinks() error {
 	for _, lp := range d.p.links {
 		index := map[string]map[string]bool{}
 		toDS := d.p.roots[lp.to.feed.Dataset]
-		for _, row := range d.rows[lp.to.feed.Dataset] {
+		for _, row := range d.withHeld(lp.to.feed.Dataset) {
 			obj, ok := d.rowObj[lp.to.feed.ID][row.Key]
 			if !ok {
 				continue
@@ -49,7 +50,7 @@ func (d *derivation) buildLinks() error {
 			}
 		}
 		fromDS := d.p.roots[lp.from.feed.Dataset]
-		for _, row := range d.rows[lp.from.feed.Dataset] {
+		for _, row := range d.withHeld(lp.from.feed.Dataset) {
 			src, ok := d.rowObj[lp.from.feed.ID][row.Key]
 			if !ok {
 				continue
@@ -137,4 +138,13 @@ func (d *derivation) bindingOf(u graph.LinkUpsert) (model.Binding, bool) {
 		return model.Binding{}, false
 	}
 	return d.p.reg.BindingFor(from.typ.ID, to.typ.ID, u.Type)
+}
+
+// withHeld is the rows of a dataset or refinement and, after them, the rows a rule filtered out whose object is
+// waited for: the links of such an object stay as they were until it is closed.
+func (d *derivation) withHeld(id string) []Row {
+	if len(d.held[id]) == 0 {
+		return d.rows[id]
+	}
+	return append(slices.Clone(d.rows[id]), d.held[id]...)
 }

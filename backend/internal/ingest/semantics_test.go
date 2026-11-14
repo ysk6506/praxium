@@ -222,3 +222,119 @@ func TestInAndNotInSetAsideTheSpacesAtTheEnds(t *testing.T) {
 		}
 	}
 }
+
+// serversFilteredBy is the mapping of the usual rig with a refinement on the servers whose filter is given.
+func serversFilteredBy(filter string) string {
+	mp := strings.Replace(mappingJSON, `{"feeds":[`, `{"refinements":[{"id":"r_servers","input":"ds_servers","ops":[`+filter+`]}],"feeds":[`, 1)
+	return strings.Replace(mp, `"id":"f_server","dataset":"ds_servers"`, `"id":"f_server","dataset":"r_servers"`, 1)
+}
+
+func (r *rig) useMapping(mapping string) {
+	r.t.Helper()
+	m, err := ParseMapping(strings.NewReader(mapping))
+	if err != nil {
+		r.t.Fatal(err)
+	}
+	if r.plan, err = Compile(r.runner.Reg, r.plan.Source, m); err != nil {
+		r.t.Fatal(err)
+	}
+}
+
+const (
+	keepAll    = `{"op":"filter","column":"power_state","not_in":["never"]}`
+	typoFilter = `{"op":"filter","column":"power_state","in":["onn"]}`
+)
+
+// [REQ-360]
+func TestAFilterTypoDoesNotCloseObjectsAtOnceButAfterTheWaitOfAVanishedRow(t *testing.T) {
+	r := newRig(t, sourceJSON, serversFilteredBy(keepAll))
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	r.run()
+	r.useMapping(serversFilteredBy(typoFilter))
+	for i := 0; i < 2; i++ {
+		r.clock.Advance(time.Hour)
+		rep := r.run()
+		if rep.RetiredObjects != 0 || rep.RetiredLinks != 0 || rep.WaitingObjects != 2 {
+			t.Fatalf("run %d: retired %d objects %d links, waiting %d", i, rep.RetiredObjects, rep.RetiredLinks, rep.WaitingObjects)
+		}
+		if d := r.dataset(rep, "ds_servers"); d.Filtered != 2 || d.Used != 0 || !d.Balanced() {
+			t.Fatalf("run %d: %+v", i, d)
+		}
+		if len(r.linksOf("SV1")) != 1 {
+			t.Fatalf("run %d: the link of a waiting object was closed", i)
+		}
+	}
+	r.clock.Advance(time.Hour)
+	if rep := r.run(); rep.RetiredObjects != 0 {
+		t.Fatalf("closed after three runs but before a day: %+v", rep)
+	}
+	r.clock.Advance(24 * time.Hour)
+	rep := r.run()
+	if rep.RetiredObjects != 2 || rep.RetiredLinks != 2 || rep.WaitingObjects != 0 {
+		t.Fatalf("retired %d objects %d links, waiting %d", rep.RetiredObjects, rep.RetiredLinks, rep.WaitingObjects)
+	}
+	if _, ok := r.rows()["SV1"]; ok {
+		t.Error("SV1 is still live")
+	}
+}
+
+// [REQ-360]
+func TestMendingTheFilterInTimeKeepsEverythingAndRestartsTheCount(t *testing.T) {
+	r := newRig(t, sourceJSON, serversFilteredBy(keepAll))
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	first := r.run()
+	r.useMapping(serversFilteredBy(typoFilter))
+	for i := 0; i < 2; i++ {
+		r.clock.Advance(time.Hour)
+		r.run()
+	}
+	r.useMapping(serversFilteredBy(keepAll))
+	r.clock.Advance(time.Hour)
+	rep := r.run()
+	if rep.RetiredObjects != 0 || rep.WaitingObjects != 0 || rep.GraphHash != first.GraphHash {
+		t.Fatalf("%+v", rep)
+	}
+	r.useMapping(serversFilteredBy(typoFilter))
+	for i := 0; i < 5; i++ {
+		r.clock.Advance(time.Hour)
+		if rep := r.run(); rep.RetiredObjects != 0 && i < 2 {
+			t.Fatalf("the count did not start again: run %d retired %d", i, rep.RetiredObjects)
+		}
+	}
+}
+
+// [REQ-360]
+func TestARowThatWasNeverAnObjectDoesNotBecomeOneByBeingFiltered(t *testing.T) {
+	r := newRig(t, sourceJSON, serversFilteredBy(`{"op":"filter","column":"power_state","not_in":["off"]}`))
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	rep := r.run()
+	if _, ok := r.rows()["SV2"]; ok || rep.Objects != 5 || rep.WaitingObjects != 0 {
+		t.Fatalf("objects %d waiting %d", rep.Objects, rep.WaitingObjects)
+	}
+}
+
+// [REQ-360]
+func TestAFilteredRowIsNotRetiredWhereAVanishedRowIsNot(t *testing.T) {
+	src := strings.Replace(sourceJSON, `{"id":"ds_servers","parser":"csv"`, `{"id":"ds_servers","deletion":"none","parser":"csv"`, 1)
+	r := newRig(t, src, serversFilteredBy(keepAll))
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	r.run()
+	r.useMapping(serversFilteredBy(typoFilter))
+	for i := 0; i < 6; i++ {
+		r.clock.Advance(48 * time.Hour)
+		if rep := r.run(); rep.RetiredObjects != 0 {
+			t.Fatalf("run %d retired %d objects of a dataset that never retires", i, rep.RetiredObjects)
+		}
+	}
+}
+
+// [REQ-360]
+func TestAVanishedRowAndAFilteredRowAreWaitingObjectsInTheSameCount(t *testing.T) {
+	r := loaded(t)
+	r.run()
+	r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state\nSV1,sn100,Zorvane,RK1,on\n"
+	r.clock.Advance(time.Hour)
+	if rep := r.run(); rep.WaitingObjects != 1 || rep.RetiredObjects != 0 {
+		t.Fatalf("waiting %d retired %d", rep.WaitingObjects, rep.RetiredObjects)
+	}
+}

@@ -101,6 +101,9 @@ type Report struct {
 	VolatileValues int `json:"volatile_values"`
 	RetiredObjects int `json:"retired_objects"`
 	RetiredLinks   int `json:"retired_links"`
+	// WaitingObjects is the objects that no row of the file shows any more or that only rows a rule filters out
+	// show, and that wait for the runs and the time before they are closed (ADR-0052).
+	WaitingObjects int `json:"waiting_objects"`
 
 	// Changed is true when the batch changed the KG; the change numbers bound what it used.
 	Changed   bool   `json:"changed"`
