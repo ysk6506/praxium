@@ -160,8 +160,9 @@ func TestOneChangedRowChangesOneObject(t *testing.T) {
 
 // [REQ-265]
 func TestAttachFeedMergesTwoFiles(t *testing.T) {
-	src := strings.Replace(sourceJSON, `]}`, `,
- {"id":"ds_power","parser":"csv","natural_key":["serial"],"columns":[{"name":"serial"},{"name":"maker"},{"name":"state"},{"name":"label"}]}]}`, 1)
+	i := strings.LastIndex(sourceJSON, `]}`)
+	src := sourceJSON[:i] + `,
+ {"id":"ds_power","parser":"csv","natural_key":["serial"],"columns":[{"name":"serial"},{"name":"maker"},{"name":"state"},{"name":"label"}]}]}`
 	feed := `,{"id":"f_power","dataset":"ds_power","object_type":"PhysicalServer","basis":"observed",
   "attributes":[{"attribute":"power_state","column":"state"},{"attribute":"name","column":"label","rank":5}],
   "identity":[{"components":[{"property":"manufacturer","column":"maker"},{"property":"serial_number","column":"serial"}],"priority":1}]}`
@@ -175,7 +176,7 @@ func TestAttachFeedMergesTwoFiles(t *testing.T) {
 	if rep.Objects != 6 {
 		t.Fatalf("two files made %d objects, want 6", rep.Objects)
 	}
-	if rep.ProblemCounts[ProblemSourceConflict] != 1 || rep.ProblemCounts[ProblemOrphanValue] != 1 {
+	if rep.ProblemCounts[ProblemSourceConflict] != 2 || rep.ProblemCounts[ProblemOrphanValue] != 1 {
 		t.Errorf("problems %v", rep.ProblemCounts)
 	}
 	if _, ok := r.rows()["SV1"]; !ok {
@@ -193,7 +194,10 @@ func TestBadRowsAreQuarantined(t *testing.T) {
 		t.Fatalf("problems %v", rep.ProblemCounts)
 	}
 	rows := r.rows()
-	for _, want := range []string{"rack-a", "rack-b", "SV1", "vm-one", "vm-two"} {
+	if _, ok := rows["vm-one"]; ok {
+		t.Error("a row with an invalid value was applied")
+	}
+	for _, want := range []string{"rack-a", "rack-b", "SV1", "vm-two"} {
 		if _, ok := rows[want]; !ok {
 			t.Errorf("%s was not applied", want)
 		}
