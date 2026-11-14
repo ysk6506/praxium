@@ -1,0 +1,7 @@
+doc: "docs/design-docs/temporary-console.md"
+target: "docs/design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md"
+hash: "8760bb0951ad279c"
+date: "2026-11-14"
+note: "요구사항 209와 ADR-0035의 최종 문구에 맞춰 대조했다"
+text_changed: true
+doc_hash: "5fcdfc98029cd09a"

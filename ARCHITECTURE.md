@@ -36,6 +36,14 @@ covers:
 | `adapter.ingestcheck` | Go | `backend/internal/ingestcheck` | 테스트 전용. 수집 슬라이스의 인수 검사: 생성기의 세계에서 형태가 다른 소스 파일을 만들어 파이프라인으로 인메모리 스토리지에 적재하고 개발용 적재기의 KG와 비교한다. 재수집, 한 행 변경, 사라진 행, 불량 행을 확인한다 | 없음. 테스트 파일만 `core.kernel`, `core.model`, `core.graph`, `core.worldgen`, `core.ingest`, `adapter.memstore`, `adapter.devload`, `adapter.filesource` (`test_may_import`) |
 | `core.worldgen` | Go | `backend/internal/worldgen` | 합성 세계 생성기. 시드와 인자로 표준 모델만 사용한 데이터센터의 정답(JSON Lines), 소스 뷰(CSV, JSON 페이지, 장치 설정, 고정 폭 테이블), 변경 스트림, 분포 프로파일을 스트리밍으로 생성하고, 정답을 등록부로 검증한다. 파일은 `Store`로 받는다(운영체제에 접근하지 않는다) | `core.kernel`, `core.model` |
 | `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 이름만 주면 커널을 조립하고 한 줄짜리 구조화 로그를 남긴 뒤 종료한다. `api serve`는 서버를 기동하고, `api routes`, `contract`, 클라이언트 명령(`health`, `types`, `catalog`, `kg`, `object`, `query`)과 개발용 `dev load-truth`, 파일 소스 한 번의 수집 `ingest run`을 가진다. `api serve -mode development`는 기본으로 인메모리 스토리지를 만들고 `-dev-truth`로 세계를 적재한다. `-store postgres -store-dsn-file <파일>`을 주면 PostgreSQL 스토리지를 쓴다(연결 문자열은 파일에서만 읽는다). 운영 모드는 실제 인증기가 없어 거부한다. 환경 변수와 파일, 리스닝, 종료 신호는 `wiring`으로 묶어 테스트에서 대체한다 | `core.*`, `adapter.*` |
+| `web.api` | TypeScript | `apps/web/src/api` | 임시 콘솔의 API 호출 계층(ADR-0035). 계약(OpenAPI)에서 생성한 타입과 호출 함수(`generated/`, 손으로 고치지 않는다), 요청을 만들고 오류(`problem+json`)를 `ApiError`로 바꾸는 클라이언트, 의존성 없는 생성기(`generator/`) | 없음 |
+| `web.data` | TypeScript | `apps/web/src/data` | 조회와 로딩·오류 상태, 커서 페이지네이션, 주소(해시 라우터), 접속 토큰, 오류를 한국어로 바꾸는 말, 표의 열 고르기 | `web.api` |
+| `web.ui` | TypeScript | `apps/web/src/ui` | 프락시움 이름의 컴포넌트와 토큰 파일(`tokens.css`, 색은 여기에만 쓴다). Base UI는 여기에서만 import한다 | 없음 |
+| `web.screens` | TypeScript | `apps/web/src/screens` | 임시 화면(접속 설정, KG 선택, 객체 타입, 객체 표, 객체 상세와 이웃). `ui`와 `data`만 쓴다. 테스트 잠금과 요구사항 추적에서 빠진다 | `web.data`, `web.ui` |
+| `web.app` | TypeScript | `apps/web/src` | 진입점(`main.tsx`)과 틀(`App.tsx`) | `web.data`, `web.ui`, `web.screens` |
+| `web.build` | TypeScript | `apps/web/config` | Vite 설정. 번들을 만든다 | 없음 |
+| `web.testsupport` | TypeScript | `apps/web/src/test-support` | 웹 UI 테스트의 렌더와 가짜 API | 없음 |
+| `adapter.webui` | Go | `backend/internal/webui` | 빌드한 웹 UI를 `go:embed`로 담는다. 커밋하는 것은 자리표시자 페이지뿐이고 실제 빌드 결과는 `scripts/build-with-web.sh`가 복사한다(ADR-0035). 서버(`adapter.http`)는 파일 시스템 값 하나(`Config.UI`)만 받고 이 패키지를 import하지 않는다 | 없음 |
 
 TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 단위다. 구조 계약에서 Go 단위는 `go:` 절에 따로 적는다.
 
@@ -98,10 +106,10 @@ core.contract   외부에 공개하는 계약: HTTP 경로와 스키마, MCP 툴
 
 ### 화면은 다른 리포지토리다 (ADR-0016)
 
-- 이 리포지토리에 화면 단위는 없다. 화면은 다른 리포지토리에서 계약(OpenAPI)으로만 통신하고, 계약에서 클라이언트를 생성해 쓴다. 백엔드의 코드를 import하지 않는다.
+- 제품의 화면 단위는 없다. 제품의 화면은 다른 리포지토리에서 계약(OpenAPI)으로만 통신하고, 계약에서 클라이언트를 생성해 쓴다. 백엔드의 코드를 import하지 않는다.
 - 계약은 이 리포지토리가 소유하고 개방형 형식(OpenAPI, JSON Schema)으로 공개한다. 서버가 계약에 맞는지, 호환성을 깨는 변경이 없는지를 이 리포지토리의 검사가 확인한다.
 - 이 리포지토리가 제공하는 것: 실행 파일(역할 4종), REST API의 계약, MCP 서버, 수집 엔벨로프의 클라이언트 라이브러리, CLI. CLI는 API를 그대로 호출해서 화면 없이도 모든 기능을 테스트하고 운영할 수 있게 한다.
-- 예외 하나: 클로즈드 베타까지 삭제할 수 있는 임시 콘솔을 이 리포지토리의 별도 폴더에 둔다(제품의 단위가 아니고 공개된 `/v1`만 호출한다. ADR-0016, TD-0007). 제품의 화면과 UX·UI 설계는 프런트엔드 리포지토리(아직 없다)의 일이다. 이 리포지토리의 알파 기준은 "모든 기능이 API와 CLI로 동작한다"이다.
+- 예외 하나: 클로즈드 베타까지 삭제할 수 있는 임시 콘솔을 `apps/web`에 둔다(React와 Vite의 정적 단일 페이지 앱. ADR-0035가 ADR-0016의 9번을 고쳤다). 공개된 `/v1`만 호출하고 콘솔 전용 경로는 없다. 빌드 결과는 `adapter.webui`로 실행 파일에 담겨 `praxium api serve`가 `/v1` 밖에서 낸다. 백엔드는 `apps/web` 없이 빌드되고 테스트된다(자리표시자만 커밋. `WEB030`~`WEB032`). 화면 계층은 위로만 의존하고 Base UI는 `web.ui`에서만 import한다(`ARCH020`). 색 리터럴은 토큰 파일 밖에서 실패하고(`WEB020`, `WEB021`), 생성한 API 코드가 계약과 다르면 실패한다(`WEB010`~`WEB013`). 제품의 화면과 UX·UI 설계는 프런트엔드 리포지토리(아직 없다)의 일이다. 이 리포지토리의 알파 기준은 "모든 기능이 API와 CLI로 동작한다"이다. 삭제 조건은 TD-0007이다.
 
 ### 클린 아키텍처의 원칙 (Go의 관례로)
 
@@ -154,6 +162,20 @@ KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 
 | 도입하는 라이브러리 | YAML 파싱(구현하는 변경이 정한다. 사용하는 부분집합을 직접 파싱하거나 허용 라이선스의 라이브러리 하나) | 부분집합을 직접 파싱한다 |
 
 기존 그래프 엔진은 도입하지 않는다(허용 라이선스, 메모리 상주, 증분 갱신, 과거 버전, 제품의 의미 체계를 함께 충족하는 것이 없다. ADR-0006).
+
+### 도입한 웹 UI 패키지 (REQ-277, ADR-0035)
+
+`apps/web/package.json`의 의존성은 허용 목록(`harness/config/web.yaml`)에 있어야 하고(`WEB001`), 실행 파일에 들어가는 것은 라이선스 허용 목록(`harness/config/licenses.yaml`)에 있어야 한다. 전이 의존은 `pnpm-lock.yaml`에서 끝까지 센 수다.
+
+| 패키지 | 버전 | 라이선스 | 전이 의존 | 이유 | 쓰는 단위 |
+|---|---|---|---|---|---|
+| `react` | 19.3.1 | MIT | 0 | 화면을 선언적으로 그린다. 직접 만들면 갱신과 포커스 관리를 다시 짜야 한다 | `web.ui`, `web.data`, `web.screens`, `web.app` |
+| `react-dom` | 19.3.1 | MIT | 2 | React를 브라우저에 그린다 | `web.app` |
+| `@base-ui/react` | 1.9.0 | MIT | 13 | 대화상자, 탭, 선택 상자의 키보드 조작과 접근성 동작. 스타일이 없는 부품이라 토큰만으로 꾸민다 | `web.ui` |
+| `tailwindcss`, `@tailwindcss/vite` | 4.3.5 | MIT | 0, 108 | 토큰 하나를 스타일의 전부로 만들고 쓰지 않는 스타일을 뺀다(개발용) | `web.build` |
+| `vite` | 7.3.8 | MIT | 83 | 정적 번들을 만든다. 테스트 도구(`vitest`)가 이미 쓰는 같은 버전이다(개발용) | `web.build` |
+| `happy-dom` | 21.0.4 | MIT | 8 | 훅과 컴포넌트 테스트용 DOM(개발용) | 테스트 파일 |
+| `@types/react`, `@types/react-dom` | 19.3.0 | MIT | 1, 2 | 타입 검사(개발용) | 없음 |
 
 ### 도입한 Go 모듈 (REQ-239, ADR-0019)
 

@@ -115,6 +115,12 @@ jobs:
         run: pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
         run: pnpm tsx harness/src/run-all.ts --with-coverage
+      # The web UI (ADR-0035): the typed API layer must be what the contract generates, and the web build and the
+      # program with the build inside must succeed. The tests and structure checks above ran without the web build.
+      - name: Web API layer matches the contract
+        run: pnpm web:gen-api --check
+      - name: Build the web UI and the program with it
+        run: scripts/build-with-web.sh "$RUNNER_TEMP/praxium"
       # The quality table's coverage column is read from a record made here, from the coverage this job just measured
       # (docs/generated/coverage-record.json, not committed). Without it every coverage cell says "unknown".
       - name: Record the measured coverage

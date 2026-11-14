@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "f9d97c35116d2b1c"
+hash: "cb730939bdd0eb71"
 date: "2026-11-14"
-note: "requirements gained REQ-263 to 269 (ingest) and REQ-270 (PostgreSQL); design text needs no change"
-text_changed: false
-doc_hash: "bea9303c5f968827"
+note: "요구사항 209와 ADR-0035의 최종 문구에 맞춰 대조했다"
+text_changed: true
+doc_hash: "06412a77a9acc006"

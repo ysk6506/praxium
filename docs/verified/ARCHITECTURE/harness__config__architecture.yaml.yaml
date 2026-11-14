@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "b9845e89beefebcf"
+hash: "16df4cf414519eea"
 date: "2026-11-14"
-note: "merged ingest units with pgstore row, module row and cmd.praxium text; checked against architecture.yaml"
+note: "웹 UI(apps/web, ADR-0035) 변경에 맞춰 대조하고 필요한 곳을 고쳤다"
 text_changed: true
-doc_hash: "5729f97cddcc7847"
+doc_hash: "cf274009c38e2c2f"

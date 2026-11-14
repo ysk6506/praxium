@@ -1,7 +1,7 @@
 doc: "docs/design-docs/harness-guide.md"
 target: "harness/src/run-all.ts"
-hash: "56f8ac958e4b87e1"
-date: "2026-11-13"
-note: "harness-guide 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 56줄), 결정과 숫자는 그대로"
+hash: "46ae754b0516c7c1"
+date: "2026-11-14"
+note: "웹 UI(apps/web, ADR-0035) 변경에 맞춰 대조하고 필요한 곳을 고쳤다"
 text_changed: true
-doc_hash: "54042f1b353a5496"
+doc_hash: "b930921b5d22c8ed"

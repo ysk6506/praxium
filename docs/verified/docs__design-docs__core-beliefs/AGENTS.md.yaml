@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "388cb5a3fb37da85"
+hash: "915156070d56ed74"
 date: "2026-11-14"
-note: "병합 후 확인: ADR-0033의 수집 슬라이스 추가분(AGENTS.md 실행 예, REQ-263~269, 계획 7번)이 문서와 맞는지 다시 읽었다"
+note: "웹 UI(apps/web, ADR-0035) 변경에 맞춰 대조하고 필요한 곳을 고쳤다"
 text_changed: false
 doc_hash: "04b2f4f490642c38"

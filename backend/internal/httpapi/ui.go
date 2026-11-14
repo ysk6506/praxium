@@ -28,24 +28,14 @@ var uiHeaders = map[string]string{
 
 // serveUI answers the request with a file of the UI and reports whether it did.
 func (s *Server) serveUI(w http.ResponseWriter, r *http.Request) bool {
-	if s.ui == nil || (r.Method != http.MethodGet && r.Method != http.MethodHead) {
-		return false
-	}
-	if r.URL.Path == "/v1" || strings.HasPrefix(r.URL.Path, apiPrefix) {
+	if s.ui == nil || !isUIMethod(r.Method) || isAPIPath(r.URL.Path) {
 		return false
 	}
 	name := strings.TrimPrefix(path.Clean("/"+r.URL.Path), "/")
 	if name == "" || name == uiIndex {
 		return s.servePage(w, r)
 	}
-	if info, err := fs.Stat(s.ui, name); err == nil && !info.IsDir() && name != uiPlaceholder {
-		for k, v := range uiHeaders {
-			w.Header().Set(k, v)
-		}
-		if strings.HasPrefix(name, uiAssetsDir) {
-			w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
-		}
-		http.ServeFileFS(w, r, s.ui, name)
+	if s.serveFile(w, r, name) {
 		return true
 	}
 	// An address without a file extension belongs to the page's own router; one with an extension is a missing file.
@@ -53,6 +43,26 @@ func (s *Server) serveUI(w http.ResponseWriter, r *http.Request) bool {
 		return s.servePage(w, r)
 	}
 	return false
+}
+
+func isUIMethod(method string) bool { return method == http.MethodGet || method == http.MethodHead }
+
+func isAPIPath(p string) bool { return p == "/v1" || strings.HasPrefix(p, apiPrefix) }
+
+// serveFile answers with one file of the UI, if there is one by that name.
+func (s *Server) serveFile(w http.ResponseWriter, r *http.Request, name string) bool {
+	info, err := fs.Stat(s.ui, name)
+	if err != nil || info.IsDir() || name == uiPlaceholder {
+		return false
+	}
+	for k, v := range uiHeaders {
+		w.Header().Set(k, v)
+	}
+	if strings.HasPrefix(name, uiAssetsDir) {
+		w.Header().Set("Cache-Control", "public, max-age=31536000, immutable")
+	}
+	http.ServeFileFS(w, r, s.ui, name)
+	return true
 }
 
 // servePage answers with the built page, or with the placeholder of a build that has none.

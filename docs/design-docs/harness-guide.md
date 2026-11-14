@@ -15,6 +15,7 @@ covers:
 | 아키텍처 강제 (REQ-021) | `harness/src/checks/architecture.ts` | `ARCH*` |
 | 제3자 라이선스 (함께 나가는 npm 패키지와 자료는 허용 목록 안의 라이선스여야 한다) | `harness/src/checks/licenses.ts` | `LIC*` |
 | REST 계약 (REQ-143, REQ-148) | `harness/src/checks/api-contract.ts` (`architecture` 안에서 실행된다) | `API*` |
+| 웹 UI(`apps/web`)의 의존성 허용 목록, 생성한 API 코드와 계약의 일치, 색 리터럴, 백엔드의 독립 (REQ-276, REQ-277, REQ-279) | `harness/src/checks/web.ts` (`architecture` 안에서 실행된다. 설정은 `harness/config/web.yaml`) | `WEB*` |
 | 기술 부채 (REQ-022) | `harness/src/checks/debt.ts` | `DEBT*` |
 | 검사 무시 금지 (무시 주석·건너뛴 테스트·CI `continue-on-error`는 이유와 근거 번호가 있어야 하고 수는 늘 수 없다) | `harness/src/checks/ignores.ts` | `IGN*` |
 | 테스트 변조 방지 (REQ-023) | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` (Go 테스트 함수도) |
@@ -41,6 +42,10 @@ covers:
 - import 경로는 보이는 그대로 읽는다: 이스케이프나 사용하지 않는 문자가 포함된 경로는 `GOARCH054`다. 테스트 파일의 빌드 제약(`//go:build`, `// +build`, OS·아키텍처 접미사)은 `GOARCH055`, 커밋될 수 있는 위치의 컴파일된 실행 파일과 `*.test`는 `GOARCH056`이다(`.gitignore`가 차단한다).
 - 테스트의 정적 규칙(TypeScript의 `TEST003`~`TEST005`에 해당): `GOTEST004`는 상수로 결정되는 조건(`if 1+1 != 2`, `if x != x`), `GOTEST005`는 에러 검사 뒤에 실패 처리 없이 `return`·`continue`·`break`하거나 실패할 경로가 없는 `recover()`, `GOTEST006`은 `m.Run`을 호출하지 않는 `TestMain`과 `test.run` 같은 플래그를 설정하는 코드다. 이름으로 참조하는 상수(`const want = 3`)는 해석하지 않는다.
 - 테스트 잠금, 요구사항 추적, 품질 등급표도 Go를 읽는다(ADR-0023, 부채 TD-0008을 닫았다). 아래 절에 있다.
+
+## 웹 UI 검사 (ADR-0035)
+
+`architecture` 안에서 도는 `WEB*` 검사가 `apps/web`을 지킨다. 검사 이름 목록은 늘리지 않았다. `WEB001`은 `apps/web/package.json`의 의존성이 허용 목록에 있는지, `WEB010`~`WEB013`은 생성한 API 코드의 계약 해시와 본문 해시와 생성기를 다시 돌린 결과, `WEB020`·`WEB021`은 토큰 파일 밖의 색, `WEB030`~`WEB032`는 백엔드가 `apps/web` 없이 빌드되는지 본다. Base UI를 `ui` 계층에서만 import하는 규칙은 `ARCH020`이다. `tests.yaml`의 `unlocked_globs`(화면 `apps/web/src/screens/**`)에 든 테스트 파일은 잠금과 요구사항 추적에서 빠지고 정적 테스트 규칙은 그대로 받는다.
 
 ## REST 계약 검사 (ADR-0024)
 
