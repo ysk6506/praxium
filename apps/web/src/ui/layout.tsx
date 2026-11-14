@@ -2,27 +2,36 @@ import type { ReactNode } from "react";
 import { cx } from "./cx";
 
 export interface AppShellProps {
-  readonly brand: string;
+  readonly brand: ReactNode;
   readonly nav: ReactNode;
   readonly children: ReactNode;
   readonly footer?: ReactNode;
+  /** A strip above everything, for a state the person must not miss (the demo mode). */
+  readonly banner?: ReactNode;
 }
 
 /** The frame of every screen: navigation on the left, the page on the right. Under 48rem the navigation goes on top. */
-export function AppShell({ brand, nav, children, footer }: AppShellProps) {
+export function AppShell({ brand, nav, children, footer, banner }: AppShellProps) {
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-4 border-b border-line bg-surface p-3 md:sticky md:top-0 md:h-screen md:w-60 md:overflow-y-auto md:border-r md:border-b-0">
-        <div className="px-2 py-1 text-base font-bold tracking-tight text-fg">{brand}</div>
-        <nav aria-label="주 메뉴" className="flex flex-col gap-4">
-          {nav}
-        </nav>
-        {footer ? <div className="mt-auto px-2 text-xs text-subtle">{footer}</div> : null}
-      </aside>
-      <main className="min-w-0 flex-1 px-4 py-5 md:px-8">
-        <div className="mx-auto max-w-6xl">{children}</div>
-      </main>
-    </div>
+    <>
+      {banner ? (
+        <output className="block border-b border-line bg-warn-soft px-4 py-1.5 text-center text-sm font-medium text-warn">
+          {banner}
+        </output>
+      ) : null}
+      <div className="flex min-h-screen flex-col md:flex-row">
+        <aside className="flex shrink-0 flex-col gap-4 border-b border-line bg-surface p-3 md:sticky md:top-0 md:h-screen md:w-60 md:overflow-y-auto md:border-r md:border-b-0">
+          <div className="px-2 py-1 text-base font-bold tracking-tight text-fg">{brand}</div>
+          <nav aria-label="주 메뉴" className="flex flex-col gap-4">
+            {nav}
+          </nav>
+          {footer ? <div className="mt-auto px-2 text-xs text-subtle">{footer}</div> : null}
+        </aside>
+        <main className="min-w-0 flex-1 px-4 py-5 md:px-8">
+          <div className="mx-auto max-w-6xl">{children}</div>
+        </main>
+      </div>
+    </>
   );
 }
 

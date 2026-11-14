@@ -9,6 +9,7 @@
 //	praxium api routes --json          the routes the server registers
 //	praxium contract assemble|check    the OpenAPI document of the API
 //	praxium health | types | catalog   the command line client of the API
+//	praxium demo [flags]               a server with a synthetic data center and the web UI
 //	praxium worldgen [flags]
 //	praxium ingest run -source f -mapping f -input dataset=file
 //	praxium --version
@@ -29,7 +30,7 @@ import (
 // version is set at build time: go build -ldflags "-X main.version=1.2.3".
 var version = "dev"
 
-const usage = "usage: praxium <api|worker|query|collector>\n       praxium worldgen [flags]\n       praxium --version\n"
+const usage = "usage: praxium <api|worker|query|collector>\n       praxium demo [flags]\n       praxium worldgen [flags]\n       praxium --version\n"
 
 // Exit codes of the command.
 const (

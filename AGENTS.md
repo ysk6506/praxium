@@ -38,6 +38,12 @@ printf 'dev-token-not-a-secret' > /tmp/dev.tok
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query find --type PhysicalServer --limit 3
 ```
 
+처음 보는 사람이 명령 하나로 합성 데이터센터가 채워진 서버를 띄워 브라우저로 둘러보는 가장 짧은 절차(데모 모드, 웹 UI를 담아 빌드한 실행 파일에서. 토큰은 실행마다 새로 만들어 출력 주소의 `#` 뒤에 들어간다, [ADR-0038](docs/design-docs/adr/0038-demo-mode-as-a-supported-feature.md)):
+
+```
+pnpm web:build /tmp/praxium && /tmp/praxium demo   # 출력된 주소를 브라우저로 연다. -data-dir <폴더>면 KG가 남는다
+```
+
 같은 서버를 브라우저로 보려면 웹 UI를 담아 빌드한다(임시 콘솔, [ADR-0035](docs/design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md)). `api serve`는 `/v1` 밖에서 화면을 내고 `-web=false`면 API만 낸다.
 
 ```

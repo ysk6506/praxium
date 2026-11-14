@@ -855,6 +855,260 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > is a demo only while the saved token is the one that came in by the demo address": {
+   "kind": "test",
+   "hash": "46c685d059350c20",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"another-token-0001\"",
+    "\"another-token-0001\"",
+    "\"demo-token-0000001\"",
+    "\"demo-token-0000001\"",
+    "\"demo-token-0000001\"",
+    "\"is a demo only while the saved token is the one that came in by the demo address\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > keeps the mark in memory when the browser gives no storage": {
+   "kind": "test",
+   "hash": "56e6203fc501e478",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"#/connect?token=memory-token-0003&demo=1\"",
+    "\"/\"",
+    "\"keeps the mark in memory when the browser gives no storage\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > reads the token and the demo flag from the fragment, and nothing from any other address": {
+   "kind": "test",
+   "hash": "2f0e73f5e221964f",
+   "asserts": 6,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/connect\"",
+    "\"#/connect\"",
+    "\"#/connect?token=\"",
+    "\"#/connect?token=\"",
+    "\"#/connect?token=%20abc123%20\"",
+    "\"#/connect?token=%20abc123%20\"",
+    "\"#/connect?token=abc123&demo=1\"",
+    "\"#/connect?token=abc123&demo=1\"",
+    "\"#/kgs?token=abc123\"",
+    "\"#/kgs?token=abc123\"",
+    "\"abc123\"",
+    "\"abc123\"",
+    "\"abc123\"",
+    "\"abc123\"",
+    "\"reads the token and the demo flag from the fragment, and nothing from any other address\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > saves the token, marks the demo and replaces the address with the KG screen": {
+   "kind": "test",
+   "hash": "178b7fc53460e90f",
+   "asserts": 6,
+   "literals": [
+    "\"\"",
+    "\"#/connect?token=secret-token-0001&demo=1\"",
+    "\"/\"",
+    "\"saves the token, marks the demo and replaces the address with the KG screen\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > takes a token without the demo flag as no demo, and leaves other addresses alone": {
+   "kind": "test",
+   "hash": "52deb54a014e3c9e",
+   "asserts": 5,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/connect?token=plain-token-0002\"",
+    "\"#/connect?token=plain-token-0002\"",
+    "\"#/kgs\"",
+    "\"#/kgs\"",
+    "\"/\"",
+    "\"/\"",
+    "\"/\"",
+    "\"/\"",
+    "\"/?a=1#/kgs\"",
+    "\"/?a=1#/kgs\"",
+    "\"1\"",
+    "\"1\"",
+    "\"?a=1\"",
+    "\"?a=1\"",
+    "\"old-token-xxxxxxxxx\"",
+    "\"takes a token without the demo flag as no demo, and leaves other addresses alone\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > tells a component about the demo and stops when the token is replaced or deleted": {
+   "kind": "test",
+   "hash": "e78df3f1e5741af7",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"#/connect?token=hook-token-0004&demo=1\"",
+    "\"/\"",
+    "\"tells a component about the demo and stops when the token is replaced or deleted\"",
+    "\"typed-token-0005\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "4fdef9ee37802613",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:1eda311a>": {
+   "kind": "support",
+   "hash": "1eda311aa7b1f70c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:90ab63fc>": {
+   "kind": "support",
+   "hash": "90ab63fce7b7c50d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:a5465db4>": {
+   "kind": "support",
+   "hash": "a5465db420b71da0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:b919bd80>": {
+   "kind": "support",
+   "hash": "b919bd80f32fd4ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=failing": {
+   "kind": "support",
+   "hash": "db81338e1137eec6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=MemoryStorage": {
+   "kind": "support",
+   "hash": "a1cbdcff0b1116fd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=recordingHistory": {
+   "kind": "support",
+   "hash": "dea8645eadac0afe",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -2215,6 +2469,78 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > puts the banner in a status element and leaves it out when there is none": {
+   "kind": "test",
+   "hash": "f1dc3c1a936fdd05",
+   "asserts": 3,
+   "literals": [
+    "\"output\"",
+    "\"output\"",
+    "\"output\"",
+    "\"puts the banner in a status element and leaves it out when there is none\"",
+    "\"데모 모드\"",
+    "\"데모 모드\"",
+    "\"데모 모드\"",
+    "\"본문\"",
+    "\"본문\"",
+    "\"프락시움\"",
+    "\"프락시움\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "4fdef9ee37802613",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<import:d0e06116>": {
+   "kind": "support",
+   "hash": "d0e06116102f191a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<import:ef29133c>": {
+   "kind": "support",
+   "hash": "ef29133c0edb6025",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/ui/ui.test.tsx::[REQ-278] a table, the layout and the lists of facts > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -3173,6 +3499,156 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestDemoFillsTheKGAndTheAPIAnswers": {
+   "kind": "test",
+   "hash": "fe03b9f986810d5a",
+   "asserts": 8,
+   "literals": [
+    "89a41aab32c3efbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoKeepsTheKGInADataFolder": {
+   "kind": "test",
+   "hash": "f910c85381e37240",
+   "asserts": 7,
+   "literals": [
+    "b2b732e05001ae93"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoRefusesAFolderWhoseFirstLoadDidNotFinish": {
+   "kind": "test",
+   "hash": "1c66bc597e92983f",
+   "asserts": 3,
+   "literals": [
+    "1c97e7ccca408fa4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoRefusesBadArguments": {
+   "kind": "test",
+   "hash": "f7165c86522f440d",
+   "asserts": 1,
+   "literals": [
+    "c7417e46fd063765"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoSaysWhenThePortIsTaken": {
+   "kind": "test",
+   "hash": "7114f7bca53d46f7",
+   "asserts": 5,
+   "literals": [
+    "9af4a42807df4fbf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoStopsBeforeServingWhenTheWorldCannotBeMade": {
+   "kind": "test",
+   "hash": "cedd142a3868e170",
+   "asserts": 2,
+   "literals": [
+    "d65c7833c3a302d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoTokenIsNewEveryRunAndOnlyInTheAddress": {
+   "kind": "test",
+   "hash": "61b28e35fe8f9e1d",
+   "asserts": 10,
+   "literals": [
+    "15ec0cc550ccda26"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-281"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoURLNeedsAnAddressWithAPort": {
+   "kind": "test",
+   "hash": "6931ceb582697c5e",
+   "asserts": 2,
+   "literals": [
+    "04c982ea0d8f2f38"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoWarnsForANonLoopbackAddress": {
+   "kind": "test",
+   "hash": "192ffef6eeba01ce",
+   "asserts": 5,
+   "literals": [
+    "bfb608074016a4ff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoWithoutTheWebUIExplainsAndKeepsTheAPI": {
+   "kind": "test",
+   "hash": "0f12f66c6ea4584b",
+   "asserts": 5,
+   "literals": [
+    "103633af8393b476"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestDevLoadTruthLoadsIntoAThrowawayStoreAndPrintsTheCounts": {
    "kind": "test",
    "hash": "93874db4f9528f89",
@@ -3275,6 +3751,21 @@
    "reqs": [
     "REQ-268",
     "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIsLoopbackAddr": {
+   "kind": "test",
+   "hash": "8e34cd1851942078",
+   "asserts": 1,
+   "literals": [
+    "73ac15f11e51f166"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
    ],
    "added": "2026-11-14",
    "amended_by": null

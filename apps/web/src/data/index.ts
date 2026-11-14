@@ -18,6 +18,13 @@ export type {
 export { type TypeEntry, useKgs, useObjectTypeDetail, useTypeCatalog } from "./catalog";
 export { columnCandidates, DEFAULT_COLUMN_COUNT, defaultColumns } from "./columns";
 export { connection, useToken } from "./connection";
+export {
+  applyEntry,
+  DEMO_LANDING,
+  type Entry,
+  parseEntry,
+  useDemo,
+} from "./entry";
 export { describeError, type ErrorKind, type ErrorView, needsToken } from "./errors";
 export {
   basisLabel,
