@@ -53,16 +53,9 @@ func printChanges(out io.Writer, changes []planChange) {
 // changeText is the name of the property and what changed; an addition needs no more than the name.
 func changeText(c planChange) string {
 	if c.Kind == model.ChangeAdded {
-		return nameOr(c)
-	}
-	return nameOr(c) + ": " + c.Detail
-}
-
-func nameOr(c planChange) string {
-	if c.Name != "" {
 		return c.Name
 	}
-	return c.Property
+	return c.Name + ": " + c.Detail
 }
 
 // printShow writes the stored organization properties as text.

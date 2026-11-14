@@ -5399,6 +5399,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAllFourStartsRefuseDefinitionsThatCannotBeUsedAndSayHowToGoOn": {
+   "kind": "test",
+   "hash": "688d69565792ed5f",
+   "asserts": 6,
+   "literals": [
+    "04dfc3c2ecd59701"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-369"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAnOrgPropertyNamedWithoutItsPrefixIsPointedTo": {
+   "kind": "test",
+   "hash": "62a2891f35facd0d",
+   "asserts": 3,
+   "literals": [
+    "42e5ecd5ed4e17ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-370"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestApiRoutesAndListenFailuresAreReported": {
    "kind": "test",
    "hash": "84ed9b0aa03562b0",
@@ -5561,6 +5591,21 @@
    "reqs": [
     "REQ-309",
     "REQ-311"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestARenamedOrgPropertyKeepsItsOldNameInMappingsAndADeprecatedOneIsRefused": {
+   "kind": "test",
+   "hash": "1cdd4ba3d36ea50e",
+   "asserts": 11,
+   "literals": [
+    "f1b162208fd4888d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-370"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6455,6 +6500,156 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestModelApplyRefusesAFolderAnotherProcessHolds": {
+   "kind": "test",
+   "hash": "7c0ed9312129775b",
+   "asserts": 7,
+   "literals": [
+    "badac6b18ac65949"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-367"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelApplyRefusesBreakingChangesWithTheWayAroundAndKeepsTheStore": {
+   "kind": "test",
+   "hash": "e272ad5fe085756a",
+   "asserts": 8,
+   "literals": [
+    "aa1711c20ad76cf3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-367"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelApplyRenamesRetiresAndNeverGivesANumberTwice": {
+   "kind": "test",
+   "hash": "683c60ce77e9dc5d",
+   "asserts": 12,
+   "literals": [
+    "487f97ed75a6ab53"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-367"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelApplyStoresOnceAndSaysWhenNothingChanged": {
+   "kind": "test",
+   "hash": "3fbd68f11cc8a49b",
+   "asserts": 6,
+   "literals": [
+    "d0fe9a0230a9d82b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-367"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelCheckComparesWithWhatIsStoredAndTakesNoLock": {
+   "kind": "test",
+   "hash": "6ed8718c6ab2859e",
+   "asserts": 6,
+   "literals": [
+    "28f6cb60e9b271a1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-366"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelCheckSaysEveryErrorAtOnceAndStoresNothing": {
+   "kind": "test",
+   "hash": "0b4435770e3befe4",
+   "asserts": 5,
+   "literals": [
+    "df757010119b68ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-366"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelReadsOfAFolderWithNothingStored": {
+   "kind": "test",
+   "hash": "4620bca31a216b68",
+   "asserts": 4,
+   "literals": [
+    "84bd5c706cdcc731"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-368"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelShowExportAndHistoryReadWithoutALockAndByNumber": {
+   "kind": "test",
+   "hash": "b21e0a0eac458f5f",
+   "asserts": 11,
+   "literals": [
+    "b7b2d51dee9ec440"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-368"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestModelStoreFlagAndUsageErrors": {
+   "kind": "test",
+   "hash": "eecf515ff8a8a701",
+   "asserts": 3,
+   "literals": [
+    "5a75f5e5836d1c02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-367"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestOnlyTheFileStoreReadsDefinitions": {
+   "kind": "test",
+   "hash": "e6e2a8f585798a83",
+   "asserts": 1,
+   "literals": [
+    "fa68dcfbd68fccec"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-369"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestOpenStoreClosesWhatItOpened": {
    "kind": "test",
    "hash": "cc4290cda297196b",
@@ -6466,6 +6661,22 @@
    "skips": 0,
    "reqs": [
     "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestOrgPropertiesGoFromTheFileThroughIngestionToQueriesAndSurviveARestart": {
+   "kind": "test",
+   "hash": "ba029ff8a16ac9ee",
+   "asserts": 10,
+   "literals": [
+    "79221fe23ad44580"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-371",
+    "REQ-373"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6731,6 +6942,21 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestStartsWithoutDefinitionsAreAsBeforeAndNothingIsWrittenForThem": {
+   "kind": "test",
+   "hash": "f355e086e1f8ff34",
+   "asserts": 5,
+   "literals": [
+    "af4425a24065e3ec"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-369"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestSystemWiringIsTheRealThing": {
@@ -7204,6 +7430,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestAttrIsCutAtTheLastDotSoAnOrganizationNameKeepsItsOwn": {
+   "kind": "test",
+   "hash": "60272e902e78496a",
+   "asserts": 3,
+   "literals": [
+    "5e50cb6c9c0e76f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-371"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestCausesNameWhatWasNotFoundForEveryKindOfResource": {
    "kind": "test",
    "hash": "29d423cce2a0da90",
@@ -7248,6 +7489,21 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestFilterOfAListIsCutAtTheLastDotToo": {
+   "kind": "test",
+   "hash": "482dfdd6444d89dc",
+   "asserts": 2,
+   "literals": [
+    "6ea4fd86b9b76d9b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-371"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/cli::TestGlobalFlagsAfterTheCommandAndTheHelpOfAClientCommand": {
    "kind": "test",
@@ -11101,6 +11357,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAMappingOntoADeprecatedAttributeIsRefusedWithItsSuccessor": {
+   "kind": "test",
+   "hash": "4d1f4ee36d5c4019",
+   "asserts": 8,
+   "literals": [
+    "5505c08f8844d11c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-370"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAnEmptyNaturalKeyIsReportedWithTheColumnThatIsEmpty": {
    "kind": "test",
    "hash": "582679ad7341c93e",
@@ -11127,6 +11398,36 @@
    "skips": 0,
    "reqs": [
     "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAnOrgAttributeCompilesLikeAStandardOne": {
+   "kind": "test",
+   "hash": "05187c10dbc40ec3",
+   "asserts": 7,
+   "literals": [
+    "a9c459b07bb1c609"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-370"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAnOrgPropertyCannotBePartOfAnIdentityKey": {
+   "kind": "test",
+   "hash": "4f476b830aace2c5",
+   "asserts": 3,
+   "literals": [
+    "40af3c6383d7bf49"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-370"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -11838,6 +12139,21 @@
    "skips": 0,
    "reqs": [
     "REQ-331"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTheOldNameOfARenamedAttributeStillMaps": {
+   "kind": "test",
+   "hash": "7ae9dec98b19f98b",
+   "asserts": 3,
+   "literals": [
+    "da86480f59c7a3cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-370"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -14445,6 +14761,21 @@
    "skips": 0,
    "reqs": [
     "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestAnAttributeNumberTheModelDoesNotKnowIsPassedOverNotShownWithoutAName": {
+   "kind": "test",
+   "hash": "ef150bc7494e33f1",
+   "asserts": 12,
+   "literals": [
+    "0fa1bf8772b53917"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-372"
    ],
    "added": "2026-11-14",
    "amended_by": null

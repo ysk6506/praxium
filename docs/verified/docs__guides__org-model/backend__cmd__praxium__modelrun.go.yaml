@@ -1,0 +1,7 @@
+doc: "docs/guides/org-model.md"
+target: "backend/cmd/praxium/modelrun.go"
+hash: "057842bd154bbe54"
+date: "2026-11-14"
+note: "예제 명령과 출력을 빌드한 실행 파일로 돌려 확인"
+text_changed: true
+doc_hash: "06ca96b874554722"

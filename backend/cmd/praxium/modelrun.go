@@ -27,7 +27,7 @@ func readModelFile(w wiring, path string) ([]byte, error) {
 }
 
 // standardState is the model with nothing stored: what check compares with when it has no data folder.
-func standardState(d deps) (*modelState, error) {
+func standardState(_ deps) (*modelState, error) {
 	std, err := model.LoadStandard()
 	if err != nil {
 		return nil, err

@@ -30,11 +30,7 @@ type modelState struct {
 // openModelState reads the definitions of the folder. A reader holds no lock; a writer (readOnly false) must hold the
 // lock of the folder, which the caller takes.
 func openModelState(dir string, readOnly bool, d deps) (*modelState, error) {
-	std, err := model.LoadStandard()
-	if err != nil {
-		return nil, err
-	}
-	base, err := model.StandardDefinitions()
+	st, err := standardState(d)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +46,7 @@ func openModelState(dir string, readOnly bool, d deps) (*modelState, error) {
 	if err != nil {
 		return nil, err
 	}
-	st := &modelState{dir: dir, base: base, std: std, svc: svc, store: store}
+	st.dir, st.svc, st.store = dir, svc, store
 	head, ok, err := svc.Head(context.Background())
 	if err != nil {
 		return nil, err

@@ -15,10 +15,10 @@ follows:
 
 | 있어요 | 아직 없어요 |
 |---|---|
-| 항목, 불변 리비전, 정의 세트 `D-n`과 해시(기준 해시를 받아요. 항목이 없으면 해시가 기준 해시 그대로예요), 머리의 compare-and-swap, 번호 원장 | PostgreSQL 어댑터, HTTP 경로, 명령줄 |
+| 항목, 불변 리비전, 정의 세트 `D-n`과 해시(기준 해시를 받아요. 항목이 없으면 해시가 기준 해시 그대로예요), 머리의 compare-and-swap, 번호 원장 | PostgreSQL 어댑터, HTTP 경로 |
 | 브랜치(바뀐 항목만)와 제안(`draft`, `in_review`, `approved`, `merged`, `closed`), 작성자의 승인 거절, `solo_approval`을 호출자가 정책으로 넘기고 기록에 남기기 | 3-way 병합과 충돌 해결(겹치면 `stale`로 거절해요), `queued`와 병합 큐, 검사의 종류별 구현(호출자가 검사 함수를 줘요) |
 | 직접 적용, 병합, 정의 세트 `D-N`의 내용으로 복원(`origin: restore`) | 제안 단위 리버트(`origin: revert`), 긴급 리버트, 가져오기와 내보내기, 계보, 고정 |
-| 메모리 어댑터, 파일 어댑터(데이터 폴더의 `definitions.json`), 둘이 통과하는 적합성 사례 | 이름 변경, `namespace`와 `contacts`, 위험 등급 |
+| 메모리 어댑터, 파일 어댑터(데이터 폴더의 `definitions.json`), 둘이 통과하는 적합성 사례. 첫 사용자는 조직 속성이에요: `praxium model apply|check|show|export|history`가 직접 적용으로 `type_overlay`를 쓰고 읽으며, 수집과 서버가 시작할 때 머리를 읽어 표준 모델과 합쳐요(바꾸면 다시 시작, PostgreSQL 서버는 표준만. ADR-0053) | 이름 변경, `namespace`와 `contacts`, 위험 등급 |
 
 ## 1. 목적과 다루는 질문
 

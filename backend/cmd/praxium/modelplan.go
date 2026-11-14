@@ -133,7 +133,7 @@ func (p *modelPlan) classify(st *modelState, storedBy map[string]model.Overlay) 
 func (p *modelPlan) note(o, prev model.Overlay, changes []model.Change) {
 	target := targetNameOf(p.base, o.Target)
 	for _, c := range changes {
-		name := ""
+		name := c.Property.String()
 		for _, pr := range append(append([]model.Property(nil), prev.Properties...), o.Properties...) {
 			if pr.ID == c.Property {
 				name = pr.Name

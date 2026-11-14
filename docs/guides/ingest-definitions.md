@@ -154,6 +154,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 - 값 종류는 문자열, 열거(타입이 허용하는 값 그대로), 정수, 숫자, 불리언(`true`와 `false`만), 시각, 수량만 된다. 시각은 `2026-03-14T09:30:00Z` 형식이고 날짜만 있으면(`2026-03-14`) 그날 0시(UTC)로 본다. 목록과 맵 같은 속성은 매핑을 읽는 단계에서 거절한다.
 - **칸 하나가 틀리면 그 행은 그 피드에서 통째로 쓰지 않는다.** `invalid_value`가 나오고 그 행의 객체는 만들어지지 않는다(다른 행은 계속 간다).
 - 값이 자주 바뀌는 속성(`power_state` 같은 휘발성)은 이력 없이 마지막 값만 남고 결과의 `volatile`로 센다.
+- **조직 속성.** 표준에 없는 컬럼은 `praxium model apply`로 타입에 속성을 더하고(안내서 `docs/guides/org-model.md`), `attribute`에 `org.management_department`처럼 `org.`을 붙인 이름을 쓴다. 이름을 바꾼 속성의 옛 이름도 통한다. 물러난(`deprecated`) 속성에 잇는 매핑은 거절한다. 조직 속성은 식별 키(`identity`)에 쓸 수 없다. `ingest run -data-dir`은 폴더에 저장된 속성을 읽으므로 폴더를 열고 있는 서버를 멈춘 뒤에 `apply`하고 수집한다.
 
 ### 3.3 링크 (`links`)
 

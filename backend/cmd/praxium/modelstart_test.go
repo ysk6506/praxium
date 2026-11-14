@@ -52,7 +52,7 @@ func ingestLedger(t *testing.T, d wiring, dir string, l ledgerFiles) (code int, 
 	return code, stdout.String(), stderr.String()
 }
 
-// [REQ-373]
+// [REQ-373] [REQ-371]
 func TestOrgPropertiesGoFromTheFileThroughIngestionToQueriesAndSurviveARestart(t *testing.T) {
 	d := modelWiring(t)
 	dir, _ := appliedFolder(t, d)
@@ -183,7 +183,11 @@ func putOverlay(t *testing.T, d wiring, dir, target, body string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	_, err = svc.Apply(context.Background(), definitions.ApplyInput{Actor: definitions.Actor{ID: "test"}, Changes: []definitions.Change{
+	head, _, err := svc.Head(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = svc.Apply(context.Background(), definitions.ApplyInput{ExpectHead: head.No, Actor: definitions.Actor{ID: "test"}, Changes: []definitions.Change{
 		{ItemID: "ov." + target, Kind: model.OverlayKind, Name: target, SchemaVersion: 1, Body: []byte(body)}}})
 	if err != nil {
 		t.Fatal(err)
