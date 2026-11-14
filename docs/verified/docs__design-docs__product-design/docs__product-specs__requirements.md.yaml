@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "f3c23775f3fcdd97"
+hash: "622225b636dd1b67"
 date: "2026-11-14"
-note: "REQ-283만 바뀜(릴리스 수동 실행). 릴리스 내용은 이 문서에 없어 수정할 것이 없음을 확인"
+note: "ADR-0042 병합 뒤 다시 읽었다. 이 문서와 main의 차이는 목표 문장(ADR-0037)뿐이고, requirements.md의 새 요구는 이 문서의 원칙과 순서에 영향이 없다"
 text_changed: true
-doc_hash: "06412a77a9acc006"
+doc_hash: "019854b80cb4930e"
