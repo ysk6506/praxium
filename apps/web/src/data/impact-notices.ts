@@ -112,9 +112,9 @@ function stoppedByPerson(facts: NoticeFacts): ImpactNotice | undefined {
   return {
     id: "stopped",
     tone: "warn",
-    title: "받기를 중지했습니다",
+    title: "불러오기를 중지했습니다",
     text: `항목 ${facts.expected}개 중 ${facts.received}개만 받아 그렸습니다. 등급별 개수는 전체를 센 값입니다.`,
-    action: { kind: "again", label: "다시 받기" },
+    action: { kind: "again", label: "다시 불러오기" },
   };
 }
 

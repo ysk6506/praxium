@@ -26,7 +26,7 @@ function json(body: unknown, status = 200): Response {
 
 function install(): void {
   vi.stubGlobal("fetch", (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-    const path = new URL(String(input), "http://fake").pathname;
+    const path = new URL(String(input), "file:///fake").pathname;
     const call: Call = {
       path,
       body: typeof init?.body === "string" ? JSON.parse(init.body) : {},
@@ -119,7 +119,13 @@ const META = {
   warnings: [] as string[],
   model_limits: ["Time is not modelled"],
   hidden: { has_hidden: false, hidden_passed_count: 0, hidden_reached_count: 0 },
-  result_complete: { total: 0, returned: 0, truncated: false, reason: null, next_cursor: null },
+  result_complete: {
+    total: 0,
+    returned: 0,
+    truncated: false,
+    reason: null,
+    next_cursor: null as string | null,
+  },
 };
 
 const section = (counts: Record<string, number>, items?: unknown[]) => ({
@@ -375,6 +381,12 @@ describe("[REQ-380] an answer with nothing, an error, and the single points of f
     expect(calls.filter((c) => c.body.shape === "items")).toHaveLength(0);
   });
 
+  it("keeps what the calculation does not see in view when nothing is affected", async () => {
+    serve({ counts: {} });
+    await open(IMPACT);
+    expect(host.querySelector("details")?.textContent).toContain("Time is not modelled");
+  });
+
   it("shows the error of the server in the words of the other screens, with what was not found", async () => {
     handler = (call) =>
       call.path.endsWith("queries:impact")
@@ -489,12 +501,12 @@ describe("[REQ-375] the request stops when the screen is left, the question chan
     await open(IMPACT);
     expect(text()).toContain("항목을 받는 중 2 / 5");
     const waiting = impactCalls().at(-1)?.signal;
-    await click(byText("button", "받기 중지"));
+    await click(byText("button", "불러오기 중지"));
     expect(waiting?.aborted).toBe(true);
-    expect(text()).toContain("받기를 중지했습니다");
+    expect(text()).toContain("불러오기를 중지했습니다");
     expect(text()).toContain("5개 중 2개");
     expect(host.querySelector("svg[role=group]")).not.toBeNull();
-    await click(byText("button", "다시 받기"));
+    await click(byText("button", "다시 불러오기"));
     expect(impactCalls().filter((c) => c.body.shape === "items").length).toBeGreaterThan(2);
   });
 });

@@ -7715,7 +7715,7 @@
   },
   "apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > stops receiving items when the person presses stop, draws what came, and says so": {
    "kind": "test",
-   "hash": "bf41e4fdf93d131e",
+   "hash": "bf5148b08693bf18",
    "asserts": 6,
    "literals": [
     "\"0\"",
@@ -7738,10 +7738,10 @@
     "\"summary\"",
     "\"svg[role=group]\"",
     "\"svg[role=group]\"",
-    "\"다시 받기\"",
-    "\"받기 중지\"",
-    "\"받기를 중지했습니다\"",
-    "\"받기를 중지했습니다\"",
+    "\"다시 불러오기\"",
+    "\"불러오기 중지\"",
+    "\"불러오기를 중지했습니다\"",
+    "\"불러오기를 중지했습니다\"",
     "\"항목을 받는 중 2 / 5\"",
     "\"항목을 받는 중 2 / 5\"",
     "true",
@@ -8065,6 +8065,22 @@
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > keeps what the calculation does not see in view when nothing is affected": {
+   "kind": "test",
+   "hash": "742108a4347a9a0d",
+   "asserts": 1,
+   "literals": [
+    "\"Time is not modelled\"",
+    "\"Time is not modelled\"",
+    "\"details\"",
+    "\"details\"",
+    "\"keeps what the calculation does not see in view when nothing is affected\""
+   ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-14",
@@ -8401,7 +8417,7 @@
   },
   "apps/web/src/impact-screen.test.tsx::=install": {
    "kind": "support",
-   "hash": "c64bd4199afda6a9",
+   "hash": "a80ff893a8e4174b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -8431,7 +8447,7 @@
   },
   "apps/web/src/impact-screen.test.tsx::=META": {
    "kind": "support",
-   "hash": "f28616a5ef250725",
+   "hash": "fdf7a360b0725aca",
    "asserts": 0,
    "literals": [],
    "precision": [],

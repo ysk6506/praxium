@@ -1,0 +1,7 @@
+doc: "docs/design-docs/temporary-console.md"
+target: "docs/design-docs/adr/0054-impact-screen-wired-to-the-api.md"
+hash: "b0f648a2d5160934"
+date: "2026-11-14"
+note: "알림 문구의 용어집 표준어 정리"
+text_changed: true
+doc_hash: "339aad83398f379e"

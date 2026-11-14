@@ -13,6 +13,7 @@ import {
   type ImpactData,
   type ImpactItem,
   type ImpactRequest,
+  type Requester,
   type UpstreamItem,
 } from "../api";
 import { useToken } from "./connection";
@@ -96,6 +97,41 @@ type SummaryState =
   | { readonly status: "ready"; readonly key: string; readonly answer: ImpactAnswer }
   | { readonly status: "error"; readonly key: string; readonly error: ErrorView };
 
+interface Receiving {
+  readonly client: Requester;
+  readonly kg: string;
+  readonly first: ImpactRequestBody;
+  readonly reading: ImpactReading;
+  readonly expected: number;
+  /** The items received, added to by each page. */
+  readonly got: ReceivedItem[];
+  readonly show: (status: ImpactItems["status"], error?: ErrorView) => void;
+  /** The person pressed stop. */
+  readonly stopped: () => boolean;
+  /** The request was ended by the screen (it was left, or the question changed). */
+  readonly aborted: () => boolean;
+}
+
+/** Asks for the pages of items one after the other, each with the cursor of the page before, and shows what has come. */
+async function receiveItems(r: Receiving): Promise<void> {
+  try {
+    let cursor: string | undefined;
+    for (;;) {
+      const body = toRequest({ ...r.first, ...(cursor !== undefined && { cursor }) });
+      const page = await askImpact(r.client, { path: { kg: r.kg }, body });
+      const fresh = pageOf(page.data, r.reading);
+      r.got.push(...fresh);
+      cursor = page.meta.result_complete.next_cursor ?? undefined;
+      if (fresh.length === 0 || cursor === undefined || r.got.length >= r.expected) break;
+      r.show("receiving");
+    }
+    r.show("done");
+  } catch (error: unknown) {
+    if (isAbort(error) && r.stopped()) r.show("stopped");
+    else if (!r.aborted()) r.show("error", describeError(error));
+  }
+}
+
 export function useImpact(kg: string, view: ImpactView): ImpactLoad {
   const token = useToken();
   const [summaryRound, setSummaryRound] = useState(0);
@@ -146,29 +182,21 @@ export function useImpact(kg: string, view: ImpactView): ImpactLoad {
       controller.abort();
     };
     const [first] = JSON.parse(itemsKey) as [ImpactRequestBody, number];
-    const client = createClient({ token, signal: controller.signal });
     const got: ReceivedItem[] = [];
     const show = (status: ImpactItems["status"], error?: ErrorView): void =>
       setItems({ status, items: [...got], expected, error });
     setItems({ status: "receiving", items: [], expected, error: undefined });
-    void (async () => {
-      try {
-        let cursor: string | undefined;
-        for (;;) {
-          const body = toRequest({ ...first, ...(cursor !== undefined && { cursor }) });
-          const page = await askImpact(client, { path: { kg }, body });
-          const fresh = pageOf(page.data, reading);
-          got.push(...fresh);
-          cursor = page.meta.result_complete.next_cursor ?? undefined;
-          if (fresh.length === 0 || cursor === undefined || got.length >= expected) break;
-          show("receiving");
-        }
-        show("done");
-      } catch (error: unknown) {
-        if (isAbort(error) && stoppedByPerson) show("stopped");
-        else if (!controller.signal.aborted) show("error", describeError(error));
-      }
-    })();
+    void receiveItems({
+      client: createClient({ token, signal: controller.signal }),
+      kg,
+      first,
+      reading,
+      expected,
+      got,
+      show,
+      stopped: () => stoppedByPerson,
+      aborted: () => controller.signal.aborted,
+    });
     return () => controller.abort();
   }, [answer, itemsKey, kg, token, reading, max]);
 
