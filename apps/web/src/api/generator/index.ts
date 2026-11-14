@@ -2,7 +2,7 @@
  * The generator of the API layer: pure functions from an OpenAPI document to TypeScript text. It reads no file and
  * runs no program; the script `scripts/web-gen-api.ts` gives it the contract, formats the result and writes it.
  */
-import { generateOperations, generateOperationTable } from "./operations";
+import { generateOperationFiles, generateOperationTable } from "./operations";
 import type { OpenApiDocument } from "./spec";
 import { generateTypeFiles } from "./types";
 
@@ -12,7 +12,7 @@ export type { OpenApiDocument } from "./spec";
 export function generateBodies(doc: OpenApiDocument): Record<string, string> {
   return {
     ...generateTypeFiles(doc),
-    "operations.ts": generateOperations(doc),
+    ...generateOperationFiles(doc),
     "operation-table.ts": generateOperationTable(doc),
   };
 }

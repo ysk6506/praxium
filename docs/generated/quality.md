@@ -25,7 +25,7 @@
 
 ## 단위별
 
-단위 수 등급별: D 0, C 9, B 21, A 5. 커버리지 기록: 없음 (모든 단위가 "알 수 없음"). 무시 주석 종류별: biome-ignore 0, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 0.
+단위 수 등급별: D 0, C 9, B 24, A 5. 커버리지 기록: 없음 (모든 단위가 "알 수 없음"). 무시 주석 종류별: biome-ignore 0, eslint-disable 0, ts-ignore 0, ts-expect-error 0, ts-nocheck 0, test-skip 0, continue-on-error 0.
 
 | 단위 | 등급 | 커버리지 (값 / 하한) | 무시 주석 | 한도 90% 넘음 (초과) | 열린 부채 (가장 이른 기한) | 가장 오래된 문서 | 이유 |
 |---|---|---|---|---|---|---|---|
@@ -37,7 +37,7 @@
 | go:core.ingest | C | 알 수 없음 / 92.5 | 0 | 7 (0) | 0 | 2026-11-14 (ingest-definitions.md) | 한도 90% 넘음 7 |
 | go:adapter.xlsx | C | 알 수 없음 / 95.0 | 0 | 9 (0) | 0 | — | 한도 90% 넘음 9 |
 | go:core.definitions | C | 알 수 없음 / 97.0 | 0 | 5 (0) | 0 | — | 한도 90% 넘음 5 |
-| go:cmd.praxium | C | 알 수 없음 / 95.0 | 0 | 3 (0) | 2 (2027-02-01) | 2026-11-14 (worldgen.md) | 열린 부채 2 |
+| go:cmd.praxium | C | 알 수 없음 / 95.0 | 0 | 6 (0) | 1 (2027-02-01) | 2026-11-14 (worldgen.md) | 한도 90% 넘음 6 |
 | web.api | B | 알 수 없음 / 98.0 | 0 | 1 (0) | 0 | — | 한도 90% 넘음 1, 커버리지 알 수 없음 |
 | web.data | B | 알 수 없음 / 97.0 | 0 | 2 (0) | 0 | — | 한도 90% 넘음 2, 커버리지 알 수 없음 |
 | web.ui | B | 알 수 없음 / 98.0 | 0 | 0 (0) | 0 | 2026-11-14 (web-ui-rules.md) | 커버리지 알 수 없음 |
@@ -51,6 +51,9 @@
 | go:adapter.graphcheck | B | 알 수 없음 / 94.5 | 0 | 2 (0) | 0 | — | 한도 90% 넘음 2, 커버리지 알 수 없음 |
 | go:adapter.filesource | B | 알 수 없음 / 98.0 | 0 | 0 (0) | 0 | — | 커버리지 알 수 없음 |
 | go:adapter.filejournal | B | 알 수 없음 / 93.0 | 0 | 3 (0) | 0 | — | 한도 90% 넘음 3, 커버리지 알 수 없음 |
+| go:core.identity | B | 알 수 없음 / 91.0 | 0 | 2 (0) | 0 | — | 한도 90% 넘음 2, 커버리지 알 수 없음 |
+| go:adapter.identityfile | B | 알 수 없음 / 96.0 | 0 | 0 (0) | 0 | — | 커버리지 알 수 없음 |
+| go:adapter.identitycheck | B | 알 수 없음 / 96.5 | 0 | 0 (0) | 0 | — | 커버리지 알 수 없음 |
 | go:adapter.definitionsfile | B | 알 수 없음 / 96.5 | 0 | 0 (0) | 0 | — | 커버리지 알 수 없음 |
 | go:adapter.definitionscheck | B | 알 수 없음 / 98.0 | 0 | 0 (0) | 0 | — | 커버리지 알 수 없음 |
 | go:adapter.devauth | B | 알 수 없음 / 98.0 | 0 | 0 (0) | 1 (2027-02-01) | — | 열린 부채 1, 커버리지 알 수 없음 |

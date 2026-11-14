@@ -84,6 +84,9 @@ amends_tests:
   - go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration
 test_change_reason: 경로가 32개로 늘어 적합성 테스트가 계약의 경로를 표에서 직접 도출하도록 테스트 4개를 한 번 제대로 수정하고(단언은 같거나 더 엄하다), 질의 테스트의 스토리지를 코어 유닛 안의 `graph.ScratchStore`로 바꾸고 옛 버전을 읽는 테스트 5개를 어댑터를 import해도 되는 `adapter.readcheck`로 옮긴다. 나머지는 같은 이름의 헬퍼를 함께 사용하게 되어 해시만 바뀐 테스트이다. 계약의 경로 이름 테스트는 테스트의 경로 규칙이 ADR-0016의 `:액션` 표기를 누락해 설계 결정보다 좁았다. 결정에 맞게 수정하고 POST 전용과 동사 세그먼트 금지를 추가했다.
 decision_hash: 53de10c2f2349e2e
+amended_by:
+  - adr: "0044"
+    what: 운영 모드가 실제 인증기를 기다린다는 배선
 ---
 # ADR-0027 KG를 API와 명령줄로 읽는다
 

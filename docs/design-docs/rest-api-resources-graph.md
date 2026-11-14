@@ -129,17 +129,20 @@ GET /v1/kgs/main/health/object_type/Interface?include=cause,readers
 - `include: unmet_objects`는 `items`를 페이지네이션으로 반환하고, `include: gaps`는 필요별로 `blocking_alone`과 분류를 반환해요.
 
 ## 4. 권한
-사람과 그룹은 사내 SSO가 알고, 프락시움은 역할과 범위를 붙여요(ADR-0012). 역할은 8종이에요: `viewer`, `editor`, `approver`, `operator`, `model_steward`, `auditor`, `admin`, `ingester`(범위에 속한 소스에 푸시하고 수집 엔벨로프를 전송해요. 그 밖은 아무것도 못 해요).
+인증은 내장 접근 토큰이고(ADR-0044), SSO를 연동하면 사람과 그룹은 SSO가 알아요. 프락시움은 프락시움은 역할과 범위를 붙여요(ADR-0012). 역할은 8종이에요: `viewer`, `editor`, `approver`, `operator`, `model_steward`, `auditor`, `admin`, `ingester`(범위에 속한 소스에 푸시하고 수집 엔벨로프를 전송해요. 그 밖은 아무것도 못 해요).
 
 | 경로 | 메서드 | 설명 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
+| `/v1/tokens/{token_id}` | GET | **구현됨(ADR-0044)** 토큰 하나. id `current`는 이 요청의 토큰이고, 그때 호출자의 주체(`subject`: `id`, `kind`, `roles`)와 토큰(`token_id`, `expires_at`)과 유효 역할. 토큰의 값과 해시는 없어요 | 로그인한 누구나 | - | access-control 3-0 |
+| `/v1/users`, `/v1/users/{user_id}:disable` | GET, POST | **구현됨** 사용자의 목록, 생성, 비활성화(되돌리지 않아요). `ingester`는 가질 수 없고 마지막 활성 관리자는 비활성화할 수 없어요. `Idempotency-Key` 필요 | `admin` | - | access-control 3-0 |
+| `/v1/tokens`, `/v1/tokens/{token_id}:revoke` | GET, POST | **구현됨** 토큰의 목록(소유자 자신의 것, `admin`은 전체), 발급(`admin`, 값은 응답에 한 번만), 폐기(소유자 또는 `admin`). 모든 토큰은 만료해요 | 로그인한 누구나 / 발급 `admin` | - | access-control 3-0 |
 | `/v1/me` | GET | 현재 사용자: `subject`, `grants`, `bulk_read`, `allowed_actions`(`[{action, allowed, reason_code}]`), `capabilities` | 로그인한 누구나 | - | access-control |
 | `/v1/directory/subjects` | GET | **사용자와 그룹 검색**(SSO). 필터링: `filter[name][prefix]`, `filter[kind][equals]` | `admin`, `editor`(담당자 선택) | - | access-control 3-2 |
 | `/v1/roles` | GET | 역할 8종과 할 수 있는 작업 표 | 로그인한 누구나 | - | access-control 4 |
 | `/v1/grants`, `/v1/grants/{grant_id}` | GET, POST | 권한 부여를 조회하고 부여해요. 필드: `subject`, `role`, `scope`(`kg`(기본 `main`), `all`, `object_types`, `sources`, `max_sensitivity`, `object_conditions`), `delegation`(범위 한정 위임용 필드), `expires_at`, `bulk_read`. `object_conditions`와 `delegation`은 필드가 알파부터 있고 구현은 클로즈드 베타예요. `Idempotency-Key` 필요 | 읽기 `auditor`, `admin` / 쓰기 `admin` | - | access-control 6 |
 | `/v1/grants/{grant_id}:revoke` | POST | 회수(이력을 남겨요) | `admin` | - | access-control 6 |
 | `/v1/owners` | GET | **담당자**(연락처)를 항목과 자원별로 모아서 조회해요. 권한이 아니에요 | 읽기 | - | access-control 8 |
-| `/v1/system-accounts`, `/v1/system-accounts/{account_id}` | GET, POST, PATCH | 서비스 계정: `display_name`, `contacts`, `bound_persons`(`on_behalf_of`로 선택할 수 있는 사람), `expires_at`, `rotated_at`, `rate_limit`, `status`. 토큰은 생성할 때 한 번만 보여요 | `admin` | - | access-control 11 |
+| `/v1/system-accounts`, `/v1/system-accounts/{account_id}` | GET, POST, PATCH | 서비스 계정(목록, 생성, `:disable`은 구현됨. `admin`을 가질 수 없어요): `display_name`, `contacts`, `bound_persons`(`on_behalf_of`로 선택할 수 있는 사람), `expires_at`, `rotated_at`, `rate_limit`, `status`. 토큰은 생성할 때 한 번만 보여요 | `admin` | - | access-control 11 |
 | `/v1/system-accounts/{account_id}:rotate-token`, `:disable` | POST | 토큰 교체(짧은 중첩 기간 뒤에 이전 토큰이 차단돼요) / 비활성화. 스토리지가 정상이면 30초 안에 전파돼요 | `admin` | - | access-control 11 |
 | `/v1/audit-records` | GET | **감사 로그**: `audit_id`, `occurred_at`, `actor_kind`, `actor_id`, `action`, `target_kind`, `target_id`, `grant_ids_used`, `outcome`, `admin_override`, `proposal_id`, `request_id`. 필터링: `actor_id`, `action`, `target_id`, `occurred_at`(`range`). 추가 전용(append-only) 기록 | `auditor` | - | access-control 12 |
 | `/v1/blocked-items/{item_id}:resolve` | POST | 차단된 항목 해제. 감사 로그에 `admin_override` | `admin` | - | access-control 10-2 |

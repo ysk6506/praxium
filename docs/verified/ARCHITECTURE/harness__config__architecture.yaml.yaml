@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "6f55dc74570eb49d"
+hash: "80d3880140254bd4"
 date: "2026-11-14"
-note: "정의 저장소 유닛 3개(core.definitions 등)와 REQ-332~341 추가분을 문서와 대조해 확인함"
+note: "인증(ADR-0044) 병합 뒤 유닛 6개와 REQ-307~341의 공존을 대조해 확인함"
 text_changed: true
-doc_hash: "424d0edc23cf6a81"
+doc_hash: "8db2847b038220e0"

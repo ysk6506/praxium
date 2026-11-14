@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "e87558391730517b"
+hash: "b428d755995ea11d"
 date: "2026-11-14"
-note: "요구사항 문서의 용어를 표준어로 고친 뒤 대조해 확인함"
+note: "인증(ADR-0044) 병합 뒤 유닛 6개와 REQ-307~341의 공존을 대조해 확인함"
 text_changed: true
 doc_hash: "019854b80cb4930e"

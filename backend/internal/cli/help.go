@@ -32,6 +32,63 @@ type helpEntry struct {
 }
 
 var helpEntries = map[string]helpEntry{
+	"whoami": {
+		usage: "usage: praxium whoami",
+		body: `Says who the access token is: the user or service account, its roles, and the token's state and expiry.
+Use it to check a token you were given.
+
+example:
+  praxium whoami
+`},
+	"admin": {
+		usage: "usage: praxium admin bootstrap|issue-token|user|account|token ...",
+		body: `Manages who may call the server. Every answer says who; passwords do not exist, access tokens do.
+  bootstrap     (at the server, offline) make the first administrator and print its token once
+  issue-token   (at the server, offline) print a new token for an existing user, to get back in
+  user          list, create and disable users (people)
+  account       list, create and disable service accounts (programs, such as an ingester)
+  token         list, create and revoke access tokens
+The last three call the server and need the token of an administrator.
+Run "praxium admin bootstrap --help", "praxium admin user --help" and so on.
+`},
+	"admin user": {
+		usage: "usage: praxium admin user list|create|disable ...",
+		body: `Users: people who sign in with an access token.
+  list                                 list users (--state active|disabled, --limit, --all)
+  create NAME --role R [--role R] [--display-name X] [--description X]
+  disable NAME                         refuse every token of the user from now on; it cannot be undone
+
+A name is lower-case letters, digits and . _ @ - (at most 64). A user cannot hold the ingester role.
+
+example:
+  praxium admin user create ada --role viewer --display-name "Ada Example"
+`},
+	"admin account": {
+		usage: "usage: praxium admin account list|create|disable ...",
+		body: `Service accounts: programs that call the server, such as an ingester.
+  list                                 list service accounts (--state, --limit, --all)
+  create NAME --role R [--role R] [--description X]
+  disable NAME                         refuse every token of the account from now on
+
+A service account cannot hold the admin role.
+
+example:
+  praxium admin account create ingest-demo --role ingester
+`},
+	"admin token": {
+		usage: "usage: praxium admin token list|create|revoke ...",
+		body: `Access tokens. A token is shown once, when it is made; the server keeps only a hash of its secret.
+  list                                 list tokens (--owner NAME, --state active|expired|revoked, --limit, --all)
+  create --owner NAME [--role R]... [--expires-in-days N] [--description X]
+  revoke TOKEN-ID                      refuse the token from now on (the id is in "token list", not the token itself)
+
+A token expires: in 90 days unless --expires-in-days (1 to 365) says otherwise. A
+token carries the roles asked, which must be roles of its owner, or all of them. An administrator sees and revokes
+any token; any other caller only its own.
+
+example:
+  praxium admin token create --owner ada --role viewer --expires-in-days 30 --description "dashboard"
+`},
 	"health": {
 		usage: "usage: praxium health",
 		body: `Asks the server whether it is alive, ready and started. Exit code 0 when all three are fine.

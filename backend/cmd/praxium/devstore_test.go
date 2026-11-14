@@ -139,9 +139,15 @@ func TestProductionNamesWhatItLacks(t *testing.T) {
 	defer stop()
 	var stderr bytes.Buffer
 	if code := execute([]string{"api", "serve", "-mode", "production"}, &bytes.Buffer{}, &stderr, d); code != exitFailure ||
-		!strings.Contains(stderr.String(), "authenticator") || !strings.Contains(stderr.String(), "store") ||
-		!strings.Contains(stderr.String(), "TD-0010") || !strings.Contains(stderr.String(), "TD-0011") {
+		!strings.Contains(stderr.String(), "memory store") || !strings.Contains(stderr.String(), "-store file") ||
+		!strings.Contains(stderr.String(), "praxium admin bootstrap") || strings.Contains(stderr.String(), "TD-") {
 		t.Fatalf("code %d, stderr %q", code, stderr.String())
+	}
+	dir := t.TempDir()
+	stderr.Reset()
+	if code := execute([]string{"api", "serve", "-mode", "production", "-store", "file", "-store-data-dir", dir}, &bytes.Buffer{}, &stderr, d); code != exitFailure ||
+		!strings.Contains(stderr.String(), "no administrator") || !strings.Contains(stderr.String(), "praxium admin bootstrap -name NAME -store file -store-data-dir "+dir) {
+		t.Fatalf("a store with no administrator: code %d, stderr %q", code, stderr.String())
 	}
 }
 

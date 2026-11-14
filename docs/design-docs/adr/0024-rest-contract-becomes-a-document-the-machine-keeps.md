@@ -48,6 +48,8 @@ decision_hash: 81b01464ac1b515e
 amended_by:
   - adr: "0028"
     what: "`core.kernel`이 `os`를 import하는 범위"
+  - adr: "0044"
+    what: 운영 모드는 늘 시작을 거부하고 인증은 개발용 인증기뿐이라는 결과
 ---
 # ADR-0024 REST 계약이 기계가 지키는 문서가 된다
 
