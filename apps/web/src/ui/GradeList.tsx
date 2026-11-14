@@ -31,7 +31,7 @@ export function GradeLegend({ items, active, onToggle }: GradeLegendProps) {
               "min-h-6 cursor-pointer rounded-md border px-2 py-1 text-sm hover:bg-sunken",
               active === item.key
                 ? "border-accent bg-accent-soft"
-                : "border-line-strong bg-surface",
+                : "border-control-line bg-surface",
             )}
           >
             <GradeMark {...item.mark} count={item.count} />

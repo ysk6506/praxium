@@ -344,7 +344,7 @@ export function LaneGraph(props: LaneGraphProps) {
         <button
           type="button"
           onClick={props.onSkip}
-          className="sr-only focus:not-sr-only focus:m-2 focus:cursor-pointer focus:rounded-md focus:border focus:border-line-strong focus:bg-surface focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium"
+          className="sr-only focus:not-sr-only focus:m-2 focus:cursor-pointer focus:rounded-md focus:border focus:border-control-line focus:bg-surface focus:px-3 focus:py-1.5 focus:text-sm focus:font-medium"
         >
           목록으로 건너뛰기
         </button>
