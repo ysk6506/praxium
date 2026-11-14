@@ -22,7 +22,7 @@ type LimiterConfig struct {
 }
 
 // Limiter is the FailureLimiter: it counts the refused tokens of each key (where a caller comes from) and blocks
-// the key that reaches the limit for a while. A good token clears the count. It lives in memory, per process.
+// the key that reaches the limit for a while. A good token clears nothing: many callers can share a key. It lives in memory, per process.
 type Limiter struct {
 	mu      sync.Mutex
 	clock   kernel.Clock
@@ -91,16 +91,6 @@ func (l *Limiter) Failed(key string) {
 	e.last = now
 	if e.count >= l.cfg.MaxFailures {
 		e.until, e.count = now.Add(l.cfg.Lockout), 0
-	}
-}
-
-// Succeeded forgets the failures of the key, unless it is blocked: a block runs out by time alone.
-func (l *Limiter) Succeeded(key string) {
-	key = KeyOf(key)
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	if e, ok := l.entries[key]; ok && !e.until.After(l.clock.Now()) {
-		delete(l.entries, key)
 	}
 }
 

@@ -189,11 +189,20 @@ func TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked(t *testing.T) 
 			t.Fatalf("a wrong token: %d", got.status)
 		}
 	}
-	blocked := r.idhSend("GET", "/v1/tokens", idhAdminToken, "")
+	blocked := r.idhSend("GET", "/v1/tokens", bad, "")
 	if blocked.status != 429 || blocked.header.Get("Retry-After") != "43" {
 		t.Fatalf("a blocked caller: %d, Retry-After %q: %s", blocked.status, blocked.header.Get("Retry-After"), blocked.body)
 	}
 	idhFits(t, "GET", "/v1/tokens", blocked)
+	if r.limiter.fails["203.0.113.9"] != 2 {
+		t.Fatalf("a refusal while blocked was counted: %v", r.limiter.fails)
+	}
+	if got := r.idhSend("GET", "/v1/tokens", idhAdminToken, ""); got.status != 200 {
+		t.Fatalf("a good token from a blocked address must pass: %d %s", got.status, got.body)
+	}
+	if r.limiter.fails["203.0.113.9"] != 2 {
+		t.Fatalf("a good token changed the failures: %v", r.limiter.fails)
+	}
 	logs := r.logs.String()
 	if !strings.Contains(logs, `"event":"auth_failed"`) || !strings.Contains(logs, `"event":"auth_blocked"`) || !strings.Contains(logs, "203.0.113.9") {
 		t.Fatalf("the refusals must be in the audit log with the address: %s", logs)
@@ -209,17 +218,13 @@ func TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked(t *testing.T) 
 }
 
 // [REQ-314]
-func TestAMissingTokenIsNotCountedAndASuccessIsReported(t *testing.T) {
+func TestAMissingTokenIsNotCounted(t *testing.T) {
 	r := idhNewRig(t, false)
 	for i := 0; i < 5; i++ {
 		r.idhSend("GET", "/v1/roles", "", "")
 	}
 	if len(r.limiter.fails) != 0 {
 		t.Fatalf("a missing token counted: %v", r.limiter.fails)
-	}
-	r.idhSend("GET", "/v1/roles", idhAdminToken, "")
-	if r.limiter.passes != 1 {
-		t.Fatalf("passes = %d", r.limiter.passes)
 	}
 }
 

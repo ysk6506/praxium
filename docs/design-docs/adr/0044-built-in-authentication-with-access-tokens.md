@@ -127,7 +127,9 @@ TLS는 표준 라이브러리(`crypto/tls`)이고 최소 버전은 1.2다. `-beh
 - 개발 서버(`Directory`가 없다)는 관리 경로에 `not_found.resource`를 답한다.
 - 명령줄은 오프라인 명령 `admin bootstrap`, `admin issue-token`과 서버를 부르는 `whoami`, `admin user|account|token list|create|disable|revoke`이다. CLI의 출력과 오류는 영어이고 `--token` 대신 환경 변수나 설정 파일을 권한다.
 
-**9. 감사 로그와 속도 제한.** 구조화 로그에 `audit: true`, `event`, `actor`를 단다: `bootstrap`, `bootstrap_refused`, `principal_created`, `principal_disabled`, `token_issued`, `token_revoked`, `auth_failed`, `auth_blocked`. 실패한 인증은 이유(`token_invalid`, `token_expired`, `access_token_revoked`, `access_subject_disabled`), 호출자의 주소, 경로, 추적 ID를 남기고 **제시된 토큰은 남기지 않는다**. 같은 주소(IPv6는 /64)가 연속으로 10번 토큰을 거절당하면 5분 동안 429(`rate_limited.requests`)와 `Retry-After`로 막는다. 헤더가 없는 요청은 세지 않고, 성공해도 이미 걸린 차단은 풀리지 않으며, 추적하는 주소는 최대 1만 개이다.
+**9. 감사 로그와 속도 제한.** 구조화 로그에 `audit: true`, `event`, `actor`를 단다: `bootstrap`, `bootstrap_refused`, `principal_created`, `principal_disabled`, `token_issued`, `token_revoked`, `auth_failed`, `auth_blocked`. 실패한 인증은 이유(`token_invalid`, `token_expired`, `access_token_revoked`, `access_subject_disabled`), 호출자의 주소, 경로, 추적 ID를 남기고 **제시된 토큰은 남기지 않는다**. 같은 주소(IPv6는 /64)에서 거절된 토큰이 10분 안에 10번 쌓이면 그 주소를 5분 동안 "차단 중"으로 표시한다. **토큰을 먼저 확인한다.** 유효한 토큰은 차단 중인 주소에서도 통과한다. 거절된 토큰이 차단 중인 주소에서 오면 429(`rate_limited.requests`)와 `Retry-After`로 답하고, 실패를 더 세지 않으며 차단 시간을 늘리지 않고 감사 로그도 쓰지 않는다. 차단이 시작될 때 `auth_blocked`를 한 번 쓴다. 성공은 실패 횟수를 지우지 않고 기록은 시간 창이 지나면 사라진다. 헤더가 없는 요청과 저장소 장애(503)는 세지 않고, 추적하는 주소는 최대 1만 개이다. 포트(`FailureLimiter`)는 `Blocked`와 `Failed` 둘이다.
+
+이유: 조직에서는 수백 명이 프록시나 NAT 주소 하나로 들어오므로, 만료된 토큰을 쓰는 스크립트 하나가 그 주소의 모든 사람을 막으면 스스로 서비스를 막는 구조가 된다. 이 제한이 막으려는 토큰 추측은 비밀이 256비트라 애초에 가능하지 않다. 남은 역할은 거절 로그가 넘치지 않게 하는 것이다.
 
 **10. 부채.** TD-0010을 닫는다. OIDC와 서비스 계정 토큰 교체는 부채가 아니라 후속 범위다.
 
@@ -187,7 +189,7 @@ TLS는 표준 라이브러리(`crypto/tls`)이고 최소 버전은 1.2다. `-beh
 | 토큰의 탈취 | 토큰을 가진 사람이 곧 그 주체다. 만료(최대 365일)와 폐기로 한정한다. 토큰의 ID는 로그와 목록에 있고 비밀은 없다 |
 | 파일을 쓸 수 있는 사람 | `identity.json`이나 데이터베이스에 쓸 수 있는 사람은 자기 해시를 넣어 관리자가 된다. 해시가 있다고 토큰을 만들 수는 없지만 쓰기 권한이 곧 전권이다. 0600과 데이터 폴더의 소유권이 경계다 |
 | 서버 기계의 접근 | `bootstrap`과 `issue-token`을 실행할 수 있으면 전권이다. 의도한 신뢰 경계이다 |
-| 속도 제한 | 프로세스 메모리에 있어 재시작하면 지워지고 서버가 여럿이면 합쳐지지 않는다. 주소는 헤더가 아닌 연결의 주소이거나 `-behind-proxy`의 마지막 `X-Forwarded-For`다. 프록시를 잘못 선언하면 주소를 속일 수 있다 |
+| 속도 제한 | 막는 것은 거절된 토큰의 로그와 반복뿐이고 유효한 토큰은 막지 않는다. 프로세스 메모리에 있어 재시작하면 지워지고 서버가 여럿이면 합쳐지지 않는다. 주소는 헤더가 아닌 연결의 주소이거나 `-behind-proxy`의 마지막 `X-Forwarded-For`다. 프록시를 잘못 선언하면 주소를 속일 수 있다 |
 | 프록시 뒤 | `-behind-proxy`는 프록시와 서버 사이가 안전하다는 운영자의 선언이다. 서버가 그것을 확인하지 않는다 |
 | 멱등 캐시 | 프로세스 메모리이고 재시작하면 지워진다. 토큰 발급의 키는 애초에 재사용되지 않는다 |
 | 저장소의 부하 | 요청마다 저장소를 읽는다. PostgreSQL에서는 요청마다 두 번이다. 캐시는 후속이다 |

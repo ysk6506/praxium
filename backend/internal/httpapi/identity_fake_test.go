@@ -172,9 +172,8 @@ func (d *idhDirectory) RevokeToken(_ context.Context, actor access.Subject, id s
 
 // idhLimiter blocks a key after two refusals and says so in its calls.
 type idhLimiter struct {
-	mu     sync.Mutex
-	fails  map[string]int
-	passes int
+	mu    sync.Mutex
+	fails map[string]int
 }
 
 func (l *idhLimiter) Blocked(key string) (time.Duration, bool) {
@@ -187,7 +186,6 @@ func (l *idhLimiter) Failed(key string) {
 	defer l.mu.Unlock()
 	l.fails[key]++
 }
-func (l *idhLimiter) Succeeded(string) { l.mu.Lock(); l.passes++; l.mu.Unlock() }
 
 const (
 	idhAdminToken  = "idh-admin-secret-not-real"

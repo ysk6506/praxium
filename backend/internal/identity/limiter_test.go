@@ -52,16 +52,10 @@ func TestAKeyThatFailsTooOftenInARowIsBlockedForAWhile(t *testing.T) {
 }
 
 // [REQ-314]
-func TestOnlyFailuresInARowWithinTheWindowCountAndAGoodTokenClearsThem(t *testing.T) {
+func TestOnlyFailuresWithinTheWindowCountAndTheyRunOutByTime(t *testing.T) {
 	l, clock := idtNewLimiter(LimiterConfig{MaxFailures: 3, Window: time.Minute, Lockout: time.Minute})
 	l.Failed("k")
 	l.Failed("k")
-	l.Succeeded("k")
-	l.Failed("k")
-	l.Failed("k")
-	if _, blocked := l.Blocked("k"); blocked {
-		t.Fatal("a good token in between did not clear the count")
-	}
 	idtMove(t, clock, 2*time.Minute)
 	l.Failed("k")
 	if _, blocked := l.Blocked("k"); blocked {
@@ -70,9 +64,12 @@ func TestOnlyFailuresInARowWithinTheWindowCountAndAGoodTokenClearsThem(t *testin
 	for i := 0; i < 3; i++ {
 		l.Failed("blocked")
 	}
-	l.Succeeded("blocked")
 	if _, blocked := l.Blocked("blocked"); !blocked {
-		t.Fatal("a good token lifted a block: a block ends by time alone")
+		t.Fatal("three failures must block")
+	}
+	idtMove(t, clock, 2*time.Minute)
+	if _, blocked := l.Blocked("blocked"); blocked {
+		t.Fatal("a block ends by time alone")
 	}
 }
 

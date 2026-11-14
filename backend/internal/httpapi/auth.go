@@ -50,9 +50,10 @@ func (c *call) satisfies(role string) bool {
 }
 
 // authenticate reads the bearer token and asks the Authenticator. It writes the problem and returns false when the
-// request has no good token. A caller that keeps presenting refused tokens is blocked before its token is looked at
-// (the limiter port, ADR-0044); an authenticator that cannot answer is a 503, never a 401 that would look like a
-// refusal of the token.
+// request has no good token. The token is looked at first: a good one passes even from an address that is blocked,
+// because many people share one address behind a proxy. A refused token from a blocked address is answered 429 and
+// is not counted (the limiter port, ADR-0044); an authenticator that cannot answer is a 503, never a 401 that
+// would look like a refusal of the token.
 func (c *call) authenticate() bool {
 	header := c.r.Header.Get("Authorization")
 	if header == "" {
@@ -60,14 +61,6 @@ func (c *call) authenticate() bool {
 		return false
 	}
 	key := c.clientKey()
-	if c.s.limiter != nil {
-		if wait, blocked := c.s.limiter.Blocked(key); blocked {
-			c.authAudit("auth_blocked", "too many refused tokens")
-			c.w.Header().Set("Retry-After", strconv.Itoa(int(wait/time.Second)+1))
-			c.fail("rate_limited.requests", map[string]any{"retry_after_seconds": int(wait/time.Second) + 1})
-			return false
-		}
-	}
 	scheme, token, _ := strings.Cut(header, " ")
 	token = strings.TrimSpace(token)
 	if !strings.EqualFold(scheme, "Bearer") || token == "" || c.s.authn == nil {
@@ -77,9 +70,6 @@ func (c *call) authenticate() bool {
 	subject, err := c.askAuthenticator(token)
 	switch {
 	case err == nil:
-		if c.s.limiter != nil {
-			c.s.limiter.Succeeded(key)
-		}
 		c.subject, c.authed = subject, true
 		return true
 	case kernel.CodeOf(err) == access.CodeTokenExpired:
@@ -110,11 +100,25 @@ func isRefusal(err error) bool {
 	return false
 }
 
-// refuseToken counts the failure, writes the audit line and answers 401. The line names the reason and the caller's
-// address, never the token that was presented.
+// refuseToken answers a refused token. From an address that is blocked it is a 429 and nothing is counted or logged,
+// so the block does not grow and the log does not fill. Otherwise the failure is counted, the audit line names the
+// reason and the caller's address (never the token that was presented), and the answer is 401; the failure that
+// starts a block is logged once as auth_blocked.
 func (c *call) refuseToken(key, reason, code string) {
-	if c.s.limiter != nil {
-		c.s.limiter.Failed(key)
+	if l := c.s.limiter; l != nil {
+		if wait, blocked := l.Blocked(key); blocked {
+			secs := int(wait/time.Second) + 1
+			c.w.Header().Set("Retry-After", strconv.Itoa(secs))
+			c.fail("rate_limited.requests", map[string]any{"retry_after_seconds": secs})
+			return
+		}
+		l.Failed(key)
+		c.authAudit("auth_failed", reason)
+		if _, blocked := l.Blocked(key); blocked {
+			c.authAudit("auth_blocked", "too many refused tokens")
+		}
+		c.fail(code, nil)
+		return
 	}
 	c.authAudit("auth_failed", reason)
 	c.fail(code, nil)

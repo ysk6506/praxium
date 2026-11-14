@@ -71,7 +71,7 @@ praxium admin issue-token -owner root -store file -store-data-dir /var/lib/praxi
 ## 5. 지켜볼 것
 
 - 로그에서 `audit: true`인 줄이 감사 로그이에요: `bootstrap`, `principal_created`, `token_issued`, `token_revoked`, `auth_failed`, `auth_blocked`. 토큰의 값과 해시는 어디에도 없어요.
-- 같은 주소가 연속으로 10번 거절당하면 5분 동안 429예요. 이 한도는 프로세스 메모리에 있어서 재시작하면 지워져요.
+- 같은 주소에서 거절된 토큰이 10번 쌓이면 5분 동안 그 주소의 거절된 토큰에 429를 줘요. 유효한 토큰은 막히지 않아서 프록시 뒤의 다른 사람에게 영향이 없어요. 이 기록은 프로세스 메모리에 있어서 재시작하면 지워져요.
 - 인증 저장소가 응답하지 못하면 401이 아니라 503이에요. 클라이언트는 토큰을 버리지 말고 다시 시도해요.
 - `identity.json`(또는 `identity_record` 테이블)에 쓸 수 있는 사람은 전권을 가져요. 데이터 폴더의 소유권을 서버 계정으로 한정해요. 다른 사용자가 읽을 수 있는 `identity.json`은 서버가 열기를 거절해요.
 - `praxium demo`와 `praxium local`은 이 절차와 상관없이 그대로예요.

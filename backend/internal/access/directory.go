@@ -105,11 +105,11 @@ type Directory interface {
 }
 
 // FailureLimiter is the port that slows down a caller who keeps presenting tokens that are refused. The key is
-// where the caller comes from. A blocked key is refused before its token is looked at.
+// where the caller comes from. A good token passes from a blocked key; a refused one from a blocked key is answered 429 and not counted.
 type FailureLimiter interface {
 	// Blocked says whether the key may not try now, and for how long.
 	Blocked(key string) (retryAfter time.Duration, blocked bool)
-	// Failed records one refused token; Succeeded forgets the failures of the key.
+	// Failed records one refused token. A good token clears nothing: the failures of others on the same address
+	// stay, and run out with the time window.
 	Failed(key string)
-	Succeeded(key string)
 }
