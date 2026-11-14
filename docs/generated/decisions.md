@@ -29,19 +29,22 @@
 | [ADR-0021 합성 세계 생성기를 core.worldgen 단위로 둔다](../design-docs/adr/0021-synthetic-world-generator.md) | 유효 |  |
 | [ADR-0022 표준 모델을 영향 범위에 맞게 보강한다](../design-docs/adr/0022-standard-model-fitted-to-impact-scope.md) | 유효 |  |
 | [ADR-0023 하네스가 Go 테스트를 잠그고 요구사항에 잇는다](../design-docs/adr/0023-harness-locks-go-tests-and-links-them-to-requirements.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (Go 테스트 규칙의 이식과 잠금의 지문 범위) |
-| [ADR-0024 REST 계약이 기계가 지키는 문서가 된다](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (`core.kernel`이 `os`를 import하는 범위) |
+| [ADR-0024 REST 계약이 기계가 지키는 문서가 된다](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (`core.kernel`이 `os`를 import하는 범위), [0044](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) (운영 모드는 늘 시작을 거부하고 인증은 개발용 인증기뿐이라는 결과) |
 | [ADR-0025 KG를 변경 시퀀스 위에 구성한다 — 스토리지 포트와 기준 구현](../design-docs/adr/0025-kg-stands-on-a-sequence-of-changes-storage-port-and-reference-implementation.md) | 유효 | 일부 수정: [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (적합성 테스트 유닛이 기준 구현을 import하는 범위) |
 | [ADR-0026 사전 정의 질의의 첫 3개가 기준 구현이 된다](../design-docs/adr/0026-closed-queries-first-three-stand-as-the-reference.md) | 유효 |  |
-| [ADR-0027 KG를 API와 명령줄로 읽는다](../design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md) | 유효 |  |
+| [ADR-0027 KG를 API와 명령줄로 읽는다](../design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md) | 유효 | 일부 수정: [0044](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) (운영 모드가 실제 인증기를 기다린다는 배선) |
 | [ADR-0028 감사에서 나온 검사의 허점을 보완한다](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) | 유효 |  |
 | [ADR-0029 문서와 화면의 문구를 표준 용어로 통일하고, 옛 표기가 다시 쓰이지 않게 검사한다](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) | 유효 | 일부 수정: [0030](../design-docs/adr/0030-document-term-check-fails-on-old-spellings.md) (문서 용어 검사의 모드를 보고에서 실패로 전환한다) |
 | [ADR-0030 문서 용어 검사를 실패 모드로 전환한다 — 정비를 마쳤으므로 옛 표기가 다시 쓰이면 병합할 수 없다](../design-docs/adr/0030-document-term-check-fails-on-old-spellings.md) | 유효 |  |
 | [ADR-0031 Go 툴체인을 지원 중인 버전으로 올리고, 지원이 끝나기 전에 올린다](../design-docs/adr/0031-go-toolchain-on-a-supported-version.md) | 유효 |  |
 | [ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다 — 드라이버 lib/pq, 직접 만든 마이그레이션 실행기, 진짜 서버로 하는 테스트](../design-docs/adr/0032-postgresql-adapter-closes-the-storage-port-and-td-0011.md) | 유효 |  |
-| [ADR-0033 파일 소스 하나를 KG까지 적재하는 수집의 최소 구현](../design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md) | 유효 |  |
+| [ADR-0033 파일 소스 하나를 KG까지 적재하는 수집의 최소 구현](../design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md) | 유효 | 일부 수정: [0041](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) (ingest run의 스토리지가 명령이 도는 동안만 있다는 결과) |
 | [ADR-0034 내장 파일 스토어 — 추가 전용 로그와 스냅샷으로 PostgreSQL 없이 KG를 저장한다](../design-docs/adr/0034-built-in-file-store-for-the-first-run.md) | 유효 |  |
 | [ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) | 유효 |  |
 | [ADR-0036 임시 디렉터리는 만든 쪽이 지운다](../design-docs/adr/0036-whoever-makes-a-temporary-directory-removes-it.md) | 유효 |  |
-| [ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다](../design-docs/adr/0038-demo-mode-as-a-supported-feature.md) | 유효 |  |
+| [ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다](../design-docs/adr/0038-demo-mode-as-a-supported-feature.md) | 유효 | 일부 수정: [0042](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) (5번과 6번의 접속 링크 처리(첫 로드에서만 받던 것을 실행 중에도 받고, 로컬 모드 링크와 접속 표시를 더함)) |
 | [ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다](../design-docs/adr/0039-release-build-for-five-targets-with-a-reproducible-program.md) | 유효 |  |
-| [ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령](../design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md) | 유효 |  |
+| [ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령](../design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md) | 유효 | 일부 수정: [0041](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) (테스트용 워크북 작성기를 제품이 부르지 않는다는 문장) |
+| [ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) | 유효 |  |
+| [ADR-0042 웹 UI의 접속 방식 표시, URL에 담는 상태, 오류 표시, 표시 이름 사전](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) | 유효 |  |
+| [ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) | 유효 |  |

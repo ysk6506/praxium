@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "303098a5308533e2"
+hash: "25245287e1fe48b9"
 date: "2026-11-14"
-note: "ADR-0040: checked; stays accurate"
-text_changed: false
-doc_hash: "ecf4125be6eb6f58"
+note: "내장 인증(ADR-0044): 새 유닛 3개, 요구사항 REQ-307~314, 계획의 경로 수를 확인했고 이 문서의 내용과 어긋나지 않는다"
+text_changed: true
+doc_hash: "3efe1723bcb52fa0"

@@ -28,7 +28,7 @@ covers:
 
 ### 설계
 
-- [권한 설계 — 사내 SSO, 역할 8종, 범위, 읽기와 가림, 승인, 감사](design-docs/access-control.md)
+- [권한 설계 — 내장 인증과 SSO, 역할 8종, 범위, 읽기와 가림, 승인, 감사](design-docs/access-control.md)
 - [ADR 작성 절차](design-docs/adr-process.md)
 - [역량 질문의 예시 — 패턴으로 끝까지 작성한 가상의 질문](design-docs/competency-examples.md)
 - [역량 질문과 충족률 — KG가 답해야 하는 질문을 정의로 적고 객체별로 평가한다](design-docs/competency-questions.md)
@@ -66,6 +66,11 @@ covers:
 - [표준 모델의 요약 — 9개 층의 타입, 링크, 액션](design-docs/standard-model.md)
 - [임시 콘솔 — 클로즈드 베타까지 기능을 눌러 보는, 삭제 쉬운 테스트용 화면](design-docs/temporary-console.md)
 - [합성 세계 생성기 — 같은 시드이면 같은 데이터센터, 정답과 소스 보기와 변경 스트림과 분포 프로파일](design-docs/worldgen.md)
+
+### 안내
+
+- [서버 운영하기 — 첫 관리자, 사용자와 토큰, 운영 모드의 시작 조건](guides/operate-the-server.md)
+- [릴리스 만들기 — 태그를 푸시하면 다섯 대상의 실행 파일이 GitHub 릴리스로 나가요](guides/release.md)
 
 ### 계획
 
