@@ -9,8 +9,10 @@ import {
   type TypeEntry,
   type TypeSortKey,
   type TypesView,
+  titleOf,
   typesViewParams,
   useHashParams,
+  useScreenTitle,
   useTypeCatalog,
 } from "../data";
 import {
@@ -107,6 +109,7 @@ function TypesTable(props: {
 /** The object types of the model with how many objects the chosen KG holds of each. */
 export function TypesScreen({ kg }: { readonly kg: string }) {
   const catalog = useTypeCatalog(kg);
+  useScreenTitle(titleOf("객체 타입", kg));
   const { params, set } = useHashParams();
   const query = params.toString();
   const view = useMemo(() => readTypesView(new URLSearchParams(query)), [query]);
@@ -137,10 +140,13 @@ export function TypesScreen({ kg }: { readonly kg: string }) {
       >
         {(types) => (
           <>
-            <div className="mb-3 flex flex-wrap items-end gap-4">
+            <search className="mb-3 flex flex-wrap items-end gap-4">
               <div className="w-72">
                 <TextField
                   label="타입 검색"
+                  type="search"
+                  spellCheck={false}
+                  autoComplete="off"
                   value={view.text}
                   onChange={(e) => update({ ...view, text: e.target.value })}
                   placeholder="이름이나 설명"
@@ -160,7 +166,7 @@ export function TypesScreen({ kg }: { readonly kg: string }) {
                   shown.length,
                 )}
               </span>
-            </div>
+            </search>
             <TypesTable kg={kg} view={view} shown={shown} update={update} />
           </>
         )}

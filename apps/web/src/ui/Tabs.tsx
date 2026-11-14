@@ -27,7 +27,7 @@ export function Tabs<V extends string>({ value, onChange, items }: TabsProps<V>)
           <BaseTabs.Tab
             key={item.value}
             value={item.value}
-            className="-mb-px cursor-pointer border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted hover:text-fg data-[active]:border-accent data-[active]:text-fg"
+            className="-mb-px cursor-pointer border-b-2 border-transparent px-3 py-2 text-sm font-medium text-muted hover:text-fg data-[active]:border-accent data-[active]:text-fg forced-colors:data-[active]:underline"
           >
             {item.label}
           </BaseTabs.Tab>

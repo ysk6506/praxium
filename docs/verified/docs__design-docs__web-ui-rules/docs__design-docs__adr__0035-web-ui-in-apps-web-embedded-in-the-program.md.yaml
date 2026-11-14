@@ -1,0 +1,7 @@
+doc: "docs/design-docs/web-ui-rules.md"
+target: "docs/design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md"
+hash: "e01ddabc80ee82e2"
+date: "2026-11-14"
+note: "화면의 모양이 임시라는 문장만 추가"
+text_changed: true
+doc_hash: "72b063c70517bdb5"

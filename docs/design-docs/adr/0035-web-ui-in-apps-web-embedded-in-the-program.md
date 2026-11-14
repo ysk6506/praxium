@@ -58,6 +58,9 @@ amends:
   - adr: "0016"
     what: 9번 임시 콘솔의 위치, 빌드, 제공 방식(빌드 없는 정적 파일과 기본 꺼짐을 apps/web의 빌드와 실행 파일에 포함으로)
 decision_hash: e01ddabc80ee82e2
+amended_by:
+  - adr: "0045"
+    what: 6번 검사 표(WEB040~WEB045를 더함)와 2번의 응답 헤더(CSP 항목과 두 헤더를 더함)
 ---
 # ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다
 

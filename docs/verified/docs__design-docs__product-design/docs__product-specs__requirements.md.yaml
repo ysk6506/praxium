@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "f4db93647209e27f"
+hash: "eb83c583b1c17b3a"
 date: "2026-11-14"
-note: "병합 후 요구사항을 다시 읽었다. REQ-300부터 306이 REQ-299와 REQ-320 사이에 들어갔고 제품 설계 개요와 어긋나지 않는다"
+note: "ADR-0045 병합 후 요구사항을 다시 읽었다. REQ-300부터 306과 다른 요구가 겹치지 않고 개요와 어긋나지 않는다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

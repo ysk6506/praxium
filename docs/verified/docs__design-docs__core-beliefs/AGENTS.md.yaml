@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "90622b576fe2fc7a"
+hash: "62a1491d8bea5d16"
 date: "2026-11-14"
-note: "main 병합 후 AGENTS.md를 다시 읽었다. query impact 실행 예 한 줄이 늘었을 뿐 신념과 줄 수 한도(120)에 영향이 없다"
+note: "병합 후 AGENTS.md를 다시 읽었다. query impact 예 한 줄이 늘었을 뿐 신념과 줄 수 한도에 영향이 없다"
 text_changed: false
 doc_hash: "04b2f4f490642c38"
