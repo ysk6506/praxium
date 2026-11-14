@@ -1,6 +1,2997 @@
 {
  "version": 1,
  "entries": {
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > answers undefined to a 204 and a 304": {
+   "kind": "test",
+   "hash": "998b75b52d7828f6",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/x\"",
+    "\"/v1/x\"",
+    "\"204\"",
+    "\"304\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"answers undefined to a 204 and a 304\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > appends the query to a base URL without doubling the slash": {
+   "kind": "test",
+   "hash": "c44aae515ceaf090",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/kgs\"",
+    "\"/v1/kgs\"",
+    "\"2\"",
+    "\"2\"",
+    "\"GET\"",
+    "\"GET\"",
+    "\"appends the query to a base URL without doubling the slash\"",
+    "\"http://host/\"",
+    "\"http://host/\"",
+    "\"http://host/v1/kgs?limit=2\"",
+    "\"http://host/v1/kgs?limit=2\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > fills and escapes path parameters": {
+   "kind": "test",
+   "hash": "606b841b88f157ce",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"/v1/kgs/main/objects/a%2Fb%20c\"",
+    "\"/v1/kgs/main/objects/a%2Fb%20c\"",
+    "\"/v1/kgs/{kg}/objects/{id}\"",
+    "\"GET\"",
+    "\"a/b c\"",
+    "\"fills and escapes path parameters\"",
+    "\"main\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > joins arrays with commas and writes objects in the deepObject style, leaving out what is not set": {
+   "kind": "test",
+   "hash": "bd02b6cedf4712c0",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"5\"",
+    "\"5\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"joins arrays with commas and writes objects in the deepObject style, leaving out what is not set\"",
+    "\"limit=5&include=a,b&filter[name][equals]=x%20y&filter[role][in]=p,q&flag=true\"",
+    "\"limit=5&include=a,b&filter[name][equals]=x%20y&filter[role][in]=p,q&flag=true\"",
+    "\"p\"",
+    "\"p\"",
+    "\"q\"",
+    "\"q\"",
+    "\"x y\"",
+    "\"x y\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > sends no credentials without a token": {
+   "kind": "test",
+   "hash": "574e151765cb12ae",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/x\"",
+    "\"0\"",
+    "\"0\"",
+    "\"GET\"",
+    "\"sends no credentials without a token\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > sends the token as a bearer header and a body as JSON": {
+   "kind": "test",
+   "hash": "2bf25925a70ff2a8",
+   "asserts": 5,
+   "literals": [
+    "\"/v1/x\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"Bearer t0ken\"",
+    "\"Bearer t0ken\"",
+    "\"Content-Type\"",
+    "\"Content-Type\"",
+    "\"POST\"",
+    "\"application/json\"",
+    "\"application/json\"",
+    "\"application/json\"",
+    "\"application/json\"",
+    "\"sends the token as a bearer header and a body as JSON\"",
+    "\"t0ken\"",
+    "\"{\\\"a\\\":1}\"",
+    "\"{\\\"a\\\":1}\"",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client turns every failure into an ApiError > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client turns every failure into an ApiError > lets an abort through as it is": {
+   "kind": "test",
+   "hash": "6b9279f0eb169a71",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/x\"",
+    "\"AbortError\"",
+    "\"GET\"",
+    "\"aborted\"",
+    "\"lets an abort through as it is\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client turns every failure into an ApiError > names a request that never reached the API": {
+   "kind": "test",
+   "hash": "35164dadb285b915",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/x\"",
+    "\"0\"",
+    "\"0\"",
+    "\"GET\"",
+    "\"failed to fetch\"",
+    "\"names a request that never reached the API\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client turns every failure into an ApiError > names a success whose body is not JSON": {
+   "kind": "test",
+   "hash": "f8cb05a7767b68bc",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/x\"",
+    "\"200\"",
+    "\"GET\"",
+    "\"names a success whose body is not JSON\"",
+    "\"plain\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client turns every failure into an ApiError > names an answer that is not a problem": {
+   "kind": "test",
+   "hash": "62daf043b77923c3",
+   "asserts": 1,
+   "literals": [
+    "\"/v1/x\"",
+    "\"502\"",
+    "\"502\"",
+    "\"502\"",
+    "\"<html>bad gateway</html>\"",
+    "\"Bad Gateway\"",
+    "\"Bad Gateway\"",
+    "\"Bad Gateway\"",
+    "\"GET\"",
+    "\"names an answer that is not a problem\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::[REQ-278] the client turns every failure into an ApiError > reads a problem answer": {
+   "kind": "test",
+   "hash": "f784979d7208eb44",
+   "asserts": 4,
+   "literals": [
+    "\"/a\"",
+    "\"/v1/problems/auth.token_missing\"",
+    "\"/v1/x\"",
+    "\"1\"",
+    "\"1\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"401\"",
+    "\"GET\"",
+    "\"Unauthorized\"",
+    "\"Unauthorized\"",
+    "\"Unauthorized\"",
+    "\"application/problem+json\"",
+    "\"auth.token_missing\"",
+    "\"auth.token_missing\"",
+    "\"auth.token_missing\"",
+    "\"invalid_input.field\"",
+    "\"none\"",
+    "\"none\"",
+    "\"none\"",
+    "\"reads a problem answer\"",
+    "\"tr-1\"",
+    "\"tr-1\"",
+    "\"tr-1\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::<import:dbcbc195>": {
+   "kind": "support",
+   "hash": "dbcbc195e9456d7c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::=fakeFetch": {
+   "kind": "support",
+   "hash": "ece47bf350b7cd7d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::=json": {
+   "kind": "support",
+   "hash": "c717f09b8b14037a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::=Seen": {
+   "kind": "support",
+   "hash": "e7b8b8a6b1273c80",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::[REQ-276] the generated functions are the operations of the contract > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::[REQ-276] the generated functions are the operations of the contract > has one function for every operation in the table and none besides": {
+   "kind": "test",
+   "hash": "b1b9ce59d6162da4",
+   "asserts": 1,
+   "literals": [
+    "\"has one function for every operation in the table and none besides\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::[REQ-276] the generated functions are the operations of the contract > marks every read of the contract as safe and names a role for it": {
+   "kind": "test",
+   "hash": "c330b8c430caa721",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"GET\"",
+    "\"marks every read of the contract as safe and names a role for it\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::[REQ-276] the generated functions are the operations of the contract > sends each operation to its method and path": {
+   "kind": "test",
+   "hash": "5cceb673a8601c64",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"sends each operation to its method and path\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::<import:4b162d64>": {
+   "kind": "support",
+   "hash": "4b162d647e20f174",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::<import:66260af5>": {
+   "kind": "support",
+   "hash": "66260af51f925048",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::<import:ae457cec>": {
+   "kind": "support",
+   "hash": "ae457cecf78a45a9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::=AnyOperation": {
+   "kind": "support",
+   "hash": "c66f2bb2ddbd4e75",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::=functions": {
+   "kind": "support",
+   "hash": "1f7090422c8a18df",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] a generated file says which contract it came from > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] a generated file says which contract it came from > does not read a file that has no header": {
+   "kind": "test",
+   "hash": "fecafca1fe0ea11e",
+   "asserts": 2,
+   "literals": [
+    "\"// a\\n// b\\n// contract-sha256: xyz\\n// body-sha256: xyz\\n\\nbody\"",
+    "\"// a\\n// b\\n// contract-sha256: xyz\\n// body-sha256: xyz\\n\\nbody\"",
+    "\"does not read a file that has no header\"",
+    "\"export type A = string;\\n\"",
+    "\"export type A = string;\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] a generated file says which contract it came from > reads back the hashes and the body it was written with": {
+   "kind": "test",
+   "hash": "5bcb8398280208ac",
+   "asserts": 3,
+   "literals": [
+    "\"64\"",
+    "\"64\"",
+    "\"64\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"export type A = string;\\n\"",
+    "\"export type A = string;\\n\"",
+    "\"export type A = string;\\n\"",
+    "\"export type A = string;\\n\"",
+    "\"export type A = string;\\n\"",
+    "\"reads back the hashes and the body it was written with\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > answers void for an operation without a JSON answer": {
+   "kind": "test",
+   "hash": "8715c2f2635525d0",
+   "asserts": 1,
+   "literals": [
+    "\"): Promise<void> =>\"",
+    "\"): Promise<void> =>\"",
+    "\"answers void for an operation without a JSON answer\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > gives the same text for the same document": {
+   "kind": "test",
+   "hash": "499d78e34d666ec2",
+   "asserts": 1,
+   "literals": [
+    "\"gives the same text for the same document\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > imports only the schemas it uses and follows a response reference": {
+   "kind": "test",
+   "hash": "1a4206acbb42a8e0",
+   "asserts": 3,
+   "literals": [
+    "\"export const listThings = (client: Requester): Promise<Array<Thing>> =>\"",
+    "\"export const listThings = (client: Requester): Promise<Array<Thing>> =>\"",
+    "\"export const makeThing = (client: Requester, args: MakeThingArgs): Promise<void> =>\"",
+    "\"export const makeThing = (client: Requester, args: MakeThingArgs): Promise<void> =>\"",
+    "\"import type { Thing, ThingInput } from \\\"./types\\\";\"",
+    "\"import type { Thing, ThingInput } from \\\"./types\\\";\"",
+    "\"imports only the schemas it uses and follows a response reference\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > lists the operations sorted by id, with their method and path": {
+   "kind": "test",
+   "hash": "dd6326084e1ed4be",
+   "asserts": 1,
+   "literals": [
+    "\"GET /v1/things listThings\"",
+    "\"GET /v1/things listThings\"",
+    "\"GET /v1/things/{id} getThing\"",
+    "\"GET /v1/things/{id} getThing\"",
+    "\"POST /v1/things makeThing\"",
+    "\"POST /v1/things makeThing\"",
+    "\"lists the operations sorted by id, with their method and path\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > makes arguments optional when nothing in them is required": {
+   "kind": "test",
+   "hash": "ccb28cd690f15caa",
+   "asserts": 2,
+   "literals": [
+    "\"/v1/x\"",
+    "\"args: ListXArgs = {}\"",
+    "\"args: ListXArgs = {}\"",
+    "\"import type {  }\"",
+    "\"import type {  }\"",
+    "\"integer\"",
+    "\"limit\"",
+    "\"listX\"",
+    "\"makes arguments optional when nothing in them is required\"",
+    "\"query\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > writes a table with the method, path, safety and roles of every operation": {
+   "kind": "test",
+   "hash": "3e32d33acf4923da",
+   "asserts": 2,
+   "literals": [
+    "\"getThing: { method: \\\"GET\\\", path: \\\"/v1/things/{id}\\\", safe: true, roles: [\\\"read\\\"] },\"",
+    "\"getThing: { method: \\\"GET\\\", path: \\\"/v1/things/{id}\\\", safe: true, roles: [\\\"read\\\"] },\"",
+    "\"makeThing: { method: \\\"POST\\\", path: \\\"/v1/things\\\", safe: false, roles: [] },\"",
+    "\"makeThing: { method: \\\"POST\\\", path: \\\"/v1/things\\\", safe: false, roles: [] },\"",
+    "\"writes a table with the method, path, safety and roles of every operation\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > writes path, query and body into the arguments and keeps header parameters out": {
+   "kind": "test",
+   "hash": "d681ad5991968cb9",
+   "asserts": 7,
+   "literals": [
+    "\"If-None-Match\"",
+    "\"If-None-Match\"",
+    "\"client.request<Thing>({ method: \\\"GET\\\", path: \\\"/v1/things/{id}\\\", pathParams: args.path, query: args.query });\"",
+    "\"client.request<Thing>({ method: \\\"GET\\\", path: \\\"/v1/things/{id}\\\", pathParams: args.path, query: args.query });\"",
+    "\"export const getThing = (client: Requester, args: GetThingArgs): Promise<Thing> =>\"",
+    "\"export const getThing = (client: Requester, args: GetThingArgs): Promise<Thing> =>\"",
+    "\"export interface GetThingArgs {\"",
+    "\"export interface GetThingArgs {\"",
+    "\"export interface MakeThingArgs { body: ThingInput; }\"",
+    "\"export interface MakeThingArgs { body: ThingInput; }\"",
+    "\"path: { id: string; };\"",
+    "\"path: { id: string; };\"",
+    "\"query?: { limit?: number; filter?: QueryObject; };\"",
+    "\"query?: { limit?: number; filter?: QueryObject; };\"",
+    "\"writes path, query and body into the arguments and keeps header parameters out\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > keeps a description from ending its own comment": {
+   "kind": "test",
+   "hash": "9af208e374dc56ab",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"/** One thing. It ends * / here. */\"",
+    "\"/** One thing. It ends * / here. */\"",
+    "\"keeps a description from ending its own comment\"",
+    "\"types-01.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > quotes names that are not identifiers and leaves the rest bare": {
+   "kind": "test",
+   "hash": "ff705a406b713e18",
+   "asserts": 2,
+   "literals": [
+    "\"\\\"odd-name\\\"\"",
+    "\"\\\"odd-name\\\"\"",
+    "\"name\"",
+    "\"name\"",
+    "\"name\"",
+    "\"name\"",
+    "\"odd-name\"",
+    "\"odd-name\"",
+    "\"quotes names that are not identifiers and leaves the rest bare\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > splits many schemas over files, imports across them and re-exports every name from types.ts": {
+   "kind": "test",
+   "hash": "dde703ae5547976b",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"30\"",
+    "\"30\"",
+    "\"S29\"",
+    "\"S29\"",
+    "\"import type { S00 } from \\\"./types-01\\\";\"",
+    "\"import type { S00 } from \\\"./types-01\\\";\"",
+    "\"import type { S24 } from \\\"./types-02\\\";\"",
+    "\"import type { S24 } from \\\"./types-02\\\";\"",
+    "\"object\"",
+    "\"splits many schemas over files, imports across them and re-exports every name from types.ts\"",
+    "\"types-01.ts\"",
+    "\"types-01.ts\"",
+    "\"types-01.ts\"",
+    "\"types-01.ts\"",
+    "\"types-02.ts\"",
+    "\"types-02.ts\"",
+    "\"types-02.ts\"",
+    "\"types-02.ts\"",
+    "\"types.ts\"",
+    "\"types.ts\"",
+    "\"types.ts\"",
+    "\"types.ts\"",
+    "\"types.ts\"",
+    "\"types.ts\"",
+    "\"} from \\\"./types-02\\\";\"",
+    "\"} from \\\"./types-02\\\";\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > types what it cannot read as unknown, and a const as its literal": {
+   "kind": "test",
+   "hash": "f82d4bb32309318c",
+   "asserts": 6,
+   "literals": [
+    "\"Array<unknown>\"",
+    "\"Array<unknown>\"",
+    "\"\\\"x\\\"\"",
+    "\"\\\"x\\\"\"",
+    "\"array\"",
+    "\"array\"",
+    "\"mystery\"",
+    "\"mystery\"",
+    "\"never\"",
+    "\"never\"",
+    "\"string\"",
+    "\"string\"",
+    "\"types what it cannot read as unknown, and a const as its literal\"",
+    "\"unknown\"",
+    "\"unknown\"",
+    "\"unknown\"",
+    "\"unknown\"",
+    "\"x\"",
+    "\"x\"",
+    "\"{ a?: string; }\"",
+    "\"{ a?: string; }\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > writes aliases for compositions and free-form objects": {
+   "kind": "test",
+   "hash": "acd137e42ce4cd47",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"export type Either = string | Thing;\"",
+    "\"export type Either = string | Thing;\"",
+    "\"export type Free = Record<string, unknown>;\"",
+    "\"export type Free = Record<string, unknown>;\"",
+    "\"export type ThingInput = (Thing) & ({ note?: string; });\"",
+    "\"export type ThingInput = (Thing) & ({ note?: string; });\"",
+    "\"types-01.ts\"",
+    "\"writes aliases for compositions and free-form objects\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > writes an interface for an object with properties, optional unless required": {
+   "kind": "test",
+   "hash": "bf73dbf84d5ad80e",
+   "asserts": 7,
+   "literals": [
+    "\"\"",
+    "\"\\\"odd-name\\\"?: boolean;\"",
+    "\"\\\"odd-name\\\"?: boolean;\"",
+    "\"export interface Thing {\"",
+    "\"export interface Thing {\"",
+    "\"extra?: Record<string, number>;\"",
+    "\"extra?: Record<string, number>;\"",
+    "\"id: string;\"",
+    "\"id: string;\"",
+    "\"kind?: \\\"a\\\" | \\\"b\\\";\"",
+    "\"kind?: \\\"a\\\" | \\\"b\\\";\"",
+    "\"size?: number | null;\"",
+    "\"size?: number | null;\"",
+    "\"tags?: Array<string>;\"",
+    "\"tags?: Array<string>;\"",
+    "\"types-01.ts\"",
+    "\"writes an interface for an object with properties, optional unless required\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::<import:5f5d4b66>": {
+   "kind": "support",
+   "hash": "5f5d4b66efe0a723",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::<import:b3edef7c>": {
+   "kind": "support",
+   "hash": "b3edef7c2c198c27",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::<import:c6b9cedb>": {
+   "kind": "support",
+   "hash": "c6b9cedb2e085a92",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::<import:cab4f9b2>": {
+   "kind": "support",
+   "hash": "cab4f9b23743a052",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::=doc": {
+   "kind": "support",
+   "hash": "1edd4da3cc2d8a99",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator.test.ts::=fakeSha": {
+   "kind": "support",
+   "hash": "34a7585a77706a56",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > is a demo only while the saved token is the one that came in by the demo address": {
+   "kind": "test",
+   "hash": "46c685d059350c20",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"another-token-0001\"",
+    "\"another-token-0001\"",
+    "\"demo-token-0000001\"",
+    "\"demo-token-0000001\"",
+    "\"demo-token-0000001\"",
+    "\"is a demo only while the saved token is the one that came in by the demo address\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > keeps the mark in memory when the browser gives no storage": {
+   "kind": "test",
+   "hash": "56e6203fc501e478",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"#/connect?token=memory-token-0003&demo=1\"",
+    "\"/\"",
+    "\"keeps the mark in memory when the browser gives no storage\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > reads the token and the demo flag from the fragment, and nothing from any other address": {
+   "kind": "test",
+   "hash": "2f0e73f5e221964f",
+   "asserts": 6,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/connect\"",
+    "\"#/connect\"",
+    "\"#/connect?token=\"",
+    "\"#/connect?token=\"",
+    "\"#/connect?token=%20abc123%20\"",
+    "\"#/connect?token=%20abc123%20\"",
+    "\"#/connect?token=abc123&demo=1\"",
+    "\"#/connect?token=abc123&demo=1\"",
+    "\"#/kgs?token=abc123\"",
+    "\"#/kgs?token=abc123\"",
+    "\"abc123\"",
+    "\"abc123\"",
+    "\"abc123\"",
+    "\"abc123\"",
+    "\"reads the token and the demo flag from the fragment, and nothing from any other address\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > saves the token, marks the demo and replaces the address with the KG screen": {
+   "kind": "test",
+   "hash": "178b7fc53460e90f",
+   "asserts": 6,
+   "literals": [
+    "\"\"",
+    "\"#/connect?token=secret-token-0001&demo=1\"",
+    "\"/\"",
+    "\"saves the token, marks the demo and replaces the address with the KG screen\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "\"secret-token-0001\"",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > takes a token without the demo flag as no demo, and leaves other addresses alone": {
+   "kind": "test",
+   "hash": "52deb54a014e3c9e",
+   "asserts": 5,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/connect?token=plain-token-0002\"",
+    "\"#/connect?token=plain-token-0002\"",
+    "\"#/kgs\"",
+    "\"#/kgs\"",
+    "\"/\"",
+    "\"/\"",
+    "\"/\"",
+    "\"/\"",
+    "\"/?a=1#/kgs\"",
+    "\"/?a=1#/kgs\"",
+    "\"1\"",
+    "\"1\"",
+    "\"?a=1\"",
+    "\"?a=1\"",
+    "\"old-token-xxxxxxxxx\"",
+    "\"takes a token without the demo flag as no demo, and leaves other addresses alone\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > tells a component about the demo and stops when the token is replaced or deleted": {
+   "kind": "test",
+   "hash": "e78df3f1e5741af7",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"#/connect?token=hook-token-0004&demo=1\"",
+    "\"/\"",
+    "\"tells a component about the demo and stops when the token is replaced or deleted\"",
+    "\"typed-token-0005\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "4fdef9ee37802613",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:1eda311a>": {
+   "kind": "support",
+   "hash": "1eda311aa7b1f70c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:90ab63fc>": {
+   "kind": "support",
+   "hash": "90ab63fce7b7c50d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:a5465db4>": {
+   "kind": "support",
+   "hash": "a5465db420b71da0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:b919bd80>": {
+   "kind": "support",
+   "hash": "b919bd80f32fd4ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=failing": {
+   "kind": "support",
+   "hash": "db81338e1137eec6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=MemoryStorage": {
+   "kind": "support",
+   "hash": "a1cbdcff0b1116fd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=recordingHistory": {
+   "kind": "support",
+   "hash": "dea8645eadac0afe",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > drops the answer of a read that was replaced, and does not read when disabled": {
+   "kind": "test",
+   "hash": "e4fcced318520ed3",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"GET /v1/kgs\"",
+    "\"drops the answer of a read that was replaced, and does not read when disabled\"",
+    "\"loading\"",
+    "\"loading\"",
+    "\"x\"",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > fails with a view of the error and keeps the old data while it reads again": {
+   "kind": "test",
+   "hash": "6c946617903403e8",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"401\"",
+    "\"GET /v1/kgs\"",
+    "\"auth\"",
+    "\"auth\"",
+    "\"auth.token_invalid\"",
+    "\"error\"",
+    "\"error\"",
+    "\"error\"",
+    "\"fails with a view of the error and keeps the old data while it reads again\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > goes from loading to ready and sends the token": {
+   "kind": "test",
+   "hash": "331b3b5edb5c9c74",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"Bearer tok-1\"",
+    "\"Bearer tok-1\"",
+    "\"GET /v1/kgs\"",
+    "\"dev\"",
+    "\"dev\"",
+    "\"dev\"",
+    "\"goes from loading to ready and sends the token\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"tok-1\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > =found": {
+   "kind": "support",
+   "hash": "7e212db00d5aa357",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > =withMeta": {
+   "kind": "support",
+   "hash": "c29dc5d3f50c6247",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > joins types with counts and reads one type in full": {
+   "kind": "test",
+   "hash": "a61dfeb6f4588807",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"/v1/object-types/Rack\"",
+    "\"/v1/object-types/Rack\"",
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"?include=effective_properties\"",
+    "\"?include=effective_properties\"",
+    "\"GET /v1/object-types\"",
+    "\"GET /v1/object-types/Rack\"",
+    "\"POST /v1/kgs/main/queries:find\"",
+    "\"Rack\"",
+    "\"Rack\"",
+    "\"Rack\"",
+    "\"Rack\"",
+    "\"Rack\"",
+    "\"core\"",
+    "\"facility\"",
+    "\"joins types with counts and reads one type in full\"",
+    "\"main\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"ready\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > keeps the pager's state between renders": {
+   "kind": "test",
+   "hash": "c858c7cbdf4dbe64",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"50\"",
+    "\"50\"",
+    "\"50\"",
+    "\"c2\"",
+    "\"c2\"",
+    "\"c2\"",
+    "\"keeps the pager's state between renders\"",
+    "\"react\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > reads a page and then the attributes of each of its rows": {
+   "kind": "test",
+   "hash": "86697f916066ca5a",
+   "asserts": 3,
+   "literals": [
+    "\"25\"",
+    "\"25\"",
+    "\"25\"",
+    "\"8\"",
+    "\"POST /v1/kgs/main/queries:find\"",
+    "\"POST /v1/kgs/main/queries:get\"",
+    "\"Rack\"",
+    "\"Rack\"",
+    "\"Rack\"",
+    "\"cur\"",
+    "\"cur\"",
+    "\"cur\"",
+    "\"items\"",
+    "\"items\"",
+    "\"main\"",
+    "\"main\"",
+    "\"obj_1\"",
+    "\"obj_1\"",
+    "\"obj_2\"",
+    "\"obj_2\"",
+    "\"queries:find\"",
+    "\"reads a page and then the attributes of each of its rows\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"t\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > reads one object and its neighbors": {
+   "kind": "test",
+   "hash": "375f4cf952f2e651",
+   "asserts": 3,
+   "literals": [
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"POST /v1/kgs/main/queries:get\"",
+    "\"POST /v1/kgs/main/queries:neighbors\"",
+    "\"both\"",
+    "\"both\"",
+    "\"main\"",
+    "\"main\"",
+    "\"neighbors\"",
+    "\"neighbors\"",
+    "\"o\"",
+    "\"o\"",
+    "\"o\"",
+    "\"o\"",
+    "\"o\"",
+    "\"reads one object and its neighbors\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"t\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the screens read the catalog, the page of a type, an object and its neighbors > shows a row whose read failed as failed and the others as read": {
+   "kind": "test",
+   "hash": "bf315990e8a1e265",
+   "asserts": 1,
+   "literals": [
+    "\"0\"",
+    "\"1\"",
+    "\"404\"",
+    "\"8\"",
+    "\"POST /v1/kgs/main/queries:get\"",
+    "\"error\"",
+    "\"error\"",
+    "\"main\"",
+    "\"not_found.resource\"",
+    "\"ready\"",
+    "\"ready\"",
+    "\"shows a row whose read failed as failed and the others as read\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the token is kept by the browser, and the page works without that > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the token is kept by the browser, and the page works without that > finds the browser's storage in a browser": {
+   "kind": "test",
+   "hash": "4a382198b0cc777b",
+   "asserts": 1,
+   "literals": [
+    "\"finds the browser's storage in a browser\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the token is kept by the browser, and the page works without that > keeps the token for the page when storage refuses or is missing": {
+   "kind": "test",
+   "hash": "bf96507e28441b4b",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"abc\"",
+    "\"abc\"",
+    "\"abc\"",
+    "\"blocked\"",
+    "\"blocked\"",
+    "\"blocked\"",
+    "\"keeps the token for the page when storage refuses or is missing\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::[REQ-278] the token is kept by the browser, and the page works without that > reads the saved token, trims a new one and tells listeners": {
+   "kind": "test",
+   "hash": "c8c1e128a6096bbe",
+   "asserts": 4,
+   "literals": [
+    "\"  new-token \\n\"",
+    "\"\"",
+    "\"\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"new-token\"",
+    "\"new-token\"",
+    "\"new-token\"",
+    "\"new-token\"",
+    "\"reads the saved token, trims a new one and tells listeners\"",
+    "\"saved\"",
+    "\"saved\"",
+    "\"saved\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "4ea8ca030a0d50e3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:0751049e>": {
+   "kind": "support",
+   "hash": "0751049ea5b84c00",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:0e3f22a0>": {
+   "kind": "support",
+   "hash": "0e3f22a008f345f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:2390bc1d>": {
+   "kind": "support",
+   "hash": "2390bc1d8e9a1d26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:34c21395>": {
+   "kind": "support",
+   "hash": "34c21395bfd2f7af",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:416b76a5>": {
+   "kind": "support",
+   "hash": "416b76a56aca4896",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:4ac736cb>": {
+   "kind": "support",
+   "hash": "4ac736cb2e0ab707",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:61ac284e>": {
+   "kind": "support",
+   "hash": "61ac284e788f9ec2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:b329391a>": {
+   "kind": "support",
+   "hash": "b329391a68fd7fa0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::=list": {
+   "kind": "support",
+   "hash": "2d7b9333f6f8830a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::=MemoryStorage": {
+   "kind": "support",
+   "hash": "a1cbdcff0b1116fd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::=NO_ITEMS": {
+   "kind": "support",
+   "hash": "aa1140e4b58d5309",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] a list is read with a few calls at a time > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] a list is read with a few calls at a time > keeps the order of the results and never runs more than the limit": {
+   "kind": "test",
+   "hash": "b9d33bbf32f433ec",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"10\"",
+    "\"10\"",
+    "\"12\"",
+    "\"12\"",
+    "\"14\"",
+    "\"14\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"4\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"6\"",
+    "\"6\"",
+    "\"6\"",
+    "\"7\"",
+    "\"8\"",
+    "\"8\"",
+    "\"keeps the order of the results and never runs more than the limit\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] errors are shown as words a person can act on > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] errors are shown as words a person can act on > falls back from the code to its group, then to the code itself": {
+   "kind": "test",
+   "hash": "023f44dcb50a9be9",
+   "asserts": 4,
+   "literals": [
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"403\"",
+    "\"418\"",
+    "\"418\"",
+    "\"500\"",
+    "\"500\"",
+    "\"brand.new\"",
+    "\"brand.new\"",
+    "\"brand.new\"",
+    "\"brand.new\"",
+    "\"falls back from the code to its group, then to the code itself\"",
+    "\"other\"",
+    "\"other\"",
+    "\"permission\"",
+    "\"permission\"",
+    "\"permission\"",
+    "\"permission\"",
+    "\"permission.role_missing\"",
+    "\"permission.role_missing\"",
+    "\"permission.something_new\"",
+    "\"permission.something_new\"",
+    "\"server\"",
+    "\"server\"",
+    "\"server.internal\"",
+    "\"server.internal\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] errors are shown as words a person can act on > names a server that cannot be reached and an answer that is not the API's": {
+   "kind": "test",
+   "hash": "e02259f0dc290503",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"502\"",
+    "\"502\"",
+    "\"502\"",
+    "\"502\"",
+    "\"names a server that cannot be reached and an answer that is not the API's\"",
+    "\"network\"",
+    "\"network\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] errors are shown as words a person can act on > shows an error that did not come from the API without its stack": {
+   "kind": "test",
+   "hash": "e413cfe4f3bbb9f0",
+   "asserts": 3,
+   "literals": [
+    "\"boom\"",
+    "\"boom\"",
+    "\"boom\"",
+    "\"boom\"",
+    "\"odd\"",
+    "\"odd\"",
+    "\"shows an error that did not come from the API without its stack\"",
+    "\"x\"",
+    "\"x\"",
+    "\"예기치 않은 오류\"",
+    "\"예기치 않은 오류\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] errors are shown as words a person can act on > tells a missing, wrong and expired token apart and sends the person to the settings": {
+   "kind": "test",
+   "hash": "440f741465bd4ef7",
+   "asserts": 4,
+   "literals": [
+    "\"401\"",
+    "\"auth\"",
+    "\"auth\"",
+    "\"auth.token_expired\"",
+    "\"auth.token_invalid\"",
+    "\"auth.token_missing\"",
+    "\"tells a missing, wrong and expired token apart and sends the person to the settings\"",
+    "\"tr-1\"",
+    "\"tr-1\"",
+    "\"접속 설정\"",
+    "\"접속 설정\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] paging goes forward by cursor and back by the cursors already seen > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] paging goes forward by cursor and back by the cursors already seen > steps forward, back and to the first page, and resets on a new page size": {
+   "kind": "test",
+   "hash": "d00496848aa25ec9",
+   "asserts": 6,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"100\"",
+    "\"100\"",
+    "\"100\"",
+    "\"25\"",
+    "\"25\"",
+    "\"3\"",
+    "\"3\"",
+    "\"c2\"",
+    "\"c2\"",
+    "\"c2\"",
+    "\"c2\"",
+    "\"c3\"",
+    "\"c3\"",
+    "\"c3\"",
+    "\"first\"",
+    "\"limit\"",
+    "\"next\"",
+    "\"next\"",
+    "\"next\"",
+    "\"previous\"",
+    "\"previous\"",
+    "\"previous\"",
+    "\"steps forward, back and to the first page, and resets on a new page size\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the address names the screen > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the address names the screen > =routes": {
+   "kind": "support",
+   "hash": "11d10ee9be02bee0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the address names the screen > falls back to the KG list for an address it does not know, and to the first tab for an unknown tab": {
+   "kind": "test",
+   "hash": "47010e97b859c5ad",
+   "asserts": 5,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/kg/%E0%A4%A/types\"",
+    "\"#/kg/%E0%A4%A/types\"",
+    "\"#/kg/main\"",
+    "\"#/kg/main\"",
+    "\"#/kg/main/objects/o1?tab=bogus\"",
+    "\"#/kg/main/objects/o1?tab=bogus\"",
+    "\"#/nonsense\"",
+    "\"#/nonsense\"",
+    "\"attributes\"",
+    "\"attributes\"",
+    "\"falls back to the KG list for an address it does not know, and to the first tab for an unknown tab\"",
+    "\"kgs\"",
+    "\"kgs\"",
+    "\"kgs\"",
+    "\"kgs\"",
+    "\"main\"",
+    "\"main\"",
+    "\"types\"",
+    "\"types\"",
+    "\"types\"",
+    "\"types\"",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the address names the screen > reads back what it wrote": {
+   "kind": "test",
+   "hash": "ab0ea83eb1c11717",
+   "asserts": 1,
+   "literals": [
+    "\"reads back what it wrote\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the address names the screen > sends a visit without a token to the settings, whatever the address": {
+   "kind": "test",
+   "hash": "3546d47cdc80731d",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/kg/main/types\"",
+    "\"#/kg/main/types\"",
+    "\"sends a visit without a token to the settings, whatever the address\"",
+    "\"settings\"",
+    "\"settings\"",
+    "\"settings\"",
+    "\"settings\"",
+    "false",
+    "false",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the catalog of types and the groups of neighbors > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the catalog of types and the groups of neighbors > groups neighbors by link type and direction in the listed order": {
+   "kind": "test",
+   "hash": "a33986a4bbfe5426",
+   "asserts": 2,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"3\"",
+    "\"4\"",
+    "\"L\"",
+    "\"L\"",
+    "\"L\"",
+    "\"L\"",
+    "\"L\"",
+    "\"L\"",
+    "\"L\"",
+    "\"M\"",
+    "\"M\"",
+    "\"M\"",
+    "\"groups neighbors by link type and direction in the listed order\"",
+    "\"in\"",
+    "\"in\"",
+    "\"in\"",
+    "\"in\"",
+    "\"out\"",
+    "\"out\"",
+    "\"out\"",
+    "\"out\"",
+    "\"out\"",
+    "\"out\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the catalog of types and the groups of neighbors > joins the model's types with the counts, by layer, the largest first": {
+   "kind": "test",
+   "hash": "9813329c36d91aa6",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"7\"",
+    "\"7\"",
+    "\"7\"",
+    "\"A\"",
+    "\"A\"",
+    "\"A\"",
+    "\"A\"",
+    "\"B\"",
+    "\"B\"",
+    "\"B\"",
+    "\"B\"",
+    "\"C\"",
+    "\"C\"",
+    "\"C\"",
+    "\"core\"",
+    "\"core\"",
+    "\"core\"",
+    "\"facility\"",
+    "\"hardware\"",
+    "\"hardware\"",
+    "\"joins the model's types with the counts, by layer, the largest first\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the table of one type picks its columns > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the table of one type picks its columns > =prop": {
+   "kind": "support",
+   "hash": "81c47313e077eb28",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the table of one type picks its columns > =properties": {
+   "kind": "support",
+   "hash": "4a9cc80f900528f1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the table of one type picks its columns > leaves out the name and nested attributes and retired ones": {
+   "kind": "test",
+   "hash": "e63aaabba01ef942",
+   "asserts": 1,
+   "literals": [
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"leaves out the name and nested attributes and retired ones\"",
+    "\"model\"",
+    "\"model\"",
+    "\"serial\"",
+    "\"serial\"",
+    "\"state\"",
+    "\"state\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] the table of one type picks its columns > puts the required ones first and stops at the count": {
+   "kind": "test",
+   "hash": "2db419e352d487af",
+   "asserts": 2,
+   "literals": [
+    "\"3\"",
+    "\"3\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"model\"",
+    "\"model\"",
+    "\"model\"",
+    "\"model\"",
+    "\"puts the required ones first and stops at the count\"",
+    "\"serial\"",
+    "\"serial\"",
+    "\"serial\"",
+    "\"serial\"",
+    "\"state\"",
+    "\"state\"",
+    "\"state\"",
+    "\"state\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] values are written the way the glossary words them > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] values are written the way the glossary words them > writes grades and bases in the standard terms": {
+   "kind": "test",
+   "hash": "cc38db450e63eaad",
+   "asserts": 8,
+   "literals": [
+    "\"assumed\"",
+    "\"assumed\"",
+    "\"assumed\"",
+    "\"assumed\"",
+    "\"fact\"",
+    "\"fact\"",
+    "\"fact\"",
+    "\"fact\"",
+    "\"neutral\"",
+    "\"neutral\"",
+    "\"neutral\"",
+    "\"neutral\"",
+    "\"new_grade\"",
+    "\"new_grade\"",
+    "\"new_grade\"",
+    "\"new_grade\"",
+    "\"observed\"",
+    "\"observed\"",
+    "\"ok\"",
+    "\"ok\"",
+    "\"out\"",
+    "\"out\"",
+    "\"sideways\"",
+    "\"sideways\"",
+    "\"sideways\"",
+    "\"sideways\"",
+    "\"unknown\"",
+    "\"unknown\"",
+    "\"unknown\"",
+    "\"unknown\"",
+    "\"warn\"",
+    "\"warn\"",
+    "\"writes grades and bases in the standard terms\"",
+    "\"가정\"",
+    "\"가정\"",
+    "\"관측\"",
+    "\"관측\"",
+    "\"나가는 링크\"",
+    "\"나가는 링크\"",
+    "\"사실\"",
+    "\"사실\"",
+    "\"알 수 없음\"",
+    "\"알 수 없음\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] values are written the way the glossary words them > writes times, ids and counts": {
+   "kind": "test",
+   "hash": "b5fd32ef8379c33b",
+   "asserts": 7,
+   "literals": [
+    "\"12,345\"",
+    "\"12,345\"",
+    "\"12345\"",
+    "\"12345\"",
+    "\"2026-11-14 03:42:02 UTC\"",
+    "\"2026-11-14 03:42:02 UTC\"",
+    "\"2026-11-14 03:42:02 UTC\"",
+    "\"2026-11-14 03:42:02 UTC\"",
+    "\"2026-11-14T03:42:02.123Z\"",
+    "\"2026-11-14T03:42:02.123Z\"",
+    "\"2026-11-14T03:42:02Z\"",
+    "\"2026-11-14T03:42:02Z\"",
+    "\"obj_1\"",
+    "\"obj_1\"",
+    "\"obj_1\"",
+    "\"obj_1\"",
+    "\"obj_1f6bdfd7bf636df9364f3bfaba59e7f0\"",
+    "\"obj_1f6bdfd7bf636df9364f3bfaba59e7f0\"",
+    "\"obj_1f6bdfd7…\"",
+    "\"obj_1f6bdfd7…\"",
+    "\"writes times, ids and counts\"",
+    "\"yesterday\"",
+    "\"yesterday\"",
+    "\"yesterday\"",
+    "\"yesterday\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::[REQ-278] values are written the way the glossary words them > writes values on one line": {
+   "kind": "test",
+   "hash": "83386c10c4c7b84d",
+   "asserts": 9,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"1\"",
+    "\"1\"",
+    "\"3141.8 W\"",
+    "\"3141.8 W\"",
+    "\"3141.8\"",
+    "\"3141.8\"",
+    "\"4\"",
+    "\"4\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"5\"",
+    "\"5\"",
+    "\"W\"",
+    "\"W\"",
+    "\"W\"",
+    "\"W\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"false\"",
+    "\"false\"",
+    "\"writes values on one line\"",
+    "\"{\\\"a\\\":[1]}\"",
+    "\"{\\\"a\\\":[1]}\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:03e4da3e>": {
+   "kind": "support",
+   "hash": "03e4da3efd339a5f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:0f74824d>": {
+   "kind": "support",
+   "hash": "0f74824d2cfc6458",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:1d36456a>": {
+   "kind": "support",
+   "hash": "1d36456af51a5acb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:2e027896>": {
+   "kind": "support",
+   "hash": "2e027896631088d4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:3acbb007>": {
+   "kind": "support",
+   "hash": "3acbb0075099e9ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:690bd448>": {
+   "kind": "support",
+   "hash": "690bd4480b7539ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:739ea8f9>": {
+   "kind": "support",
+   "hash": "739ea8f906fa3789",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:b0b5fc84>": {
+   "kind": "support",
+   "hash": "b0b5fc849e4bc66a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:b5d5eee0>": {
+   "kind": "support",
+   "hash": "b5d5eee0e74ee3f6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::=apiError": {
+   "kind": "support",
+   "hash": "e370a5253f27f31f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::<import:21dfcaf0>": {
+   "kind": "support",
+   "hash": "21dfcaf030001dbf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::=Answer": {
+   "kind": "support",
+   "hash": "f61a559facaed11d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::=Asked": {
+   "kind": "support",
+   "hash": "2ff23e2ababa1396",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::=fakeApi": {
+   "kind": "support",
+   "hash": "4050f4f2c49471bc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::=problem": {
+   "kind": "support",
+   "hash": "ff222f1a9c23dd83",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::=Reply": {
+   "kind": "support",
+   "hash": "8a97a6e09a5b4ddd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::<import:84768cfb>": {
+   "kind": "support",
+   "hash": "84768cfba8215f25",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::<import:f3b26d04>": {
+   "kind": "support",
+   "hash": "f3b26d049453b16f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::<stmt:efebe6fc>": {
+   "kind": "support",
+   "hash": "efebe6fc53e35573",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=click": {
+   "kind": "support",
+   "hash": "b8b0180cf6a84816",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=HookResult": {
+   "kind": "support",
+   "hash": "b796e31ea08db6ca",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=render": {
+   "kind": "support",
+   "hash": "43d408d8332e1ac6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=Rendered": {
+   "kind": "support",
+   "hash": "f35df30e0f492674",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=renderHook": {
+   "kind": "support",
+   "hash": "b0d6b8c1a59ff586",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=settle": {
+   "kind": "support",
+   "hash": "3d8ebe42d3135fc8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > puts the banner in a status element and leaves it out when there is none": {
+   "kind": "test",
+   "hash": "f1dc3c1a936fdd05",
+   "asserts": 3,
+   "literals": [
+    "\"output\"",
+    "\"output\"",
+    "\"output\"",
+    "\"puts the banner in a status element and leaves it out when there is none\"",
+    "\"데모 모드\"",
+    "\"데모 모드\"",
+    "\"데모 모드\"",
+    "\"본문\"",
+    "\"본문\"",
+    "\"프락시움\"",
+    "\"프락시움\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "4fdef9ee37802613",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<import:d0e06116>": {
+   "kind": "support",
+   "hash": "d0e06116102f191a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<import:ef29133c>": {
+   "kind": "support",
+   "hash": "ef29133c0edb6025",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/banner.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] a table, the layout and the lists of facts > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] a table, the layout and the lists of facts > marks the current page in the navigation and gives the page a trail": {
+   "kind": "test",
+   "hash": "8d695739793a03c3",
+   "asserts": 4,
+   "literals": [
+    "\"#/kgs\"",
+    "\"#/kgs\"",
+    "\"#/settings\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2개\"",
+    "\"3개\"",
+    "\"ID\"",
+    "\"KG\"",
+    "\"R1\"",
+    "\"aria-current\"",
+    "\"aria-current\"",
+    "\"aria-current\"",
+    "\"aria-current\"",
+    "\"dt\"",
+    "\"dt\"",
+    "\"id\"",
+    "\"marks the current page in the navigation and gives the page a trail\"",
+    "\"nav a\"",
+    "\"nav[aria-label=\\\"현재 위치\\\"]\"",
+    "\"nav[aria-label=\\\"현재 위치\\\"]\"",
+    "\"page\"",
+    "\"page\"",
+    "\"v0\"",
+    "\"객체\"",
+    "\"단순\"",
+    "\"속성\"",
+    "\"이름\"",
+    "\"탐색\"",
+    "\"프락시움\"",
+    "\"현재\"",
+    "\"현재\"",
+    "\"현재\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] a table, the layout and the lists of facts > writes a table with column headers": {
+   "kind": "test",
+   "hash": "56e1774eae9875fa",
+   "asserts": 2,
+   "literals": [
+    "\"R1\"",
+    "\"R1\"",
+    "\"col\"",
+    "\"col\"",
+    "\"scope\"",
+    "\"scope\"",
+    "\"td\"",
+    "\"td\"",
+    "\"th\"",
+    "\"th\"",
+    "\"writes a table with column headers\"",
+    "\"객체\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] buttons, badges and fields > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] buttons, badges and fields > calls back on a click and not when disabled": {
+   "kind": "test",
+   "hash": "36b9ce23f8fbd244",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"button\"",
+    "\"button\"",
+    "\"button\"",
+    "\"calls back on a click and not when disabled\"",
+    "\"ghost\"",
+    "\"primary\"",
+    "\"type\"",
+    "\"type\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] buttons, badges and fields > joins class names and skips what is not set": {
+   "kind": "test",
+   "hash": "a6d1841938f24f4b",
+   "asserts": 1,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"a b\"",
+    "\"a b\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b\"",
+    "\"joins class names and skips what is not set\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] buttons, badges and fields > shows a badge in each tone": {
+   "kind": "test",
+   "hash": "366f9b129b4b0063",
+   "asserts": 1,
+   "literals": [
+    "\"6\"",
+    "\"6\"",
+    "\"accent\"",
+    "\"danger\"",
+    "\"neutral\"",
+    "\"ok\"",
+    "\"shows a badge in each tone\"",
+    "\"span\"",
+    "\"span\"",
+    "\"warn\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] buttons, badges and fields > ties the label and the description to the input": {
+   "kind": "test",
+   "hash": "b02ee63dd7426d9f",
+   "asserts": 4,
+   "literals": [
+    "\"aria-describedby\"",
+    "\"aria-describedby\"",
+    "\"input\"",
+    "\"label\"",
+    "\"password\"",
+    "\"password\"",
+    "\"password\"",
+    "\"ties the label and the description to the input\"",
+    "\"서버를 띄울 때 정한 값\"",
+    "\"이름\"",
+    "\"이름\"",
+    "\"이름\"",
+    "\"토큰\"",
+    "\"토큰\"",
+    "\"토큰\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the keyboard and the pointer > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the keyboard and the pointer > opens the tab that was clicked and shows only its content": {
+   "kind": "test",
+   "hash": "85a7c7922fb77200",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"[role=\\\"tab\\\"]\"",
+    "\"a\"",
+    "\"a\"",
+    "\"aria-selected\"",
+    "\"aria-selected\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\"",
+    "\"click\"",
+    "\"mousedown\"",
+    "\"opens the tab that was clicked and shows only its content\"",
+    "\"true\"",
+    "\"true\"",
+    "\"가\"",
+    "\"나\"",
+    "\"내용 가\"",
+    "\"내용 가\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the keyboard and the pointer > pages forward and back and changes the page size": {
+   "kind": "test",
+   "hash": "8eb92142e9493e54",
+   "asserts": 4,
+   "literals": [
+    "\"\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"25\"",
+    "\"25\"",
+    "\"26–40 / 40\"",
+    "\"26–40 / 40\"",
+    "\"26–40 / 40\"",
+    "\"2쪽\"",
+    "\"2쪽\"",
+    "\"50\"",
+    "\"button\"",
+    "\"pages forward and back and changes the page size\"",
+    "\"다음\"",
+    "\"이전\"",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the keyboard and the pointer > shows a dialog with its title while open and nothing when closed, and tells when it should close": {
+   "kind": "test",
+   "hash": "65d689e89a7d0233",
+   "asserts": 4,
+   "literals": [
+    "\"button\"",
+    "\"shows a dialog with its title while open and nothing when closed, and tells when it should close\"",
+    "\"닫기\"",
+    "\"보일 속성\"",
+    "\"보일 속성\"",
+    "\"보일 속성\"",
+    "\"본문\"",
+    "\"본문\"",
+    "\"컬럼\"",
+    "\"컬럼\"",
+    "\"컬럼\"",
+    "\"컬럼\"",
+    "false",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the keyboard and the pointer > shows the chosen option of a select": {
+   "kind": "test",
+   "hash": "f91fbb3bb35f360a",
+   "asserts": 1,
+   "literals": [
+    "\"25\"",
+    "\"25개씩\"",
+    "\"50\"",
+    "\"50\"",
+    "\"50개씩\"",
+    "\"50개씩\"",
+    "\"50개씩\"",
+    "\"[aria-label=\\\"페이지당 개수\\\"]\"",
+    "\"shows the chosen option of a select\"",
+    "\"페이지당 개수\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] checkboxes, tabs, selects, dialogs and paging work from the keyboard and the pointer > toggles a checkbox from its label": {
+   "kind": "test",
+   "hash": "d660eec69f5c7429",
+   "asserts": 1,
+   "literals": [
+    "\"label\"",
+    "\"toggles a checkbox from its label\"",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] states say what is going on > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] states say what is going on > announces loading with a label": {
+   "kind": "test",
+   "hash": "e89780900e411af0",
+   "asserts": 2,
+   "literals": [
+    "\"announces loading with a label\"",
+    "\"output\"",
+    "\"output\"",
+    "\"객체를 읽는 중\"",
+    "\"객체를 읽는 중\"",
+    "\"객체를 읽는 중\"",
+    "\"불러오는 중\"",
+    "\"불러오는 중\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] states say what is going on > shows an empty state with its explanation and action": {
+   "kind": "test",
+   "hash": "80c38ffa949c7d79",
+   "asserts": 3,
+   "literals": [
+    "\"button\"",
+    "\"button\"",
+    "\"button\"",
+    "\"button\"",
+    "\"shows an empty state with its explanation and action\"",
+    "\"객체가 없습니다\"",
+    "\"객체가 없습니다\"",
+    "\"객체가 없습니다\"",
+    "\"비었음\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::[REQ-278] states say what is going on > shows an error as an alert with the hint and the facts for a report": {
+   "kind": "test",
+   "hash": "76feb2c8fd8493f4",
+   "asserts": 4,
+   "literals": [
+    "\"[role=\\\"alert\\\"]\"",
+    "\"[role=\\\"alert\\\"]\"",
+    "\"auth.token_invalid\"",
+    "\"auth.token_invalid\"",
+    "\"auth.token_invalid\"",
+    "\"dl\"",
+    "\"dl\"",
+    "\"m\"",
+    "\"shows an error as an alert with the hint and the facts for a report\"",
+    "\"tr-1\"",
+    "\"다시 입력하세요.\"",
+    "\"다시 입력하세요.\"",
+    "\"다시 입력하세요.\"",
+    "\"서버가 거절했습니다.\"",
+    "\"오류\"",
+    "\"추적 ID\"",
+    "\"코드\"",
+    "\"토큰이 맞지 않습니다\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:11f11895>": {
+   "kind": "support",
+   "hash": "11f11895a2e632f2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:39b89727>": {
+   "kind": "support",
+   "hash": "39b897279d2853ad",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:84c8ed11>": {
+   "kind": "support",
+   "hash": "84c8ed1150d3f633",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:a08bdd01>": {
+   "kind": "support",
+   "hash": "a08bdd01891bfda4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:b919bd80>": {
+   "kind": "support",
+   "hash": "b919bd80f32fd4ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "backend/internal/cli/testdata/find.json::<data>": {
    "kind": "data",
    "hash": "be98823b1a02f411",
@@ -237,6 +3228,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestADevelopmentServerOnTheFileStoreKeepsTheKGAcrossRestarts": {
+   "kind": "test",
+   "hash": "61bb1ead88f29c3d",
+   "asserts": 11,
+   "literals": [
+    "dc86b4292b8f5b63"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260",
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerRefusesATruthFileItCannotLoad": {
    "kind": "test",
    "hash": "f6e7e8db7a9bc164",
@@ -280,6 +3287,36 @@
     "REQ-260"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAFileStoreAfterAKillAndACutRecord": {
+   "kind": "test",
+   "hash": "cb981f4f5f59bd8d",
+   "asserts": 11,
+   "literals": [
+    "c89b0ec43eabe25a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAFileStoreKeepsItsKGInARealFolder": {
+   "kind": "test",
+   "hash": "13a8d4ebe33c3028",
+   "asserts": 9,
+   "literals": [
+    "3f9be09564049521"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestApiRoutesAndListenFailuresAreReported": {
@@ -327,6 +3364,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestApiServeCanLeaveTheWebUIOut": {
+   "kind": "test",
+   "hash": "a7b94f1708106588",
+   "asserts": 2,
+   "literals": [
+    "11ab938114dde363"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestApiServeInProductionAlwaysRefuses": {
    "kind": "test",
    "hash": "ce2024f72d60fd17",
@@ -356,6 +3408,36 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
+  },
+  "go:backend/cmd/praxium::TestApiServeServesTheEmbeddedWebUIAtTheRoot": {
+   "kind": "test",
+   "hash": "9f6ae518aec8a508",
+   "asserts": 2,
+   "literals": [
+    "0b528ef7d4b652e3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestApiServeWithoutAModeSaysWhatToRunInsteadWithoutDebtNumbers": {
+   "kind": "test",
+   "hash": "86678d26705b7f43",
+   "asserts": 2,
+   "literals": [
+    "8529d2733d5ec061"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes": {
    "kind": "test",
@@ -387,6 +3469,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
+   "kind": "test",
+   "hash": "25b25c5d1b2f841b",
+   "asserts": 9,
+   "literals": [
+    "e961a3323ca7d704"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAStartThatTakesLongSaysItIsStillWorking": {
+   "kind": "test",
+   "hash": "60f337d6a62fddbb",
+   "asserts": 2,
+   "literals": [
+    "4eb467a8e540e570"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
    "kind": "test",
    "hash": "74c14581e9651876",
@@ -402,6 +3514,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs": {
+   "kind": "test",
+   "hash": "0bc8b8ac22ea878e",
+   "asserts": 2,
+   "literals": [
+    "1447e4a13ad03dd9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestContractCommandAssemblesAndChecks": {
    "kind": "test",
    "hash": "37f69ec23cfda2f8",
@@ -415,6 +3542,171 @@
     "REQ-143"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoChecksTheFormOfTheAddressBeforeAnythingElse": {
+   "kind": "test",
+   "hash": "f76b9be88f6d2a8b",
+   "asserts": 1,
+   "literals": [
+    "3a18e43baf4b136c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoFillsTheKGAndTheAPIAnswers": {
+   "kind": "test",
+   "hash": "fe03b9f986810d5a",
+   "asserts": 8,
+   "literals": [
+    "89a41aab32c3efbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoKeepsTheKGInADataFolder": {
+   "kind": "test",
+   "hash": "f910c85381e37240",
+   "asserts": 7,
+   "literals": [
+    "b2b732e05001ae93"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoRefusesAFolderWhoseFirstLoadDidNotFinish": {
+   "kind": "test",
+   "hash": "1c66bc597e92983f",
+   "asserts": 3,
+   "literals": [
+    "1c97e7ccca408fa4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoRefusesBadArguments": {
+   "kind": "test",
+   "hash": "f7165c86522f440d",
+   "asserts": 1,
+   "literals": [
+    "c7417e46fd063765"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoSaysWhenThePortIsTaken": {
+   "kind": "test",
+   "hash": "7114f7bca53d46f7",
+   "asserts": 5,
+   "literals": [
+    "9af4a42807df4fbf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoStopsBeforeServingWhenTheWorldCannotBeMade": {
+   "kind": "test",
+   "hash": "cedd142a3868e170",
+   "asserts": 2,
+   "literals": [
+    "d65c7833c3a302d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoTokenIsNewEveryRunAndOnlyInTheAddress": {
+   "kind": "test",
+   "hash": "61b28e35fe8f9e1d",
+   "asserts": 10,
+   "literals": [
+    "15ec0cc550ccda26"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-281"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoURLNeedsAnAddressWithAPort": {
+   "kind": "test",
+   "hash": "6931ceb582697c5e",
+   "asserts": 2,
+   "literals": [
+    "04c982ea0d8f2f38"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoWarnsForANonLoopbackAddress": {
+   "kind": "test",
+   "hash": "192ffef6eeba01ce",
+   "asserts": 5,
+   "literals": [
+    "bfb608074016a4ff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoWithoutTheWebUIExplainsAndKeepsTheAPI": {
+   "kind": "test",
+   "hash": "0f12f66c6ea4584b",
+   "asserts": 5,
+   "literals": [
+    "103633af8393b476"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestDevLoadTruthLoadsIntoAThrowawayStoreAndPrintsTheCounts": {
@@ -461,6 +3753,232 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestEveryCommandAnswersHelpWithUsageFlagsAndAnExample": {
+   "kind": "test",
+   "hash": "0cad00f836b38551",
+   "asserts": 6,
+   "literals": [
+    "56a323502dd5de86"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestFilesThatAreNoWorkbookGiveAClearErrorWhateverTheyAreNamed": {
+   "kind": "test",
+   "hash": "891b02e0b6f20e76",
+   "asserts": 4,
+   "literals": [
+    "2eefe4c12a85a738"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285",
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestFormatIsToldByTheContentFirstThenTheNameThenTheFirstCharacter": {
+   "kind": "test",
+   "hash": "11751ef7b0cad8d0",
+   "asserts": 1,
+   "literals": [
+    "6d5ed4615952f100"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestGlobalFlagsMayFollowTheCommand": {
+   "kind": "test",
+   "hash": "4509713927106351",
+   "asserts": 4,
+   "literals": [
+    "514d9421a77cb45d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirKeepsTheKGAndTheStateAcrossRuns": {
+   "kind": "test",
+   "hash": "5110c5556164b595",
+   "asserts": 6,
+   "literals": [
+    "b6a2ffb337fafbe4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirRefusesADemoFolderAndALockedOne": {
+   "kind": "test",
+   "hash": "52a4b960699d1047",
+   "asserts": 6,
+   "literals": [
+    "b7a81468760ddbc1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirRefusesAFolderThatDoesNotFitItsState": {
+   "kind": "test",
+   "hash": "dd9525c7aa7f29ed",
+   "asserts": 5,
+   "literals": [
+    "3957f50dfccbd5cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInitNeverOverwritesAndRefusesBadArguments": {
+   "kind": "test",
+   "hash": "d55d7c8b3462e220",
+   "asserts": 6,
+   "literals": [
+    "ee929327bf30fe10"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-293"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInitWritesExamplesThatRunAndSaysWhatToTypeNext": {
+   "kind": "test",
+   "hash": "d6b1dfd436a15ee7",
+   "asserts": 5,
+   "literals": [
+    "ddaaf514548ae589"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-293"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectReadsCSVAndJSONLinesAndSaysWhatItDoesNotUnderstand": {
+   "kind": "test",
+   "hash": "158baef4f744bbd4",
+   "asserts": 5,
+   "literals": [
+    "63edea5aee9cffc8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectRefusesBadFlagsMissingAndTooLargeFiles": {
+   "kind": "test",
+   "hash": "684999e229163a16",
+   "asserts": 5,
+   "literals": [
+    "b024d987dfb788db"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectShowsTheSheetsColumnsAndFirstRowsOfAWorkbook": {
+   "kind": "test",
+   "hash": "74375f2eb0f19fd5",
+   "asserts": 7,
+   "literals": [
+    "bdfb9cbf8c56cc86"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectTableMarksHiddenColumnsAndUnreadableRows": {
+   "kind": "test",
+   "hash": "2f3a8490704e9205",
+   "asserts": 2,
+   "literals": [
+    "bd92f5fa28623c0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunExitCodesAndTheLastLine": {
+   "kind": "test",
+   "hash": "9cdbbd84a3fc6605",
+   "asserts": 6,
+   "literals": [
+    "67265127e056467c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunHelpExplainsTheOutputAndTheExitCodes": {
+   "kind": "test",
+   "hash": "208e833c7097b79a",
+   "asserts": 2,
+   "literals": [
+    "35c758ffd6c1ffd8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunListsAtMostTwentyProblems": {
    "kind": "test",
    "hash": "5566c902fd5c9d97",
@@ -477,6 +3995,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunReadsAWorkbookAndShowsWhereWhatWentWrongIs": {
+   "kind": "test",
+   "hash": "96cea6312ee9ef4b",
+   "asserts": 3,
+   "literals": [
+    "9ae55d486e340361"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286",
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunReadsFilesAndSecondRunChangesNothing": {
    "kind": "test",
    "hash": "58efb7531cfa7d27",
@@ -488,6 +4022,21 @@
    "skips": 0,
    "reqs": [
     "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunRefusesAnInputOfAnUndefinedDataset": {
+   "kind": "test",
+   "hash": "47ba9cc1ab837ce4",
+   "asserts": 2,
+   "literals": [
+    "c2556fd707a73e0b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -519,6 +4068,141 @@
    "reqs": [
     "REQ-268",
     "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunSaysWhatItDidNotCollectAndWhetherItKeptTheResult": {
+   "kind": "test",
+   "hash": "71c367184f43cbb7",
+   "asserts": 2,
+   "literals": [
+    "e8cab5d7d3512096"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunStopsAtALimitOfTheSourceAndNamesIt": {
+   "kind": "test",
+   "hash": "082816416197f389",
+   "asserts": 4,
+   "literals": [
+    "0b3da4a143b7966b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestVerdictLineIsGrammatical": {
+   "kind": "test",
+   "hash": "afe2546521b13752",
+   "asserts": 1,
+   "literals": [
+    "3138cd4e82e47f31"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIsLoopbackAddr": {
+   "kind": "test",
+   "hash": "8e34cd1851942078",
+   "asserts": 1,
+   "literals": [
+    "73ac15f11e51f166"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalChecksThePortBeforeAnythingAndRefusesBadArguments": {
+   "kind": "test",
+   "hash": "59acb2559f41f563",
+   "asserts": 4,
+   "literals": [
+    "d25b56e37ac48bd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalExplainsABuildWithoutTheWebUI": {
+   "kind": "test",
+   "hash": "9079eff0d59b7611",
+   "asserts": 6,
+   "literals": [
+    "fe5f96b9acaaf323"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalSaysWhatToDoWhenThereIsNothingToServe": {
+   "kind": "test",
+   "hash": "2960998bbbc65e87",
+   "asserts": 1,
+   "literals": [
+    "f4345305e33f22e8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalServesTheKGOfAFolderWithoutMakingUpData": {
+   "kind": "test",
+   "hash": "3a472f23b5d8a3a2",
+   "asserts": 8,
+   "literals": [
+    "36f489517c2e0c29"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalWarnsForANonLoopbackAddress": {
+   "kind": "test",
+   "hash": "ec04de948859ea1b",
+   "asserts": 5,
+   "literals": [
+    "69deaf23dabe9d77"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -564,6 +4248,51 @@
     "REQ-260"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleaseBuildRefusesWhatIsNotSemanticVersioning": {
+   "kind": "test",
+   "hash": "aad1e202a655f500",
+   "asserts": 2,
+   "literals": [
+    "1a85dcb8504d525e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleaseBuildSetsTheVersionAndIsReproducible": {
+   "kind": "test",
+   "hash": "25547794402c586b",
+   "asserts": 10,
+   "literals": [
+    "2f4805524197823a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestRolesThatDoNothingSayTheyAreNotImplemented": {
+   "kind": "test",
+   "hash": "db5ffb1c531901d3",
+   "asserts": 1,
+   "literals": [
+    "a8ce0d6a66a04998"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestRunStartsEveryRole": {
@@ -620,6 +4349,81 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheDefaultStoreStaysInMemory": {
+   "kind": "test",
+   "hash": "536a079dacf49d08",
+   "asserts": 1,
+   "literals": [
+    "bd7bf9fed714e7d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheFileDiskDoesWhatTheJournalAsks": {
+   "kind": "test",
+   "hash": "889f366b1eea7cf7",
+   "asserts": 21,
+   "literals": [
+    "4c816497cdd54d7d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheFileStoreFlagsAreChecked": {
+   "kind": "test",
+   "hash": "7d7f804e33151839",
+   "asserts": 2,
+   "literals": [
+    "4fd70ca289432492"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheLockOfADataFolder": {
+   "kind": "test",
+   "hash": "b7c9cfb6dd01930d",
+   "asserts": 10,
+   "literals": [
+    "189b2ea177e2874c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheRecoveryLogWarnsOnlyWhenSomethingWasLost": {
+   "kind": "test",
+   "hash": "9a75923e405ecd0a",
+   "asserts": 2,
+   "literals": [
+    "1c4f5809b4d42049"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheStoreFlagsAreCheckedAndTheDSNNeverShows": {
    "kind": "test",
    "hash": "1b8f6fbdbc332413",
@@ -632,6 +4436,81 @@
    "reqs": [
     "REQ-260",
     "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTopLevelHelpListsEveryCommandInGroups": {
+   "kind": "test",
+   "hash": "a5c288c528d73226",
+   "asserts": 5,
+   "literals": [
+    "33f7a06ceb7b1f49"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionCommandPrintsWhatTheBuildKnows": {
+   "kind": "test",
+   "hash": "2354444fb0e181d4",
+   "asserts": 2,
+   "literals": [
+    "94b722dfee05d11c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionOfABuildWithoutValuesIsDev": {
+   "kind": "test",
+   "hash": "b80383d3045729db",
+   "asserts": 3,
+   "literals": [
+    "5bf15a6df23692eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionTellsWhetherTheWebUIIsInside": {
+   "kind": "test",
+   "hash": "08c48a496c7529cc",
+   "asserts": 1,
+   "literals": [
+    "0152fb7601bf81f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionWithArgumentsIsAUsageError": {
+   "kind": "test",
+   "hash": "c239ea131e707a6f",
+   "asserts": 1,
+   "literals": [
+    "708543c6788dca8b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -746,6 +4625,66 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestACauseListsEachRejectedFieldWithItsPlainParams": {
+   "kind": "test",
+   "hash": "f274075e204ca2b4",
+   "asserts": 1,
+   "literals": [
+    "08e2bbb575b92c49"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAnErrorLineFallsBackToWhatAnOlderServerGaveAndToFieldErrors": {
+   "kind": "test",
+   "hash": "51a003f87a5b75a6",
+   "asserts": 3,
+   "literals": [
+    "613889f700f2d4a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAnErrorLineSaysWhatTheServerSaidWasWrong": {
+   "kind": "test",
+   "hash": "7db9550ec3082444",
+   "asserts": 3,
+   "literals": [
+    "22ca7d9acba37a50"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestCausesNameWhatWasNotFoundForEveryKindOfResource": {
+   "kind": "test",
+   "hash": "29d423cce2a0da90",
+   "asserts": 1,
+   "literals": [
+    "a1c59630394f6343"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestClientFlagsAreRecognisedBeforeTheCommand": {
    "kind": "test",
    "hash": "bb0556fecf32adc6",
@@ -775,6 +4714,51 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestGlobalFlagsAfterTheCommandAndTheHelpOfAClientCommand": {
+   "kind": "test",
+   "hash": "5b5bb825cd742142",
+   "asserts": 3,
+   "literals": [
+    "1ddcec0c6150a24f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestGlobalFlagsMayStandAfterTheCommandInEveryForm": {
+   "kind": "test",
+   "hash": "effd15d2bf8f6b1e",
+   "asserts": 3,
+   "literals": [
+    "ebb90b4888ee9960"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestHelpAndUsageLineOfClientCommands": {
+   "kind": "test",
+   "hash": "439b3a5235980516",
+   "asserts": 3,
+   "literals": [
+    "a4a1eb87d9b823d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/cli::TestKGCommandsAskTheRoutesTheyName": {
    "kind": "test",
@@ -1361,6 +5345,246 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/filejournal::TestADamagedNewestSnapshotIsReplacedByTheOneBeforeIt": {
+   "kind": "test",
+   "hash": "c2fa086e3577d7bc",
+   "asserts": 6,
+   "literals": [
+    "38dcd23fdaf30a17"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestAFileOfAnUnknownVersionIsNotOpened": {
+   "kind": "test",
+   "hash": "08c60edf6c6f8f14",
+   "asserts": 3,
+   "literals": [
+    "381c1361d97a4fb2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestARecordOutOfPlaceAndAMissingSegmentAreDamage": {
+   "kind": "test",
+   "hash": "c10dae9c420317a4",
+   "asserts": 7,
+   "literals": [
+    "01ea94a0fefbef32"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestAStoreReopenedOnTheSameFolderIsTheSameStore": {
+   "kind": "test",
+   "hash": "4a07417fa2d4d8a0",
+   "asserts": 4,
+   "literals": [
+    "5f678baee825895f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestAStoreThatWasNotClosedIsReadBackFromTheLog": {
+   "kind": "test",
+   "hash": "8fe5f4e26c9245f5",
+   "asserts": 6,
+   "literals": [
+    "c1cbf04ccd1a39ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestDamageInTheMiddleOfTheLogStopsRecovery": {
+   "kind": "test",
+   "hash": "e8c8308c1712d580",
+   "asserts": 3,
+   "literals": [
+    "b96bcf76ee2e6feb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestFileStorePassesTheSuite": {
+   "kind": "test",
+   "hash": "2e7c9b6a9a9fa1dd",
+   "asserts": 1,
+   "literals": [
+    "f73f52aab85a899a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestJournalRefusesWritesAfterAFailure": {
+   "kind": "test",
+   "hash": "981d549a0ce0ba2d",
+   "asserts": 8,
+   "literals": [
+    "a273446c30c860d5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestLeftoversAreRemovedAndCodesHaveMeanings": {
+   "kind": "test",
+   "hash": "c9b711904886fa71",
+   "asserts": 6,
+   "literals": [
+    "c293aaed1f23b423"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestNoiseAfterTheLastRecordIsDroppedAndTheLogGoesOn": {
+   "kind": "test",
+   "hash": "f1a096ee3faa0fe7",
+   "asserts": 8,
+   "literals": [
+    "ab93b075637ba584"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestPowerCutAtEveryOperation": {
+   "kind": "test",
+   "hash": "ea73ced1cab3395b",
+   "asserts": 4,
+   "literals": [
+    "403ac0cccdba2c0d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestTheFolderOpensInOneJournalAtATime": {
+   "kind": "test",
+   "hash": "7e94f3dad78faf5b",
+   "asserts": 6,
+   "literals": [
+    "b5ed17959c777d16"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestTheJournalRefusesCallsOutOfOrder": {
+   "kind": "test",
+   "hash": "46d46b8bdf909165",
+   "asserts": 13,
+   "literals": [
+    "e80ffcc87ace606d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestTheStoreAfterAPowerCutHoldsEveryAnsweredWrite": {
+   "kind": "test",
+   "hash": "cb440e088006a125",
+   "asserts": 5,
+   "literals": [
+    "81521ad96e59f819"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestWithNoWholeSnapshotAndAGapInTheLogRecoveryStops": {
+   "kind": "test",
+   "hash": "16da4a62edf2d470",
+   "asserts": 3,
+   "literals": [
+    "0767162866b185c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestWriteCutAtEveryByte": {
+   "kind": "test",
+   "hash": "55c418f7ee9f23b4",
+   "asserts": 4,
+   "literals": [
+    "d335469084f7f61d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/filesource::TestDatasetWithoutFileIsNotCollected": {
    "kind": "test",
    "hash": "62be521bc24f4631",
@@ -1894,6 +6118,36 @@
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
+  "go:backend/internal/httpapi::TestANotFoundAnswerSaysWhatWasNotFound": {
+   "kind": "test",
+   "hash": "8521290be39ec968",
+   "asserts": 4,
+   "literals": [
+    "2351eb3b94fe4b10"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestARefusedValueNamesTheFieldAndSaysWhy": {
+   "kind": "test",
+   "hash": "54e768f4ae39a857",
+   "asserts": 6,
+   "literals": [
+    "fa0f6c4bf542b19b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestAStoreThatFailsIsAServerProblem": {
    "kind": "test",
    "hash": "262c4d66f6cbd3b3",
@@ -2344,6 +6598,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestTheAPIAnswersCarryNoSniffAndNoReferrerHeaders": {
+   "kind": "test",
+   "hash": "276d78aae8f686d7",
+   "asserts": 2,
+   "literals": [
+    "8c8409e846446136"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-295"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestTraceIDComesFromTraceparentOrIsMade": {
    "kind": "test",
    "hash": "24f9bf87f5643ae1",
@@ -2357,6 +6626,96 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUIAnswersAnAddressOfThePagesRouterWithThePage": {
+   "kind": "test",
+   "hash": "eb2b3d5968fc899d",
+   "asserts": 5,
+   "literals": [
+    "2ca831b54da1c81b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUIHeadAnswersWithoutABodyAndOtherMethodsAreNotThePages": {
+   "kind": "test",
+   "hash": "b1641a7326b2afdb",
+   "asserts": 4,
+   "literals": [
+    "ee5e4fa94bcbf5ce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUILeavesTheAPIToTheAPI": {
+   "kind": "test",
+   "hash": "30b901ccd1695e66",
+   "asserts": 4,
+   "literals": [
+    "d3c80ee1057c7976"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUIPagesCannotBeFramedOrLoadOutsideTheirOrigin": {
+   "kind": "test",
+   "hash": "760a3c8cf9819ea2",
+   "asserts": 3,
+   "literals": [
+    "d570cc1dc4cdf3b2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUIServesThePageAndItsFiles": {
+   "kind": "test",
+   "hash": "e086a774731eedee",
+   "asserts": 11,
+   "literals": [
+    "fd375f382dac7a02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUIWithoutABuiltPageAnswersWithThePlaceholder": {
+   "kind": "test",
+   "hash": "bd6435337f8537b6",
+   "asserts": 5,
+   "literals": [
+    "1c029bbf82418bdb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/httpapi::TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer": {
@@ -2374,6 +6733,66 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/httpapi::TestWithoutUIConfiguredTheServerIsTheAPIOnly": {
+   "kind": "test",
+   "hash": "df187dc62e2ddbb9",
+   "asserts": 2,
+   "literals": [
+    "224f6900d3aa5210"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestADataRangeLimitsTheRowsAndColumnsRead": {
+   "kind": "test",
+   "hash": "a057c9b59570a82a",
+   "asserts": 2,
+   "literals": [
+    "73666e55494bd80a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestADateWithoutATimeIsMidnightForAPropertyOfTime": {
+   "kind": "test",
+   "hash": "49238d395f9ff4a1",
+   "asserts": 5,
+   "literals": [
+    "e264efd01ae73157"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
+   "kind": "test",
+   "hash": "40836a2338ae3490",
+   "asserts": 3,
+   "literals": [
+    "c6abe6714bcf6e1a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAttachFeedMergesTwoFiles": {
    "kind": "test",
    "hash": "30c29e365dafb577",
@@ -2385,6 +6804,21 @@
    "skips": 0,
    "reqs": [
     "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAWorkbookThatCannotBeReadStopsTheRunWithTheDatasetAndTheReason": {
+   "kind": "test",
+   "hash": "036f077b7ec3b2d5",
+   "asserts": 4,
+   "literals": [
+    "8a2d87e8dc45e3bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2416,6 +6850,21 @@
    "reqs": [
     "REQ-263",
     "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCellsThatGaveNoValueAreListedWithTheirAddress": {
+   "kind": "test",
+   "hash": "43e99124baaa1355",
+   "asserts": 3,
+   "literals": [
+    "e18d521b56ea2568"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2466,6 +6915,66 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestDataEndsAfterEnoughBlankRows": {
+   "kind": "test",
+   "hash": "17bc549e271a083c",
+   "asserts": 2,
+   "literals": [
+    "66f51cb778d2927e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFileStateStoreKeepsAStateAcrossOpens": {
+   "kind": "test",
+   "hash": "0e1fa2947549ac9f",
+   "asserts": 8,
+   "literals": [
+    "1e32fb05c9910fab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFileStateStoreLeavesTheOldFileWhenAWriteFails": {
+   "kind": "test",
+   "hash": "62dbe549c8ab79a4",
+   "asserts": 7,
+   "literals": [
+    "e4ff523d5cc4de3b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFileStateStoreRefusesAFileItDoesNotKnow": {
+   "kind": "test",
+   "hash": "67bfb1f2b2604c5c",
+   "asserts": 2,
+   "literals": [
+    "515163fd804c11df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestFirstRun": {
    "kind": "test",
    "hash": "b6f21715f4921949",
@@ -2477,6 +6986,51 @@
    "skips": 0,
    "reqs": [
     "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHeaderOfTwoRowsIsJoinedAndMergedGroupsSpanTheirColumns": {
+   "kind": "test",
+   "hash": "8b967b9679e43d8d",
+   "asserts": 2,
+   "literals": [
+    "0af78ac820c246a7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHeadersAreNormalizedAndAliasesAreUsed": {
+   "kind": "test",
+   "hash": "d7bb8aa277728548",
+   "asserts": 3,
+   "literals": [
+    "b244b00dd5067867"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHiddenRowsAreReadAndCountedOrSkipped": {
+   "kind": "test",
+   "hash": "026184ba00eb7ed6",
+   "asserts": 2,
+   "literals": [
+    "5268fd2f98734e18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2528,6 +7082,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestInspectRefusesWhatItCannotReadAndNamesTheSheetsThereAre": {
+   "kind": "test",
+   "hash": "f7c46e1827f466e5",
+   "asserts": 5,
+   "literals": [
+    "99e2971a1742705c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestLinkKeyTypeAndFilterTestsAreChecked": {
    "kind": "test",
    "hash": "50b2eb6a21e73343",
@@ -2559,6 +7128,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestMergedCellsAreFilledOrKeptInTheFirstCell": {
+   "kind": "test",
+   "hash": "79b6f62455af4c61",
+   "asserts": 1,
+   "literals": [
+    "db3bdaa71c4e2879"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestOneChangedRowChangesOneObject": {
    "kind": "test",
    "hash": "281a86fdfa283831",
@@ -2570,6 +7154,66 @@
    "skips": 0,
    "reqs": [
     "REQ-266"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileHelpers": {
+   "kind": "test",
+   "hash": "a0ab6328326366d6",
+   "asserts": 7,
+   "literals": [
+    "38fffb3eee95bed8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileOfACSVFileHasTheColumnsOfTheDesign": {
+   "kind": "test",
+   "hash": "879e7fb6a12f9e1f",
+   "asserts": 4,
+   "literals": [
+    "cee0ca0cd3c5e381"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileOfAJSONLinesFileFlattensPaths": {
+   "kind": "test",
+   "hash": "3a0341ab432bcb91",
+   "asserts": 3,
+   "literals": [
+    "1a62449e63f2c466"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileOfAWorkbookListsSheetsAndGuessesTheHeader": {
+   "kind": "test",
+   "hash": "6853991226f346a0",
+   "asserts": 9,
+   "literals": [
+    "9c2322974afb0f77"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2631,6 +7275,21 @@
    "skips": 0,
    "reqs": [
     "REQ-264"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowProblemsOfAWorkbookCarryTheRangeOfTheRow": {
+   "kind": "test",
+   "hash": "97a3190287c3c0b5",
+   "asserts": 2,
+   "literals": [
+    "1871617637663357"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2710,6 +7369,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestSheetAddressesAreQuotedLikeExcelDoes": {
+   "kind": "test",
+   "hash": "a2f7f08178215ab1",
+   "asserts": 4,
+   "literals": [
+    "42738cc19e1163dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSheetOptionsAreChecked": {
+   "kind": "test",
+   "hash": "7151bdf3c5a785a8",
+   "asserts": 4,
+   "literals": [
+    "d081e3ab08196ad7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestSourceDefinitionRefusesWhatThisBuildLacks": {
    "kind": "test",
    "hash": "d1e690334b8d0845",
@@ -2740,6 +7429,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheSheetIsPickedByNameByPlaceOrFirstAndMissingOnesAreSaid": {
+   "kind": "test",
+   "hash": "65be25ccebb4ee8f",
+   "asserts": 7,
+   "literals": [
+    "6328172e093e01c5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTitleAboveTheHeaderAndBlankRowsInTheMiddle": {
+   "kind": "test",
+   "hash": "c28b438d9e8a60d2",
+   "asserts": 3,
+   "literals": [
+    "8e33af487a793642"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestVanishedRowRetiresAfterThreeRunsAndADay": {
    "kind": "test",
    "hash": "5ccf529f798522b1",
@@ -2751,6 +7470,36 @@
    "skips": 0,
    "reqs": [
     "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestWhereARowStandsIsKeptWhenOnlyItsPlaceChanged": {
+   "kind": "test",
+   "hash": "de359e1d5b9d463b",
+   "asserts": 2,
+   "literals": [
+    "45838054e58b3a04"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestWorkbookRunReportsWhatWasReadAndWhereTheProblemsAre": {
+   "kind": "test",
+   "hash": "967bde1a0b31045e",
+   "asserts": 9,
+   "literals": [
+    "ddba3cb8a58d7700"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2815,6 +7564,38 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingestcheck::TestMergedCellsKeptInTheFirstCellLeaveTheOthersWithoutAnIdentityAndSaySo": {
+   "kind": "test",
+   "hash": "336a85d859130293",
+   "asserts": 3,
+   "literals": [
+    "8f07614cc61e79d6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286",
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestMessyWorkbookGivesTheRowsExpectedAndReportsWhereTheProblemsAre": {
+   "kind": "test",
+   "hash": "1eab481e578a579f",
+   "asserts": 14,
+   "literals": [
+    "333716bc6a339aa4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286",
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingestcheck::TestReingestingTheSameFilesChangesNothing": {
    "kind": "test",
    "hash": "8563e00c2a39f746",
@@ -2830,6 +7611,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingestcheck::TestReingestingTheSameWorkbookChangesNothing": {
+   "kind": "test",
+   "hash": "9ddc83c653b01224",
+   "asserts": 8,
+   "literals": [
+    "ed80faa0886d089c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284",
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingestcheck::TestVanishedRowIsRetiredAfterThreeCompleteCapturesAndADay": {
    "kind": "test",
    "hash": "e2fc622e272746a3",
@@ -2841,6 +7638,22 @@
    "skips": 0,
    "reqs": [
     "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestWorkbookOfTheWorldGivesTheSameKGAsTheCSVAndJSONLinesFiles": {
+   "kind": "test",
+   "hash": "081fa75c6bb1ec02",
+   "asserts": 11,
+   "literals": [
+    "6e50e113fcac867e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284",
+    "REQ-286"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -3256,6 +8069,66 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/memstore::TestAChunkThatCannotBeWrittenOrReadIsRefused": {
+   "kind": "test",
+   "hash": "bb7c29ae3fbc60cf",
+   "asserts": 4,
+   "literals": [
+    "866d8b3b15549be8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAFailedAppendLeavesTheStoreAsItWasAndShutsItToWrites": {
+   "kind": "test",
+   "hash": "d3c4c5c8edf60380",
+   "asserts": 9,
+   "literals": [
+    "bc6f70bf028d7f2c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAFailedSnapshotLeavesTheWritesWorking": {
+   "kind": "test",
+   "hash": "f283d3cced5df9ea",
+   "asserts": 8,
+   "literals": [
+    "f055e92c659cf83f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAJournaledStoreComesBackAsItWas": {
+   "kind": "test",
+   "hash": "fb84742f4ad99015",
+   "asserts": 9,
+   "literals": [
+    "4c433562366590ef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestAnAbandonedApplyGoesAndItsNumbersComeBack": {
    "kind": "test",
    "hash": "b89350ee63da9043",
@@ -3287,6 +8160,21 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/memstore::TestARecoveredStoreTakesMoreWork": {
+   "kind": "test",
+   "hash": "f8af6370a34ec21f",
+   "asserts": 8,
+   "literals": [
+    "4501624f9648cdcb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestARestoreRaisesTheGenerationAndCutsLaterRows": {
    "kind": "test",
    "hash": "f1e692dcbcbb9eed",
@@ -3301,6 +8189,36 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/memstore::TestASnapshotWhoseWriterFailsIsAnError": {
+   "kind": "test",
+   "hash": "82b93adbddeb732d",
+   "asserts": 3,
+   "literals": [
+    "cee7f7c6b15fb85e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAStoreWithoutAJournalIsUnchanged": {
+   "kind": "test",
+   "hash": "57c23ac84b7a8d1d",
+   "asserts": 2,
+   "literals": [
+    "ce12430bc28344f6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/memstore::TestIdentifiersOfListsTheLiveIdentifiersOfOneObject": {
    "kind": "test",
@@ -3317,6 +8235,36 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/memstore::TestIdentityEventsSurviveTheWire": {
+   "kind": "test",
+   "hash": "5a28a5d6150e30f0",
+   "asserts": 3,
+   "literals": [
+    "26010cef31887915"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestRecordsAndSnapshotsThatMakeNoSenseAreRefused": {
+   "kind": "test",
+   "hash": "9cd82b48244ccfd5",
+   "asserts": 26,
+   "literals": [
+    "9348075b32830076"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestTheCatalogAndLeaseRefuseBadInput": {
    "kind": "test",
    "hash": "4c1e7440fed2b3b6",
@@ -3332,6 +8280,21 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/memstore::TestValuesRoundTripInTheirOwnForm": {
+   "kind": "test",
+   "hash": "e4f81b302cda9d03",
+   "asserts": 5,
+   "literals": [
+    "be6b2bd0391d88e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/memstore::TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead": {
    "kind": "test",
@@ -4486,6 +9449,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/query::TestAFieldErrorKeepsItsMessageAndNamesTheField": {
+   "kind": "test",
+   "hash": "47d8a8e4a834e986",
+   "asserts": 3,
+   "literals": [
+    "461a664f5a34ef85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/query::TestCodesAreDescribedAndSorted": {
    "kind": "test",
    "hash": "53b762b7c637e746",
@@ -4888,6 +9866,36 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/webui::TestBuiltTellsTheBuiltUIFromThePlaceholder": {
+   "kind": "test",
+   "hash": "0c826671f6413394",
+   "asserts": 3,
+   "literals": [
+    "a415e1ebe23a9bee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/webui::TestPlaceholderIsAlwaysEmbedded": {
+   "kind": "test",
+   "hash": "5b06404febd76dd6",
+   "asserts": 2,
+   "literals": [
+    "c9c9ef368e41521b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/worldgen::TestApplyShape": {
    "kind": "test",
@@ -5465,6 +10473,201 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestAnArchiveThatLiesAboutItsSizeIsRefused": {
+   "kind": "test",
+   "hash": "65ec9db8d6a05dda",
+   "asserts": 3,
+   "literals": [
+    "4ffe3c12bf4afe68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestDatesFollowTheStyleAndTheDateSystem": {
+   "kind": "test",
+   "hash": "2dc5331aadfedc03",
+   "asserts": 2,
+   "literals": [
+    "a114a8920c6226bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestDefaultLimits": {
+   "kind": "test",
+   "hash": "8762ca68b400094b",
+   "asserts": 1,
+   "literals": [
+    "6044ca25dafe06cd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestFilesOverALimitAreRefusedAndTheErrorNamesTheLimit": {
+   "kind": "test",
+   "hash": "9401ffb85ba4b9d2",
+   "asserts": 4,
+   "literals": [
+    "dcd7bda01cc0cf31"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestFilesThatCannotBeReadAreRefusedWithAClearError": {
+   "kind": "test",
+   "hash": "2df2b10579f8fc0f",
+   "asserts": 10,
+   "literals": [
+    "45272b71f193b20d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestFormulaCellsGiveTheStoredValue": {
+   "kind": "test",
+   "hash": "e0e3ce68586ffd92",
+   "asserts": 2,
+   "literals": [
+    "0ce815272aa14c68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestHiddenSheetsRowsAndColumnsAreReadAndMarked": {
+   "kind": "test",
+   "hash": "47e43b2ec44c7690",
+   "asserts": 3,
+   "literals": [
+    "3b649fe4d81a50c3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestMacroPartsAndExternalLinksAreNotFollowed": {
+   "kind": "test",
+   "hash": "17fbaa09652613da",
+   "asserts": 2,
+   "literals": [
+    "bf09827082802ed3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestNumbersAreWrittenInPlainDecimalForm": {
+   "kind": "test",
+   "hash": "0ed492babcfd8b63",
+   "asserts": 2,
+   "literals": [
+    "b957cc401be49694"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestSameWorkbookWrittenByEachToolReadsTheSame": {
+   "kind": "test",
+   "hash": "bc7f4493ec129357",
+   "asserts": 6,
+   "literals": [
+    "0d2701e583afd77d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestSheetsAreFoundByRelationshipNotByFileName": {
+   "kind": "test",
+   "hash": "deeafe6312a093a1",
+   "asserts": 4,
+   "literals": [
+    "dcb48a1246939f52"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestStringsKeepTheirTextExactly": {
+   "kind": "test",
+   "hash": "d5b5cc9340db0125",
+   "asserts": 2,
+   "literals": [
+    "fbd3b52be29ee0d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestTheBudgetOfUnpackedBytesCountsWhatIsRead": {
+   "kind": "test",
+   "hash": "e372c5daafbd8d88",
+   "asserts": 1,
+   "literals": [
+    "c886b5eaaa8b1f30"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "harness/src/checks/api-assembled.test.ts::<import:30102eeb>": {
@@ -23472,6 +28675,99 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/test-unlocked.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::<import:43095698>": {
+   "kind": "support",
+   "hash": "430956981f5ca8e8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::test files that are not locked [REQ-279] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::test files that are not locked [REQ-279] > =files": {
+   "kind": "support",
+   "hash": "b5a89de9a59724a8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::test files that are not locked [REQ-279] > =globs": {
+   "kind": "support",
+   "hash": "b02ba4c219702884",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::test files that are not locked [REQ-279] > unlocked_globs keep a file out of the lock and the trace, not out of the test files": {
+   "kind": "test",
+   "hash": "299a7045f5a84187",
+   "asserts": 2,
+   "literals": [
+    "\"apps/web/src/screens/**\"",
+    "\"apps/web/src/screens/b.test.tsx\"",
+    "\"apps/web/src/screens/b.test.tsx\"",
+    "\"apps/web/src/ui/a.test.tsx\"",
+    "\"apps/web/src/ui/a.test.tsx\"",
+    "\"apps/web/src/ui/a.test.tsx\"",
+    "\"apps/web/src/ui/a.test.tsx\"",
+    "\"unlocked_globs keep a file out of the lock and the trace, not out of the test files\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/test-unlocked.test.ts::test files that are not locked [REQ-279] > without unlocked_globs every test file is locked": {
+   "kind": "test",
+   "hash": "52adf06c9c9cb98b",
+   "asserts": 1,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"without unlocked_globs every test file is locked\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "harness/src/checks/testguard.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
@@ -24883,6 +30179,428 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::<import:733ac331>": {
+   "kind": "support",
+   "hash": "733ac3313f865e03",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::<import:f94243c9>": {
+   "kind": "support",
+   "hash": "f94243c94c1209a6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::=codes": {
+   "kind": "support",
+   "hash": "5d1b98ca26b81095",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::=CONFIG": {
+   "kind": "support",
+   "hash": "631cbf1d132dc365",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::=generated": {
+   "kind": "support",
+   "hash": "1ef2ccc5ad74b0f7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::=repo": {
+   "kind": "support",
+   "hash": "3919d9d6ffe59679",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::=sha": {
+   "kind": "support",
+   "hash": "108e1382c71a8af8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::colors are written in the token file only [REQ-277] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::colors are written in the token file only [REQ-277] > =scan": {
+   "kind": "support",
+   "hash": "91edcd07073d8a88",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::colors are written in the token file only [REQ-277] > arbitrary Tailwind colors, palette names, white and black are WEB021": {
+   "kind": "test",
+   "hash": "a5cc6f4906f18ac6",
+   "asserts": 1,
+   "literals": [
+    "\"<p className=\\\"bg-[#fff]\\\" />\"",
+    "\"<p className=\\\"bg-[#fff]\\\" />\"",
+    "\"<p className=\\\"bg-[color:var(--x)]\\\" />\"",
+    "\"<p className=\\\"bg-[color:var(--x)]\\\" />\"",
+    "\"<p className=\\\"border-white\\\" />\"",
+    "\"<p className=\\\"border-white\\\" />\"",
+    "\"<p className=\\\"text-red-500\\\" />\"",
+    "\"<p className=\\\"text-red-500\\\" />\"",
+    "\"WEB020:apps/web/src/screens/A.tsx:4\"",
+    "\"WEB020:apps/web/src/screens/A.tsx:4\"",
+    "\"WEB021:apps/web/src/screens/A.tsx:1\"",
+    "\"WEB021:apps/web/src/screens/A.tsx:1\"",
+    "\"WEB021:apps/web/src/screens/A.tsx:2\"",
+    "\"WEB021:apps/web/src/screens/A.tsx:2\"",
+    "\"WEB021:apps/web/src/screens/A.tsx:3\"",
+    "\"WEB021:apps/web/src/screens/A.tsx:3\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"apps/web/src/screens/A.tsx\"",
+    "\"apps/web/src/screens/A.tsx\"",
+    "\"arbitrary Tailwind colors, palette names, white and black are WEB021\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::colors are written in the token file only [REQ-277] > literals outside the token file are WEB020, inside it they are fine": {
+   "kind": "test",
+   "hash": "bee173bdae82cfe1",
+   "asserts": 1,
+   "literals": [
+    "\":root { --px-a: oklch(0.5 0.1 20); --px-b: #fff; }\\n\"",
+    "\":root { --px-a: oklch(0.5 0.1 20); --px-b: #fff; }\\n\"",
+    "\"WEB020:apps/web/src/app.css:1\"",
+    "\"WEB020:apps/web/src/app.css:1\"",
+    "\"WEB020:apps/web/src/screens/A.tsx:1\"",
+    "\"WEB020:apps/web/src/screens/A.tsx:1\"",
+    "\"WEB020:apps/web/src/screens/A.tsx:2\"",
+    "\"WEB020:apps/web/src/screens/A.tsx:2\"",
+    "\"a { color: hsl(10 10% 10%); }\\n\"",
+    "\"a { color: hsl(10 10% 10%); }\\n\"",
+    "\"apps/web/src/app.css\"",
+    "\"apps/web/src/app.css\"",
+    "\"apps/web/src/screens/A.tsx\"",
+    "\"apps/web/src/screens/A.tsx\"",
+    "\"apps/web/src/ui/tokens.css\"",
+    "\"apps/web/src/ui/tokens.css\"",
+    "\"const a = \\\"#1a2b3c\\\";\\nconst b = \\\"rgb(0 0 0)\\\";\\n\"",
+    "\"const a = \\\"#1a2b3c\\\";\\nconst b = \\\"rgb(0 0 0)\\\";\\n\"",
+    "\"literals outside the token file are WEB020, inside it they are fine\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::colors are written in the token file only [REQ-277] > token names, hash routes and sizes are not colors": {
+   "kind": "test",
+   "hash": "1a9a5f8fa3fa1b83",
+   "asserts": 1,
+   "literals": [
+    "\"apps/web/src/screens/A.tsx\"",
+    "\"apps/web/src/screens/A.tsx\"",
+    "\"const r = \\\"#/kg/main\\\"; const c = \\\"bg-surface text-muted border-line w-[12rem] text-accent\\\";\\n\"",
+    "\"const r = \\\"#/kg/main\\\"; const c = \\\"bg-surface text-muted border-line w-[12rem] text-accent\\\";\\n\"",
+    "\"token names, hash routes and sizes are not colors\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the backend builds without apps/web [REQ-279] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the backend builds without apps/web [REQ-279] > =healthy": {
+   "kind": "support",
+   "hash": "63951560b3fbb534",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the backend builds without apps/web [REQ-279] > =scan": {
+   "kind": "support",
+   "hash": "280de41b57264567",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the backend builds without apps/web [REQ-279] > a missing placeholder is WEB030, a Go reference WEB031, a missing ignore line WEB032": {
+   "kind": "test",
+   "hash": "a3fa206f245e8902",
+   "asserts": 3,
+   "literals": [
+    "\".gitignore\"",
+    "\".gitignore\"",
+    "\".gitignore\"",
+    "\".gitignore\"",
+    "\"// ../../apps/web/dist\\npackage main\\n\"",
+    "\"// ../../apps/web/dist\\npackage main\\n\"",
+    "\"WEB030\"",
+    "\"WEB030\"",
+    "\"WEB031\"",
+    "\"WEB031\"",
+    "\"WEB032\"",
+    "\"WEB032\"",
+    "\"a missing placeholder is WEB030, a Go reference WEB031, a missing ignore line WEB032\"",
+    "\"backend/internal/webui/dist/*\"",
+    "\"backend/internal/webui/dist/*\"",
+    "\"backend/main.go\"",
+    "\"backend/main.go\"",
+    "\"backend/main.go\"",
+    "\"backend/main.go\"",
+    "\"node_modules\\n\"",
+    "\"node_modules\\n\"",
+    "\"package main\\n\"",
+    "\"package main\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the backend builds without apps/web [REQ-279] > a placeholder, the ignore line and clean Go code pass": {
+   "kind": "test",
+   "hash": "d12f578dac3d0359",
+   "asserts": 1,
+   "literals": [
+    "\"a placeholder, the ignore line and clean Go code pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the dependencies of apps/web are on an allow-list [REQ-277] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the dependencies of apps/web are on an allow-list [REQ-277] > a package that lists only allowed names is clean": {
+   "kind": "test",
+   "hash": "51ba39c1bb6b7d0f",
+   "asserts": 1,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"a package that lists only allowed names is clean\"",
+    "\"apps/web/package.json\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the dependencies of apps/web are on an allow-list [REQ-277] > listed dependencies pass, others are WEB001 in every kind": {
+   "kind": "test",
+   "hash": "bd15585c03b08255",
+   "asserts": 2,
+   "literals": [
+    "\" \"",
+    "\" \"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"WEB001\"",
+    "\"WEB001\"",
+    "\"WEB001\"",
+    "\"WEB001\"",
+    "\"WEB001\"",
+    "\"WEB001\"",
+    "\"apps/web/package.json\"",
+    "\"listed dependencies pass, others are WEB001 in every kind\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > =check": {
+   "kind": "support",
+   "hash": "86e54ca3df2dc75e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > =contract": {
+   "kind": "support",
+   "hash": "9bec5ef3dbdc918b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > =dir": {
+   "kind": "support",
+   "hash": "088475b26e886ee8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > a file made from another contract is WEB010": {
+   "kind": "test",
+   "hash": "9d2e4f201d54ceb1",
+   "asserts": 1,
+   "literals": [
+    "\"WEB010\"",
+    "\"WEB010\"",
+    "\"a file made from another contract is WEB010\"",
+    "\"export const a = 1;\\n\"",
+    "\"export const a = 1;\\n\"",
+    "\"{\\\"other\\\":1}\"",
+    "\"{\\\"other\\\":1}\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > a file made from this contract with its own body passes": {
+   "kind": "test",
+   "hash": "b2576ecb14ab69aa",
+   "asserts": 1,
+   "literals": [
+    "\"a file made from this contract with its own body passes\"",
+    "\"export const a = 1;\\n\"",
+    "\"export const a = 1;\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > a file without the header and a missing folder are WEB012": {
+   "kind": "test",
+   "hash": "c474b4c7de7eeeab",
+   "asserts": 2,
+   "literals": [
+    "\"WEB012\"",
+    "\"WEB012\"",
+    "\"WEB012\"",
+    "\"WEB012\"",
+    "\"a file without the header and a missing folder are WEB012\"",
+    "\"export const a = 1;\\n\"",
+    "\"export const a = 1;\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web.test.ts::the generated API layer matches the contract [REQ-276] > a hand-edited body is WEB011": {
+   "kind": "test",
+   "hash": "199318f280e29121",
+   "asserts": 1,
+   "literals": [
+    "\"WEB011\"",
+    "\"WEB011\"",
+    "\"a = 1\"",
+    "\"a = 2\"",
+    "\"a hand-edited body is WEB011\"",
+    "\"export const a = 1;\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
    "amended_by": null
   },
   "harness/src/common.test.ts::<import:007beb93>": {

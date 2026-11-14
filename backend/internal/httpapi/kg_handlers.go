@@ -213,6 +213,10 @@ func (c *call) objectGet() {
 
 // runGet asks get and writes the answer; the GET and the POST form share it.
 func (c *call) runGet(in query.GetInput) {
+	c.asked = in.ObjectID
+	if in.Identifier != nil {
+		c.asked = in.Identifier.Scheme + ":" + in.Identifier.Value
+	}
 	ans, err := c.s.queries.Get(c.r.Context(), in, c.readFilter())
 	if err != nil {
 		c.failErr(err)

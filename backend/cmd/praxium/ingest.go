@@ -2,42 +2,120 @@ package main
 
 import (
 	"context"
+	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"sort"
 	"strings"
 
-	"github.com/ysk6506/praxium/backend/internal/devload"
 	"github.com/ysk6506/praxium/backend/internal/filesource"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
-	"github.com/ysk6506/praxium/backend/internal/memstore"
 	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/xlsx"
 )
 
-const ingestUsage = `usage: praxium ingest run -source <source.json> -mapping <mapping.json> -input <dataset>=<file> [-input ...] [-times N]
-  One ingestion run of a file source (ADR-0033): capture, parse, raw record changes, refinement, feeds,
-  identification, links and apply, into a KG in a store that lives as long as this command. -times repeats
-  the run on the same files in the same store to show that a second run changes nothing.
-  The files are only read. The definitions are JSON data (docs/design-docs/ingestion.md).
+// exitProblems is the exit code of `ingest run -fail-on-problem` when the run set problems aside (ADR-0041).
+const exitProblems = 20
+
+const ingestRunUsage = "usage: praxium ingest run -source <source.json> -mapping <mapping.json> -input <dataset>=<file> [-input ...] [-data-dir <folder>] [-fail-on-problem] [-times N]"
+
+const ingestRunBody = `Reads files into a KG: capture, parse, raw record changes, refinement, feeds, identification, links and apply
+(ADR-0033). The files are only read. The source definition says which datasets there are and how each file is parsed
+(CSV, JSON Lines, or a sheet of an Excel workbook); the mapping definition says which objects and links they make
+(docs/design-docs/ingestion.md). Both are JSON files; "praxium ingest init" writes examples.
+
+Without -data-dir the KG lives in memory only while this command runs. With -data-dir <folder> the KG is built in
+that folder (the built-in file store) and what the run learned (which rows it saw, how often a row was missing) is
+kept next to it, so the next run goes on from here: a row that stays away from complete runs is retired only after
+several of them. Look at the result with: praxium local -data-dir <folder>. A folder that a server has open is locked:
+stop the server and run again.
+
+A dataset with no -input is not collected in this run and keeps what it had. A -input that names a dataset the source
+does not define is an error.
+
+Reading the output:
+  ingest ...            one line per run. objects, links: what the run made or kept alive. volatile: values of
+                        attributes that change all the time and keep no history. retired_objects, retired_links:
+                        closed in this run. changed: whether the KG changed; new_version: whether a version was
+                        sealed. version, graph_hash: the sealed version and a hash of the whole graph; the same
+                        files give the same hash.
+  dataset ...           one line per dataset: the rows of the file. received = read + unreadable. read = used +
+                        filtered (by a rule of the mapping) + problem + unused (no feed uses the row).
+                        raw_added, raw_modified, raw_unchanged, raw_deleted, raw_unseen: what changed against the
+                        previous run (unseen: not in the file this time, not yet retired).
+  problems kind=N       how many problems of each kind; problem ... lines list the first 20 with the row and why.
+  last line             completed without problems, or completed with N problems (see "problem" lines above).
+
+Exit codes:
+  0    the run finished (also when it set problems aside; the problems are listed and counted on the last line)
+  1    the run failed (a file or definition could not be read, the data folder is locked or does not fit, ...)
+  2    the command line is wrong (including a -input for a dataset the source does not define)
+  20   the run finished with problems and -fail-on-problem was given
+
+example:
+  praxium ingest init -out example
+  praxium ingest run -data-dir data -source example/csv/source.json -mapping example/csv/mapping.json \
+    -input ds_racks=example/csv/racks.csv -input ds_servers=example/csv/servers.csv
 `
+
+// inputList is the repeated -input <dataset>=<file>.
+type inputList map[string]string
+
+func (l inputList) String() string { return fmt.Sprint(map[string]string(l)) }
+
+func (l inputList) Set(v string) error {
+	ds, file, ok := strings.Cut(v, "=")
+	if !ok || ds == "" || file == "" {
+		return fmt.Errorf("-input wants <dataset>=<file>, got %q", v)
+	}
+	l[ds] = file
+	return nil
+}
 
 // ingestFlags is what the command line of one ingestion run says.
 type ingestFlags struct {
-	source, mapping string
-	inputs          map[string]string
-	times           int
+	source, mapping, dataDir string
+	inputs                   inputList
+	times                    int
+	failOnProblem            bool
+}
+
+func newIngestRunFlags(f *ingestFlags) *flag.FlagSet {
+	fs := flag.NewFlagSet("ingest run", flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+	fs.StringVar(&f.source, "source", "", "the source definition (JSON): the datasets and how each file is parsed")
+	fs.StringVar(&f.mapping, "mapping", "", "the mapping definition (JSON): which objects and links the datasets make")
+	fs.Var(f.inputs, "input", "the file of a dataset, <dataset>=<file>; repeat it for every dataset")
+	fs.StringVar(&f.dataDir, "data-dir", "", "keep the KG and the ingestion state in this folder (default: in memory, gone when the command ends)")
+	fs.IntVar(&f.times, "times", 1, "run N times on the same files, to show that a second run changes nothing (1 to 20)")
+	fs.BoolVar(&f.failOnProblem, "fail-on-problem", false, "exit with code 20 when the run set problems aside (default: exit 0)")
+	return fs
+}
+
+// ingestHelpEntries are the help entries of this file's commands.
+func ingestHelpEntries(out map[string]helpEntry) {
+	out["ingest"] = helpEntry{usage: "usage: praxium ingest init|inspect|run ...", body: `Bring in your data: files in, a KG out.
+  init      write example definitions and sample files, to try the steps
+  inspect   look at a file before writing a mapping for it
+  run       read files into a KG (-data-dir keeps the result)
+Run "praxium ingest <command> --help" for the flags.
+`}
+	out["ingest run"] = helpEntry{usage: ingestRunUsage, body: ingestRunBody, flags: func() *flag.FlagSet { return newIngestRunFlags(&ingestFlags{inputs: inputList{}}) }}
 }
 
 func parseIngestRun(args []string) (ingestFlags, error) {
-	f := ingestFlags{inputs: map[string]string{}, times: 1}
-	for i := 0; i < len(args); i += 2 {
-		if i+1 >= len(args) {
-			return f, kernel.Errorf(kernel.CodeInvalidValue, "%s wants a value", args[i])
-		}
-		if err := f.set(args[i], args[i+1]); err != nil {
-			return f, err
-		}
+	f := ingestFlags{inputs: inputList{}}
+	fs := newIngestRunFlags(&f)
+	if err := fs.Parse(args); err != nil {
+		return f, flagProblem(err)
+	}
+	if fs.NArg() > 0 {
+		return f, kernel.Errorf(kernel.CodeInvalidValue, "unexpected argument %q", fs.Arg(0))
+	}
+	if f.times < 1 || f.times > 20 {
+		return f, kernel.Errorf(kernel.CodeInvalidValue, "-times wants a number from 1 to 20, got %d", f.times)
 	}
 	if f.source == "" || f.mapping == "" || len(f.inputs) == 0 {
 		return f, kernel.Errorf(kernel.CodeInvalidValue, "ingest run needs -source, -mapping and at least one -input")
@@ -45,43 +123,37 @@ func parseIngestRun(args []string) (ingestFlags, error) {
 	return f, nil
 }
 
-// set takes one flag and its value.
-func (f *ingestFlags) set(flag, v string) error {
-	switch flag {
-	case "-source":
-		f.source = v
-	case "-mapping":
-		f.mapping = v
-	case "-input":
-		ds, file, ok := strings.Cut(v, "=")
-		if !ok || ds == "" || file == "" {
-			return kernel.Errorf(kernel.CodeInvalidValue, "-input wants <dataset>=<file>, got %q", v)
-		}
-		f.inputs[ds] = file
-	case "-times":
-		if _, err := fmt.Sscanf(v, "%d", &f.times); err != nil || f.times < 1 || f.times > 20 {
-			return kernel.Errorf(kernel.CodeInvalidValue, "-times wants a number from 1 to 20, got %q", v)
-		}
-	default:
-		return kernel.Errorf(kernel.CodeInvalidValue, "unexpected argument %q", flag)
-	}
-	return nil
-}
+// inputProblem is a -input the source does not fit: a usage error, found before anything is read.
+type inputProblem struct{ msg string }
 
-// runIngest is `praxium ingest ...`: only `run` exists.
+func (e inputProblem) Error() string { return e.msg }
+
+// runIngest is `praxium ingest ...`: run, inspect and init.
 func runIngest(args []string, stdout, stderr io.Writer, w wiring) int {
+	if len(args) >= 1 && args[0] == "inspect" {
+		return runInspect(args[1:], stdout, stderr, w)
+	}
+	if len(args) >= 1 && args[0] == "init" {
+		return runInit(args[1:], stdout, stderr)
+	}
 	if len(args) < 1 || args[0] != "run" {
-		fmt.Fprint(stderr, ingestUsage)
+		fmt.Fprint(stderr, "praxium: ingest needs init, inspect or run\n"+commandHelps()["ingest"].usage+"\nFor details: praxium ingest --help\n")
 		return exitUsage
 	}
 	f, err := parseIngestRun(args[1:])
 	if err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n%s", err, ingestUsage)
-		return exitUsage
+		return usageFail(stderr, err, "ingest run")
 	}
-	if err := ingestRun(f, stdout, w); err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+	problems, err := ingestRun(f, stdout, stderr, w)
+	var bad inputProblem
+	switch {
+	case errors.As(err, &bad):
+		return usageFail(stderr, err, "ingest run")
+	case err != nil:
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
+	case problems > 0 && f.failOnProblem:
+		return exitProblems
 	}
 	return exitOK
 }
@@ -117,59 +189,92 @@ func loadPlan(reg *model.Registry, f ingestFlags, w wiring) (*ingest.Plan, error
 	return ingest.Compile(reg, src, mp)
 }
 
-func ingestRun(f ingestFlags, stdout io.Writer, w wiring) error {
+// checkInputs compares the -input datasets with the datasets the source defines: a name the source does not define
+// is an error that lists the names it does; a dataset without a file is a note, since it is simply not collected.
+func checkInputs(plan *ingest.Plan, inputs inputList) (notes []string, err error) {
+	defined := map[string]bool{}
+	var names []string
+	for _, ds := range plan.Source.Datasets {
+		defined[ds.ID] = true
+		names = append(names, ds.ID)
+	}
+	var unknown []string
+	for ds := range inputs {
+		if !defined[ds] {
+			unknown = append(unknown, ds)
+		}
+	}
+	sort.Strings(unknown)
+	if len(unknown) > 0 {
+		return nil, inputProblem{fmt.Sprintf("-input names %s, which source %s does not define; the datasets it defines are: %s",
+			quoteAll(unknown), plan.Source.ID, strings.Join(names, ", "))}
+	}
+	for _, name := range names {
+		if _, ok := inputs[name]; !ok {
+			notes = append(notes, fmt.Sprintf("note: dataset %s has no -input, so it is not collected in this run (what it had before stays as it is)", name))
+		}
+	}
+	return notes, nil
+}
+
+func quoteAll(names []string) string {
+	quoted := make([]string, len(names))
+	for i, n := range names {
+		quoted[i] = fmt.Sprintf("dataset %q", n)
+	}
+	return strings.Join(quoted, ", ")
+}
+
+// ingestRun runs the pipeline as many times as asked and prints each run, then the last lines: whether there were
+// problems and whether the result is kept. It returns the problems of the last run.
+func ingestRun(f ingestFlags, stdout, stderr io.Writer, w wiring) (int, error) {
 	ctx := context.Background()
 	reg, err := model.LoadStandard()
 	if err != nil {
-		return err
+		return 0, err
 	}
 	plan, err := loadPlan(reg, f, w)
 	if err != nil {
-		return err
+		return 0, err
 	}
-	store := memstore.New()
-	kg, err := devload.NewKG(ctx, store, reg, w.ids, w.clock, "ingested")
+	notes, err := checkInputs(plan, f.inputs)
 	if err != nil {
-		return err
+		return 0, err
 	}
+	for _, n := range notes {
+		fmt.Fprintln(stdout, n)
+	}
+	target, err := openIngestTarget(ctx, reg, w, f.dataDir, stderr)
+	if err != nil {
+		return 0, err
+	}
+	target.reg = reg
+	problems, runErr := runPlan(ctx, f, plan, target, stdout, w)
+	if err := target.close(); err != nil && runErr == nil {
+		runErr = err
+	}
+	if runErr != nil {
+		return 0, runErr
+	}
+	printEnd(stdout, problems, f.dataDir)
+	return problems, nil
+}
+
+func runPlan(ctx context.Context, f ingestFlags, plan *ingest.Plan, t ingestTarget, stdout io.Writer, w wiring) (int, error) {
 	opener := w.open
 	if opener == nil {
 		opener = func(p string) (io.ReadCloser, error) { return openTruth(w, p) }
 	}
-	runner := ingest.Runner{Store: store, Reg: reg, Clock: w.clock, IDs: w.ids, States: ingest.NewMemStateStore(),
-		Fetcher: filesource.Source{Open: opener, Files: f.inputs}}
+	runner := ingest.Runner{Store: t.store, Reg: t.reg, Clock: w.clock, IDs: w.ids, States: t.states,
+		Fetcher: filesource.Source{Open: opener, Files: f.inputs}, Workbooks: xlsx.Reader{}}
+	problems := 0
 	for i := 0; i < f.times; i++ {
-		rep, err := runner.Run(ctx, plan, kg.ID)
+		rep, err := runner.Run(ctx, plan, t.kg.ID)
 		if err != nil {
-			return err
+			return 0, err
 		}
 		printReport(stdout, rep)
+		problems = countProblems(rep)
 	}
-	return nil
-}
-
-// printReport prints one run: a line for the run, a line for each dataset and the problems it set aside.
-func printReport(out io.Writer, r ingest.Report) {
-	fmt.Fprintf(out, "ingest source=%s run=%d objects=%d links=%d volatile=%d retired_objects=%d retired_links=%d changed=%t new_version=%t version=%s graph_hash=%s\n",
-		r.SourceID, r.Run, r.Objects, r.Links, r.VolatileValues, r.RetiredObjects, r.RetiredLinks, r.Changed, r.NewVersion, r.VersionID, r.GraphHash)
-	for _, d := range r.Datasets {
-		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d\n",
-			d.Dataset, d.Collected, d.Received, d.Unreadable, d.Read, d.Used, d.Filtered, d.Problem, d.Unused,
-			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen)
-	}
-	kinds := make([]string, 0, len(r.ProblemCounts))
-	for k := range r.ProblemCounts {
-		kinds = append(kinds, k)
-	}
-	sort.Strings(kinds)
-	for _, k := range kinds {
-		fmt.Fprintf(out, "  problems %s=%d\n", k, r.ProblemCounts[k])
-	}
-	for i, p := range r.Problems {
-		if i == 20 {
-			fmt.Fprintf(out, "  ... %d more listed in the report\n", len(r.Problems)-i)
-			break
-		}
-		fmt.Fprintf(out, "  problem %s dataset=%s key=%s line=%d: %s\n", p.Kind, p.Dataset, p.Key, p.Line, p.Reason)
-	}
+	return problems, nil
 }

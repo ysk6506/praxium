@@ -1,0 +1,7 @@
+doc: "docs/guides/release.md"
+target: "scripts/release-build.sh"
+hash: "bdd64612a4883f7e"
+date: "2026-11-14"
+note: "ADR-0041: added the demo-first step, smoke checks and sorted SHA256SUMS"
+text_changed: true
+doc_hash: "dd05546c217ac2ab"

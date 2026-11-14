@@ -57,6 +57,16 @@
       }
     },
     {
+      "includes": ["apps/web/src/ui/tokens.css"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noUnknownAtRules": "off"
+          }
+        }
+      }
+    },
+    {
       "includes": ["**/*.test.ts", "**/*.test.tsx", "**/test-support/**"],
       "linter": {
         "rules": {

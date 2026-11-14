@@ -10,14 +10,16 @@
   "scripts": {
     "lint": "biome check .",
     "format": "biome format --write .",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && pnpm --filter @praxium/web typecheck",
     "test": "vitest run --coverage",
     "structure": "tsx harness/src/run-all.ts --with-coverage",
     "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm structure",
     "check:pr": "pnpm lint && pnpm typecheck && pnpm test && tsx harness/src/run-all.ts --with-coverage --base origin/main",
     "ratchet": "tsx harness/src/checks/coverage.ts ratchet && tsx harness/src/checks/debt.ts ratchet && tsx harness/src/checks/ignores.ts ratchet",
     "quality": "tsx harness/src/checks/quality.ts",
-    "lock-tests": "tsx harness/src/checks/testguard.ts lock"
+    "lock-tests": "tsx harness/src/checks/testguard.ts lock",
+    "web:gen-api": "tsx scripts/web-gen-api.ts",
+    "web:build": "bash scripts/build-with-web.sh"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.7",

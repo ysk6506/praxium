@@ -69,8 +69,8 @@ func newDerivation(p *Plan, st *State, rep *Report, now time.Time) *derivation {
 		objects: map[string]*objAcc{}, rowObj: map[string]map[string]string{}, identOwner: map[string]string{}, links: map[string]desiredLink{}}
 }
 
-func (d *derivation) problem(kind, dataset, feed, key string, line int, reason string) {
-	d.rep.problem(Problem{Kind: kind, Dataset: dataset, Feed: feed, Key: key, Line: line, Reason: reason})
+func (d *derivation) problem(kind, dataset, feed string, row Row, reason string) {
+	d.rep.problem(Problem{Kind: kind, Dataset: dataset, Feed: feed, Key: row.Key, Line: row.Line, Where: row.Where, Reason: reason})
 }
 
 // materialize reads the open raw records of every dataset as rows and runs the refinements over them.
@@ -86,7 +86,7 @@ func (d *derivation) materialize() {
 		d.fates[ds.ID] = map[string]*fate{}
 		for i, k := range keys {
 			rec := state.Open[k]
-			rows[i] = Row{Key: k, Line: rec.Line, Fields: rec.Fields}
+			rows[i] = Row{Key: k, Line: rec.Line, Where: rec.Where, Fields: rec.Fields}
 			d.fates[ds.ID][k] = &fate{}
 		}
 		d.rows[ds.ID] = rows
@@ -130,13 +130,13 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 	contribs, err := d.values(fp, row, root)
 	if err != nil {
 		f.problem = true
-		d.problem(ProblemInvalidValue, root, fp.feed.ID, row.Key, row.Line, err.Error())
+		d.problem(ProblemInvalidValue, root, fp.feed.ID, row, err.Error())
 		return nil
 	}
 	formed, why := formKeys(fp, d.p.reg, row)
 	if len(formed) == 0 {
 		f.problem = true
-		d.problem(ProblemMissingIdentity, root, fp.feed.ID, row.Key, row.Line, strings.Join(why, "; "))
+		d.problem(ProblemMissingIdentity, root, fp.feed.ID, row, strings.Join(why, "; "))
 		return nil
 	}
 	res, found, err := identify(fp, d.st, formed)
@@ -146,7 +146,7 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 	acc := d.objects[res.id.String()]
 	if !found || (!fp.feed.CreatesObjects && acc == nil) {
 		f.problem = true
-		d.problem(ProblemOrphanValue, root, fp.feed.ID, row.Key, row.Line, "no object of type "+fp.typ.Name+" has this identity")
+		d.problem(ProblemOrphanValue, root, fp.feed.ID, row, "no object of type "+fp.typ.Name+" has this identity")
 		return nil
 	}
 	if acc == nil {
@@ -154,7 +154,7 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 	}
 	for _, c := range res.conflicts {
 		f.problem = true
-		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row.Key, row.Line, c)
+		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row, c)
 	}
 	d.attach(fp, acc, formed, contribs, row)
 	d.rowObj[fp.feed.ID][row.Key] = res.id.String()
@@ -209,7 +209,7 @@ func (d *derivation) attach(fp *feedPlan, acc *objAcc, formed []formedKey, contr
 func (d *derivation) claim(acc *objAcc, scheme, value string, fp *feedPlan, row Row, root string) {
 	k := scheme + keySep + value
 	if owner, ok := d.identOwner[k]; ok && owner != acc.id.String() {
-		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row.Key, row.Line, "identifier "+scheme+" "+value+" already names another object")
+		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row, "identifier "+scheme+" "+value+" already names another object")
 		return
 	}
 	d.identOwner[k] = acc.id.String()

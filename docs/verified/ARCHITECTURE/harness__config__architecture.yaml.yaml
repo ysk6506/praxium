@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "b9845e89beefebcf"
+hash: "303098a5308533e2"
 date: "2026-11-14"
-note: "merged ingest units with pgstore row, module row and cmd.praxium text; checked against architecture.yaml"
-text_changed: true
-doc_hash: "5729f97cddcc7847"
+note: "ADR-0040: checked; stays accurate"
+text_changed: false
+doc_hash: "ecf4125be6eb6f58"

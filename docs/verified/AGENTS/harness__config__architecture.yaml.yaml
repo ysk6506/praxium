@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "b9845e89beefebcf"
+hash: "303098a5308533e2"
 date: "2026-11-14"
-note: "architecture.yaml gained adapter.pgstore and lib/pq beside the ingest units; AGENTS text unchanged and still correct"
+note: "x"
 text_changed: true
-doc_hash: "388cb5a3fb37da85"
+doc_hash: "06b823911173696c"

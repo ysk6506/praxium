@@ -15,9 +15,12 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/worldgen"
 )
 
-const worldgenUsage = `usage: praxium worldgen [flags]            generate a synthetic world
-       praxium worldgen validate <truth.jsonl>
-       praxium worldgen params             list the parameters
+const worldgenHelp = `Generates a synthetic data center (a "world") from a seed: the truth of the world, and optionally views of it
+as files, a stream of changes and a shape card (docs/design-docs/worldgen.md). praxium demo uses the same generator.
+  praxium worldgen [flags]            generate a synthetic world
+  praxium worldgen validate <truth.jsonl>
+  praxium worldgen params             list the parameters
+
 flags:
   -seed N          seed of the world (default 1)
   -scale N         about this many objects and links (default 100000)
@@ -27,6 +30,9 @@ flags:
   -changes N       plan N changes and write the change stream
   -shape           compute and write the shape card
   -shape-in FILE   set parameters from a shape card
+
+example:
+  praxium worldgen -scale 500 -seed 7 -out /tmp/world
 `
 
 // dirStore creates files under a directory and never outside it.
@@ -62,10 +68,10 @@ func runWorldgen(args []string, stdout, stderr io.Writer, d deps) int {
 	}
 	code, err := worldgenRun(args, stdout, d)
 	if err != nil {
-		fmt.Fprintf(stderr, "worldgen: %v\n", err)
 		if code == exitUsage {
-			fmt.Fprint(stderr, worldgenUsage)
+			return usageFail(stderr, err, "worldgen")
 		}
+		fmt.Fprintf(stderr, "worldgen: %v\n", err)
 	}
 	return code
 }
@@ -82,7 +88,10 @@ func worldgenRun(args []string, stdout io.Writer, d deps) (int, error) {
 	shapeIn := fs.String("shape-in", "", "")
 	var sets setFlags
 	fs.Var(&sets, "set", "")
-	if err := fs.Parse(args); err != nil || fs.NArg() > 0 {
+	if err := fs.Parse(args); err != nil {
+		return exitUsage, flagProblem(err)
+	}
+	if fs.NArg() > 0 {
 		return exitUsage, kernel.Errorf(kernel.CodeInvalidValue, "bad arguments %v", args)
 	}
 	p := worldgen.DefaultParams(*seed, *scale)
@@ -154,8 +163,7 @@ func (nopCloser) Close() error { return nil }
 
 func worldgenValidate(args []string, stdout, stderr io.Writer) int {
 	if len(args) != 1 {
-		fmt.Fprint(stderr, worldgenUsage)
-		return exitUsage
+		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "validate wants one truth file"), "worldgen")
 	}
 	f, err := os.Open(args[0])
 	if err != nil {

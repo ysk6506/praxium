@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"context"
+	"io/fs"
 	"log/slog"
 	"net"
 	"net/http"
@@ -44,6 +45,8 @@ type Config struct {
 	// Queries and KGs read the KGs; both nil means the server has no store and the KG routes answer 503.
 	Queries *query.Engine
 	KGs     KGSource
+	// UI is the built web UI, served at / next to the API. Nil means the server serves the API only (ADR-0035).
+	UI fs.FS
 	// Version is the build version, reported by capabilities later and logged now.
 	Version string
 }
@@ -64,6 +67,7 @@ type Server struct {
 	lists    *registryLists
 	queries  *query.Engine
 	kgs      KGSource
+	ui       fs.FS
 	started  atomic.Bool
 	draining atomic.Bool
 }
@@ -75,7 +79,7 @@ func New(cfg Config) (*Server, error) {
 	}
 	s := &Server{
 		reg: cfg.Registry, authn: cfg.Authenticator, authz: cfg.Authorizer, clock: cfg.Clock,
-		ids: cfg.IDs, log: cfg.Logger, queries: cfg.Queries, kgs: cfg.KGs, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
+		ids: cfg.IDs, log: cfg.Logger, queries: cfg.Queries, kgs: cfg.KGs, ui: cfg.UI, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
 		mux: http.NewServeMux(),
 	}
 	if s.authz == nil {
@@ -152,13 +156,16 @@ func (s *Server) dispatch(w http.ResponseWriter, r *http.Request) {
 		s.mux.ServeHTTP(w, r)
 		return
 	}
+	if s.serveUI(w, r) {
+		return
+	}
 	c := &call{s: s, w: w, r: r, trace: traceOf(r.Context())}
 	if allowed := s.allowedMethods(r); len(allowed) > 0 {
 		w.Header().Set("Allow", joinMethods(allowed))
 		c.fail("invalid_input.method_not_allowed", map[string]any{"method": r.Method, "allowed": allowed})
 		return
 	}
-	c.notFound("route")
+	c.notFound("route", c.r.URL.Path)
 }
 
 // allowedMethods lists the methods the request's path has routes for.

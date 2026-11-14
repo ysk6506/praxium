@@ -3,6 +3,7 @@ package httpapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 	"strings"
@@ -38,15 +39,15 @@ func (c *call) failErr(err error) {
 	}
 	switch code {
 	case query.CodeObjectNotFound:
-		c.notFound("object")
+		c.notFound("object", first(c.r.PathValue("object_id"), c.asked))
 	case graph.CodeKGNotFound:
-		c.notFound("kg")
+		c.notFound("kg", c.r.PathValue("kg"))
 	case graph.CodeGenerationChanged:
 		c.fail("conflict.generation_changed", nil)
 	case graph.CodeWaitTimeout, graph.CodeNotReadable:
 		c.fail("stale.min_seq_not_reached", detail(err))
 	case kernel.CodeInvalidValue:
-		c.fail("invalid_input.field", detail(err))
+		c.fail("invalid_input.field", fieldParams(err))
 	case kernel.CodeUnsupported:
 		c.fail("server.unavailable", detail(err))
 	default:
@@ -56,6 +57,39 @@ func (c *call) failErr(err error) {
 }
 
 func detail(err error) map[string]any { return map[string]any{"detail": err.Error()} }
+
+// fieldParams are the params of invalid_input.field: detail is the error with its code, message the plain sentence
+// and field, when the error knows it, the field of the request it is about (the notes of the error shape in
+// rest-api.md; the command line and the web UI show them).
+func fieldParams(err error) map[string]any {
+	params := detail(err)
+	params["message"] = plainMessage(err)
+	if field := query.FieldOf(err); field != "" {
+		params["field"] = field
+	}
+	return params
+}
+
+// plainMessage is the text of an error without its code.
+func plainMessage(err error) string {
+	var ke *kernel.Error
+	if !errors.As(err, &ke) {
+		return err.Error()
+	}
+	if ke.Cause != nil {
+		return ke.Message + ": " + ke.Cause.Error()
+	}
+	return ke.Message
+}
+
+func first(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
+}
 
 // queryProblem is the code of the catalogue a refusal of the queries becomes, and its parameters.
 type queryProblem struct {

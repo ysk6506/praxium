@@ -10,3 +10,8 @@ coverage/
 backend/cmd/praxium/praxium
 backend/**/*.exe
 *.test
+
+# The built web UI that the Go program embeds (ADR-0035): scripts/build-with-web.sh copies it in; only the placeholder is committed.
+!backend/internal/webui/dist/
+backend/internal/webui/dist/*
+!backend/internal/webui/dist/placeholder.html

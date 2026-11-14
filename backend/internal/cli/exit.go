@@ -36,10 +36,26 @@ type ProblemError struct {
 	Title   string         `json:"title"`
 	TraceID string         `json:"trace_id"`
 	Params  map[string]any `json:"params"`
+	Errors  []FieldProblem `json:"errors"`
 }
 
+// FieldProblem is one wrong field of a request, as the server names it.
+type FieldProblem struct {
+	Pointer string         `json:"pointer"`
+	Code    string         `json:"code"`
+	Params  map[string]any `json:"params"`
+}
+
+// Error is the one line a person reads: the code, what the server said was wrong, the status and the trace.
 func (p *ProblemError) Error() string {
-	return fmt.Sprintf("%s (HTTP %d, trace %s)", p.Code, p.Status, p.TraceID)
+	head := p.Code
+	if why := p.Cause(); why != "" {
+		head += ": " + why
+	}
+	if p.TraceID == "" {
+		return fmt.Sprintf("%s (HTTP %d)", head, p.Status)
+	}
+	return fmt.Sprintf("%s (HTTP %d, trace %s)", head, p.Status, p.TraceID)
 }
 
 // Group is the part of the code before the dot.

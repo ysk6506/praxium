@@ -1,0 +1,43 @@
+/* Tailwind without its default theme: the tokens file is the whole theme (ADR-0035). */
+@layer theme, base, components, utilities;
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css" layer(utilities);
+@import "./ui/tokens.css" layer(theme);
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    background: var(--color-canvas);
+    color: var(--color-fg);
+    /* Korean text breaks between words, not inside them; a long id or path may still break anywhere. */
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-size: 0.875rem;
+  }
+
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+  }
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+}

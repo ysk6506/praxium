@@ -19,8 +19,10 @@ func itoa(n int) string { return strconv.Itoa(n) }
 
 // Row is one record of a dataset: the cells by column name and the natural key that names it.
 type Row struct {
-	Key    string
-	Line   int
+	Key  string
+	Line int
+	// Where says where the row is when a line number does not: the range of the row on its sheet (Servers!A12:F12).
+	Where  string
 	Fields map[string]string
 }
 
@@ -38,7 +40,9 @@ func (r Row) with(column, value string) Row {
 // Unreadable is a line that could not become a row. It is counted and kept for a sample; it is never dropped
 // without a trace (ingestion.md 3.4).
 type Unreadable struct {
-	Line   int
+	Line int
+	// Where is the cell that made the row unreadable, for a workbook (Servers!B12).
+	Where  string
 	Reason string
 }
 
@@ -51,6 +55,17 @@ type Table struct {
 	Missing []string
 	// Extra lists the header names no column of the dataset reads.
 	Extra []string
+	// Reason says why a table is unusable when it is not for a missing column (a sheet the workbook does not have).
+	Reason string
+	// Sheet, SheetState and the counts that follow are those of a workbook: which sheet was read, whether it is
+	// hidden, how many hidden rows and hidden mapped columns were read, what was passed over and why, and the cells
+	// that gave no value.
+	Sheet          string
+	SheetState     string
+	HiddenRowsRead int
+	HiddenColsRead int
+	Skipped        map[string]int
+	CellIssues     []CellIssue
 }
 
 // Received is every data line of the capture, read or not.

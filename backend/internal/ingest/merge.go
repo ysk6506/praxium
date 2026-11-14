@@ -34,7 +34,7 @@ func (d *derivation) pick(acc *objAcc, no int, cs []contrib) contrib {
 	win := cs[0]
 	for _, c := range cs[1:] {
 		if c.text != win.text {
-			d.problem(ProblemSourceConflict, "", c.feedID, acc.id.String(), 0,
+			d.problem(ProblemSourceConflict, "", c.feedID, Row{Key: acc.id.String()},
 				fmt.Sprintf("attribute %s: %q from %s lost to %q from %s", c.attr.prop.Name, c.text, c.feedID, win.text, win.feedID))
 		}
 	}

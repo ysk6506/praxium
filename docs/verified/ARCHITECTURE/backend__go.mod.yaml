@@ -2,6 +2,6 @@ doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
 hash: "bb0c12bc6870bd05"
 date: "2026-11-14"
-note: "pgstore row, module row and go 1.27.4 toolchain re-read against ADR-0032 and go.mod"
-text_changed: true
-doc_hash: "3eb0ff5423e5c733"
+note: "ADR-0040: checked; stays accurate"
+text_changed: false
+doc_hash: "ecf4125be6eb6f58"

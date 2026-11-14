@@ -115,6 +115,12 @@ jobs:
         run: pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
         run: pnpm tsx harness/src/run-all.ts --with-coverage
+      # The web UI (ADR-0035): the typed API layer must be what the contract generates, and the web build and the
+      # program with the build inside must succeed. The tests and structure checks above ran without the web build.
+      - name: Web API layer matches the contract
+        run: pnpm web:gen-api --check
+      - name: Build the web UI and the program with it
+        run: scripts/build-with-web.sh "$RUNNER_TEMP/praxium"
       # The quality table's coverage column is read from a record made here, from the coverage this job just measured
       # (docs/generated/coverage-record.json, not committed). Without it every coverage cell says "unknown".
       - name: Record the measured coverage
@@ -126,6 +132,8 @@ jobs:
   # backend/go.sum is the only proof of what the one third-party module contains, and it was first written without
   # the checksum database (ADR-0032). This job asks the official database for the same lines: scripts/verify-go-sum.sh
   # rebuilds go.sum in an empty module cache against the default proxy and database and fails when it differs.
+  # The same job compiles the program for every release target (ADR-0039), so a change that only breaks Windows or
+  # macOS fails here and not at the first tag. It takes about two minutes on a cold cache and no other job waits for it.
   go-sum:
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
@@ -138,6 +146,8 @@ jobs:
           go-version-file: backend/go.mod
           cache: false
       - run: scripts/verify-go-sum.sh
+      - name: Every release target compiles
+        run: scripts/release-build.sh --compile-only
 
   # The light path: structure checks without coverage.
   docs:

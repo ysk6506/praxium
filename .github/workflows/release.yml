@@ -1,0 +1,75 @@
+# Release build (ADR-0039). A tag `v*` (v0.1.0, v0.1.0-alpha.1) builds the program for five targets with the web UI
+# inside, packs one archive per target with SHA256SUMS, and makes the GitHub release. A manual run (workflow_dispatch)
+# does everything except the release: the files stay a workflow artifact, so the whole path can be tried first.
+# The work is in scripts/release-build.sh and scripts/release-smoke.sh; this file only calls them. A tag with a `-`
+# in it is marked as a pre-release. Only the GITHUB_TOKEN is used, and it may write only in the `release` job.
+name: release
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      # The one third-party module must be what the checksum database vouches for before anything is built from it.
+      - run: scripts/verify-go-sum.sh
+      # A tag run names the version after the tag; a manual run takes the script's default (0.0.0-snapshot.<sha>).
+      - name: Build, pack and checksum
+        env:
+          TAG: ${{ github.event_name == 'push' && github.ref_name || '' }}
+        run: scripts/release-build.sh --version "$TAG" --out "$RUNNER_TEMP/release"
+      - name: Try the Linux amd64 archive as a person who downloaded it would
+        run: scripts/release-smoke.sh "$RUNNER_TEMP"/release/praxium_*_linux_amd64.tar.gz
+      - name: List the files
+        run: |
+          {
+            echo "### Release files"
+            echo '```'
+            cat "$RUNNER_TEMP/release/SHA256SUMS"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-files
+          path: ${{ runner.temp }}/release/*
+          if-no-files-found: error
+          retention-days: 14
+
+  # Only a tag push makes a release. This is the one job that may write to the repository.
+  release:
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: release-files
+          path: ${{ runner.temp }}/release
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          cd "$RUNNER_TEMP/release"
+          sha256sum -c SHA256SUMS
+          flags=()
+          if [[ "$TAG" == *-* ]]; then flags+=(--prerelease); fi
+          gh release create "$TAG" ./* --verify-tag --title "$TAG" --generate-notes "${flags[@]}"

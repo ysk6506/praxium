@@ -21,7 +21,7 @@
 | [ADR-0013 데이터 관측성: 실행기가 신호를 발행하고, 헬스 상태가 계보를 따라 전파되고, 사람과 에이전트가 함께 질의한다](../design-docs/adr/0013-data-observability.md) | 유효 |  |
 | [ADR-0014 정의의 버전과 브랜치: 바뀌지 않는 정의 세트, 제안과 검사, 직렬 큐로 반영하는 병합, 앞으로 나아가는 리버트, 정의의 계보](../design-docs/adr/0014-definitions-branches-revert.md) | 유효 |  |
 | [ADR-0015 역량 질문과 충족률: KG가 답해야 하는 질문을 정의로 적고, 객체마다 자동으로 계산해 비율로 낸다](../design-docs/adr/0015-competency-questions.md) | 유효 |  |
-| [ADR-0016 화면은 다른 리포지토리에 두고, REST API의 계약이 유일한 경계다: 계약이 먼저, 메이저 버전, 일관된 형식](../design-docs/adr/0016-frontend-separate-rest-api-contract.md) | 유효 | 일부 수정: [0024](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) (계약의 위치와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 분리) |
+| [ADR-0016 화면은 다른 리포지토리에 두고, REST API의 계약이 유일한 경계다: 계약이 먼저, 메이저 버전, 일관된 형식](../design-docs/adr/0016-frontend-separate-rest-api-contract.md) | 유효 | 일부 수정: [0024](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) (계약의 위치와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 분리), [0035](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) (9번 임시 콘솔의 위치, 빌드, 제공 방식(빌드 없는 정적 파일과 기본 꺼짐을 apps/web의 빌드와 실행 파일에 포함으로)) |
 | [ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 관측하고, 진단하고, 정해진 운영 액션으로 운영할 수 있게 만든다](../design-docs/adr/0017-self-observability-and-operability.md) | 유효 |  |
 | [ADR-0018 시크릿과 암호화 — 평문으로 두지 않고, 사용하는 시점에만 복호화하고, 다시 노출되지 않고, 사용 이력이 남는다](../design-docs/adr/0018-secrets-and-encryption.md) | 유효 |  |
 | [ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 위치와 검사](../design-docs/adr/0019-harness-reads-go-backend-place-and-checks.md) | 유효 | 일부 수정: [0023](../design-docs/adr/0023-harness-locks-go-tests-and-links-them-to-requirements.md) (Go 테스트 잠금과 추적과 등급표), [0024](../design-docs/adr/0024-rest-contract-becomes-a-document-the-machine-keeps.md) (코어 유닛 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)), [0028](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) (구조 계약의 `go:` 절에 두는 필드와 import 규칙) |
@@ -39,3 +39,9 @@
 | [ADR-0031 Go 툴체인을 지원 중인 버전으로 올리고, 지원이 끝나기 전에 올린다](../design-docs/adr/0031-go-toolchain-on-a-supported-version.md) | 유효 |  |
 | [ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다 — 드라이버 lib/pq, 직접 만든 마이그레이션 실행기, 진짜 서버로 하는 테스트](../design-docs/adr/0032-postgresql-adapter-closes-the-storage-port-and-td-0011.md) | 유효 |  |
 | [ADR-0033 파일 소스 하나를 KG까지 적재하는 수집의 최소 구현](../design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md) | 유효 |  |
+| [ADR-0034 내장 파일 스토어 — 추가 전용 로그와 스냅샷으로 PostgreSQL 없이 KG를 저장한다](../design-docs/adr/0034-built-in-file-store-for-the-first-run.md) | 유효 |  |
+| [ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) | 유효 |  |
+| [ADR-0036 임시 디렉터리는 만든 쪽이 지운다](../design-docs/adr/0036-whoever-makes-a-temporary-directory-removes-it.md) | 유효 |  |
+| [ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다](../design-docs/adr/0038-demo-mode-as-a-supported-feature.md) | 유효 |  |
+| [ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다](../design-docs/adr/0039-release-build-for-five-targets-with-a-reproducible-program.md) | 유효 |  |
+| [ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령](../design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md) | 유효 |  |

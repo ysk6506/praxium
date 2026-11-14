@@ -17,6 +17,7 @@ type RawRecord struct {
 	Key     string            `json:"key"`
 	Hash    string            `json:"hash"`
 	Line    int               `json:"line"`
+	Where   string            `json:"where,omitempty"`
 	Fields  map[string]string `json:"fields"`
 	FromRun int               `json:"from_run"`
 	ToRun   int               `json:"to_run,omitempty"`

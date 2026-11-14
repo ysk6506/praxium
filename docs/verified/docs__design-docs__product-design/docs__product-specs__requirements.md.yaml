@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "a4a375f394241064"
+hash: "24f72c38c238ae80"
 date: "2026-11-14"
-note: "목표 문장을 requirements.md와 같은 새 문장(ADR-0037)으로 바꿨다. 원칙, 순서, 설계 문서 지도는 목표의 내용이 그대로라 수정할 곳이 없음을 확인했다"
+note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
 text_changed: true
-doc_hash: "019854b80cb4930e"
+doc_hash: "06412a77a9acc006"
