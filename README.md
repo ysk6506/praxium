@@ -53,7 +53,7 @@ IT 인프라 정보는 여러 시스템에 나뉘어 있습니다. 자산 대장
 
 ## 빠른 시작
 
-### 1. 내려받기
+### 1. 다운로드
 
 [최신 릴리스](https://github.com/ysk6506/praxium/releases/latest)에서 자기 운영체제에 맞는 파일(`praxium_<버전>_<os>_<arch>`)을 받습니다. 리눅스와 맥은 `.tar.gz`, 윈도우는 `.zip`입니다. 첫 릴리스(`v0.1.0-alpha.1`)는 곧 나옵니다. 받은 파일은 릴리스의 `SHA256SUMS`로 확인하고 압축을 풉니다.
 
@@ -115,7 +115,7 @@ The result is kept in data (KG main). Look at it with: praxium local -data-dir d
 
 자기 데이터에는 소스 정의와 매핑 정의 JSON을 직접 써야 합니다. 예제 파일이 출발점입니다. 형식은 [현실 데이터 수집](docs/design-docs/ingestion.md)에 있습니다.
 
-### 4. 명령 한눈에
+### 4. 명령 개요
 
 `./praxium --help`가 모든 명령을 보여 주고, `./praxium <명령> --help`가 사용법과 예를 보여 줍니다.
 
