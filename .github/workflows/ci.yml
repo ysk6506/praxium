@@ -81,12 +81,30 @@ jobs:
       - run: pnpm lint
       - run: pnpm typecheck
 
-  # Tests once, with coverage; then every structure check, which reads that coverage.
+  # Tests once, with coverage; then every structure check, which reads that coverage. The tests of the PostgreSQL
+  # adapter and of the server on it run against a real PostgreSQL 16, the service container below. The variable gives
+  # them its address; without it those tests fail (they are never skipped, ADR-0032). The container is throwaway
+  # and listens on the job's own network only, so it needs no password.
   test:
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: praxium
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U praxium"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PRAXIUM_TEST_PG_DSN: postgres://praxium@127.0.0.1:5432/postgres?sslmode=disable
     steps:
       - uses: actions/checkout@v4
         with:
@@ -105,6 +123,22 @@ jobs:
         if: always()
         run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"
 
+  # backend/go.sum is the only proof of what the one third-party module contains, and it was first written without
+  # the checksum database (ADR-0032). This job asks the official database for the same lines: scripts/verify-go-sum.sh
+  # rebuilds go.sum in an empty module cache against the default proxy and database and fails when it differs.
+  go-sum:
+    needs: changes
+    if: needs.changes.outputs.docs_only != 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: backend/go.mod
+          cache: false
+      - run: scripts/verify-go-sum.sh
+
   # The light path: structure checks without coverage.
   docs:
     needs: changes
@@ -119,7 +153,7 @@ jobs:
       - run: pnpm tsx harness/src/run-all.ts --base origin/${{ github.base_ref }}
 
   gate:
-    needs: [changes, lint-types, test, docs]
+    needs: [changes, lint-types, test, go-sum, docs]
     if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -130,6 +164,7 @@ jobs:
           CHANGES: ${{ needs.changes.result }}
           LINT: ${{ needs.lint-types.result }}
           TEST: ${{ needs.test.result }}
+          GO_SUM: ${{ needs.go-sum.result }}
           DOCS: ${{ needs.docs.result }}
         run: |
           fail=0
@@ -142,5 +177,6 @@ jobs:
             echo "full path"
             check lint-types "$LINT"
             check test "$TEST"
+            check go-sum "$GO_SUM"
           fi
           exit $fail

@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "7dee7cefbd834699"
+hash: "b9845e89beefebcf"
 date: "2026-11-14"
-note: "수집 슬라이스(ADR-0033)로 새 유닛 셋과 ingest run 예를 더했고 나머지 내용은 그대로 맞음을 확인했다"
+note: "architecture.yaml gained adapter.pgstore and lib/pq beside the ingest units; AGENTS text unchanged and still correct"
 text_changed: true
-doc_hash: "59141a8c2ecb983e"
+doc_hash: "388cb5a3fb37da85"
