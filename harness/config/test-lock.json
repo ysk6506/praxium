@@ -3339,10 +3339,10 @@
   },
   "go:backend/cmd/praxium::TestReleaseBuildSetsTheVersionAndIsReproducible": {
    "kind": "test",
-   "hash": "a6ec6f66e2900fa3",
+   "hash": "25547794402c586b",
    "asserts": 10,
    "literals": [
-    "e4aa47fffaa3b54b"
+    "2f4805524197823a"
    ],
    "precision": [],
    "skips": 0,
