@@ -33,3 +33,21 @@ export function Button({
     />
   );
 }
+
+/** A link that looks like a button, for moving to another screen. */
+export function ButtonLink({
+  variant = "secondary",
+  className,
+  ...rest
+}: ComponentProps<"a"> & { readonly variant?: ButtonVariant }) {
+  return (
+    <a
+      className={cx(
+        "inline-flex h-8 items-center justify-center gap-1.5 rounded-md border px-3 text-sm font-medium no-underline",
+        VARIANTS[variant],
+        className,
+      )}
+      {...rest}
+    />
+  );
+}

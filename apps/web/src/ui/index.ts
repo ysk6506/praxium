@@ -4,7 +4,7 @@
  * own. Screens put these together.
  */
 export { Badge, type BadgeTone } from "./Badge";
-export { Button, type ButtonVariant } from "./Button";
+export { Button, ButtonLink, type ButtonVariant } from "./Button";
 export { Checkbox } from "./Checkbox";
 export { Dialog } from "./Dialog";
 export { AppShell, KeyValues, Mono, NavLink, NavSection, PageHeader, Section } from "./layout";
