@@ -40,7 +40,7 @@ scripts/release-smoke.sh /tmp/praxium-release/praxium_0.1.0-alpha.1_linux_amd64.
 ```
 
 - `--out`의 폴더는 비어 있거나 없어야 해요. 기본은 `dist/release`예요(커밋되지 않아요).
-- `release-smoke.sh`는 압축을 풀어 `praxium version`을 확인하고 서버를 띄워 `/`가 웹 UI로 200을 주는지 봐요. 이 컴퓨터의 운영체제에 맞는 파일만 테스트할 수 있어요.
+- `release-smoke.sh`는 압축을 풀어 `praxium version`을 확인하고 서버와 `praxium demo`를 차례로 띄워 `/`가 웹 UI로 200을 주는지 봐요. 이 컴퓨터의 운영체제에 맞는 파일만 테스트할 수 있어요.
 - 같은 커밋을 다시 빌드하면 같은 해시가 나와요(같은 Go 버전일 때). 두 번 만들어 `SHA256SUMS`를 비교해 보세요.
 - 컴파일만 확인하려면 `scripts/release-build.sh --compile-only`예요. 웹도 압축도 하지 않고 평소 CI가 같은 명령을 돌려요.
 

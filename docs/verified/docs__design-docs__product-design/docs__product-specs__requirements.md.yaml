@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "dfa8b37ba3d567aa"
+hash: "671a42f81541d8b5"
 date: "2026-11-14"
-note: "REQ-282, REQ-283(릴리스 빌드와 version 명령)만 추가됐고 설계 개요의 원칙과 순서에는 영향이 없음을 확인"
+note: "REQ-280~283(데모 모드, 릴리스 빌드)가 더해졌고 설계 개요의 원칙과 순서는 바뀌지 않음을 확인"
 text_changed: true
 doc_hash: "06412a77a9acc006"

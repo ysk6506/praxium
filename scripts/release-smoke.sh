@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Try a release archive of this machine's kind the way a person who downloaded it would (ADR-0039): unpack it, ask
-# `praxium version`, start the server and ask for the web UI at /.
+# `praxium version`, start the server and ask for the web UI at /, then do the same with `praxium demo`.
 #
 #   scripts/release-smoke.sh <praxium_<version>_linux_amd64.tar.gz>
 #
@@ -48,4 +48,22 @@ done
 status="$(curl -s -o "$work/index.html" -w '%{http_code}' "http://$addr/")"
 [ "$status" = 200 ] || fail "GET / answered $status"
 grep -q '<div id="root"' "$work/index.html" || fail "GET / did not answer the web UI's page"
-echo "release-smoke: ok (version $want_version, GET / = 200 with the web UI)"
+kill "$server" 2>/dev/null || true; wait "$server" 2>/dev/null || true; server=""
+
+# The demo: `praxium demo` on a free port prints an address with the token after the #; / must give the web UI.
+"$dir/praxium" demo -addr 127.0.0.1:0 > "$work/demo.out" 2> "$work/demo.err" &
+server=$!
+url=""
+for _ in $(seq 1 300); do
+  url="$(grep -m1 '^http://' "$work/demo.out" || true)"
+  [ -n "$url" ] && break
+  kill -0 "$server" 2>/dev/null || fail "the demo stopped: $(cat "$work/demo.out" "$work/demo.err")"
+  sleep 0.1
+done
+[ -n "$url" ] || fail "the demo did not print an address: $(cat "$work/demo.out" "$work/demo.err")"
+status="$(curl -s -o "$work/demo.html" -w '%{http_code}' "${url%%#*}")"
+[ "$status" = 200 ] || fail "demo: GET / answered $status"
+grep -q '<div id="root"' "$work/demo.html" || fail "demo: GET / did not answer the web UI's page"
+grep -q 'does not include the web UI' "$work/demo.out" && fail "demo: the program says the web UI is not inside"
+
+echo "release-smoke: ok (version $want_version, GET / = 200 with the web UI, also in praxium demo)"
