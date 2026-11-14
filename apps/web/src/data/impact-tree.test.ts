@@ -140,16 +140,16 @@ describe("[REQ-350] the answer is a tree of causes", () => {
         single_points_of_failure: 0,
         counts_by_type: [],
         counts_by_effect: {},
-        items: items.map((it) => ({
-          object_id: it.object_id,
-          object_type: it.object_type,
-          display_name: it.display_name,
-          hops: it.hops,
-          effects: { facts_only: it.result, with_assumptions: it.result },
+        items: items.map((row) => ({
+          object_id: row.object_id,
+          object_type: row.object_type,
+          display_name: row.display_name,
+          hops: row.hops,
+          effects: { facts_only: row.result, with_assumptions: row.result },
           single_point_of_failure: false,
-          assumption_based: it.assumption_based,
+          assumption_based: row.assumption_based,
           // A dependency's path runs to the target; the link of a step is the one that carried the failure to it.
-          path: it.path
+          path: row.path
             .map((step, i, all) => ({
               object_id: step.object_id,
               object_type: step.object_type,
@@ -273,7 +273,7 @@ describe("[REQ-350] the answer is a tree of causes", () => {
     const data = impactOfSize(5000);
     const items = data.with_assumptions?.items ?? [];
     const tree = treeOf(data);
-    const pathSteps = items.reduce((sum, it) => sum + it.path.length, 0);
+    const pathSteps = items.reduce((sum, row) => sum + row.path.length, 0);
     expect(tree.work.visited).toBe(tree.nodes.size);
     expect(tree.nodes.size).toBeLessThanOrEqual(items.length + 2);
     expect(tree.work.chainSteps).toBeLessThanOrEqual(pathSteps);

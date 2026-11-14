@@ -21,6 +21,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
   - harness/config/test-lock.json
+decision_hash: 93a400335f1180a0
 ---
 # ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)
 
