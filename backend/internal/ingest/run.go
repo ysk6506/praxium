@@ -115,7 +115,7 @@ func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report,
 			rep.problem(Problem{Kind: ProblemShapeChanged, Dataset: ds.ID, Reason: fmt.Sprintf("the file lacks the columns %v", table.Missing)})
 			continue
 		}
-		if err := r.capture(ds, table, st, rep, dr, &cap, now); err != nil {
+		if err := capture(captureInput{ds, table, st, rep, dr, &cap, now}); err != nil {
 			return cap, err
 		}
 		st.dataset(ds.ID).LastCapture = c.Hash
@@ -123,7 +123,19 @@ func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report,
 	return cap, nil
 }
 
-func (r Runner) capture(ds Dataset, t Table, st *State, rep *Report, dr *DatasetReport, cap *captured, now time.Time) error {
+// captureInput is what the capture of one dataset works on.
+type captureInput struct {
+	ds  Dataset
+	t   Table
+	st  *State
+	rep *Report
+	dr  *DatasetReport
+	cap *captured
+	now time.Time
+}
+
+func capture(in captureInput) error {
+	ds, t, st, rep, dr, cap, now := in.ds, in.t, in.st, in.rep, in.dr, in.cap, in.now
 	for _, h := range t.Extra {
 		rep.problem(Problem{Kind: ProblemExtraColumn, Dataset: ds.ID, Reason: "the header has a column no dataset column reads: " + h})
 	}

@@ -445,6 +445,22 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunListsAtMostTwentyProblems": {
+   "kind": "test",
+   "hash": "5566c902fd5c9d97",
+   "asserts": 3,
+   "literals": [
+    "b052ddec9323ec94"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268",
+    "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunReadsFilesAndSecondRunChangesNothing": {
    "kind": "test",
    "hash": "58efb7531cfa7d27",

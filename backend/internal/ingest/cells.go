@@ -14,40 +14,56 @@ import (
 // The value is checked the way the graph checks it, so a bad cell is found here, in the row it belongs to, and
 // does not stop the whole batch.
 func convertCell(s valueSpec, text string) (any, error) {
-	p := s.prop
+	v, err := convertBase(s, text)
+	if err != nil {
+		return nil, err
+	}
+	if v != nil {
+		return v, nil
+	}
+	if _, err := model.NormalizeValue(s.prop.ValueType, text); err != nil {
+		return nil, err
+	}
+	return text, nil
+}
+
+// convertBase checks a cell by its base kind. It returns the value for the kinds that have a Go value of their own and
+// nil for the kinds whose value is the text itself.
+func convertBase(s valueSpec, text string) (any, error) {
+	trimmed := strings.TrimSpace(text)
 	switch s.base {
 	case model.BaseInteger:
-		n, err := strconv.ParseInt(strings.TrimSpace(text), 10, 64)
+		n, err := strconv.ParseInt(trimmed, 10, 64)
 		if err != nil {
 			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is not an integer", text)
 		}
 		return n, nil
 	case model.BaseBoolean:
-		switch strings.TrimSpace(text) {
-		case "true":
-			return true, nil
-		case "false":
-			return false, nil
+		if trimmed != "true" && trimmed != "false" {
+			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is not true or false", text)
 		}
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is not true or false", text)
+		return trimmed == "true", nil
 	case model.BaseNumber, model.BaseQuantity:
-		if _, err := strconv.ParseFloat(strings.TrimSpace(text), 64); err != nil {
+		if _, err := strconv.ParseFloat(trimmed, 64); err != nil {
 			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is not a number", text)
 		}
-		return strings.TrimSpace(text), nil
-	case model.BaseTime:
+		return trimmed, nil
+	case model.BaseTime, model.BaseEnum:
+		return nil, checkText(s, text)
+	}
+	return nil, nil
+}
+
+// checkText checks the kinds whose value is the text itself.
+func checkText(s valueSpec, text string) error {
+	if s.base == model.BaseTime {
 		if _, err := time.Parse(time.RFC3339, text); err != nil {
-			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is not a time of the form 2006-01-02T15:04:05Z", text)
+			return kernel.Errorf(kernel.CodeInvalidValue, "%q is not a time of the form 2006-01-02T15:04:05Z", text)
 		}
-	case model.BaseEnum:
-		if len(p.EnumValues) > 0 && !contains(p.EnumValues, text) {
-			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is none of the values %v of %s", text, p.EnumValues, p.Name)
-		}
+	} else if p := s.prop; len(p.EnumValues) > 0 && !contains(p.EnumValues, text) {
+		return kernel.Errorf(kernel.CodeInvalidValue, "%q is none of the values %v of %s", text, p.EnumValues, p.Name)
 	}
-	if _, err := model.NormalizeValue(p.ValueType, text); err != nil {
-		return nil, err
-	}
-	return text, nil
+	return nil
 }
 
 func contains(list []string, s string) bool {

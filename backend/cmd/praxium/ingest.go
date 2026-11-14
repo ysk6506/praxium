@@ -31,35 +31,41 @@ type ingestFlags struct {
 
 func parseIngestRun(args []string) (ingestFlags, error) {
 	f := ingestFlags{inputs: map[string]string{}, times: 1}
-	for i := 0; i < len(args); i++ {
+	for i := 0; i < len(args); i += 2 {
 		if i+1 >= len(args) {
 			return f, kernel.Errorf(kernel.CodeInvalidValue, "%s wants a value", args[i])
 		}
-		v := args[i+1]
-		switch args[i] {
-		case "-source":
-			f.source = v
-		case "-mapping":
-			f.mapping = v
-		case "-input":
-			ds, file, ok := strings.Cut(v, "=")
-			if !ok || ds == "" || file == "" {
-				return f, kernel.Errorf(kernel.CodeInvalidValue, "-input wants <dataset>=<file>, got %q", v)
-			}
-			f.inputs[ds] = file
-		case "-times":
-			if _, err := fmt.Sscanf(v, "%d", &f.times); err != nil || f.times < 1 || f.times > 20 {
-				return f, kernel.Errorf(kernel.CodeInvalidValue, "-times wants a number from 1 to 20, got %q", v)
-			}
-		default:
-			return f, kernel.Errorf(kernel.CodeInvalidValue, "unexpected argument %q", args[i])
+		if err := f.set(args[i], args[i+1]); err != nil {
+			return f, err
 		}
-		i++
 	}
 	if f.source == "" || f.mapping == "" || len(f.inputs) == 0 {
 		return f, kernel.Errorf(kernel.CodeInvalidValue, "ingest run needs -source, -mapping and at least one -input")
 	}
 	return f, nil
+}
+
+// set takes one flag and its value.
+func (f *ingestFlags) set(flag, v string) error {
+	switch flag {
+	case "-source":
+		f.source = v
+	case "-mapping":
+		f.mapping = v
+	case "-input":
+		ds, file, ok := strings.Cut(v, "=")
+		if !ok || ds == "" || file == "" {
+			return kernel.Errorf(kernel.CodeInvalidValue, "-input wants <dataset>=<file>, got %q", v)
+		}
+		f.inputs[ds] = file
+	case "-times":
+		if _, err := fmt.Sscanf(v, "%d", &f.times); err != nil || f.times < 1 || f.times > 20 {
+			return kernel.Errorf(kernel.CodeInvalidValue, "-times wants a number from 1 to 20, got %q", v)
+		}
+	default:
+		return kernel.Errorf(kernel.CodeInvalidValue, "unexpected argument %q", flag)
+	}
+	return nil
 }
 
 // runIngest is `praxium ingest ...`: only `run` exists.

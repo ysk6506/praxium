@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -101,5 +102,28 @@ func TestIngestRunRefusesWhatItCannotRun(t *testing.T) {
 	args := []string{"ingest", "run", "-source", sampleDir + "source.json", "-mapping", wrong, "-input", "ds_racks=" + sampleDir + "sample/racks.csv"}
 	if code := execute(args, &bytes.Buffer{}, &errOut, d); code != exitFailure || !strings.Contains(errOut.String(), "Nope") {
 		t.Errorf("a wrong mapping: code %d: %s", code, errOut.String())
+	}
+}
+
+// [REQ-269] [REQ-268]
+func TestIngestRunListsAtMostTwentyProblems(t *testing.T) {
+	data := "asset_id,serial_number,manufacturer,rack_asset_id,power_state\n"
+	for i := 0; i < 25; i++ {
+		data += fmt.Sprintf("SV-X%d,,Zorvane,RK-1001,on\n", i)
+	}
+	bad := filepath.Join(t.TempDir(), "servers.csv")
+	if err := os.WriteFile(bad, []byte(data), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	d, _, stop := apiDeps(nil, nil)
+	defer stop()
+	d.open = systemOpen
+	var out, errOut bytes.Buffer
+	args := []string{"ingest", "run", "-source", sampleDir + "source.json", "-mapping", sampleDir + "mapping.json", "-input", "ds_servers=" + bad}
+	if code := execute(args, &out, &errOut, d); code != exitOK {
+		t.Fatalf("code %d: %s", code, errOut.String())
+	}
+	if !strings.Contains(out.String(), "problems missing_identity=25") || !strings.Contains(out.String(), "5 more listed in the report") {
+		t.Errorf("the output:\n%s", out.String())
 	}
 }

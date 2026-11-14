@@ -124,14 +124,8 @@ func (d Dataset) normalized(source string) (Dataset, error) {
 	if d.Deletion == "" {
 		d.Deletion = DeletionAbsentInFull
 	}
-	if d.Kind != "raw" || d.ReceiveMode != "snapshot" {
-		return d, kernel.Errorf(kernel.CodeUnsupported, "%s: only raw datasets received as snapshot exist in this build", where)
-	}
-	if d.Parser != ParserCSV && d.Parser != ParserJSONLines {
-		return d, kernel.Errorf(kernel.CodeUnsupported, "%s: parser %q is not in this build (csv, json_lines)", where, d.Parser)
-	}
-	if d.Deletion != DeletionAbsentInFull && d.Deletion != DeletionNone {
-		return d, kernel.Errorf(kernel.CodeUnsupported, "%s: deletion %q is not in this build", where, d.Deletion)
+	if err := d.checkSupported(where); err != nil {
+		return d, err
 	}
 	cols, err := d.checkColumns(where)
 	if err != nil {
@@ -146,6 +140,20 @@ func (d Dataset) normalized(source string) (Dataset, error) {
 		}
 	}
 	return d, nil
+}
+
+// checkSupported refuses what this build does not have.
+func (d Dataset) checkSupported(where string) error {
+	if d.Kind != "raw" || d.ReceiveMode != "snapshot" {
+		return kernel.Errorf(kernel.CodeUnsupported, "%s: only raw datasets received as snapshot exist in this build", where)
+	}
+	if d.Parser != ParserCSV && d.Parser != ParserJSONLines {
+		return kernel.Errorf(kernel.CodeUnsupported, "%s: parser %q is not in this build (csv, json_lines)", where, d.Parser)
+	}
+	if d.Deletion != DeletionAbsentInFull && d.Deletion != DeletionNone {
+		return kernel.Errorf(kernel.CodeUnsupported, "%s: deletion %q is not in this build", where, d.Deletion)
+	}
+	return nil
 }
 
 // checkColumns checks the names and returns them. A column with no path is read by its own name.
