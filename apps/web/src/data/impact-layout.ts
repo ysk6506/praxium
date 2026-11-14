@@ -23,7 +23,7 @@ export const LANE_ORDER: readonly string[] = [
 /** The column of a layer the model does not list; it comes after the known ones. */
 export const OTHER_LANE = "other";
 
-export const ROW_HEIGHT = 16;
+export const ROW_HEIGHT = 24;
 export const LANE_WIDTH = 170;
 
 export interface LayoutInput {

@@ -151,10 +151,11 @@ describe("[REQ-350] the answer is a tree of causes", () => {
           // A dependency's path runs to the target; the link of a step is the one that carried the failure to it.
           path: it.path
             .map((step, i, all) => ({
-              ...step,
-              link: i === 0 ? undefined : undefined,
-              via_group: undefined,
-              ...(all[i + 1] && { link: all[i + 1]?.link, via_group: all[i + 1]?.via_group }),
+              object_id: step.object_id,
+              object_type: step.object_type,
+              display_name: step.display_name,
+              link: all[i + 1]?.link,
+              via_group: all[i + 1]?.via_group,
             }))
             .reverse(),
         })),

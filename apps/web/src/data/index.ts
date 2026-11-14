@@ -106,6 +106,14 @@ export {
   ROW_HEIGHT,
 } from "./impact-layout";
 export {
+  nodePicture,
+  overviewPicture,
+  type Picture,
+  type PictureEdge,
+  type PictureLane,
+  type PictureNode,
+} from "./impact-picture";
+export {
   type ImpactRow,
   impactRows,
   pageOfRows,
@@ -196,3 +204,4 @@ export {
   typesViewParams,
 } from "./urlstate";
 export type { AsyncResult, AsyncState } from "./useAsync";
+export { type Spread, useReducedMotion, useSpread } from "./useSpread";
