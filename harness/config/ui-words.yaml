@@ -40,7 +40,7 @@ rules:
 # mode: report counts the old spellings per document and never fails; fail makes each one a WORD003 failure.
 # The last stage of the terminology clean-up switches `mode` to `fail`.
 documents:
-  mode: report
+  mode: fail
   scan: ["docs/**/*.md", README.md, AGENTS.md, ARCHITECTURE.md]
   # Reference documents are starting material and keep the spellings of their time (ADR-0029).
   skip:

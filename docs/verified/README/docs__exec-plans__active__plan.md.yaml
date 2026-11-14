@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "523053434789535d"
+hash: "077fe9b70584e790"
 date: "2026-11-14"
-note: "수집 슬라이스(ADR-0033)에서 따르는 문서가 바뀐 것을 확인했다. 이 문서의 내용과 어긋나는 곳이 없어 고치지 않았다"
-text_changed: false
-doc_hash: "63d2e3e9b1b863d8"
+note: "병합 후 확인: ADR-0033의 수집 슬라이스 추가분(AGENTS.md 실행 예, REQ-263~269, 계획 7번)이 문서와 맞는지 다시 읽었다"
+text_changed: true
+doc_hash: "a2feadd6b4a108d6"

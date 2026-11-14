@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "59141a8c2ecb983e"
+hash: "388cb5a3fb37da85"
 date: "2026-11-14"
-note: "수집 슬라이스(ADR-0033)에서 따르는 문서가 바뀐 것을 확인했다. 이 문서의 내용과 어긋나는 곳이 없어 고치지 않았다"
+note: "병합 후 확인: ADR-0033의 수집 슬라이스 추가분(AGENTS.md 실행 예, REQ-263~269, 계획 7번)이 문서와 맞는지 다시 읽었다"
 text_changed: false
-doc_hash: "b6dbe9997ada99ae"
+doc_hash: "04b2f4f490642c38"

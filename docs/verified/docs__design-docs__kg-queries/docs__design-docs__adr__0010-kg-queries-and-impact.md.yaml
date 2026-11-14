@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-queries.md"
 target: "docs/design-docs/adr/0010-kg-queries-and-impact.md"
-hash: "b4f3ebf38a2f8ed6"
-date: "2026-11-13"
-note: "kg-queries 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 220줄), 결정과 숫자는 그대로"
+hash: "2b95405a5b961880"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 링크 텍스트를 대상 문서 제목과 같게 맞췄다."
 text_changed: true
-doc_hash: "f4b0707bbc0545f9"
+doc_hash: "1fe4505603cae696"

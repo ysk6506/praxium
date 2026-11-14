@@ -1,7 +1,7 @@
 doc: "docs/product-specs/requirements.md"
 target: "docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md"
-hash: "1140a12760ae3546"
-date: "2026-11-13"
-note: "requirements 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+hash: "266ca1ec5f1a56b5"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 번호 영역 설명의 범위를 218~262로 실제 표에 맞췄다."
 text_changed: true
-doc_hash: "5118723d5dc9d23b"
+doc_hash: "30ee390771a1e8ef"
