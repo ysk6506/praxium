@@ -15,6 +15,20 @@ follows:
 
 지금은 **KG를 짓고 운영하는 기반의 설계를 끝낸 단계**예요(ADR-0005~0018). 코드는 이제 시작이에요: `backend/`에 Go 모듈이 있고 공통 기반 코드(`core.kernel`), 타입 등록부와 표준 모델(`core.model`), 합성 세계 생성기(`core.worldgen`), KG 중심부와 스토리지 포트와 메모리 기준 구현과 PostgreSQL 구현(`core.graph`, `adapter.memstore`, ADR-0025, `adapter.pgstore`, ADR-0032), 사전 정의 질의의 첫 셋(`core.query`, ADR-0026), 그 질의를 API와 명령줄로 읽는 경로와 개발용 적재기(`adapter.devload`, ADR-0027), 진입점이 들어 있어요(ADR-0019, ADR-0020, ADR-0021). 백엔드는 Go로 만들고, 화면은 다른 리포지토리에서 REST API 계약으로만 통신해요(ADR-0006, ADR-0016). 지금 있는 TypeScript는 구조 검사(하네스, Go 코드도 읽어요)와 프런트엔드 리포지토리로 옮길 공통 기반 코드예요. 목표와 요구사항은 [요구사항](docs/product-specs/requirements.md)에, 설계 문서의 안내는 [제품 설계 개요](docs/design-docs/product-design.md)에 있어요. 테라리움 시절의 요구사항과 쟁점은 출발 자료로 [테라리움에서 이어받은 자료](docs/references/from-terrarium.md)에 남아 있어요.
 
+## 브라우저로 보기
+
+합성한 세계를 띄우고 임시 화면(`apps/web`)으로 KG를 둘러볼 수 있어요. 토큰은 지어낸 값이에요.
+
+```
+pnpm install
+pnpm web:build /tmp/praxium
+/tmp/praxium worldgen -scale 500 -seed 7 -out /tmp/world
+printf 'dev-token-not-a-secret' > /tmp/dev.tok
+/tmp/praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl
+```
+
+브라우저로 `http://127.0.0.1:8080`을 열고 접속 설정에 토큰을 붙여 넣어요. 외부 주소는 부르지 않아요. 설계는 [임시 콘솔](docs/design-docs/temporary-console.md)에 있어요.
+
 ## 이름
 
 프락시움(Praxium)은 프락시스(praxis, 실천·행동)에서 온 이름이에요. [테라리움](https://github.com/ysk6506/terrarium)이 유리 안에서 에이전트를 테스트하는 곳이라면, 프락시움은 담쟁이가 벽을 타고 뻗어 나가듯 유리 밖의 현실에 닿아 일을 하는 곳이에요.

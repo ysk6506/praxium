@@ -9,6 +9,7 @@
   "go:adapter.http": 93,
   "go:adapter.memstore": 95.5,
   "go:adapter.pgstore": 91.5,
+  "go:adapter.webui": 90,
   "go:cmd.praxium": 94.5,
   "go:core.access": 96,
   "go:core.contract": 91.5,
@@ -18,5 +19,8 @@
   "go:core.model": 98,
   "go:core.query": 90.5,
   "go:core.worldgen": 96.5,
-  "harness": 96.5
+  "harness": 96.5,
+  "web.api": 98,
+  "web.data": 96,
+  "web.ui": 96
 }

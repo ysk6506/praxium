@@ -38,6 +38,17 @@ printf 'dev-token-not-a-secret' > /tmp/dev.tok
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query find --type PhysicalServer --limit 3
 ```
 
+같은 서버를 브라우저로 보려면 웹 UI를 담아 빌드한다(임시 콘솔, [ADR-0035](docs/design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md)). `api serve`는 `/v1` 밖에서 화면을 내고 `-web=false`면 API만 낸다.
+
+```
+pnpm web:build /tmp/praxium      # 웹 빌드, 복사, Go 빌드(Go와 pnpm이 PATH에 있어야 한다)
+/tmp/praxium worldgen -scale 500 -seed 7 -out /tmp/world
+printf 'dev-token-not-a-secret' > /tmp/dev.tok
+/tmp/praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl &
+# 브라우저로 http://127.0.0.1:8080 을 열고, 접속 설정에 dev-token-not-a-secret을 붙여 넣는다
+pnpm --filter @praxium/web dev   # 화면을 고칠 때: 개발 서버가 /v1을 127.0.0.1:8080으로 넘긴다
+```
+
 파일 소스 하나를 수집 파이프라인으로 KG에 넣는 가장 짧은 경로(소스 정의와 매핑 정의는 JSON 데이터이고 샘플 파일은 합성한 값이다, [ADR-0033](docs/design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md)). `-times 2`는 같은 파일로 한 번 더 실행해 두 번째 실행이 아무것도 바꾸지 않음을 보인다:
 
 ```
@@ -79,12 +90,13 @@ CI가 병합 관문이다: main에는 풀 리퀘스트로만 반영되고, 필�
 - 요구사항을 받으면 그것만 보고 기능을 덧붙이지 않는다. 제품 설계 개요의 원칙에 비춰 보고, 영향받는 기존 자산을 전부 찾고, 어긋나면 먼저 알린다.
 - 같은 주제의 결정 기록을 하루에 2개를 넘게 쓰게 되면 멈추고 전체를 다시 본다.
 - 계획은 날짜가 아니라 순서로 관리한다.
-- 화면 코드는 이 리포지토리에 없다. 예외는 삭제할 수 있는 임시 콘솔 하나이고 공개된 `/v1`만 부른다(ADR-0016, TD-0007).
+- 제품의 화면 코드는 이 리포지토리에 없다. 예외는 삭제할 수 있는 임시 콘솔(`apps/web`) 하나이고 공개된 `/v1`만 부른다. 백엔드는 그것 없이 빌드되고 테스트된다(ADR-0016, ADR-0035, TD-0007).
 - 문서와 화면에는 한국의 IT 실무자가 쓰는 표준 용어를 쓰고 새 용어를 만들지 않는다. 사전은 [용어집](docs/design-docs/glossary.md)의 표 하나이고, 옛 표기는 `WORD003`이 알린다.
 
 ## 자주 하는 일
 
 - **`DOC010`** → 문서를 코드와 대조해 수정하고 `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "확인한 내용"`. 확인 상태는 `docs/verified/`의 (문서, 대상) 기록에 있다.
+- **웹 UI(`apps/web`)** → 한 번에 빌드해 실행 파일에 담으려면 `pnpm web:build`(또는 `scripts/build-with-web.sh [출력 파일]`). 실행은 `praxium api serve -mode development -dev-token-file <파일> -dev-truth <정답 파일>`이고 브라우저로 그 주소(기본 `127.0.0.1:8080`)를 연다. 계약이 바뀌면 `pnpm web:gen-api`로 호출 코드를 다시 생성한다(`WEB010`~`WEB013`). 색은 `apps/web/src/ui/tokens.css`에만 쓴다(`WEB020`, `WEB021`). 화면(`src/screens`)의 테스트는 잠금과 요구사항 추적에서 빠진다(ADR-0035).
 - **새 테스트 추가** → 제목에 `[REQ-NNN]`을 넣고(Go는 `Test` 함수 바로 위 주석 `// [REQ-NNN] [REQ-MMM]`), 작성 후 `pnpm lock-tests` (새 항목만 추가됨).
 - **새 유닛(디렉터리) 추가** → 같은 변경에서 `harness/config/architecture.yaml`에 등록하고(Go는 `go:` 절, 디렉터리는 `backend/internal/<유닛>`) ARCHITECTURE.md를 수정한다(보호 경로라 ADR이 필요하다). 테스트에서만 쓰는 유닛은 `may_import`가 아니라 `test_may_import`에 적는다.
 - **새 결정** → [ADR 작성 절차](docs/design-docs/adr-process.md). `enforced_by`로 강제 장치에 연결하고, `updates_docs`에 변경하는 문서를 적어 같은 변경에서 수정한다. 앞선 결정의 일부를 변경하면 `amends`를 적고 `docs.ts link-amends <ADR>`를 돌린다.

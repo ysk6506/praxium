@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/protected-paths.txt"
 hash: "fac3d70375047f10"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
-text_changed: true
-doc_hash: "fb44b4c839f340dd"
+date: "2026-11-14"
+note: "화면 문구 표준화에 맞춰 대조했다"
+text_changed: false
+doc_hash: "915156070d56ed74"

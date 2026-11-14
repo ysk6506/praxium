@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "package.json"
-hash: "26b41f6091bdbba8"
-date: "2026-11-13"
-note: "ADR-0027의 읽기 길과 개발용 적재기를 현재 상태 문장에 더함"
+hash: "3b9075e60b504834"
+date: "2026-11-14"
+note: "화면 문구 표준화에 맞춰 대조했다"
 text_changed: true
-doc_hash: "3c15ec7b172901a9"
+doc_hash: "63f2152de7eb6009"

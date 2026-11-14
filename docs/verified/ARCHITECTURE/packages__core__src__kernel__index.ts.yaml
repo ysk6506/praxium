@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "packages/core/src/kernel/index.ts"
 hash: "a0e635f3462c49c3"
-date: "2026-11-13"
-note: "identity keys now have set components (ADR-0022); units and dependency directions unchanged"
+date: "2026-11-14"
+note: "화면 문구 표준화에 맞춰 대조했다"
 text_changed: true
-doc_hash: "b67b04283ec99f40"
+doc_hash: "cf274009c38e2c2f"

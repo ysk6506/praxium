@@ -6,16 +6,120 @@ Praxium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Praxi
 - 이 목록은 웹·서버에서 도달할 수 있는 모든 패키지를 담아 실제 번들보다 넓어요.
 - 소스 zip과 컨테이너 이미지에 이 파일이 들어 있어요.
 
-<!-- licenses-fingerprint: 7ba1ecf3857b0f15 -->
+<!-- licenses-fingerprint: 3c515bafe9a2805e -->
 
 ## 요약
 
 | 라이선스 | 구성요소 수 |
 |---|---|
 | Apache-2.0 | 1 |
-| MIT | 1 |
+| MIT | 15 |
 
 ## 구성요소
+
+### @babel/runtime@8.1.2
+
+- 라이선스: MIT
+- 출처: https://github.com/babel/babel
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2014-present Sebastian McKenzie and other contributors
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @base-ui/react@1.9.0
+
+- 라이선스: MIT
+- 출처: https://github.com/mui/base-ui
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2019 Material-UI SAS
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @base-ui/utils@0.5.0
+
+- 라이선스: MIT
+- 출처: https://github.com/mui/base-ui
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2019 Material-UI SAS
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @floating-ui/core@1.8.0
+
+- 라이선스: MIT
+- 출처: https://github.com/floating-ui/floating-ui
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2021-present Floating UI contributors
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @floating-ui/dom@1.8.0
+
+- 라이선스: MIT
+- 출처: https://github.com/floating-ui/floating-ui
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2021-present Floating UI contributors
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @floating-ui/react-dom@2.1.9
+
+- 라이선스: MIT
+- 출처: https://github.com/floating-ui/floating-ui
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2021-present Floating UI contributors
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @floating-ui/utils@0.2.12
+
+- 라이선스: MIT
+- 출처: https://github.com/floating-ui/floating-ui
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2021-present Floating UI contributors
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### @types/react@19.3.0
+
+- 라이선스: MIT
+- 출처: https://github.com/DefinitelyTyped/DefinitelyTyped
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) Microsoft Corporation.
+- 라이선스 전문: [MIT-2](#mit-2)
+
+### csstype@3.2.3
+
+- 라이선스: MIT
+- 출처: https://github.com/frenic/csstype
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2017-2018 Fredrik Nicol
+- 라이선스 전문: [MIT-3](#mit-3)
+
+### react@19.3.1
+
+- 라이선스: MIT
+- 출처: https://github.com/react/react
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) Meta Platforms, Inc. and affiliates.
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### react-dom@19.3.1
+
+- 라이선스: MIT
+- 출처: https://github.com/react/react
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) Meta Platforms, Inc. and affiliates.
+- 라이선스 전문: [MIT-1](#mit-1)
+
+### reselect@5.3.0
+
+- 라이선스: MIT
+- 출처: https://github.com/reduxjs/reselect
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) 2015-2018 Reselect Contributors
+- 라이선스 전문: [MIT-4](#mit-4)
+
+### scheduler@0.28.0
+
+- 라이선스: MIT
+- 출처: https://github.com/react/react
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) Meta Platforms, Inc. and affiliates.
+- 라이선스 전문: [MIT-1](#mit-1)
 
 ### Terrarium harness and kernel (ysk6506/terrarium commit 3a8a83d, 2026-11-12)
 
@@ -30,6 +134,14 @@ Praxium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Praxi
 ```text
 Copyright 2026 The Terrarium authors
 ```
+
+### use-sync-external-store@1.7.0
+
+- 라이선스: MIT
+- 출처: https://github.com/react/react
+- 들어가는 곳: web 번들
+- 저작권: Copyright (c) Meta Platforms, Inc. and affiliates.
+- 라이선스 전문: [MIT-1](#mit-1)
 
 ### zod@3.25.76
 
@@ -253,10 +365,87 @@ Apache License
 
 ### MIT-1
 
-쓰는 구성요소: zod@3.25.76
+쓰는 구성요소: @babel/runtime@8.1.2, @base-ui/react@1.9.0, @base-ui/utils@0.5.0, @floating-ui/core@1.8.0, @floating-ui/dom@1.8.0, @floating-ui/react-dom@2.1.9, @floating-ui/utils@0.2.12, react@19.3.1, react-dom@19.3.1, scheduler@0.28.0, use-sync-external-store@1.7.0, zod@3.25.76
 
 ```text
 MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+```
+
+### MIT-2
+
+쓰는 구성요소: @types/react@19.3.0
+
+```text
+MIT License
+
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+    of this software and associated documentation files (the "Software"), to deal
+    in the Software without restriction, including without limitation the rights
+    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+    copies of the Software, and to permit persons to whom the Software is
+    furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included in all
+    copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+    SOFTWARE
+```
+
+### MIT-3
+
+쓰는 구성요소: csstype@3.2.3
+
+```text
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+### MIT-4
+
+쓰는 구성요소: reselect@5.3.0
+
+```text
+The MIT License (MIT)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

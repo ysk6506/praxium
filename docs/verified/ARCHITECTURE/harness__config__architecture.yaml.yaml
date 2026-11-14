@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "112f87e356acf73e"
+hash: "672bddbb6231c446"
 date: "2026-11-14"
-note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
+note: "main의 파일 스토어(ADR-0034)와 웹 UI(ADR-0035) 병합 뒤 대조했다"
 text_changed: true
-doc_hash: "70dbb7de18bc4e42"
+doc_hash: "03d4d0fcd1805905"

@@ -88,7 +88,7 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 const envDevToken = "PRAXIUM_DEV_TOKEN"
 
 const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-store memory|postgres|file] [-store-dsn-file file] [-store-data-dir dir]\n" +
-	"                          [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file]\n" +
+	"                          [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file] [-web=false]\n" +
 	"       praxium api routes --json\n"
 
 // runAPI handles `praxium api serve` and `praxium api routes`; runCommand sends nothing else here.
@@ -126,6 +126,8 @@ type serveOptions struct {
 	// store is "memory" (the default), "postgres" or "file"; storeDSNFile is the file that holds the PostgreSQL DSN and
 	// storeDataDir the data folder of the file store.
 	store, storeDSNFile, storeDataDir string
+	// web is whether the server also serves the embedded web UI at / (ADR-0035).
+	web bool
 }
 
 func parseServe(args []string) (serveOptions, error) {
@@ -140,6 +142,7 @@ func parseServe(args []string) (serveOptions, error) {
 	fs.StringVar(&o.truth, "dev-truth", "", "")
 	fs.StringVar(&o.store, "store", storeMemory, "")
 	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "")
+	fs.BoolVar(&o.web, "web", true, "")
 	fs.StringVar(&o.storeDataDir, "store-data-dir", "", "")
 	if err := fs.Parse(args); err != nil {
 		return o, kernel.Wrap(kernel.CodeInvalidValue, err, "bad flags for api serve")
@@ -236,7 +239,7 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	}
 	srv, err := httpapi.New(httpapi.Config{
 		Registry: reg, Authenticator: authn, Clock: d.clock, IDs: d.ids, Logger: log, Version: version,
-		Queries: queries, KGs: store,
+		Queries: queries, KGs: store, UI: uiFor(o),
 	})
 	if err != nil {
 		return err
@@ -248,7 +251,7 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	stopCtx, stop := d.signals()
 	defer stop()
 	log.Info("praxium api listening", slog.String("addr", ln.Addr().String()), slog.String("mode", o.mode),
-		slog.Bool("dev_auth", authn != nil), slog.String("store", o.store), slog.String("version", version))
+		slog.Bool("dev_auth", authn != nil), slog.String("store", o.store), slog.String("web_ui", uiState(o)), slog.String("version", version))
 	return srv.Serve(stopCtx, ln)
 }
 

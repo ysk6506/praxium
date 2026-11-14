@@ -7,7 +7,7 @@ notices_file: THIRD_PARTY_NOTICES.md
 assets_manifest: harness/config/third-party-assets.yaml
 
 # The npm packages these workspaces list under `dependencies` (and what those need, all the way down).
-distributed_workspaces: [packages/core]
+distributed_workspaces: [packages/core, apps/web]
 
 # Root devDependencies the shipped program cannot start without (none yet).
 extra_runtime_roots: []

@@ -11,7 +11,7 @@ lock: harness/config/test-lock.json
 vitest_config: vitest.config.ts
 test_script: vitest run --coverage
 vitest_include: ["packages/**/src/**/*.test.ts", "apps/**/src/**/*.test.{ts,tsx}", "harness/src/**/*.test.ts", "tests/spec/**/*.test.ts"]
-coverage_include: ["packages/*/src/**", "apps/server/src/**", "apps/web/src/logic/**", "harness/src/**"]
+coverage_include: ["packages/*/src/**", "apps/server/src/**", "apps/web/src/logic/**", "apps/web/src/api/**", "apps/web/src/data/**", "apps/web/src/ui/**", "harness/src/**"]
 coverage_exclude_allowed: ["**/*.test.ts", "**/*.test.tsx", "**/test-support/**"]
 forbidden_test_options: [exclude, passWithNoTests, allowOnly, retry, bail, testNamePattern, setupFiles, globalSetup, onConsoleLog, dangerouslyIgnoreUnhandledErrors]
 # setupFiles is forbidden except for exactly this list: a file that only gives the worker an event-loop turn
@@ -23,3 +23,7 @@ coverage_summary: coverage/coverage-summary.json
 coverage_floor: harness/config/coverage-floor.json
 min_floor: 90
 max_ignore_comments: 3   # `/* v8 ignore */` budget in production code; each needs a reason
+
+# Test files the lock (test-lock.json) and the requirement trace do not cover (ADR-0035). The temporary screens of the web UI
+# change with every look at the product and are checked by looking at them; the static test rules and the rest still apply.
+unlocked_globs: ["apps/web/src/screens/**"]
