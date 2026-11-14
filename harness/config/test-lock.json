@@ -22636,10 +22636,10 @@
   },
   "go:backend/internal/worldgen::TestScaleIsClose": {
    "kind": "test",
-   "hash": "11b7c4a9fc33a63a",
+   "hash": "585297dbc4b5fc61",
    "asserts": 3,
    "literals": [
-    "7f6b542378ab2c81"
+    "42fca6fe04330c76"
    ],
    "precision": [],
    "skips": 0,

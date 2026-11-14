@@ -24,7 +24,7 @@ amends_tests:
   - go:backend/internal/worldgen::TestScaleIsClose
   - go:backend/internal/readcheck::TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries
 test_change_reason: 합성 세계의 스토리지 어레이가 전원 장치 둘과 전원 이중화 그룹을 갖게 되어 세계가 바뀐다. 골든 세계의 객체와 링크 수와 해시, 규모 검사가 쓰는 가장 작은 규모의 입력, 어레이가 PDU 하나로 내려가는지 단언하던 영향 범위 시나리오의 기대값이 새 세계의 값으로 바뀐다. 단언의 종류와 강도는 그대로이거나 더 세밀해진다
-decision_hash: 91c3429db4c0125a
+decision_hash: 9e16a9c05def95a6
 ---
 # ADR-0057 합성 세계의 스토리지 어레이에 전원 이중화 그룹을 둔다
 
@@ -83,5 +83,9 @@ decision_hash: 91c3429db4c0125a
 | 테스트 | 바뀐 것 | 이유 |
 |---|---|---|
 | `TestGoldenTinyWorld` | 골든 객체 수 1,391에서 1,394, 링크 수 2,505에서 2,509, 내용 해시와 매니페스트 해시 | 작은 골든 세계의 어레이 하나가 전원 장치 둘과 그룹을 얻었다. 단언은 같다 |
-| `TestScaleIsClose` | 가장 작은 규모의 입력 3,000에서 3,100 | 이 규모의 세계는 랙 단위로만 커져서 이미 허용 범위의 끝(3,896개, 상한 3,900)이었고 7개가 늘면 넘는다. 허용 범위(0.7~1.3배)는 그대로 두고 세계가 범위 안에 드는 입력으로 옮겼다 |
+| `TestScaleIsClose` | 가장 작은 규모의 입력 3,000에서 4,000. 위에 주석을 달았다 | 세계는 랙 단위로 커진다(시드 1에서 랙 1개 1,506개, 2개 3,903개, 3개 5,870개). 규모 3,000에서 가장 가까운 크기는 랙 2개인데 전에는 상한(3,900)의 0.13% 안쪽이었고 이제 바깥이다. 생성기의 잘못이 아니라 표본이 랙 수가 바뀌는 경계에 있었던 것이므로, 랙 2개의 세계가 0.98배로 양쪽에 여유가 있는 4,000으로 옮겼다. 허용 범위(0.7~1.3배)는 그대로다 |
 | `TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries` | 이름을 `TestImpactAnArrayLosesRedundancyWithOnePduAndGoesDownWithBoth`로 바꾸고 새 사실을 단언 | 옛 사실("PDU 하나로 어레이와 HA 쌍이 중단")이 틀렸다. 새 테스트는 정답 데이터의 구조(그룹과 전원 장치 둘, 각 PDU), PDU 하나에서 어레이는 이중화 상실(직접)이고 풀과 볼륨과 데이터스토어와 가상 디스크와 가상 머신은 이중화 상실(간접)이며 컨트롤러와 HA 쌍은 건드리지 않는 것, PDU 둘에서 어레이와 컨트롤러와 HA 쌍이 중단인 것, 경로의 단계를 단언한다 |
+
+## 한계
+
+- 어레이의 전원 장치는 어레이에 `PART_OF`로 잇지 못하고 그룹과 PDU로만 이어진다. 표준 모델에 그 연결이 없기 때문이다. 표준 모델의 연결 허용 범위를 넓히는 일은 따로 한다(예정).

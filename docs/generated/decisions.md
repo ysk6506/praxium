@@ -48,7 +48,7 @@
 | [ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령](../design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md) | 유효 | 일부 수정: [0041](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) (테스트용 워크북 작성기를 제품이 부르지 않는다는 문장) |
 | [ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) | 유효 | 일부 수정: [0046](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) (ingest init의 CSV 예제가 합격 테스트의 샘플 파일과 같다는 결정) |
 | [ADR-0042 웹 UI의 접속 방식 표시, URL에 담는 상태, 오류 표시, 표시 이름 사전](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) | 유효 |  |
-| [ADR-0043 영향 범위 질의 impact — 전파 규칙, 이중화, 근거 등급, 한도와 업스트림](../design-docs/adr/0043-impact-query-propagation-redundancy-and-limits.md) | 유효 |  |
+| [ADR-0043 영향 범위 질의 impact — 전파 규칙, 이중화, 근거 등급, 한도와 업스트림](../design-docs/adr/0043-impact-query-propagation-redundancy-and-limits.md) | 유효 | 일부 수정: [0057](../design-docs/adr/0057-storage-array-power-redundancy-in-the-synthetic-world.md) (스토리지 어레이가 PDU 둘에 직렬이라 PDU 하나에 내려간다는 설명) |
 | [ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) | 유효 |  |
 | [ADR-0045 웹 UI 규칙을 Chrome 팀의 웹 가이드에서 추려 문서와 검사로 둔다](../design-docs/adr/0045-web-ui-rules-from-the-chrome-web-guidance.md) | 유효 |  |
 | [ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다 — 없는 시트와 컬럼, 키 오류, 인코딩, 구분자, 정의 초안](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) | 유효 |  |
@@ -60,3 +60,4 @@
 | [ADR-0053 조직 속성의 명령줄과 시작 배선](../design-docs/adr/0053-org-properties-command-line-and-start-wiring.md) | 유효 |  |
 | [ADR-0054 영향 범위 화면의 연결 — 주소, 읽기 훅, 화면, 객체 상세의 입구](../design-docs/adr/0054-impact-screen-wired-to-the-api.md) | 유효 |  |
 | [ADR-0055 수집의 소음과 메시지를 고친다 — 키 없는 행을 건너뛰는 옵션, 걸러진 행의 칸 문제, 무엇을 고칠지 알려 주는 메시지](../design-docs/adr/0055-ingest-messages-and-options-for-a-first-time-user.md) | 유효 |  |
+| [ADR-0057 합성 세계의 스토리지 어레이에 전원 이중화 그룹을 둔다](../design-docs/adr/0057-storage-array-power-redundancy-in-the-synthetic-world.md) | 유효 |  |
