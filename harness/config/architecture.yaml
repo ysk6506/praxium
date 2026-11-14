@@ -54,7 +54,11 @@ go:
     adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.memstore]}
     # The first three closed queries over the storage port (ADR-0026). The core imports no adapter (ADR-0027): its tests run on graph.ScratchStore.
     core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph]}
+    # The ingestion pipeline of the vertical slice (ADR-0033): source and mapping definitions, the stages from parse to apply, the state between runs. The core imports no adapter: the bytes of a file come in as a capture, and its tests run on graph.ScratchStore.
+    core.ingest:    {path: backend/internal/ingest, may_import: [core.kernel, core.model, core.graph]}
     # Adapters sit outside the core and never import each other: only the composition root joins them.
+    # The file adapter: reads the bytes of a file into a capture; the operating system is reached through an opener the composition root gives (ADR-0033).
+    adapter.filesource: {path: backend/internal/filesource, may_import: [core.kernel, core.ingest]}
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
@@ -63,6 +67,8 @@ go:
     adapter.devload: {path: backend/internal/devload, may_import: [core.kernel, core.model, core.graph, core.worldgen], test_may_import: [core.query]}
     # A package of tests only: its production code (the package clause) imports nothing, everything below is for its _test.go files (ADR-0028).
     adapter.readcheck: {path: backend/internal/readcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.query, core.access, core.contract, core.worldgen, adapter.memstore, adapter.http, adapter.devload]}
+    # A package of tests only: the acceptance of the slice, which runs the generator's source views through the pipeline and compares the KG with the development load of the truth (ADR-0033).
+    adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium

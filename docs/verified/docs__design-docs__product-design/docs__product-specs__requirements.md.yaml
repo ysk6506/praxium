@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "42c601030a265b69"
+hash: "f9d97c35116d2b1c"
 date: "2026-11-14"
-note: "requirements.md gained REQ-270 (PostgreSQL adapter); the product design text already covers the storage port and needs no change"
+note: "requirements gained REQ-263 to 269 (ingest) and REQ-270 (PostgreSQL); design text needs no change"
 text_changed: false
 doc_hash: "bea9303c5f968827"

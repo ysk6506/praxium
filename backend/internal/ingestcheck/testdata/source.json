@@ -1,0 +1,53 @@
+{
+  "id": "src_example_files",
+  "name": "example file exports",
+  "adapter": "file",
+  "datasets": [
+    {
+      "id": "ds_racks",
+      "parser": "csv",
+      "natural_key": ["asset_id"],
+      "columns": [{ "name": "asset_id" }, { "name": "rack_name" }, { "name": "total_u" }]
+    },
+    {
+      "id": "ds_servers",
+      "parser": "csv",
+      "natural_key": ["asset_id"],
+      "columns": [
+        { "name": "asset_id" },
+        { "name": "serial", "paths": ["serial_number", "serial_no"] },
+        { "name": "manufacturer" },
+        { "name": "rack_asset_id" },
+        { "name": "power_state", "optional": true }
+      ]
+    },
+    {
+      "id": "ds_hosts",
+      "parser": "json_lines",
+      "natural_key": ["host_id"],
+      "columns": [
+        { "name": "host_id" },
+        { "name": "hostname", "paths": ["name"] },
+        { "name": "serial", "paths": ["hardware.serial"] },
+        { "name": "connection", "optional": true }
+      ]
+    },
+    {
+      "id": "ds_vms",
+      "parser": "json_lines",
+      "natural_key": ["vm_id"],
+      "columns": [
+        { "name": "vm_id" },
+        { "name": "instance_uuid" },
+        { "name": "name" },
+        { "name": "host_id", "paths": ["host.host_id", "hypervisor.host_id"] }
+      ]
+    },
+    {
+      "id": "ds_vm_power",
+      "parser": "csv",
+      "natural_key": ["instance_uuid"],
+      "columns": [{ "name": "instance_uuid" }, { "name": "power_state" }]
+    }
+  ]
+}

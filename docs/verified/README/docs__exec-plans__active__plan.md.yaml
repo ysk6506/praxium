@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "f70925cdaf477015"
+hash: "8633716ed44e3d3b"
 date: "2026-11-14"
-note: "code list names adapter.pgstore next to the in-memory reference; plan.md row 7 updated for TD-0011 closure"
+note: "code list holds both ingest and pgstore; plan.md row 7 lists both"
 text_changed: true
 doc_hash: "05fb2a0b817b0255"

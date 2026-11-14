@@ -38,3 +38,4 @@
 | [ADR-0030 문서 용어 검사를 실패 모드로 전환한다 — 정비를 마쳤으므로 옛 표기가 다시 쓰이면 병합할 수 없다](../design-docs/adr/0030-document-term-check-fails-on-old-spellings.md) | 유효 |  |
 | [ADR-0031 Go 툴체인을 지원 중인 버전으로 올리고, 지원이 끝나기 전에 올린다](../design-docs/adr/0031-go-toolchain-on-a-supported-version.md) | 유효 |  |
 | [ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다 — 드라이버 lib/pq, 직접 만든 마이그레이션 실행기, 진짜 서버로 하는 테스트](../design-docs/adr/0032-postgresql-adapter-closes-the-storage-port-and-td-0011.md) | 유효 |  |
+| [ADR-0033 파일 소스 하나를 KG까지 적재하는 수집의 최소 구현](../design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md) | 유효 |  |

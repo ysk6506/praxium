@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "28d5676923ef3dda"
+hash: "b9845e89beefebcf"
 date: "2026-11-14"
-note: "Added the adapter.pgstore row, the lib/pq row of the Go module table, the memstore and cmd.praxium rows and the library line; checked go.mod and architecture.yaml against the tables"
+note: "merged ingest units with pgstore row, module row and cmd.praxium text; checked against architecture.yaml"
 text_changed: true
-doc_hash: "79e452cb64574da9"
+doc_hash: "5729f97cddcc7847"

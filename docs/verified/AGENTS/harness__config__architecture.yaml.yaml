@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "28d5676923ef3dda"
+hash: "b9845e89beefebcf"
 date: "2026-11-14"
-note: "Read against the new unit adapter.pgstore and the first third-party Go module in architecture.yaml: the rules about registering a unit (line 79) and external modules still hold, and ADR-0032 followed them; no text needed a change"
+note: "architecture.yaml gained adapter.pgstore and lib/pq beside the ingest units; AGENTS text unchanged and still correct"
 text_changed: true
-doc_hash: "e697a638621bc065"
+doc_hash: "388cb5a3fb37da85"
