@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "e697a638621bc065"
-date: "2026-11-13"
-note: "core-beliefs 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 4줄), 결정과 숫자는 그대로"
-text_changed: true
+hash: "59141a8c2ecb983e"
+date: "2026-11-14"
+note: "수집 슬라이스(ADR-0033)에서 따르는 문서가 바뀐 것을 확인했다. 이 문서의 내용과 어긋나는 곳이 없어 고치지 않았다"
+text_changed: false
 doc_hash: "b6dbe9997ada99ae"

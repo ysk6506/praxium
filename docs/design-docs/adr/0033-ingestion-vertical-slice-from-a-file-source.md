@@ -23,6 +23,7 @@ touches_protected:
   - harness/config/coverage-floor.json
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
+decision_hash: 98e39c61dde6843a
 ---
 # ADR-0033 파일 소스 하나를 KG까지 싣는 수집의 첫 한 줄
 
