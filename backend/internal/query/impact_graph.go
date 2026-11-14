@@ -81,6 +81,9 @@ type linkMeta struct {
 	seen     string
 	delay    string
 	weak     uint8
+	// cut is set on a link that the question names in dead_links; src and dst are the nodes it joins.
+	cut      bool
+	src, dst int32
 }
 
 // member is a member of a redundancy group and the link that makes it one.
@@ -303,9 +306,9 @@ func linkSeen(row graph.LinkRow) string {
 }
 
 func (l *loader) addLink(row graph.LinkRow) {
-	if l.opt.deadLinks[row.ID] {
+	cut := l.opt.deadLinks[row.ID]
+	if cut {
 		l.g.cutFound[row.ID] = true
-		return
 	}
 	lt, ok := l.e.links[row.TypeNo]
 	if !ok || !l.r.designed(row.Basis) {
@@ -324,7 +327,7 @@ func (l *loader) addLink(row graph.LinkRow) {
 	}
 	seen := linkSeen(row)
 	meta := linkMeta{id: row.ID, typeName: lt.Name, meaning: lt.Meaning, grade: row.Grade, basis: row.Basis, seen: seen,
-		delay: string(lt.DelayClass), weak: l.weakness(row, seen)}
+		delay: string(lt.DelayClass), weak: l.weakness(row, seen), cut: cut, src: src, dst: dst}
 	if meta.weak != weakNone {
 		l.g.weakLinks++
 	}

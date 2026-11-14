@@ -131,6 +131,21 @@ type solver struct {
 	stamp     []uint32
 	epoch     uint32
 	rounds    int
+	// cutOn makes the links that the question names as cut carry nothing: their target counts as down.
+	cutOn bool
+	// cutFrontier are the objects at the two ends of a cut link, which are worked out in the first round.
+	cutFrontier []int32
+}
+
+// isCut says whether the link is cut in this run.
+func (s *solver) isCut(link int32) bool { return s.cutOn && link >= 0 && s.g.links[link].cut }
+
+// stateVia is the service of the object at the far end of a link, as the link hands it on: a cut link hands on down.
+func (s *solver) stateVia(to, link int32) val {
+	if s.isCut(link) {
+		return vDown
+	}
+	return s.cur[to].svc
 }
 
 func newSolver(g *depGraph, pol policy, base []nstate) *solver {
@@ -153,6 +168,7 @@ func (s *solver) reset() {
 		s.seed[x] = false
 	}
 	s.seedCause = map[int32]cause{}
+	s.cutFrontier = s.cutFrontier[:0]
 	s.seedList = s.seedList[:0]
 	s.touched = s.touched[:0]
 	s.rounds = 0
@@ -168,9 +184,11 @@ func (s *solver) failSeed(x int32, c cause) {
 	s.seedList = append(s.seedList, x)
 }
 
-// flow is what a dependency hands on: its state, or only "unknown" when the link is weak.
+// flow is what a dependency hands on: its state, or only "unknown" when the
+// link is weak and the target is not up. A weak link says nothing about a
+// target that is up: with nothing failed, nothing is unknown (kg-queries.md 5.6).
 func flow(tv val, weak bool) val {
-	if weak {
+	if weak && tv != vUp {
 		return vUnknown
 	}
 	return tv
@@ -202,7 +220,7 @@ func (s *solver) eval(x int32) (nstate, cause, cause) {
 }
 
 func (s *solver) applyEdge(a *accum, d *edge) {
-	tv := s.cur[d.to].svc
+	tv := s.stateVia(d.to, d.link)
 	weak := s.pol.weak(s.g.links[d.link].weak)
 	c := cause{from: d.to, link: d.link, group: -1, role: roleDependency}
 	switch d.kind {
@@ -238,7 +256,7 @@ func (s *solver) applyEdge(a *accum, d *edge) {
 // failover group is declared, the group decides: an object it can take over is
 // only interrupted, one it cannot is down, one it may not be able to is unknown.
 func (s *solver) runsOn(d *edge, tv val, weak bool, c cause) (val, cause) {
-	if weak {
+	if weak && tv != vUp {
 		return vUnknown, c
 	}
 	if tv < vInterrupted || len(d.failover) == 0 {
@@ -265,7 +283,7 @@ func (s *solver) applyGroup(a *accum, nd *node) {
 	var alive, unknown int32
 	worst := vUp
 	for _, m := range nd.members {
-		state := flow(s.cur[m.node].svc, s.pol.weak(s.g.links[m.link].weak))
+		state := flow(s.stateVia(m.node, m.link), s.pol.weak(s.g.links[m.link].weak))
 		switch state {
 		case vUp:
 			alive++
@@ -404,5 +422,6 @@ func solveBaseline(g *depGraph, pol policy) []nstate {
 
 // fail runs a question: the failed objects (failSeed) and their failure spreads.
 func (s *solver) fail(maxHops int, now func() time.Time, deadline time.Time) string {
-	return s.run(append([]int32(nil), s.seedList...), maxHops, now, deadline)
+	frontier := append(append([]int32(nil), s.seedList...), s.cutFrontier...)
+	return s.run(frontier, maxHops, now, deadline)
 }

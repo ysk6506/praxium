@@ -3814,6 +3814,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestImpactAnswersAreTheSameOnTheMemoryTheFileAndThePostgresStore": {
+   "kind": "test",
+   "hash": "0ed196c61419d98a",
+   "asserts": 10,
+   "literals": [
+    "924169d3d4ad9bcf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestDataDirKeepsTheKGAndTheStateAcrossRuns": {
    "kind": "test",
    "hash": "5110c5556164b595",
@@ -9671,6 +9687,400 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/query::TestImpactACapacityGroupIsUnknownWhenAMemberFailsAndSaysSo": {
+   "kind": "test",
+   "hash": "b12a257021bbb194",
+   "asserts": 5,
+   "literals": [
+    "ff8bac71b418fde1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAContainerThatFailsTakesWhatIsContainedInItAndLinkCutsAreAccepted": {
+   "kind": "test",
+   "hash": "cbb58fca9d4730cb",
+   "asserts": 5,
+   "literals": [
+    "7796475811831cff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-303"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactADeadObjectFailsEverythingThatIsPartOfItAndAHardPartFailsTheWhole": {
+   "kind": "test",
+   "hash": "91e59d690d73dbff",
+   "asserts": 5,
+   "literals": [
+    "8e7d1b6ee8e4170d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAGroupWithoutMinAliveIsOnlyDecidedWhenEveryValueAgrees": {
+   "kind": "test",
+   "hash": "006889c490da5de3",
+   "asserts": 4,
+   "literals": [
+    "5e18d344a8af1627"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAHostOfAPoolThatCanFailOverOnlyInterruptsItsVMs": {
+   "kind": "test",
+   "hash": "a68b1bb42329e24f",
+   "asserts": 4,
+   "literals": [
+    "59dfce345eaf2fb6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactALinkOfUnknownGradeGivesUnknownInBothAnswers": {
+   "kind": "test",
+   "hash": "d124ab6543fd49df",
+   "asserts": 3,
+   "literals": [
+    "63bf1f6a78788e8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnAssumedLinkCarriesAFailureOnlyIntoTheAnswerWithAssumptions": {
+   "kind": "test",
+   "hash": "0f120b9703eb0060",
+   "asserts": 6,
+   "literals": [
+    "17e431d71e387b6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnAssumedMinAliveIsBelievedOnlyWithAssumptions": {
+   "kind": "test",
+   "hash": "37010ae6fb9c479a",
+   "asserts": 5,
+   "literals": [
+    "59e1d923ff70979e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301",
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnDependencyCycleEndsAndKeepsEveryObjectOnIt": {
+   "kind": "test",
+   "hash": "253a223726051de8",
+   "asserts": 4,
+   "literals": [
+    "8ffc70a0930df7e9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnObservedLinkOlderThanMaxStalenessIsNotUsed": {
+   "kind": "test",
+   "hash": "4ac3a4ff1086ac3f",
+   "asserts": 6,
+   "literals": [
+    "68b311068b70e14a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactASoftRequirementOnlyDegradesWhileAHardOneBringsTheObjectDown": {
+   "kind": "test",
+   "hash": "f83ceb56823f371d",
+   "asserts": 2,
+   "literals": [
+    "930ac9386a1e105c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactBothPdusTakeTheDualFedServerDownAndTheDownSpreadsToHostAndVM": {
+   "kind": "test",
+   "hash": "efd8844164a2c3b3",
+   "asserts": 3,
+   "literals": [
+    "a512045bc67d856c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactCoolingGroupOfThreeFansNeedingTwo": {
+   "kind": "test",
+   "hash": "0026b142c38a1d6e",
+   "asserts": 5,
+   "literals": [
+    "2bfa4e33d3663c46"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactHidesWhatTheCallerMayNotReadButKeepsTheRoute": {
+   "kind": "test",
+   "hash": "7be9920e834a35e7",
+   "asserts": 6,
+   "literals": [
+    "aeefe3a921c6bab0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-303"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactItemsSayWhichChannelNoLinkSupplies": {
+   "kind": "test",
+   "hash": "95403dedb6ec1d46",
+   "asserts": 3,
+   "literals": [
+    "23ff45a864308de1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-303"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactKeepsAtMostMaxItemsAndSaysSo": {
+   "kind": "test",
+   "hash": "774a4b0e3f665260",
+   "asserts": 4,
+   "literals": [
+    "d5ef026d955fe136"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactMlagPairLosesOneSwitchThenBoth": {
+   "kind": "test",
+   "hash": "56ba8ae3dff80b0c",
+   "asserts": 3,
+   "literals": [
+    "383e7df36f44c2e0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactOnePduLeavesTheDualFedServerExposedAndTakesTheSingleOneDown": {
+   "kind": "test",
+   "hash": "e98bf06ca997bf11",
+   "asserts": 6,
+   "literals": [
+    "a8d70cc1c2e8e456"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactOrderOfTheSeedsDoesNotChangeTheAnswer": {
+   "kind": "test",
+   "hash": "3f65acffaaf7ba53",
+   "asserts": 6,
+   "literals": [
+    "4f50e08c6ca2eefc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactPagesInTheOrderOfSeverityAndOtherQueriesCursorsAreRefused": {
+   "kind": "test",
+   "hash": "ce74ef0fcde48048",
+   "asserts": 7,
+   "literals": [
+    "bd23fa167b88f0fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactRefusesWhatItCannotAnswer": {
+   "kind": "test",
+   "hash": "d4037cbb7bc36f8b",
+   "asserts": 2,
+   "literals": [
+    "6510cd0e0d60b7d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactStopsAtMaxHopsAndSaysTheAnswerIsNotComplete": {
+   "kind": "test",
+   "hash": "f18c8ab42b5da156",
+   "asserts": 5,
+   "literals": [
+    "ae2b0b31db6368dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactStopsWhenTheTimeBudgetIsUsedUp": {
+   "kind": "test",
+   "hash": "cf2f1f4f27024389",
+   "asserts": 5,
+   "literals": [
+    "846f4d98702cc004"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactUpstreamListsWhatTheTargetDependsOnAndWhichOnesAreSinglePoints": {
+   "kind": "test",
+   "hash": "33f09e41fb651ec8",
+   "asserts": 8,
+   "literals": [
+    "02e7f39f74b761eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactUpstreamPagesAndCapsTheDependenciesItTries": {
+   "kind": "test",
+   "hash": "05654bdc5099dc8a",
+   "asserts": 4,
+   "literals": [
+    "7c507eb4f166304d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactUpstreamWithAnAssumedLinkNamesTheSinglePointOnlyWithAssumptions": {
+   "kind": "test",
+   "hash": "c666ee2cd9ca2bc9",
+   "asserts": 2,
+   "literals": [
+    "cd103ea0009271f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/query::TestNeighborsGroupsAndStepsAreReported": {
    "kind": "test",
    "hash": "8c06023337ff5b71",
@@ -9834,6 +10244,220 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/readcheck::TestImpactADeadMemoryModuleDegradesTheServerAndADeadCPUTakesItDown": {
+   "kind": "test",
+   "hash": "b51a97ef57bcf76f",
+   "asserts": 6,
+   "literals": [
+    "b3da12807bc58d7a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactAMoreFailuresNeverBringBackAnObjectThatWasDown": {
+   "kind": "test",
+   "hash": "96104487a3f14474",
+   "asserts": 4,
+   "literals": [
+    "409e16664a5d9316"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactBothRackPdusTakeTheServersDownAndItReachesHostsAndVMs": {
+   "kind": "test",
+   "hash": "a5bd89f7b3021c2c",
+   "asserts": 6,
+   "literals": [
+    "9f4b11ca39d0be3e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactDownstreamAndUpstreamAgreeOnWhatOneFailureDoesToATarget": {
+   "kind": "test",
+   "hash": "88bc986853f7b477",
+   "asserts": 6,
+   "literals": [
+    "932cbf8790f7af63"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactEndsOnAWholeSiteAndOnEveryPduAtOnce": {
+   "kind": "test",
+   "hash": "25f3b6aa6634fa70",
+   "asserts": 4,
+   "literals": [
+    "c515c47fccf37842"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactEveryObjectThatGoesDownWithASeedNamesTheSeedAsItsSinglePoint": {
+   "kind": "test",
+   "hash": "2db94f5edae28815",
+   "asserts": 3,
+   "literals": [
+    "315ba13fdbbb9c3a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactFailureAcrossAnAssumedLinkIsMarkedAndOnlyBelievedWithAssumptions": {
+   "kind": "test",
+   "hash": "48af082c275345ce",
+   "asserts": 4,
+   "literals": [
+    "9be613505d2b0add"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactFanGroupOfAServerNeedsAllButOneFan": {
+   "kind": "test",
+   "hash": "60834460813c737c",
+   "asserts": 5,
+   "literals": [
+    "22a553a605b88eda"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries": {
+   "kind": "test",
+   "hash": "5347235169728072",
+   "asserts": 9,
+   "literals": [
+    "4e8cff423596c126"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactMlagPairOfARackLosesOneSwitchAndThenBoth": {
+   "kind": "test",
+   "hash": "ea4f3d28b7fd4854",
+   "asserts": 6,
+   "literals": [
+    "67f62e7bf84645f4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactOneHostOfAClusterOnlyInterruptsItsVMs": {
+   "kind": "test",
+   "hash": "f9e8f55e135bed06",
+   "asserts": 5,
+   "literals": [
+    "bcf9fcb2c6918eab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactOneRackPduExposesTheDualFedServersAndDownsTheSinglyFedToRSwitch": {
+   "kind": "test",
+   "hash": "6759e1bdee7c395e",
+   "asserts": 8,
+   "literals": [
+    "3ae94c53e1b46e51"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactSaysWhenALimitCutTheAnswer": {
+   "kind": "test",
+   "hash": "36771d56171cfc32",
+   "asserts": 6,
+   "literals": [
+    "9e58b429d1cbae00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactTheOrderOfTheSeedsDoesNotChangeTheAnswerOnAGeneratedWorld": {
+   "kind": "test",
+   "hash": "da7d25da3f4bc5a5",
+   "asserts": 2,
+   "literals": [
+    "8113444e8369479a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/readcheck::TestNeighborsReadThePastAndTheView": {
    "kind": "test",

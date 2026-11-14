@@ -137,7 +137,9 @@ type ImpactSection struct {
 	CountsByType   []TypeCount    `json:"counts_by_type"`
 	CountsByParent []ParentCount  `json:"counts_by_parent"`
 	GroupsTouched  []GroupTouched `json:"groups_touched"`
-	Items          []ImpactItem   `json:"items,omitempty"`
+	// UnfilledChannelObjects counts the changed objects whose type needs a channel that no link supplies (ADR-0043).
+	UnfilledChannelObjects int          `json:"unfilled_channel_objects"`
+	Items                  []ImpactItem `json:"items,omitempty"`
 }
 
 // UpstreamItem is one object the target depends on, with what happens to the

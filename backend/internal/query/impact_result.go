@@ -99,6 +99,17 @@ func (rd *reading) unfilledChannels(x int32) []string {
 	return out
 }
 
+// countUnfilled counts the candidates with a needed channel that no link supplies.
+func (rd *reading) countUnfilled(cands []candidate) int {
+	n := 0
+	for _, c := range cands {
+		if len(rd.unfilledChannels(c.x)) > 0 {
+			n++
+		}
+	}
+	return n
+}
+
 // item builds the answer for one changed object, with its path.
 func (e *Engine) impactItem(rd *reading, c candidate) ImpactItem {
 	nd := &rd.g.nodes[c.x]

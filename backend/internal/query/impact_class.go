@@ -71,11 +71,11 @@ func (s *solver) classify() *outcome {
 		if s.g.nodes[x].group {
 			o.groups = append(o.groups, x)
 		}
-		if s.seed[x] {
-			continue
-		}
-		if b := bitsOf(s.cur[x]); b != 0 {
-			o.mask[x] |= b
+		// The objects that were named are the question, not part of the answer; an object that fails with its container is.
+		if named := s.seed[x] && s.seedCause[x].role == roleSeed; !named {
+			if b := bitsOf(s.cur[x]); b != 0 {
+				o.mask[x] |= b
+			}
 		}
 		if s.cur[x].svc >= vInterrupted {
 			failed = append(failed, x)
@@ -153,16 +153,23 @@ func (s *solver) dependsOnGroup(u, g int32) (*edge, bool) {
 
 // degradeThroughSoft marks the objects that depend softly on something that failed.
 func (s *solver) degradeThroughSoft(o *outcome, failed []int32) {
-	seen := map[int32]bool{}
+	var cands []int32
 	for _, t := range failed {
-		for _, u := range s.g.nodes[t].users {
-			if seen[u] || !s.alive(u) {
-				continue
-			}
-			seen[u] = true
-			if d := s.softEdge(u); d != nil {
-				o.expose(u, bitDegraded, prioDegraded, cause{from: d.to, link: d.link, group: -1, role: roleDependency})
-			}
+		cands = append(cands, s.g.nodes[t].users...)
+	}
+	for _, l := range s.g.links {
+		if l.cut && s.cutOn {
+			cands = append(cands, l.src)
+		}
+	}
+	seen := map[int32]bool{}
+	for _, u := range cands {
+		if seen[u] || !s.alive(u) {
+			continue
+		}
+		seen[u] = true
+		if d := s.softEdge(u); d != nil {
+			o.expose(u, bitDegraded, prioDegraded, cause{from: d.to, link: d.link, group: -1, role: roleDependency})
 		}
 	}
 }
@@ -173,7 +180,7 @@ func (s *solver) softEdge(u int32) *edge {
 	for i := range nd.deps {
 		d := &nd.deps[i]
 		soft := d.soft && (d.kind == kRequires || d.kind == kWholeNeeds) || d.kind == kSupply && nd.need[d.ch] == needSoft
-		if soft && s.cur[d.to].svc >= vInterrupted && !s.pol.weak(s.g.links[d.link].weak) {
+		if soft && s.stateVia(d.to, d.link) >= vInterrupted && !s.pol.weak(s.g.links[d.link].weak) {
 			return d
 		}
 	}

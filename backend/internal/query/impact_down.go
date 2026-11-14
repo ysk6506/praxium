@@ -26,6 +26,12 @@ func resolveSeeds(g *depGraph, in ImpactInput) (seedSet, error) {
 // applyTo makes the objects fail in a solver. A contained object fails with its
 // container when the link that says so is believed under the policy of the solver.
 func (ss seedSet) applyTo(s *solver) {
+	s.cutOn = true
+	for _, l := range s.g.links {
+		if l.cut {
+			s.cutFrontier = append(s.cutFrontier, l.src, l.dst)
+		}
+	}
 	for _, x := range ss.dead {
 		s.failSeed(x, noCause)
 	}
@@ -36,7 +42,7 @@ func (ss seedSet) applyTo(s *solver) {
 	}
 	for head := 0; head < len(queue); head++ {
 		for _, ch := range s.g.nodes[queue[head]].children {
-			if s.seed[ch.node] || s.pol.weak(s.g.links[ch.link].weak) {
+			if s.seed[ch.node] || s.pol.weak(s.g.links[ch.link].weak) || s.isCut(ch.link) {
 				continue
 			}
 			s.failSeed(ch.node, cause{from: queue[head], link: ch.link, group: -1, role: roleContainment})
@@ -116,7 +122,7 @@ func (e *Engine) section(r *read, rd *reading, possible *reading, plan *impactPl
 	}
 	cands := rd.visibleCandidates(rd.candidates(po))
 	byResult, byType, byParent := rd.counts(cands)
-	sec := &ImpactSection{CountsByResult: byResult, CountsByType: byType, CountsByParent: byParent, GroupsTouched: rd.touchedGroups()}
+	sec := &ImpactSection{CountsByResult: byResult, CountsByType: byType, CountsByParent: byParent, GroupsTouched: rd.touchedGroups(), UnfilledChannelObjects: rd.countUnfilled(cands)}
 	ps := pageState{total: len(cands), last: after}
 	if len(cands) > plan.maxItems {
 		ps.overCap = true

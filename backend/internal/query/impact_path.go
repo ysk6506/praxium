@@ -72,6 +72,10 @@ func (rd *reading) chain(x int32, top uint8) []pstep {
 		if c.from < 0 {
 			break
 		}
+		if c.link >= 0 && rd.s.isCut(c.link) {
+			rev = append(rev, pstep{x: c.from, c: noCause})
+			break
+		}
 		cur, c = c.from, rd.causeOf(c.from, c.role, 0)
 	}
 	out := make([]pstep, len(rev))
@@ -123,6 +127,9 @@ func (e *Engine) pathLink(rd *reading, st pstep) (PathLink, model.Grade, bool) {
 	}
 	grade := lm.grade
 	weak := rd.pol.weak(lm.weak) || lm.weak != weakNone && rd.pol == pReal
+	if rd.s.isCut(st.c.link) {
+		pl.Note = "the link is cut (dead_links)"
+	}
 	if lm.weak == weakStale {
 		pl.Note = "the observation is older than max_staleness"
 	}
