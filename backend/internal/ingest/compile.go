@@ -21,6 +21,8 @@ type Plan struct {
 	links   []*linkPlan
 	// columns of every dataset and refinement by id.
 	columns map[string][]string
+	// roots is the dataset a refinement comes from, through all the refinements before it.
+	roots map[string]string
 }
 
 type valueSpec struct {
@@ -83,8 +85,9 @@ func bad(format string, args ...any) error {
 // definitions are judged: a name the standard model does not know, a key it does not have or a link it does not
 // allow is an error here and never a surprise in a run.
 func Compile(reg *model.Registry, src Source, m Mapping) (*Plan, error) {
-	p := &Plan{Source: src, Mapping: m, reg: reg, columns: map[string][]string{}}
+	p := &Plan{Source: src, Mapping: m, reg: reg, columns: map[string][]string{}, roots: map[string]string{}}
 	for _, d := range src.Datasets {
+		p.roots[d.ID] = d.ID
 		for _, c := range d.Columns {
 			p.columns[d.ID] = append(p.columns[d.ID], c.Name)
 		}
@@ -124,7 +127,7 @@ func (p *Plan) compileRefinements() error {
 				return bad("refinement %s, operation %d: %v", r.ID, i+1, err)
 			}
 		}
-		p.columns[r.ID] = cols
+		p.columns[r.ID], p.roots[r.ID] = cols, p.roots[r.Input]
 		p.refs = append(p.refs, r)
 	}
 	return nil
