@@ -27,6 +27,7 @@ touches_protected:
   - harness/config/coverage-floor.json
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
+decision_hash: f9e92c66929bae1e
 ---
 # ADR-0034 내장 파일 스토어
 

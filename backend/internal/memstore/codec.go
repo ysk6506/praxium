@@ -7,7 +7,6 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
-	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
 // The records of the journal and the parts of a snapshot are gob streams of the wire types below. A wire type is the
@@ -27,8 +26,8 @@ const (
 
 type wAttr struct {
 	Value      []byte
-	Grade      model.Grade
-	Basis      model.Basis
+	Grade      string
+	Basis      string
 	SourceTime string
 	SourceRef  string
 }
@@ -37,7 +36,7 @@ type wObject struct {
 	ID          string
 	TypeNo      int
 	Name        string
-	MinGrade    model.Grade
+	MinGrade    string
 	Attrs       map[int]wAttr
 	SourceRefs  []string
 	ContentHash kernel.Hash
@@ -51,8 +50,8 @@ type wLink struct {
 	Src           string
 	Dst           string
 	Discriminator string
-	Grade         model.Grade
-	Basis         model.Basis
+	Grade         string
+	Basis         string
 	Attrs         map[int]wAttr
 	SourceRefs    []string
 	ContentHash   kernel.Hash
@@ -64,8 +63,8 @@ type wVolatile struct {
 	Object string
 	AttrNo int
 	Value  []byte
-	Grade  model.Grade
-	Basis  model.Basis
+	Grade  string
+	Basis  string
 	SeenAt string
 	Ref    string
 }
@@ -120,7 +119,7 @@ func toWireAttrs(in map[int]graph.Attr) (map[int]wAttr, error) {
 		if err != nil {
 			return nil, err
 		}
-		out[no] = wAttr{Value: v, Grade: a.Grade, Basis: a.Basis, SourceTime: a.SourceTime, SourceRef: a.SourceRef}
+		out[no] = wAttr{Value: v, Grade: string(a.Grade), Basis: string(a.Basis), SourceTime: a.SourceTime, SourceRef: a.SourceRef}
 	}
 	return out, nil
 }
@@ -135,7 +134,10 @@ func fromWireAttrs(in map[int]wAttr) (map[int]graph.Attr, error) {
 		if err != nil {
 			return nil, err
 		}
-		out[no] = graph.Attr{Value: v, Grade: a.Grade, Basis: a.Basis, SourceTime: a.SourceTime, SourceRef: a.SourceRef}
+		ga := graph.Attr{Value: v, SourceTime: a.SourceTime, SourceRef: a.SourceRef}
+		set(&ga.Grade, a.Grade)
+		set(&ga.Basis, a.Basis)
+		out[no] = ga
 	}
 	return out, nil
 }
@@ -145,7 +147,7 @@ func toWireObject(r *graph.ObjectRow) (*wObject, error) {
 		return nil, nil
 	}
 	attrs, err := toWireAttrs(r.Attrs)
-	return &wObject{r.ID.String(), r.TypeNo, r.Name, r.MinGrade, attrs, r.SourceRefs, r.ContentHash, r.SeqFrom, r.SeqTo}, err
+	return &wObject{r.ID.String(), r.TypeNo, r.Name, string(r.MinGrade), attrs, r.SourceRefs, r.ContentHash, r.SeqFrom, r.SeqTo}, err
 }
 
 func (d *ids) objectRow(w *wObject) (*graph.ObjectRow, error) {
@@ -156,8 +158,10 @@ func (d *ids) objectRow(w *wObject) (*graph.ObjectRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &graph.ObjectRow{ID: d.object(w.ID), TypeNo: w.TypeNo, Name: w.Name, MinGrade: w.MinGrade, Attrs: attrs,
-		SourceRefs: w.SourceRefs, ContentHash: w.ContentHash, SeqFrom: w.SeqFrom, SeqTo: w.SeqTo}, d.err
+	row := &graph.ObjectRow{ID: d.object(w.ID), TypeNo: w.TypeNo, Name: w.Name, Attrs: attrs,
+		SourceRefs: w.SourceRefs, ContentHash: w.ContentHash, SeqFrom: w.SeqFrom, SeqTo: w.SeqTo}
+	set(&row.MinGrade, w.MinGrade)
+	return row, d.err
 }
 
 func toWireLink(r *graph.LinkRow) (*wLink, error) {
@@ -165,7 +169,7 @@ func toWireLink(r *graph.LinkRow) (*wLink, error) {
 		return nil, nil
 	}
 	attrs, err := toWireAttrs(r.Attrs)
-	return &wLink{r.ID.String(), r.TypeNo, r.Src.String(), r.Dst.String(), r.Discriminator, r.Grade, r.Basis, attrs, r.SourceRefs,
+	return &wLink{r.ID.String(), r.TypeNo, r.Src.String(), r.Dst.String(), r.Discriminator, string(r.Grade), string(r.Basis), attrs, r.SourceRefs,
 		r.ContentHash, r.SeqFrom, r.SeqTo}, err
 }
 
@@ -177,13 +181,16 @@ func (d *ids) linkRow(w *wLink) (*graph.LinkRow, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &graph.LinkRow{ID: d.link(w.ID), TypeNo: w.TypeNo, Src: d.object(w.Src), Dst: d.object(w.Dst), Discriminator: w.Discriminator,
-		Grade: w.Grade, Basis: w.Basis, Attrs: attrs, SourceRefs: w.SourceRefs, ContentHash: w.ContentHash, SeqFrom: w.SeqFrom, SeqTo: w.SeqTo}, d.err
+	row := &graph.LinkRow{ID: d.link(w.ID), TypeNo: w.TypeNo, Src: d.object(w.Src), Dst: d.object(w.Dst), Discriminator: w.Discriminator,
+		Attrs: attrs, SourceRefs: w.SourceRefs, ContentHash: w.ContentHash, SeqFrom: w.SeqFrom, SeqTo: w.SeqTo}
+	set(&row.Grade, w.Grade)
+	set(&row.Basis, w.Basis)
+	return row, d.err
 }
 
 func toWireVolatile(v graph.VolatileRow) (wVolatile, error) {
 	b, err := putValue(nil, v.Value)
-	return wVolatile{v.Object.String(), v.AttrNo, b, v.Grade, v.Basis, v.SeenAt, v.Ref}, err
+	return wVolatile{v.Object.String(), v.AttrNo, b, string(v.Grade), string(v.Basis), v.SeenAt, v.Ref}, err
 }
 
 func (d *ids) volatileRow(w wVolatile) (graph.VolatileRow, error) {
@@ -191,7 +198,10 @@ func (d *ids) volatileRow(w wVolatile) (graph.VolatileRow, error) {
 	if err != nil {
 		return graph.VolatileRow{}, err
 	}
-	return graph.VolatileRow{Object: d.object(w.Object), AttrNo: w.AttrNo, Value: v, Grade: w.Grade, Basis: w.Basis, SeenAt: w.SeenAt, Ref: w.Ref}, d.err
+	row := graph.VolatileRow{Object: d.object(w.Object), AttrNo: w.AttrNo, Value: v, SeenAt: w.SeenAt, Ref: w.Ref}
+	set(&row.Grade, w.Grade)
+	set(&row.Basis, w.Basis)
+	return row, d.err
 }
 
 func toWireChunk(w graph.ChunkWrite) (wChunk, error) {
@@ -298,3 +308,8 @@ func decodeRecord(b []byte, v any) error {
 	}
 	return nil
 }
+
+// set stores a wire string into a string-based field. The wire types keep
+// grades and bases as plain strings so that this unit does not import the
+// model; the encoding is the same as the named string types.
+func set[T ~string](dst *T, s string) { *dst = T(s) }
