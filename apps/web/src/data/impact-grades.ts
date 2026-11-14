@@ -52,7 +52,7 @@ export const GRADE_STYLES: Readonly<Record<ImpactGrade, GradeStyle>> = {
     dashed: false,
   },
   exposed_inherited: {
-    name: "이중화 상실(상속)",
+    name: "이중화 상실(간접)",
     shape: "triangle-open",
     tone: "warn",
     dashed: false,

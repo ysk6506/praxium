@@ -7,9 +7,13 @@ export type {
   AttributeValue,
   FindItem,
   GetData,
+  GroupTouched,
   IdentifierItem,
+  ImpactAnswer,
+  ImpactData,
   KG,
   NeighborItem,
+  ObjectRef,
   ObjectType,
   Property,
   QueryMeta,
@@ -65,6 +69,7 @@ export {
   gradeTone,
   shortId,
 } from "./format";
+export { serverCounts, singlePoints, totalCount, unfilledCount } from "./impact-counts";
 export {
   GRADE_STYLES,
   type GradeShape,
@@ -105,6 +110,18 @@ export {
   type PlacedEdge,
   ROW_HEIGHT,
 } from "./impact-layout";
+export {
+  type ImpactModel,
+  useImpactModel,
+} from "./impact-model";
+export {
+  channelName,
+  type ImpactNotice,
+  impactNotices,
+  type NoticeAction,
+  type NoticeFacts,
+  nextItemLimit,
+} from "./impact-notices";
 export {
   nodePicture,
   overviewPicture,
@@ -150,9 +167,13 @@ export {
 } from "./impact-tree";
 export {
   DEFAULT_IMPACT_VIEW,
+  DEFAULT_ITEM_LIMIT,
+  EMPTY_QUESTION,
+  type ImpactQuestion,
   type ImpactRequestBody,
   type ImpactSortKey,
   type ImpactView,
+  ITEM_LIMITS,
   impactAddress,
   impactViewParams,
   isAnswerable,
@@ -177,6 +198,7 @@ export {
 export { PAGE_SIZES, usePager } from "./pager";
 export type { ObjectTab, Route } from "./router";
 export {
+  hashParams,
   OBJECT_TABS,
   parseRoute,
   repairedHash,
@@ -213,4 +235,12 @@ export {
   typesViewParams,
 } from "./urlstate";
 export type { AsyncResult, AsyncState } from "./useAsync";
+export {
+  expectedItems,
+  type ImpactItems,
+  type ImpactLoad,
+  type ReceivedItem,
+  useImpact,
+  withItems,
+} from "./useImpact";
 export { type Spread, useReducedMotion, useSpread } from "./useSpread";

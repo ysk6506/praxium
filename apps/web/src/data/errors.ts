@@ -29,7 +29,7 @@ const BY_CODE: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "messa
     kind: "auth",
     title: "토큰이 없습니다",
     message: "요청에 토큰이 실리지 않았습니다.",
-    hint: "접속 설정에서 개발용 토큰을 입력하십시오.",
+    hint: "접속 설정에서 접근 토큰을 입력하십시오.",
   },
   "auth.token_invalid": {
     kind: "auth",

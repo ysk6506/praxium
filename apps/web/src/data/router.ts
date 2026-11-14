@@ -20,7 +20,9 @@ export type Route =
   | { readonly page: "kgs" }
   | { readonly page: "types"; readonly kg: string }
   | { readonly page: "objects"; readonly kg: string; readonly type: string }
-  | { readonly page: "object"; readonly kg: string; readonly id: string; readonly tab: ObjectTab };
+  | { readonly page: "object"; readonly kg: string; readonly id: string; readonly tab: ObjectTab }
+  /** The impact of a question; the question and the view are the query of the address (`impact-view.ts`). */
+  | { readonly page: "impact"; readonly kg: string };
 
 const decode = (part: string): string => {
   try {
@@ -40,6 +42,7 @@ export function parseRoute(hash: string, hasToken: boolean): Route {
   if (head === "kg" && kg !== undefined) {
     if (section === "types" && third !== undefined) return { page: "objects", kg, type: third };
     if (section === "types") return { page: "types", kg };
+    if (section === "impact") return { page: "impact", kg };
     if (section === "objects" && third !== undefined) {
       const tab = new URLSearchParams(query).get("tab");
       const known = OBJECT_TABS.find((t) => t === tab);
@@ -68,6 +71,8 @@ export function routeHash(route: Route): string {
       const tab = route.tab === "attributes" ? "" : `?tab=${route.tab}`;
       return `#/kg/${enc(route.kg)}/objects/${enc(route.id)}${tab}`;
     }
+    case "impact":
+      return `#/kg/${enc(route.kg)}/impact`;
   }
 }
 
@@ -98,7 +103,10 @@ function isKnownPath(parts: readonly string[]): boolean {
   if (head === "kgs" || head === "settings") return parts.length === 1;
   if (head !== "kg" || kg === undefined || extra !== undefined) return false;
   return (
-    section === undefined || section === "types" || (section === "objects" && third !== undefined)
+    section === undefined ||
+    section === "types" ||
+    (section === "impact" && third === undefined) ||
+    (section === "objects" && third !== undefined)
   );
 }
 

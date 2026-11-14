@@ -22,6 +22,9 @@ touches_protected:
   - docs/product-specs/requirements.md
   - harness/config/test-lock.json
 decision_hash: e7514a6ed373be05
+amended_by:
+  - adr: "0054"
+    what: 간접 노출 등급의 화면 이름
 ---
 # ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)
 

@@ -11,6 +11,7 @@ import {
   useToken,
 } from "./data";
 import {
+  ImpactScreen,
   KgsScreen,
   NotFoundScreen,
   ObjectScreen,
@@ -59,6 +60,8 @@ function Screen({ route, go }: { readonly route: Route; readonly go: (route: Rou
           onTab={(tab) => go({ ...route, tab })}
         />
       );
+    case "impact":
+      return <ImpactScreen key={route.kg} kg={route.kg} />;
     case "notFound":
       return <NotFoundScreen path={route.path} />;
   }
