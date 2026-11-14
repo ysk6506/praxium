@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "docs/design-docs/adr-process.md"
-hash: "96fb5112a5d05991"
-date: "2026-11-13"
-note: "core-beliefs 문서의 옛 표기를 용어집 표준 용어로 고친 것을 확인(변경 4줄), 결정과 숫자는 그대로"
+hash: "905db7f42e324ed2"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다."
 text_changed: true
-doc_hash: "b6dbe9997ada99ae"
+doc_hash: "04b2f4f490642c38"

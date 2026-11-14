@@ -29,7 +29,7 @@ touches_protected:
   - harness/config/coverage-floor.json
   - AGENTS.md
 amends_tests: []
-decision_hash: 96da88dfc83a40db
+decision_hash: 4b9ec51cca3d38a4
 ---
 # ADR-0021 합성 세계 생성기를 core.worldgen 단위로 둔다
 

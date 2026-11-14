@@ -14,7 +14,7 @@ touches_protected:
   - docs/product-specs/requirements.md
   - AGENTS.md
 amends_tests: []
-decision_hash: 8270a47d56571e39
+decision_hash: d2817f5820ee5da6
 amended_by:
   - adr: "0004"
     what: 목표는 초안이 아니다

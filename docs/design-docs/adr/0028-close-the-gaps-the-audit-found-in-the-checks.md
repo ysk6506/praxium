@@ -126,14 +126,14 @@ amends_tests:
 test_change_reason: 적합성 테스트의 사례 목록을 테스트 잠금의 지문에 포함해 사례를 삭제하거나 약화하면 잠금이 깨지게 했고(단언은 같고 사례별 요구사항 태그가 늘었다), Go의 상수 판정 규칙이 생겨 Go 기반 자료(fixture)가 상수 비교 대신 코드 호출 결과를 비교하게 했으며, 같은 메모의 재확인을 막아 문서 기반 자료가 이미 확인된 문서를 다시 스탬프하지 않게 했다. 세 곳 모두 테스트가 확인하는 것은 같거나 더 많다. 또 지원 코드(`graph/fixture.go`, `graph/scratch.go`)를 잠금 범위에 포함해 지문이 넓어졌다. 그 테스트들의 본문과 단언은 그대로다.
 amends:
   - adr: "0019"
-    what: 구조 계약의 `go:` 절에 두는 칸과 import 규칙
+    what: 구조 계약의 `go:` 절에 두는 필드와 import 규칙
   - adr: "0023"
     what: Go 테스트 규칙의 이식과 잠금의 지문 범위
   - adr: "0024"
     what: "`core.kernel`이 `os`를 import하는 범위"
   - adr: "0025"
-    what: 적합성 테스트 단위가 기준 구현을 import하는 범위
-decision_hash: 6ab9c37a496b85ff
+    what: 적합성 테스트 유닛이 기준 구현을 import하는 범위
+decision_hash: 6a8deb2905149f00
 ---
 # ADR-0028 감사에서 나온 검사의 허점을 보완한다
 

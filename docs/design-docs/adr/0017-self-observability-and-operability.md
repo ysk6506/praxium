@@ -12,7 +12,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 02eb9f96f1a3c76d
+decision_hash: 9f617af4352fa59d
 ---
 # ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 관측하고, 진단하고, 정해진 운영 액션으로 운영할 수 있게 만든다
 

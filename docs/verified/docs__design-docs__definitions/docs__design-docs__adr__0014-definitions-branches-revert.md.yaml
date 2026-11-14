@@ -1,7 +1,7 @@
 doc: "docs/design-docs/definitions.md"
 target: "docs/design-docs/adr/0014-definitions-branches-revert.md"
-hash: "f2d527be2b10f242"
-date: "2026-11-13"
-note: "definitions 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
-text_changed: false
-doc_hash: "b27745e4ae95650f"
+hash: "8d067e124059ef12"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 항목 리비전 용어와 REQ-172 제목 인용과 ADR-0006 역할 4종 표기를 맞췄다."
+text_changed: true
+doc_hash: "c3d3f6bd72ad3a96"

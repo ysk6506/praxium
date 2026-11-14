@@ -26,7 +26,7 @@ touches_protected:
   - harness/**
   - .github/**
 amends_tests: []
-decision_hash: eb940a11078e1467
+decision_hash: 38259b08e60d731d
 amended_by:
   - adr: "0029"
     what: 화면 용어에 대한 작업 규칙을 용어집의 표준 용어로 변경하고 문서 본문에도 적용한다
@@ -44,7 +44,7 @@ amended_by:
    | `AGENTS.md` | 지도. 120줄 이하. 상세 내용은 링크로 |
    | `ARCHITECTURE.md` | 유닛과 의존 방향 |
    | `docs/product-specs/requirements.md` | 목표와 요구사항(`REQ-NNN`)의 단일 출처 |
-   | `docs/design-docs/` | 설계 문서, 제품 설계 한 장, 용어집 |
+   | `docs/design-docs/` | 설계 문서, 제품 설계 개요, 용어집 |
    | `docs/design-docs/adr/` | 결정 기록. 확정되어 본문을 수정하지 않는다 |
    | `docs/exec-plans/` | 계획과 기술 부채 대장 |
    | `docs/generated/` | 하네스가 생성하는 것(결정 목록, 품질 등급표) |

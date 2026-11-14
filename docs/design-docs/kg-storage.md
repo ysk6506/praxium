@@ -87,7 +87,7 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 | `source_cursor` | `kg_id`, `source_id`, `position`(소스가 준 위치값), `updated_at` | `(kg_id, source_id)` | 작은 테이블. 소스에서 어디까지 읽었나 |
 | `ingest_order` | `kg_id`, `order_no`, `event_kind`, `log_id`, `log_position_from`, `log_position_to`, `ingest_seq_from`, `ingest_seq_to`, `ordered_at` | `(kg_id, order_no)` | 작은 테이블. 순서 목록 |
 
-- **소스 커서는 2종이에요.** `source_cursor`는 수집 변경 로그에 쓰는 것과 함께 전진해요. 로그가 PostgreSQL이면 한 트랜잭션이고, 메시지 로그 스토리지이면 기록한 뒤에 전진해서 중복 수신된 것을 `(소스, 위치)` 키로 걸러 내요. `applied_through`는 KG에 적용하는 트랜잭션에 묶여요.
+- **소스 커서는 2종이에요.** `source_cursor`는 수집 변경 로그에 쓰는 것과 함께 전진해요. 로그가 PostgreSQL이면 한 트랜잭션이고, 메시지 로그 스토리지이면 기록한 뒤에 전진해서 중복 수신된 것을 `(소스, 오프셋)` 키로 걸러 내요. `applied_through`는 KG에 적용하는 트랜잭션에 묶여요.
 - **순서는 확정 단계에서 정해져요.** KG마다 하나뿐인 적용기가 배치를 읽을 때 `ingest_order`에 기록하고 `ingest_seq`를 매겨요. 재실행할 때는 이 목록을 따르므로, 수집 변경 로그가 어느 어댑터든 순서가 같아요. 목록에 들어가는 이벤트는 `event_kind`의 **고정된 8종**이에요(적용 문서 5절). 원본 변경이 아닌 이벤트는 `log_*` 컬럼이 비어요.
 - `raw_record`의 `to_ingest_seq`는 **열어 둬요**. 같은 레코드를 다시 수집해도 행을 수정하지 않고, 관측되지 않거나 내용이 바뀌었을 때(또는 삭제 이벤트)만 닫아요.
 - **`volatile` 속성만 전달하는 스트림의 데이터셋**은 구간을 쓰지 않고 `raw_log`에 이벤트마다 한 행을 추가만 해요. 초당 수만 건에서 옛 행을 닫고 새 행을 넣는 쓰기를 피해요. 짧게 보관해요(적용 문서 8절). 어느 데이터셋이 이 유형인지는 정의의 계보에서 정해져요(그 데이터셋이 전달하는 속성이 전부 `volatile`).

@@ -10,7 +10,7 @@ updates_docs:
 touches_protected:
   - AGENTS.md
 amends_tests: []
-decision_hash: ab3b3ffed62747dd
+decision_hash: 326ff8e59538136d
 ---
 # ADR-0003 리포지토리에는 공개된 사실만 둔다 — 내부에서 들은 사실, 실제 데이터, 시크릿은 넣지 않는다
 

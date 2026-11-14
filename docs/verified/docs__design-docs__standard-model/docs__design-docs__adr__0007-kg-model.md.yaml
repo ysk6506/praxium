@@ -1,7 +1,7 @@
 doc: "docs/design-docs/standard-model.md"
 target: "docs/design-docs/adr/0007-kg-model.md"
-hash: "5fcc8ee4259a2ee1"
-date: "2026-11-13"
-note: "standard-model 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+hash: "be7b41394c87a9ca"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 채널 6종이 표준 모델 데이터와 같고 롤백할 수 있는 액션 표기를 맞췄다."
 text_changed: true
-doc_hash: "b9c59f2db280f4d1"
+doc_hash: "7a5e88c78aa218c0"

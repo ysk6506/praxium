@@ -373,4 +373,4 @@ health(resource={kind: "object_type", id: "Interface"}, include=["cause", "reade
 
 - 결정: [ADR-0013](adr/0013-data-observability.md). 관련 결정은 ADR-0006(역할 4종, 언어), ADR-0007(근거 등급, 타입의 관리), ADR-0008(건수 대조, 안전장치, 기대 조건), ADR-0009(변경 시퀀스, 신선도), ADR-0010(사전 정의 질의, 응답 엔벨로프, 변경 알림), ADR-0011(문제 목록, 신선도, 가용성), ADR-0012(역할, 담당자, 민감 등급), ADR-0014(정의의 계보, 알림 규칙과 목표를 정의로), ADR-0015(역량 질문과 충족률), ADR-0016(REST API).
 - 요구사항: REQ-180(8개 영역의 신호), REQ-181(헬스 상태와 전파, 근본 원인), REQ-182(목표), REQ-183(이상 탐지), REQ-184(알림), REQ-185(실행 소스 탐색과 타임라인), REQ-186(데이터 인시던트의 영향), REQ-187(`health`·`quality`와 헬스 힌트), REQ-188(지표의 저장과 내보내기), REQ-189(이중화 현황, 플래핑, 읽히지 않는 항목). 확장된 것은 REQ-150~152.
-- 같이 읽을 문서: [KG 운영](kg-operations.md), [현실 데이터 수집](ingestion.md), [KG에 묻기](kg-queries.md), [KG의 저장과 버전](kg-storage.md), [KG의 모델](kg-model.md), [표준 모델](standard-model.md), [접근 제어](access-control.md), [REST API 설계](rest-api.md).
+- 같이 읽을 문서: [KG 운영](kg-operations.md), [현실 데이터 수집](ingestion.md), [KG 질의](kg-queries.md), [KG의 저장과 버전](kg-storage.md), [KG의 모델](kg-model.md), [표준 모델](standard-model.md), [권한 설계](access-control.md), [REST API 설계](rest-api.md).

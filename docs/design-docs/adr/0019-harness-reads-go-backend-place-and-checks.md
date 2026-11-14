@@ -28,14 +28,14 @@ touches_protected:
   - .github/**
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: d57e7a3207fda1fe
+decision_hash: 7ef852746cc50c17
 amended_by:
   - adr: "0023"
     what: Go 테스트 잠금과 추적과 등급표
   - adr: "0024"
-    what: 코어 단위 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)
+    what: 코어 유닛 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)
   - adr: "0028"
-    what: 구조 계약의 `go:` 절에 두는 칸과 import 규칙
+    what: 구조 계약의 `go:` 절에 두는 필드와 import 규칙
 ---
 # ADR-0019 하네스가 Go 코드를 읽는다 — Go 백엔드의 위치와 검사
 

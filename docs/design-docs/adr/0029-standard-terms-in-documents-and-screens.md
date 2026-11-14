@@ -113,7 +113,10 @@ amends_tests:
   - "harness/src/checks/ui-words.test.ts::the word list: old words on screen fail with the word to use [REQ-003] > it names the line, the found word and the word to use"
   - harness/src/test-support/go-repo.ts::=GO_ARCHITECTURE_DOC
 test_change_reason: 표준 용어를 금지하던 규칙(회, 횟수, 시드, 에스컬레이션)을 없애거나 뒤집고, 하네스가 읽는 표 머리글(`시험 파일`을 `테스트 파일`로, `까닭`을 `이유`로)과 생성 문서의 말을 표준 용어로 바꿨다. 단언의 힘은 그대로이고 기대하는 문자열만 바뀌었다.
-decision_hash: 766ca73ec8ee0fa6
+decision_hash: da24809a32b4f567
+amended_by:
+  - adr: "0030"
+    what: 문서 용어 검사의 모드를 보고에서 실패로 전환한다
 ---
 # ADR-0029 문서와 화면의 문구를 표준 용어로 통일하고, 옛 표기가 다시 쓰이지 않게 검사한다
 

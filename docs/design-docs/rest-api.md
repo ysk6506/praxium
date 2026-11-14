@@ -52,7 +52,7 @@ follows:
 **이유.** 이름이 경로마다 다르면 화면이 경로마다 예외 처리를 해야 해요. ID를 해석해서 쓰면 ID의 구조가 계약이 돼 버려요. 예: `{"object_id": "obj_7f3a", "created_at": "2031-04-02T09:30:00Z", "result": "degraded"}`
 
 ### 3-2. 응답 엔벨로프
-**규칙.** 모든 성공 응답은 `data`와 `meta`를 가져요. `meta`의 필드는 사전 정의 질의의 엔벨로프(ADR-0010, [KG에 묻기](kg-queries.md))를 그대로 써요. 목록이 아닌 단순한 자원은 `meta`가 작아도 되지만 필드 이름은 같아요.
+**규칙.** 모든 성공 응답은 `data`와 `meta`를 가져요. `meta`의 필드는 사전 정의 질의의 엔벨로프(ADR-0010, [KG 질의](kg-queries.md))를 그대로 써요. 목록이 아닌 단순한 자원은 `meta`가 작아도 되지만 필드 이름은 같아요.
 **이유.** KG에서 온 응답은 어느 시점까지 반영했는지, 얼마나 오래됐는지, 근거가 무엇인지, 잘렸는지를 항상 알려야 해요. REST와 MCP가 같아야 하고요(3-12).
 
 | `meta`의 필드 | 의미 |
@@ -210,7 +210,7 @@ queued ─▶ running ─▶ succeeded
 
 | 이벤트의 `kind` | 그룹 | 담는 내용 |
 |---|---|---|
-| `job_progress`, `job_finished` | 바탕 | `job_id`, `state`, `progress` |
+| `job_progress`, `job_finished` | 기반 | `job_id`, `state`, `progress` |
 | `proposal_state_changed` | 정의 | `proposal_id`, 앞뒤 상태, 차단 사유의 수 |
 | `definition_merged`, `definition_reverted`, `kg_version_sealed` | 정의, KG | `set_no`나 `sealed_version` |
 | `kg_changed` | KG | `kg`, `generation`, `change_seq`의 구간, 타입별 수(숨겨진 것을 뺀 수). 경량 변경(`volatile`)도 포함해요. 내용은 없어요(내용은 `changes`로 읽어요) |

@@ -93,7 +93,7 @@ follows:
 | [KG의 모델](kg-model.md), [표준 모델](standard-model.md) | 타입 등록부, 링크 의미와 채널, 이중화 그룹, 근거, 식별, 타입 관리, 계층별 표준 타입 | ADR-0007 |
 | [현실 데이터 수집](ingestion.md), [파이프라인](pipeline.md), [수집 확장](ingestion-extensions.md) | 소스와 어댑터, 수집 방식, 읽기 전용, 안전장치, 수집 엔벨로프, 실행기와 정제·피드·식별·링크 정의, 푸시 수집, 재수집, 매핑 지원 | ADR-0008 |
 | [KG의 저장과 버전](kg-storage.md), [적용](kg-storage-apply.md), [스토리지 운영](postgres-operations.md) | 저장, 변경 배치, 확정 버전, 적용, 쓰기 경로와 복제와 신호 | ADR-0009 |
-| [KG 질의](kg-queries.md), [예시](kg-queries-examples.md), [엔진의 구조](query-engine-shape.md) | 사전 정의 질의, 영향 범위, 프로젝션과 질의 엔진, 엔진의 언어와 규모 검증 | ADR-0010 |
+| [KG 질의](kg-queries.md), [예시](kg-queries-examples.md), [질의 엔진의 언어와 구조](query-engine-shape.md) | 사전 정의 질의, 영향 범위, 프로젝션과 질의 엔진, 엔진의 언어와 규모 검증 | ADR-0010 |
 | [합성 세계 생성기](worldgen.md) | 시드로 구축하는 데이터센터의 정답과 소스 보기와 변경 스트림과 분포 프로파일, 인자, 결함, 규모 측정 | ADR-0021 |
 | [KG 운영](kg-operations.md) | 문제 목록, 가용성, 실패 처리 | ADR-0011 |
 | [권한](access-control.md) | SSO, 역할 8종, 범위, 감사 | ADR-0012 |

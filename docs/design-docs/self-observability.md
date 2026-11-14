@@ -176,7 +176,7 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 | `code`, `kinds` | 이름, 사용처(`event` 로그 / `error` API 오류 / `alert` 알림 종류 / `cause` 헬스 상태의 원인. 여러 개일 수 있어요) |
 | `severity`, `alert_severity`, `meaning`, `params` | 로그의 심각도, 알림이 되면 `info` / `warning` / `critical`, 의미 한 줄(영어. 화면의 문구는 코드로 만들어요), 파라미터의 키와 타입 |
 | `common_causes`, `look_at` | 흔한 원인(다른 `cause` 코드), 확인할 항목(신호, 자원, 기대하는 값) |
-| `actions`, `since`, `status` | 실행할 수 있는 운영 액션(이름, 조건, 되돌리는 액션), 처음 도입된 목록 버전, `active` / `deprecated` |
+| `actions`, `since`, `status` | 실행할 수 있는 운영 액션(이름, 조건, 롤백 액션), 처음 도입된 목록 버전, `active` / `deprecated` |
 
 **버전과 경로.** 목록의 버전은 `catalog_version`이에요(코드를 추가하면 마이너 번호, 필드 구조를 바꾸면 메이저 번호가 올라가요). 역할은 자기가 쓰는 버전을 `role_version_info`로 내보내요. `GET /v1/ops/event-codes`가 목록을, `GET /v1/problems/{code}`가 오류 코드의 설명을 반환해요(`storage.*`와 `secret.version_check_failed`도 이 목록에 있어요). 테스트가 3가지를 검사해요: 출력하는 모든 코드가 목록에 있는지, `actions`가 7절의 목록 안에 있는지, `look_at`의 지표가 지표 목록에 있는지예요.
 
@@ -204,7 +204,7 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 ### 7.1 목록
 위험 축은 ADR-0007의 4가지예요: 상태 변경 여부 · `reversibility` · `disruption` · 사람 손(모든 운영 액션이 「아니요」라 표에서 뺐어요). 「소스」 범위의 액션은 그 소스를 범위에 가진 `operator`가 수행해요.
 
-| 액션 | 동작 | 축 | 선언한 효과 | 되돌리는 액션 | 필요한 역할 | 승인 기본값 |
+| 액션 | 동작 | 축 | 선언한 효과 | 롤백 액션 | 필요한 역할 | 승인 기본값 |
 |---|---|---|---|---|---|---|
 | `pause_source`, `pause_feed`, `pause_stream` | 소스, 피드, 스트림을 일시 중지해요 | 예 · reversible · none | 새 수집이 중단되고 `paused`로 표시돼요. 신선도는 나빠지지만 질의는 그대로예요 | `resume_source`, `resume_feed`, `resume_stream`(스케줄이 자동으로 멈춘 소스도 재개해요) | `operator`(소스) | 아니요 |
 | `release_held_stream` | 보류된 스트림에 쌓인 변경을 수신 순서대로 적용 | 예 · irreversible · none | `held`가 해제되고 새 KG 버전이 생성돼요 | 없음(새 변경으로 앞으로 수정해요) | `operator`(소스) | 예 |
@@ -215,14 +215,14 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 | `roll_engine` | 엔진을 인스턴스 하나씩 내렸다가 다시 올려요(기동이 끝나면 다음 인스턴스) | 예 · reversible · none | 인스턴스마다 `started`를 거쳐요 | `roll_engine` | `operator`(전체) | 아니요 |
 | `pin_serving`, `unpin_serving` | 질의를 이전 KG 버전에 고정하고 해제해요(`pending` → `active`) | 예 · reversible · none | 응답의 `as_of.pinned`에 표시돼요 | 서로 | `operator`(전체), `admin` | 아니요 |
 | `run_archive_now`, `run_purge_now` | 보존 기한이 지난 데이터를 콜드 스토리지로 아카이브 / 삭제 | 예 · reversible · none / irreversible · data_loss | 현재 스토리지의 크기가 줄어요(아카이브한 데이터도 읽을 수 있어요) / 삭제한 만큼 줄어요 | 필요 없음 / 없음 | `operator`(전체) / `admin` | 아니요 / 예 |
-| 스토리지 액션(부하 감소, 보류, 백필 중지, 장기 트랜잭션 종료, 질의 패턴 차단, 테이블 정리) | 스토리지 신호가 가리킬 때 PostgreSQL을 관리해요. 이름과 축은 구현하는 변경이 목록에 추가해요 | 예 · 액션마다 | 신호(`storage.*`)에 나타나요 | 액션마다 | `operator`(전체), 범위가 넓으면 `admin` | 위험 축을 따라요 |
+| 스토리지 액션(속도 제한, 보류, 백필 중지, 장기 트랜잭션 종료, 질의 패턴 차단, 테이블 정리) | 스토리지 신호가 가리킬 때 PostgreSQL을 관리해요. 이름과 축은 구현하는 변경이 목록에 추가해요 | 예 · 액션마다 | 신호(`storage.*`)에 나타나요 | 액션마다 | `operator`(전체), 범위가 넓으면 `admin` | 위험 축을 따라요 |
 | `run_connection_check_now` | 소스에 접속해 보고 결과만 기록(소스 보호 장치를 거쳐요) | 아니요 · reversible · none | 소스의 연결 헬스 상태가 새로 산출돼요 | 필요 없음 | `operator`(소스) | 아니요 |
-| `pause_sources_by_secret` | 시크릿이 유출됐다고 의심될 때 그 값을 쓰는 소스를 한 번에 중지하고 값에 `suspected`를 표시해요 | 예 · reversible · none(수집만 중지하고 질의는 가능해요. 사람 손은 필요 없어요) | 그 값을 쓰는 소스가 모두 `paused`가 되고 새 연결이 없어요 | `resume_source`(값의 버전을 폐기한 뒤 소스마다) | `operator`(그 소스들을 모두 범위에 가진), 범위가 넓으면 `admin` | 아니요(되돌릴 수 있는 보호 액션이에요. 설정으로 켤 수 있어요) |
+| `pause_sources_by_secret` | 시크릿이 유출됐다고 의심될 때 그 값을 쓰는 소스를 한 번에 중지하고 값에 `suspected`를 표시해요 | 예 · reversible · none(수집만 중지하고 질의는 가능해요. 사람 손은 필요 없어요) | 그 값을 쓰는 소스가 모두 `paused`가 되고 새 연결이 없어요 | `resume_source`(값의 버전을 폐기한 뒤 소스마다) | `operator`(그 소스들을 모두 범위에 가진), 범위가 넓으면 `admin` | 아니요(롤백할 수 있는 보호 액션이에요. 설정으로 켤 수 있어요) |
 | `rotate_system_token` | 서비스 계정의 토큰을 교체해요 | 예 · irreversible · service_affecting | 기존 토큰은 병행 사용 기간이 끝나면 차단돼 그 토큰을 쓰던 시스템의 접속이 끊겨요. 스토리지가 정상이면 회수는 30초 안에 전파돼요 | 없음 | `admin` | 예 |
 | `rewrap_master_key` | 데이터 키를 새 마스터 키로 다시 래핑해요(ADR-0018) | 예 · reversible · none | 기존 마스터 키를 폐기해도 되는 시점이 와요. 값은 다시 암호화하지 않아요 | 기존 마스터 키로 다시 래핑해요 | `admin` | 예 |
 | `redact_raw_record` | 원본 레코드의 내용을 제거해요(해시, 위치, 이유만 남겨요) | 예 · irreversible · data_loss | 그 레코드를 다시 처리하면 값은 제거된 것으로 취급해요 | 없음 | `admin` | 예 |
 | `enter_maintenance_mode`, `exit_maintenance_mode` | 수정 요청(정의 수정, 제안, 병합)을 받지 않기 / 수정 요청 수신 재개. 질의와 수집·적용은 그대로 | 예 · reversible · service_affecting / none | 수정 요청이 `blocked.maintenance_mode`로 차단돼요 / 해제돼요 | 서로 | `admin` | 예 / 아니요 |
-| `update_setting`, `revert_setting` | 설정을 변경하고 되돌려요(8절) | 예 · reversible · none | 새 버전이 만들어지고 역할이 다음에 읽을 때 적용해요 | 서로 | `admin` | 설정 항목의 위험 축을 따라요 |
+| `update_setting`, `revert_setting` | 설정을 변경하고 리버트해요(8절) | 예 · reversible · none | 새 버전이 만들어지고 역할이 다음에 읽을 때 적용해요 | 서로 | `admin` | 설정 항목의 위험 축을 따라요 |
 
 토큰 값과 시크릿은 어느 액션의 결과에도 포함되지 않아요. 스토리지 액션은 알파에서 이름과 위험 축만 계약으로 두고, 구현은 클로즈드 베타에서 오픈 베타 사이에 해요(13절). `pause_sources_by_secret`은 값의 버전을 폐기하고 값을 교체하는 일, 복호화 사용 이력을 조회하는 일(ADR-0018)에 앞서 하는 첫 조치예요. 새 토큰은 계정을 관리하는 `admin`의 경로로 발급해요(access-control 11절).
 
@@ -242,7 +242,7 @@ ADR-0013 6절의 틀(`threshold`, `period`, `allowed_miss`, 못 지킨 비율, �
 ```
 `action_run`의 필드: `run_id`, `action`, `params`, `target`, `requested_by`(`actor_kind`, `actor_id`), `diagnosis_id`와 그 요약(`rule_id`와 근거 참조. 진단이 사라져도 이력이 남도록 복사해요), `dry_run_id`, `approval`(`required`, `reason`, `approved_by`, `at`), `idempotency_key`, `state`, `result`(`outcome`, 오류 `code`), `verification`, `reverse_of`, `trace_id`.
 
-**사후 확인.** 선언한 효과를 신호에 대한 기대값으로 바꾼 것이 `verification_plan`이에요. 실행이 끝나고 `ops.verification_settle_s`(14절)가 지나면 신호를 확인하고 판정을 결과에 기록해요: `confirmed`(기대한 변화가 나타났어요), `not_observed`(기한 안에 나타나지 않았어요), `contradicted`(반대로 악화됐어요), `unknown`(신호가 없어 판정하지 못했어요). `confirmed`가 아니면 상태는 `effect_not_confirmed`이고 알림이 가요. **자동으로 되돌리지 않아요.** 되돌리는 액션을 제안으로 붙일 뿐이고, 실행은 외부 에이전트나 사람이 해요.
+**사후 확인.** 선언한 효과를 신호에 대한 기대값으로 바꾼 것이 `verification_plan`이에요. 실행이 끝나고 `ops.verification_settle_s`(14절)가 지나면 신호를 확인하고 판정을 결과에 기록해요: `confirmed`(기대한 변화가 나타났어요), `not_observed`(기한 안에 나타나지 않았어요), `contradicted`(반대로 악화됐어요), `unknown`(신호가 없어 판정하지 못했어요). `confirmed`가 아니면 상태는 `effect_not_confirmed`이고 알림이 가요. **자동으로 롤백하지 않아요.** 롤백 액션을 제안으로 붙일 뿐이고, 실행은 외부 에이전트나 사람이 해요.
 
 ## 8. 설정은 데이터
 운영 설정(한도, 임계값, 보존 기한, 동시 실행 수)은 파일을 수정하고 재기동해서 바꾸는 값이 아니라 API로 바꾸는 버전 관리 값이에요. 스토리지 접속 정보처럼 설정을 읽기 전에 필요한 값은 이 목록에 없고 배포 환경이 제공해요. 필드: `key`(점으로 이은 snake_case. `worker.candidate_run_concurrency`), `type`(`int`, `duration`, `ratio`, `bool`, `enum`), `unit`, `min`, `max`, `default`(범위 밖은 `invalid_input.field_range`로 거절해요), `applies`(`live` 역할이 다음에 읽을 때 적용 / `restart_required` 재기동해야 적용), `risk`(변경 시 위험 축. 기본 reversible · none), `rev`, `value`, `previous_value`, `changed_by`, `changed_at`, `reason`, `run_id`, `diagnosis_id`.
@@ -266,8 +266,8 @@ ADR-0012의 역할과 범위를 그대로 써요. 읽기에도 새 역할이 없
 
 ### 9.2 서비스 계정(에이전트)과 승인의 설정
 에이전트는 서비스 계정이에요(예: `acct_ops_agent`). 사람과 같은 역할과 범위를 받고, 토큰은 해시로만 저장되고, 만료, 교체, 호출 한도가 있어요(ADR-0012). 계정의 `contacts`가 한도 초과와 이상 사용 알림을 받아요. 에이전트는 승인할 수 없어요. 계정을 비활성화하거나 토큰을 회수하면 스토리지가 정상일 때 30초 안에 전파돼요(권한 캐시 경과 시간의 상한 15분이 최대 지연이에요). 서비스 계정의 `on_behalf_of`는 관리자가 그 계정에 연결해 둔 사람 중에서만 선택해요. 액션마다 설정이 2가지 있어요.
-- `require_approval`: 승인이 있어야 실행해요. 기본값은 위험 축에서 정해져요. 되돌릴 수 없거나(`irreversible`) 서비스가 끊기는(`service_affecting`, `data_loss`) 액션은 참이에요. 요청한 주체가 사람이든 서비스 계정이든 같아요.
-- `delegation`: 서비스 계정이 그 액션을 어디까지 수행할 수 있는지. `none`(수행 불가, 기본값) / `with_approval`(요청하고 사람이 승인해요) / `autonomous`(승인 없이 실행해요). `autonomous`는 되돌릴 수 있고 서비스가 끊기지 않는 액션에만 설정할 수 있어요. 아니면 `invalid_input.autonomy_exceeds_risk`로 거절해요.
+- `require_approval`: 승인이 있어야 실행해요. 기본값은 위험 축에서 정해져요. 롤백할 수 없거나(`irreversible`) 서비스가 끊기는(`service_affecting`, `data_loss`) 액션은 참이에요. 요청한 주체가 사람이든 서비스 계정이든 같아요.
+- `delegation`: 서비스 계정이 그 액션을 어디까지 수행할 수 있는지. `none`(수행 불가, 기본값) / `with_approval`(요청하고 사람이 승인해요) / `autonomous`(승인 없이 실행해요). `autonomous`는 롤백할 수 있고 서비스가 끊기지 않는 액션에만 설정할 수 있어요. 아니면 `invalid_input.autonomy_exceeds_risk`로 거절해요.
 
 ### 9.3 감사 로그
 운영 액션은 모두 감사 로그(ADR-0012)에 기록돼요. 읽기(신호, `diagnose`)는 일반 읽기라 기록하지 않아요. `action`은 `ops_action_requested`, `ops_action_approved`, `ops_action_rejected`, `ops_action_finished`, `setting_changed`이고, 기존 필드(`actor_kind`, `actor_id`, `target_*`, `outcome`, `request_id`)에 다음 필드를 추가해요: `ops_run_id`, `diagnosis_id`와 `diagnosis_rule_ids`(어떤 진단의 어느 규칙이 일치해서 근거로 삼았는지. 사람이 근거 없이 실행한 경우는 비어 있고, 서비스 계정의 요청에서 비어 있으면 `invalid_input.diagnosis_required`), `dry_run_id`, `verification_verdict`. 어느 역할의 어떤 실행이 시크릿을 언제 복호화해 사용했는지(복호화 사용 이력)는 ADR-0018의 감사 필드이고, `secret_unwrap_count`가 그 횟수를 집계해요.
@@ -361,7 +361,7 @@ features: [{feature: self_kg, enabled: false}]   settings_pending_restart: [{key
 |---|---|---|---|
 | 1. 보기와 진단 | 신호를 읽고 `diagnose`를 실행해요. 액션은 실행하지 못해요 | 모든 액션이 `delegation: none` | 진단을 보고 직접 실행해요 |
 | 2. 제안과 승인 | 미리 실행을 하고 액션을 요청해요 | 선택한 액션을 `with_approval` | 승인하고 사후 확인을 검토해요 |
-| 3. 낮은 위험은 자율 실행 | 되돌릴 수 있고 서비스가 끊기지 않는 액션을 스스로 실행해요 | 그 액션만 `autonomous` | 사후 확인과 감사를 검토하고, 기대와 다르면 `none`으로 낮춰요 |
+| 3. 낮은 위험은 자율 실행 | 롤백할 수 있고 서비스가 끊기지 않는 액션을 스스로 실행해요 | 그 액션만 `autonomous` | 사후 확인과 감사를 검토하고, 기대와 다르면 `none`으로 낮춰요 |
 
 단계를 올리고 내리는 것은 설정이고 자동으로 올라가지 않아요. **지금 만드는 부분**은 액션 목록, 위험 축, 승인 필요 여부, 위임 설정, 감사 로그의 필드예요. **엔드투엔드(E2E) 프로세스 단계에서 얹을 것**은 위임 틀 자체(실적이 쌓이면 올리고 무효가 되면 내리는 규칙, 업무 단위의 적용 단계)예요. 방향은 [방향 메모](process-direction.md)에 있고 아직 결정이 아니에요.
 
@@ -388,4 +388,4 @@ features: [{feature: self_kg, enabled: false}]   settings_pending_restart: [{key
 ## 16. 관련 결정과 요구사항
 - 결정: [ADR-0017](adr/0017-self-observability-and-operability.md). 관련 결정은 ADR-0006(역할 4종), ADR-0007(위험 축), ADR-0010(MCP, 사전 정의 질의), ADR-0011(가용성), ADR-0012(역할, 서비스 계정, 감사), ADR-0013(헬스 상태, 알림, 지표 테이블), ADR-0016(REST 규칙).
 - 요구사항: REQ-200(역할 4종의 신호), REQ-201(자체 측정), REQ-202(헬스 상태와 `diagnose`), REQ-203(이벤트 코드 목록), REQ-204(운영 액션), REQ-205(설정), REQ-206(권한과 기록), REQ-207(운영 MCP 인터페이스), REQ-208(하트비트, 롤아웃, 증가 예측).
-- 같이 읽을 문서: [데이터 관측성](data-observability.md), [KG 운영](kg-operations.md), [접근 제어](access-control.md), [REST API 자원과 경로 (2)](rest-api-resources-graph.md), [KG에 묻기](kg-queries.md).
+- 같이 읽을 문서: [데이터 관측성](data-observability.md), [KG 운영](kg-operations.md), [권한 설계](access-control.md), [REST API 자원과 경로 (2)](rest-api-resources-graph.md), [KG 질의](kg-queries.md).

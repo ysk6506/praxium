@@ -93,7 +93,7 @@ follows:
 | 경로 | 방식 | 설명 | 역할 |
 |---|---|---|---|
 | `/v1/ops/diagnose` | POST | 진단: 현재 이상 상태인 것, 원인, 근거 신호, 실행할 수 있는 운영 액션. 스토리지 없이도 답해요. 안전함 | `operator`, `admin`, `auditor` |
-| `/v1/ops/actions`, `/v1/ops/actions/{action}` | GET | 운영 액션의 목록(위험 축 4개, 선언한 효과, 되돌리는 액션, 승인 필요 여부). 액션 하나가 이름 하나예요 | `operator` |
+| `/v1/ops/actions`, `/v1/ops/actions/{action}` | GET | 운영 액션의 목록(위험 축 4개, 선언한 효과, 롤백 액션, 승인 필요 여부). 액션 하나가 이름 하나예요 | `operator` |
 | `/v1/ops/actions/{action}:dry-run` | POST | 미리 실행: 실제로 실행하지 않고 무엇이 중단되고 무엇이 영향받는지 응답해요(안전함) | `operator` |
 | `/v1/ops/actions/{action}/runs` | POST | 운영 액션을 요청해요(실행 `action_run`이 생성돼요). `Idempotency-Key`를 받고 서비스 계정의 요청에는 근거가 된 진단의 ID가 있어야 해요. 범위가 넓은 액션은 `admin`만 | `operator`(넓은 것은 `admin`) |
 | `/v1/ops/action-runs`, `/v1/ops/action-runs/{run_id}` | GET | 실행의 목록과 한 건(상태, 승인, 사후 확인) | `operator`, `admin`, `auditor` |

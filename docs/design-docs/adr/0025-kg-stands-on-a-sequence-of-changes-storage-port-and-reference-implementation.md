@@ -27,10 +27,10 @@ touches_protected:
 amends:
   - adr: "0009"
     what: 링크의 내용 해시에 등급과 근거의 종류가 들고, 반쯤 든 배치는 되감아 포기한다
-decision_hash: 17e1b4cb4439675c
+decision_hash: 3365849d7977790d
 amended_by:
   - adr: "0028"
-    what: 적합성 테스트 단위가 기준 구현을 import하는 범위
+    what: 적합성 테스트 유닛이 기준 구현을 import하는 범위
 ---
 # ADR-0025 KG를 변경 시퀀스 위에 구성한다: 스토리지 포트와 기준 구현
 

@@ -242,7 +242,7 @@ POST /v1/feed-flows/flow_3:release    Idempotency-Key: 90c2-...
 
 해제는 쌓인 변경을 수신 순서대로 적용해요. 스트림이 `held`가 아니면 409 `conflict.state_not_allowed`예요. 쌓인 변경을 적용하지 않고 건너뛰려면 `:discard`예요(정합성 대조를 할 수 있는 소스에서만 가능해요. 원본 레코드는 삭제하지 않아요. 어긋난 것은 다음 정합성 대조가 바로잡아요).
 
-**6) 같은 일을 명령줄로.** 화면 없이도 같은 일이 가능해요. CLI는 같은 API를 호출해요(도구의 이름은 정하지 않아서 `px`라고 적어요).
+**6) 같은 일을 명령줄로.** 화면 없이도 같은 일이 가능해요. CLI는 같은 API를 호출해요(도구 이름은 `praxium`이에요).
 
 ```
 praxium feed-flow list --filter flow_state=held

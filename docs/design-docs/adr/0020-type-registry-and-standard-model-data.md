@@ -24,7 +24,7 @@ touches_protected:
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
 amends_tests: []
-decision_hash: 83001386894ed401
+decision_hash: c9455b9fdd14ba98
 ---
 # ADR-0020 타입 등록부와 표준 모델의 데이터 파일을 도입한다
 
@@ -47,7 +47,7 @@ ADR-0007이 모델의 필드와 규칙을 정했고 표준 모델은 "데이터 
 | 액션 타입 | 112 | 112 |
 | 특성 | 16 | 19(공통 속성의 `Common`, 부품 조립체 `HardwareAssembly`, 망의 바깥 `NetworkAnchor`) |
 
-링크 이름이 3개 줄었다. `INSTALLED_IN`과 `REQUIRES_PART`는 `PART_OF`로 통합했다(의미 `part_of`, 부품 측 전파는 바인딩의 `whole_needs_part`. 방향은 부품에서 전체). `SUPPLIED_BY`(리소스 `fuel`)는 고정된 채널 4종에 연료가 없어 제외했고, 그래서 `Generator`와 `FuelTank`를 연결하는 바인딩이 없다. 바인딩은 표의 행 하나가 여러 쌍을 뜻해 쌍으로 세면 늘어난다.
+링크 이름이 3개 줄었다. `INSTALLED_IN`과 `REQUIRES_PART`는 `PART_OF`로 통합했다(의미 `part_of`, 부품 측 전파는 바인딩의 `whole_needs_part`. 방향은 부품에서 전체). `SUPPLIED_BY`(리소스 `fuel`)는 고정된 채널 6종에 연료가 없어 제외했고, 그래서 `Generator`와 `FuelTank`를 연결하는 바인딩이 없다. 바인딩은 표의 행 하나가 여러 쌍을 뜻해 쌍으로 세면 늘어난다.
 
 - **바인딩 펼치기.** 표의 행 하나가 출발 여러 타입이나 도착 여러 타입을 뜻하면 출발과 도착의 쌍마다 바인딩 하나로 펼친다. 표의 행 157개가 바인딩 528개가 된다.
 - **키로 표현하지 못한 것.** 데이터에 키 213개를 담았고 초안의 키 35개가 빠졌으며 이 때문에 키가 하나도 없는 타입은 20개다(OnCallSchedule, Contract, PlacementRule, HostAggregate, InitiatorGroup, SanZone, MlagDomain, IpAddress, RoutingSession, EcmpGroup, Tunnel, OverlaySegment, Circuit, RackUnit, PowerCircuit, PowerFeed, CoolingLoop, Endpoint, LogicalGroup, UnknownObject). 한 부류는 초안의 링크 행에 부모로 가는 N:1 바인딩이 없어서 문맥을 구성할 수 없는 키이고(Rack 안의 RackUnit, Fabric 안의 SanZone 따위. 바인딩을 지어내지 않았다), 다른 부류는 모델이 표현하지 못하는 키다. 문맥만 있는 키(Transceiver), 집합 구성(Cable의 양 끝 집합, MlagDomain의 멤버 집합), 문맥 2개(EcmpGroup, ApplicationService), 끝점 쌍(Tunnel), 값이 아닌 객체 참조(Circuit의 사업자), 힌트 해시(UnknownObject)이다.

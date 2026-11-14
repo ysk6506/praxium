@@ -11,7 +11,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: fdeec476db861238
+decision_hash: 7a0870e63962bac3
 ---
 # ADR-0011 KG를 운영한다: 문제는 규칙으로 해결하고, 질의는 중단되지 않고, 스트림이 중단돼도 잃지 않는다
 

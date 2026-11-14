@@ -22,7 +22,7 @@ follows:
 | 부품과 전체의 `INSTALLED_IN`과 `REQUIRES_PART`, 롤업 정책 | `PART_OF`(`part_of`) 하나. 전체가 부품을 필요로 하는지는 `whole_needs_part`. 이중화하는 부품은 `none`이고 그룹을 거쳐요 |
 | 위치의 `contained_in` | `LOCATED_IN`, `MOUNTED_IN`만. 부품에는 쓰지 않아요 |
 | 전파되지 않는 논리 구획(`contained_in`, 전파 없음) | `LogicalGroup`의 하위 타입과 `MEMBER_OF` (`VirtualDatacenter`, `Namespace`, `Environment`, `Team`, `PlacementRule` 등) |
-| 위험 등급 하나(초안) | 축 4개. 읽기는 `mutates`가 아니요, 되돌릴 수 있으면 `reversible`, 데이터를 덮어쓰거나 삭제하면 `data_loss`, 현장 작업이면 `physical` |
+| 위험 등급 하나(초안) | 축 4개. 읽기는 `mutates`가 아니요, 롤백할 수 있으면 `reversible`, 데이터를 덮어쓰거나 삭제하면 `data_loss`, 현장 작업이면 `physical` |
 | 구성에서만 도출한 그룹 | 그룹마다 설정·테이블·문서 경로로 수집해요([KG의 모델](kg-model.md) 8절) |
 | 신호 하나인 상태 | 채널 6종. `POWERED_BY`는 `supplied_by(power)`, `COOLED_BY`는 `supplied_by(cooling)`, `UPLINKED_VIA`는 `supplied_by(network)`, `BACKED_BY`는 `supplied_by(storage)` |
 

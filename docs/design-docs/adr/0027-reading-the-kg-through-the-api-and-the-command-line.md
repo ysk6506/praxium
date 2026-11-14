@@ -82,8 +82,8 @@ amends_tests:
   - go:backend/internal/query::TestNeighborsRefusesBadInputs
   - go:backend/internal/query::TestNeighborsTableDriven
   - go:backend/internal/query::TestReadsWaitForMinSeqAndNoticeANewGeneration
-test_change_reason: 경로가 32개로 늘어 적합성 테스트가 계약의 경로를 표에서 직접 도출하도록 테스트 4개를 한 번 제대로 수정하고(단언은 같거나 더 엄하다), 질의 테스트의 스토리지를 코어 유닛 안의 `graph.ScratchStore`로 바꾸고 옛 버전을 읽는 테스트 5개를 어댑터를 import해도 되는 `adapter.readcheck`로 옮긴다. 나머지는 같은 이름의 헬퍼를 함께 사용하게 되어 해시만 바뀐 테스트이다. 계약의 경로 이름 테스트는 테스트의 경로 규칙이 ADR-0016의 `:action` 표기를 누락해 설계 결정보다 좁았다. 결정에 맞게 수정하고 POST 전용과 동사 세그먼트 금지를 추가했다.
-decision_hash: ebb17d5971ee019a
+test_change_reason: 경로가 32개로 늘어 적합성 테스트가 계약의 경로를 표에서 직접 도출하도록 테스트 4개를 한 번 제대로 수정하고(단언은 같거나 더 엄하다), 질의 테스트의 스토리지를 코어 유닛 안의 `graph.ScratchStore`로 바꾸고 옛 버전을 읽는 테스트 5개를 어댑터를 import해도 되는 `adapter.readcheck`로 옮긴다. 나머지는 같은 이름의 헬퍼를 함께 사용하게 되어 해시만 바뀐 테스트이다. 계약의 경로 이름 테스트는 테스트의 경로 규칙이 ADR-0016의 `:액션` 표기를 누락해 설계 결정보다 좁았다. 결정에 맞게 수정하고 POST 전용과 동사 세그먼트 금지를 추가했다.
+decision_hash: 53de10c2f2349e2e
 ---
 # ADR-0027 KG를 API와 명령줄로 읽는다
 
@@ -109,9 +109,9 @@ ADR-0026이 첫 3종의 질의를 정했고 3부와 4부를 이 변경으로 미
 8. **코어 수정 3건.** (1) 카디널리티(`1:1`, `N:1`)는 링크 타입이 아니라 링크가 놓인 **바인딩별로** 계산한다(컨테이너 클러스터의 컨트롤 플레인과 네임스페이스 때문에 발견됐다; REQ-261). 모델 등록부에 `BindingFor`가 추가됐다. (2) 큰 세계의 적재 비용을 줄였다: 등록부 복제의 메모이제이션, 스칼라 값의 빠른 경로, 메모리 스토리지의 식별자 색인, 리스 기간 12시간(`lease_lost`를 방지한다). 첫 측정은 3만 5천 객체에 24초와 3.0GB였다. (3) `ScratchStore`.
 9. **측정.** `docs/design-docs/kg-read-measurements.md`에 머신 사양과 함께 적었다: 작은 세계(객체 522)와 큰 세계(객체 약 10만, 링크 약 18만)의 적재 시간, 메모리, 질의 시간. 부채 TD-0011이 큰 세계의 적재 시간과 `find`의 선형 스캔을 추적한다.
 10. **구조 계약.** 유닛 `adapter.devload`와 `adapter.readcheck`(테스트 전용)를 추가하고, `core.query`의 `may_import`에서 `adapter.memstore`를 제거했으며, `adapter.http`가 `core.graph`와 `core.query`를 import하게 했다. 유닛의 커버리지 하한은 올린다.
-11. **검사와 확정된 결정이 어긋나면 결정이 규칙이고 검사를 맞춘다.** 좁게, 결정이 말하는 것보다 느슨하지 않게 한다. `TestEveryOperationDeclaresTheConventions`(`backend/internal/contract/contract_test.go`)의 경로 규칙이 ADR-0016과 `rest-api.md`의 `:action` 표기를 누락해 결정보다 좁았다. 수정한 것:
+11. **검사와 확정된 결정이 어긋나면 결정이 규칙이고 검사를 맞춘다.** 좁게, 결정이 말하는 것보다 느슨하지 않게 한다. `TestEveryOperationDeclaresTheConventions`(`backend/internal/contract/contract_test.go`)의 경로 규칙이 ADR-0016과 `rest-api.md`의 `:액션` 표기를 누락해 결정보다 좁았다. 수정한 것:
     - 옛 `^/v1(/[a-z0-9]+(-[a-z0-9]+)*|/\{[a-z_]+\})+$`
-    - 새 `^/v1(/[a-z0-9]+(-[a-z0-9]+)*|/\{[a-z_]+\})+(:[a-z]+(-[a-z]+)*)?$`: 액션은 경로 끝의 `:action` 하나뿐이고 컬렉션 세그먼트나 `{id}` 뒤에 온다.
+    - 새 `^/v1(/[a-z0-9]+(-[a-z0-9]+)*|/\{[a-z_]+\})+(:[a-z]+(-[a-z]+)*)?$`: 액션은 경로 끝의 `:액션` 하나뿐이고 컬렉션 세그먼트나 `{id}` 뒤에 온다.
     - 추가한 제약(검사 함수 `pathProblem`과 새 테스트 `TestThePathRuleAcceptsActionsAndRefusesWhatTheDecisionRefuses`): 콜론이 든 경로는 POST만, 콜론은 끝 이외에는 어디에도 없다(정규식이 차단한다), 세그먼트 하나가 동사 그대로면 거부(`/questions/find` 형식, 동사는 하네스 설정의 `action_verbs`와 `find`, `get`). 하네스 설정은 수정하지 않았다.
 
 ## 이유

@@ -12,7 +12,7 @@ updates_docs:
 touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
-decision_hash: 94774f5e875c84f6
+decision_hash: f93eb5367ac45128
 ---
 # ADR-0013 데이터 관측성: 실행기가 신호를 발행하고, 헬스 상태가 계보를 따라 전파되고, 사람과 에이전트가 함께 질의한다
 

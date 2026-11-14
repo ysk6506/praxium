@@ -1,7 +1,7 @@
 doc: "docs/design-docs/ingestion-extensions.md"
 target: "docs/design-docs/adr/0008-ingestion.md"
-hash: "c62cdb33b1afc12b"
-date: "2026-11-13"
-note: "ingestion-extensions 문서에서 엔드투엔드(E2E)를 처음 나올 때 풀어 쓰고 결정 기록의 확정을 다시 맞춘 것을 확인했다"
+hash: "379c57d2814375f7"
+date: "2026-11-14"
+note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다."
 text_changed: true
-doc_hash: "dd98177040db80e2"
+doc_hash: "1d6c508820f7cd4d"

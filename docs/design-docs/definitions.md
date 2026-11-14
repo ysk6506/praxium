@@ -384,6 +384,6 @@ items/<kind>/<name>   항목 파일: item_id, schema_version, body
 
 ## 18. 관련 결정과 요구사항
 
-- 결정: [ADR-0014](adr/0014-definitions-branches-revert.md). 이어진 것은 ADR-0006(Go, 역할 넷, 알파의 범위), ADR-0015(역량 질문, 충족률), ADR-0007(이름 공간 `org`/`ext`/`std`와 `sys`, 호환성을 깨는 변경의 순서), ADR-0018(시크릿을 복호화하는 일), ADR-0008(안전장치, 드라이 런, 출처 따라가기), ADR-0009(KG 버전 ID, 결정성), ADR-0012(역할과 범위, 승인, 감사), ADR-0013(사용 통계, 타임라인).
-- 요구사항: REQ-119(정의의 버전과 브랜치), REQ-128(충돌), REQ-129(리버트), REQ-109(호환성을 깨는 변경과 마이그레이션), REQ-171(정의의 테스트), REQ-172(계보와 참조 관계), REQ-194(드라이 런의 검사에 충족률과 목표).
-- 같이 읽을 문서: [에이전트 규모의 정의 관리](definitions-at-agent-scale.md), [정의의 계보](definitions-lineage.md), [접근 제어](access-control.md), [KG의 저장과 버전](kg-storage.md), [KG 질의](kg-queries.md), [KG 운영](kg-operations.md), [데이터 관측성](data-observability.md), [KG의 모델](kg-model.md), [역량 질문](competency-questions.md), [현실 데이터 수집](ingestion.md).
+- 결정: [ADR-0014](adr/0014-definitions-branches-revert.md). 이어진 것은 ADR-0006(Go, 역할 4종, 알파의 범위), ADR-0015(역량 질문, 충족률), ADR-0007(이름 공간 `org`/`ext`/`std`와 `sys`, 호환성을 깨는 변경의 순서), ADR-0018(시크릿을 복호화하는 일), ADR-0008(안전장치, 드라이 런, 출처 따라가기), ADR-0009(KG 버전 ID, 결정성), ADR-0012(역할과 범위, 승인, 감사), ADR-0013(사용 통계, 타임라인).
+- 요구사항: REQ-119(정의의 버전과 브랜치), REQ-128(충돌), REQ-129(리버트), REQ-109(호환성을 깨는 변경과 마이그레이션), REQ-171(정의의 테스트), REQ-172(정의의 계보와 누가 쓰나), REQ-194(드라이 런의 검사에 충족률과 목표).
+- 같이 읽을 문서: [에이전트 규모의 정의 관리](definitions-at-agent-scale.md), [정의의 계보](definitions-lineage.md), [권한 설계](access-control.md), [KG의 저장과 버전](kg-storage.md), [KG 질의](kg-queries.md), [KG 운영](kg-operations.md), [데이터 관측성](data-observability.md), [KG의 모델](kg-model.md), [역량 질문](competency-questions.md), [현실 데이터 수집](ingestion.md).

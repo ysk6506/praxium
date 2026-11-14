@@ -34,7 +34,7 @@ amends:
 amends_tests:
   - harness/src/test-support/go-repo.ts::=BASE
 test_change_reason: Go 테스트에도 "실패할 수 있는 경로가 없는 테스트는 허용되지 않는다"(GOTEST003)가 적용되어, Go 하네스 테스트의 작은 Go 모듈 샘플(go-repo.ts)에서 cmd/app의 테스트가 로그만 남기던 것을 실제로 실패할 수 있는 테스트로 바꾼다. 샘플의 의미는 그대로이고 요구사항이 아닌 샘플 데이터만 바뀐다.
-decision_hash: 424ee63dd02c6076
+decision_hash: eb4f386130bf108c
 amended_by:
   - adr: "0028"
     what: Go 테스트 규칙의 이식과 잠금의 지문 범위

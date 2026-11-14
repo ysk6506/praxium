@@ -44,7 +44,7 @@ amends:
     what: 계약의 위치와 검사, 요구사항 REQ-143, REQ-148, REQ-229의 분리
   - adr: "0019"
     what: 코어 유닛 `core.kernel`이 운영체제의 `os`를 import한다(`entropy.go` 한 파일에서 환경 변수를 읽는 입구)
-decision_hash: 678b81ea94fb945e
+decision_hash: 81b01464ac1b515e
 amended_by:
   - adr: "0028"
     what: "`core.kernel`이 `os`를 import하는 범위"
