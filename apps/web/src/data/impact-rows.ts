@@ -5,7 +5,7 @@
  */
 
 import { gradeRank, sortedGrades } from "./impact-grades";
-import type { ImpactTree } from "./impact-tree";
+import { compareText, type ImpactTree } from "./impact-tree";
 import type { ImpactSortKey } from "./impact-view";
 
 /** How many rows a section shows at first, and how many more each "show more" adds. */
@@ -78,8 +78,6 @@ export function sectionsByGrade(rows: readonly ImpactRow[]): RowSection[] {
   }
   return sortedGrades(by.keys()).map((grade) => ({ grade, rows: by.get(grade) ?? [] }));
 }
-
-const compareText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 const basisOf = (row: ImpactRow): number => (row.assumed ? 1 : 0);
 

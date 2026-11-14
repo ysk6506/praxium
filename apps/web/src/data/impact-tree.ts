@@ -62,7 +62,8 @@ export interface ImpactTree {
 type Mutable<T> = { -readonly [K in keyof T]: T[K] };
 type Draft = Mutable<ImpactNode> & { childIds: string[] };
 
-const compareText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
+/** Orders two texts by code unit, the same on every machine (no locale). The one comparator of the impact files. */
+export const compareText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 const edgeOf = (step: ChainStep | undefined): ImpactEdge | undefined =>
   step?.link === undefined

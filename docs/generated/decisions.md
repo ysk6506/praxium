@@ -56,3 +56,4 @@
 | [ADR-0049 정의 저장소 — 종류를 모르는 저장, 브랜치와 제안, 파일 하나로 보관](../design-docs/adr/0049-definitions-store-kind-agnostic-with-branches-and-one-file.md) | 유효 |  |
 | [ADR-0050 조직 속성을 오버레이로 모델에 더한다](../design-docs/adr/0050-org-properties-as-overlays-in-the-model.md) | 유효 |  |
 | [ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)](../design-docs/adr/0051-impact-view-parts-svg-without-new-dependencies.md) | 유효 |  |
+| [ADR-0052 수집에서 조용히 틀리거나 한 실수가 크게 번지는 동작을 고친다 — 칸 하나의 오류, key_name, 걸러진 행, 행 수 한도, 공백, 링크 등급](../design-docs/adr/0052-ingestion-semantics-that-do-not-go-wrong-quietly.md) | 유효 |  |
