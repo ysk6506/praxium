@@ -265,6 +265,8 @@ export interface UnitGlobs {
   readonly test_globs: readonly string[];
   readonly support_globs: readonly string[];
   readonly data_globs: readonly string[];
+  /** Test files the lock and the requirement trace leave alone (ADR-0035: the temporary screens). The static test rules still read them. */
+  readonly unlocked_globs?: readonly string[];
 }
 
 export function testFiles(root: string, globs: UnitGlobs): string[] {
@@ -273,9 +275,15 @@ export function testFiles(root: string, globs: UnitGlobs): string[] {
   );
 }
 
+/** The test files that are locked and traced: all of them but the ones `unlocked_globs` names. */
+export function lockedTestFiles(root: string, globs: UnitGlobs): string[] {
+  const unlocked = new Set(expandGlobs(root, globs.unlocked_globs ?? []));
+  return testFiles(root, globs).filter((f) => !unlocked.has(f));
+}
+
 export function currentUnits(root: string, globs: UnitGlobs): Map<string, Unit> {
   const units = new Map<string, Unit>();
-  for (const file of testFiles(root, globs)) {
+  for (const file of lockedTestFiles(root, globs)) {
     for (const unit of collectUnits(root, file)) units.set(unit.key, unit);
   }
   for (const unit of goTestUnits(root)) units.set(unit.key, unit);

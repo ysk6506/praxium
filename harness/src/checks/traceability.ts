@@ -20,7 +20,7 @@ import { findRoot, finish, flag, isMain, parseArgs, type Violation, violation } 
 import { lineOf, parse, ts, walk } from "../ts-ast";
 import { loadGoConfig } from "./go-config";
 import { goCitations, strayTagViolations } from "./go-test-units";
-import { testApi, testFiles } from "./test-units";
+import { lockedTestFiles, testApi } from "./test-units";
 import { loadTestsConfig } from "./testguard";
 
 const REQUIREMENTS = "docs/product-specs/requirements.md";
@@ -109,7 +109,7 @@ export function report(root: string): { violations: Violation[]; planned: string
   const { ids, violations } = requirementIds(root);
   const config = loadTestsConfig(root);
   const covered = new Set<string>();
-  for (const file of testFiles(root, config)) {
+  for (const file of lockedTestFiles(root, config)) {
     const cited = citations(root, file);
     for (const [id, line] of cited) {
       covered.add(id);

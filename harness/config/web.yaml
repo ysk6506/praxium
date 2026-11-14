@@ -1,0 +1,29 @@
+# Rules for the web UI in apps/web (ADR-0035). Enforced by harness/src/checks/web.ts inside the architecture check.
+# Protected path: change only with an accepted ADR that lists it in touches_protected.
+#
+# Which unit may import which package (Base UI only from web.ui, and so on) is in architecture.yaml (ARCH020);
+# what is written here is what that file cannot say.
+
+# apps/web/package.json: every dependency must be listed here, with the decision in the ADR and the table of ARCHITECTURE.md (WEB001).
+package: apps/web/package.json
+dependencies: ["@base-ui/react", react, react-dom]
+dev_dependencies: ["@tailwindcss/vite", "@types/react", "@types/react-dom", happy-dom, tailwindcss, vite]
+
+# Colors are written in one file only (WEB020, WEB021); every other file uses the token names.
+token_file: apps/web/src/ui/tokens.css
+scan: [apps/web/src, apps/web/config, apps/web/index.html]
+
+# The generated API layer must be what the contract generates (WEB010, WEB011, WEB012).
+contract: backend/internal/contract/openapi/openapi.json
+generated_dir: apps/web/src/api/generated
+generator_script: scripts/web-gen-api.ts
+
+# The backend builds and tests without apps/web (WEB030, WEB031, WEB032): the embed folder holds a committed placeholder,
+# the real output is ignored by git, and no Go code or module file names apps/web.
+backend:
+  root: backend
+  embed_dir: backend/internal/webui/dist
+  placeholder: backend/internal/webui/dist/placeholder.html
+  forbidden_reference: apps/web
+  gitignore: .gitignore
+  ignore_lines: ["backend/internal/webui/dist/*", "!backend/internal/webui/dist/placeholder.html"]

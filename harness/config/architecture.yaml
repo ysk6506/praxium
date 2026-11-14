@@ -10,6 +10,15 @@
 units:
   core.kernel:              {path: packages/core/src/kernel, may_import: []}
   harness:                  {path: harness/src, may_import: [], public_index: false}
+  # The web UI (ADR-0035): layers that depend only upward, api <- data <- screens and ui <- screens. Base UI is reached from web.ui alone (third_party below).
+  # Order matters: a file belongs to the first unit whose folder holds it, so web.app (the rest of apps/web/src) comes last.
+  web.testsupport:          {path: apps/web/src/test-support, may_import: [], public_index: false}
+  web.api:                  {path: apps/web/src/api, may_import: []}
+  web.data:                 {path: apps/web/src/data, may_import: [web.api, web.testsupport]}
+  web.ui:                   {path: apps/web/src/ui, may_import: [web.testsupport]}
+  web.screens:              {path: apps/web/src/screens, may_import: [web.data, web.ui]}
+  web.build:                {path: apps/web/config, may_import: [], public_index: false}
+  web.app:                  {path: apps/web/src, may_import: [web.data, web.ui, web.screens], public_index: false}
 
 # Only these units may import Node built-ins (core must run anywhere, without Node).
 node_builtins: [harness]
@@ -19,6 +28,11 @@ node_builtins: [harness]
 third_party:
   typescript: [harness]
   yaml: [harness]
+  react: [web.ui, web.data, web.screens, web.app, web.testsupport]
+  react-dom: [web.app, web.testsupport]
+  "@base-ui/react": [web.ui]
+  vite: [web.build]
+  "@tailwindcss/vite": [web.build]
 
 # Packages only test code (*.test.ts, test-support/) may import.
 test_only: [vitest, fast-check]
@@ -62,6 +76,8 @@ go:
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
+    # The built web UI (ADR-0035): the files of apps/web embedded in the program. It imports nothing; the backend builds and tests without the real build (a placeholder page is committed).
+    adapter.webui:  {path: backend/internal/webui, may_import: []}
     # Checks of the read path that need a store with history (ADR-0027); a unit of tests only, so the units above the port stay free of adapters.
     # The development loader of the generator's ground truth (ADR-0027): a developer convenience and test path, not the ingestion pipeline.
     adapter.devload: {path: backend/internal/devload, may_import: [core.kernel, core.model, core.graph, core.worldgen], test_may_import: [core.query]}
