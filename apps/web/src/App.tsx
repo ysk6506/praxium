@@ -1,9 +1,37 @@
-import { connection, type Route, routeHash, useDemo, useRoute, useToken } from "./data";
-import { KgsScreen, ObjectScreen, ObjectsScreen, SettingsScreen, TypesScreen } from "./screens";
+import {
+  type EntryMode,
+  forgetToken,
+  type Route,
+  routeHash,
+  useEntryMode,
+  useHash,
+  useRoute,
+  useToken,
+} from "./data";
+import {
+  KgsScreen,
+  NotFoundScreen,
+  ObjectScreen,
+  ObjectsScreen,
+  SettingsScreen,
+  TypesScreen,
+} from "./screens";
 import { AppShell, Badge, Button, NavLink, NavSection } from "./ui";
 
-const DEMO_NOTICE =
-  "데모 모드: 합성 데이터이며 실제 시스템과 연결되어 있지 않습니다. 운영용이 아닙니다.";
+/** What the strip above everything says about a way in that is not an ordinary one (ADR-0038, ADR-0042). */
+const NOTICES: Readonly<Record<"demo" | "local", { notice: string; badge: string }>> = {
+  demo: {
+    notice: "데모 모드: 합성 데이터이며 실제 시스템과 연결되어 있지 않습니다. 운영용이 아닙니다.",
+    badge: "데모",
+  },
+  local: {
+    notice: "로컬 모드: 이 컴퓨터에서 혼자 쓰는 용도이며 운영용이 아닙니다.",
+    badge: "로컬",
+  },
+};
+
+const noticeOf = (mode: EntryMode | "none") =>
+  mode === "demo" || mode === "local" ? NOTICES[mode] : undefined;
 
 function currentKg(route: Route): string | undefined {
   return "kg" in route ? route.kg : undefined;
@@ -18,7 +46,7 @@ function Screen({ route, go }: { readonly route: Route; readonly go: (route: Rou
     case "types":
       return <TypesScreen kg={route.kg} />;
     case "objects":
-      return <ObjectsScreen key={route.type} kg={route.kg} type={route.type} />;
+      return <ObjectsScreen key={`${route.kg}/${route.type}`} kg={route.kg} type={route.type} />;
     case "object":
       return (
         <ObjectScreen
@@ -28,19 +56,23 @@ function Screen({ route, go }: { readonly route: Route; readonly go: (route: Rou
           onTab={(tab) => go({ ...route, tab })}
         />
       );
+    case "notFound":
+      return <NotFoundScreen path={route.path} />;
   }
 }
 
 export function App() {
   const token = useToken();
-  const demo = useDemo();
+  const mode = useEntryMode();
+  const hash = useHash();
   const { route, go } = useRoute(token !== "");
   const kg = currentKg(route);
+  const notice = noticeOf(mode);
   const nav = (
     <>
-      <NavSection title="지식 그래프">
+      <NavSection title="탐색">
         <NavLink href={routeHash({ page: "kgs" })} current={route.page === "kgs"}>
-          KG 선택
+          KG 목록
         </NavLink>
         {kg ? (
           <NavLink
@@ -61,19 +93,20 @@ export function App() {
   return (
     <AppShell
       brand={
-        demo ? (
+        notice ? (
           <>
-            프락시움 <Badge tone="warn">데모</Badge>
+            프락시움 <Badge tone="warn">{notice.badge}</Badge>
           </>
         ) : (
           "프락시움"
         )
       }
-      banner={demo ? DEMO_NOTICE : undefined}
+      banner={notice?.notice}
+      place={hash}
       nav={nav}
       footer={
         token ? (
-          <Button variant="ghost" onClick={() => connection.clear()}>
+          <Button variant="ghost" onClick={() => forgetToken()}>
             토큰 삭제
           </Button>
         ) : (
@@ -81,7 +114,8 @@ export function App() {
         )
       }
     >
-      <Screen route={route} go={go} />
+      {/* A new token (another server run, a pasted address) is a new session: nothing of the old one stays on screen. */}
+      <Screen key={token} route={route} go={go} />
     </AppShell>
   );
 }

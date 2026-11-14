@@ -21,3 +21,12 @@ export function defaultColumns(
   const rest = candidates.filter((p) => !p.required);
   return [...required, ...rest].slice(0, count).map((p) => p.name);
 }
+
+/**
+ * The candidates in the order the table shows its columns and the dialog lists them: the required properties first,
+ * then the others in the order of the model. One order for both, so the dialog is the table's header rotated.
+ */
+export function orderedColumns(properties: readonly Property[]): Property[] {
+  const candidates = columnCandidates(properties);
+  return [...candidates.filter((p) => p.required), ...candidates.filter((p) => !p.required)];
+}

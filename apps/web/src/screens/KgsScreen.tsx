@@ -1,35 +1,43 @@
 import type { KG } from "../data";
-import { formatTimestamp, routeHash, useKgs } from "../data";
+import { formatTimestamp, kgRoleName, kgStateName, routeHash, useKgs } from "../data";
 import { Badge, EmptyState, Mono, PageHeader, Table, TBody, Td, THead, Th, Tr } from "../ui";
 import { Async } from "./Async";
 
-const ROLE_LABELS: Readonly<Record<string, string>> = {
-  production: "운영",
-  candidate: "후보",
-  test: "테스트",
-  system: "시스템",
-};
-
 function KgRow({ kg }: { readonly kg: KG }) {
-  const key = kg.alias ?? kg.kg_id;
+  // The address and the API name a KG by its alias, or by its ID when it has none.
+  const href = routeHash({ page: "types", kg: kg.alias ?? kg.kg_id });
   return (
     <Tr>
       <Td>
-        <a href={routeHash({ page: "types", kg: key })} className="font-medium">
-          {kg.alias ?? kg.name}
-        </a>
-        {kg.alias ? <div className="text-xs text-muted">{kg.name}</div> : null}
+        {kg.alias ? (
+          <a href={href} className="font-medium">
+            {kg.alias}
+          </a>
+        ) : (
+          "—"
+        )}
+      </Td>
+      <Td>
+        {kg.alias ? (
+          kg.name
+        ) : (
+          <a href={href} className="font-medium">
+            {kg.name}
+          </a>
+        )}
       </Td>
       <Td>
         <Mono>{kg.kg_id}</Mono>
       </Td>
       <Td>
-        <Badge tone={kg.role === "production" ? "accent" : "neutral"}>
-          {ROLE_LABELS[kg.role] ?? kg.role}
+        <Badge tone={kg.role === "production" ? "accent" : "neutral"} title={kg.role}>
+          {kgRoleName(kg.role)}
         </Badge>
       </Td>
       <Td>
-        <Badge tone={kg.state === "serving" ? "ok" : "warn"}>{kg.state}</Badge>
+        <Badge tone={kg.state === "serving" ? "ok" : "warn"} title={kg.state}>
+          {kgStateName(kg.state)}
+        </Badge>
       </Td>
       <Td className="text-right tabular-nums">{kg.head_change_seq}</Td>
       <Td className="whitespace-nowrap">{formatTimestamp(kg.created_at)}</Td>
@@ -42,7 +50,10 @@ export function KgsScreen() {
   const kgs = useKgs();
   return (
     <>
-      <PageHeader title="KG 선택" subtitle="읽을 지식 그래프(KG)를 선택하십시오." />
+      <PageHeader
+        title="KG 목록"
+        subtitle="읽을 KG(지식 그래프)를 선택하십시오. 별칭은 주소와 API에서 KG를 가리키는 이름입니다."
+      />
       <Async result={kgs} loadingLabel="KG를 불러오는 중">
         {(list) =>
           list.length === 0 ? (
@@ -53,6 +64,7 @@ export function KgsScreen() {
             <Table aria-label="KG 목록">
               <THead>
                 <Tr>
+                  <Th>별칭</Th>
                   <Th>이름</Th>
                   <Th>KG ID</Th>
                   <Th>역할</Th>

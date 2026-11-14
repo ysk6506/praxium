@@ -19,6 +19,9 @@ export interface ErrorView {
   readonly code?: string;
   readonly status?: number;
   readonly traceId?: string;
+  /** What the server said about the cause: the fields of the answer that name the field, the message, the target. */
+  readonly params?: Readonly<Record<string, unknown>>;
+  readonly fieldErrors?: readonly { readonly pointer: string; readonly code: string }[];
 }
 
 const BY_CODE: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "message" | "hint">>> = {
@@ -113,7 +116,13 @@ export function describeError(error: unknown): ErrorView {
       message: error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.",
     };
   }
-  const base = { code: error.code, status: error.status, traceId: error.traceId };
+  const base = {
+    code: error.code,
+    status: error.status,
+    traceId: error.traceId,
+    params: error.params,
+    fieldErrors: error.errors,
+  };
   if (error.code === CLIENT_CODES.network) {
     return {
       ...base,
@@ -141,3 +150,100 @@ export function describeError(error: unknown): ErrorView {
 
 /** Whether the person has to change the token to get past this error. */
 export const needsToken = (view: ErrorView): boolean => view.kind === "auth";
+
+/** How the person came in, as far as the words of an error depend on it (`entry.ts` has the full set). */
+export type AccessMode = "demo" | "local" | "direct" | "none";
+
+const NEW_ADDRESS_HINT =
+  "서버를 다시 시작하면 접속 링크가 바뀝니다. 터미널에 출력된 새 주소를 여십시오.";
+
+/**
+ * An authentication error in the words that fit how the person came in. A demo or a local-mode server makes its token
+ * itself and the person never typed one, so the way out is the new address the server printed. A typed token is
+ * typed again in the settings. Other errors, and the typed token, are left as they are.
+ */
+export function withAccessMode(view: ErrorView, mode: AccessMode): ErrorView {
+  if (view.kind !== "auth" || (mode !== "demo" && mode !== "local")) return view;
+  if (view.code === "auth.token_missing") {
+    return {
+      ...view,
+      message: "요청에 접속 링크의 토큰이 실리지 않았습니다.",
+      hint: NEW_ADDRESS_HINT,
+    };
+  }
+  return {
+    ...view,
+    title: "접속 링크가 더는 맞지 않습니다",
+    message: "서버가 이 브라우저에 저장된 토큰을 받아들이지 않았습니다.",
+    hint: NEW_ADDRESS_HINT,
+  };
+}
+
+/** The resources a not-found answer can name, with the Korean noun in the forms the sentences need. */
+const RESOURCES: Readonly<Record<string, { object: string; subject: string }>> = {
+  kg: { object: "KG를", subject: "KG가" },
+  object: { object: "객체를", subject: "객체가" },
+  object_type: { object: "객체 타입을", subject: "객체 타입이" },
+};
+
+/**
+ * What a screen knows about what it asked for, by the resource name the server uses (`kg`, `object`, `object_type`).
+ * The server says that something was not found; the screen says what it was looking for.
+ */
+export type Names = Readonly<Partial<Record<"kg" | "object" | "object_type", string>>>;
+
+/** A not-found error that names what was not found. Other errors are left as they are. */
+export function withNames(view: ErrorView, names: Names): ErrorView {
+  if (view.kind !== "notFound") return view;
+  const resource = typeof view.params?.resource === "string" ? view.params.resource : undefined;
+  const known = resource ? RESOURCES[resource] : undefined;
+  const name = resource ? names[resource as keyof Names] : undefined;
+  if (!known || !name) return view;
+  return {
+    ...view,
+    title: `${known.object} 찾을 수 없습니다`,
+    message: `‘${name}’라는 ${known.subject} 없거나, 이 토큰으로는 볼 수 없습니다.`,
+    hint:
+      resource === "kg"
+        ? "KG 목록에서 읽을 수 있는 KG를 선택하십시오."
+        : "주소를 잘못 입력했거나, 다른 KG의 항목은 아닌지 확인하십시오.",
+  };
+}
+
+const FIELD_KEYS = ["field", "pointer", "parameter"];
+const MESSAGE_KEYS = ["detail", "message", "reason"];
+const SHOWN_AS_FACT = new Set([...FIELD_KEYS, ...MESSAGE_KEYS]);
+
+const firstText = (params: ErrorView["params"], keys: readonly string[]): string | undefined => {
+  for (const key of keys) {
+    const value = params?.[key];
+    if (typeof value === "string" && value !== "") return value;
+  }
+  return undefined;
+};
+
+/** The cause the server gave, to be read at once: which field was refused and what the server said about it. */
+export function errorFacts(view: ErrorView): [label: string, value: string][] {
+  const facts: [string, string][] = [];
+  const field = firstText(view.params, FIELD_KEYS) ?? view.fieldErrors?.[0]?.pointer;
+  if (field) facts.push(["필드", field]);
+  const message = firstText(view.params, MESSAGE_KEYS);
+  if (message) facts.push(["서버 메시지", message]);
+  return facts;
+}
+
+const plain = (value: unknown): string =>
+  typeof value === "string" ? value : (JSON.stringify(value) ?? String(value));
+
+/** What a person who reports the error needs, folded away on the screen: code, status, trace id, the rest of the answer. */
+export function errorDetails(view: ErrorView): [label: string, value: string][] {
+  const details: [string, string][] = [];
+  if (view.code) details.push(["코드", view.code]);
+  if (view.status) details.push(["HTTP 상태", String(view.status)]);
+  if (view.traceId) details.push(["추적 ID", view.traceId]);
+  for (const [key, value] of Object.entries(view.params ?? {})) {
+    if (!SHOWN_AS_FACT.has(key)) details.push([key, plain(value)]);
+  }
+  for (const problem of view.fieldErrors ?? []) details.push([problem.pointer, problem.code]);
+  return details;
+}
