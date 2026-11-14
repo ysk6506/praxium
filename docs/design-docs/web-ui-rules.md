@@ -15,7 +15,7 @@ follows:
 ---
 # 웹 UI 규칙
 
-`apps/web`의 화면 코드(HTML, CSS, TypeScript)를 쓰거나 고치기 전에 읽는다. 구글 크롬 팀의 웹 플랫폼 가이드 `GoogleChrome/modern-web-guidance-src`의 `guides/`에서 프락시움에 해당하는 것만 추려 규칙으로 만들었다(출처는 맨 끝). 기계가 확인할 수 있는 규칙은 하네스 검사가 지키고(`WEB040`~`WEB045`), 나머지는 쓰는 쪽이 지킨다. 계층, 색 토큰, 의존성 규칙은 [ADR-0035](adr/0035-web-ui-in-apps-web-embedded-in-the-program.md)와 [임시 콘솔](temporary-console.md)이 정한 그대로이고 이 문서는 그 위에 더해진다. 이 문서에 없는 패턴이 필요하면 가이드 저장소의 `guides/` 아래 해당 가이드를 열어 읽는다(읽기만 한다. 아래 "채택하지 않는 것" 참고).
+`apps/web`의 화면 코드(HTML, CSS, TypeScript)를 쓰거나 고치기 전에 읽는다. 구글 크롬 팀의 웹 플랫폼 가이드 `GoogleChrome/modern-web-guidance-src`의 `guides/`에서 프락시움에 해당하는 것만 추려 규칙으로 만들었다(출처는 맨 끝). 기계가 확인할 수 있는 규칙은 하네스 검사가 지키고(`WEB040`~`WEB045`), 나머지는 쓰는 쪽이 지킨다. 계층, 색 토큰, 의존성 규칙은 [ADR-0035](adr/0035-web-ui-in-apps-web-embedded-in-the-program.md)와 [임시 콘솔](temporary-console.md)이 정한 그대로이고 이 문서는 그 위에 더해진다. 지금 화면의 색, 글꼴, 배치는 임시이고 제품의 디자인이 아니다. 디자인 콘셉트와 룩앤필은 아직 정하지 않았다. 오래 남는 것은 동작과 접근성 규칙, 계층 구조, 토큰을 한 파일에 두는 원칙이다. 이 문서에 없는 패턴이 필요하면 가이드 저장소의 `guides/` 아래 해당 가이드를 열어 읽는다(읽기만 한다. 아래 "채택하지 않는 것" 참고).
 
 ## 1. 브라우저 지원 기준
 
