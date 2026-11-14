@@ -172,7 +172,7 @@ func (e *Engine) planTypes(p *findPlan, in FindInput) ([]*typeInfo, error) {
 	}
 	root, ok := e.types.byName[in.ObjectType]
 	if !ok {
-		return nil, kernel.Errorf(CodeInput, "no object type %q", in.ObjectType)
+		return nil, inputf("object_type", "no object type %q", in.ObjectType)
 	}
 	p.types = map[int]bool{}
 	sub := in.IncludeSubtypes == nil || *in.IncludeSubtypes
@@ -192,7 +192,7 @@ func (e *Engine) planTrait(p *findPlan, name string, candidates []*typeInfo) err
 	}
 	tr, ok := e.reg.TraitByName(name)
 	if !ok {
-		return kernel.Errorf(CodeInput, "no trait %q", name)
+		return inputf("trait", "no trait %q", name)
 	}
 	p.traits = map[int]bool{}
 	for _, t := range candidates {
@@ -208,15 +208,15 @@ func checkOp(a AttrFilter) error {
 	switch a.Op {
 	case OpEquals, OpPrefix:
 		if len(a.Values) != 1 {
-			return kernel.Errorf(CodeInput, "%s on %q takes one value", a.Op, a.Name)
+			return inputf("attributes", "%s on %q takes one value", a.Op, a.Name)
 		}
 	case OpIn:
 		if len(a.Values) == 0 {
-			return kernel.Errorf(CodeInput, "in on %q takes at least one value", a.Name)
+			return inputf("attributes", "in on %q takes at least one value", a.Name)
 		}
 	case OpRange:
 		if len(a.Values) != 2 || a.Values[0] == "" && a.Values[1] == "" {
-			return kernel.Errorf(CodeInput, "range on %q takes a lower and an upper bound, one of them may be empty", a.Name)
+			return inputf("attributes", "range on %q takes a lower and an upper bound, one of them may be empty", a.Name)
 		}
 	default:
 		return kernel.Errorf(CodeFilterOp, "operation %q is not equals, in, prefix or range", a.Op)
@@ -251,7 +251,7 @@ func (e *Engine) planAttr(a AttrFilter, candidates []*typeInfo, f ReadFilter) (a
 func (e *Engine) planIdentifier(ctx context.Context, r *read, p *findPlan, id IdentifierFilter) error {
 	scheme, ok := e.reg.IdentifierSchemeByName(id.Scheme)
 	if !ok {
-		return kernel.Errorf(CodeInput, "no identifier scheme %q", id.Scheme)
+		return inputf("identifier.scheme", "no identifier scheme %q", id.Scheme)
 	}
 	recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), id.Value)
 	if err != nil {

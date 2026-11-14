@@ -16,13 +16,32 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/xlsx"
 )
 
-const inspectUsage = `usage: praxium ingest inspect -input <file> [-format csv|jsonl|xlsx] [-sheet <name|number>] [-header-row N] [-header-rows N] [-rows N] [-o table|json]
-  Look at a file before writing a mapping for it (docs/design-docs/ingestion-extensions.md 4): CSV, JSON Lines or an
-  Excel workbook. For a workbook: its sheets with their size and whether they are hidden, the header row it guesses (or
-  the one -header-row and -header-rows give), and for each sheet the columns with their type, the share of empty
-  values, the number of distinct values, the frequent values and the shape of the values, and the first rows.
-  The file is only read. -o json gives the same as JSON.
+const inspectUsage = "usage: praxium ingest inspect -input <file> [-format csv|jsonl|xlsx] [-sheet <name|number>] [-header-row N] [-header-rows N] [-rows N] [-o table|json]"
+
+const inspectBody = `Look at a file before writing a mapping for it (docs/design-docs/ingestion-extensions.md 4): CSV, JSON Lines or an
+Excel workbook. For a workbook: its sheets with their size and whether they are hidden, the header row it guesses (or
+the one -header-row and -header-rows give), and for each sheet the columns with their type, the share of empty
+values, the number of distinct values, the frequent values and the shape of the values, and the first rows.
+The file is only read; nothing is written and no mapping is applied.
+
+flags:
+  -input FILE        the file to look at (required)
+  -format F          csv, jsonl or xlsx (default: found from the file)
+  -sheet S           a workbook's sheet, by name or number (default: every sheet)
+  -header-row N      the row of the header (default: guessed)
+  -header-rows N     how many rows the header has (default: guessed)
+  -rows N            how many rows to show as a sample (default 5)
+  -o table|json      the form of the output (default table)
+
+example:
+  praxium ingest init -out example
+  praxium ingest inspect -input example/excel/datacenter.xlsx
 `
+
+// inspectHelpEntries are the help entries of this file's commands.
+func inspectHelpEntries(out map[string]helpEntry) {
+	out["ingest inspect"] = helpEntry{usage: inspectUsage, body: inspectBody}
+}
 
 // inspectFlags is what the command line of one inspection says.
 type inspectFlags struct {
@@ -96,11 +115,10 @@ func count(flag, v string, into *int) error {
 func runInspect(args []string, stdout, stderr io.Writer, w wiring) int {
 	f, err := parseInspect(args)
 	if err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n%s", err, inspectUsage)
-		return exitUsage
+		return usageFail(stderr, err, "ingest inspect")
 	}
 	if err := inspectFile(f, stdout, w); err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
 	}
 	return exitOK

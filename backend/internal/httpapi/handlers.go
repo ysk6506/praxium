@@ -45,7 +45,7 @@ func (c *call) contractDocument() {
 func (c *call) problemDetail() {
 	entry, ok := contract.LookupProblem(c.r.PathValue("code"))
 	if !ok {
-		c.notFound("problem")
+		c.notFound("problem", c.r.PathValue("code"))
 		return
 	}
 	c.ok(entry, nil)

@@ -57,7 +57,13 @@ func (c *call) fail(code string, params map[string]any, errs ...fieldError) {
 	c.writeJSON(entry.Status, problemMediaType, body)
 }
 
-// notFound is the answer for a missing or invisible resource (both look alike).
-func (c *call) notFound(resource string) {
-	c.fail("not_found.resource", map[string]any{"resource": resource})
+// notFound is the answer for a missing or invisible resource (both look alike). id is what the request asked for
+// (a name, an id, a path); it is in the params so the caller can say what was not found, and it is left out when
+// the request named nothing.
+func (c *call) notFound(resource, id string) {
+	params := map[string]any{"resource": resource}
+	if id != "" {
+		params["id"] = id
+	}
+	c.fail("not_found.resource", params)
 }

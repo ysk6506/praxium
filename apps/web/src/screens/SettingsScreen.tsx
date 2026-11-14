@@ -23,8 +23,11 @@ function Ways() {
       <li>
         <strong className="font-semibold">로컬 모드</strong>
         <p className="text-muted">
-          이 컴퓨터에서 혼자 쓰는 용도입니다. 서버가 터미널에 출력한 주소를 여십시오. 데모와 같이
-          토큰은 주소에 들어 있고, 운영용이 아닙니다.
+          이 컴퓨터에서 혼자 쓰는 용도입니다. <Mono>praxium local -data-dir &lt;폴더&gt;</Mono>가
+          터미널에 출력한 주소를 여십시오. 수집은{" "}
+          <Mono>praxium ingest run -data-dir &lt;폴더&gt;</Mono>로 하고, 예제는{" "}
+          <Mono>praxium ingest init</Mono>이 만듭니다. 데모와 같이 토큰은 주소에 들어 있고, 운영용이
+          아닙니다.
         </p>
       </li>
       <li>

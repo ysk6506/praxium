@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "06b823911173696c"
+hash: "a0ca76039b1ca3ed"
 date: "2026-11-14"
-note: "ADR-0040: checked; stays accurate"
+note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
 text_changed: false
 doc_hash: "04b2f4f490642c38"

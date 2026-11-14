@@ -108,17 +108,17 @@ func (e *Engine) normalize(c Common) (Common, error) {
 		c.View = ViewAsObserved
 	case ViewAsObserved, ViewAsDesigned:
 	default:
-		return c, kernel.Errorf(CodeInput, "view %q is not as_designed or as_observed", c.View)
+		return c, inputf("view", "view %q is not as_designed or as_observed", c.View)
 	}
 	switch c.Shape {
 	case "":
 		c.Shape = ShapeSummary
 	case ShapeSummary, ShapeItems:
 	default:
-		return c, kernel.Errorf(CodeInput, "shape %q is not summary or items", c.Shape)
+		return c, inputf("shape", "shape %q is not summary or items", c.Shape)
 	}
 	if c.KGVersionID != "" && c.ChangeSeq != nil {
-		return c, kernel.Errorf(CodeInput, "give kg_version_id or change_seq, not both")
+		return c, inputf("kg_version_id", "give kg_version_id or change_seq, not both")
 	}
 	return c, nil
 }
@@ -171,7 +171,7 @@ func (e *Engine) readPoint(ctx context.Context, r *read, fp string) (graph.ReadP
 	case c.KGVersionID != "":
 		vid, err := kernel.ParseID[graph.VersionKind](c.KGVersionID)
 		if err != nil {
-			return rp, kernel.Errorf(CodeInput, "kg_version_id %q is not a version id", c.KGVersionID)
+			return rp, inputf("kg_version_id", "kg_version_id %q is not a version id", c.KGVersionID)
 		}
 		rp.Kind, rp.Version = graph.ReadVersion, vid
 	case c.ChangeSeq != nil:

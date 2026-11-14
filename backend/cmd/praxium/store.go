@@ -62,7 +62,7 @@ func openFile(o serveOptions, log *slog.Logger) (graph.Store, func() error, erro
 	}
 	j, err := filejournal.Open(disk)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, lockHint(err)
 	}
 	st, err := memstore.Open(j, memstore.Options{})
 	if err != nil {
@@ -101,4 +101,13 @@ func openPostgres(ctx context.Context, o serveOptions, d wiring) (graph.Store, f
 		return nil, nil, err
 	}
 	return st, st.Close, nil
+}
+
+// lockHint says what to do about a data folder another process has open: stop that process. The folder holds one
+// writer at a time (ADR-0034).
+func lockHint(err error) error {
+	if kernel.CodeOf(err) != filejournal.CodeLocked {
+		return err
+	}
+	return kernel.Wrap(filejournal.CodeLocked, err, "another praxium has this data folder open (a server such as praxium demo or praxium local, or another ingest run); stop it and run this again")
 }

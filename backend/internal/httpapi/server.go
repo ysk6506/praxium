@@ -165,7 +165,7 @@ func (s *Server) dispatch(w http.ResponseWriter, r *http.Request) {
 		c.fail("invalid_input.method_not_allowed", map[string]any{"method": r.Method, "allowed": allowed})
 		return
 	}
-	c.notFound("route")
+	c.notFound("route", c.r.URL.Path)
 }
 
 // allowedMethods lists the methods the request's path has routes for.

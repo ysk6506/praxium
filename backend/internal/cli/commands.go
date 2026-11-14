@@ -12,22 +12,6 @@ import (
 	"strings"
 )
 
-// Usage is the help text of the client commands.
-const Usage = `client commands (flags before the command, then the command's own):
-  praxium [--endpoint URL] [--token T] [--config FILE] [--json] health
-  praxium [flags] types list [--kind object|link|action|trait|scheme] [--filter field.op=value]... [--limit N] [--all]
-  praxium [flags] types get [--kind K] [--include a,b] <id-or-name>
-  praxium [flags] catalog [link-meanings|channels|error-codes|reason-codes|roles|value-types|layers]
-  praxium [flags] kg list [--role R] [--state S] [--limit N] [--all]
-  praxium [flags] kg get [KG]
-  praxium [flags] object get [--kg main] [--include a,b] [read flags] <object-id>
-  praxium [flags] object links [--kg main] [--direction in|out|both] [--link-type T]... [--steps N] [read flags] <object-id>
-  praxium [flags] query find [--kg main] [--type T] [--no-subtypes] [--trait T] [--text X] [--identifier scheme:value] [--attr name.op=value]... [read flags]
-  praxium [flags] query get [--kg main] [--include a,b] [read flags] <object-id> | --identifier scheme:value
-  praxium [flags] query neighbors [--kg main] [--direction D] [--link-type T]... [--meaning M]... [--peer-type T]... [--steps N] [read flags] <object-id>
-read flags: --at-seq N | --version ID (an older state), --view as_observed|as_designed, --min-seq N --wait PT5S, --limit N, --all (every page), --summary
-`
-
 // IsClientCommand says whether the first word of the command line is a client command.
 func IsClientCommand(word string) bool {
 	return word == "health" || word == "types" || word == "catalog" || word == "kg" || word == "object" || word == "query"
@@ -44,21 +28,99 @@ func IsClientFlag(word string) bool {
 
 // Run runs a client command line and returns the exit code. httpClient may be
 // nil. Errors are written to stderr as one line; the exit code carries the kind.
+// A wrong command line adds its one usage line and where the help is, never the whole list.
 func Run(args []string, env Env, stdout, stderr io.Writer, httpClient *http.Client) int {
-	err := run(args, env, stdout, httpClient)
+	opts, err := parseGlobal(args, env)
+	if err == nil {
+		if text, asked := helpOf(opts.rest); asked {
+			fmt.Fprint(stdout, text)
+			return ExitOK
+		}
+		err = run(opts, stdout, httpClient)
+	}
 	if err != nil {
 		fmt.Fprintf(stderr, "praxium: %v\n", err)
 		if _, ok := err.(usageError); ok {
-			fmt.Fprint(stderr, Usage)
+			path := commandWords(opts.rest)
+			fmt.Fprintf(stderr, "%s\nFor details: praxium %s --help\n", UsageLine(path), strings.TrimSpace(strings.Join(firstWords(path, 1), " ")))
 		}
 	}
 	return ExitCode(err)
+}
+
+// helpOf answers a command line that asks for help: -h or --help anywhere after the command.
+func helpOf(rest []string) (string, bool) {
+	for _, word := range rest {
+		if !isHelpFlag(word) {
+			continue
+		}
+		path := commandWords(rest)
+		for n := len(path); n > 0; n-- {
+			if text, ok := Help(path[:n]); ok {
+				return text, true
+			}
+		}
+	}
+	return "", false
+}
+
+// commandWords are the words of the command before its first flag: "kg", "list".
+func commandWords(rest []string) []string {
+	var words []string
+	for _, w := range rest {
+		if strings.HasPrefix(w, "-") {
+			break
+		}
+		words = append(words, w)
+	}
+	return firstWords(words, 2)
+}
+
+func firstWords(words []string, n int) []string {
+	if len(words) > n {
+		return words[:n]
+	}
+	return words
 }
 
 type options struct {
 	settings Settings
 	asJSON   bool
 	rest     []string
+}
+
+// globalValue are the global flags that take a value; --json takes none.
+var globalValue = map[string]bool{"endpoint": true, "token": true, "config": true}
+
+// hoistGlobals takes the global flags that stand after the command out of its words, so the flags may be put
+// before or after the command. It stops at "--".
+func hoistGlobals(rest []string) (kept []string, found map[string]string, err error) {
+	found = map[string]string{}
+	for i := 0; i < len(rest); i++ {
+		word := rest[i]
+		if word == "--" {
+			return append(kept, rest[i:]...), found, nil
+		}
+		name, value, hasValue := strings.Cut(strings.TrimLeft(word, "-"), "=")
+		isFlag := strings.HasPrefix(word, "-") && (globalValue[name] || name == "json")
+		switch {
+		case !isFlag:
+			kept = append(kept, word)
+		case name == "json":
+			found[name] = "true"
+			if hasValue {
+				found[name] = value
+			}
+		case hasValue:
+			found[name] = value
+		case i+1 < len(rest):
+			i++
+			found[name] = rest[i]
+		default:
+			return nil, nil, usageError{msg: "--" + name + " needs a value"}
+		}
+	}
+	return kept, found, nil
 }
 
 func parseGlobal(args []string, env Env) (options, error) {
@@ -69,20 +131,37 @@ func parseGlobal(args []string, env Env) (options, error) {
 	configPath := fs.String("config", "", "")
 	asJSON := fs.Bool("json", false, "")
 	if err := fs.Parse(args); err != nil {
-		return options{}, usageError{msg: err.Error()}
+		return options{}, usageError{msg: flagMessage(err)}
 	}
-	settings, err := Resolve(*endpoint, *token, *configPath, env)
+	rest, later, err := hoistGlobals(fs.Args())
 	if err != nil {
 		return options{}, err
 	}
-	return options{settings: settings, asJSON: *asJSON, rest: fs.Args()}, nil
+	for name, dst := range map[string]*string{"endpoint": endpoint, "token": token, "config": configPath} {
+		if v, ok := later[name]; ok {
+			*dst = v
+		}
+	}
+	if v, ok := later["json"]; ok {
+		*asJSON = v != "false"
+	}
+	settings, err := Resolve(*endpoint, *token, *configPath, env)
+	if err != nil {
+		return options{rest: rest}, err
+	}
+	return options{settings: settings, asJSON: *asJSON, rest: rest}, nil
 }
 
-func run(args []string, env Env, stdout io.Writer, httpClient *http.Client) error {
-	opts, err := parseGlobal(args, env)
-	if err != nil {
-		return err
+// flagMessage is the words of a flag error of the standard library, in the words of this program.
+func flagMessage(err error) string {
+	text := err.Error()
+	if name, ok := strings.CutPrefix(text, "flag provided but not defined: "); ok {
+		return "unknown flag " + name
 	}
+	return text
+}
+
+func run(opts options, stdout io.Writer, httpClient *http.Client) error {
 	if len(opts.rest) == 0 {
 		return usageError{msg: "no command"}
 	}
@@ -286,7 +365,7 @@ func parseMixed(fs *flag.FlagSet, args []string) ([]string, error) {
 	var positional []string
 	for len(args) > 0 {
 		if err := fs.Parse(args); err != nil {
-			return nil, usageError{msg: err.Error()}
+			return nil, usageError{msg: flagMessage(err)}
 		}
 		if fs.NArg() == 0 {
 			break

@@ -17,10 +17,9 @@ import (
 // devKGName is the name of the production KG a development server creates when it loads a truth file.
 const devKGName = "dev"
 
-const devUsage = `usage: praxium dev load-truth <truth.jsonl> [-batch N]
-  A developer convenience and test path, NOT the ingestion pipeline: it applies the ground truth of
-  "praxium worldgen" to a KG in a store that lives as long as this command, and prints what it loaded.
-  To read the KG, start the API with: praxium api serve -mode development -dev-truth <truth.jsonl>
+const devHelp = `A developer convenience and test path, NOT the ingestion pipeline: it applies the ground truth of
+"praxium worldgen" to a KG in a store that lives as long as this command, and prints what it loaded.
+To read the KG, start the API with: praxium api serve -mode development -dev-truth <truth.jsonl>
 `
 
 // openTruth opens a truth file: the wiring's opener, else the whole file from the environment's reader.
@@ -87,23 +86,21 @@ func reportLine(rep devload.Report) string {
 // runDev is `praxium dev ...`: the developer commands. Only load-truth exists.
 func runDev(args []string, stdout, stderr io.Writer, w wiring) int {
 	if len(args) < 2 || args[0] != "load-truth" {
-		fmt.Fprint(stderr, devUsage)
-		return exitUsage
+		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "dev needs load-truth <truth.jsonl>"), "dev")
 	}
 	file, batch, err := parseLoadTruth(args[1:])
 	if err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n%s", err, devUsage)
-		return exitUsage
+		return usageFail(stderr, err, "dev")
 	}
 	reg, err := model.LoadStandard()
 	if err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
 	}
 	start := w.clock.Now()
 	_, rep, err := loadDevStore(context.Background(), reg, w, file, batch)
 	if err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
 	}
 	fmt.Fprintf(stdout, "%s elapsed_ms=%d peak_rss_kb=%d\n", reportLine(*rep), w.clock.Now().Sub(start).Milliseconds(), peakRSSKB())
