@@ -6,7 +6,8 @@ import (
 	"testing"
 )
 
-// REQ-330: `ingest init` writes the guide to the format of the definitions next to the examples, and the copy in the
+// [REQ-330]
+// `ingest init` writes the guide to the format of the definitions next to the examples, and the copy in the
 // program is the original under docs/guides, byte for byte, so the two cannot drift apart.
 func TestInitWritesTheFormatGuideEqualToTheOriginal(t *testing.T) {
 	out := filepath.Join(t.TempDir(), "ex")

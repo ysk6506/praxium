@@ -5905,14 +5905,16 @@
   },
   "go:backend/cmd/praxium::TestInitWritesTheFormatGuideEqualToTheOriginal": {
    "kind": "test",
-   "hash": "9ff58926951c63c7",
+   "hash": "0cc7b82ce3feda99",
    "asserts": 4,
    "literals": [
     "239139a09854daf9"
    ],
    "precision": [],
    "skips": 0,
-   "reqs": [],
+   "reqs": [
+    "REQ-330"
+   ],
    "added": "2026-11-14",
    "amended_by": null
   },

@@ -282,27 +282,40 @@ func runTypes(ctx context.Context, c *Client, opts options, w io.Writer) error {
 		}
 		return listAll(ctx, c, listRequest{path: path, query: query, all: *all, asJSON: opts.asJSON, columns: kindColumns[*kind]}, w)
 	case "get":
-		if len(positional) != 1 {
-			return usageError{msg: "types get needs one id or name"}
-		}
-		query := url.Values{}
-		if *include != "" {
-			query.Set("include", *include)
-		}
-		readable := !opts.asJSON && *kind == "object"
-		if readable && *include == "" {
-			query.Set("include", "effective_properties")
-		}
-		env, err := c.Get(ctx, path+"/"+url.PathEscape(positional[0]), query)
-		if err != nil {
-			return err
-		}
-		if readable {
-			return printTypeView(w, env)
-		}
-		return printOne(w, env, opts.asJSON)
+		return getType(ctx, c, typeGet{path: path, id: positional, include: *include, readable: !opts.asJSON && *kind == "object", asJSON: opts.asJSON}, w)
 	}
 	return usageError{msg: fmt.Sprintf("types has no %q", opts.rest[1])}
+}
+
+// typeGet is one `types get`: the kind's path, the positional arguments and how to show the type.
+type typeGet struct {
+	path     string
+	id       []string
+	include  string
+	readable bool
+	asJSON   bool
+}
+
+// getType reads one type; the table of an object type shows its effective properties and keys as readable lines.
+func getType(ctx context.Context, c *Client, g typeGet, w io.Writer) error {
+	if len(g.id) != 1 {
+		return usageError{msg: "types get needs one id or name"}
+	}
+	query := url.Values{}
+	if g.include != "" {
+		query.Set("include", g.include)
+	}
+	if g.readable && g.include == "" {
+		query.Set("include", "effective_properties")
+	}
+	env, err := c.Get(ctx, g.path+"/"+url.PathEscape(g.id[0]), query)
+	if err != nil {
+		return err
+	}
+	if g.readable {
+		return printTypeView(w, env)
+	}
+	return printOne(w, env, g.asJSON)
 }
 
 // listQuery turns --filter field.op=value into filter[field][op]=value.

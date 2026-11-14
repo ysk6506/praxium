@@ -33,7 +33,7 @@ func DraftSource(p FileProfile, file, delimiter string) Draft {
 		if isSheet && (info.State != SheetVisible || info.Kind != SheetKindWorksheet) {
 			continue
 		}
-		ds, note := draftDataset(p.Format, t, info, isSheet, stem, delimiter, used)
+		ds, note := draftDataset(draftTable{format: p.Format, table: t, info: info, isSheet: isSheet, stem: stem, delimiter: delimiter}, used)
 		d.Source.Datasets = append(d.Source.Datasets, ds)
 		d.Notes = append(d.Notes, note)
 	}
@@ -45,8 +45,19 @@ func DraftSource(p FileProfile, file, delimiter string) Draft {
 	return d
 }
 
+// draftTable is one table of the profile with what names its dataset.
+type draftTable struct {
+	format    string
+	table     TableProfile
+	info      SheetInfo
+	isSheet   bool
+	stem      string
+	delimiter string
+}
+
 // draftDataset makes the dataset of one table, and the note about its natural key.
-func draftDataset(format string, t TableProfile, info SheetInfo, isSheet bool, stem, delimiter string, used map[string]bool) (Dataset, string) {
+func draftDataset(dt draftTable, used map[string]bool) (Dataset, string) {
+	format, t, info, isSheet, stem, delimiter := dt.format, dt.table, dt.info, dt.isSheet, dt.stem, dt.delimiter
 	ds := Dataset{ID: uniqueID("ds_"+slug(datasetStem(t, stem, isSheet), fmt.Sprintf("sheet_%d", info.Index)), used), Name: t.Name, Parser: parserOf(format)}
 	switch {
 	case isSheet:
