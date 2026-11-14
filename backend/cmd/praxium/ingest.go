@@ -25,7 +25,7 @@ const ingestRunBody = `Reads files into a KG: capture, parse, raw record changes
 (ADR-0033). The files are only read. The source definition says which datasets there are and how each file is parsed
 (CSV, JSON Lines, or a sheet of an Excel workbook); the mapping definition says which objects and links they make.
 Both are JSON files. The format of both, field by field, is in docs/guides/ingest-definitions.md of the Praxium
-repository. "praxium ingest inspect -input <file> -emit-source" drafts the source definition of a file.
+repository; "praxium ingest init" writes a copy of it as ingest-definitions.md. "praxium ingest inspect -input <file> -emit-source" drafts the source definition of a file.
 
 Without -data-dir the KG lives in memory only while this command runs. With -data-dir <folder> the KG is built in
 that folder (the built-in file store) and what the run learned (which rows it saw, how often a row was missing) is
@@ -117,7 +117,8 @@ func ingestHelpEntries(out map[string]helpEntry) {
   inspect   look at a file before writing a mapping for it (-emit-source drafts its source definition)
   run       read files into a KG (-data-dir keeps the result)
 The two definition files (source.json: the datasets and how each file is read; mapping.json: the objects and links they
-make) are described field by field in docs/guides/ingest-definitions.md of the Praxium repository.
+make) are described field by field in docs/guides/ingest-definitions.md of the Praxium repository
+("praxium ingest init" writes a copy of it).
 Run "praxium ingest <command> --help" for the flags.
 `}
 	out["ingest run"] = helpEntry{usage: ingestRunUsage, body: ingestRunBody, flags: func() *flag.FlagSet { return newIngestRunFlags(&ingestFlags{inputs: inputList{}}) }}

@@ -11,6 +11,7 @@ enforced_by:
   - backend/internal/model/hints_test.go
   - backend/internal/query/schemehint_test.go
   - backend/cmd/praxium/ingestusability_test.go
+  - backend/cmd/praxium/ingestguide_test.go
 updates_docs:
   - docs/design-docs/ingestion.md
   - docs/product-specs/requirements.md
@@ -24,7 +25,7 @@ test_change_reason: 카탈로그 목록(/v1/catalog)에 레이어 목록(layers)
 amends:
   - adr: "0041"
     what: ingest init의 CSV 예제가 합격 테스트의 샘플 파일과 같다는 결정
-decision_hash: 905ede44fd46a87c
+decision_hash: 0ff1c0654a2919a1
 ---
 # ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다
 
@@ -63,7 +64,7 @@ decision_hash: 905ede44fd46a87c
 
 **9. 도움말 (REQ-329).** `ingest`와 `ingest run --help`가 형식 안내서 docs/guides/ingest-definitions.md를 가리키고, `ingest run --help`가 요약 줄의 항목(`not_read`, `skipped_blank_row`, `skipped_hidden_row`, `skipped_after_end`, 문제의 종류)을 설명한다. `ingest inspect --help`는 `-delimiter`, `-emit-source`, 인코딩 조건을 설명한다.
 
-**10. 안내서를 실행 파일과 함께 (구현은 안내서가 메인 브랜치에 들어온 뒤).** 릴리스 압축 파일에는 문서가 없고 설치한 곳에서 GitHub을 볼 수 없는 사용자가 있으므로, `ingest init`이 예제 폴더에 `ingest-definitions.md`를 함께 쓴다. 원본은 docs/guides/ingest-definitions.md 하나이고 실행 파일에 넣는 사본은 `embed`로 담되(`go:embed`는 상위 폴더를 가리킬 수 없어 패키지 안에 사본을 둔다) 원본과 어긋나면 테스트가 실패하게 묶는다. 이 변경은 이 ADR의 코드에 포함되지 않았다. 안내서가 아직 메인 브랜치에 없다. 도움말(9)은 구현할 때까지 안내서를 리포지토리의 파일로만 가리키고, 구현하는 변경이 도움말에 "`ingest init`이 사본을 쓴다"를 더한다.
+**10. 안내서를 실행 파일과 함께 (REQ-330).** 릴리스 압축 파일에는 문서가 없고 설치한 곳에서 GitHub을 볼 수 없는 사용자가 있으므로, `ingest init`이 예제 폴더에 `ingest-definitions.md`를 함께 쓴다. 원본은 docs/guides/ingest-definitions.md 하나이고 실행 파일에 넣는 사본은 `embed`로 담는다(`go:embed`는 상위 폴더를 가리킬 수 없어 `backend/internal/ingestcheck/guide/`에 사본을 둔다). `ingest init`이 쓴 파일이 원본과 한 바이트도 다르지 않은지 테스트가 확인하므로 어긋나면 실패한다. 원본을 고치면 사본도 같은 변경에서 복사한다.
 
 ## 이유
 
@@ -83,7 +84,7 @@ decision_hash: 905ede44fd46a87c
 
 ## 결과
 
-- 알려진 한계. 예제 폴더에는 아직 형식 안내서가 없다(결정 10). 릴리스 압축 파일만 받은 사람은 안내서를 볼 수 없다.
+- 알려진 한계. 안내서의 사본은 원본을 고칠 때마다 손으로 복사한다(테스트가 어긋남을 잡는다).
 - 알려진 한계. 한국어 Windows의 엑셀이 "CSV(쉼표로 분리)"로 저장한 파일은 CP949이므로 처음에는 멈춘다. 오류가 방법을 말한다.
 - 알려진 한계. 이 결정은 걸러낸 행(소계, 합계)의 수식 셀 문제(`formula_without_value`), 계산하는 속성(volatile)의 필터, `ingest init --json`, 대시 표기 통일, `--json --limit`의 다음 페이지 정보를 다루지 않는다.
 - 새 서드파티 의존성이 없다. `harness/config`의 규칙, 한도, 허용 목록, 잠긴 테스트는 바꾸지 않았다. 바뀐 보호 경로는 요구사항 표(REQ-320~329, 331 추가), ADR-0041의 `amended_by`, 새 테스트의 잠금(`test-lock.json`)이다.

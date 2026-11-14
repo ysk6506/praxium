@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "b5d8ecbd2af6c985"
+hash: "93406aae4aa69af8"
 date: "2026-11-14"
-note: "요구사항 표의 수집 사용성 항목(REQ-320~329, 331) 문구를 표준 용어로 고쳤다. 제품 설계 개요의 수집 설명과 어긋나지 않는다"
+note: "요구사항 표에 수집 사용성(REQ-320~331)이 더해졌다. 제품 개요의 원칙과 순서에 영향이 없다"
 text_changed: true
-doc_hash: "06412a77a9acc006"
+doc_hash: "019854b80cb4930e"

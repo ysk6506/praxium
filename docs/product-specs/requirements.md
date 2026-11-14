@@ -11,7 +11,7 @@ follows:
 
 ## 제품 목표 (ADR-0001, ADR-0004, ADR-0005)
 
-**실제 IT 인프라를 믿을 수 있는 지식 그래프(KG)로 만들고, 그 위에서 AI 에이전트가 수행하는 엔드투엔드(E2E) 운영 업무를 정의·위임·측정하는 오픈소스 플랫폼.**
+**IT 인프라를 믿을 수 있는 지식 그래프(KG)로 만드는 오픈소스 플랫폼. 그 위에서 AI 에이전트에게 운영 업무를 위임하고 결과를 측정하는 것이 목표다.**
 
 제품 책임자가 확인한 목표다(ADR-0004). 설계 결정은 이 목표를 기준으로 내린다.
 
@@ -286,6 +286,7 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-327 | 정의 JSON의 `unknown field` 오류는 그 위치와 거기서 허용되는 필드를 싣는다. `missing_natural_key`는 비어 있는 컬럼 이름을 말한다. 서버에 묻지 않는 명령(`ingest` 등) 앞에 `--endpoint`, `--token` 같은 전역 플래그를 쓰면 그 명령이 서버에 접속하지 않아 받지 않는다고 원인을 말한다 | ADR-0046, `backend/internal/ingest/usability_test.go`, `backend/cmd/praxium/ingestusability_test.go` |
 | REQ-328 | `praxium health`의 표 출력은 live, ready, started의 상태를 한 줄씩 보이고, `types get`의 표 출력은 식별 키와 속성을 사람이 읽는 줄로 보인다. 객체로 된 다른 값도 `{...}`로만 보이지 않는다. `--json` 출력은 바뀌지 않는다 | ADR-0046, `backend/cmd/praxium/ingestusability_test.go` |
 | REQ-329 | `ingest`와 `ingest run --help`는 정의 형식의 안내서(docs/guides/ingest-definitions.md)를 가리키고, `ingest run --help`는 요약 줄의 항목(`not_read`, `skipped_blank_row`, `skipped_hidden_row`, `skipped_after_end`와 문제의 종류)을 한 줄씩 설명한다 | ADR-0046, `backend/cmd/praxium/ingestusability_test.go` |
+| REQ-330 | `ingest init`은 예제 폴더에 형식 안내서(`ingest-definitions.md`)도 쓴다. 쓰는 사본은 docs/guides/ingest-definitions.md와 같다 | ADR-0046, `backend/cmd/praxium/ingestguide_test.go` |
 | REQ-331 | 새 옵션(`delimiter`, `ignore_undeclared_columns`, 컬럼의 `note`)은 모두 선택이다. 옛 정의 파일은 그대로 읽히고 같은 입력이면 같은 `graph_hash`가 나온다 | ADR-0046, `backend/internal/ingest/usability_test.go` |
 
 ## 범위 밖

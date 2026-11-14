@@ -5903,6 +5903,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestInitWritesTheFormatGuideEqualToTheOriginal": {
+   "kind": "test",
+   "hash": "9ff58926951c63c7",
+   "asserts": 4,
+   "literals": [
+    "239139a09854daf9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestInspectDraftsASourceThatRunsOnceTheNaturalKeyIsChosen": {
    "kind": "test",
    "hash": "818404ca1edfa2a0",
