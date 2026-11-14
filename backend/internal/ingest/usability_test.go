@@ -345,3 +345,30 @@ func TestAnEmptyNaturalKeyIsReportedWithTheColumnThatIsEmpty(t *testing.T) {
 		t.Fatalf("an empty natural key lists the columns: %v", err)
 	}
 }
+
+// [REQ-331]
+func TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas(t *testing.T) {
+	files := func(r *rig) {
+		r.files["ds_racks"] = "asset_id,rack_name,total_u\nRK1,rack-a,42\nRK2,rack-b,45\n"
+		r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state\nSV1,sn100,Zorvane,RK1,on\n"
+		r.files["ds_vms"] = `{"instance_uuid":"vm-1","name":"vm-one","cpu":4}` + "\n"
+	}
+	old := newRig(t, sourceJSON, mappingJSON)
+	files(old)
+	with := strings.NewReplacer(`"id":"ds_racks","parser":"csv"`, `"id":"ds_racks","parser":"csv","delimiter":"comma","ignore_undeclared_columns":false`,
+		`{"name":"asset_id"},{"name":"rack_name"}`, `{"name":"asset_id","note":"text; e.g. RK1"},{"name":"rack_name"}`).Replace(sourceJSON)
+	if with == sourceJSON {
+		t.Fatal("the test must change the definition")
+	}
+	now := newRig(t, with, mappingJSON)
+	files(now)
+	a, b := old.run(), now.run()
+	if a.GraphHash == "" || a.GraphHash != b.GraphHash || a.Objects != b.Objects || len(b.Problems) != 0 {
+		t.Fatalf("%+v\n%+v", a, b)
+	}
+	for _, d := range b.Datasets {
+		if d.NotRead != "" {
+			t.Fatalf("%+v", d)
+		}
+	}
+}

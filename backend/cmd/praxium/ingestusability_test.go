@@ -218,3 +218,23 @@ func TestTheTableFormShowsNestedValuesAndTheJSONFormIsUnchanged(t *testing.T) {
 		t.Fatalf("%s", out)
 	}
 }
+
+// [REQ-329]
+func TestIngestHelpPointsToTheGuideAndExplainsTheSummaryLines(t *testing.T) {
+	_, run, _ := cmdRun(t, "ingest", "run", "--help")
+	for _, want := range []string{"docs/guides/ingest-definitions.md", "skipped_blank_row", "skipped_hidden_row", "skipped_after_end", "not_read=", "undeclared_column", "ignore_undeclared_columns", "formula_without_value"} {
+		if !strings.Contains(run, want) {
+			t.Errorf("ingest run --help must say %q:\n%s", want, run)
+		}
+	}
+	_, group, _ := cmdRun(t, "ingest", "--help")
+	if !strings.Contains(group, "docs/guides/ingest-definitions.md") || !strings.Contains(group, "-emit-source") {
+		t.Errorf("ingest --help:\n%s", group)
+	}
+	_, inspect, _ := cmdRun(t, "ingest", "inspect", "--help")
+	for _, want := range []string{"-delimiter", "-emit-source", "UTF-8"} {
+		if !strings.Contains(inspect, want) {
+			t.Errorf("ingest inspect --help must say %q:\n%s", want, inspect)
+		}
+	}
+}
