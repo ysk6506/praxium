@@ -8,14 +8,13 @@ func volumeID(a rackAddr, v int) string { return child(arrayID(a), "vol", v) }
 
 // storageArray makes a block array in a storage rack: two controllers in an
 // HA pair, a pool over a RAID group of drives, and volumes that the clusters
-// of the hall use as datastores.
+// of the hall use as datastores. Like a server, it has two power supplies, one
+// on each PDU, in a 2N group (one is enough), and the array depends on the group.
 func (g *gen) storageArray(c *siteCtx, hc *hallCtx, a rackAddr, rk ref, pdu [2]ref) {
 	arr := g.obj(tArray, arrayID(a)).set(kS("name", "arr-"+a.id()), kS("manufacturer", pickOf(storMakers, hash64(a.id()))),
 		kS("array_kind", "block"), kI("controller_count", 2)).emit()
 	g.link(lMountedIn, arr, rk, kS("face", "front"), kS("side", "full"))
-	for side := 0; side < 2; side++ {
-		g.link(lPoweredBy, arr, pdu[side], kS("feed_side", feedSide[side]), kS("path_role", "primary"))
-	}
+	g.dualPower(arr, pdu, false)
 	pair := g.obj(tHaPair, child(arr.id, "ha", 0)).set(kS("name", "ha-"+arr.id), kI("min_alive", 1), kS("mode", "active_active")).in(lPartOf, arr).emit()
 	for i := 0; i < 2; i++ {
 		ctl := g.obj(tController, child(arr.id, "ctl", i)).set(kS("name", "ctl-"+arr.id+itoa(i))).in(lPartOf, arr).emit()

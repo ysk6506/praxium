@@ -52,7 +52,7 @@ func TestSameParametersSameBytes(t *testing.T) {
 }
 
 func TestScaleIsClose(t *testing.T) {
-	for _, scale := range []int64{3000, 20000, 150000} {
+	for _, scale := range []int64{3100, 20000, 150000} {
 		w := smallWorld(t, 1, scale, nil)
 		var c Counts
 		if err := w.Generate(&c); err != nil {

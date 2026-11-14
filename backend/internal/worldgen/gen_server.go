@@ -18,21 +18,31 @@ func (g *gen) server(c *siteCtx, a rackAddr, rk ref, srv int, f rackFeeds) {
 	for i := 0; i < g.p.Drives; i++ {
 		g.obj(tDrive, child(sv.id, "drv", i)).set(kS("slot_name", "slot"+itoa(i))).in(lPartOf, sv).emit()
 	}
-	g.serverPower(sv, f.pdu)
+	g.dualPower(sv, f.pdu, true)
 	g.serverFans(sv)
 	g.serverNetwork(sv, f.tor, f.mlag)
 	g.hostOf(c, a, sv, srv)
 }
 
-func (g *gen) serverPower(sv ref, pdu [2]ref) {
-	grp := g.obj(tPowerGroup, child(sv.id, "pg", 0)).set(kS("name", "psu-"+sv.id), kI("min_alive", 1), kS("mode", "two_n"),
-		kS("threshold_kind", "count")).in(lPartOf, sv).emit()
+// dualPower gives a device two power supplies, one on each PDU of its rack,
+// in a 2N group (one is enough); the device depends on the group, not on a
+// PDU, so one PDU going down costs the device its redundancy and no more.
+// The supplies of a server are parts of it; the standard model has no
+// PART_OF from a power supply to a storage array, so there they stand alone
+// and are known by the group and by the PDU that feeds them.
+func (g *gen) dualPower(dev ref, pdu [2]ref, holdsPsu bool) {
+	grp := g.obj(tPowerGroup, child(dev.id, "pg", 0)).set(kS("name", "psu-"+dev.id), kI("min_alive", 1), kS("mode", "two_n"),
+		kS("threshold_kind", "count")).in(lPartOf, dev).emit()
 	for side := 0; side < 2; side++ {
-		psu := g.obj(tPsu, child(sv.id, "psu", side)).set(kS("slot_name", "psu"+itoa(side))).in(lPartOf, sv).emit()
+		b := g.obj(tPsu, child(dev.id, "psu", side)).set(kS("slot_name", "psu"+itoa(side)))
+		if holdsPsu {
+			b = b.in(lPartOf, dev)
+		}
+		psu := b.emit()
 		g.link(lPoweredBy, psu, pdu[side], kS("feed_side", feedSide[side]), kS("path_role", "primary"))
 		g.link(lMemberOf, psu, grp)
 	}
-	g.link(lPoweredBy, sv, grp)
+	g.link(lPoweredBy, dev, grp)
 }
 
 func (g *gen) serverFans(sv ref) {

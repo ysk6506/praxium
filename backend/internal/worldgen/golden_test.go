@@ -10,10 +10,10 @@ import (
 // be deliberate. If it is, the numbers below are updated with the change and
 // docs/design-docs/worldgen.md says why.
 const (
-	goldenObjects      = 1391
-	goldenLinks        = 2505
-	goldenHash         = "8d648b7bfd6e370de5163d17a9c1a9a8d196cac2fe8c19a2df518621c60b4085"
-	goldenManifestHash = "cd5f56fb86006bf1bd59b5ec13c44f1806b42347000d1ef79e5e20623994017a"
+	goldenObjects      = 1394
+	goldenLinks        = 2509
+	goldenHash         = "2b482ee1c866524057d8c55aacb72b9843eb55fb08da84386e632a3f873db1b9"
+	goldenManifestHash = "5bbc705ee412b4ab6030be9e5dad714b2825cfe3744248157d89e8401fa33f6e"
 )
 
 // [REQ-001]
