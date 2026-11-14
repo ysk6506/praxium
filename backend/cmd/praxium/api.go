@@ -352,15 +352,10 @@ func runServer(p serverPlan, stderr io.Writer, d wiring) error {
 		return err
 	}
 	defer closeLogged(kit.close, log)
-	var ln net.Listener
-	serving := false
-	defer func() {
-		if ln != nil && !serving {
-			_ = ln.Close()
-		}
-	}()
+	var lease addrLease
+	defer lease.release()
 	if p.listenFirst {
-		if ln, err = listenOn(d, p.opts.addr); err != nil {
+		if err = lease.take(d, p.opts.addr); err != nil {
 			return err
 		}
 	}
@@ -368,26 +363,51 @@ func runServer(p serverPlan, stderr io.Writer, d wiring) error {
 	if err != nil {
 		return err
 	}
-	if ln == nil {
-		if ln, err = listenOn(d, p.opts.addr); err != nil {
-			return err
-		}
+	if err = lease.take(d, p.opts.addr); err != nil {
+		return err
 	}
 	srv, err := newServer(p, kit, d, log, store, reg)
 	if err != nil {
 		return err
 	}
 	if tlsCfg != nil {
-		ln = tls.NewListener(ln, tlsCfg)
+		lease.ln = tls.NewListener(lease.ln, tlsCfg)
 	}
+	ln := lease.ln
 	log.Info("praxium api listening", slog.String("addr", ln.Addr().String()), slog.String("mode", p.opts.mode),
 		slog.Bool("dev_auth", p.authn != nil), slog.String("auth", kit.name), slog.Bool("tls", tlsCfg != nil),
 		slog.String("store", p.opts.store), slog.String("web_ui", uiState(p.opts)), slog.String("version", version))
 	if p.ready != nil {
 		p.ready(ln.Addr(), rep)
 	}
-	serving = true
+	lease.serving = true
 	return srv.Serve(stopCtx, ln)
+}
+
+// addrLease holds the listener from the moment the address is taken until the server serves on it, and gives the
+// address back when the start fails on the way.
+type addrLease struct {
+	ln      net.Listener
+	serving bool
+}
+
+// take opens the address unless it is already open.
+func (l *addrLease) take(d wiring, addr string) error {
+	if l.ln != nil {
+		return nil
+	}
+	ln, err := listenOn(d, addr)
+	if err != nil {
+		return err
+	}
+	l.ln = ln
+	return nil
+}
+
+func (l *addrLease) release() {
+	if l.ln != nil && !l.serving {
+		_ = l.ln.Close()
+	}
 }
 
 // authFor settles who may call the server: the built-in authentication of a production plan, else the development

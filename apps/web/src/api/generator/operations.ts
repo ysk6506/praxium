@@ -128,9 +128,12 @@ function tableEntry(entry: OperationEntry): string {
 }
 
 /** The body of `operations.ts`: one function (and its argument type) per operation. */
-export function generateOperations(doc: OpenApiDocument): string {
+export function generateOperations(
+  doc: OpenApiDocument,
+  entries: readonly OperationEntry[] = operationsOf(doc),
+): string {
   const refs = new Set<string>();
-  const code = operationsOf(doc).map((entry) => operationCode(entry, doc, refs));
+  const code = entries.map((entry) => operationCode(entry, doc, refs));
   const imports = [...refs].sort(compareText).join(", ");
   return [
     'import type { QueryObject, Requester } from "../client";',
@@ -138,6 +141,38 @@ export function generateOperations(doc: OpenApiDocument): string {
     "",
     code.join("\n"),
   ].join("\n");
+}
+
+/** How many operations one generated file holds: the files stay under the size limit however many there are. */
+export const OPERATIONS_PER_FILE = 16;
+
+const operationFileName = (index: number): string =>
+  `operations-${String(index + 1).padStart(2, "0")}.ts`;
+
+/**
+ * The operation files: `operations-01.ts`, `operations-02.ts`... hold the functions in order of operation id, and
+ * `operations.ts` re-exports every name, so callers import from one place.
+ */
+export function generateOperationFiles(doc: OpenApiDocument): Record<string, string> {
+  const entries = operationsOf(doc);
+  const files: Record<string, string> = {};
+  const barrel: string[] = [];
+  for (let i = 0; i * OPERATIONS_PER_FILE < entries.length; i++) {
+    const body = generateOperations(
+      doc,
+      entries.slice(i * OPERATIONS_PER_FILE, (i + 1) * OPERATIONS_PER_FILE),
+    );
+    const own = operationFileName(i);
+    files[own] = body;
+    const names = (kind: string): string[] =>
+      [...body.matchAll(new RegExp(`^export ${kind} (\\w+)`, "gm"))].map((m) => m[1] as string);
+    const from = `from "./${own.replace(/\.ts$/, "")}";`;
+    barrel.push(`export { ${names("const").join(", ")} } ${from}`);
+    const types = names("interface");
+    if (types.length > 0) barrel.push(`export type { ${types.join(", ")} } ${from}`);
+  }
+  files["operations.ts"] = `${barrel.join("\n")}\n`;
+  return files;
 }
 
 /** The body of `operation-table.ts`: the method, path, safety and roles of every operation, by operation id. */

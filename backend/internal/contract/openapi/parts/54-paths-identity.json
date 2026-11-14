@@ -1,10 +1,10 @@
 {
   "paths": {
-    "/v1/tokens/current": {
+    "/v1/tokens/{token_id}": {
       "get": {
-        "operationId": "getCurrentToken",
-        "summary": "Who is calling",
-        "description": "Who the caller is and which access token it came with. Any logged-in caller may ask; it is the way to check a token.",
+        "operationId": "getToken",
+        "summary": "Look at an access token",
+        "description": "Shows one access token and its state; never the secret or the hash. The id current stands for the token of this request, and then the answer also says who is calling (subject), which is the way to check a token. Any other id is answered to its owner and to an administrator; for anyone else it is not found.",
         "tags": [
           "identity"
         ],
@@ -13,10 +13,20 @@
         ],
         "x-safe": true,
         "x-long-running": false,
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "token_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the token (not the token itself), or the word current.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "The caller.",
+            "description": "The token.",
             "headers": {
               "X-Trace-Id": {
                 "$ref": "#/components/headers/TraceId"

@@ -30,7 +30,7 @@ func ifPut(t *testing.T, s *Store, kind, id, data string, expect int64) int64 {
 	return v
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestWhatWasWrittenIsThereAfterTheFileIsOpenedAgain(t *testing.T) {
 	d := NewMemDisk()
 	s := ifOpen(t, d)
@@ -54,7 +54,7 @@ func TestWhatWasWrittenIsThereAfterTheFileIsOpenedAgain(t *testing.T) {
 	}
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestAWriteThatFailsAtAnyStepLeavesTheOldFileAndTheOldRecords(t *testing.T) {
 	for _, step := range []string{"create", "write", "sync", "close", "rename", "syncdir"} {
 		t.Run(step, func(t *testing.T) {
@@ -96,7 +96,7 @@ func TestAWriteThatFailsAtAnyStepLeavesTheOldFileAndTheOldRecords(t *testing.T) 
 	}
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestOpenRefusesAFileThatIsNotWhole(t *testing.T) {
 	tests := map[string]struct {
 		file string
@@ -124,7 +124,7 @@ func TestOpenRefusesAFileThatIsNotWhole(t *testing.T) {
 	}
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestTheLeftoverOfAnInterruptedWriteIsRemovedAndTheOldFileIsKept(t *testing.T) {
 	d := NewMemDisk()
 	s := ifOpen(t, d)
@@ -139,7 +139,7 @@ func TestTheLeftoverOfAnInterruptedWriteIsRemovedAndTheOldFileIsKept(t *testing.
 	}
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestAFileWithoutRecordsIsAnEmptyStoreAndTextThatIsNotTextIsRefused(t *testing.T) {
 	d := NewMemDisk()
 	d.Put(FileName, []byte(`{"format":"praxium-identity","version":1}`))
@@ -155,5 +155,29 @@ func TestAFileWithoutRecordsIsAnEmptyStoreAndTextThatIsNotTextIsRefused(t *testi
 	}
 	if _, err := d.ReadWhole("nothing"); !errors.Is(err, fs.ErrNotExist) {
 		t.Fatalf("the memory disk: %v", err)
+	}
+}
+
+// [REQ-310]
+func TestScanVisitsOneKindInTheOrderOfTheIDsAndStopsAtAnError(t *testing.T) {
+	s := ifOpen(t, NewMemDisk())
+	for _, id := range []string{"b", "a", "c"} {
+		ifPut(t, s, "subject", id, `{"id":"`+id+`"}`, 0)
+	}
+	ifPut(t, s, "token", "t", `{}`, 0)
+	var seen []string
+	if err := s.Scan(ifCtx, "subject", func(id string, data []byte, version int64) error {
+		if version != 1 || !strings.Contains(string(data), id) {
+			t.Errorf("scan gave %q %q at %d", id, data, version)
+		}
+		seen = append(seen, id)
+		return nil
+	}); err != nil || strings.Join(seen, "") != "abc" {
+		t.Fatalf("scan: %v, error %v", seen, err)
+	}
+	stop := kernel.Errorf(kernel.CodeInternal, "stop")
+	count := 0
+	if err := s.Scan(ifCtx, "subject", func(string, []byte, int64) error { count++; return stop }); err != stop || count != 1 {
+		t.Fatalf("scan that stops: %d visited, error %v", count, err)
 	}
 }

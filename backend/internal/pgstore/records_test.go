@@ -7,7 +7,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
-// [REQ-311]
+// [REQ-310]
 func TestIdentityRecordsAreKeptWithTheirVersionsAndFirstWriterWins(t *testing.T) {
 	ctx := context.Background()
 	rec := NewTestStore(t).Records()
@@ -44,7 +44,7 @@ func TestIdentityRecordsAreKeptWithTheirVersionsAndFirstWriterWins(t *testing.T)
 	}
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestIdentityRecordsSurviveReopeningTheDatabase(t *testing.T) {
 	ctx := context.Background()
 	dsn := NewTestDatabase(t)

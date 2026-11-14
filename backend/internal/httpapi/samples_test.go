@@ -60,6 +60,7 @@ var requestSamples = map[string]sampleSpec{
 	"POST /v1/system-accounts/{account_id}:disable": {Status: http.StatusForbidden},
 	"POST /v1/tokens":                               {Status: http.StatusForbidden},
 	"GET /v1/tokens":                                {Status: http.StatusNotFound},
+	"GET /v1/tokens/{token_id}":                     {Status: http.StatusNotFound},
 	"POST /v1/tokens/{token_id}:revoke":             {Status: http.StatusNotFound},
 }
 

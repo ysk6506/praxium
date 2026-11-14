@@ -144,6 +144,28 @@ func TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce(t 
 	}
 }
 
+// [REQ-312]
+func TestAnotherTokenIsShownToItsOwnerAndToAnAdministratorOnly(t *testing.T) {
+	r := idhNewRig(t, false)
+	own := r.idhSend("GET", "/v1/tokens/red0000000000001", idhReaderToken, "")
+	if own.status != 200 {
+		t.Fatalf("an owner sees its own token: %d %s", own.status, own.body)
+	}
+	idhFits(t, "GET", "/v1/tokens/{token_id}", own)
+	if strings.Contains(string(own.body), `"subject"`) {
+		t.Fatalf("only the word current says who is calling: %s", own.body)
+	}
+	if got := r.idhSend("GET", "/v1/tokens/red0000000000001", idhAdminToken, ""); got.status != 200 {
+		t.Fatalf("an administrator sees any token: %d", got.status)
+	}
+	if got := r.idhSend("GET", "/v1/tokens/adm0000000000001", idhReaderToken, ""); got.status != 404 {
+		t.Fatalf("the token of another is not found: %d", got.status)
+	}
+	if got := r.idhSend("GET", "/v1/tokens/zzzz000000000000", idhAdminToken, ""); got.status != 404 {
+		t.Fatalf("a token that does not exist: %d", got.status)
+	}
+}
+
 // [REQ-313]
 func TestTheCurrentTokenSaysWhoIsCalling(t *testing.T) {
 	r := idhNewRig(t, false)
@@ -151,7 +173,7 @@ func TestTheCurrentTokenSaysWhoIsCalling(t *testing.T) {
 	if got.status != 200 {
 		t.Fatalf("%d %s", got.status, got.body)
 	}
-	idhFits(t, "GET", "/v1/tokens/current", got)
+	idhFits(t, "GET", "/v1/tokens/{token_id}", got)
 	data := idhData(t, got)
 	if data["subject"].(map[string]any)["id"] != "ada" || data["token"].(map[string]any)["id"] != "red0000000000001" {
 		t.Fatalf("%s", got.body)

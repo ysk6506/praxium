@@ -4,12 +4,12 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
-	"crypto/rand"
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"math/big"
+	"math/rand/v2"
 	"net"
 	"net/http"
 	"os"
@@ -50,17 +50,20 @@ func athBootstrap(t *testing.T) (dir, token string) {
 // athSelfSigned makes a certificate for 127.0.0.1 and the client that trusts it.
 func athSelfSigned(t *testing.T) (certPEM, keyPEM string, client *http.Client) {
 	t.Helper()
-	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	// A fixed stream: the key lives for one test and protects nothing, and a test that needs no system entropy is
+	// the same on every run (REQ-001).
+	stream := rand.NewChaCha8([32]byte{'p', 'r', 'a', 'x', 'i', 'u', 'm', ' ', 't', 'e', 's', 't', ' ', 'k', 'e', 'y'})
+	key, err := ecdsa.GenerateKey(elliptic.P256(), stream)
 	if err != nil {
 		t.Fatal(err)
 	}
 	tpl := &x509.Certificate{
 		SerialNumber: big.NewInt(1), Subject: pkix.Name{CommonName: "praxium test"},
-		NotBefore: time.Now().Add(-time.Hour), NotAfter: time.Now().Add(time.Hour),
+		NotBefore: time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), NotAfter: time.Date(2099, 1, 1, 0, 0, 0, 0, time.UTC),
 		KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
 		IPAddresses: []net.IP{net.ParseIP("127.0.0.1")}, IsCA: true, BasicConstraintsValid: true,
 	}
-	der, err := x509.CreateCertificate(rand.Reader, tpl, tpl, &key.PublicKey, key)
+	der, err := x509.CreateCertificate(stream, tpl, tpl, &key.PublicKey, key)
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -19,7 +19,7 @@ func identityRoutes() []routeSpec {
 	}
 	revoke := routeSpec{method: "POST", path: "/v1/tokens/{token_id}:revoke", roles: authed, handle: (*call).revokeToken, mux: "/v1/tokens/{token_action}"}
 	return []routeSpec{
-		get("/v1/tokens/current", authed, (*call).currentToken),
+		get("/v1/tokens/{token_id}", authed, (*call).getToken),
 		get("/v1/users", admins, listPrincipals(access.SubjectPerson)),
 		post("/v1/users", admins, createPrincipal(access.SubjectPerson)),
 		action("/v1/users/{user_id}:disable", "user_action", disablePrincipal(access.SubjectPerson, "user_action")),

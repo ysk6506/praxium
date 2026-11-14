@@ -13,16 +13,23 @@ type tokenBody struct {
 	ExpiresInDays int      `json:"expires_in_days"`
 }
 
-// currentToken says who the caller is and, when the caller came with an access token, which one. It works
-// without a directory: the development authenticator has a subject but no token record.
-func (c *call) currentToken() {
+// getToken answers GET /v1/tokens/{token_id}. The id "current" is the token of this request and then the answer
+// also says who is calling. Any other token is shown to its owner and to an administrator, and for anyone else it
+// is not found, as if it did not exist. The word current works without a directory: the development authenticator
+// has a subject but no token record.
+func (c *call) getToken() {
+	id := c.r.PathValue("token_id")
+	c.w.Header().Set("Cache-Control", "no-store")
+	if id != "current" {
+		c.otherToken(id)
+		return
+	}
 	var token any
 	if c.s.dir != nil && c.subject.TokenID != "" {
 		if info, err := c.s.dir.GetToken(c.r.Context(), c.subject.TokenID); err == nil {
 			token = tokenView(info)
 		}
 	}
-	c.w.Header().Set("Cache-Control", "no-store")
 	c.ok(map[string]any{
 		"subject": map[string]any{
 			"id": c.subject.ID, "kind": string(c.subject.Kind), "display_name": c.subject.DisplayName,
@@ -30,6 +37,23 @@ func (c *call) currentToken() {
 		},
 		"token": token,
 	}, nil)
+}
+
+func (c *call) otherToken(id string) {
+	dir, ok := c.directory()
+	if !ok {
+		return
+	}
+	info, err := dir.GetToken(c.r.Context(), id)
+	if err != nil {
+		c.idError(err)
+		return
+	}
+	if info.Owner != c.subject.ID && !c.isAdmin() {
+		c.notFound("resource", c.r.URL.Path)
+		return
+	}
+	c.ok(map[string]any{"token": tokenView(info)}, nil)
 }
 
 // isAdmin says whether the caller may see and revoke the tokens of others. The roles of a subject are the ones its

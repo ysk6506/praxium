@@ -69,6 +69,13 @@ func (s *idtCountingStore) Put(ctx context.Context, kind, id string, data []byte
 	return s.MemoryStore.Put(ctx, kind, id, data, expect)
 }
 
+func (s *idtCountingStore) Scan(ctx context.Context, kind string, fn func(string, []byte, int64) error) error {
+	if err := s.failure(); err != nil {
+		return err
+	}
+	return s.MemoryStore.Scan(ctx, kind, fn)
+}
+
 func (s *idtCountingStore) failure() error {
 	s.mu.Lock()
 	defer s.mu.Unlock()

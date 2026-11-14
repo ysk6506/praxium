@@ -959,7 +959,7 @@
         "type": "object"
       },
       "CurrentToken": {
-        "description": "Who is calling and with which token.",
+        "description": "An access token, and for the word current also who is calling with it.",
         "properties": {
           "subject": {
             "$ref": "#/components/schemas/CurrentSubject"
@@ -973,13 +973,12 @@
           }
         },
         "required": [
-          "subject",
           "token"
         ],
         "type": "object"
       },
       "CurrentTokenAnswer": {
-        "description": "Who is calling.",
+        "description": "An access token.",
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CurrentToken"
@@ -9486,11 +9485,21 @@
         "x-safe": false
       }
     },
-    "/v1/tokens/current": {
+    "/v1/tokens/{token_id}": {
       "get": {
-        "description": "Who the caller is and which access token it came with. Any logged-in caller may ask; it is the way to check a token.",
-        "operationId": "getCurrentToken",
-        "parameters": [],
+        "description": "Shows one access token and its state; never the secret or the hash. The id current stands for the token of this request, and then the answer also says who is calling (subject), which is the way to check a token. Any other id is answered to its owner and to an administrator; for anyone else it is not found.",
+        "operationId": "getToken",
+        "parameters": [
+          {
+            "description": "The id of the token (not the token itself), or the word current.",
+            "in": "path",
+            "name": "token_id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -9531,7 +9540,7 @@
                 }
               }
             },
-            "description": "The caller.",
+            "description": "The token.",
             "headers": {
               "X-Trace-Id": {
                 "$ref": "#/components/headers/TraceId"
@@ -9560,7 +9569,7 @@
             "$ref": "#/components/responses/Unavailable"
           }
         },
-        "summary": "Who is calling",
+        "summary": "Look at an access token",
         "tags": [
           "identity"
         ],

@@ -463,7 +463,7 @@
       },
       "CurrentToken": {
         "type": "object",
-        "description": "Who is calling and with which token.",
+        "description": "An access token, and for the word current also who is calling with it.",
         "properties": {
           "subject": {
             "$ref": "#/components/schemas/CurrentSubject"
@@ -477,13 +477,12 @@
           }
         },
         "required": [
-          "subject",
           "token"
         ]
       },
       "CurrentTokenAnswer": {
         "type": "object",
-        "description": "Who is calling.",
+        "description": "An access token.",
         "properties": {
           "data": {
             "$ref": "#/components/schemas/CurrentToken"

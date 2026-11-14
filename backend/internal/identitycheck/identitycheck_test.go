@@ -8,19 +8,25 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgstore"
 )
 
+// caseFloor is how many cases the suite had when it was made; a suite that shrinks proves less.
+const caseFloor = 12
+
 func idcRun(t *testing.T, factory Factory) {
 	t.Helper()
+	if len(Cases()) < caseFloor {
+		t.Fatalf("the suite has %d cases, and it must keep at least %d", len(Cases()), caseFloor)
+	}
 	for _, c := range Cases() {
 		t.Run(c.Name, func(t *testing.T) { c.Run(t, factory) })
 	}
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestTheInMemoryStoreConformsToTheIdentityStorePort(t *testing.T) {
 	idcRun(t, func(TB) Store { return identity.NewMemoryStore() })
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestTheFileStoreConformsToTheIdentityStorePort(t *testing.T) {
 	idcRun(t, func(tb TB) Store {
 		s, err := identityfile.Open(identityfile.NewMemDisk())
@@ -31,7 +37,7 @@ func TestTheFileStoreConformsToTheIdentityStorePort(t *testing.T) {
 	})
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestThePostgresStoreConformsToTheIdentityStorePort(t *testing.T) {
 	idcRun(t, func(tb TB) Store {
 		st := pgstore.NewTestStore(t)
@@ -39,7 +45,7 @@ func TestThePostgresStoreConformsToTheIdentityStorePort(t *testing.T) {
 	})
 }
 
-// [REQ-311]
+// [REQ-310]
 func TestTheSuiteCatchesAStoreThatIgnoresTheVersion(t *testing.T) {
 	caught := 0
 	for _, c := range Cases() {
