@@ -10,6 +10,7 @@ import path from "node:path";
 import { splitFrontMatter, type Violation, violation } from "../common";
 import { amendEntries } from "./doc-amends";
 import type { DocsConfig } from "./doc-config";
+import { followEntries, followProblems } from "./doc-targets";
 
 const strings = (value: unknown): string[] => (Array.isArray(value) ? value.map(String) : []);
 const GOAL_HEADING = "## 제품 목표";
@@ -17,7 +18,7 @@ const GOAL_HEADING = "## 제품 목표";
 /** DOC092: a document that neither covers code nor follows other documents has nothing to go stale against. */
 export function checkFollows(file: string, data: Record<string, unknown>): Violation[] {
   if (data.kind === "decision") return [];
-  if (strings(data.covers).length > 0 || strings(data.follows).length > 0) return [];
+  if (strings(data.covers).length > 0 || followEntries(data).length > 0) return [];
   return [
     violation(
       "DOC092",
@@ -27,6 +28,19 @@ export function checkFollows(file: string, data: Record<string, unknown>): Viola
       "Add `covers:` (code it describes) or `follows:` (docs, ADRs or globs whose changes should make it be re-read), then run reverify.",
     ),
   ];
+}
+
+/** DOC001: a `follows` entry is a path, or `{ doc, recheck }` with recheck `change` or `release` (ADR-0056). */
+export function checkFollowEntries(file: string, data: Record<string, unknown>): Violation[] {
+  return followProblems(data).map((problem) =>
+    violation(
+      "DOC001",
+      file,
+      1,
+      `front matter: ${problem}`,
+      "Write each follows entry as a path or glob, or as { doc: <path or glob>, recheck: change | release }.",
+    ),
+  );
 }
 
 /** DOC091: every `amends` entry exists and lists this ADR in its `amended_by`; and the other way round. */

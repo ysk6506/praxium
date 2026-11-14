@@ -12,4 +12,5 @@ vitest.config.ts
 .github/**
 docs/design-docs/adr/**
 docs/product-specs/requirements.md
+docs/product-specs/requirements-*.md
 AGENTS.md

@@ -42,6 +42,16 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
+      # A run that publishes also runs the docs check in its release mode (ADR-0056), which needs Node and the harness.
+      - if: github.event_name == 'push' || inputs.version != ''
+        uses: pnpm/action-setup@v4
+      - if: github.event_name == 'push' || inputs.version != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - if: github.event_name == 'push' || inputs.version != ''
+        run: pnpm install --frozen-lockfile
       - id: plan
         name: Plan the release
         env:

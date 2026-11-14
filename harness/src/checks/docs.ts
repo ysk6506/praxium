@@ -13,6 +13,7 @@
  * DOC060 wrong place    DOC070 sealed ADR edited DOC071 ADR not sealed  DOC080 ADR unenforced
  * DOC090 new ADR's updates_docs (doc-diff.ts)  DOC091 amends/amended_by  DOC092 no covers or follows
  * DOC093 goal sentence (doc-follow.ts, ADR-0180)  DOC094/DOC095 notices
+ * DOC013 a `recheck: release` relation is stale, in the release check (`--release`, ADR-0056)  DOC103 the same, as a notice
  */
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -36,8 +37,15 @@ import { ClaimContext, checkClaims, proseLines } from "./doc-claims";
 import { type DocsConfig, discoverDocs, loadDocsConfig } from "./doc-config";
 import { linkAmends, writeDecisions } from "./doc-decisions";
 import { checkFacts, FactCounter } from "./doc-facts";
-import { checkAmendLinks, checkFollows, checkGoal } from "./doc-follow";
-import { checkAge, checkFreshness, docState, legacyKeysOf, legacyViolation } from "./doc-freshness";
+import { checkAmendLinks, checkFollowEntries, checkFollows, checkGoal } from "./doc-follow";
+import {
+  checkAge,
+  checkFreshness,
+  docState,
+  legacyKeysOf,
+  legacyViolation,
+  releaseNote,
+} from "./doc-freshness";
 import { LIST_BEGIN, listedDocs, writeIndex } from "./doc-index";
 import { migrateAll } from "./doc-legacy";
 import { bodyFingerprint } from "./doc-print";
@@ -243,6 +251,9 @@ interface Scan {
   readonly ctx: DocContext;
   readonly legacy: Map<string, string[]>;
   readonly violations: Violation[];
+  readonly notes: string[];
+  /** The release check: a stale `recheck: release` relation fails (ADR-0056). */
+  readonly release: boolean;
 }
 
 /** Freshness and age of one non-decision document, or its place in the old-format list. */
@@ -257,17 +268,35 @@ function checkVerification(
   if (legacy.length > 0) scan.legacy.set(file, legacy);
   if (data.kind === "decision" || legacy.length > 0) return;
   const state = docState(scan.ctx, file, data);
-  scan.violations.push(...checkFreshness(file, state), ...checkAge(config, file, data, state, now));
+  scan.violations.push(
+    ...checkFreshness(file, state, scan.release),
+    ...checkAge(config, file, data, state, now),
+  );
+  const note = releaseNote(file, state);
+  if (note !== null && !scan.release) scan.notes.push(note);
 }
 
-export function run(root: string, now: string = today()): Violation[] {
+export interface DocsReport {
+  readonly violations: Violation[];
+  /** Lines for the reader that do not fail the check (`NOTE docs [DOC103] ...`). */
+  readonly notes: string[];
+}
+
+/** The docs check with its notes. `release` is the release check: stale `recheck: release` relations fail. */
+export function report(root: string, now: string = today(), release = false): DocsReport {
   const config = loadDocsConfig(root);
   const docs = discoverDocs(root, config);
   const links = new Map<string, string[]>();
   const adrs = new Map<string, Record<string, unknown>>();
   const claims = new ClaimContext(root, config.adr_dir);
   const facts = new FactCounter(root, claims);
-  const scan: Scan = { ctx: new DocContext(root), legacy: new Map(), violations: [] };
+  const scan: Scan = {
+    ctx: new DocContext(root),
+    legacy: new Map(),
+    violations: [],
+    notes: [],
+    release,
+  };
   const violations = scan.violations;
   for (const file of docs) {
     const text = readFileSync(path.join(root, file), "utf8");
@@ -278,7 +307,11 @@ export function run(root: string, now: string = today()): Violation[] {
     links.set(file, scanned.links);
     if (data === null) continue;
     checkVerification(scan, config, file, data, now);
-    violations.push(...checkFollows(file, data), ...checkPlacement(config, file, data));
+    violations.push(
+      ...checkFollows(file, data),
+      ...checkFollowEntries(file, data),
+      ...checkPlacement(config, file, data),
+    );
     if (data.kind === "decision") {
       violations.push(...checkAdr(root, file, data, body));
       adrs.set(file, data);
@@ -290,15 +323,21 @@ export function run(root: string, now: string = today()): Violation[] {
     }
   }
   const listed = hasList(root, config) ? listedDocs(root, config) : [];
-  return [
-    ...violations,
-    ...legacyViolation(scan.legacy),
-    ...checkRecordFolders(root, docs),
-    ...checkAmendLinks(config, adrs),
-    ...checkGoal(root, config),
-    ...checkOrphans(config, docs, links, listed),
-  ];
+  return {
+    violations: [
+      ...violations,
+      ...legacyViolation(scan.legacy),
+      ...checkRecordFolders(root, docs),
+      ...checkAmendLinks(config, adrs),
+      ...checkGoal(root, config),
+      ...checkOrphans(config, docs, links, listed),
+    ],
+    notes: scan.notes,
+  };
 }
+
+export const run = (root: string, now: string = today(), release = false): Violation[] =>
+  report(root, now, release).violations;
 
 const hasList = (root: string, config: DocsConfig): boolean =>
   existsSync(path.join(root, config.index)) &&
@@ -376,7 +415,12 @@ export function main(argv: readonly string[]): number {
   const root = findRoot(flag(flags, "root"));
   const [command, target] = positional;
   if (target && onDoc(root, command, target, flags)) return 0;
-  return onRepo(root, command) ?? finish("docs", run(root));
+  const handled = onRepo(root, command);
+  if (handled !== null) return handled;
+  const checked = report(root, today(), flags.has("release"));
+  const code = finish("docs", checked.violations);
+  for (const line of checked.notes) console.log(line);
+  return code;
 }
 
 if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));

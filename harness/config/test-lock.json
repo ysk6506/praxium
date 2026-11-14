@@ -12656,6 +12656,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestReleasePlanRefusesAReleaseWhenAReleaseRelationIsStale": {
+   "kind": "test",
+   "hash": "f41bb46d198e9aa4",
+   "asserts": 14,
+   "literals": [
+    "a13726ec7a9bb68d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-396"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestReleasePlanRefusesWhatIsNotSafeToRelease": {
    "kind": "test",
    "hash": "064d3c86af7cc71d",
@@ -12667,6 +12682,21 @@
    "skips": 0,
    "reqs": [
     "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePlanSaysSoWhenTheCheckoutHasNoDocumentContract": {
+   "kind": "test",
+   "hash": "84777ae308b30f88",
+   "asserts": 6,
+   "literals": [
+    "a8673f04f1bce934"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-396"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -29424,6 +29454,433 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/doc-release.test.ts::<import:0a16891b>": {
+   "kind": "support",
+   "hash": "0a16891bd76aacb1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::<import:0bf8b541>": {
+   "kind": "support",
+   "hash": "0bf8b5419b863156",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::<import:cd66fb27>": {
+   "kind": "support",
+   "hash": "cd66fb2759e02f26",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::<import:e88c67f1>": {
+   "kind": "support",
+   "hash": "e88c67f1000bfaa2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::<import:ed788498>": {
+   "kind": "support",
+   "hash": "ed788498f59a2e65",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::=changeSpec": {
+   "kind": "support",
+   "hash": "28e844ba301e3fe5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::=codes": {
+   "kind": "support",
+   "hash": "8931c6c617a37d3e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::=RELEASE": {
+   "kind": "support",
+   "hash": "492c8cacdc0400ab",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::=repoFollowing": {
+   "kind": "support",
+   "hash": "a2bff52eacd7500f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a follows entry says when it must be re-read [REQ-394] > %s is a front matter error": {
+   "kind": "test",
+   "hash": "b1e0f1b5248f96f2",
+   "asserts": 1,
+   "literals": [
+    "\"%s is a front matter error\"",
+    "\"3\"",
+    "\"DOC001\"",
+    "\"DOC001\"",
+    "\"a number\"",
+    "\"an unknown key\"",
+    "\"an unknown time\"",
+    "\"docs/guide.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"no doc\"",
+    "\"release\"",
+    "\"release\"",
+    "\"weekly\"",
+    "\"x\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a follows entry says when it must be re-read [REQ-394] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a follows entry says when it must be re-read [REQ-394] > a change relation fails at once, in both modes": {
+   "kind": "test",
+   "hash": "3af68050813935fb",
+   "asserts": 3,
+   "literals": [
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"a change relation fails at once, in both modes\"",
+    "\"change\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "false",
+    "false",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a follows entry says when it must be re-read [REQ-394] > a doc whose only relation is an object still counts as following something": {
+   "kind": "test",
+   "hash": "3b90afc414d3941b",
+   "asserts": 1,
+   "literals": [
+    "\"a doc whose only relation is an object still counts as following something\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a follows entry says when it must be re-read [REQ-394] > a path entry is a change relation, and so is { doc } and { doc, recheck: change }": {
+   "kind": "test",
+   "hash": "97611da375622c11",
+   "asserts": 1,
+   "literals": [
+    "\"a path entry is a change relation, and so is { doc } and { doc, recheck: change }\"",
+    "\"a.md\"",
+    "\"a.md:change\"",
+    "\"a.md:change\"",
+    "\"b.md\"",
+    "\"b.md:change\"",
+    "\"b.md:change\"",
+    "\"c.md\"",
+    "\"c.md:change\"",
+    "\"c.md:change\"",
+    "\"change\"",
+    "\"d.md\"",
+    "\"d.md:release\"",
+    "\"d.md:release\"",
+    "\"release\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a follows entry says when it must be re-read [REQ-394] > a target that a change entry also names stays a change relation": {
+   "kind": "test",
+   "hash": "d86b1aee5b09316f",
+   "asserts": 1,
+   "literals": [
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"a target that a change entry also names stays a change relation\"",
+    "\"docs/spec.md\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > a release relation with no record yet is stale for the release": {
+   "kind": "test",
+   "hash": "f5bd04e8a9fb0313",
+   "asserts": 2,
+   "literals": [
+    "\"DOC013\"",
+    "\"DOC013\"",
+    "\"a release relation with no record yet is stale for the release\"",
+    "\"docs/guide.md\"",
+    "\"package.json\"",
+    "\"package.json\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > a stale change relation and a stale release relation are told apart": {
+   "kind": "test",
+   "hash": "74f318d1f1a95725",
+   "asserts": 2,
+   "literals": [
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"DOC010\"",
+    "\"DOC013\"",
+    "\"DOC013\"",
+    "\"a stale change relation and a stale release relation are told apart\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/spec.md\"",
+    "\"first reading\"",
+    "\"package.json\"",
+    "\"package.json\"",
+    "\"{\\\"changed\\\":true}\\n\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > reverify records it, and the release check is quiet again": {
+   "kind": "test",
+   "hash": "b0583b90dda2cb4d",
+   "asserts": 2,
+   "literals": [
+    "\"compared with the second spec\"",
+    "\"compared with the second spec\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"reverify records it, and the release check is quiet again\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > stale fails in the release check, and the message says what to run": {
+   "kind": "test",
+   "hash": "3a54619186d363af",
+   "asserts": 6,
+   "literals": [
+    "\"--note\"",
+    "\"--note\"",
+    "\"DOC013\"",
+    "\"DOC013\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"reverify docs/guide.md --target docs/spec.md\"",
+    "\"reverify docs/guide.md --target docs/spec.md\"",
+    "\"stale fails in the release check, and the message says what to run\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > stale is a notice that names the document, the target and the command": {
+   "kind": "test",
+   "hash": "e4a96f562a49baf6",
+   "asserts": 7,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"docs/guide.md\"",
+    "\"docs/guide.md\"",
+    "\"docs/spec.md\"",
+    "\"docs/spec.md\"",
+    "\"reverify docs/guide.md --target docs/spec.md\"",
+    "\"reverify docs/guide.md --target docs/spec.md\"",
+    "\"stale is a notice that names the document, the target and the command\"",
+    "\"다음 릴리스 전에 다시 확인\"",
+    "\"다음 릴리스 전에 다시 확인\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::a stale release relation is a notice, and a failure in the release check [REQ-395] > up to date is quiet in both modes": {
+   "kind": "test",
+   "hash": "08dca1c40f21ab02",
+   "asserts": 2,
+   "literals": [
+    "\"up to date is quiet in both modes\"",
+    "false",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::the product design overview is re-read at the release [REQ-395] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::the product design overview is re-read at the release [REQ-395] > it follows the requirements at release and the decision at once": {
+   "kind": "test",
+   "hash": "e0915fd2dab5955e",
+   "asserts": 1,
+   "literals": [
+    "\"0005-separate-product-own-model-verification-outside.md:change\"",
+    "\"0005-separate-product-own-model-verification-outside.md:change\"",
+    "\"docs/design-docs/product-design.md\"",
+    "\"it follows the requirements at release and the decision at once\"",
+    "\"requirements*.md:release\"",
+    "\"requirements*.md:release\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::the product design overview is re-read at the release [REQ-395] > only the product design overview has a release relation, and only to the requirements": {
+   "kind": "test",
+   "hash": "625d2f215c13d067",
+   "asserts": 1,
+   "literals": [
+    "\"docs/design-docs/product-design.md -> docs/product-specs/requirements*.md\"",
+    "\"docs/design-docs/product-design.md -> docs/product-specs/requirements*.md\"",
+    "\"only the product design overview has a release relation, and only to the requirements\"",
+    "\"release\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-release.test.ts::the product design overview is re-read at the release [REQ-395] > the release check of the real repository adds DOC013 and nothing else": {
+   "kind": "test",
+   "hash": "d1401c4b87c30c25",
+   "asserts": 1,
+   "literals": [
+    "\"DOC013\"",
+    "\"the release check of the real repository adds DOC013 and nothing else\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "harness/src/checks/doc-stamps.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",
@@ -40934,6 +41391,245 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:360d4493>": {
+   "kind": "support",
+   "hash": "360d449330ba66e6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:50321f6c>": {
+   "kind": "support",
+   "hash": "50321f6c860a7a17",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:926bbd59>": {
+   "kind": "support",
+   "hash": "926bbd59eb51ec9d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::=read": {
+   "kind": "support",
+   "hash": "70aee78d6a7b3d9c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::=repo": {
+   "kind": "support",
+   "hash": "f180a0b0ae929ee3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::=SPEC": {
+   "kind": "support",
+   "hash": "38d40d34c0f42e02",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::=table": {
+   "kind": "support",
+   "hash": "1d50f26a67183968",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::requirements in the entry document and the area documents [REQ-397] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::requirements in the entry document and the area documents [REQ-397] > a planned marker counts in an area document": {
+   "kind": "test",
+   "hash": "6e479c4bf409d6a5",
+   "asserts": 2,
+   "literals": [
+    "\"# later\\n\"",
+    "\"ADR-0007\"",
+    "\"ADR-0007\"",
+    "\"REQ-002\"",
+    "\"REQ-002\"",
+    "\"a planned marker counts in an area document\"",
+    "\"docs/design-docs/adr/0007-later.md\"",
+    "\"docs/product-specs/requirements-area.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"| REQ-001 | a |\"",
+    "\"| REQ-002 | **예정(ADR-0007)** later |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::requirements in the entry document and the area documents [REQ-397] > a test can cite a number that only an area document has": {
+   "kind": "test",
+   "hash": "4d313c9b1efbb164",
+   "asserts": 1,
+   "literals": [
+    "\"a test can cite a number that only an area document has\"",
+    "\"b [REQ-002]\"",
+    "\"docs/product-specs/requirements-area.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"tests/spec/b.test.ts\"",
+    "\"| REQ-001 | a |\"",
+    "\"| REQ-002 | b |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::requirements in the entry document and the area documents [REQ-397] > an area requirement without a test fails, and a cited unknown number fails": {
+   "kind": "test",
+   "hash": "9fcc8f53ee4791bd",
+   "asserts": 1,
+   "literals": [
+    "\"TRACE001\"",
+    "\"TRACE001\"",
+    "\"TRACE002\"",
+    "\"TRACE002\"",
+    "\"an area requirement without a test fails, and a cited unknown number fails\"",
+    "\"b [REQ-777]\"",
+    "\"docs/product-specs/requirements-area.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"tests/spec/b.test.ts\"",
+    "\"| REQ-001 | a |\"",
+    "\"| REQ-002 | b |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::requirements in the entry document and the area documents [REQ-397] > the entry document comes first, then the area documents by name": {
+   "kind": "test",
+   "hash": "7b2f0652f21ca29d",
+   "asserts": 2,
+   "literals": [
+    "\"REQ-001\"",
+    "\"REQ-001\"",
+    "\"REQ-002\"",
+    "\"REQ-002\"",
+    "\"REQ-003\"",
+    "\"REQ-003\"",
+    "\"docs/product-specs/notes.md\"",
+    "\"docs/product-specs/requirements-Bad.md\"",
+    "\"docs/product-specs/requirements-alpha.md\"",
+    "\"docs/product-specs/requirements-alpha.md\"",
+    "\"docs/product-specs/requirements-alpha.md\"",
+    "\"docs/product-specs/requirements-zeta.md\"",
+    "\"docs/product-specs/requirements-zeta.md\"",
+    "\"docs/product-specs/requirements-zeta.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"the entry document comes first, then the area documents by name\"",
+    "\"| REQ-001 | a |\"",
+    "\"| REQ-002 | b |\"",
+    "\"| REQ-003 | c |\"",
+    "\"| REQ-008 | not read |\"",
+    "\"| REQ-009 | not read |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/requirement-files.test.ts::requirements in the entry document and the area documents [REQ-397] > the same number in two documents fails, naming the second file": {
+   "kind": "test",
+   "hash": "1c0f3349bf07ce0d",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"REQ-001\"",
+    "\"REQ-001\"",
+    "\"TRACE004\"",
+    "\"docs/product-specs/requirements-area.md\"",
+    "\"docs/product-specs/requirements-area.md\"",
+    "\"docs/product-specs/requirements-area.md\"",
+    "\"docs/product-specs/requirements.md\"",
+    "\"the same number in two documents fails, naming the second file\"",
+    "\"| REQ-001 | a |\"",
+    "\"| REQ-001 | again |\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
    "amended_by": null
   },
   "harness/src/checks/test-config.test.ts::<import:0458d18f>": {

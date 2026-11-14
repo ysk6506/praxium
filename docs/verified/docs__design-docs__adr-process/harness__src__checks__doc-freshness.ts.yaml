@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-freshness.ts"
-hash: "8eca070af63690e4"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
-text_changed: true
-doc_hash: "57f525cdc5d61411"
+hash: "1fb918b2885ead0b"
+date: "2026-11-14"
+note: "release 관계의 낡은 기록은 DOC010이 아니라 알림(DOC103)과 릴리스 검사의 DOC013이 됨: follows 절에 반영"
+text_changed: false
+doc_hash: "af5c22dc328d7514"

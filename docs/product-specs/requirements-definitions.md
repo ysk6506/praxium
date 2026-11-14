@@ -1,0 +1,52 @@
+---
+title: 프락시움 요구사항 — 정의
+kind: spec
+status: active
+follows:
+  - docs/design-docs/adr/0005-separate-product-own-model-verification-outside.md
+---
+# 요구사항 — 정의
+
+정의의 버전, 브랜치, 제안(100번대 후반, 170번대), 정의 저장소(330번대), 조직 속성(366~373)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
+
+| ID | 요구사항 |
+|---|---|
+| REQ-119 | **예정(ADR-0014)** 정의는 바뀌지 않는 정의 세트로 쌓이고, 브랜치와 제안으로 수정하며, 병합은 검사를 거쳐 한 번에 반영된다. |
+| REQ-128 | **예정(ADR-0014)** 같은 항목을 둘이 수정한 충돌, 의미 충돌, 결과 충돌을 병합 전에 잡는다. |
+| REQ-129 | **예정(ADR-0014)** 리버트는 앞으로 나아가는 새 변경이다. 영향받는 것이 있으면 차단하고 보여 주며, 긴급 리버트 방법이 있고, 질의하는 측을 이전 KG 버전에 고정할 수 있다. |
+| REQ-171 | **예정(ADR-0014)** 정의의 항목에 합성 샘플 테스트를 붙이고 병합 검사로 실행한다. |
+| REQ-172 | **예정(ADR-0014)** 정의의 계보(소스에서 링크 정의까지, 컬럼과 속성 단위)와 "누가 쓰나"로 수정하기 전에 무엇이 영향받는지 답한다. |
+| REQ-218 | **예정(ADR-0014)** 정의의 브랜치와 제안은 작성한 주체와 위임한 사람과 에이전트 실행을 기록하고, 승인은 사람만 하며 같은 주체나 같은 위임자는 승인하지 못한다. |
+| REQ-219 | **예정(ADR-0014)** 제안에 변경한 이유(계기, 근거가 된 KG 버전과 질의, 기대하는 효과, 검토한 대안)를 남기고 승인자에게 선언한 의도와 드라이 런의 실제 차이를 나란히 보여 준다. |
+| REQ-220 | **예정(ADR-0014)** 제안의 위험 등급(R0~R3)은 작성자의 주장이 아니라 후보 차이에서 계산하고, 항목 종류마다 최소 등급이 있다(소스의 `endpoints`, 마스킹 규칙, 시크릿의 접속 주소 등은 KG 차이가 없어도 R3). 첫 적용의 사람 확인은 R2부터이고 R0, R1은 자동으로 적용하고 알린다(알파부터). 정책에 따른 자동 병합은 클로즈드 베타부터이고 기본이 꺼짐이며 `admin`이 켠다. R3는 언제나 사람이 본다. 혼자 쓰는 테스트 배포를 위한 `solo_approval`은 REQ-236이다. |
+| REQ-221 | **예정(ADR-0014)** 병합 큐는 직렬 처리 하나를 유지하되 무거운 드라이 런은 큐 밖에서 실행해 재사용하고, 주체마다 열 수 있는 브랜치와 제안과 계산 예산의 한도가 있다(값은 기본값 표의 가정). 정의가 다른 소스를 참조하면 그 참조 대상 소스를 범위로 가진 승인자의 승인이 필요하다. 계보상 영향받는 것에만 적용을 보류하고 영향받지 않는 소스의 스트림은 새 정의 세트로 바로 이어서 처리한다. |
+| REQ-236 | **예정(ADR-0014)** 공개 설정 `solo_approval`을 켜면 자기가 수정한 것을 자기가 승인할 수 있다. 기본은 꺼짐이고 켜면 모든 승인의 감사에 표시가 남고 헬스 상태에 경고가 표시된다. |
+
+| ID | 요구사항 | 근거·테스트 |
+|---|---|---|
+| REQ-332 | 정의 저장소(`core.definitions`)는 정의의 종류를 모른다. 항목은 바뀌지 않는 ID, `kind`(뜻을 모르는 문자열), 이름을 갖고, 리비전은 쓰기만 한다(리비전 번호, 내용 해시, 스키마 버전, 정규화한 본문, 만든 사람, 메시지, 시각). 본문은 JSON 객체 하나여야 하고 정규화해서 해시하므로 같은 내용이면 같은 해시다(키 순서, 공백, 같은 수의 다른 표기와 무관). 내용이 지금과 같으면 새 리비전을 만들지 않고, 되돌려서 같아진 내용도 리비전 번호는 새로 오른다. 본문 크기, 세트의 항목 수, 열린 브랜치 수 같은 한도는 생성 때 받고 넘으면 어느 한도인지 말한다 | ADR-0049, `backend/internal/definitions/body_test.go`, `backend/internal/definitions/apply_test.go` |
+| REQ-333 | 정의 세트 `D-n`은 바뀌지 않는다. 내용 해시는 호출자가 주는 기준 해시와 정렬한 (항목 ID, 내용 해시) 목록으로 계산하고, 항목의 순서와 부모와 리비전 번호에 무관하다. 항목이 하나도 없으면 해시는 기준 해시 그대로다(기준만 있던 기존 데이터와 같은 값) | ADR-0049, `backend/internal/definitions/body_test.go`, `backend/internal/definitions/apply_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-334 | 메인 브랜치의 머리는 기대한 값일 때만 옮겨진다(compare-and-swap). 직접 적용은 기대한 머리와 변경 목록을 받아 새 항목, 리비전, 세트, 원장, 머리를 원자적 쓰기 한 번으로 쓰고, 바뀐 것이 없으면 아무것도 쓰지 않고 그렇다고 알린다 | ADR-0049, `backend/internal/definitions/apply_test.go`, `backend/internal/definitions/store_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-335 | 번호 원장은 이름 붙은 단조 증가 카운터다. 시작 값은 호출자가 주고, 세트를 만드는 같은 쓰기에서 오르며, 버려진 쓰기(머리 충돌, 한도 위반, 검사 실패, 디스크 실패) 뒤에도 내려가거나 따로 오르지 않는다 | ADR-0049, `backend/internal/definitions/apply_test.go`, `backend/internal/definitions/store_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-336 | 브랜치는 기준 세트와 바뀐 항목(추가, 수정, 삭제)만 갖는다. 고칠 때마다 저장되고 버전으로 동시 수정을 막는다(읽은 버전이 아니면 거절). 기준과 같아진 항목은 브랜치에서 빠진다. 브랜치를 얹은 "초안 상태의 전체 항목"을 읽을 수 있다 | ADR-0049, `backend/internal/definitions/branch_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-337 | 제안은 브랜치와 일대일이고 `draft → in_review → approved → merged`, 어느 때나(병합 전) `closed`로만 간다. 내용을 고치면 `draft`로 돌아가고 승인은 무효가 된다. 승인은 본 내용의 해시에 묶이고, 작성자(브랜치를 고친 모든 주체와 그들을 대신하는 주체)는 자기 제안을 승인하지 못한다. 호출자가 넘기는 정책이 단독 승인을 허용하면 할 수 있고 그 사실이 승인 기록에 남는다. 누가 어떤 역할인지는 이 유닛이 모른다 | ADR-0049, `backend/internal/definitions/proposal_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-338 | 병합은 승인된 제안의 브랜치를 머리에 얹어 새 세트를 만든다. 브랜치의 기준 이후 머리에서 같은 항목이 바뀌었으면 `stale`로 거절하고(3-way 병합과 충돌 풀기는 하지 않는다), 겹치지 않으면 합친다. 병합 직전에 호출자가 준 검사 함수가 합쳐진 세트 전체를 받고, 오류가 있으면 아무것도 쓰지 않고 오류 목록을 돌려준다. 세트, 리비전, 원장, 머리, 브랜치와 제안의 상태는 원자적 쓰기 한 번이다 | ADR-0049, `backend/internal/definitions/merge_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-339 | 지난 세트 `D-N`의 내용으로 새 브랜치와 제안(`origin: restore`)을 만드는 복원이 있다. 세트는 지우지도 고치지도 않으며, 병합하면 머리 뒤에 새 세트와 새 리비전 번호가 생긴다. 머리가 이미 그 내용이면 "할 일 없음"으로 답한다 | ADR-0049, `backend/internal/definitions/merge_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-340 | 저장 포트는 "원자적 쓰기 한 번"(리비전 여러 개, 세트, 원장, 머리, 브랜치와 제안의 상태가 전부 되거나 전혀 안 된다)을 표현해 PostgreSQL 어댑터가 한 트랜잭션으로 구현할 수 있다. 기준 구현인 메모리 어댑터와, 데이터 폴더의 `definitions.json` 하나(형식 이름과 버전을 가진다)를 임시 파일에 쓰고 동기화한 뒤 이름을 바꿔 교체하는 파일 어댑터가 있다. 파일이 없으면 정의 없음이고, 알 수 없는 버전이나 깨진 파일은 이유를 말하고 거절하며 덮어쓰지 않는다. 내장 파일 스토어의 저널과 스냅샷 형식은 건드리지 않는다 | ADR-0049, `backend/internal/definitions/store_test.go`, `backend/internal/definitions/fault_test.go`, `backend/internal/definitionsfile/store_test.go` |
+| REQ-341 | 정의 저장소의 적합성 사례가 있고 메모리 어댑터와 파일 어댑터가 모두 통과한다: 머리 충돌, 같은 내용의 두 번 쓰기, 원장, 세트 해시의 결정성, 중간 실패 때 부분 쓰기가 없는지, `stale` 거절과 병합, 자기 승인 거절과 단독 승인, 상태 전이의 금지된 경로, 리버트, 재시작 뒤의 상태. 결함이 있는 저장소를 사례가 잡는지도 테스트한다 | ADR-0049, `backend/internal/definitionscheck/definitionscheck_test.go`, `backend/internal/definitionscheck/flawed_test.go` |
+| REQ-342 | 표준 객체 타입이나 표준 특성에 조직이 속성을 더하는 것을 오버레이로 정의한다. 오버레이는 정의 항목(`type_overlay`, 항목 ID는 `ov.`와 대상 ID, 대상 하나에 항목 하나)이고 속성만 더한다. 본문(`schema_version` 1)과 사람이 쓰는 파일(`praxium-org-model`, 대상은 이름으로, 값 타입은 짧은 이름으로 쓰고 ID와 번호는 생략할 수 있다)은 모르는 필드, 크기 한도(본문 256KiB, 파일 1MiB, 오버레이 하나에 속성 100개, 전체 1000개, 열거 값 100개, 표시 이름 100자, 설명 1000자)를 넘는 것, 같은 대상의 오버레이 둘을 이유와 코드를 붙여 거절하고, 검사는 오류를 모아서 알린다 | ADR-0050, `backend/internal/model/overlay_test.go`, `backend/internal/model/overlay_file_test.go` |
+| REQ-343 | 조직 속성의 이름은 `org.`와 `snake_case`(전체 64자 이하)이고 ID는 `pr.org.`로 시작한다. 표준 속성의 이름은 점을 갖지 않으므로 표준이 어떤 이름을 더해도 겹치지 않는다. 같은 타입 계통(자기, 조상, 특성) 안에서 조직 속성의 이름이나 별칭이 겹치면 거절하고, 같은 이름이 서로 관계없는 두 타입에 있는 것은 받는다. 짧은 이름이 같은 타입의 표준 속성과 같거나 비슷한 것은 막지 않고 경고로 알린다 | ADR-0050, `backend/internal/model/overlay_test.go`, `backend/internal/model/overlay_standard_test.go` |
+| REQ-344 | 속성 번호는 두 범위로 나눈다. 표준과 `sys`의 속성은 99999 이하, 조직의 속성은 100000 이상이고 범위를 벗어난 번호는 거절한다. 번호가 없는 속성은 자기 범위에서 다음 번호를 받는다. 표준 모델이 올라가도 조직 속성의 번호는 바뀌지 않고 표준의 번호와 겹치지 않는다. 번호는 저장소가 처음 저장할 때 발급해 본문에 적고, 모델은 번호가 채워진 오버레이만 받는다 | ADR-0050, `backend/internal/model/overlay_test.go`, `backend/internal/model/overlay_standard_test.go` |
+| REQ-345 | 오버레이는 표준 정의와 합쳐 새 정의를 만들고 보통의 모델 검사를 거친다(원본은 바꾸지 않는다). 대상이 없거나 `sys` 타입이거나 표준이 아니면 거절한다. 값 종류는 문자열, 정수, 수, 불리언, 시간, 열거(값 필요), 수량(단위 필요)과 이것을 바탕으로 한 이름 붙은 값 타입만 받고 참조, 목록, 맵은 거절한다. `required`, `scope_key`, `history_kind`, 변경 속도 `dynamic`, 후속 속성은 아직 받지 않고 이유를 알리며 거절한다 | ADR-0050, `backend/internal/model/overlay_test.go`, `backend/internal/model/overlay_standard_test.go` |
+| REQ-346 | 조직 속성이 없는 표준 모델의 해시는 이 기능이 생기기 전과 같다(이름 공간은 값이 있을 때만 해시에 넣는다). 조직 속성을 더하면 모델 해시가 바뀌고, 속성의 이름, 표시 이름, 설명을 바꾸는 것은 모델 해시와 행의 해시를 바꾸지 않으며, 번호는 번호 해시에만 들어간다 | ADR-0050, `backend/internal/model/overlay_hash_test.go`, `backend/internal/model/overlay_standard_test.go` |
+| REQ-347 | 오버레이의 변경은 이전과 다음을 속성의 ID로 맞춰 추가, 호환되는 변경(표시 이름, 설명, 별칭, 열거 값 더하기, 민감 등급 올리기, 상태 변경, 옛 이름을 별칭으로 남기는 이름 바꾸기), 호환성을 깨는 변경(속성 빠짐, 값 종류·단위·변경 속도·번호 변경, 열거 값 빼기, 민감 등급 낮추기, 옛 이름을 남기지 않는 이름 바꾸기, 대상 변경)으로 나눈다. 호환성을 깨는 변경에는 새 속성을 더하고 채우고 옛것을 물러나게 하라는 안내가 붙는다 | ADR-0050, `backend/internal/model/overlay_classify_test.go` |
+| REQ-348 | 조직 속성은 삭제하지 않고 `deprecated`로 둔다. 조직(`org`, `ext`) 속성은 후속 없이 `deprecated`일 수 있고 표준 속성은 후속을 가리켜야 한다. 번호와 이름은 계속 예약돼 과거 버전의 행이 그 번호를 가리켜도 읽을 수 있다. 대상 타입이 표준에서 `deprecated`가 된 오버레이는 경고만 한다 | ADR-0050, `backend/internal/model/overlay_test.go` |
+| REQ-349 | 오버레이 항목의 본문은 라벨을 포함한 모든 필드를 담고 정의 저장소의 정규화 형식으로 쓰며, 속성과 별칭과 열거 값의 순서와 상관없이 같은 오버레이는 같은 바이트가 된다. 항목의 내용 해시와 정의 세트의 해시(항목이 없으면 기준 해시인 표준 레지스트리의 해시)는 정의 저장소가 이 본문에서 계산한다. 사람이 쓴 파일의 속성에 ID와 번호를 채우는 일은 저장된 속성과 이름으로 맞추고 번호를 발급 함수에서 받는 순수 함수로 하며, 이미 쓴 ID는 다시 쓰지 않는다 | ADR-0050, `backend/internal/model/overlay_hash_test.go`, `backend/internal/model/overlay_file_test.go` |
+| REQ-366 | `praxium model check -file f [-data-dir d]`는 조직 속성 파일을 저장하지 않고 검사한다. 오류는 전부 모아 한 번에 보이고, 경고와 저장된 정의와의 차이(추가, 호환되는 변경, 호환성을 깨는 변경)를 보인다. 호환성을 깨는 변경이 있거나 오류가 있으면 종료 코드 1이다. 데이터 폴더가 없으면 표준 모델에 대해서만 검사하고, 잠금을 잡지 않아 서버가 폴더를 열고 있어도 된다. `--json`과 `--help`가 있다 | ADR-0053, `backend/cmd/praxium/model_test.go` |
+| REQ-367 | `praxium model apply -file f -data-dir d [-m 메시지]`는 검사에 통과한 파일을 항목 하나가 대상 하나인 `type_overlay`로 정의 저장소에 쓴다. 새 속성의 번호는 번호 원장에서 받고(시작 값 100000), 번호 올리기와 리비전, 세트, 머리 쓰기는 한 번의 원자적 쓰기다. 바뀐 것이 없으면 아무것도 쓰지 않고 그렇다고 말한다. 호환성을 깨는 변경은 거절하고(강제 플래그가 없다) 이름을 바꾸면 옛 이름이 별칭으로 남고 번호는 다시 쓰이지 않는다. 폴더를 다른 프로세스가 열고 있으면 이유를 말하고 거절하며, `-store postgres`는 "아직 없다"고 말하고 종료 코드 2다 | ADR-0053, `backend/cmd/praxium/model_test.go` |
+| REQ-368 | `praxium model show|export|history`는 잠금 없이 저장된 조직 속성을 보인다(`-set N`으로 지난 세트). `export`한 파일을 다시 `apply`하면 바뀐 것이 없다. `history`는 세트마다 시각, 해시 앞 8자, 추가된 속성 수와 바뀐 속성 수, 메시지를 보인다 | ADR-0053, `backend/cmd/praxium/model_test.go` |
+| REQ-369 | `ingest run -data-dir`, `local`, `demo`, `api serve -store file`은 시작할 때 데이터 폴더의 정의를 읽어 표준 모델과 합친 레지스트리를 쓴다. 정의가 없으면 표준 모델만 쓰고 아무것도 만들지 않는다. 합칠 수 없는 정의(깨진 파일, 대상 없음, 번호 겹침)면 이유와 해결 방법을 말하고 시작을 거절한다. 데이터 폴더가 없는 실행과 PostgreSQL 스토어의 서버는 표준 모델만 쓴다 | ADR-0053, `backend/cmd/praxium/modelstart_test.go` |
+| REQ-370 | 수집 매핑의 `attribute`에 `org.<이름>`을 쓸 수 있다. 물러난 속성에 잇는 매핑은 정의 오류로 거절하고 후속 속성이 있으면 이름을 알려 준다. 타입에 없는 속성의 오류는 `org.`을 붙이면 있는 이름이면 그렇게 알려 준다. 이름을 바꾼 속성의 옛 이름은 매핑에서 통하고, 조직 속성은 식별 키에 쓸 수 없다(이유를 말한다) | ADR-0053, `backend/internal/ingest/compile_org_test.go`, `backend/cmd/praxium/modelstart_test.go` |
+| REQ-371 | 명령줄의 `--attr 이름.연산=값`과 `--filter 이름.연산=값`은 마지막 점에서 잘라 이름이 점을 가질 수 있다(`org.management_department.equals=A`). 서버의 속성 필터는 조직 속성 이름을 받는다 | ADR-0053, `backend/internal/cli/attr_split_test.go`, `backend/cmd/praxium/modelstart_test.go` |
+| REQ-372 | 조회가 레지스트리에 없는 속성 번호의 값을 만나면(레지스트리가 데이터보다 옛것일 때) 그 값을 건너뛴다. 이름 없는 속성을 응답에 내지 않고, 텍스트 검색에도 걸지 않으며, 읽기를 실패시키지 않는다 | ADR-0053, `backend/internal/query/unknown_attr_test.go` |
+| REQ-373 | 끝에서 끝까지: 데이터 폴더에 `model apply`한 조직 속성을 `ingest run`의 매핑으로 받고, 서버를 열어 `find`의 속성 필터(`equals`, `in`, `prefix`, `range`)와 객체 상세와 타입 응답에서 표준 속성처럼 보고, 서버를 다시 시작해도 같으며, 같은 파일로 다시 수집하면 바뀌는 것이 없다. 정의를 바꾸면 서버를 다시 시작해야 반영된다 | ADR-0053, `backend/cmd/praxium/modelstart_test.go` |

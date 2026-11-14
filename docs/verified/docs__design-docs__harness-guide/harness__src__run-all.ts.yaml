@@ -1,7 +1,7 @@
 doc: "docs/design-docs/harness-guide.md"
 target: "harness/src/run-all.ts"
-hash: "46ae754b0516c7c1"
+hash: "79837612da54b63c"
 date: "2026-11-14"
-note: "웹 UI(apps/web, ADR-0035) 변경에 맞춰 대조하고 필요한 곳을 고쳤다"
+note: "run-all이 문서 검사의 알림을 모으게 바뀜. 명령 절에 docs.ts --release를 더했고 나머지 설명은 그대로 맞음"
 text_changed: true
-doc_hash: "b930921b5d22c8ed"
+doc_hash: "d3db33da04d8320e"
