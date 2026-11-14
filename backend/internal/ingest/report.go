@@ -66,9 +66,13 @@ type DatasetReport struct {
 	// NotRead says why the file of a collected dataset was not read at all: the sheet is not there, or the header lacks
 	// a column the dataset declares. The same text is the shape_changed problem; the counts of the line are then 0.
 	NotRead string `json:"not_read,omitempty"`
-	// UsedWithProblem is the rows counted as used that also had a problem; it is not part of the sum.
-	UsedWithProblem int        `json:"used_with_problem"`
-	Raw             RawChanges `json:"raw"`
+	// UsedWithProblem is the rows counted as used that also had a problem; it is not part of the sum. A row whose
+	// cell was wrong but is no part of an identity key is such a row: its object is made without that value.
+	UsedWithProblem int `json:"used_with_problem"`
+	// CellsLeftOut is the cells of used rows whose value was left out because it was wrong (invalid_value): the
+	// object has no value for the attribute then.
+	CellsLeftOut int        `json:"cells_left_out"`
+	Raw          RawChanges `json:"raw"`
 	// The rest is for a dataset read from a workbook: the sheet, its state, how many hidden rows and hidden columns
 	// the mapping read, and the rows passed over (blank_row, hidden_row, after_end), which are no part of the count.
 	Sheet          string         `json:"sheet,omitempty"`
@@ -97,6 +101,9 @@ type Report struct {
 	VolatileValues int `json:"volatile_values"`
 	RetiredObjects int `json:"retired_objects"`
 	RetiredLinks   int `json:"retired_links"`
+	// WaitingObjects is the objects that no row of the file shows any more or that only rows a rule filters out
+	// show, and that wait for the runs and the time before they are closed (ADR-0052).
+	WaitingObjects int `json:"waiting_objects"`
 
 	// Changed is true when the batch changed the KG; the change numbers bound what it used.
 	Changed   bool   `json:"changed"`

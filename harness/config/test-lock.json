@@ -9706,6 +9706,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunShowsTheRowsThatOnlyLostACellAndTheObjectsThatWait": {
+   "kind": "test",
+   "hash": "4708dc5477e7aa43",
+   "asserts": 4,
+   "literals": [
+    "4bc93ff81063ef0d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-358",
+    "REQ-360"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunStopsAtALimitOfTheSourceAndNamesIt": {
    "kind": "test",
    "hash": "082816416197f389",
@@ -10221,6 +10237,21 @@
    "skips": 0,
    "reqs": [
     "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheGuideThatInitWritesSpeaksOfTheNewBehaviour": {
+   "kind": "test",
+   "hash": "bb23ed22f2ba3c6f",
+   "asserts": 3,
+   "literals": [
+    "65cd243227bfa546"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-364"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -14518,6 +14549,96 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAFileWithMoreRowsThanTheLimitIsAnIncompleteCaptureAndUsesNothing": {
+   "kind": "test",
+   "hash": "9239aaa8f1ccd8d2",
+   "asserts": 6,
+   "literals": [
+    "5d91f58876220e39"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-361"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAFilteredRowIsNotRetiredWhereAVanishedRowIsNot": {
+   "kind": "test",
+   "hash": "8304ea1d281ee3d7",
+   "asserts": 2,
+   "literals": [
+    "fbb440b78666979a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-360"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAFilterTypoDoesNotCloseObjectsAtOnceButAfterTheWaitOfAVanishedRow": {
+   "kind": "test",
+   "hash": "0fcfcb36e6fc5464",
+   "asserts": 7,
+   "literals": [
+    "a717da091415fdc4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-360"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAKeyNameThatOneFeedGivesAndAnotherLacksStillFindsTheObject": {
+   "kind": "test",
+   "hash": "c688a2e0b41b5122",
+   "asserts": 2,
+   "literals": [
+    "825a044b56f99962"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-359"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestALinkIsAsCertainAsTheLowestFeedItWasMadeFrom": {
+   "kind": "test",
+   "hash": "c445a41d38247edd",
+   "asserts": 2,
+   "literals": [
+    "959a26f8821bea8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-365"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestALinkOfTwoApproximateFeedsIsAssumedAndKeepsItsBasis": {
+   "kind": "test",
+   "hash": "974cd8d6f5841511",
+   "asserts": 5,
+   "literals": [
+    "7a21e4118c6b2a08"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-363"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAnEmptyNaturalKeyIsReportedWithTheColumnThatIsEmpty": {
    "kind": "test",
    "hash": "582679ad7341c93e",
@@ -14533,6 +14654,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAnEmptyRequiredAttributeAndAWrongOneGiveTheSameObject": {
+   "kind": "test",
+   "hash": "6b676223bd172f1f",
+   "asserts": 4,
+   "literals": [
+    "16b615217fcb8939"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-358"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAnInvalidValueIsReportedWithOneCodePrefix": {
    "kind": "test",
    "hash": "0def96f5a56ef2b4",
@@ -14544,6 +14680,21 @@
    "skips": 0,
    "reqs": [
     "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestARowThatWasNeverAnObjectDoesNotBecomeOneByBeingFiltered": {
+   "kind": "test",
+   "hash": "a0e7c37bcd19caab",
+   "asserts": 2,
+   "literals": [
+    "aec794d0883c7a58"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-360"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -14593,6 +14744,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAValueThatTurnsWrongIsAsIfTheCellWereEmpty": {
+   "kind": "test",
+   "hash": "de3527de6957ab1c",
+   "asserts": 5,
+   "literals": [
+    "77706bd6585d2167"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-358"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAVanishedRowAndAFilteredRowAreWaitingObjectsInTheSameCount": {
+   "kind": "test",
+   "hash": "d1df49048ee865ff",
+   "asserts": 2,
+   "literals": [
+    "f61bcfc5cf7a8527"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-360"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAWorkbookThatCannotBeReadStopsTheRunWithTheDatasetAndTheReason": {
    "kind": "test",
    "hash": "036f077b7ec3b2d5",
@@ -14608,12 +14789,57 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestBadRowsAreQuarantined": {
+  "go:backend/internal/ingest::TestAWrongCellDoesNotRetireTheObjectOfARowThatWasGood": {
    "kind": "test",
-   "hash": "e3cbdff982e1eb1d",
+   "hash": "80c34bff8d58e892",
+   "asserts": 2,
+   "literals": [
+    "770ed5fb8290ee94"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-358"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAWrongCellLeavesOutTheValueAndKeepsTheObjectAndItsLinks": {
+   "kind": "test",
+   "hash": "1c62cd8d553f0198",
+   "asserts": 8,
+   "literals": [
+    "736a86db1ea55354"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-358"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAWrongCellOfAnIdentityKeyStillMakesNoObject": {
+   "kind": "test",
+   "hash": "6888b6451bbb69c0",
    "asserts": 5,
    "literals": [
-    "4dacfd889a53a869"
+    "e1307282c42bce95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-358"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestBadRowsAreQuarantined": {
+   "kind": "test",
+   "hash": "b52c864a183fb781",
+   "asserts": 4,
+   "literals": [
+    "ec5f854861e46fdf"
    ],
    "precision": [],
    "skips": 0,
@@ -14621,7 +14847,7 @@
     "REQ-268"
    ],
    "added": "2026-11-14",
-   "amended_by": null
+   "amended_by": "0052-ingestion-semantics-that-do-not-go-wrong-quietly.md"
   },
   "go:backend/internal/ingest::TestCellsOfEveryBaseKindAreConvertedOrReported": {
    "kind": "test",
@@ -14852,6 +15078,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestInAndNotInSetAsideTheSpacesAtTheEnds": {
+   "kind": "test",
+   "hash": "41d5697f75b8a097",
+   "asserts": 1,
+   "literals": [
+    "7a8065cd6b69dbba"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-362"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestIncompleteCaptureDoesNotCountAbsence": {
    "kind": "test",
    "hash": "d50da59d221718f0",
@@ -14909,6 +15150,21 @@
    "reqs": [
     "REQ-265",
     "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestMendingTheFilterInTimeKeepsEverythingAndRestartsTheCount": {
+   "kind": "test",
+   "hash": "8a878bbb027fe373",
+   "asserts": 3,
+   "literals": [
+    "bde7ce7932bfa0a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-360"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -15244,6 +15500,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheKeyNameTakesNoPartInWhichObjectARowIs": {
+   "kind": "test",
+   "hash": "fc02d9e36213be55",
+   "asserts": 3,
+   "literals": [
+    "cd4b2278923c8e47"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-359"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas": {
    "kind": "test",
    "hash": "10d3d38a9be8eada",
@@ -15255,6 +15526,21 @@
    "skips": 0,
    "reqs": [
     "REQ-331"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTheRowLimitHasADefaultLikeTheSheetsAndCannotBeNegative": {
+   "kind": "test",
+   "hash": "d9ebdd6d816ed23c",
+   "asserts": 3,
+   "literals": [
+    "69dbe52252140a8b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-361"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -15300,6 +15586,21 @@
    "skips": 0,
    "reqs": [
     "REQ-325"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestUnreadableLinesCountForTheRowLimit": {
+   "kind": "test",
+   "hash": "8bd156110b151323",
+   "asserts": 2,
+   "literals": [
+    "c9d63a2148183967"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-361"
    ],
    "added": "2026-11-14",
    "amended_by": null

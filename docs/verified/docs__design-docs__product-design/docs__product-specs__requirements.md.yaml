@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "aee23f9ee4af03e4"
+hash: "80f57bfe1adceafa"
 date: "2026-11-14"
-note: "요구사항 342~349(조직 속성의 모델)와 350~357(영향 범위 화면의 부품)이 함께 들어감. 둘 다 제품 설계 개요가 이미 다루는 순서 안의 기능이고 개요의 범위와 용어는 바뀌지 않아 그대로 둠"
+note: "영향 범위 화면(ADR-0051) 병합 뒤 REQ-300~365의 공존을 다시 대조해 확인함"
 text_changed: true
 doc_hash: "019854b80cb4930e"

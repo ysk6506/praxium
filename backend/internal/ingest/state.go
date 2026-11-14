@@ -32,10 +32,14 @@ type Unseen struct {
 
 // DatasetState is what the pipeline keeps of one dataset between runs.
 type DatasetState struct {
-	Open        map[string]*RawRecord `json:"open"`
-	Closed      []RawRecord           `json:"closed,omitempty"`
-	Unseen      map[string]Unseen     `json:"unseen,omitempty"`
-	LastCapture string                `json:"last_capture,omitempty"`
+	Open   map[string]*RawRecord `json:"open"`
+	Closed []RawRecord           `json:"closed,omitempty"`
+	Unseen map[string]Unseen     `json:"unseen,omitempty"`
+	// Filtered counts, for a row a rule of the mapping filters out, how many runs in a row filtered it and since
+	// when. A row that is filtered out is treated as a row that is gone from the file: the object it made is closed
+	// only after the same number of runs and the same time as for a row that vanished (ADR-0052).
+	Filtered    map[string]Unseen `json:"filtered,omitempty"`
+	LastCapture string            `json:"last_capture,omitempty"`
 }
 
 // ObjectInfo is what the pipeline knows of an object it made. Retirable is set once a feed that may retire

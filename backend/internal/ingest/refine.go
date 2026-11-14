@@ -42,17 +42,24 @@ func checkFunc(op Op) error {
 	return kernel.Errorf(kernel.CodeUnsupported, "function %q is not in the closed list (trim, lower, upper, map)", op.Func)
 }
 
-// keep says whether a row passes the filter of an operation.
+// keep says whether a row passes the filter of an operation. The spaces at both ends of the cell and of the listed
+// values are of no account (as for not_empty and for the natural key), so "on " is in ["on"] (ADR-0052).
 func (op Op) keep(cell string) bool {
+	trimmed := strings.TrimSpace(cell)
 	switch {
-	case op.NotEmpty && strings.TrimSpace(cell) == "":
+	case op.NotEmpty && trimmed == "":
 		return false
-	case len(op.In) > 0 && !slices.Contains(op.In, cell):
+	case len(op.In) > 0 && !listed(op.In, trimmed):
 		return false
-	case len(op.NotIn) > 0 && slices.Contains(op.NotIn, cell):
+	case len(op.NotIn) > 0 && listed(op.NotIn, trimmed):
 		return false
 	}
 	return true
+}
+
+// listed tells whether a value is one of the listed values, the spaces at the ends of the listed ones set aside.
+func listed(list []string, trimmed string) bool {
+	return slices.ContainsFunc(list, func(v string) bool { return strings.TrimSpace(v) == trimmed })
 }
 
 // rewrite gives the cell after a fill or a replace.
@@ -80,11 +87,13 @@ func (op Op) rewrite(cell string) string {
 }
 
 // refineRows runs the operations of a refinement over rows. The rows it drops are returned by key with the
-// operation that dropped them (the row count of pipeline.md 7 says "filtered by a rule", and which). Rows are
-// copied only when a cell changes, so the input is never touched.
-func refineRows(r Refinement, rows []Row) (kept []Row, dropped map[string]string) {
+// operation that dropped them (the row count of pipeline.md 7 says "filtered by a rule", and which). A dropped row
+// is not forgotten: it goes on through the operations that rewrite cells and comes out in held, together with the
+// rows an earlier refinement dropped (heldIn), so the run can tell whether an object lives only by rows a rule
+// filtered (ADR-0052). Rows are copied only when a cell changes, so the input is never touched.
+func refineRows(r Refinement, rows, heldIn []Row) (kept, held []Row, dropped map[string]string) {
 	dropped = map[string]string{}
-	kept = rows
+	kept, held = rows, slices.Clone(heldIn)
 	for i, op := range r.Ops {
 		next := make([]Row, 0, len(kept))
 		for _, row := range kept {
@@ -94,15 +103,32 @@ func refineRows(r Refinement, rows []Row) (kept []Row, dropped map[string]string
 					next = append(next, row)
 				} else {
 					dropped[row.Key] = r.ID + "#" + itoa(i+1)
+					held = append(held, row)
 				}
 				continue
 			}
-			if to := op.rewrite(cell); to != cell {
-				row = row.with(op.Column, to)
-			}
-			next = append(next, row)
+			next = append(next, op.rewritten(row, cell))
 		}
 		kept = next
+		if op.Op != OpFilter {
+			held = rewriteAll(op, held)
+		}
 	}
-	return kept, dropped
+	return kept, held, dropped
+}
+
+// rewritten gives the row after a fill or a replace of its cell.
+func (op Op) rewritten(row Row, cell string) Row {
+	if to := op.rewrite(cell); to != cell {
+		return row.with(op.Column, to)
+	}
+	return row
+}
+
+func rewriteAll(op Op, rows []Row) []Row {
+	out := make([]Row, len(rows))
+	for i, row := range rows {
+		out[i] = op.rewritten(row, row.Fields[op.Column])
+	}
+	return out
 }
