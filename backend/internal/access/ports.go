@@ -31,6 +31,8 @@ type Subject struct {
 	ID          string
 	DisplayName string
 	Roles       []Role
+	// TokenID names the access token the subject presented, when there is one.
+	TokenID string
 }
 
 // Holds reports whether the subject has the role.
