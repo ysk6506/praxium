@@ -1,0 +1,7 @@
+doc: "docs/guides/release.md"
+target: "docs/design-docs/adr/0039-release-build-for-five-targets-with-a-reproducible-program.md"
+hash: "c2d307a2bbea0868"
+date: "2026-11-14"
+note: "용어 수정(시험을 테스트로) 뒤 다시 확인"
+text_changed: true
+doc_hash: "b0189732303b6a9f"

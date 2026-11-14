@@ -30,7 +30,7 @@ import (
 // version is set at build time: go build -ldflags "-X main.version=1.2.3".
 var version = "dev"
 
-const usage = "usage: praxium <api|worker|query|collector>\n       praxium demo [flags]\n       praxium worldgen [flags]\n       praxium --version\n"
+const usage = "usage: praxium <api|worker|query|collector>\n       praxium demo [flags]\n       praxium worldgen [flags]\n       praxium version\n       praxium --version\n"
 
 // Exit codes of the command.
 const (
@@ -74,6 +74,9 @@ func run(args []string, stdout, stderr io.Writer, d deps) int {
 	if len(args) == 1 && (args[0] == "--version" || args[0] == "-version") {
 		fmt.Fprintf(stdout, "praxium %s\n", version)
 		return exitOK
+	}
+	if len(args) == 1 && args[0] == "version" {
+		return runVersion(stdout)
 	}
 	if len(args) > 0 && args[0] == "worldgen" {
 		return runWorldgen(args[1:], stdout, stderr, d)

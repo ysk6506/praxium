@@ -132,6 +132,8 @@ jobs:
   # backend/go.sum is the only proof of what the one third-party module contains, and it was first written without
   # the checksum database (ADR-0032). This job asks the official database for the same lines: scripts/verify-go-sum.sh
   # rebuilds go.sum in an empty module cache against the default proxy and database and fails when it differs.
+  # The same job compiles the program for every release target (ADR-0039), so a change that only breaks Windows or
+  # macOS fails here and not at the first tag. It takes about two minutes on a cold cache and no other job waits for it.
   go-sum:
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
@@ -144,6 +146,8 @@ jobs:
           go-version-file: backend/go.mod
           cache: false
       - run: scripts/verify-go-sum.sh
+      - name: Every release target compiles
+        run: scripts/release-build.sh --compile-only
 
   # The light path: structure checks without coverage.
   docs:

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "cf9685ed8d7eaf37"
+hash: "7914b9d9328214f0"
 date: "2026-11-14"
-note: "요구사항에 REQ-280~281(데모 모드)이 더해졌다. 제품 설계의 원칙과 순서는 바뀌지 않아 본문은 그대로 둔다"
+note: "요구사항 표에서 REQ-280~281과 REQ-282~283의 순서만 바꿨고 내용은 그대로임을 다시 읽어 확인"
 text_changed: true
 doc_hash: "06412a77a9acc006"

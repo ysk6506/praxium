@@ -1,0 +1,7 @@
+doc: "docs/guides/release.md"
+target: "scripts/release-smoke.sh"
+hash: "3483ad3ffc60259f"
+date: "2026-11-14"
+note: "스모크 확인에 demo를 더한 것을 반영"
+text_changed: true
+doc_hash: "2bec4635d1355b17"
