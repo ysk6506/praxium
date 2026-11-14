@@ -16,13 +16,14 @@ updates_docs:
   - docs/design-docs/temporary-console.md
   - docs/product-specs/requirements.md
 touches_protected:
+  - docs/design-docs/adr/0038-demo-mode-as-a-supported-feature.md
   - docs/product-specs/requirements.md
   - harness/config/coverage-floor.json
   - harness/config/test-lock.json
 amends:
   - adr: "0038"
     what: 5번과 6번의 접속 링크 처리(첫 로드에서만 받던 것을 실행 중에도 받고, 로컬 모드 링크와 접속 표시를 더함)
-decision_hash: 2978016b15b3141d
+decision_hash: b541a6ec01262ff8
 ---
 # ADR-0042 웹 UI의 접속 방식 표시, URL에 담는 상태, 오류 표시, 표시 이름 사전
 
@@ -53,6 +54,7 @@ decision_hash: 2978016b15b3141d
 
 | 경로 | 바뀐 것 | 이유 |
 |---|---|---|
+| `docs/design-docs/adr/0038-demo-mode-as-a-supported-feature.md` | 앞선 결정의 수정 표시(`amended_by`) | 이 결정이 0038의 5번과 6번을 일부 바꾼다(`link-amends`) |
 | `docs/product-specs/requirements.md` | REQ-296~299 추가 | 요구사항 표의 변화 |
 | `harness/config/coverage-floor.json` | `web.data` 96에서 97, `web.ui` 96에서 98 | 새 테스트로 오른 측정값을 따라 하한을 올렸다(`pnpm ratchet`, `COV006`). 낮춘 것은 없다 |
 | `harness/config/test-lock.json` | 새 테스트의 지문과 위 한 건의 해시 | 새 테스트의 잠금(`pnpm lock-tests`), 바뀐 한 건(`--amend`) |
