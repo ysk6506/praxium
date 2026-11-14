@@ -3693,6 +3693,97 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestFilesThatAreNoWorkbookGiveAClearErrorWhateverTheyAreNamed": {
+   "kind": "test",
+   "hash": "891b02e0b6f20e76",
+   "asserts": 4,
+   "literals": [
+    "2eefe4c12a85a738"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285",
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestFormatIsToldByTheContentFirstThenTheNameThenTheFirstCharacter": {
+   "kind": "test",
+   "hash": "11751ef7b0cad8d0",
+   "asserts": 1,
+   "literals": [
+    "6d5ed4615952f100"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectReadsCSVAndJSONLinesAndSaysWhatItDoesNotUnderstand": {
+   "kind": "test",
+   "hash": "158baef4f744bbd4",
+   "asserts": 5,
+   "literals": [
+    "63edea5aee9cffc8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectRefusesBadFlagsMissingAndTooLargeFiles": {
+   "kind": "test",
+   "hash": "684999e229163a16",
+   "asserts": 5,
+   "literals": [
+    "b024d987dfb788db"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectShowsTheSheetsColumnsAndFirstRowsOfAWorkbook": {
+   "kind": "test",
+   "hash": "74375f2eb0f19fd5",
+   "asserts": 7,
+   "literals": [
+    "bdfb9cbf8c56cc86"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInspectTableMarksHiddenColumnsAndUnreadableRows": {
+   "kind": "test",
+   "hash": "2f3a8490704e9205",
+   "asserts": 2,
+   "literals": [
+    "bd92f5fa28623c0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunListsAtMostTwentyProblems": {
    "kind": "test",
    "hash": "5566c902fd5c9d97",
@@ -3705,6 +3796,22 @@
    "reqs": [
     "REQ-268",
     "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunReadsAWorkbookAndShowsWhereWhatWentWrongIs": {
+   "kind": "test",
+   "hash": "96cea6312ee9ef4b",
+   "asserts": 3,
+   "literals": [
+    "9ae55d486e340361"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286",
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -3751,6 +3858,21 @@
    "reqs": [
     "REQ-268",
     "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunStopsAtALimitOfTheSourceAndNamesIt": {
+   "kind": "test",
+   "hash": "082816416197f389",
+   "asserts": 4,
+   "literals": [
+    "0b3da4a143b7966b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6131,6 +6253,51 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestADataRangeLimitsTheRowsAndColumnsRead": {
+   "kind": "test",
+   "hash": "a057c9b59570a82a",
+   "asserts": 2,
+   "literals": [
+    "73666e55494bd80a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestADateWithoutATimeIsMidnightForAPropertyOfTime": {
+   "kind": "test",
+   "hash": "49238d395f9ff4a1",
+   "asserts": 5,
+   "literals": [
+    "e264efd01ae73157"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
+   "kind": "test",
+   "hash": "40836a2338ae3490",
+   "asserts": 3,
+   "literals": [
+    "c6abe6714bcf6e1a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAttachFeedMergesTwoFiles": {
    "kind": "test",
    "hash": "30c29e365dafb577",
@@ -6142,6 +6309,21 @@
    "skips": 0,
    "reqs": [
     "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAWorkbookThatCannotBeReadStopsTheRunWithTheDatasetAndTheReason": {
+   "kind": "test",
+   "hash": "036f077b7ec3b2d5",
+   "asserts": 4,
+   "literals": [
+    "8a2d87e8dc45e3bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6173,6 +6355,21 @@
    "reqs": [
     "REQ-263",
     "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCellsThatGaveNoValueAreListedWithTheirAddress": {
+   "kind": "test",
+   "hash": "43e99124baaa1355",
+   "asserts": 3,
+   "literals": [
+    "e18d521b56ea2568"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6223,6 +6420,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestDataEndsAfterEnoughBlankRows": {
+   "kind": "test",
+   "hash": "17bc549e271a083c",
+   "asserts": 2,
+   "literals": [
+    "66f51cb778d2927e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestFirstRun": {
    "kind": "test",
    "hash": "b6f21715f4921949",
@@ -6234,6 +6446,51 @@
    "skips": 0,
    "reqs": [
     "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHeaderOfTwoRowsIsJoinedAndMergedGroupsSpanTheirColumns": {
+   "kind": "test",
+   "hash": "8b967b9679e43d8d",
+   "asserts": 2,
+   "literals": [
+    "0af78ac820c246a7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHeadersAreNormalizedAndAliasesAreUsed": {
+   "kind": "test",
+   "hash": "d7bb8aa277728548",
+   "asserts": 3,
+   "literals": [
+    "b244b00dd5067867"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHiddenRowsAreReadAndCountedOrSkipped": {
+   "kind": "test",
+   "hash": "026184ba00eb7ed6",
+   "asserts": 2,
+   "literals": [
+    "5268fd2f98734e18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6285,6 +6542,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestInspectRefusesWhatItCannotReadAndNamesTheSheetsThereAre": {
+   "kind": "test",
+   "hash": "f7c46e1827f466e5",
+   "asserts": 5,
+   "literals": [
+    "99e2971a1742705c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestLinkKeyTypeAndFilterTestsAreChecked": {
    "kind": "test",
    "hash": "50b2eb6a21e73343",
@@ -6316,6 +6588,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestMergedCellsAreFilledOrKeptInTheFirstCell": {
+   "kind": "test",
+   "hash": "79b6f62455af4c61",
+   "asserts": 1,
+   "literals": [
+    "db3bdaa71c4e2879"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestOneChangedRowChangesOneObject": {
    "kind": "test",
    "hash": "281a86fdfa283831",
@@ -6327,6 +6614,66 @@
    "skips": 0,
    "reqs": [
     "REQ-266"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileHelpers": {
+   "kind": "test",
+   "hash": "a0ab6328326366d6",
+   "asserts": 7,
+   "literals": [
+    "38fffb3eee95bed8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileOfACSVFileHasTheColumnsOfTheDesign": {
+   "kind": "test",
+   "hash": "879e7fb6a12f9e1f",
+   "asserts": 4,
+   "literals": [
+    "cee0ca0cd3c5e381"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileOfAJSONLinesFileFlattensPaths": {
+   "kind": "test",
+   "hash": "3a0341ab432bcb91",
+   "asserts": 3,
+   "literals": [
+    "1a62449e63f2c466"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestProfileOfAWorkbookListsSheetsAndGuessesTheHeader": {
+   "kind": "test",
+   "hash": "6853991226f346a0",
+   "asserts": 9,
+   "literals": [
+    "9c2322974afb0f77"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-288"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6388,6 +6735,21 @@
    "skips": 0,
    "reqs": [
     "REQ-264"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowProblemsOfAWorkbookCarryTheRangeOfTheRow": {
+   "kind": "test",
+   "hash": "97a3190287c3c0b5",
+   "asserts": 2,
+   "literals": [
+    "1871617637663357"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6467,6 +6829,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestSheetAddressesAreQuotedLikeExcelDoes": {
+   "kind": "test",
+   "hash": "a2f7f08178215ab1",
+   "asserts": 4,
+   "literals": [
+    "42738cc19e1163dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSheetOptionsAreChecked": {
+   "kind": "test",
+   "hash": "7151bdf3c5a785a8",
+   "asserts": 4,
+   "literals": [
+    "d081e3ab08196ad7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestSourceDefinitionRefusesWhatThisBuildLacks": {
    "kind": "test",
    "hash": "d1e690334b8d0845",
@@ -6497,6 +6889,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheSheetIsPickedByNameByPlaceOrFirstAndMissingOnesAreSaid": {
+   "kind": "test",
+   "hash": "65be25ccebb4ee8f",
+   "asserts": 7,
+   "literals": [
+    "6328172e093e01c5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTitleAboveTheHeaderAndBlankRowsInTheMiddle": {
+   "kind": "test",
+   "hash": "c28b438d9e8a60d2",
+   "asserts": 3,
+   "literals": [
+    "8e33af487a793642"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestVanishedRowRetiresAfterThreeRunsAndADay": {
    "kind": "test",
    "hash": "5ccf529f798522b1",
@@ -6508,6 +6930,36 @@
    "skips": 0,
    "reqs": [
     "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestWhereARowStandsIsKeptWhenOnlyItsPlaceChanged": {
+   "kind": "test",
+   "hash": "de359e1d5b9d463b",
+   "asserts": 2,
+   "literals": [
+    "45838054e58b3a04"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestWorkbookRunReportsWhatWasReadAndWhereTheProblemsAre": {
+   "kind": "test",
+   "hash": "967bde1a0b31045e",
+   "asserts": 9,
+   "literals": [
+    "ddba3cb8a58d7700"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-287"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6572,6 +7024,38 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingestcheck::TestMergedCellsKeptInTheFirstCellLeaveTheOthersWithoutAnIdentityAndSaySo": {
+   "kind": "test",
+   "hash": "336a85d859130293",
+   "asserts": 3,
+   "literals": [
+    "8f07614cc61e79d6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286",
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestMessyWorkbookGivesTheRowsExpectedAndReportsWhereTheProblemsAre": {
+   "kind": "test",
+   "hash": "1eab481e578a579f",
+   "asserts": 14,
+   "literals": [
+    "333716bc6a339aa4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286",
+    "REQ-287"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingestcheck::TestReingestingTheSameFilesChangesNothing": {
    "kind": "test",
    "hash": "8563e00c2a39f746",
@@ -6587,6 +7071,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingestcheck::TestReingestingTheSameWorkbookChangesNothing": {
+   "kind": "test",
+   "hash": "9ddc83c653b01224",
+   "asserts": 8,
+   "literals": [
+    "ed80faa0886d089c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284",
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingestcheck::TestVanishedRowIsRetiredAfterThreeCompleteCapturesAndADay": {
    "kind": "test",
    "hash": "e2fc622e272746a3",
@@ -6598,6 +7098,22 @@
    "skips": 0,
    "reqs": [
     "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestWorkbookOfTheWorldGivesTheSameKGAsTheCSVAndJSONLinesFiles": {
+   "kind": "test",
+   "hash": "081fa75c6bb1ec02",
+   "asserts": 11,
+   "literals": [
+    "6e50e113fcac867e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284",
+    "REQ-286"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -9402,6 +9918,201 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestAnArchiveThatLiesAboutItsSizeIsRefused": {
+   "kind": "test",
+   "hash": "65ec9db8d6a05dda",
+   "asserts": 3,
+   "literals": [
+    "4ffe3c12bf4afe68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestDatesFollowTheStyleAndTheDateSystem": {
+   "kind": "test",
+   "hash": "2dc5331aadfedc03",
+   "asserts": 2,
+   "literals": [
+    "a114a8920c6226bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestDefaultLimits": {
+   "kind": "test",
+   "hash": "8762ca68b400094b",
+   "asserts": 1,
+   "literals": [
+    "6044ca25dafe06cd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestFilesOverALimitAreRefusedAndTheErrorNamesTheLimit": {
+   "kind": "test",
+   "hash": "9401ffb85ba4b9d2",
+   "asserts": 4,
+   "literals": [
+    "dcd7bda01cc0cf31"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestFilesThatCannotBeReadAreRefusedWithAClearError": {
+   "kind": "test",
+   "hash": "2df2b10579f8fc0f",
+   "asserts": 10,
+   "literals": [
+    "45272b71f193b20d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestFormulaCellsGiveTheStoredValue": {
+   "kind": "test",
+   "hash": "e0e3ce68586ffd92",
+   "asserts": 2,
+   "literals": [
+    "0ce815272aa14c68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestHiddenSheetsRowsAndColumnsAreReadAndMarked": {
+   "kind": "test",
+   "hash": "47e43b2ec44c7690",
+   "asserts": 3,
+   "literals": [
+    "3b649fe4d81a50c3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestMacroPartsAndExternalLinksAreNotFollowed": {
+   "kind": "test",
+   "hash": "17fbaa09652613da",
+   "asserts": 2,
+   "literals": [
+    "bf09827082802ed3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestNumbersAreWrittenInPlainDecimalForm": {
+   "kind": "test",
+   "hash": "0ed492babcfd8b63",
+   "asserts": 2,
+   "literals": [
+    "b957cc401be49694"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestSameWorkbookWrittenByEachToolReadsTheSame": {
+   "kind": "test",
+   "hash": "bc7f4493ec129357",
+   "asserts": 6,
+   "literals": [
+    "0d2701e583afd77d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestSheetsAreFoundByRelationshipNotByFileName": {
+   "kind": "test",
+   "hash": "deeafe6312a093a1",
+   "asserts": 4,
+   "literals": [
+    "dcb48a1246939f52"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestStringsKeepTheirTextExactly": {
+   "kind": "test",
+   "hash": "d5b5cc9340db0125",
+   "asserts": 2,
+   "literals": [
+    "fbd3b52be29ee0d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-284"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestTheBudgetOfUnpackedBytesCountsWhatIsRead": {
+   "kind": "test",
+   "hash": "e372c5daafbd8d88",
+   "asserts": 1,
+   "literals": [
+    "c886b5eaaa8b1f30"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "harness/src/checks/api-assembled.test.ts::<import:30102eeb>": {

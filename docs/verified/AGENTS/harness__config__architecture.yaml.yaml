@@ -2,6 +2,6 @@ doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
 hash: "303098a5308533e2"
 date: "2026-11-14"
-note: "ADR-0040: checked against the xlsx source change (new unit adapter.xlsx, REQ-284~288, ingest inspect); this doc stays accurate"
+note: "ADR-0040: checked against the xlsx source change; this doc stays accurate"
 text_changed: true
-doc_hash: "49eacc4c42e7a6c8"
+doc_hash: "80f4987eb9e2a8ce"
