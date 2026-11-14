@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "7f073443ea4651ba"
+hash: "9839a897ab59c7ac"
 date: "2026-11-14"
-note: "main 병합 뒤 REQ-283 문구만 바뀜(메인 브랜치 실행 조건). 이 문서에 릴리스 내용 없음"
+note: "병합 뒤 요구사항 표를 다시 읽었다. 수집 사용성(REQ-320~331)과 병합된 변경이 제품 개요의 원칙과 순서에 영향이 없다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

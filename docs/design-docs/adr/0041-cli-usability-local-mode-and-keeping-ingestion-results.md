@@ -35,6 +35,9 @@ amends:
   - adr: "0040"
     what: 테스트용 워크북 작성기를 제품이 부르지 않는다는 문장
 decision_hash: d795851d2e5b9aff
+amended_by:
+  - adr: "0046"
+    what: ingest init의 CSV 예제가 합격 테스트의 샘플 파일과 같다는 결정
 ---
 # ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기
 

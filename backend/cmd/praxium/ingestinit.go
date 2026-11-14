@@ -20,7 +20,8 @@ const ingestInitBody = `Writes the examples of ingestion into a folder, so you c
 definition and a mapping definition for CSV and JSON Lines files with the sample files, and a source definition and
 a mapping definition for an Excel workbook with a sample workbook (made up, with a title above the header, a merged
 cell and a total row, as real sheets have). The files are made up; open them to see what a definition looks like, and
-copy and change them for your own files. It never overwrites: if one of the files is there, it stops.
+copy and change them for your own files. It also writes ingest-definitions.md, the guide to every field of the two
+definitions and every problem code. It never overwrites: if one of the files is there, it stops.
 
 Then it prints the commands to try next: ingest inspect, ingest run -data-dir and local.
 `
@@ -64,11 +65,12 @@ func exampleFiles() ([]exampleFile, error) {
 		return nil
 	}
 	steps := [][2]string{
-		{"csv/source.json", "testdata/source.json"}, {"csv/mapping.json", "testdata/mapping.json"},
+		{"csv/source.json", "samples-csv/source.json"}, {"csv/mapping.json", "samples-csv/mapping.json"},
 		{"excel/source.json", "samples-xlsx/source.json"}, {"excel/mapping.json", "samples-xlsx/mapping.json"},
+		{"ingest-definitions.md", "guide/ingest-definitions.md"},
 	}
 	for _, in := range csvExampleInputs {
-		steps = append(steps, [2]string{"csv/" + in.file, "testdata/sample/" + in.file})
+		steps = append(steps, [2]string{"csv/" + in.file, "samples-csv/sample/" + in.file})
 	}
 	for _, s := range steps {
 		if err := add(s[0], s[1]); err != nil {
@@ -95,10 +97,10 @@ func exampleWorkbook() ([]byte, error) {
 	servers := b.Sheet("서버 목록")
 	servers.Row(1, xlsx.Str("서버 목록 (예시)"))
 	servers.Row(2, xlsx.Str("합성한 값입니다. 머리글은 3행입니다."))
-	servers.Row(3, xlsx.Str("자산번호"), xlsx.Str("시리얼"), xlsx.Str("제조사"), xlsx.Str("랙"), xlsx.Str("전원"))
-	servers.Row(4, xlsx.Str("XS-4001"), xlsx.Str("SN-X100"), xlsx.Str("Zorvane"), xlsx.Str("XR-3001"), xlsx.Str("on"))
-	servers.Row(5, xlsx.Str("XS-4002"), xlsx.Str("SN-X200"), xlsx.Str("Zorvane"), xlsx.C{}, xlsx.Str("off"))
-	servers.Row(6, xlsx.Str("XS-4003"), xlsx.Str("SN-X300"), xlsx.Str("Kelmar"), xlsx.Str("XR-3002"), xlsx.Str("on"))
+	servers.Row(3, xlsx.Str("자산번호"), xlsx.Str("시리얼"), xlsx.Str("제조사"), xlsx.Str("랙"), xlsx.Str("전원"), xlsx.Str("BMC MAC"))
+	servers.Row(4, xlsx.Str("XS-4001"), xlsx.Str("SN-X100"), xlsx.Str("Zorvane"), xlsx.Str("XR-3001"), xlsx.Str("on"), xlsx.Str("02:00:00:00:40:01"))
+	servers.Row(5, xlsx.Str("XS-4002"), xlsx.Str("SN-X200"), xlsx.Str("Zorvane"), xlsx.C{}, xlsx.Str("off"), xlsx.Str("02:00:00:00:40:02"))
+	servers.Row(6, xlsx.Str("XS-4003"), xlsx.Str("SN-X300"), xlsx.Str("Kelmar"), xlsx.Str("XR-3002"), xlsx.Str("on"), xlsx.Str("02:00:00:00:40:03"))
 	servers.Row(7, xlsx.Str("합계"))
 	servers.Merges = []string{"D4:D5"}
 	return b.Bytes()
@@ -167,4 +169,5 @@ func printInitNext(out io.Writer, dir string, files []exampleFile) {
 		fmt.Fprintf(out, "     -input %s=%s%s", in.dataset, path.Join(csvDir, in.file), end)
 	}
 	fmt.Fprintf(out, "\n3. Look at the result in the web UI (open the address it prints):\n   praxium local -data-dir data\n")
+	fmt.Fprintf(out, "\nThe format of the two definitions, field by field, is in %s.\n", path.Join(dir, "ingest-definitions.md"))
 }

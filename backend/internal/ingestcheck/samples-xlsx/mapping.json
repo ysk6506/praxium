@@ -46,7 +46,8 @@
           ],
           "priority": 1
         }
-      ]
+      ],
+      "identifiers": [{ "scheme": "bmc_mac", "column": "bmc_mac" }]
     }
   ],
   "links": [

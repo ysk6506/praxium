@@ -130,7 +130,7 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 	contribs, err := d.values(fp, row, root)
 	if err != nil {
 		f.problem = true
-		d.problem(ProblemInvalidValue, root, fp.feed.ID, row, err.Error())
+		d.problem(ProblemInvalidValue, root, fp.feed.ID, row, chainText(err))
 		return nil
 	}
 	formed, why := formKeys(fp, d.p.reg, row)

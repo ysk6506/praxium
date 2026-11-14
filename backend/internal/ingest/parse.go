@@ -44,6 +44,8 @@ type Unreadable struct {
 	// Where is the cell that made the row unreadable, for a workbook (Servers!B12).
 	Where  string
 	Reason string
+	// Column is the natural key column that gave no value, for a row that is unreadable for that reason.
+	Column string
 }
 
 // Table is what parsing a capture gives: the rows read and the lines that could not be read.
@@ -57,6 +59,12 @@ type Table struct {
 	Extra []string
 	// Reason says why a table is unusable when it is not for a missing column (a sheet the workbook does not have).
 	Reason string
+	// Header is the names of the header the parser read (blank names left out) and HeaderRow the row of a sheet
+	// they were read from, so a message about missing columns can say what the file has. Hint is what the parser
+	// noticed about why the header may not be the one meant (a CSV that uses another delimiter).
+	Header    []string
+	HeaderRow int
+	Hint      string
 	// Sheet, SheetState and the counts that follow are those of a workbook: which sheet was read, whether it is
 	// hidden, how many hidden rows and hidden mapped columns were read, what was passed over and why, and the cells
 	// that gave no value.
@@ -83,6 +91,7 @@ func Parse(d Dataset, data []byte) Table {
 func parseCSV(d Dataset, data []byte) Table {
 	data = bytes.TrimPrefix(data, []byte("\xef\xbb\xbf"))
 	r := csv.NewReader(bytes.NewReader(data))
+	r.Comma = d.comma()
 	r.FieldsPerRecord = -1
 	r.LazyQuotes = true
 	var t Table
@@ -97,7 +106,9 @@ func parseCSV(d Dataset, data []byte) Table {
 	idx, missing := csvIndex(d, header)
 	t.Missing = missing
 	t.Extra = extraHeader(d, header)
+	t.Header = nonBlank(header)
 	if len(missing) > 0 {
+		t.Hint = delimiterHint(header, r.Comma)
 		return t
 	}
 	for {
@@ -176,7 +187,7 @@ func (t *Table) addRow(d Dataset, line int, fields map[string]string) {
 	for i, k := range d.NaturalKey {
 		parts[i] = strings.TrimSpace(fields[k])
 		if parts[i] == "" {
-			t.Unreadable = append(t.Unreadable, Unreadable{Line: line, Reason: "missing_natural_key"})
+			t.Unreadable = append(t.Unreadable, Unreadable{Line: line, Reason: "missing_natural_key", Column: k})
 			return
 		}
 	}
