@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "0546be4674972a57"
+hash: "9921f6de8e5b9b8d"
 date: "2026-11-14"
-note: "용어 정리 후 다시 확인함(ADR-0034 반영)"
+note: "main의 파일 스토어(ADR-0034)와 웹 UI(ADR-0035) 병합 뒤 대조했다"
 text_changed: true
 doc_hash: "06412a77a9acc006"
