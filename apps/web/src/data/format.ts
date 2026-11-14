@@ -29,7 +29,8 @@ export const gradeLabel = (grade: string | null | undefined): string =>
 export const basisLabel = (basis: string | null | undefined): string =>
   basis == null ? EMPTY_CELL : (BASIS_LABELS[basis] ?? basis);
 
-export const directionLabel = (direction: string): string => DIRECTION_LABELS[direction] ?? direction;
+export const directionLabel = (direction: string): string =>
+  DIRECTION_LABELS[direction] ?? direction;
 
 /** Which tone a grade gets in a badge. */
 export function gradeTone(grade: string | null | undefined): "ok" | "warn" | "neutral" {

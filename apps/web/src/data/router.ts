@@ -6,7 +6,12 @@ import { useCallback, useSyncExternalStore } from "react";
 
 export type ObjectTab = "attributes" | "identifiers" | "neighbors" | "evidence";
 
-export const OBJECT_TABS: readonly ObjectTab[] = ["attributes", "identifiers", "neighbors", "evidence"];
+export const OBJECT_TABS: readonly ObjectTab[] = [
+  "attributes",
+  "identifiers",
+  "neighbors",
+  "evidence",
+];
 
 export type Route =
   | { readonly page: "settings" }

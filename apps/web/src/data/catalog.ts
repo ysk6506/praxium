@@ -1,6 +1,14 @@
 /** What exists: the KGs, and the object types of the model with how many objects of each a KG holds. */
 import { useCallback } from "react";
-import { askFind, getObjectType, type KG, listKGs, listObjectTypes, type ObjectType, type ObjectTypeSummary } from "../api";
+import {
+  askFind,
+  getObjectType,
+  type KG,
+  listKGs,
+  listObjectTypes,
+  type ObjectType,
+  type ObjectTypeSummary,
+} from "../api";
 import { type AsyncResult, useAsync } from "./useAsync";
 
 /** The largest page the API gives (the contract's limit), enough for every KG and every type of the model. */
@@ -8,7 +16,8 @@ export const MAX_PAGE = 1000;
 
 export function useKgs(): AsyncResult<readonly KG[]> {
   const load = useCallback(
-    async (client: Parameters<typeof listKGs>[0]) => (await listKGs(client, { query: { limit: MAX_PAGE } })).data,
+    async (client: Parameters<typeof listKGs>[0]) =>
+      (await listKGs(client, { query: { limit: MAX_PAGE } })).data,
     [],
   );
   return useAsync(load);
@@ -39,7 +48,12 @@ export function joinTypes(
       parent: t.parent,
       count: byName.get(t.name) ?? 0,
     }))
-    .sort((a, b) => a.layer.localeCompare(b.layer, "en") || b.count - a.count || a.name.localeCompare(b.name, "en"));
+    .sort(
+      (a, b) =>
+        a.layer.localeCompare(b.layer, "en") ||
+        b.count - a.count ||
+        a.name.localeCompare(b.name, "en"),
+    );
 }
 
 export function useTypeCatalog(kg: string): AsyncResult<readonly TypeEntry[]> {
@@ -59,7 +73,12 @@ export function useTypeCatalog(kg: string): AsyncResult<readonly TypeEntry[]> {
 export function useObjectTypeDetail(typeName: string): AsyncResult<ObjectType> {
   const load = useCallback(
     async (client: Parameters<typeof listKGs>[0]) =>
-      (await getObjectType(client, { path: { type_id: typeName }, query: { include: "effective_properties" } })).data,
+      (
+        await getObjectType(client, {
+          path: { type_id: typeName },
+          query: { include: "effective_properties" },
+        })
+      ).data,
     [typeName],
   );
   return useAsync(load);

@@ -15,7 +15,8 @@ export interface AsyncResult<T> {
   readonly reload: () => void;
 }
 
-const isAbort = (error: unknown): boolean => error instanceof DOMException && error.name === "AbortError";
+const isAbort = (error: unknown): boolean =>
+  error instanceof DOMException && error.name === "AbortError";
 
 /**
  * Run `load` when it changes (and the token), and again on `reload()`. Callers give `load` its identity with
@@ -40,7 +41,11 @@ export function useAsync<T>(
       })
       .catch((error: unknown) => {
         if (controller.signal.aborted || isAbort(error)) return;
-        setState((previous) => ({ status: "error", error: describeError(error), data: previous.data }));
+        setState((previous) => ({
+          status: "error",
+          error: describeError(error),
+          data: previous.data,
+        }));
       });
     return () => controller.abort();
   }, [load, token, enabled, round]);

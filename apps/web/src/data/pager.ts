@@ -15,7 +15,10 @@ export type PagerAction =
 
 export const PAGE_SIZES = [25, 50, 100] as const;
 
-export const initialPager = (limit: number = PAGE_SIZES[0]): PagerState => ({ limit, cursors: [undefined] });
+export const initialPager = (limit: number = PAGE_SIZES[0]): PagerState => ({
+  limit,
+  cursors: [undefined],
+});
 
 export function pagerReducer(state: PagerState, action: PagerAction): PagerState {
   switch (action.type) {
@@ -31,7 +34,8 @@ export function pagerReducer(state: PagerState, action: PagerAction): PagerState
 }
 
 /** The cursor of the current page. */
-export const currentCursor = (state: PagerState): string | undefined => state.cursors[state.cursors.length - 1];
+export const currentCursor = (state: PagerState): string | undefined =>
+  state.cursors[state.cursors.length - 1];
 
 /** The 1-based number of the current page. */
 export const pageNumber = (state: PagerState): number => state.cursors.length;

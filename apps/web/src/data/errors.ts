@@ -1,7 +1,14 @@
 /** Turns what went wrong into words a person can act on. The API sends codes; this is where they become Korean. */
 import { ApiError, CLIENT_CODES } from "../api";
 
-export type ErrorKind = "auth" | "permission" | "notFound" | "network" | "input" | "server" | "other";
+export type ErrorKind =
+  | "auth"
+  | "permission"
+  | "notFound"
+  | "network"
+  | "input"
+  | "server"
+  | "other";
 
 export interface ErrorView {
   readonly kind: ErrorKind;
@@ -59,14 +66,42 @@ const BY_CODE: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "messa
 };
 
 const BY_GROUP: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "message">>> = {
-  auth: { kind: "auth", title: "인증에 실패했습니다", message: "서버가 이 요청의 인증을 거절했습니다." },
-  permission: { kind: "permission", title: "권한이 없습니다", message: "이 요청을 할 권한이 없습니다." },
+  auth: {
+    kind: "auth",
+    title: "인증에 실패했습니다",
+    message: "서버가 이 요청의 인증을 거절했습니다.",
+  },
+  permission: {
+    kind: "permission",
+    title: "권한이 없습니다",
+    message: "이 요청을 할 권한이 없습니다.",
+  },
   not_found: { kind: "notFound", title: "찾을 수 없습니다", message: "요청한 항목이 없습니다." },
-  invalid_input: { kind: "input", title: "요청이 맞지 않습니다", message: "서버가 요청의 값을 받아들이지 않았습니다." },
-  conflict: { kind: "other", title: "충돌했습니다", message: "데이터가 바뀌어 요청을 처리하지 못했습니다." },
-  stale: { kind: "server", title: "데이터가 아직 준비되지 않았습니다", message: "요청한 시점의 데이터를 읽을 수 없습니다." },
-  rate_limited: { kind: "server", title: "요청이 너무 많습니다", message: "잠시 뒤에 다시 시도하세요." },
-  server: { kind: "server", title: "서버에 문제가 있습니다", message: "서버가 요청을 처리하지 못했습니다." },
+  invalid_input: {
+    kind: "input",
+    title: "요청이 맞지 않습니다",
+    message: "서버가 요청의 값을 받아들이지 않았습니다.",
+  },
+  conflict: {
+    kind: "other",
+    title: "충돌했습니다",
+    message: "데이터가 바뀌어 요청을 처리하지 못했습니다.",
+  },
+  stale: {
+    kind: "server",
+    title: "데이터가 아직 준비되지 않았습니다",
+    message: "요청한 시점의 데이터를 읽을 수 없습니다.",
+  },
+  rate_limited: {
+    kind: "server",
+    title: "요청이 너무 많습니다",
+    message: "잠시 뒤에 다시 시도하세요.",
+  },
+  server: {
+    kind: "server",
+    title: "서버에 문제가 있습니다",
+    message: "서버가 요청을 처리하지 못했습니다.",
+  },
 };
 
 /** An error of any kind as something to show. An abort is not an error and never reaches here. */

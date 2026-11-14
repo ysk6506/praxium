@@ -3,10 +3,12 @@ import type { Requester, RequestSpec } from "./client";
 import { operationTable } from "./generated/operation-table";
 import * as operations from "./generated/operations";
 
-const functions = Object.entries(operations).filter(
-  (entry): entry is [string, (client: Requester, args: unknown) => Promise<unknown>] =>
-    typeof entry[1] === "function",
-);
+type AnyOperation = (client: Requester, args: unknown) => Promise<unknown>;
+
+const functions = Object.entries(operations).filter(([, value]) => typeof value === "function") as [
+  string,
+  AnyOperation,
+][];
 
 describe("[REQ-276] the generated functions are the operations of the contract", () => {
   it("has one function for every operation in the table and none besides", () => {
