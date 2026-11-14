@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-follow.ts"
-hash: "33988bf9cc3ddda1"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+hash: "330bfd34b8224aaf"
+date: "2026-11-14"
+note: "checkFollows가 객체 항목도 따르는 관계로 세고 DOC001 항목 검사가 더해짐: follows 절에 recheck 항목을 적음"
 text_changed: true
-doc_hash: "57f525cdc5d61411"
+doc_hash: "af5c22dc328d7514"

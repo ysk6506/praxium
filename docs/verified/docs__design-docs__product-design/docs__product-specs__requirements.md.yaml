@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "78eb49b84220547c"
+hash: "8658d5730b9bbcf4"
 date: "2026-11-14"
-note: "요구사항 366~373(조직 속성의 명령줄과 시작 배선: model 명령, 매핑의 org 속성, --attr의 마지막 점)이 함께 들어감. 조직이 표준 모델에 자기 속성을 더하는 일은 개요가 이미 다루는 범위이고, 개요의 범위와 용어는 바뀌지 않아 그대로 둠"
+note: "main에 들어온 REQ-366~381(조직 속성 명령줄, 영향 범위 화면)과 이 변경의 REQ-394~396(문서 확인 시점)을 개요의 기둥, 원칙, 5절 단계, 지도와 대조했다. 개요는 이 요구사항들과 어긋나지 않아 고치지 않았다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-targets.ts"
-hash: "f45e75c9f45974ad"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
-text_changed: true
-doc_hash: "57f525cdc5d61411"
+hash: "980e96a46a4eca90"
+date: "2026-11-14"
+note: "follows 항목의 객체 형식(doc, recheck)과 change가 이기는 규칙을 읽는 코드: follows 절의 설명과 일치함을 대조"
+text_changed: false
+doc_hash: "af5c22dc328d7514"

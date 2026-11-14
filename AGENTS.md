@@ -86,7 +86,7 @@ CI가 병합 관문이다: main에는 풀 리퀘스트로만 반영되고, 필�
 | 추적 없는 `TODO` | `TODO(TD-NNNN)` + [부채 대장](docs/exec-plans/tech-debt.yaml) (`DEBT001`, Go는 `GODEBT001`) |
 | 내부에서 알게 된 사실(어느 조직이 무엇을 개발·운영하는지, 내부 시스템의 이름·구조·규모·제조사, 조직과 절차), 실제 데이터, 시크릿을 코드·문서·PR·이슈·커밋에 적기 | 리포지토리는 공개돼 있다. 기계가 구분하지 못하므로 작성하는 쪽이 지킨다. 요구사항의 형태로 바꿔 적고, 샘플은 합성한다 ([ADR-0003](docs/design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md)) |
 | `Date.now()`, `Math.random()`, Go의 `time.Now`, `os.Getenv`, `math/rand` 직접 사용 | `kernel`의 `Clock`/`Rng`를 주입받는다 (`ARCH052`, `GOARCH052`) |
-| 코드만 변경하고 문서 방치 | 문서가 `covers`한 코드나 `follows`한 문서가 변경되면 실패 (`DOC010`). 문서가 가리키는 경로·명령·코드·숫자가 없으면 실패 (`DOC094`, `DOC095`). 결정이 변경하는 문서를 같은 변경에서 수정하지 않으면 실패 (`DOC090`) |
+| 코드만 변경하고 문서 방치 | 문서가 `covers`한 코드나 `follows`한 문서가 변경되면 실패 (`DOC010`). `recheck: release`인 `follows`는 보통 검사에서 알림(`DOC103`)이고 릴리스 검사(`docs.ts --release`)에서 실패 (`DOC013`). 문서가 가리키는 경로·명령·코드·숫자가 없으면 실패 (`DOC094`, `DOC095`). 결정이 변경하는 문서를 같은 변경에서 수정하지 않으면 실패 (`DOC090`) |
 
 ## 설계할 때 (기계가 못 지키는 것)
 

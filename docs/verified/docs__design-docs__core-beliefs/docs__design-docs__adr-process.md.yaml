@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "docs/design-docs/adr-process.md"
-hash: "905db7f42e324ed2"
+hash: "af5c22dc328d7514"
 date: "2026-11-14"
-note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다."
-text_changed: true
+note: "adr-process.md는 follows 절에 recheck 항목 설명이 더해짐. 신념의 문서 최신 유지 원칙과 어긋나지 않음"
+text_changed: false
 doc_hash: "04b2f4f490642c38"

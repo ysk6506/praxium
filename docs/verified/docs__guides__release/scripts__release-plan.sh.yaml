@@ -1,7 +1,7 @@
 doc: "docs/guides/release.md"
 target: "scripts/release-plan.sh"
-hash: "524855d918da521f"
+hash: "041f4fddc10fae36"
 date: "2026-11-14"
-note: "메인 브랜치에서만 릴리스, 태그 확인 방식, 게시 뒤 확인을 가이드에 반영"
+note: "plan 단계가 게시하는 실행에서 릴리스 검사를 함: 5절 1번과 4절 확인 목록, 6절 실패 원인에 반영"
 text_changed: true
-doc_hash: "7b57d824dee1927e"
+doc_hash: "50cc4e220498dbe5"
