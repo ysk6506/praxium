@@ -20,7 +20,10 @@ func TestEveryCallAnswersAnErrorWhenTheStoreCannot(t *testing.T) {
 			return err
 		},
 		"list users": func() error { _, err := r.svc.ListPrincipals(r.ctx, access.SubjectPerson); return err },
-		"disable":    func() error { _, err := r.svc.DisablePrincipal(r.ctx, idtAdmin, access.SubjectPerson, "ann"); return err },
+		"disable": func() error {
+			_, err := r.svc.DisablePrincipal(r.ctx, idtAdmin, access.SubjectPerson, "ann")
+			return err
+		},
 		"issue": func() error {
 			_, err := r.svc.IssueToken(r.ctx, idtAdmin, access.TokenRequest{Owner: "ann"})
 			return err

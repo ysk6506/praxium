@@ -6150,10 +6150,10 @@
   },
   "go:backend/cmd/praxium::TestProductionSpeaksTLSWhenItIsGivenACertificate": {
    "kind": "test",
-   "hash": "9a4359858457f409",
+   "hash": "de40927d2a4158da",
    "asserts": 6,
    "literals": [
-    "10395d2713bcc15e"
+    "1e78da252a5d06ce"
    ],
    "precision": [],
    "skips": 0,
@@ -9203,7 +9203,7 @@
   },
   "go:backend/internal/identity::TestEveryCallAnswersAnErrorWhenTheStoreCannot": {
    "kind": "test",
-   "hash": "eb39c9f5adb0a6c2",
+   "hash": "a51dbc568705cc2a",
    "asserts": 4,
    "literals": [
     "24ce34ff1bcce4f2"

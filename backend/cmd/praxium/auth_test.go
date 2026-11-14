@@ -4,17 +4,18 @@ import (
 	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"crypto/sha256"
 	"crypto/tls"
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/pem"
 	"math/big"
-	"math/rand/v2"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -47,12 +48,24 @@ func athBootstrap(t *testing.T) (dir, token string) {
 	return dir, token
 }
 
+// athStream is a fixed stream of bytes: SHA-256 of a counter. It stands for system randomness where a test makes a key.
+type athStream struct{ n uint64 }
+
+func (s *athStream) Read(p []byte) (int, error) {
+	for i := 0; i < len(p); {
+		s.n++
+		sum := sha256.Sum256([]byte("praxium test stream " + strconv.FormatUint(s.n, 10)))
+		i += copy(p[i:], sum[:])
+	}
+	return len(p), nil
+}
+
 // athSelfSigned makes a certificate for 127.0.0.1 and the client that trusts it.
 func athSelfSigned(t *testing.T) (certPEM, keyPEM string, client *http.Client) {
 	t.Helper()
 	// A fixed stream: the key lives for one test and protects nothing, and a test that needs no system entropy is
 	// the same on every run (REQ-001).
-	stream := rand.NewChaCha8([32]byte{'p', 'r', 'a', 'x', 'i', 'u', 'm', ' ', 't', 'e', 's', 't', ' ', 'k', 'e', 'y'})
+	stream := &athStream{}
 	key, err := ecdsa.GenerateKey(elliptic.P256(), stream)
 	if err != nil {
 		t.Fatal(err)
