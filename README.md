@@ -172,7 +172,7 @@ The result is kept in data (KG main). Look at it with: praxium local -data-dir d
 | `demo` | 합성 데이터센터와 웹 UI를 띄웁니다 |
 | `local` | 내 파일로 만든 KG를 웹 UI와 API로 보여 줍니다 |
 | `ingest init`, `inspect`, `run` | 예제 만들기, 파일 살펴보기, 파일을 읽어 KG로 만들기 |
-| `kg`, `types`, `object`, `query` | 실행 중인 서버에 KG, 타입, 객체를 묻습니다. `query impact`는 장애가 번지는 범위를 계산합니다 |
+| `kg`, `types`, `object`, `query` | 실행 중인 서버에 KG, 타입, 객체를 묻습니다 |
 | `catalog` | 서버가 가진 목록(층, 값 타입, 링크 의미, 오류 코드 등)을 보여 줍니다 |
 | `health` | 서버가 살아 있고 준비됐는지 확인합니다. `--json`을 붙이면 상태 코드가 나옵니다 |
 | `version` | 버전을 보여 줍니다 |
