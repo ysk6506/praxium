@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "622225b636dd1b67"
+hash: "7f073443ea4651ba"
 date: "2026-11-14"
-note: "ADR-0042 병합 뒤 다시 읽었다. 이 문서와 main의 차이는 목표 문장(ADR-0037)뿐이고, requirements.md의 새 요구는 이 문서의 원칙과 순서에 영향이 없다"
+note: "main 병합 뒤 REQ-283 문구만 바뀜(메인 브랜치 실행 조건). 이 문서에 릴리스 내용 없음"
 text_changed: true
 doc_hash: "019854b80cb4930e"

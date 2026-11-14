@@ -5993,10 +5993,10 @@
   },
   "go:backend/cmd/praxium::TestReleasePlanDecidesTheModeTheTagAndTheCommit": {
    "kind": "test",
-   "hash": "eb87e18378ca4e6f",
+   "hash": "28ebfade345adf2a",
    "asserts": 4,
    "literals": [
-    "7b2d64b4de8bdf36"
+    "916828ae0892f88b"
    ],
    "precision": [],
    "skips": 0,
@@ -6008,10 +6008,25 @@
   },
   "go:backend/cmd/praxium::TestReleasePlanRefusesWhatIsNotSafeToRelease": {
    "kind": "test",
-   "hash": "b385a64ca8b76e95",
+   "hash": "064d3c86af7cc71d",
    "asserts": 3,
    "literals": [
-    "1cfaa0d7909be342"
+    "74bcb57b5a3ffd9c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishChecksTheCommitOfTheNewTag": {
+   "kind": "test",
+   "hash": "b449172fe2a425c7",
+   "asserts": 9,
+   "literals": [
+    "bb8374ff5eb84f89"
    ],
    "precision": [],
    "skips": 0,
@@ -6023,10 +6038,10 @@
   },
   "go:backend/cmd/praxium::TestReleasePublishForAManualReleaseTargetsTheCommitAndReadsTheNotesFile": {
    "kind": "test",
-   "hash": "b10b3fd017786b3e",
+   "hash": "d07cd7977e0d0658",
    "asserts": 16,
    "literals": [
-    "c0bef15538c96f85"
+    "2d45e43f24a951a5"
    ],
    "precision": [],
    "skips": 0,
@@ -6038,10 +6053,10 @@
   },
   "go:backend/cmd/praxium::TestReleasePublishForATagPushUsesGeneratedNotesAndChecksTheTag": {
    "kind": "test",
-   "hash": "d2e92c4882105105",
+   "hash": "f7fccc9eed7dd831",
    "asserts": 17,
    "literals": [
-    "d2bc956b2565cb54"
+    "59ca961f06b3786f"
    ],
    "precision": [],
    "skips": 0,
@@ -6053,10 +6068,10 @@
   },
   "go:backend/cmd/praxium::TestReleasePublishPublishesNothingWhenSomethingIsWrong": {
    "kind": "test",
-   "hash": "d99f05ae042e254a",
+   "hash": "c9f6c608f01ff6d1",
    "asserts": 9,
    "literals": [
-    "4f8f56c585cce3b1"
+    "110a25b2003f8c0b"
    ],
    "precision": [],
    "skips": 0,
@@ -6068,10 +6083,10 @@
   },
   "go:backend/cmd/praxium::TestReleasePublishTakesANotesFileWithoutFrontMatterAsItIs": {
    "kind": "test",
-   "hash": "c26d36928a11056f",
+   "hash": "4b57add4b0167b4d",
    "asserts": 7,
    "literals": [
-    "3cf076292d739b85"
+    "9a7588db9b6c440f"
    ],
    "precision": [],
    "skips": 0,

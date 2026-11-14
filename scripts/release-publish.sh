@@ -12,7 +12,7 @@
 # It checks the files against SHA256SUMS first. The notes are the body of docs/releases/<tag>.md of this checkout
 # (without its front matter) or, when there is no such file, the notes GitHub generates; either way the SHA256SUMS
 # lines follow in a code block, so the checksums can be read before anything is downloaded. A tag with a `-` in it is
-# marked as a pre-release. The title is the tag. Temporary files are removed when the script ends (ADR-0036).
+# marked as a pre-release. After a manual release it reads the commit of the new tag and fails when that is not SHA. The title is the tag. Temporary files are removed when the script ends (ADR-0036).
 set -euo pipefail
 
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -33,8 +33,16 @@ work="$(mktemp -d "${TMPDIR:-/tmp}/praxium-publish.XXXXXX")"
 trap 'rm -rf "$work"' EXIT
 
 # A tag may have been pushed after the plan was made; GitHub would then use that tag and not the commit that was built.
-if [ "$mode" = manual ] && gh api "repos/${GH_REPO:?GH_REPO is needed}/git/ref/tags/$tag" > /dev/null 2>&1; then
-  fail "the tag $tag exists now; nothing is published"
+# Only a 404 says the tag is not there: any other answer (an error, a timeout, no permission) is not an answer.
+if [ "$mode" = manual ]; then
+  repo="${GH_REPO:?GH_REPO is needed}"
+  status=0
+  answer="$(gh api -i "repos/$repo/git/ref/tags/$tag" 2>&1)" || status=$?
+  if [ "$status" = 0 ]; then
+    fail "the tag $tag exists now; nothing is published"
+  elif ! grep -Eq '^HTTP/[0-9.]+ 404( |$)' <<< "$answer"; then
+    fail "could not find out whether the tag $tag exists; nothing is published"
+  fi
 fi
 
 notes="$work/notes.md"
@@ -67,3 +75,9 @@ if [ "$mode" = manual ]; then flags+=(--target "$sha"); else flags+=(--verify-ta
 files=()
 for f in "$dir"/*; do files+=("$f"); done
 gh release create "$tag" "${files[@]}" --title "$tag" --notes-file "$notes" ${generate[@]+"${generate[@]}"} "${flags[@]}"
+
+# A manual release made the tag: it must point at the commit that was built (checked after the fact; nothing is deleted).
+if [ "$mode" = manual ]; then
+  at="$(gh api "repos/$repo/commits/$tag" --jq .sha)" || fail "the release $tag was made, but the commit of its tag could not be read; check it by hand"
+  [ "$at" = "$sha" ] || fail "the release $tag is on $at, not on the built commit $sha. Delete the release and the tag (gh release delete $tag --cleanup-tag) and run again"
+fi

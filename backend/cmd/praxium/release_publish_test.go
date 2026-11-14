@@ -13,12 +13,22 @@ import (
 const publishSHA = "0123456789abcdef0123456789abcdef01234567"
 
 // A gh that only writes down what it was asked: the arguments one per line in $GH_LOG, the notes file in
-// $GH_LOG.notes. `gh api` answers as $FAKE_API_EXISTS says (set: the tag exists).
+// $GH_LOG.notes. `gh api` answers about the tag as $FAKE_TAG says (exists, 404, 503, or anything else for a network
+// error; 404 when unset) and gives $FAKE_TAG_COMMIT as the commit of the tag.
 const fakeGH = `#!/usr/bin/env bash
 if [ "$1" = api ]; then
   echo "$*" >> "$GH_LOG.api"
-  [ -n "${FAKE_API_EXISTS:-}" ]
-  exit
+  case "$*" in
+    *git/ref/tags*)
+      case "${FAKE_TAG:-404}" in
+        exists) echo "HTTP/2.0 200 OK"; exit 0 ;;
+        404) echo "HTTP/2.0 404 Not Found"; echo "gh: Not Found (HTTP 404)" >&2; exit 1 ;;
+        503) echo "HTTP/2.0 503 Service Unavailable"; echo "gh: Service Unavailable (HTTP 503)" >&2; exit 1 ;;
+        *) echo "error connecting to api.github.com" >&2; exit 1 ;;
+      esac ;;
+    *commits/*) echo "${FAKE_TAG_COMMIT:?}"; exit 0 ;;
+  esac
+  exit 1
 fi
 printf '%s\n' "$@" > "$GH_LOG"
 while [ $# -gt 0 ]; do
@@ -83,7 +93,7 @@ func (k publishKit) run(t *testing.T, tag, mode string, more ...string) (string,
 	t.Helper()
 	cmd := exec.Command("bash", filepath.Join(k.tree, "scripts", "release-publish.sh"), k.files)
 	cmd.Env = releaseEnv(k.tmp, "TMPDIR="+k.tmp, "GH_LOG="+k.log,
-		"GH_REPO=example/praxium", "TAG="+tag, "SHA="+publishSHA, "MODE="+mode)
+		"GH_REPO=example/praxium", "FAKE_TAG_COMMIT="+publishSHA, "TAG="+tag, "SHA="+publishSHA, "MODE="+mode)
 	cmd.Env[0] = "PATH=" + k.bin + ":/usr/local/bin:/usr/bin:/bin"
 	cmd.Env = append(cmd.Env, more...)
 	out, err := cmd.CombinedOutput()
@@ -223,7 +233,9 @@ func TestReleasePublishPublishesNothingWhenSomethingIsWrong(t *testing.T) {
 		{"a file that was changed", func(t *testing.T, k publishKit) {
 			writeReleaseFile(t, filepath.Join(k.files, "praxium_0.2.0_windows_amd64.zip"), "changed")
 		}, "v0.2.0", "tag-push", nil, "do not match"},
-		{"a tag that exists by now", func(t *testing.T, k publishKit) {}, "v0.2.0", "manual", []string{"FAKE_API_EXISTS=1"}, "exists now"},
+		{"a tag that exists by now", func(t *testing.T, k publishKit) {}, "v0.2.0", "manual", []string{"FAKE_TAG=exists"}, "exists now"},
+		{"a tag check that failed with a server error", func(t *testing.T, k publishKit) {}, "v0.2.0", "manual", []string{"FAKE_TAG=503"}, "could not find out"},
+		{"a tag check that never got an answer", func(t *testing.T, k publishKit) {}, "v0.2.0", "manual", []string{"FAKE_TAG=down"}, "could not find out"},
 		{"a notes file with no text", func(t *testing.T, k publishKit) {
 			writeReleaseFile(t, filepath.Join(k.tree, "docs", "releases", "v0.2.0.md"), "---\ntitle: x\n---\n")
 		}, "v0.2.0", "manual", nil, "no text"},
@@ -244,5 +256,30 @@ func TestReleasePublishPublishesNothingWhenSomethingIsWrong(t *testing.T) {
 		if left := leftovers(t, k); len(left) != 0 {
 			t.Errorf("%s: temporary files were left: %v", c.name, left)
 		}
+	}
+}
+
+// [REQ-283]
+func TestReleasePublishChecksTheCommitOfTheNewTag(t *testing.T) {
+	k := newPublishKit(t)
+	if out, err := k.run(t, "v0.2.0", "manual"); err != nil {
+		t.Fatalf("a tag on the built commit: %v\n%s", err, out)
+	}
+	api, err := os.ReadFile(k.log + ".api")
+	if err != nil || !strings.Contains(string(api), "repos/example/praxium/commits/v0.2.0") {
+		t.Errorf("the script did not read the commit of the tag: %v %q", err, api)
+	}
+	other := strings.Repeat("f", 40)
+	k = newPublishKit(t)
+	out, err := k.run(t, "v0.2.0", "manual", "FAKE_TAG_COMMIT="+other)
+	if err == nil || !strings.Contains(out, "is on "+other) || !strings.Contains(out, "gh release delete v0.2.0 --cleanup-tag") {
+		t.Errorf("a tag on another commit: err = %v, output %q", err, out)
+	}
+	if args := k.ghArgs(t); args == nil {
+		t.Errorf("the release should have been made before the check")
+	}
+	k = newPublishKit(t)
+	if out, err := k.run(t, "v0.2.0-alpha.1", "tag-push", "FAKE_TAG_COMMIT="+other); err != nil {
+		t.Errorf("a tag push does not check the commit of the tag: %v\n%s", err, out)
 	}
 }

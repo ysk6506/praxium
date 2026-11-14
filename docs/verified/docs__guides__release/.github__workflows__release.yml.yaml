@@ -1,7 +1,7 @@
 doc: "docs/guides/release.md"
 target: ".github/workflows/release.yml"
-hash: "27008c48ed32d07c"
+hash: "39287906809d576d"
 date: "2026-11-14"
-note: "ADR-0047: 수동 실행의 입력과 검증, 릴리스 노트 위치, 두 방법으로 절을 다시 씀"
+note: "메인 브랜치에서만 릴리스, 태그 확인 방식, 게시 뒤 확인을 가이드에 반영"
 text_changed: true
-doc_hash: "8e18fd6500a52170"
+doc_hash: "7b57d824dee1927e"

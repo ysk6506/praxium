@@ -86,15 +86,17 @@ func TestReleasePlanDecidesTheModeTheTagAndTheCommit(t *testing.T) {
 			"tag-push", "v0.1.0-alpha.1", r.sideOnly, "true", ""},
 		{"no version builds a snapshot of the tip of the branch", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.sideOnly},
 			"snapshot", "", r.sideOnly, "false", ""},
+		{"a snapshot may be run on any ref", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.sideOnly, "RUN_REF=refs/heads/side"},
+			"snapshot", "", r.sideOnly, "false", ""},
 		{"a snapshot may name a commit", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "INPUT_COMMIT=" + r.sideOnly},
 			"snapshot", "", r.sideOnly, "false", ""},
-		{"a version without v gets the v", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "INPUT_VERSION=0.2.0", "INPUT_COMMIT=" + r.first},
+		{"a version without v gets the v", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/main", "INPUT_VERSION=0.2.0", "INPUT_COMMIT=" + r.first},
 			"manual", "v0.2.0", r.first, "true", ""},
-		{"a version with v is the same", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "INPUT_VERSION=v0.2.0-alpha.1", "INPUT_COMMIT=" + r.tip},
+		{"a version with v is the same", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/main", "INPUT_VERSION=v0.2.0-alpha.1", "INPUT_COMMIT=" + r.tip},
 			"manual", "v0.2.0-alpha.1", r.tip, "true", ""},
-		{"no commit is the tip of the branch that was run", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "INPUT_VERSION=0.2.0"},
+		{"no commit is the tip of the branch that was run", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/main", "INPUT_VERSION=0.2.0"},
 			"manual", "v0.2.0", r.tip, "true", ""},
-		{"an upper-case commit is the same commit", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "INPUT_VERSION=0.2.0", "INPUT_COMMIT=" + strings.ToUpper(r.first)},
+		{"an upper-case commit is the same commit", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/main", "INPUT_VERSION=0.2.0", "INPUT_COMMIT=" + strings.ToUpper(r.first)},
 			"manual", "v0.2.0", r.first, "true", ""},
 	}
 	for _, c := range cases {
@@ -113,7 +115,7 @@ func TestReleasePlanDecidesTheModeTheTagAndTheCommit(t *testing.T) {
 func TestReleasePlanRefusesWhatIsNotSafeToRelease(t *testing.T) {
 	r := newPlanRepo(t)
 	manual := func(more ...string) []string {
-		return append([]string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip}, more...)
+		return append([]string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/main"}, more...)
 	}
 	cases := []struct {
 		name string
@@ -130,7 +132,11 @@ func TestReleasePlanRefusesWhatIsNotSafeToRelease(t *testing.T) {
 		{"a branch name as the commit", manual("INPUT_VERSION=0.2.0", "INPUT_COMMIT=main"), "40-digit"},
 		{"a commit that is not in the repository", manual("INPUT_VERSION=0.2.0", "INPUT_COMMIT="+strings.Repeat("a", 40)), "not in this repository"},
 		{"a commit that is not on main", manual("INPUT_VERSION=0.2.0", "INPUT_COMMIT="+r.sideOnly), "not on the main branch"},
-		{"the tip of a branch that is not main", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.sideOnly, "INPUT_VERSION=0.2.0"}, "not on the main branch"},
+		{"the tip of a branch that is not main", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.sideOnly, "RUN_REF=refs/heads/main", "INPUT_VERSION=0.2.0"}, "not on the main branch"},
+		{"a version on another branch", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/side", "INPUT_VERSION=0.2.0"}, "run on the main branch"},
+		{"a version on a tag ref", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/tags/v0.1.0", "INPUT_VERSION=0.2.0"}, "run on the main branch"},
+		{"a version with no ref", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "INPUT_VERSION=0.2.0"}, "run on the main branch"},
+		{"a branch that only ends like main", []string{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/x/main", "INPUT_VERSION=0.2.0"}, "run on the main branch"},
 		{"a tag that exists", manual("INPUT_VERSION=v0.1.0", "INPUT_COMMIT="+r.tip), "already exists"},
 		{"a tag that exists, given without v", manual("INPUT_VERSION=0.1.0"), "already exists"},
 		{"a pushed tag that is not semantic versioning", []string{"EVENT_NAME=push", "REF_NAME=v1", "RUN_SHA=" + r.tip}, "semantic versioning"},

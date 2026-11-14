@@ -48,6 +48,7 @@ jobs:
           EVENT_NAME: ${{ github.event_name }}
           REF_NAME: ${{ github.ref_name }}
           RUN_SHA: ${{ github.sha }}
+          RUN_REF: ${{ github.ref }}
           INPUT_VERSION: ${{ inputs.version }}
           INPUT_COMMIT: ${{ inputs.commit }}
         run: scripts/release-plan.sh

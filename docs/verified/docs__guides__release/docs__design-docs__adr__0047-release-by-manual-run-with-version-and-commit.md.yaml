@@ -1,7 +1,7 @@
 doc: "docs/guides/release.md"
 target: "docs/design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md"
-hash: "6b97dedf32ecd263"
+hash: "2e49f15853b60a19"
 date: "2026-11-14"
-note: "ADR-0047 문구만 바뀜(용어). 가이드와 어긋나는 곳 없음을 다시 읽어 확인"
-text_changed: false
-doc_hash: "8e18fd6500a52170"
+note: "메인 브랜치에서만 릴리스, 태그 확인 방식, 게시 뒤 확인을 가이드에 반영"
+text_changed: true
+doc_hash: "7b57d824dee1927e"

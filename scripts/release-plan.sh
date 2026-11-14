@@ -8,11 +8,14 @@
 #   RUN_SHA        the commit the workflow run is on (the pushed tag's commit, or the tip of the chosen branch)
 #   INPUT_VERSION  manual run: the version (0.1.0-alpha.1 or v0.1.0-alpha.1); empty builds a snapshot, no release
 #   INPUT_COMMIT   manual run: the 40-digit SHA to release; empty is RUN_SHA
-#   MAIN_REF       the main branch (default refs/remotes/origin/main)
+#   RUN_REF        the ref the workflow was run on (github.ref, e.g. refs/heads/main or refs/tags/v1.0.0)
+#   MAIN_BRANCH    the ref a release may be run from (default refs/heads/main)
+#   MAIN_REF       the main branch to look for commits in (default refs/remotes/origin/main)
 #   GITHUB_OUTPUT  where the answers go (default: standard output)
 #
 # Answers (name=value lines): mode (tag-push, manual or snapshot), tag (v...; empty for a snapshot), sha, publish.
-# A manual release must be a commit of the main branch (an ancestor of its tip, or its tip), and its tag must not
+# A manual release must be run on the main branch (its scripts and notes are the ones that were reviewed and
+# merged; a snapshot may be run on any ref) and be a commit of the main branch (an ancestor of its tip, or its tip), and its tag must not
 # exist yet; a pushed tag is taken as it is. The tags that exist are those the checkout fetched.
 set -euo pipefail
 
@@ -21,6 +24,7 @@ fail() { echo "release-plan: $*" >&2; exit 1; }
 event="${EVENT_NAME:-}"
 run_sha="${RUN_SHA:-}"
 main_ref="${MAIN_REF:-refs/remotes/origin/main}"
+main_branch="${MAIN_BRANCH:-refs/heads/main}"
 semver='^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z]+(\.[0-9A-Za-z]+)*)?$'
 
 [[ "$run_sha" =~ ^[0-9a-fA-F]{40}$ ]] || fail "RUN_SHA is not a 40-digit commit"
@@ -47,6 +51,7 @@ case "$event" in
       version="${version#v}"
       [[ "$version" =~ $semver ]] || fail "the version '$version' is not semantic versioning (1.2.3 or 1.2.3-alpha.1)"
       tag="v$version"
+      [ "${RUN_REF:-}" = "$main_branch" ] || fail "a release is run on the main branch ($main_branch), not on '${RUN_REF:-}'; run the workflow on main, or leave the version empty for a snapshot"
       git rev-parse --verify --quiet "refs/tags/$tag" > /dev/null && fail "the tag $tag already exists; use the next version"
       git rev-parse --verify --quiet "$main_ref" > /dev/null || fail "the main branch ($main_ref) is not in the checkout"
       git merge-base --is-ancestor "$sha" "$main_ref" || fail "the commit $sha is not on the main branch; only a commit of main can be released"
