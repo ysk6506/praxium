@@ -1,6 +1,9 @@
 package model
 
-import "sort"
+import (
+	"fmt"
+	"sort"
+)
 
 // Stable numbers (REQ-233). A type, a link type and a property each get a
 // small positive integer that rows and projections use instead of the name.
@@ -70,7 +73,8 @@ func (c *checker) checkNumbers() {
 }
 
 // checkNumberKind checks the numbers written in the data: positive, unique,
-// not reserved. A zero is a number still to be assigned.
+// not reserved, and for a property in the range of its kind. A zero is a
+// number still to be assigned.
 func (c *checker) checkNumberKind(name string, slots []numberSlot, reserved []int) {
 	isReserved := map[int]bool{}
 	for _, no := range reserved {
@@ -86,18 +90,28 @@ func (c *checker) checkNumberKind(name string, slots []numberSlot, reserved []in
 		case no == 0:
 		case no < 0:
 			c.fail(CodeNumber, "%s has %s %d, which is not positive", slot.use, name, no)
-		case slot.ranged && slot.high && no < OrgNumberBase:
-			c.fail(CodeNumber, "%s has %s %d: an organisation property takes a number of %d or more", slot.use, name, no, OrgNumberBase)
-		case slot.ranged && !slot.high && no >= OrgNumberBase:
-			c.fail(CodeNumber, "%s has %s %d: a standard property takes a number below %d", slot.use, name, no, OrgNumberBase)
 		case isReserved[no]:
 			c.fail(CodeNumber, "%s has %s %d, which is reserved and never given again", slot.use, name, no)
 		case owner[no] != "":
 			c.fail(CodeNumber, "%s and %s have the same %s %d", owner[no], slot.use, name, no)
 		default:
 			owner[no] = slot.use
+			if problem := rangeProblem(slot, no); problem != "" {
+				c.fail(CodeNumber, "%s has %s %d: %s", slot.use, name, no, problem)
+			}
 		}
 	}
+}
+
+// rangeProblem says what is wrong with a property number outside its range, or nothing.
+func rangeProblem(slot numberSlot, no int) string {
+	switch {
+	case !slot.ranged || slot.high == (no >= OrgNumberBase):
+		return ""
+	case slot.high:
+		return fmt.Sprintf("an organisation property takes a number of %d or more", OrgNumberBase)
+	}
+	return fmt.Sprintf("a standard property takes a number below %d", OrgNumberBase)
 }
 
 // assignNumbers gives every definition without a number the next free one.

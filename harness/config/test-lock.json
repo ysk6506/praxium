@@ -10097,6 +10097,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/model::TestClassifyNamesTheValuesThatChange": {
+   "kind": "test",
+   "hash": "55902ae1b96c79e3",
+   "asserts": 1,
+   "literals": [
+    "1f0671cb9fb682d4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-347"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestClassifyOverlay": {
    "kind": "test",
    "hash": "142bceab1fd3be48",
@@ -10167,6 +10182,21 @@
    "skips": 0,
    "reqs": [
     "REQ-342",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestComposeRegistryReportsWhatTheOrdinaryChecksFind": {
+   "kind": "test",
+   "hash": "bc011edef90b7604",
+   "asserts": 3,
+   "literals": [
+    "fd4d07cd31dbe47f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
     "REQ-345"
    ],
    "added": "2026-11-14",
@@ -10508,6 +10538,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/model::TestOrgModelFileTargetsAndIds": {
+   "kind": "test",
+   "hash": "cdbd0bc123d3527f",
+   "asserts": 5,
+   "literals": [
+    "8717ebd0f7328e57"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestOrgPropertyChangesTheModelHashButNotItsName": {
    "kind": "test",
    "hash": "0892f44ea852d0bf",
@@ -10534,6 +10579,22 @@
    "skips": 0,
    "reqs": [
     "REQ-348"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestOverlayBodyKeepsASuccessorSoThatItCanBeRefused": {
+   "kind": "test",
+   "hash": "57f622a72f9f67b7",
+   "asserts": 2,
+   "literals": [
+    "5e49d84f726ae1ce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-349"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -10647,6 +10708,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/model::TestOverlayRefusesWhatItDoesNotKnow": {
+   "kind": "test",
+   "hash": "c669823bd44888af",
+   "asserts": 1,
+   "literals": [
+    "c3b8e042203ca2d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-342",
+    "REQ-343"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestOverlayWarnings": {
    "kind": "test",
    "hash": "1d02fd20e4e206ec",
@@ -10685,6 +10762,22 @@
    "asserts": 5,
    "literals": [
     "7b6061a4666ec2a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-348"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestPropertyNamingErrors": {
+   "kind": "test",
+   "hash": "02496939f60a9aa8",
+   "asserts": 4,
+   "literals": [
+    "b50bb6cfb419ffd6"
    ],
    "precision": [],
    "skips": 0,
@@ -11133,6 +11226,22 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestWarningsForATraitTarget": {
+   "kind": "test",
+   "hash": "dd828c48abfc38d8",
+   "asserts": 1,
+   "literals": [
+    "00fd34d1fbd04e53"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-343",
+    "REQ-345"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestWhatIsAllowed": {
