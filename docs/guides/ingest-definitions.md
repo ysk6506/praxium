@@ -19,15 +19,16 @@ covers:
 
 ## 1. 전체 흐름
 
-파일은 **소스 정의**(`source.json`)가 읽는 방법을 정하고, **매핑 정의**(`mapping.json`)가 읽은 행으로 만들 객체와 링크를 정한다. 소스 정의는 파일마다 데이터셋(행과 컬럼으로 본 표)을 선언한다. 매핑 정의는 데이터셋을 정제하고(`refinements`), 데이터셋마다 객체 타입 하나로 잇고(`feeds`), 객체 사이의 링크를 만든다(`links`). 마지막에 `praxium ingest run`이 두 정의와 파일을 받아 KG를 만든다. 파일은 읽기만 한다. 예제는 `praxium ingest init -out ex`가 쓴다.
+파일은 **소스 정의**(`source.json`)가 읽는 방법을 정하고, **매핑 정의**(`mapping.json`)가 읽은 행으로 만들 객체와 링크를 정한다. 소스 정의는 파일마다 데이터셋(행과 컬럼으로 본 표)을 선언한다. 매핑 정의는 데이터셋을 정제하고(`refinements`), 데이터셋마다 객체 타입 하나로 잇고(`feeds`), 객체 사이의 링크를 만든다(`links`). 마지막에 `praxium ingest run`이 두 정의와 파일을 받아 KG를 만든다. 파일은 읽기만 한다. 예제는 `praxium ingest init -out ex`가 쓴다. 이 문서의 사본(`ingest-definitions.md`)도 같은 폴더에 쓴다.
 
 ```
 praxium ingest inspect -input 파일          # 파일에 무엇이 있는지 본다(쓰기 전)
+praxium ingest inspect -input 파일 -emit-source   # 소스 정의 초안을 표준 출력으로 낸다(2.6)
 praxium ingest run -data-dir data -source source.json -mapping mapping.json -input 데이터셋=파일 ...
 praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 ```
 
-정의 파일에 모르는 필드를 쓰면 `unknown field "…"`로 거절한다(철자 오류를 조용히 넘기지 않는다). 거절할 때 가능한 필드를 알려 주지는 않으므로 아래 표를 본다.
+정의 파일에 모르는 필드를 쓰면 `unknown field "…"`로 거절한다(철자 오류를 조용히 넘기지 않는다). 거절할 때 그 자리에서 허용되는 필드를 함께 알려 준다.
 
 ## 2. 소스 정의 (source.json)
 
@@ -40,7 +41,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 | `datasets` | 예 | | 데이터셋 목록(1개 이상) |
 | `name` | 아니오 | | 사람이 읽는 설명. 동작에 영향이 없다 |
 | `collector` | 아니오 | `in_product` | 지금은 값을 검사하지도 쓰지도 않는다 |
-| `limits` | 아니오 | 2.6의 기본값 | 엑셀 파일의 안전 한도 |
+| `limits` | 아니오 | 2.7의 기본값 | 엑셀 파일의 안전 한도 |
 
 ### 2.2 데이터셋
 
@@ -53,6 +54,8 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 | `sheet` | 아니오 | 첫 시트 | 엑셀의 읽기 옵션(2.5). `xlsx`가 아닌 파서에 쓰면 거절한다 |
 | `deletion` | 아니오 | `absent_in_full` | `absent_in_full`: 파일에서 계속 사라진 행은 원본 레코드에서 닫는다(6절). `none`: 사라져도 닫지 않는다 |
 | `name` | 아니오 | | 설명. 동작에 영향이 없다 |
+| `delimiter` | 아니오 | 쉼표 | CSV의 구분자. 쉼표(`comma`), 탭(`tab`), 세미콜론(`semicolon`), 세로선(`pipe`)만 되고, 이름 대신 글자(`,` `\t` `;` `\|`)도 된다. `csv`가 아닌 파서에 쓰면 거절한다 |
+| `ignore_undeclared_columns` | 아니오 | `false` | `true`면 선언하지 않은 컬럼을 무시하고 `undeclared_column`을 보고하지 않는다 |
 | `kind`, `receive_mode` | 아니오 | `raw`, `snapshot` | 지금은 이 값만 된다. 다른 값은 거절한다 |
 
 자연 키가 비어 있는 행은 읽을 수 없는 줄(`unreadable_line`, `missing_natural_key`)이다. 자연 키가 같은 행이 둘이면 나중 행을 쓰고 앞의 행은 `duplicate_key` 문제로 남는다.
@@ -63,17 +66,18 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 |---|---|---|---|
 | `name` | 예 | | 매핑 정의가 쓰는 이름. 파일의 머리글과 같지 않아도 된다 |
 | `paths` | 아니오 | `[name]` | 파일에서 이 컬럼을 찾는 이름의 목록. 앞에서부터 처음 있는 것을 쓴다. 머리글 이름이 바뀐 파일도 옛 이름을 뒤에 두면 읽는다 |
-| `optional` | 아니오 | `false` | `true`면 파일에 없어도 된다(값은 빈 칸). 아니면 없을 때 데이터셋 전체를 쓰지 않는다(`shape_changed`) |
+| `optional` | 아니오 | `false` | `true`면 파일에 없어도 된다(값은 빈 칸). 아니면 없을 때 데이터셋 전체를 쓰지 않는다(`shape_changed`). 메시지에 실제로 읽은 머리글 컬럼이 나온다 |
+| `note` | 아니오 | | 정의를 읽는 사람을 위한 메모. 동작에 영향이 없다 |
 
-선언하지 않은 컬럼이 파일 머리글에 있으면 `undeclared_column` 문제가 한 번씩 나온다. 쓰지 않을 컬럼도 선언해 두면 문제가 나오지 않는다.
+선언하지 않은 컬럼이 파일 머리글에 있으면 `undeclared_column` 문제가 한 번씩 나온다. 쓰지 않을 컬럼도 선언해 두면 문제가 나오지 않는다. 컬럼이 많은 대장에서 일부만 쓸 때는 데이터셋에 `ignore_undeclared_columns: true`를 쓴다. 선언한 컬럼이 파일에서 사라진 것은 이 옵션과 상관없이 `shape_changed`로 계속 보고한다.
 
 ### 2.4 파일 종류별 읽는 규칙
 
-- **CSV**: UTF-8과 쉼표만 읽는다. 앞의 BOM은 있어도 된다. 첫 줄이 머리글이다. 머리글 이름은 글자 그대로(대소문자, 공백 포함) 맞아야 한다. 빈 줄은 건너뛴다. 필드 수가 머리글과 다른 줄은 `wrong_field_count`, 따옴표가 깨진 줄은 `malformed_csv`로 읽을 수 없는 줄이 된다.
+- **CSV**: UTF-8만 읽고, 구분자는 `delimiter`로 정한다(기본 쉼표). 앞의 BOM은 있어도 된다. 첫 줄이 머리글이다. 머리글 이름은 글자 그대로(대소문자, 공백 포함) 맞아야 한다. 빈 줄은 건너뛴다. 필드 수가 머리글과 다른 줄은 `wrong_field_count`, 따옴표가 깨진 줄은 `malformed_csv`로 읽을 수 없는 줄이 된다.
 - **JSON Lines**: 한 줄에 JSON 객체 하나. 빈 줄은 건너뛰고, 객체가 아니거나 한 줄에 둘 이상이면 `invalid_json`이다. `paths`는 점으로 이은 경로이고(`hardware.serial`) 숫자는 배열의 위치다(`tags.0`). 값은 비어 있지 않은 문자열, 숫자, 불리언만 된다. `null`, 객체, 배열, 빈 문자열은 값이 없는 것으로 본다. 이름에 점이 든 키는 가리킬 수 없다.
 - **엑셀(`.xlsx`)**: 2.5. 머리글 이름은 앞뒤 공백을 없애고 연속한 공백을 하나로 줄여 맞춘다(대소문자는 구분한다). 수식은 파일에 저장된 계산 값을 읽는다. 날짜 칸은 `2026-03-14`, 날짜와 시각 칸은 `2026-03-14T09:30:00Z`, 정수는 `16`(`16.0` 아님), 불리언은 `true`와 `false` 글자로 바뀐다. 숫자 칸을 서식으로 `00123`처럼 보이게 한 경우 값은 `123`으로 읽으므로, 앞자리 0이 필요한 값은 칸을 텍스트로 저장한다.
 - **한 파일의 한도**: 20MB. 넘으면 그 데이터셋은 쓰지 않고 `incomplete_capture`가 나온다.
-- **읽지 못하는 것**: `.xls`("old binary Excel format"), 깨진 파일, 이름만 `.xlsx`인 CSV는 실행이 오류로 멈춘다. UTF-8이 아닌 CSV(EUC-KR, UTF-16), 세미콜론이나 탭으로 나눈 파일은 읽지 못한다. 머리글이 깨져 보이면 `shape_changed`로 끝나고, 선언한 컬럼의 값에 UTF-8이 아닌 글자가 있으면 `string is not valid UTF-8`로 멈춘다. 엑셀에서 "CSV UTF-8"로 저장하거나 `.xlsx`를 그대로 쓴다.
+- **읽지 못하는 것**: `.xls`("old binary Excel format"), 깨진 파일, 이름만 `.xlsx`인 CSV는 실행이 오류로 멈춘다. UTF-8이 아닌 CSV(EUC-KR, UTF-16)는 `ingest inspect`와 `ingest run` 모두 원인과 해결 방법을 말하고 멈춘다. 글자를 바꿔 읽지는 않는다(ADR-0046). 구분자가 다른 파일은 `delimiter`를 쓰고, `inspect`에는 `-delimiter`를 준다. 쉼표로 읽었더니 컬럼이 하나뿐이고 탭이나 세미콜론이 반복되면 `inspect`가 구분자를 확인하라고 알려 준다. 엑셀에서 "CSV UTF-8"로 저장하거나 `.xlsx`를 그대로 쓴다.
 
 ### 2.5 엑셀 시트 옵션 (`sheet`)
 
@@ -81,7 +85,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 
 | 필드 | 기본값 | 뜻 |
 |---|---|---|
-| `name` | | 시트 이름. 없는 이름이면 `shape_changed`와 함께 있는 시트 이름을 알려 준다 |
+| `name` | | 시트 이름. 없는 이름이면 `shape_changed`로 보고하고 파일에 있는 시트 이름을 알려 준다(`ingest run` 요약 줄에는 `not_read`가 붙는다) |
 | `index` | | 시트 번호(1부터). `name`과 함께 쓸 수 없다 |
 | `header_row` | `1` | 머리글이 있는 행 |
 | `header_rows` | `1` | 머리글의 행 수. 둘 이상이면 위에서 아래로 공백으로 이어 컬럼 이름을 만든다(`속성`과 `이름` → `속성 이름`) |
@@ -94,7 +98,11 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 - 선언한 컬럼의 칸이 `#N/A` 같은 오류이면 `cell_error`, 계산한 적 없는 수식(프로그램이 만든 파일에 흔하다)이면 `formula_without_value`가 나오고 그 칸은 빈 값이다. 행은 그대로 읽는다. 정제로 걸러지는 행(소계, 합계)의 칸도 문제로 나온다.
 - 같은 엑셀 파일의 여러 시트를 데이터셋마다 `-input`으로 같은 파일에 잇는다.
 
-### 2.6 한도 (`limits`)
+### 2.6 소스 정의 초안 (`inspect -emit-source`)
+
+`praxium ingest inspect -input 파일 -emit-source`는 살펴본 파일에 맞는 소스 정의 초안을 표준 출력에 쓴다(시트, 머리글 행, 컬럼, 추측한 값 종류는 `note`). 자연 키는 추측하지 않고 `FILL IN:`으로 시작하는 자리표시자를 둔다. 이대로 `ingest run`을 하면 어느 컬럼이 있는지 알려 주며 멈추므로 하나를 골라 바꾼다. CSV에는 `-delimiter`를 줄 수 있다.
+
+### 2.7 한도 (`limits`)
 
 엑셀 파일이 이 한도를 넘으면 실행이 오류로 멈추고 어느 한도인지 알려 준다. 필드 이름과 기본값은 `max_uncompressed_bytes`(268435456), `max_rows_per_sheet`(200000), `max_columns_per_sheet`(1024), `max_cell_chars`(32767), `max_shared_strings`(2000000)이다. 0보다 작으면 거절한다.
 
@@ -226,8 +234,8 @@ completed with 1 problem (see "problem" lines above)
 | 코드 | 뜻 | 해결 |
 |---|---|---|
 | `shape_changed` | 파일에 선언한 컬럼이나 시트가 없어서 데이터셋 전체를 쓰지 않았다. 이전 실행의 데이터는 그대로다 | 메시지의 컬럼 이름(선언한 `name`)과 `paths`, `header_row`, 시트 이름을 맞춘다 |
-| `undeclared_column` | 머리글에 있는데 선언하지 않은 컬럼 | 쓰지 않아도 `columns`에 선언한다 |
-| `unreadable_line` | 행으로 읽지 못한 줄. 이유는 `missing_natural_key`(자연 키 칸이 빔), `wrong_field_count`, `malformed_csv`, `invalid_json`, `unreadable_header` | 이유대로 파일을 고치거나 자연 키를 바꾼다. `where`가 칸 주소를 준다 |
+| `undeclared_column` | 머리글에 있는데 선언하지 않은 컬럼 | 쓰지 않아도 `columns`에 선언하거나 `ignore_undeclared_columns`를 쓴다 |
+| `unreadable_line` | 행으로 읽지 못한 줄. 이유는 `missing_natural_key`(자연 키 칸이 빔, 메시지가 빈 컬럼 이름을 준다), `wrong_field_count`, `malformed_csv`, `invalid_json`, `unreadable_header` | 이유대로 파일을 고치거나 자연 키를 바꾼다. `where`가 칸 주소를 준다 |
 | `duplicate_key` | 같은 자연 키가 앞에도 있다. 나중 행을 썼다 | 키가 정말 유일한 컬럼을 `natural_key`로 쓴다 |
 | `incomplete_capture` | 파일이 20MB를 넘거나 끝까지 읽지 못해 쓰지 않았다 | 파일을 나눈다 |
 | `invalid_value` | 칸의 값이 속성 타입에 맞지 않아 그 행을 쓰지 않았다. 메시지에 허용 값이 있다 | 값을 `replace`의 `map`으로 바꾸거나 파일을 고친다 |
@@ -336,7 +344,7 @@ praxium --endpoint <주소> --token <토큰> query get --include identifiers --i
 
 ## 8. 지금의 한계
 
-- 소스는 파일(`.xlsx`, CSV, JSON Lines)뿐이다. CSV는 UTF-8과 쉼표만, `.xls`는 읽지 못한다.
+- 소스는 파일(`.xlsx`, CSV, JSON Lines)뿐이다. CSV는 UTF-8만(구분자는 `delimiter`), `.xls`는 읽지 못한다.
 - 정제 연산은 `filter`, `fill_empty`, `replace`뿐이고 컬럼을 새로 만들거나 합치지 못한다. 링크 조건은 `same_key`뿐이다.
 - 파일 하나는 20MB까지이다.
 - 파일 수집에서 쓸 수 있는 식별 키는 속성이나 식별자 방식으로만 된 것이다.

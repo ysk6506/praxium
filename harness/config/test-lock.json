@@ -432,6 +432,100 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/api/generator/generator-split.test.ts::[REQ-276] the operations are split over files of a fixed size > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::[REQ-276] the operations are split over files of a fixed size > =count": {
+   "kind": "support",
+   "hash": "a2c6feebf30e33fb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::[REQ-276] the operations are split over files of a fixed size > =doc": {
+   "kind": "support",
+   "hash": "da1b159cb2e77762",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::[REQ-276] the operations are split over files of a fixed size > fills a file, starts the next one and re-exports every name from operations.ts": {
+   "kind": "test",
+   "hash": "c43f010dab3fce7e",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"export type { ListThing00Args } from \\\"./operations-01\\\";\"",
+    "\"export type { ListThing00Args } from \\\"./operations-01\\\";\"",
+    "\"fills a file, starts the next one and re-exports every name from operations.ts\"",
+    "\"from \\\"./operations-02\\\";\"",
+    "\"from \\\"./operations-02\\\";\"",
+    "\"operations-01.ts\"",
+    "\"operations-01.ts\"",
+    "\"operations-01.ts\"",
+    "\"operations-01.ts\"",
+    "\"operations-02.ts\"",
+    "\"operations-02.ts\"",
+    "\"operations-02.ts\"",
+    "\"operations-02.ts\"",
+    "\"operations.ts\"",
+    "\"operations.ts\"",
+    "\"operations.ts\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::<import:3ef762f6>": {
+   "kind": "support",
+   "hash": "3ef762f6271cd916",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::<import:8fce3352>": {
+   "kind": "support",
+   "hash": "8fce335237c764cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/api/generator/generator.test.ts::[REQ-276] a generated file says which contract it came from > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -2965,6 +3059,266 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > leaves the focus alone for a change of the query and for back, and says where the person arrived": {
+   "kind": "test",
+   "hash": "c5b7b30906edd87d",
+   "asserts": 3,
+   "literals": [
+    "\"#/kg/main/types\"",
+    "\"#/kg/main/types?q=rack\"",
+    "\"#/kgs\"",
+    "\"KG 목록 · 프락시움\"",
+    "\"KG 목록 · 프락시움\"",
+    "\"[data-other]\"",
+    "\"[data-said]\"",
+    "\"[data-said]\"",
+    "\"leaves the focus alone for a change of the query and for back, and says where the person arrived\"",
+    "false",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > moves the focus to the heading after a move the person made, and not on the first load": {
+   "kind": "test",
+   "hash": "d314f7d0395aad06",
+   "asserts": 3,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"#/kg/main/types\"",
+    "\"#/kgs\"",
+    "\"[data-said]\"",
+    "\"[data-said]\"",
+    "\"h1\"",
+    "\"h1\"",
+    "\"moves the focus to the heading after a move the person made, and not on the first load\"",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > names every route, and two routes that differ in the query only are one screen": {
+   "kind": "test",
+   "hash": "38e3e66bb6823ea5",
+   "asserts": 5,
+   "literals": [
+    "\"/x\"",
+    "\"/x\"",
+    "\"attributes\"",
+    "\"attributes\"",
+    "\"attributes\"",
+    "\"attributes\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"names every route, and two routes that differ in the query only are one screen\"",
+    "\"neighbors\"",
+    "\"neighbors\"",
+    "\"notFound\"",
+    "\"notFound\"",
+    "\"o1\"",
+    "\"o1\"",
+    "\"o1\"",
+    "\"o1\"",
+    "\"o1\"",
+    "\"o1\"",
+    "\"object\"",
+    "\"object\"",
+    "\"object\"",
+    "\"object\"",
+    "\"object\"",
+    "\"object\"",
+    "\"settings\"",
+    "\"settings\"",
+    "\"types\"",
+    "\"types\"",
+    "\"객체 · main · 프락시움\"",
+    "\"객체 · main · 프락시움\"",
+    "\"객체 타입 · main · 프락시움\"",
+    "\"객체 타입 · main · 프락시움\"",
+    "\"접속 설정 · 프락시움\"",
+    "\"접속 설정 · 프락시움\"",
+    "\"페이지를 찾을 수 없습니다 · 프락시움\"",
+    "\"페이지를 찾을 수 없습니다 · 프락시움\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > waits for a heading that is not there yet, and does not take the focus from a person who moved it meanwhile": {
+   "kind": "test",
+   "hash": "55a676ff5e68e61d",
+   "asserts": 2,
+   "literals": [
+    "\"#/kg/main/types\"",
+    "\"#/kgs\"",
+    "\"[data-other]\"",
+    "\"main\"",
+    "\"main\"",
+    "\"waits for a heading that is not there yet, and does not take the focus from a person who moved it meanwhile\"",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > writes the title of the page from the route, and the name an object screen reports": {
+   "kind": "test",
+   "hash": "a8c2ebf490efecfa",
+   "asserts": 3,
+   "literals": [
+    "\"#/kg/main/objects/o1\"",
+    "\"#/kg/main/types/PhysicalServer\"",
+    "\"#/kgs\"",
+    "\"KG 목록 · 프락시움\"",
+    "\"KG 목록 · 프락시움\"",
+    "\"PhysicalServer 객체 · main · 프락시움\"",
+    "\"PhysicalServer 객체 · main · 프락시움\"",
+    "\"writes the title of the page from the route, and the name an object screen reports\"",
+    "\"서버-1 · PhysicalServer · 프락시움\"",
+    "\"서버-1 · PhysicalServer · 프락시움\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "ba50a58b35df8629",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<import:88d995df>": {
+   "kind": "support",
+   "hash": "88d995dfbde9d419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<import:ad033e13>": {
+   "kind": "support",
+   "hash": "ad033e13d0a60651",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<import:b919bd80>": {
+   "kind": "support",
+   "hash": "b919bd80f32fd4ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<import:d7631fd2>": {
+   "kind": "support",
+   "hash": "d7631fd27758e1cc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<import:ef29133c>": {
+   "kind": "support",
+   "hash": "ef29133c0edb6025",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::<stmt:55c31ef5>": {
+   "kind": "support",
+   "hash": "55c31ef5e7e4bf94",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::=go": {
+   "kind": "support",
+   "hash": "bc463c215e622d90",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::=moved": {
+   "kind": "support",
+   "hash": "5e00f534a40084e3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::=Named": {
+   "kind": "support",
+   "hash": "916cc9e4315b9b45",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screen.test.tsx::=Page": {
+   "kind": "support",
+   "hash": "bca5227aab05bfa0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/data/screenstate.test.tsx::[REQ-297] a new screen opens at the top, and back returns to where the person was > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -4923,6 +5277,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestACSVInALocalCodePageStopsInspectAndRunWithWhatToDo": {
+   "kind": "test",
+   "hash": "ad269658e54f17b9",
+   "asserts": 6,
+   "literals": [
+    "e2d7207874c54c69"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-323"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerOnPostgresServesTheKgAndKeepsItAcrossRestarts": {
    "kind": "test",
    "hash": "a36d5800ca2c06ff",
@@ -5180,6 +5549,22 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAProductionServerSignsInWithTokensAndKeepsThemAcrossARestart": {
+   "kind": "test",
+   "hash": "cc834f3212bbe2de",
+   "asserts": 17,
+   "literals": [
+    "36a135b4eae1307f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309",
+    "REQ-311"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
    "kind": "test",
    "hash": "25b25c5d1b2f841b",
@@ -5210,6 +5595,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestATabSeparatedFileIsSaidToNeedTheDelimiterAndReadWithIt": {
+   "kind": "test",
+   "hash": "9d9e56422968c01a",
+   "asserts": 8,
+   "literals": [
+    "94fab942e4a6cd12"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-324"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
    "kind": "test",
    "hash": "74c14581e9651876",
@@ -5225,6 +5625,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAWorkbookWithoutTheSheetFailsTheRunAndSaysWhichSheetsItHas": {
+   "kind": "test",
+   "hash": "23eecf7dc189e3b1",
+   "asserts": 7,
+   "literals": [
+    "822a22dc8201f755"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-320"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs": {
    "kind": "test",
    "hash": "0bc8b8ac22ea878e",
@@ -5236,6 +5651,36 @@
    "skips": 0,
    "reqs": [
     "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestBehindAProxyAPlainNonLoopbackAddressStarts": {
+   "kind": "test",
+   "hash": "f30b0c034de5ea83",
+   "asserts": 6,
+   "literals": [
+    "c51a6b63c363e01d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestBootstrapMakesTheFirstAdministratorOnceAndPrintsItsTokenOnce": {
+   "kind": "test",
+   "hash": "d25ec73144e23a6a",
+   "asserts": 5,
+   "literals": [
+    "d4579e7c003e721b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -5510,6 +5955,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestGlobalFlagsBeforeIngestAreExplained": {
+   "kind": "test",
+   "hash": "69c2678ea134ef35",
+   "asserts": 2,
+   "literals": [
+    "16768f60eb4491c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestGlobalFlagsMayFollowTheCommand": {
    "kind": "test",
    "hash": "4509713927106351",
@@ -5521,6 +5981,22 @@
    "skips": 0,
    "reqs": [
     "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpactAnswersAreTheSameOnTheMemoryTheFileAndThePostgresStore": {
+   "kind": "test",
+   "hash": "0ed196c61419d98a",
+   "asserts": 10,
+   "literals": [
+    "924169d3d4ad9bcf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-305"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -5566,6 +6042,21 @@
    "skips": 0,
    "reqs": [
     "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestHelpPointsToTheGuideAndExplainsTheSummaryLines": {
+   "kind": "test",
+   "hash": "b88ff0e6db790944",
+   "asserts": 3,
+   "literals": [
+    "0d225b43876e2cb7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-329"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -5828,6 +6319,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestInitWritesTheFormatGuideEqualToTheOriginal": {
+   "kind": "test",
+   "hash": "0cc7b82ce3feda99",
+   "asserts": 4,
+   "literals": [
+    "239139a09854daf9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-330"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestInspectDraftsASourceThatRunsOnceTheNaturalKeyIsChosen": {
+   "kind": "test",
+   "hash": "818404ca1edfa2a0",
+   "asserts": 9,
+   "literals": [
+    "4716e0a19df8ac45"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-326"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIsLoopbackAddr": {
    "kind": "test",
    "hash": "8e34cd1851942078",
@@ -5839,6 +6360,22 @@
    "skips": 0,
    "reqs": [
     "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIssueTokenAtTheServerGetsAnAdministratorBackInAndNeedsTheFolderFree": {
+   "kind": "test",
+   "hash": "58ee7629762e9e00",
+   "asserts": 8,
+   "literals": [
+    "1388c9d91141eb42"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307",
+    "REQ-313"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -5948,17 +6485,63 @@
   },
   "go:backend/cmd/praxium::TestProductionNamesWhatItLacks": {
    "kind": "test",
-   "hash": "37980d5779564c05",
-   "asserts": 1,
+   "hash": "925ed24c171ea07f",
+   "asserts": 2,
    "literals": [
-    "ae6b7b36e01e09dc"
+    "0cae297091ebb3b1"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-260"
    ],
-   "added": "2026-11-13",
+   "added": "2026-11-14",
+   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
+  },
+  "go:backend/cmd/praxium::TestProductionOnPostgresBootstrapsServesAndKeepsTheTokens": {
+   "kind": "test",
+   "hash": "04c0e9e7ffd5f801",
+   "asserts": 10,
+   "literals": [
+    "66b98913d7345f0c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307",
+    "REQ-311"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestProductionRefusesWhatItMustBeforeItOpensAnything": {
+   "kind": "test",
+   "hash": "c3c1eb78cf478e44",
+   "asserts": 3,
+   "literals": [
+    "2a653759d6684ec6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestProductionSpeaksTLSWhenItIsGivenACertificate": {
+   "kind": "test",
+   "hash": "de40927d2a4158da",
+   "asserts": 6,
+   "literals": [
+    "1e78da252a5d06ce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestReleaseBuildRefusesWhatIsNotSemanticVersioning": {
@@ -5982,6 +6565,111 @@
    "asserts": 10,
    "literals": [
     "2f4805524197823a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePlanDecidesTheModeTheTagAndTheCommit": {
+   "kind": "test",
+   "hash": "28ebfade345adf2a",
+   "asserts": 4,
+   "literals": [
+    "916828ae0892f88b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePlanRefusesWhatIsNotSafeToRelease": {
+   "kind": "test",
+   "hash": "064d3c86af7cc71d",
+   "asserts": 3,
+   "literals": [
+    "74bcb57b5a3ffd9c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishChecksTheCommitOfTheNewTag": {
+   "kind": "test",
+   "hash": "b449172fe2a425c7",
+   "asserts": 9,
+   "literals": [
+    "bb8374ff5eb84f89"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishForAManualReleaseTargetsTheCommitAndReadsTheNotesFile": {
+   "kind": "test",
+   "hash": "d07cd7977e0d0658",
+   "asserts": 16,
+   "literals": [
+    "2d45e43f24a951a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishForATagPushUsesGeneratedNotesAndChecksTheTag": {
+   "kind": "test",
+   "hash": "f7fccc9eed7dd831",
+   "asserts": 17,
+   "literals": [
+    "59ca961f06b3786f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishPublishesNothingWhenSomethingIsWrong": {
+   "kind": "test",
+   "hash": "c9f6c608f01ff6d1",
+   "asserts": 9,
+   "literals": [
+    "110a25b2003f8c0b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishTakesANotesFileWithoutFrontMatterAsItIs": {
+   "kind": "test",
+   "hash": "4b57add4b0167b4d",
+   "asserts": 7,
+   "literals": [
+    "9a7588db9b6c440f"
    ],
    "precision": [],
    "skips": 0,
@@ -6075,6 +6763,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheExamplesGiveTheirServersAnIdentifierThatFindsThem": {
+   "kind": "test",
+   "hash": "85510ae95e34906b",
+   "asserts": 7,
+   "literals": [
+    "7836e48484d91e11"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-322"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheFileDiskDoesWhatTheJournalAsks": {
    "kind": "test",
    "hash": "889f366b1eea7cf7",
@@ -6105,6 +6808,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheIdentityFileIsForItsOwnerOnlyAndALooseOneIsRefused": {
+   "kind": "test",
+   "hash": "c800d947761eb955",
+   "asserts": 6,
+   "literals": [
+    "46139a48f47e7dff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-311"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheLockOfADataFolder": {
    "kind": "test",
    "hash": "b7c9cfb6dd01930d",
@@ -6116,6 +6834,21 @@
    "skips": 0,
    "reqs": [
     "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheOfflineAdminCommandsCheckTheirFlags": {
+   "kind": "test",
+   "hash": "fe9c56b644454a9c",
+   "asserts": 3,
+   "literals": [
+    "66a82945b05a6b18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6135,6 +6868,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheSecretsOfTokensComeFromTheRandomSourceOfTheWiring": {
+   "kind": "test",
+   "hash": "b574bc5990d54bc3",
+   "asserts": 1,
+   "literals": [
+    "14b28c9856e57f98"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheStoreFlagsAreCheckedAndTheDSNNeverShows": {
    "kind": "test",
    "hash": "1b8f6fbdbc332413",
@@ -6147,6 +6895,21 @@
    "reqs": [
     "REQ-260",
     "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheTableFormShowsNestedValuesAndTheJSONFormIsUnchanged": {
+   "kind": "test",
+   "hash": "8b9e6d7e6908777e",
+   "asserts": 7,
+   "literals": [
+    "67d376c69ef470d1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6351,6 +7114,66 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestAdminCommandsAskTheRoutesTheyNameWithAFreshIdempotencyKey": {
+   "kind": "test",
+   "hash": "dd49832d681b6b4a",
+   "asserts": 3,
+   "literals": [
+    "e1ca2bf35e430be4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAdminCommandsReportAServerThatIsGoneOrSaysNonsense": {
+   "kind": "test",
+   "hash": "c50e9af5dd0ba0d2",
+   "asserts": 2,
+   "literals": [
+    "fbacebd986ad7c1d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAdminListsFilterAndATokenIsShownOnceWithAWarning": {
+   "kind": "test",
+   "hash": "a5635b9fcbcb8d5c",
+   "asserts": 5,
+   "literals": [
+    "e8257f05ec70e2a4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAdminRefusesWhatItCannotAskAndReportsProblems": {
+   "kind": "test",
+   "hash": "576b9373a7865f24",
+   "asserts": 3,
+   "literals": [
+    "38594db97e40ef18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestAnErrorLineFallsBackToWhatAnOlderServerGaveAndToFieldErrors": {
    "kind": "test",
    "hash": "51a003f87a5b75a6",
@@ -6456,6 +7279,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestHealthInTheTableFormGivesOneLinePerProbe": {
+   "kind": "test",
+   "hash": "b607cab21048aa78",
+   "asserts": 1,
+   "literals": [
+    "d992ad4e6c5186e8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestHelpAndUsageLineOfClientCommands": {
    "kind": "test",
    "hash": "439b3a5235980516",
@@ -6467,6 +7305,66 @@
    "skips": 0,
    "reqs": [
     "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestImpactCommandAsksTheRouteAndPrintsSummaryGroupsAndPaths": {
+   "kind": "test",
+   "hash": "6f3c25f918de53e4",
+   "asserts": 5,
+   "literals": [
+    "71e3e34de4d1b8e7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestImpactCommandPrintsAnUpstreamAnswerWithItsSinglePointsAndHiddenSteps": {
+   "kind": "test",
+   "hash": "ed69260c310d3de5",
+   "asserts": 2,
+   "literals": [
+    "a8b126720013f7ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestImpactCommandSaysWhenNothingChangesAndListsUnfilledChannels": {
+   "kind": "test",
+   "hash": "3af79741236ae937",
+   "asserts": 2,
+   "literals": [
+    "1474514fac2a98b8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestImpactCommandUpstreamTakesATargetAndRefusesAMixedOrEmptyQuestion": {
+   "kind": "test",
+   "hash": "c90eedd01865ed5f",
+   "asserts": 4,
+   "literals": [
+    "9b124c336e38e79f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -6531,6 +7429,21 @@
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
+  "go:backend/internal/cli::TestNestedValuesAreWrittenForAPersonInTheTableForm": {
+   "kind": "test",
+   "hash": "bfa516dd08c6f2b2",
+   "asserts": 15,
+   "literals": [
+    "834ff7a402efaae9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestProblemsBecomeExitCodesAndOneErrorLine": {
    "kind": "test",
    "hash": "8bd85efa0eb620e4",
@@ -6591,6 +7504,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestTypesGetNeedsOneNameAndReadsAnObject": {
+   "kind": "test",
+   "hash": "600af84603c60053",
+   "asserts": 3,
+   "literals": [
+    "c3a39c3b522ac0f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTypesGetShowsTheEffectivePropertiesAndKeysByName": {
+   "kind": "test",
+   "hash": "79a0d0e7921b45da",
+   "asserts": 6,
+   "literals": [
+    "f22c3d033751dcb0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestTypesListPrintsATableOrJSONAndFollowsCursors": {
    "kind": "test",
    "hash": "b346bde7daa6f1ed",
@@ -6604,6 +7547,21 @@
     "REQ-245"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestWhoamiSaysWhoTheTokenIs": {
+   "kind": "test",
+   "hash": "e49388d0c850a97e",
+   "asserts": 3,
+   "literals": [
+    "5f9b7a909018d899"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/contract::TestAssembleBuildsOneCanonicalDocument": {
@@ -6859,6 +7817,730 @@
     "REQ-143"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestABranchKeepsOnlyWhatItChangesAndSavesAtEveryEdit": {
+   "kind": "test",
+   "hash": "b7e2b44b66c8f522",
+   "asserts": 11,
+   "literals": [
+    "12675742e79ff384"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestABranchOnAnEmptyMainLineAndItsLimits": {
+   "kind": "test",
+   "hash": "ae529ab53e723239",
+   "asserts": 10,
+   "literals": [
+    "d8b768c0522e88a7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestABranchThatTouchesAnItemTheMainLineChangedIsStale": {
+   "kind": "test",
+   "hash": "d3b309e192a96833",
+   "asserts": 6,
+   "literals": [
+    "fdcd6f63a5693077"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAFailingStoreIsReportedByEveryOperationAndNothingIsHalfDone": {
+   "kind": "test",
+   "hash": "e494fc23bb07b023",
+   "asserts": 4,
+   "literals": [
+    "55b0612e37d03c3e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAFirstProposalMergesIntoAMainLineWithoutASet": {
+   "kind": "test",
+   "hash": "930c7bb8528a9cf1",
+   "asserts": 2,
+   "literals": [
+    "12089e60ca16e2d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAMergeThatChangesNothingOnTheHeadMakesNoSet": {
+   "kind": "test",
+   "hash": "8a6ab1c89e68cbe2",
+   "asserts": 5,
+   "literals": [
+    "252f6957afb9d0c3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAnAuthorCannotApproveUnlessThePolicyAllowsItAndThenItIsRecorded": {
+   "kind": "test",
+   "hash": "63751d0f72132836",
+   "asserts": 6,
+   "literals": [
+    "1980e89dde6bdaa9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAnEditTakesTheProposalBackToDraftAndVoidsTheApprovals": {
+   "kind": "test",
+   "hash": "9b21497bf158aea3",
+   "asserts": 5,
+   "literals": [
+    "4d55c04d500f1deb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAnEmptyStartKeepsTheBaselineAsTheHash": {
+   "kind": "test",
+   "hash": "b8074145020a3af8",
+   "asserts": 4,
+   "literals": [
+    "2be0859c75d5a483"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-333"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestApplyIsRefusedForAnotherHeadAndLeavesNothing": {
+   "kind": "test",
+   "hash": "16e3def4c6783995",
+   "asserts": 4,
+   "literals": [
+    "e1bad0cb964de199"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-334"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestApplyMakesTheFirstSetAndTheNextOneOnlyForNewContent": {
+   "kind": "test",
+   "hash": "c119d31d57faa8e9",
+   "asserts": 8,
+   "literals": [
+    "570322cd005e0145"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332",
+    "REQ-333",
+    "REQ-334"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestApplyRefusesWhatIsNotSound": {
+   "kind": "test",
+   "hash": "eeeb19bb9f76f945",
+   "asserts": 4,
+   "literals": [
+    "649c0c2959d5b506"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332",
+    "REQ-334"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAProposalGoesDraftReviewApprovedAndNoOtherWay": {
+   "kind": "test",
+   "hash": "a8a7827f867c4a81",
+   "asserts": 18,
+   "literals": [
+    "7d8d221667505af0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAProposalThatChangesNothingIsNotSentToReview": {
+   "kind": "test",
+   "hash": "36b33d1b683abb19",
+   "asserts": 2,
+   "literals": [
+    "a6ef390cc45833d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestARemovedItemComesBackWithANewRevisionNumber": {
+   "kind": "test",
+   "hash": "ef4a4632596c2e99",
+   "asserts": 6,
+   "literals": [
+    "b22e255dc132dea8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAStoreOpenedFromItsExportIsTheSameStore": {
+   "kind": "test",
+   "hash": "7a5dfa42d29db278",
+   "asserts": 4,
+   "literals": [
+    "0480128eac2538a2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestAWriteThatCannotBeKeptLeavesTheStoreAsItWasUnlessTheFileWasReplaced": {
+   "kind": "test",
+   "hash": "dfb15b9c911fa082",
+   "asserts": 5,
+   "literals": [
+    "5d0317c791fe1921"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestBranchChangesHashFollowsTheChangesAndNotTheOrder": {
+   "kind": "test",
+   "hash": "cf0b06740f6f1024",
+   "asserts": 1,
+   "literals": [
+    "7ad062605f414503"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestBranchesThatDoNotOverlapBothMergeAndTheSameChangeTwiceIsStale": {
+   "kind": "test",
+   "hash": "cf94f6bdc3f2ee45",
+   "asserts": 5,
+   "literals": [
+    "ae5892df07d37cff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestClosingIsFinalAndClosesTheBranch": {
+   "kind": "test",
+   "hash": "b7fbb0e2ae335816",
+   "asserts": 8,
+   "literals": [
+    "b2ed93dd9d2a1ebd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-337"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestDamagedDataIsRefusedWithAReason": {
+   "kind": "test",
+   "hash": "b308c5ce2e5b7aed",
+   "asserts": 2,
+   "literals": [
+    "aef23527f9ca6117"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestEditsThatUndoThemselvesLeaveNothing": {
+   "kind": "test",
+   "hash": "68981e0134b45972",
+   "asserts": 7,
+   "literals": [
+    "b4b24f74768a7f0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestIDsFromAGeneratorThatStartedAgainSkipTheOnesInUse": {
+   "kind": "test",
+   "hash": "0770bbc4fb19d6b1",
+   "asserts": 3,
+   "literals": [
+    "422f4dcff7e9966f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestMergingAnApprovedProposalMakesOneSetAndMarksBothMerged": {
+   "kind": "test",
+   "hash": "699fa160927dae67",
+   "asserts": 6,
+   "literals": [
+    "7b9bfd321b96e5ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestNewServiceNeedsItsParts": {
+   "kind": "test",
+   "hash": "0e353fd2ff17856c",
+   "asserts": 2,
+   "literals": [
+    "3ba519610fb74e18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestNormalizeBodyGivesOneFormToOneContent": {
+   "kind": "test",
+   "hash": "ab38a100c57c29d9",
+   "asserts": 2,
+   "literals": [
+    "2ae1c53f70ba44a4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestNormalizeBodyRefusesWhatIsNotOneObject": {
+   "kind": "test",
+   "hash": "fbe7859b1e9501c8",
+   "asserts": 1,
+   "literals": [
+    "2d1c779169ce44e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-332"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestRestoreOpensANewBranchThatBringsBackAnEarlierSetAndNeverRewinds": {
+   "kind": "test",
+   "hash": "691fce72f43c3a7f",
+   "asserts": 10,
+   "literals": [
+    "e36df4e23a9cbb00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-339"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestRestoreToAnEmptyMainLineRemovesEverything": {
+   "kind": "test",
+   "hash": "fda104dea8e8ef91",
+   "asserts": 4,
+   "literals": [
+    "a4fc8edc9614f2c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-339"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestSetHashIsTheBaselineWithoutItemsAndDoesNotDependOnOrder": {
+   "kind": "test",
+   "hash": "6a85b4b11609c353",
+   "asserts": 2,
+   "literals": [
+    "c7f3f75b55c1c888"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-333"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheCheckSeesTheWholeMergedSetAndAProblemStopsTheMerge": {
+   "kind": "test",
+   "hash": "18da130fd2c1fbd6",
+   "asserts": 7,
+   "literals": [
+    "54cc904b94cc9bfb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-338"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheLedgerRisesWithTheSetAndNeverFalls": {
+   "kind": "test",
+   "hash": "0306ff63998ee592",
+   "asserts": 11,
+   "literals": [
+    "706fc4717b562396"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-335"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheReadsOfTheStoreAreCopies": {
+   "kind": "test",
+   "hash": "4e120b52a74c3162",
+   "asserts": 3,
+   "literals": [
+    "70af799e57b40525"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheStoreKeepsTheLedgerAndVersionsOfBranchesAndProposals": {
+   "kind": "test",
+   "hash": "8a8f423b6a13b5a0",
+   "asserts": 7,
+   "literals": [
+    "67afebdede0e807d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-335",
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTheStoreRefusesAWriteThatBreaksItsRulesAndKeepsWhatItHad": {
+   "kind": "test",
+   "hash": "20350256b8d543b6",
+   "asserts": 3,
+   "literals": [
+    "55139b29f4e9acb2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitions::TestTwoEditorsOfOneBranchCannotOverwriteEachOther": {
+   "kind": "test",
+   "hash": "1fad203470780974",
+   "asserts": 4,
+   "literals": [
+    "03d2f7655dafcd5a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-336"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionscheck::TestTheFileStoreConformsToTheDefinitionsStorePort": {
+   "kind": "test",
+   "hash": "b591e83f13eee803",
+   "asserts": 1,
+   "literals": [
+    "55449285384a0376"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-341"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionscheck::TestTheMemoryStoreConformsToTheDefinitionsStorePort": {
+   "kind": "test",
+   "hash": "11e0db089e836d60",
+   "asserts": 1,
+   "literals": [
+    "212a49ff487cda9b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-341"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionscheck::TestTheSuiteCatchesEachFlawOfAStore": {
+   "kind": "test",
+   "hash": "7b59cd62e4475a7a",
+   "asserts": 2,
+   "literals": [
+    "800e09ac8bfffb74"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-341"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestABranchBodyThatIsNotJSONIsRefused": {
+   "kind": "test",
+   "hash": "b7b47c45a960e215",
+   "asserts": 4,
+   "literals": [
+    "f89ae3e3de281622"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestAFailureToSyncTheFolderKeepsTheNewStateAndSaysSo": {
+   "kind": "test",
+   "hash": "c073999318d70ae6",
+   "asserts": 6,
+   "literals": [
+    "0be9365700676fa8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestAFileThatIsNotUsableIsRefusedWithAReasonAndNothingIsOverwritten": {
+   "kind": "test",
+   "hash": "813df7e3acadc167",
+   "asserts": 6,
+   "literals": [
+    "07ad3c4e2a292280"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestAFolderWithoutTheFileIsEmptyAndNothingIsWrittenUntilTheFirstWrite": {
+   "kind": "test",
+   "hash": "752f0d444a9cedf6",
+   "asserts": 5,
+   "literals": [
+    "5c6642d1b98f094f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestOpeningNeedsTheDiskToAnswerAndRemovesTheLeftoverOfAnInterruptedWrite": {
+   "kind": "test",
+   "hash": "cf9e489eb2ae2261",
+   "asserts": 4,
+   "literals": [
+    "bde451f3ec559032"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheDiskFailingAtAnyStepLeavesTheOldFileAndTheOldState": {
+   "kind": "test",
+   "hash": "67cef764965a0965",
+   "asserts": 7,
+   "literals": [
+    "280660e6fe7ca3b7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheFileHasOneRecordToALineAndAReformattedFileIsStillRead": {
+   "kind": "test",
+   "hash": "05a1676f4e6b376f",
+   "asserts": 7,
+   "literals": [
+    "062a993306f699c5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheMemoryDiskBehavesLikeADisk": {
+   "kind": "test",
+   "hash": "7264d48b87df5753",
+   "asserts": 7,
+   "literals": [
+    "c32e25b34badcddf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/definitionsfile::TestTheStateIsTheSameAfterTheFileIsOpenedAgain": {
+   "kind": "test",
+   "hash": "cc51e8ad345f0f92",
+   "asserts": 12,
+   "literals": [
+    "0baf490546b57f1e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-340"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/devauth::TestAuthenticateAcceptsExactlyOneToken": {
@@ -7784,6 +9466,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestACallWhoseFirstTryIsStillRunningIsRefusedNotRepeated": {
+   "kind": "test",
+   "hash": "d9ec216d1edabfc6",
+   "asserts": 3,
+   "literals": [
+    "b1f350662143a0e2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestAcceptHeaderNegotiation": {
    "kind": "test",
    "hash": "09c25261379f9f17",
@@ -7814,6 +9511,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestAFailingDirectoryIsAnOutageThatShowsNothingOfTheStore": {
+   "kind": "test",
+   "hash": "1662c1d12b9b4ab8",
+   "asserts": 2,
+   "literals": [
+    "db56943a2138a05f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestAllowedActionsFollowTheRoleTable": {
    "kind": "test",
    "hash": "ecc4d0319b91becd",
@@ -7829,6 +9541,66 @@
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
+  "go:backend/internal/httpapi::TestAMissingTokenIsNotCounted": {
+   "kind": "test",
+   "hash": "0a3c4e93b94d1a17",
+   "asserts": 2,
+   "literals": [
+    "6d323a13d7f63a5c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnAdministratorManagesUsersAndTheAnswersFitTheContract": {
+   "kind": "test",
+   "hash": "4c2248a3380b07fb",
+   "asserts": 19,
+   "literals": [
+    "2cb0ef92078d925b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnAuthenticatorThatCannotAnswerIsAnOutageNotARefusal": {
+   "kind": "test",
+   "hash": "df53c3faa6911442",
+   "asserts": 5,
+   "literals": [
+    "fcea6baefb340575"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestANewTokenIsInOneAnswerOnlyAndItsKeyCannotBeUsedAgain": {
+   "kind": "test",
+   "hash": "57588d710397760b",
+   "asserts": 10,
+   "literals": [
+    "f1cf808b96fd0a68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestANotFoundAnswerSaysWhatWasNotFound": {
    "kind": "test",
    "hash": "8521290be39ec968",
@@ -7840,6 +9612,51 @@
    "skips": 0,
    "reqs": [
     "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnotherTokenIsShownToItsOwnerAndToAnAdministratorOnly": {
+   "kind": "test",
+   "hash": "2a6bb8e519667b59",
+   "asserts": 7,
+   "literals": [
+    "7c3b5e93c226c253"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce": {
+   "kind": "test",
+   "hash": "4e372fba8a21ee2b",
+   "asserts": 10,
+   "literals": [
+    "c36aabde055f4cd0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked": {
+   "kind": "test",
+   "hash": "cecaf45de1175a56",
+   "asserts": 10,
+   "literals": [
+    "7eccb1a139978858"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -7874,6 +9691,36 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/httpapi::TestBadRequestsToTheManagementRoutesAreRefusedWithAProblem": {
+   "kind": "test",
+   "hash": "63b75d7008216fcd",
+   "asserts": 3,
+   "literals": [
+    "8ee9c4fe981c9ca6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestBehindAProxyTheLastForwardedAddressIsTheCaller": {
+   "kind": "test",
+   "hash": "54e085af9132db8c",
+   "asserts": 4,
+   "literals": [
+    "98721ef83f7d1b89"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestBodyLimitAndMediaType": {
    "kind": "test",
    "hash": "a06662b446f3e3ae",
@@ -7891,18 +9738,18 @@
   },
   "go:backend/internal/httpapi::TestCatalogsServeTheClosedLists": {
    "kind": "test",
-   "hash": "1272941bb744370c",
+   "hash": "09431b2e2a5860a7",
    "asserts": 7,
    "literals": [
-    "b596a6b83394e232"
+    "64a3cb7e25681ea4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-229"
    ],
-   "added": "2026-11-13",
-   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+   "added": "2026-11-14",
+   "amended_by": "0046-ingestion-usability-from-the-first-own-file.md"
   },
   "go:backend/internal/httpapi::TestConditionalReadsAnswerNotModified": {
    "kind": "test",
@@ -7918,6 +9765,21 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/httpapi::TestCreatingAndActingCallsNeedAWellFormedIdempotencyKey": {
+   "kind": "test",
+   "hash": "1e1caeecca9d0fe1",
+   "asserts": 3,
+   "literals": [
+    "950acc7aa43998a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/httpapi::TestCursorIsRefusedWhenItDoesNotBelong": {
    "kind": "test",
@@ -7981,33 +9843,33 @@
   },
   "go:backend/internal/httpapi::TestEveryAnswerFitsTheContract": {
    "kind": "test",
-   "hash": "2bde210b82d25ff5",
+   "hash": "586e90b7c37a0857",
    "asserts": 13,
    "literals": [
-    "ca4f783bce9982c6"
+    "9fcea7530e79fc59"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-148"
    ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+   "added": "2026-11-14",
+   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
   },
   "go:backend/internal/httpapi::TestEveryOperationAsksForTheRoleItDeclares": {
    "kind": "test",
-   "hash": "d2c251667f7f2054",
-   "asserts": 8,
+   "hash": "270c26b6a7d60cec",
+   "asserts": 9,
    "literals": [
-    "23efdaf1bbd47723"
+    "8617ad55ed8810ba"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-148"
    ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+   "added": "2026-11-14",
+   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
   },
   "go:backend/internal/httpapi::TestFiltersSelectWhatTheModelHolds": {
    "kind": "test",
@@ -8053,6 +9915,36 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/httpapi::TestImpactOverHTTPAnswersASiteFailureAndAnUpstreamQuestion": {
+   "kind": "test",
+   "hash": "3d4637a917562514",
+   "asserts": 12,
+   "literals": [
+    "85913c0341881d4c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestImpactOverHTTPRefusesWhatItCannotAnswerWithAProblem": {
+   "kind": "test",
+   "hash": "8275e02f93e40b35",
+   "asserts": 8,
+   "literals": [
+    "28e4a81952960326"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/httpapi::TestKGAnswersFitTheContract": {
    "kind": "test",
@@ -8191,18 +10083,18 @@
   },
   "go:backend/internal/httpapi::TestProblemsKeepTheirShapeAndCatalogue": {
    "kind": "test",
-   "hash": "a29d0736298d913f",
+   "hash": "bd7612e32178cb0c",
    "asserts": 18,
    "literals": [
-    "6935c3666886094e"
+    "84d7a57b52f301b0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-148"
    ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+   "added": "2026-11-14",
+   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
   },
   "go:backend/internal/httpapi::TestQuestionBodiesAreRefusedWithAProblem": {
    "kind": "test",
@@ -8324,6 +10216,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestTheCurrentTokenSaysWhoIsCalling": {
+   "kind": "test",
+   "hash": "52adfa34f1cf57c4",
+   "asserts": 5,
+   "literals": [
+    "b2377d2f4fac82ac"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestTraceIDComesFromTraceparentOrIsMade": {
    "kind": "test",
    "hash": "24f9bf87f5643ae1",
@@ -8350,6 +10257,21 @@
    "skips": 0,
    "reqs": [
     "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestUIContentSecurityPolicyNamesEachKindOfLoadAndAllowsNoOtherOrigin": {
+   "kind": "test",
+   "hash": "7ddc7e81a6f5d888",
+   "asserts": 3,
+   "literals": [
+    "4ad7e98735790ea8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-318"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -8384,6 +10306,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestUIPageIsNotStoredButBfcacheStaysPossible": {
+   "kind": "test",
+   "hash": "9c5917bdfc0e13f5",
+   "asserts": 2,
+   "literals": [
+    "4aad374e0fc2f757"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-318"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestUIPagesCannotBeFramedOrLoadOutsideTheirOrigin": {
    "kind": "test",
    "hash": "760a3c8cf9819ea2",
@@ -8414,6 +10351,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestUITurnsOffBrowserFeaturesItDoesNotUseAndKeepsItsOwnWindowGroup": {
+   "kind": "test",
+   "hash": "2295b36fed2289ca",
+   "asserts": 4,
+   "literals": [
+    "51c3b5c6c181f946"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-318"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestUIWithoutABuiltPageAnswersWithThePlaceholder": {
    "kind": "test",
    "hash": "bd6435337f8537b6",
@@ -8429,20 +10381,35 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestWithoutADirectoryTheManagementRoutesAnswerNotFound": {
+   "kind": "test",
+   "hash": "baf033956e8e1cad",
+   "asserts": 4,
+   "literals": [
+    "c4f50a915de093f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer": {
    "kind": "test",
-   "hash": "392157882fd2f161",
+   "hash": "39f012a992ccab5a",
    "asserts": 14,
    "literals": [
-    "f6e07fde9a1174ba"
+    "2384ef17fa830135"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-148"
    ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+   "added": "2026-11-14",
+   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
   },
   "go:backend/internal/httpapi::TestWithoutUIConfiguredTheServerIsTheAPIOnly": {
    "kind": "test",
@@ -8455,6 +10422,591 @@
    "skips": 0,
    "reqs": [
     "REQ-275"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestADisabledPrincipalsTokensAreRefusedAndTheLastAdministratorStays": {
+   "kind": "test",
+   "hash": "05a7521f120d0790",
+   "asserts": 9,
+   "literals": [
+    "7abfeb9d2f4e16cf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestAFailedBootstrapGivesItsClaimBackAndADeadOneRunsOut": {
+   "kind": "test",
+   "hash": "21582ae9e6d177c8",
+   "asserts": 7,
+   "literals": [
+    "016ed35f9d1207df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestAFailingStoreIsNotAnInvalidToken": {
+   "kind": "test",
+   "hash": "47e0390dc9d93e95",
+   "asserts": 3,
+   "literals": [
+    "edd61e8c4542ede8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestAKeyThatFailsTooOftenInARowIsBlockedForAWhile": {
+   "kind": "test",
+   "hash": "9e2787301ab4d096",
+   "asserts": 8,
+   "literals": [
+    "5822c0c115624961"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestAnAddressIsCountedWithItsNetworkForIPv6": {
+   "kind": "test",
+   "hash": "fc3c5d8f67c08366",
+   "asserts": 1,
+   "literals": [
+    "2b67a80e7f5468c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestAPlainUseWritesNoAuditLine": {
+   "kind": "test",
+   "hash": "8281517e69543155",
+   "asserts": 5,
+   "literals": [
+    "db8b35be809c1b05"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestARevokedTokenIsRefusedAtOnceAndStaysListed": {
+   "kind": "test",
+   "hash": "5b45994ddc2f9161",
+   "asserts": 8,
+   "literals": [
+    "490ab81fcd3d28a2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestAStoredRecordOfAnotherVersionIsRefused": {
+   "kind": "test",
+   "hash": "3869346ff878da1a",
+   "asserts": 7,
+   "literals": [
+    "dbed278e907c12b4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestATokenCanOnlyNarrowTheRolesOfItsOwner": {
+   "kind": "test",
+   "hash": "bd1565d1291a93e1",
+   "asserts": 6,
+   "literals": [
+    "fc3f299a270d0d8e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestATokenThatIsNotGoodIsRefusedWithoutSayingWhichPartIsWrong": {
+   "kind": "test",
+   "hash": "7748c1df2e4b432b",
+   "asserts": 3,
+   "literals": [
+    "805c060a38c97293"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestATokenWorksUntilItExpires": {
+   "kind": "test",
+   "hash": "403af02b175de614",
+   "asserts": 6,
+   "literals": [
+    "61ce0068bd9cb14d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestBootstrapChecksTheNameBeforeItClaimsAnything": {
+   "kind": "test",
+   "hash": "2d52d98be1ef9fd9",
+   "asserts": 4,
+   "literals": [
+    "1dc33b56e2117cce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestBootstrapMakesTheFirstAdministratorAndItsTokenOnce": {
+   "kind": "test",
+   "hash": "75756c6e6c3adf83",
+   "asserts": 8,
+   "literals": [
+    "bb3f184077555fbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestBootstrapStaysRefusedWhileAnAdministratorExistsEvenWithoutAUsableToken": {
+   "kind": "test",
+   "hash": "2473e97a1dd1b166",
+   "asserts": 4,
+   "literals": [
+    "20491b5d67dc4cca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestEveryCallAnswersAnErrorWhenTheStoreCannot": {
+   "kind": "test",
+   "hash": "a51dbc568705cc2a",
+   "asserts": 4,
+   "literals": [
+    "24ce34ff1bcce4f2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestEveryTokenExpiresAndTheLifetimeHasLimits": {
+   "kind": "test",
+   "hash": "5b32d7a7d8907f80",
+   "asserts": 4,
+   "literals": [
+    "438e12993eedfc44"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestOfBootstrapsAtTheSameMomentExactlyOneMakesTheAdministrator": {
+   "kind": "test",
+   "hash": "ec9d05b8af08f292",
+   "asserts": 3,
+   "literals": [
+    "95e71b1d374b4325"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-307"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestOnlyFailuresWithinTheWindowCountAndTheyRunOutByTime": {
+   "kind": "test",
+   "hash": "01d9e769d0284aa0",
+   "asserts": 5,
+   "literals": [
+    "1d2799b17c15c039"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestOnlyTheSha256OfTheSecretBoundToItsIdentifierIsKept": {
+   "kind": "test",
+   "hash": "7b2e942525716017",
+   "asserts": 6,
+   "literals": [
+    "8d2a3fdb3bb03427"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestPrincipalsHaveUniqueNamesAndRolesThatFitTheirKind": {
+   "kind": "test",
+   "hash": "8addc1c5c323c77e",
+   "asserts": 7,
+   "literals": [
+    "5710240176d0f1c7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTakingARoleFromTheOwnerTakesItFromItsTokens": {
+   "kind": "test",
+   "hash": "3832abdfad82aa4e",
+   "asserts": 7,
+   "literals": [
+    "323c9b518b531679"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTheAuditLogRecordsWhoDidWhatToWhomAndNeverASecret": {
+   "kind": "test",
+   "hash": "180c8b280690c1ec",
+   "asserts": 12,
+   "literals": [
+    "2373afcd1bac68bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTheLastUseIsWrittenAtMostOnceAMinute": {
+   "kind": "test",
+   "hash": "3775fc797c711ac3",
+   "asserts": 6,
+   "literals": [
+    "d0b548bed34feb4e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTheLimiterKeepsItsMemoryBounded": {
+   "kind": "test",
+   "hash": "1100c5f7ffcd49e6",
+   "asserts": 2,
+   "literals": [
+    "ae42b0424450b086"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTheSecretIsComparedWithTheStandardConstantTimeComparison": {
+   "kind": "test",
+   "hash": "eb6c5e9e3776b9da",
+   "asserts": 4,
+   "literals": [
+    "4229d1478088ddd9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTokenIsARandomSecretWithAPublicIdentifier": {
+   "kind": "test",
+   "hash": "da21ce964bfe28cc",
+   "asserts": 5,
+   "literals": [
+    "d95dd8f072e63e55"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-308"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identity::TestTokensAreListedByOwnerWithTheKindOfTheOwner": {
+   "kind": "test",
+   "hash": "521023e50d2de124",
+   "asserts": 6,
+   "literals": [
+    "80fabf2ba7a1c5e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identitycheck::TestEachCaseOfTheSuiteFailsOnTheFlawItIsMadeFor": {
+   "kind": "test",
+   "hash": "489cd799b259eb7f",
+   "asserts": 3,
+   "literals": [
+    "ed44a8ba5a23b80a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identitycheck::TestTheFileStoreConformsToTheIdentityStorePort": {
+   "kind": "test",
+   "hash": "2694a7bf10889b9e",
+   "asserts": 1,
+   "literals": [
+    "b30e4c8717d5e988"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identitycheck::TestTheInMemoryStoreConformsToTheIdentityStorePort": {
+   "kind": "test",
+   "hash": "cc5ae80a0c1269aa",
+   "asserts": 1,
+   "literals": [
+    "66fc16f69adf1652"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identitycheck::TestThePostgresStoreConformsToTheIdentityStorePort": {
+   "kind": "test",
+   "hash": "ab2e49eaeaca146c",
+   "asserts": 1,
+   "literals": [
+    "66fc16f69adf1652"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identitycheck::TestTheSuiteCatchesAStoreThatIgnoresTheVersion": {
+   "kind": "test",
+   "hash": "0487e803839698ec",
+   "asserts": 1,
+   "literals": [
+    "6bb92e9dac097b8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identityfile::TestAFileWithoutRecordsIsAnEmptyStoreAndTextThatIsNotTextIsRefused": {
+   "kind": "test",
+   "hash": "d3b95920e43d320c",
+   "asserts": 5,
+   "literals": [
+    "e5c99402af923cbb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identityfile::TestAWriteThatFailsAtAnyStepLeavesTheOldFileAndTheOldRecords": {
+   "kind": "test",
+   "hash": "0d555d4352fb34e4",
+   "asserts": 10,
+   "literals": [
+    "fbff499c965adb8c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identityfile::TestOpenRefusesAFileThatIsNotWhole": {
+   "kind": "test",
+   "hash": "e424cb73c3bf6de2",
+   "asserts": 2,
+   "literals": [
+    "5d3878a3181d3ad6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identityfile::TestScanVisitsOneKindInTheOrderOfTheIDsAndStopsAtAnError": {
+   "kind": "test",
+   "hash": "37892743b5532915",
+   "asserts": 6,
+   "literals": [
+    "b96d45e5001790c7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identityfile::TestTheLeftoverOfAnInterruptedWriteIsRemovedAndTheOldFileIsKept": {
+   "kind": "test",
+   "hash": "e1de4ff54e7e76b2",
+   "asserts": 5,
+   "literals": [
+    "98de5dd851828710"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/identityfile::TestWhatWasWrittenIsThereAfterTheFileIsOpenedAgain": {
+   "kind": "test",
+   "hash": "6d75b2efc15fb07b",
+   "asserts": 9,
+   "literals": [
+    "5a69b7554d171aa0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestACSVDelimiterIsTheDatasetsAndAFileThatNeedsAnotherIsSaid": {
+   "kind": "test",
+   "hash": "56e3dfaef2685071",
+   "asserts": 8,
+   "literals": [
+    "91243dc60fd804f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-324"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -8489,6 +11041,96 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestADraftSourceIsADefinitionThatNeedsOnlyItsNaturalKey": {
+   "kind": "test",
+   "hash": "a806e51e50c6978a",
+   "asserts": 7,
+   "literals": [
+    "4ba619845cdd3525"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-326"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestADraftSourceOfAWorkbookHasADatasetForEveryVisibleSheet": {
+   "kind": "test",
+   "hash": "587cb9a8aa8d6e3c",
+   "asserts": 7,
+   "literals": [
+    "0204489eebaa738a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-326"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAFieldThatIsNotAllowedIsReportedWithTheFieldsThatAre": {
+   "kind": "test",
+   "hash": "9558f11143f605cc",
+   "asserts": 4,
+   "literals": [
+    "a6487782acab247e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAFileThatIsNotUTF8StopsWithWhatToDo": {
+   "kind": "test",
+   "hash": "248e5b74a9e074bd",
+   "asserts": 6,
+   "literals": [
+    "1badaa8447113c0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-323"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAnEmptyNaturalKeyIsReportedWithTheColumnThatIsEmpty": {
+   "kind": "test",
+   "hash": "582679ad7341c93e",
+   "asserts": 3,
+   "literals": [
+    "0af0030ac3b1d4f5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAnInvalidValueIsReportedWithOneCodePrefix": {
+   "kind": "test",
+   "hash": "0def96f5a56ef2b4",
+   "asserts": 3,
+   "literals": [
+    "a0589f3d558cb203"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-327"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
    "kind": "test",
    "hash": "40836a2338ae3490",
@@ -8500,6 +11142,21 @@
    "skips": 0,
    "reqs": [
     "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestASheetTheWorkbookLacksIsReportedWithTheSheetsItHas": {
+   "kind": "test",
+   "hash": "f3eee8479437075f",
+   "asserts": 5,
+   "literals": [
+    "4764752571b5770f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-320"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -8854,6 +11511,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestMissingColumnsAreReportedWithTheHeaderThatWasRead": {
+   "kind": "test",
+   "hash": "1070fc3e017636cf",
+   "asserts": 5,
+   "literals": [
+    "86c218aba7547b45"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-320"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestOneChangedRowChangesOneObject": {
    "kind": "test",
    "hash": "281a86fdfa283831",
@@ -8956,6 +11628,21 @@
    "reqs": [
     "REQ-263",
     "REQ-264"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRefusedKeysAndSchemesListWhatTheModelAllows": {
+   "kind": "test",
+   "hash": "2ac2357edfac31b8",
+   "asserts": 5,
+   "literals": [
+    "604be033ee35b02e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-321"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -9140,6 +11827,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas": {
+   "kind": "test",
+   "hash": "10d3d38a9be8eada",
+   "asserts": 5,
+   "literals": [
+    "4471cdbdbe20ba9f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-331"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestTheSheetIsPickedByNameByPlaceOrFirstAndMissingOnesAreSaid": {
    "kind": "test",
    "hash": "65be25ccebb4ee8f",
@@ -9166,6 +11868,21 @@
    "skips": 0,
    "reqs": [
     "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestUndeclaredColumnsCanBeLeftOutAndTheDeclaredOnesStayRequired": {
+   "kind": "test",
+   "hash": "18b8200c0bf411f8",
+   "asserts": 5,
+   "literals": [
+    "bf106e458f5103b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-325"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -10024,6 +12741,21 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/model::TestAKeyThatNamesWhatTheRegistryLacksIsStillDescribed": {
+   "kind": "test",
+   "hash": "c447ba0f34b00871",
+   "asserts": 6,
+   "literals": [
+    "8460c4cc4fdfc39c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-321"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestBaselineIsSound": {
    "kind": "test",
    "hash": "7aed28c6f91f4db0",
@@ -10189,10 +12921,10 @@
   },
   "go:backend/internal/model::TestComposeRegistryReportsWhatTheOrdinaryChecksFind": {
    "kind": "test",
-   "hash": "bc011edef90b7604",
-   "asserts": 3,
+   "hash": "557f2dfde766b888",
+   "asserts": 2,
    "literals": [
-    "fd4d07cd31dbe47f"
+    "f9c6966a448ed150"
    ],
    "precision": [],
    "skips": 0,
@@ -10213,21 +12945,6 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/model::TestDefinitionSetHash": {
-   "kind": "test",
-   "hash": "bec45c13fbc89e32",
-   "asserts": 11,
-   "literals": [
-    "97dabeb1b1591134"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-349"
-   ],
-   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestEveryBindingUsesAnAllowedMeaningAndChannel": {
@@ -10583,6 +13300,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/model::TestOverlayBodyIsCanonical": {
+   "kind": "test",
+   "hash": "100e056b4fa0169c",
+   "asserts": 5,
+   "literals": [
+    "ff146d4c41ba5ee3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-349"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestOverlayBodyKeepsASuccessorSoThatItCanBeRefused": {
    "kind": "test",
    "hash": "57f622a72f9f67b7",
@@ -10601,10 +13333,10 @@
   },
   "go:backend/internal/model::TestOverlayBodyRoundTrips": {
    "kind": "test",
-   "hash": "d06980393cddee24",
-   "asserts": 7,
+   "hash": "46b9aa174adf0718",
+   "asserts": 8,
    "literals": [
-    "f14228ffefc60516"
+    "0e2d5cfe5ac57d88"
    ],
    "precision": [],
    "skips": 0,
@@ -10642,21 +13374,6 @@
     "REQ-343",
     "REQ-344",
     "REQ-345"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/model::TestOverlayHashCoversEveryFieldButNotTheOrder": {
-   "kind": "test",
-   "hash": "db134c674bae5632",
-   "asserts": 7,
-   "literals": [
-    "599e67c83d424172"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-349"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -11039,10 +13756,10 @@
   },
   "go:backend/internal/model::TestStandardHashIsTheSameWithNoOverlay": {
    "kind": "test",
-   "hash": "56ed9b80617de8fd",
-   "asserts": 4,
+   "hash": "c7cf6117a088cd0c",
+   "asserts": 3,
    "literals": [
-    "76030cfae2c0f362"
+    "83be3a583a0c1bd0"
    ],
    "precision": [],
    "skips": 0,
@@ -11184,6 +13901,21 @@
     "REQ-100"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestTheModelDescribesTheIdentityKeysAndSchemesOfATypeForMessages": {
+   "kind": "test",
+   "hash": "2e211e2558e0571b",
+   "asserts": 7,
+   "literals": [
+    "ba0cbe9026d23a1a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-321"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/model::TestValid": {
@@ -11431,6 +14163,51 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/pgstore::TestIdentityRecordsAreKeptWithTheirVersionsAndFirstWriterWins": {
+   "kind": "test",
+   "hash": "4bd358a5d587d490",
+   "asserts": 9,
+   "literals": [
+    "c42c15080a0b1876"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIdentityRecordsFailWithAnErrorWhenTheirTableIsGoneOrThePoolIsClosed": {
+   "kind": "test",
+   "hash": "1f66a5e95ab6f350",
+   "asserts": 6,
+   "literals": [
+    "f875894cdca4f536"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIdentityRecordsSurviveReopeningTheDatabase": {
+   "kind": "test",
+   "hash": "b0535eb1d7c4d0a1",
+   "asserts": 7,
+   "literals": [
+    "98f6597bdde76331"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-310"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestLeasesRefuseBadInputAndStaleHolders": {
    "kind": "test",
    "hash": "ff7000664d3273ee",
@@ -11465,10 +14242,10 @@
   },
   "go:backend/internal/pgstore::TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited": {
    "kind": "test",
-   "hash": "59ec02a834b9f303",
+   "hash": "574535aa9bbf6098",
    "asserts": 9,
    "literals": [
-    "82885e9e0719ffcd"
+    "925bd7232aa03046"
    ],
    "precision": [],
    "skips": 0,
@@ -11476,7 +14253,7 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
-   "amended_by": null
+   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
   },
   "go:backend/internal/pgstore::TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns": {
    "kind": "test",
@@ -11668,6 +14445,36 @@
    "skips": 0,
    "reqs": [
     "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestAnIdentifierIsLookedUpTidiedTheWayItWasStored": {
+   "kind": "test",
+   "hash": "af251eedd74b55a2",
+   "asserts": 4,
+   "literals": [
+    "fcc18566f02a1010"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-322"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestAnIdentifierSchemeThatDoesNotExistIsAnsweredWithTheSchemesThatDo": {
+   "kind": "test",
+   "hash": "85b7e872b3ad04c4",
+   "asserts": 3,
+   "literals": [
+    "7bde15458a89808e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-321"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -11879,6 +14686,400 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/query::TestImpactACapacityGroupIsUnknownWhenAMemberFailsAndSaysSo": {
+   "kind": "test",
+   "hash": "b12a257021bbb194",
+   "asserts": 5,
+   "literals": [
+    "ff8bac71b418fde1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAContainerThatFailsTakesWhatIsContainedInItAndLinkCutsAreAccepted": {
+   "kind": "test",
+   "hash": "cbb58fca9d4730cb",
+   "asserts": 5,
+   "literals": [
+    "7796475811831cff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-303"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactADeadObjectFailsEverythingThatIsPartOfItAndAHardPartFailsTheWhole": {
+   "kind": "test",
+   "hash": "91e59d690d73dbff",
+   "asserts": 5,
+   "literals": [
+    "8e7d1b6ee8e4170d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAGroupWithoutMinAliveIsOnlyDecidedWhenEveryValueAgrees": {
+   "kind": "test",
+   "hash": "006889c490da5de3",
+   "asserts": 4,
+   "literals": [
+    "5e18d344a8af1627"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAHostOfAPoolThatCanFailOverOnlyInterruptsItsVMs": {
+   "kind": "test",
+   "hash": "a68b1bb42329e24f",
+   "asserts": 4,
+   "literals": [
+    "59dfce345eaf2fb6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactALinkOfUnknownGradeGivesUnknownInBothAnswers": {
+   "kind": "test",
+   "hash": "d124ab6543fd49df",
+   "asserts": 3,
+   "literals": [
+    "63bf1f6a78788e8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnAssumedLinkCarriesAFailureOnlyIntoTheAnswerWithAssumptions": {
+   "kind": "test",
+   "hash": "0f120b9703eb0060",
+   "asserts": 6,
+   "literals": [
+    "17e431d71e387b6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnAssumedMinAliveIsBelievedOnlyWithAssumptions": {
+   "kind": "test",
+   "hash": "37010ae6fb9c479a",
+   "asserts": 5,
+   "literals": [
+    "59e1d923ff70979e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301",
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnDependencyCycleEndsAndKeepsEveryObjectOnIt": {
+   "kind": "test",
+   "hash": "253a223726051de8",
+   "asserts": 4,
+   "literals": [
+    "8ffc70a0930df7e9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactAnObservedLinkOlderThanMaxStalenessIsNotUsed": {
+   "kind": "test",
+   "hash": "4ac3a4ff1086ac3f",
+   "asserts": 6,
+   "literals": [
+    "68b311068b70e14a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactASoftRequirementOnlyDegradesWhileAHardOneBringsTheObjectDown": {
+   "kind": "test",
+   "hash": "f83ceb56823f371d",
+   "asserts": 2,
+   "literals": [
+    "930ac9386a1e105c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactBothPdusTakeTheDualFedServerDownAndTheDownSpreadsToHostAndVM": {
+   "kind": "test",
+   "hash": "efd8844164a2c3b3",
+   "asserts": 3,
+   "literals": [
+    "a512045bc67d856c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactCoolingGroupOfThreeFansNeedingTwo": {
+   "kind": "test",
+   "hash": "0026b142c38a1d6e",
+   "asserts": 5,
+   "literals": [
+    "2bfa4e33d3663c46"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactHidesWhatTheCallerMayNotReadButKeepsTheRoute": {
+   "kind": "test",
+   "hash": "7be9920e834a35e7",
+   "asserts": 6,
+   "literals": [
+    "aeefe3a921c6bab0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-303"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactItemsSayWhichChannelNoLinkSupplies": {
+   "kind": "test",
+   "hash": "95403dedb6ec1d46",
+   "asserts": 3,
+   "literals": [
+    "23ff45a864308de1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-303"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactKeepsAtMostMaxItemsAndSaysSo": {
+   "kind": "test",
+   "hash": "774a4b0e3f665260",
+   "asserts": 4,
+   "literals": [
+    "d5ef026d955fe136"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactMlagPairLosesOneSwitchThenBoth": {
+   "kind": "test",
+   "hash": "56ba8ae3dff80b0c",
+   "asserts": 3,
+   "literals": [
+    "383e7df36f44c2e0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactOnePduLeavesTheDualFedServerExposedAndTakesTheSingleOneDown": {
+   "kind": "test",
+   "hash": "e98bf06ca997bf11",
+   "asserts": 6,
+   "literals": [
+    "a8d70cc1c2e8e456"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactOrderOfTheSeedsDoesNotChangeTheAnswer": {
+   "kind": "test",
+   "hash": "3f65acffaaf7ba53",
+   "asserts": 6,
+   "literals": [
+    "4f50e08c6ca2eefc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactPagesInTheOrderOfSeverityAndOtherQueriesCursorsAreRefused": {
+   "kind": "test",
+   "hash": "ce74ef0fcde48048",
+   "asserts": 7,
+   "literals": [
+    "bd23fa167b88f0fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactRefusesWhatItCannotAnswer": {
+   "kind": "test",
+   "hash": "d4037cbb7bc36f8b",
+   "asserts": 2,
+   "literals": [
+    "6510cd0e0d60b7d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactStopsAtMaxHopsAndSaysTheAnswerIsNotComplete": {
+   "kind": "test",
+   "hash": "f18c8ab42b5da156",
+   "asserts": 5,
+   "literals": [
+    "ae2b0b31db6368dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactStopsWhenTheTimeBudgetIsUsedUp": {
+   "kind": "test",
+   "hash": "cf2f1f4f27024389",
+   "asserts": 5,
+   "literals": [
+    "846f4d98702cc004"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactUpstreamListsWhatTheTargetDependsOnAndWhichOnesAreSinglePoints": {
+   "kind": "test",
+   "hash": "33f09e41fb651ec8",
+   "asserts": 8,
+   "literals": [
+    "02e7f39f74b761eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactUpstreamPagesAndCapsTheDependenciesItTries": {
+   "kind": "test",
+   "hash": "05654bdc5099dc8a",
+   "asserts": 4,
+   "literals": [
+    "7c507eb4f166304d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestImpactUpstreamWithAnAssumedLinkNamesTheSinglePointOnlyWithAssumptions": {
+   "kind": "test",
+   "hash": "c666ee2cd9ca2bc9",
+   "asserts": 2,
+   "literals": [
+    "cd103ea0009271f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/query::TestNeighborsGroupsAndStepsAreReported": {
    "kind": "test",
    "hash": "8c06023337ff5b71",
@@ -12042,6 +15243,220 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/readcheck::TestImpactADeadMemoryModuleDegradesTheServerAndADeadCPUTakesItDown": {
+   "kind": "test",
+   "hash": "b51a97ef57bcf76f",
+   "asserts": 6,
+   "literals": [
+    "b3da12807bc58d7a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactAMoreFailuresNeverBringBackAnObjectThatWasDown": {
+   "kind": "test",
+   "hash": "96104487a3f14474",
+   "asserts": 4,
+   "literals": [
+    "409e16664a5d9316"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactBothRackPdusTakeTheServersDownAndItReachesHostsAndVMs": {
+   "kind": "test",
+   "hash": "a5bd89f7b3021c2c",
+   "asserts": 6,
+   "literals": [
+    "9f4b11ca39d0be3e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactDownstreamAndUpstreamAgreeOnWhatOneFailureDoesToATarget": {
+   "kind": "test",
+   "hash": "88bc986853f7b477",
+   "asserts": 6,
+   "literals": [
+    "932cbf8790f7af63"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactEndsOnAWholeSiteAndOnEveryPduAtOnce": {
+   "kind": "test",
+   "hash": "25f3b6aa6634fa70",
+   "asserts": 4,
+   "literals": [
+    "c515c47fccf37842"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactEveryObjectThatGoesDownWithASeedNamesTheSeedAsItsSinglePoint": {
+   "kind": "test",
+   "hash": "2db94f5edae28815",
+   "asserts": 3,
+   "literals": [
+    "315ba13fdbbb9c3a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-305"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactFailureAcrossAnAssumedLinkIsMarkedAndOnlyBelievedWithAssumptions": {
+   "kind": "test",
+   "hash": "48af082c275345ce",
+   "asserts": 4,
+   "literals": [
+    "9be613505d2b0add"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-302"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactFanGroupOfAServerNeedsAllButOneFan": {
+   "kind": "test",
+   "hash": "60834460813c737c",
+   "asserts": 5,
+   "literals": [
+    "22a553a605b88eda"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries": {
+   "kind": "test",
+   "hash": "5347235169728072",
+   "asserts": 9,
+   "literals": [
+    "4e8cff423596c126"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactMlagPairOfARackLosesOneSwitchAndThenBoth": {
+   "kind": "test",
+   "hash": "ea4f3d28b7fd4854",
+   "asserts": 6,
+   "literals": [
+    "67f62e7bf84645f4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactOneHostOfAClusterOnlyInterruptsItsVMs": {
+   "kind": "test",
+   "hash": "f9e8f55e135bed06",
+   "asserts": 5,
+   "literals": [
+    "bcf9fcb2c6918eab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactOneRackPduExposesTheDualFedServersAndDownsTheSinglyFedToRSwitch": {
+   "kind": "test",
+   "hash": "6759e1bdee7c395e",
+   "asserts": 8,
+   "literals": [
+    "3ae94c53e1b46e51"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300",
+    "REQ-301"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactSaysWhenALimitCutTheAnswer": {
+   "kind": "test",
+   "hash": "36771d56171cfc32",
+   "asserts": 6,
+   "literals": [
+    "9e58b429d1cbae00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-304"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/readcheck::TestImpactTheOrderOfTheSeedsDoesNotChangeTheAnswerOnAGeneratedWorld": {
+   "kind": "test",
+   "hash": "da7d25da3f4bc5a5",
+   "asserts": 2,
+   "literals": [
+    "8113444e8369479a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-300"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/readcheck::TestNeighborsReadThePastAndTheView": {
    "kind": "test",
@@ -32387,6 +35802,745 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-316] oklch becomes sRGB and a pair gets its WCAG contrast > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-316] oklch becomes sRGB and a pair gets its WCAG contrast > a saturated color is clipped into the gamut and a red is not dark": {
+   "kind": "test",
+   "hash": "cebd476dafacd7db",
+   "asserts": 2,
+   "literals": [
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.2577\"",
+    "\"0.628\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"29.23\"",
+    "\"a saturated color is clipped into the gamut and a red is not dark\""
+   ],
+   "precision": [
+    1
+   ],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-316] oklch becomes sRGB and a pair gets its WCAG contrast > percent lightness, alpha and other notations are read or refused": {
+   "kind": "test",
+   "hash": "aa4a222da9239366",
+   "asserts": 4,
+   "literals": [
+    "\"#fff\"",
+    "\"#fff\"",
+    "\"--px-x\"",
+    "\"--px-x\"",
+    "\"0.1\"",
+    "\"0.1\"",
+    "\"0.4\"",
+    "\"0.4\"",
+    "\"0.5\"",
+    "\"0.5\"",
+    "\"1\"",
+    "\"1\"",
+    "\"120\"",
+    "\"120\"",
+    "\"oklch(0.2 0.02 258 / 0.4)\"",
+    "\"oklch(0.2 0.02 258 / 0.4)\"",
+    "\"oklch(0.2 0.02 258 / 0.4)\"",
+    "\"oklch(0.2 0.02 258 / 0.4)\"",
+    "\"oklch(50% 0.1 120)\"",
+    "\"oklch(50% 0.1 120)\"",
+    "\"percent lightness, alpha and other notations are read or refused\"",
+    "\"x\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-316] oklch becomes sRGB and a pair gets its WCAG contrast > the dark theme is the light one with the dark block laid over it": {
+   "kind": "test",
+   "hash": "15d0a9d8fd841864",
+   "asserts": 5,
+   "literals": [
+    "\"--px-fg\"",
+    "\"--px-fg\"",
+    "\"--px-fg\"",
+    "\"--px-fg\"",
+    "\"--px-line\"",
+    "\"--px-line\"",
+    "\"0\"",
+    "\"0\"",
+    "\"10\"",
+    "\"10\"",
+    "\"4.5\"",
+    "\"canvas\"",
+    "\"dark\"",
+    "\"dark\"",
+    "\"fg\"",
+    "\"light\"",
+    "\"light\"",
+    "\"oklch(0.2 0 0)\"",
+    "\"oklch(0.2 0 0)\"",
+    "\"oklch(0.6 0 0)\"",
+    "\"oklch(0.6 0 0)\"",
+    "\"oklch(0.95 0 0)\"",
+    "\"oklch(0.95 0 0)\"",
+    "\"the dark theme is the light one with the dark block laid over it\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-316] oklch becomes sRGB and a pair gets its WCAG contrast > white, black and a mid gray give the known values": {
+   "kind": "test",
+   "hash": "56bc860fd1ca47e4",
+   "asserts": 6,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0.389\"",
+    "\"0.389\"",
+    "\"0.5\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"1\"",
+    "\"2\"",
+    "\"2\"",
+    "\"21\"",
+    "\"21\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"3\"",
+    "\"5.5\"",
+    "\"5.5\"",
+    "\"6.5\"",
+    "\"6.5\"",
+    "\"white, black and a mid gray give the known values\""
+   ],
+   "precision": [
+    3,
+    3,
+    1,
+    2
+   ],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-319] the support floor is written down and the build targets it > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-319] the support floor is written down and the build targets it > =read": {
+   "kind": "support",
+   "hash": "f1123e3ad9e51c81",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-319] the support floor is written down and the build targets it > =root": {
+   "kind": "support",
+   "hash": "b817f4fc2421c607",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-319] the support floor is written down and the build targets it > the build target names the browsers of the floor, not a language edition": {
+   "kind": "test",
+   "hash": "4e312e1d01f96514",
+   "asserts": 2,
+   "literals": [
+    "\"apps/web/config/vite.config.ts\"",
+    "\"chrome111\"",
+    "\"edge111\"",
+    "\"firefox128\"",
+    "\"safari16.4\"",
+    "\"the build target names the browsers of the floor, not a language edition\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::[REQ-319] the support floor is written down and the build targets it > the rules document states the floor, the policy, what is not adopted and the license, and AGENTS.md leads to it": {
+   "kind": "test",
+   "hash": "c685afad1f6df851",
+   "asserts": 2,
+   "literals": [
+    "\"5e5cd33\"",
+    "\"AGENTS.md\"",
+    "\"AGENTS.md\"",
+    "\"Baseline Widely available\"",
+    "\"CC BY 4.0\"",
+    "\"Newly available\"",
+    "\"docs/design-docs/web-ui-rules.md\"",
+    "\"docs/design-docs/web-ui-rules.md\"",
+    "\"docs/design-docs/web-ui-rules.md\"",
+    "\"the rules document states the floor, the policy, what is not adopted and the license, and AGENTS.md leads to it\"",
+    "\"사파리 16.4\"",
+    "\"채택하지 않는 것\"",
+    "\"크롬·엣지 111\"",
+    "\"파이어폭스 128\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:162b4ab4>": {
+   "kind": "support",
+   "hash": "162b4ab4b1d0e096",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:336c32d2>": {
+   "kind": "support",
+   "hash": "336c32d2f402b7a7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:46dc40aa>": {
+   "kind": "support",
+   "hash": "46dc40aa82ca0ed6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:50136be5>": {
+   "kind": "support",
+   "hash": "50136be5e88151da",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:b8a73295>": {
+   "kind": "support",
+   "hash": "b8a73295c63ff5eb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::=codes": {
+   "kind": "support",
+   "hash": "8af23c4b3c1669b0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::=CONFIG": {
+   "kind": "support",
+   "hash": "93bbb55e37e8be70",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::=run": {
+   "kind": "support",
+   "hash": "7e704c20cc38b62d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::=TOKENS": {
+   "kind": "support",
+   "hash": "7b04aaa5b0304926",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB040: a pair of tokens below its contrast in either theme [REQ-316] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB040: a pair of tokens below its contrast in either theme [REQ-316] > a dark theme that is too dim for the text, and a light edge that is too faint, fail with problem and fix": {
+   "kind": "test",
+   "hash": "e76c9ff2c4229186",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"WEB040\"",
+    "\"WEB040\"",
+    "\"WEB040\"",
+    "\"WEB040\"",
+    "\"\\n        :root { --px-canvas: oklch(1 0 0); --px-fg: oklch(0.2 0 0); --px-line: oklch(0.9 0 0); }\\n        @media (prefers-color-scheme: dark) { :root { --px-canvas: oklch(0.2 0 0); --px-fg: oklch(0.3 0 0); } }\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"a dark theme that is too dim for the text, and a light edge that is too faint, fail with problem and fix\"",
+    "\"apps/web/src/ui/tokens.css\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB040: a pair of tokens below its contrast in either theme [REQ-316] > a token that the pair names and the file lacks is WEB040": {
+   "kind": "test",
+   "hash": "90f9371b16f056b4",
+   "asserts": 1,
+   "literals": [
+    "\":root { --px-canvas: oklch(1 0 0); }\"",
+    "\":root { --px-canvas: oklch(1 0 0); }\"",
+    "\"WEB040\"",
+    "\"WEB040\"",
+    "\"a token that the pair names and the file lacks is WEB040\"",
+    "\"apps/web/src/ui/tokens.css\"",
+    "\"apps/web/src/ui/tokens.css\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB040: a pair of tokens below its contrast in either theme [REQ-316] > the pairs of the config pass in both themes": {
+   "kind": "test",
+   "hash": "a50481d01d950265",
+   "asserts": 1,
+   "literals": [
+    "\"the pairs of the config pass in both themes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB041: sinks that run or insert text as code or markup [REQ-318] > %s is WEB041": {
+   "kind": "test",
+   "hash": "841ef6665326809a",
+   "asserts": 1,
+   "literals": [
+    "\"%s is WEB041\"",
+    "\"<div dangerouslySetInnerHTML={{ __html: x }} />\"",
+    "\"WEB041\"",
+    "\"WEB041\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"const f = new Function('a', x);\"",
+    "\"document.write(x);\"",
+    "\"el.innerHTML = value;\"",
+    "\"el.insertAdjacentHTML('beforeend', x);\"",
+    "\"el.outerHTML += value;\"",
+    "\"el.setHTMLUnsafe(x);\"",
+    "\"eval(x);\"",
+    "\"setTimeout('go()', 10);\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB041: sinks that run or insert text as code or markup [REQ-318] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB041: sinks that run or insert text as code or markup [REQ-318] > text, a function passed to setTimeout, a comparison, a comment and a test file are clean": {
+   "kind": "test",
+   "hash": "0e19b7869927247b",
+   "asserts": 1,
+   "literals": [
+    "\"apps/web/src/a.test.tsx\"",
+    "\"apps/web/src/a.test.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"document.body.innerHTML = '';\\n\"",
+    "\"document.body.innerHTML = '';\\n\"",
+    "\"el.textContent = x;\\nsetTimeout(() => go(), 10);\\nif (el.innerHTML === '') {}\\n// eval(x) is refused\\nretrieval(x);\\n\"",
+    "\"el.textContent = x;\\nsetTimeout(() => go(), 10);\\nif (el.innerHTML === '') {}\\n// eval(x) is refused\\nretrieval(x);\\n\"",
+    "\"text, a function passed to setTimeout, a comparison, a comment and a test file are clean\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB042: an absolute address in the sources [REQ-318] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB042: an absolute address in the sources [REQ-318] > a path of the same origin and an exempted fixture file are clean; a neighbor of the fixture is not": {
+   "kind": "test",
+   "hash": "4339c2d387452c6c",
+   "asserts": 3,
+   "literals": [
+    "\"WEB042\"",
+    "\"WEB042\"",
+    "\"a path of the same origin and an exempted fixture file are clean; a neighbor of the fixture is not\"",
+    "\"apps/web/src/a.ts\"",
+    "\"apps/web/src/a.ts\"",
+    "\"apps/web/src/fixture.test.ts\"",
+    "\"apps/web/src/fixture.test.ts\"",
+    "\"apps/web/src/other.test.ts\"",
+    "\"apps/web/src/other.test.ts\"",
+    "\"fetch('/v1/kgs');\\n\"",
+    "\"fetch('/v1/kgs');\\n\"",
+    "\"new URL('http://fake');\\n\"",
+    "\"new URL('http://fake');\\n\"",
+    "\"new URL('http://fake');\\n\"",
+    "\"new URL('http://fake');\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB042: an absolute address in the sources [REQ-318] > an http or https address in a source, in index.html or in CSS is WEB042": {
+   "kind": "test",
+   "hash": "c5e4d597e05d926f",
+   "asserts": 3,
+   "literals": [
+    "\"<script src=\\\"http://cdn.example/x.js\\\"></script>\\n\"",
+    "\"<script src=\\\"http://cdn.example/x.js\\\"></script>\\n\"",
+    "\"@import url(https://fonts.example/a.css);\\n\"",
+    "\"@import url(https://fonts.example/a.css);\\n\"",
+    "\"WEB042\"",
+    "\"WEB042\"",
+    "\"WEB042\"",
+    "\"WEB042\"",
+    "\"WEB042\"",
+    "\"WEB042\"",
+    "\"an http or https address in a source, in index.html or in CSS is WEB042\"",
+    "\"apps/web/index.html\"",
+    "\"apps/web/index.html\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.ts\"",
+    "\"apps/web/src/a.ts\"",
+    "\"const u = 'https://example.org/x';\\n\"",
+    "\"const u = 'https://example.org/x';\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB043: the focus outline is removed [REQ-318] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB043: the focus outline is removed [REQ-318] > a replacement on the same element, the focus-visible pattern and the browser's own outline are clean": {
+   "kind": "test",
+   "hash": "2632fa0be7db0cd2",
+   "asserts": 1,
+   "literals": [
+    "\"<a className=\\\"outline-none focus-visible:outline-2\\\">x</a>\\n<b className=\\\"p-1\\\" />\\n\"",
+    "\"<a className=\\\"outline-none focus-visible:outline-2\\\">x</a>\\n<b className=\\\"p-1\\\" />\\n\"",
+    "\"WEB043\"",
+    "\"WEB043\"",
+    "\"a replacement on the same element, the focus-visible pattern and the browser's own outline are clean\"",
+    "\"a:focus:not(:focus-visible) { outline: none; }\\n:focus-visible { outline: 2px solid red; }\\n\"",
+    "\"a:focus:not(:focus-visible) { outline: none; }\\n:focus-visible { outline: 2px solid red; }\\n\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB043: the focus outline is removed [REQ-318] > outline-none without a focus-visible replacement on the same line is WEB043": {
+   "kind": "test",
+   "hash": "9bb49293d78c9b44",
+   "asserts": 3,
+   "literals": [
+    "\"<a className=\\\"px-2 outline-none\\\">x</a>\\n\"",
+    "\"<a className=\\\"px-2 outline-none\\\">x</a>\\n\"",
+    "\"WEB043\"",
+    "\"WEB043\"",
+    "\"WEB043\"",
+    "\"WEB043\"",
+    "\"WEB043\"",
+    "\"WEB043\"",
+    "\"a { outline: 0 }\\n\"",
+    "\"a { outline: 0 }\\n\"",
+    "\"a { outline: none; }\\n\"",
+    "\"a { outline: none; }\\n\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"outline-none without a focus-visible replacement on the same line is WEB043\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB044: motion that does not stop for a person who asked for less [REQ-317] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB044: motion that does not stop for a person who asked for less [REQ-317] > an animate- utility is clean only behind motion-safe:": {
+   "kind": "test",
+   "hash": "67cf9520bc0b3cbf",
+   "asserts": 3,
+   "literals": [
+    "\"<i className=\\\"motion-safe:animate-spin animate-none\\\" />\\n\"",
+    "\"<i className=\\\"motion-safe:animate-spin animate-none\\\" />\\n\"",
+    "\"<i className=\\\"size-4 animate-spin\\\" />\\n\"",
+    "\"<i className=\\\"size-4 animate-spin\\\" />\\n\"",
+    "\"<i className=\\\"size-4 hover:animate-pulse\\\" />\\n\"",
+    "\"<i className=\\\"size-4 hover:animate-pulse\\\" />\\n\"",
+    "\"@media (prefers-reduced-motion: reduce) { a { color: red } }\\n\"",
+    "\"WEB044\"",
+    "\"WEB044\"",
+    "\"WEB044\"",
+    "\"WEB044\"",
+    "\"an animate- utility is clean only behind motion-safe:\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/a.tsx\"",
+    "\"apps/web/src/b.css\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB044: motion that does not stop for a person who asked for less [REQ-317] > keyframes or a transition with no prefers-reduced-motion anywhere in the CSS is WEB044": {
+   "kind": "test",
+   "hash": "acdaf13890187bf8",
+   "asserts": 2,
+   "literals": [
+    "\"@keyframes s { to { opacity: 1 } }\\n\"",
+    "\"@keyframes s { to { opacity: 1 } }\\n\"",
+    "\"WEB044\"",
+    "\"WEB044\"",
+    "\"WEB044\"",
+    "\"WEB044\"",
+    "\"a { transition: color 1s }\\n\"",
+    "\"a { transition: color 1s }\\n\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"keyframes or a transition with no prefers-reduced-motion anywhere in the CSS is WEB044\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB044: motion that does not stop for a person who asked for less [REQ-317] > one rule for reduced motion anywhere in the CSS answers it": {
+   "kind": "test",
+   "hash": "081cedf3a4f6867b",
+   "asserts": 1,
+   "literals": [
+    "\"@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }\\n\"",
+    "\"@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto } }\\n\"",
+    "\"a { transition: color 1s }\\n\"",
+    "\"a { transition: color 1s }\\n\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/a.css\"",
+    "\"apps/web/src/b.css\"",
+    "\"apps/web/src/b.css\"",
+    "\"one rule for reduced motion anywhere in the CSS answers it\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB045: the build is over its budget [REQ-318] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB045: the build is over its budget [REQ-318] > =big": {
+   "kind": "support",
+   "hash": "d064dc45f807a90c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB045: the build is over its budget [REQ-318] > a small build passes and a large one is WEB045 for the kind that is large": {
+   "kind": "test",
+   "hash": "e6bc639d2bd3d58e",
+   "asserts": 4,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"WEB045\"",
+    "\"WEB045\"",
+    "\"a small build passes and a large one is WEB045 for the kind that is large\"",
+    "\"a\"",
+    "\"a\"",
+    "\"apps/web/dist/assets/a.css\"",
+    "\"apps/web/dist/assets/a.css\"",
+    "\"apps/web/dist/assets/a.css\"",
+    "\"apps/web/dist/assets/a.js\"",
+    "\"apps/web/dist/assets/a.js\"",
+    "\"apps/web/dist/assets/a.js\"",
+    "\"b\"",
+    "\"b\"",
+    "\"b\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/web-rules.test.ts::WEB045: the build is over its budget [REQ-318] > with no build the check is silent, unless the build is required (the CI step after the web build)": {
+   "kind": "test",
+   "hash": "b17a1aecee9cc75a",
+   "asserts": 2,
+   "literals": [
+    "\"WEB045\"",
+    "\"WEB045\"",
+    "\"harness/config/web.yaml\"",
+    "\"with no build the check is silent, unless the build is required (the CI step after the web build)\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
    "amended_by": null
   },
   "harness/src/checks/web.test.ts::<import:0458d18f>": {

@@ -16,7 +16,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/xlsx"
 )
 
-const inspectUsage = "usage: praxium ingest inspect -input <file> [-format csv|jsonl|xlsx] [-sheet <name|number>] [-header-row N] [-header-rows N] [-rows N] [-o table|json]"
+const inspectUsage = "usage: praxium ingest inspect -input <file> [-format csv|jsonl|xlsx] [-sheet <name|number>] [-header-row N] [-header-rows N] [-delimiter comma|tab|semicolon|pipe] [-rows N] [-o table|json] [-emit-source]"
 
 const inspectBody = `Look at a file before writing a mapping for it (docs/design-docs/ingestion-extensions.md 4): CSV, JSON Lines or an
 Excel workbook. For a workbook: its sheets with their size and whether they are hidden, the header row it guesses (or
@@ -30,12 +30,23 @@ flags:
   -sheet S           a workbook's sheet, by name or number (default: every sheet)
   -header-row N      the row of the header (default: guessed)
   -header-rows N     how many rows the header has (default: guessed)
+  -delimiter D       the separator of a CSV file: comma (default), tab, semicolon or pipe. A file that comes out as one
+                     column whose values hold tabs, semicolons or bars is probably separated by them; a note says so
   -rows N            how many rows to show as a sample (default 5)
   -o table|json      the form of the output (default table)
+  -emit-source       instead of the tables, print a draft of the source definition for this file (a dataset for the
+                     file, or for each visible sheet: header row, columns, a note on what the values look like) on the
+                     standard output, and notes on the standard error. Save it as source.json and edit it. The natural
+                     key is left for you: nothing in a file says which column tells one row from another, so the draft
+                     holds a placeholder that "ingest run" refuses, listing the columns to choose from
+
+A CSV or JSON Lines file must be UTF-8 (a UTF-8 byte order mark is fine). A file in a local code page (EUC-KR, CP949)
+or in UTF-16 stops with an error that says how to save it again; an .xlsx workbook has no such problem.
 
 example:
   praxium ingest init -out example
   praxium ingest inspect -input example/excel/datacenter.xlsx
+  praxium ingest inspect -input example/excel/datacenter.xlsx -emit-source > source.json
 `
 
 // inspectHelpEntries are the help entries of this file's commands.
@@ -45,13 +56,19 @@ func inspectHelpEntries(out map[string]helpEntry) {
 
 // inspectFlags is what the command line of one inspection says.
 type inspectFlags struct {
-	input, format, sheet, output string
-	headerRow, headerRows, rows  int
+	input, format, sheet, output, delimiter string
+	headerRow, headerRows, rows             int
+	emitSource                              bool
 }
 
 func parseInspect(args []string) (inspectFlags, error) {
 	f := inspectFlags{output: "table"}
 	for i := 0; i < len(args); i += 2 {
+		if args[i] == "-emit-source" {
+			f.emitSource = true
+			i--
+			continue
+		}
 		if i+1 >= len(args) {
 			return f, kernel.Errorf(kernel.CodeInvalidValue, "%s wants a value", args[i])
 		}
@@ -62,6 +79,9 @@ func parseInspect(args []string) (inspectFlags, error) {
 	if f.input == "" {
 		return f, kernel.Errorf(kernel.CodeInvalidValue, "ingest inspect needs -input")
 	}
+	if f.emitSource && f.output == "json" {
+		return f, kernel.Errorf(kernel.CodeInvalidValue, "-emit-source prints a source definition, which is JSON already; leave out -o")
+	}
 	return f, nil
 }
 
@@ -71,6 +91,9 @@ func (f *inspectFlags) set(flag, v string) error {
 		f.input = v
 	case "-sheet":
 		f.sheet = v
+	case "-delimiter":
+		f.delimiter = v
+		return ingest.CheckDelimiter(v)
 	case "-format", "-o":
 		return f.choice(flag, v)
 	case "-header-row":
@@ -117,14 +140,14 @@ func runInspect(args []string, stdout, stderr io.Writer, w wiring) int {
 	if err != nil {
 		return usageFail(stderr, err, "ingest inspect")
 	}
-	if err := inspectFile(f, stdout, w); err != nil {
+	if err := inspectFile(f, stdout, stderr, w); err != nil {
 		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
 	}
 	return exitOK
 }
 
-func inspectFile(f inspectFlags, stdout io.Writer, w wiring) error {
+func inspectFile(f inspectFlags, stdout, stderr io.Writer, w wiring) error {
 	in, err := openTruth(w, f.input)
 	if err != nil {
 		return kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read "+f.input)
@@ -141,9 +164,12 @@ func inspectFile(f inspectFlags, stdout io.Writer, w wiring) error {
 	if format == "" {
 		format = detectFormat(f.input, data)
 	}
-	prof, err := ingest.Inspect(data, ingest.InspectOptions{Format: format, Sheet: f.sheet, HeaderRow: f.headerRow, HeaderRows: f.headerRows, SampleRows: f.rows}, xlsx.Reader{})
+	prof, err := ingest.Inspect(data, ingest.InspectOptions{Format: format, Sheet: f.sheet, HeaderRow: f.headerRow, HeaderRows: f.headerRows, SampleRows: f.rows, Delimiter: f.delimiter}, xlsx.Reader{})
 	if err != nil {
 		return err
+	}
+	if f.emitSource {
+		return emitSource(prof, f, stdout, stderr)
 	}
 	if f.output == "json" {
 		enc := json.NewEncoder(stdout)
@@ -151,6 +177,25 @@ func inspectFile(f inspectFlags, stdout io.Writer, w wiring) error {
 		return enc.Encode(prof)
 	}
 	printProfile(stdout, f.input, prof)
+	return nil
+}
+
+// emitSource prints the draft of a source definition for the file on the standard output and what the person should
+// know about it on the standard error, so the output can be saved as it is.
+func emitSource(prof ingest.FileProfile, f inspectFlags, stdout, stderr io.Writer) error {
+	draft := ingest.DraftSource(prof, f.input, f.delimiter)
+	if len(draft.Source.Datasets) == 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "%s has nothing to make a dataset of (no visible sheet with data)", f.input)
+	}
+	enc := json.NewEncoder(stdout)
+	enc.SetIndent("", "  ")
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(draft.Source); err != nil {
+		return err
+	}
+	for _, n := range append(prof.Notes, draft.Notes...) {
+		fmt.Fprintf(stderr, "note: %s\n", n)
+	}
 	return nil
 }
 
@@ -190,6 +235,9 @@ func printProfile(out io.Writer, name string, p ingest.FileProfile) {
 	}
 	for _, t := range p.Tables {
 		printTable(out, t)
+	}
+	for _, n := range p.Notes {
+		fmt.Fprintf(out, "\nnote: %s\n", n)
 	}
 }
 

@@ -6,6 +6,7 @@ import (
 	"io"
 	"maps"
 	"slices"
+	"sort"
 	"strings"
 	"unicode/utf8"
 
@@ -131,24 +132,51 @@ type bodyOverlay struct {
 	Properties    []bodyProperty `json:"properties"`
 }
 
-// Body is the JSON of the overlay as it is stored: the properties without
-// their namespace, which is always org. The same overlay always gives the same bytes.
+// Body is the body of the overlay item as it is stored, in the normal form of
+// the definition store (definitions.NormalizeBody): no white space, keys in
+// byte order, a number written one way. The properties come in the order of
+// their ids and the aliases and enum values in the order of their text, so one
+// overlay, written in any order, always gives the same bytes and so the same
+// content hash. A property has no namespace in it, which is always org. The
+// content hash itself is the store's: RevisionHash of kind OverlayKind.
 func (o Overlay) Body() ([]byte, error) {
 	c := bodyOverlay{SchemaVersion: o.SchemaVersion, Kind: o.Kind, Target: o.Target, Properties: make([]bodyProperty, len(o.Properties))}
 	for i, p := range o.Properties {
 		p = p.clone()
 		p.Namespace = ""
+		slices.Sort(p.Aliases)
+		slices.Sort(p.EnumValues)
 		c.Properties[i] = bodyProperty{Property: p}
 		if !p.SupersededBy.IsZero() {
 			successor := p.SupersededBy
 			c.Properties[i].SupersededBy = &successor
 		}
 	}
-	data, err := json.Marshal(c)
+	sort.SliceStable(c.Properties, func(i, j int) bool { return c.Properties[i].ID.String() < c.Properties[j].ID.String() })
+	raw, err := json.Marshal(c)
 	if err != nil {
 		return nil, kernel.Wrap(kernel.CodeInternal, err, "cannot write an overlay body")
 	}
-	return data, nil
+	return normalJSON(raw)
+}
+
+// normalJSON writes a JSON object with its keys in byte order and its text
+// not escaped for HTML, which is the normal form of the definition store. The
+// numbers of a body are integers, so they stay as they are.
+func normalJSON(raw []byte) ([]byte, error) {
+	dec := json.NewDecoder(bytes.NewReader(raw))
+	dec.UseNumber()
+	var v any
+	if err := dec.Decode(&v); err != nil {
+		return nil, kernel.Wrap(kernel.CodeInternal, err, "cannot read an overlay body back")
+	}
+	var out bytes.Buffer
+	enc := json.NewEncoder(&out)
+	enc.SetEscapeHTML(false)
+	if err := enc.Encode(v); err != nil {
+		return nil, kernel.Wrap(kernel.CodeInternal, err, "cannot write an overlay body")
+	}
+	return bytes.TrimRight(out.Bytes(), "\n"), nil
 }
 
 // CheckOverlay applies the rules of an overlay that need nothing but the

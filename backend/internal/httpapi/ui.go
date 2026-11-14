@@ -17,13 +17,22 @@ const (
 	apiPrefix     = "/v1/"
 )
 
-// uiHeaders are sent with every file of the UI: the page may load only its own files, may not be framed, and the
-// browser must not guess a type.
+// uiCSP lets the page load and call only its own origin and says so for each kind of load, so a later change of
+// default-src cannot open one by accident (ADR-0045). Styles may be inline because the dialogs and menus place
+// themselves with style attributes; scripts may not (no inline script, no eval).
+const uiCSP = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; " +
+	"connect-src 'self'; worker-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'"
+
+// uiHeaders are sent with every file of the UI: the page may load only its own files, may not be framed, the
+// browser must not guess a type, no browser feature that a console has no use for is on, and the page does not
+// share a browsing context group with a window of another origin.
 var uiHeaders = map[string]string{
-	"Content-Security-Policy": "default-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; form-action 'self'",
-	"X-Content-Type-Options":  "nosniff",
-	"X-Frame-Options":         "DENY",
-	"Referrer-Policy":         "no-referrer",
+	"Content-Security-Policy":    uiCSP,
+	"X-Content-Type-Options":     "nosniff",
+	"X-Frame-Options":            "DENY",
+	"Referrer-Policy":            "no-referrer",
+	"Permissions-Policy":         "camera=(), microphone=(), geolocation=(), payment=(), usb=(), serial=()",
+	"Cross-Origin-Opener-Policy": "same-origin",
 }
 
 // serveUI answers the request with a file of the UI and reports whether it did.

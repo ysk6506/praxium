@@ -3,6 +3,7 @@ package model_test
 import (
 	"bytes"
 	"reflect"
+	"sort"
 	"strings"
 	"testing"
 
@@ -158,8 +159,13 @@ func TestOverlayBodyRoundTrips(t *testing.T) {
 			t.Errorf("the body has a namespace: %s", body)
 		}
 		back, err := model.ParseOverlay(body)
-		if err != nil || !reflect.DeepEqual(back, o) {
-			t.Fatalf("ParseOverlay() = %+v, %v; want %+v", back, err, o)
+		if err != nil {
+			t.Fatalf("ParseOverlay() = %v", err)
+		}
+		want := o.Clone()
+		sort.Slice(want.Properties, func(i, j int) bool { return want.Properties[i].ID.String() < want.Properties[j].ID.String() })
+		if !reflect.DeepEqual(back, want) {
+			t.Fatalf("ParseOverlay() = %+v; want %+v", back, want)
 		}
 		if again, _ := back.Body(); !bytes.Equal(again, body) {
 			t.Errorf("the body is not stable")

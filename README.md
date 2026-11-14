@@ -13,7 +13,7 @@ follows:
 
 [![ci](https://github.com/ysk6506/praxium/actions/workflows/ci.yml/badge.svg)](https://github.com/ysk6506/praxium/actions/workflows/ci.yml)
 
-> **초기 개발 단계이며, 운영 환경에서는 쓸 수 없습니다.** 알파 1을 만드는 중입니다. 인증은 개발용 토큰뿐이고, API와 데이터 형식은 예고 없이 바뀔 수 있습니다.
+> **초기 개발 단계이며, 운영 환경에서는 쓸 수 없습니다.** 지금은 알파 단계입니다. 최신 릴리스는 [릴리스 페이지](https://github.com/ysk6506/praxium/releases)에서 받습니다. 인증은 개발용 토큰뿐이고, API와 데이터 형식은 예고 없이 바뀔 수 있습니다.
 > 문서는 지금 한국어로만 제공합니다. 영어 문서는 오픈 베타 이후에 제공합니다.
 
 ## 무엇을 할 수 있나요
@@ -38,7 +38,7 @@ IT 인프라 정보는 여러 시스템에 나뉘어 있습니다. 자산 대장
 - 합성 데이터센터 생성기. 같은 시드이면 같은 세계가 나옵니다.
 - 실행 파일에 포함된 웹 UI(제품 화면이 따로 생길 때까지 쓰는 임시 화면). 타입, 객체 테이블, 객체 상세(근거 등급 포함), 이웃을 읽기 전용으로 보여 줍니다.
 - 데모 모드(`praxium demo`)와 로컬 모드(`praxium local`).
-- 엑셀, CSV, JSON Lines 소스의 수집(`praxium ingest`).
+- 엑셀, CSV, JSON Lines 소스의 수집(`praxium ingest`). CSV는 쉼표 말고 탭, 세미콜론, 세로선 구분도 읽습니다. UTF-8이 아닌 CSV(EUC-KR, CP949, UTF-16)는 이유와 해결 방법을 알려 주고 멈춥니다. 엑셀에서 "CSV UTF-8"로 저장하거나 `.xlsx`를 그대로 쓰세요.
 - 내장 파일 스토어와 PostgreSQL 스토리지.
 - 조회 세 가지(객체 찾기 `find`, 하나 읽기 `get`, 이웃 보기 `neighbors`)를 REST API와 명령줄로 실행.
 
@@ -55,7 +55,7 @@ IT 인프라 정보는 여러 시스템에 나뉘어 있습니다. 자산 대장
 
 ### 1. 다운로드
 
-[릴리스 페이지](https://github.com/ysk6506/praxium/releases)에서 자기 운영체제에 맞는 압축 파일과 `SHA256SUMS`를 같은 폴더에 받습니다. 파일 이름은 `praxium_<버전>_<운영체제>_<CPU>`이고 `<버전>`에 릴리스의 버전(예: `0.1.0-alpha.1`)을 넣습니다.
+[릴리스 페이지](https://github.com/ysk6506/praxium/releases)에서 자기 운영체제에 맞는 압축 파일과 `SHA256SUMS`를 같은 폴더에 받습니다. 파일 이름은 `praxium_<버전>_<운영체제>_<CPU>`이고 `<버전>`에 릴리스의 버전(예: `0.1.0-alpha.2`)을 넣습니다.
 
 | 운영체제 | 파일 |
 |---|---|
@@ -95,7 +95,7 @@ cd praxium_<버전>_windows_amd64
 ```
 
 ```
-praxium 0.1.0-alpha.1
+praxium <버전>
 commit:  ...
 built:   ...
 go:      go1.27.4
@@ -143,7 +143,7 @@ The data is in memory and is gone when the demo stops. Press Ctrl+C to stop.
 .\praxium.exe ingest run -data-dir data -source ex/csv/source.json -mapping ex/csv/mapping.json -input ds_racks=ex/csv/racks.csv -input ds_servers=ex/csv/servers.csv -input ds_hosts=ex/csv/hosts.jsonl -input ds_vms=ex/csv/vms.jsonl -input ds_vm_power=ex/csv/vm-power.csv
 ```
 
-- `ingest init`은 예제 소스 정의, 매핑 정의, 샘플 파일(합성한 값)을 씁니다. 다음에 실행할 명령도 알려 줍니다.
+- `ingest init`은 예제 소스 정의, 매핑 정의, 샘플 파일(합성한 값)과 정의의 형식 문서(`ingest-definitions.md`)를 씁니다. 다음에 실행할 명령도 알려 줍니다.
 - `ingest inspect`는 매핑을 쓰기 전에 파일의 시트, 컬럼, 값의 모양을 보여 줍니다.
 - `ingest run`은 파일을 읽어 `data` 폴더에 KG로 남깁니다. 파일은 읽기만 합니다. 엑셀과 CSV는 소스가 달라도 같은 `data` 폴더의 KG 하나(`main`)로 합쳐집니다.
 - `local`은 그 KG를 웹 UI와 API로 보여 주고, 접속 주소를 출력합니다. 서버가 `data` 폴더를 열고 있는 동안에는 `ingest run`을 하지 않습니다.
@@ -161,7 +161,7 @@ The result is kept in data (KG main). Look at it with: praxium local -data-dir d
 
 `local`이 출력한 주소를 브라우저로 엽니다. 데모와 달리 KG 목록에서 시작하므로 `main`을 골라 타입 목록으로 들어갑니다. 서버(PhysicalServer)는 엑셀 3대와 CSV 3대, 모두 6대가 보입니다.
 
-자기 데이터에는 소스 정의와 매핑 정의 JSON을 직접 써야 합니다. 예제 파일이 출발점이고, 모든 필드와 문제 코드는 [수집 정의 형식](docs/guides/ingest-definitions.md)에 있습니다.
+자기 데이터에는 소스 정의와 매핑 정의 JSON을 직접 써야 합니다. 예제 파일이 출발점입니다. 자기 엑셀이나 CSV는 `./praxium ingest inspect -input <파일> -emit-source`로 소스 정의 초안을 만든 뒤, `ex/ingest-definitions.md`의 "따라 하기"(엑셀 한 시트에서 정의 두 파일까지)를 보며 매핑 정의를 씁니다. 모든 필드와 문제 코드는 같은 내용의 [수집 정의 형식](docs/guides/ingest-definitions.md)에 있습니다.
 
 ### 4. 명령 개요
 
@@ -215,7 +215,7 @@ obj_b49a31d3475f13a6ae1aa062e02adca8  PhysicalServer  XS-4002
 
 ## 로드맵
 
-날짜는 정하지 않고 순서만 둡니다. 지금은 알파 1입니다.
+날짜는 정하지 않고 순서만 둡니다. 지금은 알파 단계입니다.
 
 1. **알파 1.** 파일 소스 하나에서 KG를 만들고 `find`, `get`, `neighbors`로 읽습니다. 이 단계부터 직접 써 볼 수 있습니다.
 2. **알파 2.** 수집 확장, 정의의 브랜치와 권한, 영향 범위, 관측성. 객체와 링크 100만 개 수준에서 모든 기능이 API와 CLI로 동작합니다.

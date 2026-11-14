@@ -6,7 +6,7 @@ Praxium은 Apache License 2.0이에요 ([LICENSE](LICENSE)). 이 파일은 Praxi
 - 이 목록은 웹·서버에서 도달할 수 있는 모든 패키지를 담아 실제 번들보다 넓어요.
 - 소스 zip과 컨테이너 이미지에 이 파일이 들어 있어요.
 
-<!-- licenses-fingerprint: 3c515bafe9a2805e -->
+<!-- licenses-fingerprint: 12cfd6e6c99bb5ec -->
 
 ## 요약
 
@@ -465,3 +465,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
+
+## 바깥 자료를 참고한 데이터
+
+### Chrome 팀의 웹 플랫폼 가이드(modern-web-guidance-src)
+
+docs/design-docs/web-ui-rules.md는 GoogleChrome/modern-web-guidance-src의 guides/ (CC BY 4.0, 커밋 5e5cd33, https://creativecommons.org/licenses/by/4.0/)를 바탕으로 프락시움에 맞게 추리고 한국어로 요약한 것이다. 가이드의 문장과 코드는 옮기지 않았고 규칙을 새로 썼다. 원 저작자가 이 문서를 보증하지 않는다.
+
+위치: `docs/design-docs/web-ui-rules.md`

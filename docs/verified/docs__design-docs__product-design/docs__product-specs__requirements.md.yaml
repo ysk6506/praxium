@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "7c8c72d2ea6a49f0"
+hash: "edaeffcb1e3b219b"
 date: "2026-11-14"
-note: "requirements.md의 REQ-342~349 문구를 표준 용어로 고쳤다. 제품 설계 개요는 바꿀 내용이 없음을 확인했다"
+note: "REQ-342~349(조직 속성, 모델 유닛만)가 요구사항에 공존함을 대조했다. 개요의 내용은 바꿀 것이 없다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

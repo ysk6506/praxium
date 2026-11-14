@@ -1,0 +1,4 @@
+asset_id,serial_number,manufacturer,rack_asset_id,power_state,bmc_mac
+SV-2001,SN-A100,Zorvane,RK-1001,on,02:00:00:00:20:01
+SV-2002,SN-A200,Zorvane,RK-1001,off,02:00:00:00:20:02
+SV-2003,SN-B300,Kelmar,RK-1002,on,02:00:00:00:20:03

@@ -9,6 +9,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // requestTimeout bounds one request; a command line has no use for a hung call.
@@ -79,11 +81,33 @@ func (c *Client) Post(ctx context.Context, path string, body any) (*Envelope, er
 	return &env, nil
 }
 
+// Change sends a JSON body to a route that creates or acts (a user, a token, a disabling). It adds a new
+// Idempotency-Key, so a retry of the same call by the transport is never a second one. The answer may hold a secret
+// that is shown once: it is returned to the caller and nowhere else.
+func (c *Client) Change(ctx context.Context, path string, body any) (*Envelope, error) {
+	raw, err := json.Marshal(body)
+	if err != nil {
+		return nil, usageError{msg: "the request cannot be written as JSON: " + err.Error()}
+	}
+	status, answer, err := c.do(ctx, http.MethodPost, path, nil, raw, "Idempotency-Key", "cli-"+kernel.NewToken(16))
+	if err != nil {
+		return nil, err
+	}
+	if status >= 400 {
+		return nil, problemOf(status, answer)
+	}
+	var env Envelope
+	if err := json.Unmarshal(answer, &env); err != nil {
+		return nil, transportError{err: err}
+	}
+	return &env, nil
+}
+
 func (c *Client) raw(ctx context.Context, path string, query url.Values) (int, []byte, error) {
 	return c.do(ctx, http.MethodGet, path, query, nil)
 }
 
-func (c *Client) do(ctx context.Context, method, path string, query url.Values, body []byte) (int, []byte, error) {
+func (c *Client) do(ctx context.Context, method, path string, query url.Values, body []byte, headers ...string) (int, []byte, error) {
 	target := c.base + path
 	if len(query) > 0 {
 		target += "?" + query.Encode()
@@ -93,6 +117,9 @@ func (c *Client) do(ctx context.Context, method, path string, query url.Values, 
 		return 0, nil, usageError{msg: "the endpoint is not a URL: " + err.Error()}
 	}
 	req.Header.Set("Accept", "application/json")
+	for i := 0; i+1 < len(headers); i += 2 {
+		req.Header.Set(headers[i], headers[i+1])
+	}
 	if body != nil {
 		req.Header.Set("Content-Type", "application/json")
 	}

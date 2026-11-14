@@ -24,10 +24,6 @@ func TestStandardHashIsTheSameWithNoOverlay(t *testing.T) {
 	if got := r.Hash().String(); got != standardModelHash {
 		t.Errorf("model hash = %s, want %s", got, standardModelHash)
 	}
-	set, err := model.DefinitionSetHash(r.Hash(), nil)
-	if err != nil || set != r.Hash() {
-		t.Errorf("the set hash of no items = %v (%v), want the registry hash", set, err)
-	}
 }
 
 // [REQ-346]
@@ -100,17 +96,24 @@ func TestRowHashDoesNotSeeNames(t *testing.T) {
 }
 
 // [REQ-349]
-func TestOverlayHashCoversEveryFieldButNotTheOrder(t *testing.T) {
-	// The item hash follows every field, labels included, and ignores the order of properties, aliases and enum values.
+func TestOverlayBodyIsCanonical(t *testing.T) {
+	// One overlay gives one body, whatever the order it was written in; the body is the normal form of the definition store (sorted keys, no white space, no HTML escapes) and follows every field.
 	a, b := orgProp("server.a", "a", "vt.string", 100001), enumProp()
-	a.Aliases = []string{"org.x", "org.y"}
-	base := mustOverlayHash(t, serverOverlay(a, b))
-	reordered := a
-	reordered.Aliases = []string{"org.y", "org.x"}
-	swapped := enumProp()
-	swapped.EnumValues = []string{"silver", "gold"}
-	if got := mustOverlayHash(t, serverOverlay(swapped, reordered)); got != base {
-		t.Errorf("the order changes the hash")
+	a.Aliases = []string{"org.y", "org.x"}
+	a.Description = "a < b & c"
+	b.EnumValues = []string{"silver", "gold"}
+	body, err := serverOverlay(a, b).Body()
+	if err != nil {
+		t.Fatalf("Body() = %v", err)
+	}
+	const want = `{"kind":"type_overlay","properties":[{"aliases":["org.x","org.y"],"attr_no":100001,"change_class":"slow","description":"a < b & c","id":"pr.org.server.a","name":"org.a","value_type":"vt.string"},` +
+		`{"attr_no":100001,"change_class":"slow","enum_values":["gold","silver"],"id":"pr.org.server.grade","name":"org.grade","value_type":"vt.enum"}],"schema_version":1,"target":{"id":"ot.server","kind":"object_type"}}`
+	if string(body) != want {
+		t.Errorf("Body() =\n%s\nwant\n%s", body, want)
+	}
+	swapped, _ := serverOverlay(b, a).Body()
+	if string(swapped) != want {
+		t.Errorf("the order of the properties changes the body")
 	}
 	changes := map[string]func(p *model.Property){
 		"name":         func(p *model.Property) { p.Name = "org.other" },
@@ -118,66 +121,16 @@ func TestOverlayHashCoversEveryFieldButNotTheOrder(t *testing.T) {
 		"description":  func(p *model.Property) { p.Description = "d" },
 		"number":       func(p *model.Property) { p.AttrNo = 100123 },
 		"alias":        func(p *model.Property) { p.Aliases = nil },
-		"unit":         func(p *model.Property) { p.Unit = "w" },
 		"sensitivity":  func(p *model.Property) { p.Sensitivity = model.SensitivityRestricted },
 	}
 	for name, change := range changes {
 		c := a
 		change(&c)
-		if mustOverlayHash(t, serverOverlay(c, b)) == base {
-			t.Errorf("a change of %s does not change the item hash", name)
+		if other, _ := serverOverlay(c, b).Body(); string(other) == want {
+			t.Errorf("a change of %s does not change the body", name)
 		}
 	}
-	if mustOverlayHash(t, model.NewOverlay(model.TargetObjectType, "ot.rack", []model.Property{a, b})) == base {
-		t.Errorf("the target is not in the item hash")
-	}
-}
-
-func mustOverlayHash(t *testing.T, o model.Overlay) kernel.Hash {
-	t.Helper()
-	h, err := model.OverlayHash(o)
-	if err != nil {
-		t.Fatalf("OverlayHash() = %v", err)
-	}
-	return h
-}
-
-// [REQ-349]
-func TestDefinitionSetHash(t *testing.T) {
-	// The set hash follows the standard and the items and not their order or where the set came from.
-	std := newBaseline(t).Hash()
-	entries, err := model.OverlaySetEntries([]model.Overlay{
-		serverOverlay(orgProp("server.a", "a", "vt.string", 100001)),
-		model.NewOverlay(model.TargetObjectType, "ot.rack", []model.Property{orgProp("rack.b", "b", "vt.string", 100002)}),
-	})
-	if err != nil {
-		t.Fatalf("OverlaySetEntries() = %v", err)
-	}
-	hash := func(std kernel.Hash, e []model.SetEntry) kernel.Hash {
-		h, err := model.DefinitionSetHash(std, e)
-		if err != nil {
-			t.Fatalf("DefinitionSetHash() = %v", err)
-		}
-		return h
-	}
-	base := hash(std, entries)
-	if base == std {
-		t.Errorf("a set with items has the hash of the standard")
-	}
-	if hash(std, []model.SetEntry{entries[1], entries[0]}) != base {
-		t.Errorf("the order of the items changes the set hash")
-	}
-	if hash(std, entries[:1]) == base {
-		t.Errorf("an item fewer does not change the set hash")
-	}
-	if hash(mustHash(t, newBaseline(t).NumberingHash), entries) == base {
-		t.Errorf("another standard gives the same set hash")
-	}
-	changed := []model.SetEntry{entries[0], {ItemID: entries[1].ItemID, ContentHash: entries[0].ContentHash}}
-	if hash(std, changed) == base {
-		t.Errorf("another content of an item does not change the set hash")
-	}
-	if entries[0].ItemID != "ov.ot.server" || entries[1].ItemID != "ov.ot.rack" {
-		t.Errorf("item ids = %s, %s", entries[0].ItemID, entries[1].ItemID)
+	if other, _ := model.NewOverlay(model.TargetObjectType, "ot.rack", []model.Property{a, b}).Body(); string(other) == want {
+		t.Errorf("the target is not in the body")
 	}
 }

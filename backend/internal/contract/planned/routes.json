@@ -699,14 +699,6 @@
     },
     {
       "method": "POST",
-      "path": "/v1/kgs/{kg}/queries:impact",
-      "feature": "사전 정의 질의 13종",
-      "adr": "ADR-0010",
-      "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
       "path": "/v1/kgs/{kg}/queries:paths",
       "feature": "사전 정의 질의 13종",
       "adr": "ADR-0010",
@@ -1335,30 +1327,6 @@
       "feature": "실행, 단계별 수, 샘플, 다시 돌리기",
       "adr": "ADR-0008",
       "phase": "alpha-1",
-      "status": "planned"
-    },
-    {
-      "method": "GET",
-      "path": "/v1/system-accounts",
-      "feature": "수집기를 등록하고 토큰을 바꾸기",
-      "adr": "ADR-0012",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
-      "path": "/v1/system-accounts",
-      "feature": "서비스 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
-      "adr": "ADR-0012",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
-      "path": "/v1/system-accounts/{account_id}:disable",
-      "feature": "서비스 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
-      "adr": "ADR-0012",
-      "phase": "alpha-2",
       "status": "planned"
     },
     {

@@ -15,6 +15,8 @@ touches_protected:
 amends_tests: []
 decision_hash: 8401e824b9e38ded
 amended_by:
+  - adr: "0043"
+    what: 필요한 채널을 채우는 링크가 없으면 알 수 없음이 된다는 문장
   - adr: "0050"
     what: 17번의 삭제 규칙(조직 속성은 삭제하지 않고 폐기로만 둔다)
 ---

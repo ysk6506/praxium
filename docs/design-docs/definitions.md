@@ -7,7 +7,18 @@ follows:
 ---
 # 정의의 버전과 브랜치
 
-정의(타입, 소스, 데이터셋, 정제, 피드, 식별 규칙 같은 버전 관리되는 모든 구성 데이터)를 어떻게 저장하고, 수정하고, 병합하고, 리버트하고, 추적하는지의 설계예요. 코드는 아직 없어요. 필드 이름은 `core.definitions`가 사용할 이름이고, 예시의 이름은 가상의 값이에요. 제품 책임자의 지침은 네 가지예요. 파이프라인과 모델의 모든 것에 버전과 브랜치가 있다 / 큰 기술 회사들의 사례를 참고한다 / 변경은 잦지 않으니 동시 수정의 충돌 해결과 리버트가 잘 돼야 한다(변경이 잦은지는 사용 방식에 달려서 못 박지 않아요. 에이전트가 많이 사용하는 경우는 [보충 문서](definitions-at-agent-scale.md)가 다뤄요) / 데이터 계보를 관리한다.
+정의(타입, 소스, 데이터셋, 정제, 피드, 식별 규칙 같은 버전 관리되는 모든 구성 데이터)를 어떻게 저장하고, 수정하고, 병합하고, 리버트하고, 추적하는지의 설계예요. 코드는 일부만 있어요(아래 "지금 구현된 범위"). 필드 이름은 `core.definitions`가 사용할 이름이고, 예시의 이름은 가상의 값이에요. 제품 책임자의 지침은 네 가지예요. 파이프라인과 모델의 모든 것에 버전과 브랜치가 있다 / 큰 기술 회사들의 사례를 참고한다 / 변경은 잦지 않으니 동시 수정의 충돌 해결과 리버트가 잘 돼야 한다(변경이 잦은지는 사용 방식에 달려서 못 박지 않아요. 에이전트가 많이 사용하는 경우는 [보충 문서](definitions-at-agent-scale.md)가 다뤄요) / 데이터 계보를 관리한다.
+
+## 지금 구현된 범위 (ADR-0049)
+
+`core.definitions`(`backend/internal/definitions`)가 이 문서의 부분집합을 구현해요. 종류를 모르는 저장소라서 항목에는 `kind`(뜻을 모르는 문자열)와 정규화한 JSON 본문만 있고, 본문의 뜻은 쓰는 쪽 유닛이 알아요.
+
+| 있어요 | 아직 없어요 |
+|---|---|
+| 항목, 불변 리비전, 정의 세트 `D-n`과 해시(기준 해시를 받아요. 항목이 없으면 해시가 기준 해시 그대로예요), 머리의 compare-and-swap, 번호 원장 | PostgreSQL 어댑터, HTTP 경로, 명령줄 |
+| 브랜치(바뀐 항목만)와 제안(`draft`, `in_review`, `approved`, `merged`, `closed`), 작성자의 승인 거절, `solo_approval`을 호출자가 정책으로 넘기고 기록에 남기기 | 3-way 병합과 충돌 해결(겹치면 `stale`로 거절해요), `queued`와 병합 큐, 검사의 종류별 구현(호출자가 검사 함수를 줘요) |
+| 직접 적용, 병합, 정의 세트 `D-N`의 내용으로 복원(`origin: restore`) | 제안 단위 리버트(`origin: revert`), 긴급 리버트, 가져오기와 내보내기, 계보, 고정 |
+| 메모리 어댑터, 파일 어댑터(데이터 폴더의 `definitions.json`), 둘이 통과하는 적합성 사례 | 이름 변경, `namespace`와 `contacts`, 위험 등급 |
 
 ## 1. 목적과 다루는 질문
 
@@ -93,7 +104,7 @@ follows:
 
 그 밖의 항목은 통째로 하나로 봐요. 항목 안의 필드 단위 자동 병합은 하지 않아요.
 
-**`type_overlay`의 본문**(`schema_version` 1, [ADR-0050](adr/0050-org-properties-as-overlays-in-the-model.md))은 `target`(`kind`가 `object_type`이나 `trait`, `id`)과 `properties`예요. `item_id`는 `ov.`와 대상 ID이고 대상 하나에 항목 하나라서, 다른 타입을 고치는 두 사람은 충돌하지 않아요. 속성은 표준 속성과 같은 필드에서 `id`(`pr.org.`로 시작), `attr_no`(100000 이상, 저장소가 처음 저장할 때 발급), `name`(`org.snake_case`), `aliases`, `value_type`, `unit`, `enum_values`, `change_class`(`static`과 `slow`), `sensitivity`, `status`, `display_names`, `description`만 받아요. 항목의 내용 해시는 이 모든 필드를 덮고, 정의 세트의 `content_hash`는 항목이 없으면 표준 모델의 해시와 같아요(항목이 있으면 표준 해시와 항목 목록의 해시). 같은 속성을 이름이나 자료형을 바꾸어 다시 쓸 때의 분류는 11절의 표를 따라요.
+**`type_overlay`의 본문**(`schema_version` 1, [ADR-0050](adr/0050-org-properties-as-overlays-in-the-model.md))은 `target`(`kind`가 `object_type`이나 `trait`, `id`)과 `properties`예요. `item_id`는 `ov.`와 대상 ID이고 대상 하나에 항목 하나라서, 다른 타입을 고치는 두 사람은 충돌하지 않아요. 속성은 표준 속성과 같은 필드에서 `id`(`pr.org.`로 시작), `attr_no`(100000 이상, 저장소가 처음 저장할 때 발급), `name`(`org.snake_case`), `aliases`, `value_type`, `unit`, `enum_values`, `change_class`(`static`과 `slow`), `sensitivity`, `status`, `display_names`, `description`만 받아요. 본문은 이 모든 필드를 담는 정규화한 JSON이고(속성은 `id` 순서), 항목의 내용 해시는 저장소가 그 본문에서 계산해요. 정의 세트의 `content_hash`는 표준 레지스트리의 해시를 기준 해시로 써서 만들어서, 항목이 없으면 표준 모델의 해시와 같아요. 같은 속성을 이름이나 자료형을 바꾸어 다시 쓸 때의 분류는 11절의 표를 따라요.
 
 ## 4. 제안의 진행 절차
 

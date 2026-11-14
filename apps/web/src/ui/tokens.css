@@ -12,6 +12,7 @@
   --color-sunken: var(--px-sunken);
   --color-line: var(--px-line);
   --color-line-strong: var(--px-line-strong);
+  --color-control-line: var(--px-control-line);
   --color-fg: var(--px-fg);
   --color-muted: var(--px-muted);
   --color-subtle: var(--px-subtle);
@@ -107,9 +108,11 @@
   --px-sunken: oklch(0.96 0.004 255);
   --px-line: oklch(0.915 0.005 255);
   --px-line-strong: oklch(0.83 0.008 255);
+  /* The edge of an input, a select, a checkbox, a button: at least 3:1 on every surface (WCAG 1.4.11, WEB040). */
+  --px-control-line: oklch(0.62 0.012 258);
   --px-fg: oklch(0.235 0.02 258);
   --px-muted: oklch(0.47 0.02 258);
-  --px-subtle: oklch(0.58 0.015 258);
+  --px-subtle: oklch(0.52 0.015 258);
   --px-accent: oklch(0.5 0.17 262);
   --px-accent-fg: oklch(0.99 0 0);
   --px-accent-soft: oklch(0.955 0.025 262);
@@ -131,6 +134,7 @@
     --px-sunken: oklch(0.215 0.012 258);
     --px-line: oklch(0.32 0.014 258);
     --px-line-strong: oklch(0.42 0.018 258);
+    --px-control-line: oklch(0.56 0.018 258);
     --px-fg: oklch(0.93 0.008 258);
     --px-muted: oklch(0.75 0.014 258);
     --px-subtle: oklch(0.65 0.014 258);

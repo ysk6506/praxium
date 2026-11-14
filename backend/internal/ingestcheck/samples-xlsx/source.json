@@ -30,7 +30,8 @@
         { "name": "serial", "paths": ["시리얼"] },
         { "name": "manufacturer", "paths": ["제조사"] },
         { "name": "rack_asset_id", "paths": ["랙"] },
-        { "name": "power_state", "paths": ["전원"], "optional": true }
+        { "name": "power_state", "paths": ["전원"], "optional": true },
+        { "name": "bmc_mac", "paths": ["BMC MAC"], "optional": true }
       ]
     }
   ]

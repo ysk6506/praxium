@@ -23,6 +23,8 @@ type call struct {
 	subject access.Subject
 	// asked is the object the question named in its body, for the answer of a missing object.
 	asked string
+	// idem is the claim on the Idempotency-Key of a creating or acting call.
+	idem *idemSlot
 }
 
 // writeJSON writes a JSON body with its status and media type.
@@ -37,6 +39,7 @@ func (c *call) writeJSON(status int, mediaType string, body any) {
 	c.w.Header().Set("Content-Length", strconv.Itoa(len(data)))
 	c.w.WriteHeader(status)
 	_, _ = c.w.Write(data)
+	c.remember(status, data)
 }
 
 // envelope is the shape of every success answer: data and meta (rest-api.md 3-2).

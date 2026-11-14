@@ -87,9 +87,6 @@ func TestComposeRegistryReportsWhatTheOrdinaryChecksFind(t *testing.T) {
 	if _, errs := model.ComposeRegistry(baseline(), []model.Overlay{serverOverlay(badUnit)}); len(errs) != 1 {
 		t.Errorf("a unit that is not text: %v", errs)
 	}
-	if _, err := model.OverlaySetEntries([]model.Overlay{serverOverlay(badUnit)}); err == nil {
-		t.Errorf("OverlaySetEntries() accepts a unit that is not text")
-	}
 }
 
 // [REQ-347]

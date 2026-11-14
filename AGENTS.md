@@ -36,6 +36,7 @@ printf 'dev-token-not-a-secret' > /tmp/dev.tok
 /tmp/praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl &
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret kg list
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query find --type PhysicalServer --limit 3
+/tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query impact <객체 ID> --mode facts_only   # 장애가 번지는 범위. --upstream <ID>면 기대는 객체
 ```
 
 릴리스 실행 파일을 받은 사람(소스 없이)이 가장 먼저 치는 명령. `praxium --help`가 모든 명령을 묶음별로 보여 준다. 데모는 토큰을 실행마다 새로 만들어 출력 주소의 `#` 뒤에 넣는다([ADR-0038](docs/design-docs/adr/0038-demo-mode-as-a-supported-feature.md)). 소스에서는 `pnpm web:build /tmp/praxium`으로 같은 실행 파일을 만든다:
@@ -96,7 +97,7 @@ CI가 병합 관문이다: main에는 풀 리퀘스트로만 반영되고, 필�
 - 요구사항을 받으면 그것만 보고 기능을 덧붙이지 않는다. 제품 설계 개요의 원칙에 비춰 보고, 영향받는 기존 자산을 전부 찾고, 어긋나면 먼저 알린다.
 - 같은 주제의 결정 기록을 하루에 2개를 넘게 쓰게 되면 멈추고 전체를 다시 본다.
 - 계획은 날짜가 아니라 순서로 관리한다.
-- 제품의 화면 코드는 이 리포지토리에 없다. 예외는 삭제할 수 있는 임시 콘솔(`apps/web`) 하나이고 공개된 `/v1`만 부른다. 백엔드는 그것 없이 빌드되고 테스트된다(ADR-0016, ADR-0035, TD-0007).
+- 제품의 화면 코드는 이 리포지토리에 없다. 예외는 삭제할 수 있는 임시 콘솔(`apps/web`) 하나이고 공개된 `/v1`만 부른다. 백엔드는 그것 없이 빌드되고 테스트된다(ADR-0016, ADR-0035, TD-0007). 화면 코드는 [웹 UI 규칙](docs/design-docs/web-ui-rules.md)을 따른다.
 - 문서와 화면에는 한국의 IT 실무자가 쓰는 표준 용어를 쓰고 새 용어를 만들지 않는다. 사전은 [용어집](docs/design-docs/glossary.md)의 표 하나이고, 옛 표기는 `WORD003`이 알린다.
 
 ## 자주 하는 일

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/web-ui-rules.md"
+target: "apps/web/config/vite.config.ts"
+hash: "93b2df874ec7f90c"
+date: "2026-11-14"
+note: "화면의 모양이 임시라는 문장만 추가"
+text_changed: true
+doc_hash: "72b063c70517bdb5"

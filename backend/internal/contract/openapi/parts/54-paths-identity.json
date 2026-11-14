@@ -1,0 +1,1174 @@
+{
+  "paths": {
+    "/v1/tokens/{token_id}": {
+      "get": {
+        "operationId": "getToken",
+        "summary": "Look at an access token",
+        "description": "Shows one access token and its state; never the secret or the hash. The id current stands for the token of this request, and then the answer also says who is calling (subject), which is the way to check a token. Any other id is answered to its owner and to an administrator; for anyone else it is not found.",
+        "tags": ["identity"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "token_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the token (not the token itself), or the word current.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The token.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CurrentTokenAnswer"
+                },
+                "example": {
+                  "data": {
+                    "subject": {
+                      "id": "ada",
+                      "kind": "person",
+                      "display_name": "Ada Example",
+                      "roles": ["viewer"]
+                    },
+                    "token": {
+                      "id": "pxm_0123456789abcdef",
+                      "owner": "ada",
+                      "owner_kind": "person",
+                      "roles": ["viewer"],
+                      "description": "read only",
+                      "state": "active",
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "expires_at": "2030-04-02T03:04:05Z",
+                      "last_used_at": null,
+                      "revoked_at": null,
+                      "revoked_by": null
+                    }
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/users": {
+      "get": {
+        "operationId": "listUsers",
+        "summary": "List users",
+        "description": "The users, active and disabled. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "object",
+                  "description": "Filter on kind.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "state": {
+                  "type": "object",
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                },
+                "role": {
+                  "type": "object",
+                  "description": "Filter on role.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name, created_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: created_at, created_by, description, disabled_at, display_name, id, kind, roles, state.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "ada",
+                      "kind": "person",
+                      "display_name": "Ada Example",
+                      "description": "",
+                      "roles": ["viewer"],
+                      "state": "active",
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "disabled_at": null
+                    }
+                  ],
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createUser",
+        "summary": "Make a user",
+        "description": "Makes a user with the roles given. A user holds any role but ingester. A principal is never deleted, only disabled. The Idempotency-Key is needed; the same key and body within ten minutes replay the first answer. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": false,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The new user.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrincipalRequest"
+              },
+              "example": {
+                "name": "ada",
+                "display_name": "Ada Example",
+                "roles": ["viewer"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new user.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                },
+                "example": {
+                  "data": {
+                    "id": "ada",
+                    "kind": "person",
+                    "display_name": "Ada Example",
+                    "description": "",
+                    "roles": ["viewer"],
+                    "state": "active",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "disabled_at": null
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/users/{user_id}:disable": {
+      "post": {
+        "operationId": "disableUser",
+        "summary": "Disable a user",
+        "description": "Disables the user: every token it owns is refused from now on, and the disabling cannot be undone. The last enabled administrator cannot be disabled. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": false,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the user.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The disabled user.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                },
+                "example": {
+                  "data": {
+                    "id": "ada",
+                    "kind": "person",
+                    "display_name": "Ada Example",
+                    "description": "",
+                    "roles": ["viewer"],
+                    "state": "disabled",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "disabled_at": "2030-01-03T00:00:00Z"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/system-accounts": {
+      "get": {
+        "operationId": "listSystemAccounts",
+        "summary": "List service accounts",
+        "description": "The service accounts, active and disabled. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "kind": {
+                  "type": "object",
+                  "description": "Filter on kind.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "state": {
+                  "type": "object",
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "name": {
+                  "type": "object",
+                  "description": "Filter on name.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "prefix": {
+                      "type": "string",
+                      "description": "Starts with this text."
+                    }
+                  }
+                },
+                "role": {
+                  "type": "object",
+                  "description": "Filter on role.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: name, created_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: created_at, created_by, description, disabled_at, display_name, id, kind, roles, state.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "ingest-demo",
+                      "kind": "system_account",
+                      "display_name": "ingest-demo",
+                      "description": "The demo ingester.",
+                      "roles": ["ingester"],
+                      "state": "active",
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "disabled_at": null
+                    }
+                  ],
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createSystemAccount",
+        "summary": "Make a service account",
+        "description": "Makes a service account with the roles given. A service account holds any role but admin; ingester is for it. A principal is never deleted, only disabled. The Idempotency-Key is needed; the same key and body within ten minutes replay the first answer. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": false,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The new service account.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PrincipalRequest"
+              },
+              "example": {
+                "name": "ingest-demo",
+                "display_name": "ingest-demo",
+                "roles": ["ingester"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new service account.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                },
+                "example": {
+                  "data": {
+                    "id": "ingest-demo",
+                    "kind": "system_account",
+                    "display_name": "ingest-demo",
+                    "description": "The demo ingester.",
+                    "roles": ["ingester"],
+                    "state": "active",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "disabled_at": null
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/system-accounts/{account_id}:disable": {
+      "post": {
+        "operationId": "disableSystemAccount",
+        "summary": "Disable a service account",
+        "description": "Disables the service account: every token it owns is refused from now on, and the disabling cannot be undone. The last enabled administrator cannot be disabled. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": false,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "account_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the service account.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The disabled service account.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrincipalAnswer"
+                },
+                "example": {
+                  "data": {
+                    "id": "ingest-demo",
+                    "kind": "system_account",
+                    "display_name": "ingest-demo",
+                    "description": "The demo ingester.",
+                    "roles": ["ingester"],
+                    "state": "disabled",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "disabled_at": "2030-01-03T00:00:00Z"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/tokens": {
+      "get": {
+        "operationId": "listTokens",
+        "summary": "List access tokens",
+        "description": "The access tokens, with their state. An administrator sees all of them and may filter by owner; any other caller sees its own. The secret and the hash are never listed.",
+        "tags": ["identity"],
+        "x-required-role": ["authenticated"],
+        "x-safe": true,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Limit"
+          },
+          {
+            "$ref": "#/components/parameters/Cursor"
+          },
+          {
+            "name": "filter",
+            "in": "query",
+            "required": false,
+            "style": "deepObject",
+            "explode": true,
+            "description": "filter[<field>][<operation>]=<value>. A field or operation not listed here is refused (invalid_input.filter_field_unknown, invalid_input.filter_op_unknown).",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "owner": {
+                  "type": "object",
+                  "description": "Filter on owner.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "owner_kind": {
+                  "type": "object",
+                  "description": "Filter on owner_kind.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                },
+                "state": {
+                  "type": "object",
+                  "description": "Filter on state.",
+                  "properties": {
+                    "equals": {
+                      "type": "string",
+                      "description": "Exactly this value."
+                    },
+                    "in": {
+                      "type": "string",
+                      "description": "Any of these values, separated by commas."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          {
+            "name": "sort",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields, a minus for descending; the id is always added last. Sortable: created_at, expires_at.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fields",
+            "in": "query",
+            "required": false,
+            "description": "Comma-separated fields to keep in each item. Selectable: created_at, created_by, description, expires_at, id, last_used_at, owner, owner_kind, revoked_at, revoked_by, roles, state.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A page of the list.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenList"
+                },
+                "example": {
+                  "data": [
+                    {
+                      "id": "pxm_0123456789abcdef",
+                      "owner": "ada",
+                      "owner_kind": "person",
+                      "roles": ["viewer"],
+                      "description": "read only",
+                      "state": "active",
+                      "created_at": "2030-01-02T03:04:05Z",
+                      "created_by": "root",
+                      "expires_at": "2030-04-02T03:04:05Z",
+                      "last_used_at": null,
+                      "revoked_at": null,
+                      "revoked_by": null
+                    }
+                  ],
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef",
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 1,
+                      "total": 1,
+                      "truncated": false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      },
+      "post": {
+        "operationId": "createToken",
+        "summary": "Make an access token",
+        "description": "Makes an access token for a principal. The answer holds the token itself, and no other call ever shows it again; the server keeps only a hash of its secret. The token expires, in 90 days unless a lifetime of 1 hour to 365 days is asked, and carries the roles asked or all of the owner's. The Idempotency-Key is needed; the key of this call cannot be used again, because the answer holds a secret that is shown once. For administrators only.",
+        "tags": ["identity"],
+        "x-required-role": ["admin"],
+        "x-safe": false,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "description": "The new token.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TokenRequest"
+              },
+              "example": {
+                "owner": "ada",
+                "description": "read only",
+                "roles": ["viewer"],
+                "expires_in_days": 90
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "The new token with its secret.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IssuedTokenAnswer"
+                },
+                "example": {
+                  "data": {
+                    "id": "pxm_0123456789abcdef",
+                    "owner": "ada",
+                    "owner_kind": "person",
+                    "roles": ["viewer"],
+                    "description": "read only",
+                    "state": "active",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "expires_at": "2030-04-02T03:04:05Z",
+                    "last_used_at": null,
+                    "revoked_at": null,
+                    "revoked_by": null,
+                    "token": "pxm_0123456789abcdef_<64 hex characters, shown once>"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    },
+    "/v1/tokens/{token_id}:revoke": {
+      "post": {
+        "operationId": "revokeToken",
+        "summary": "Revoke an access token",
+        "description": "Revokes the token: it is refused from now on. A token that is revoked or expired stays listed. An administrator may revoke any token; any other caller only its own.",
+        "tags": ["identity"],
+        "x-required-role": ["authenticated"],
+        "x-safe": false,
+        "x-long-running": false,
+        "parameters": [
+          {
+            "name": "token_id",
+            "in": "path",
+            "required": true,
+            "description": "The id of the token (not the token itself).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKey"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The revoked token.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            },
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TokenAnswer"
+                },
+                "example": {
+                  "data": {
+                    "id": "pxm_0123456789abcdef",
+                    "owner": "ada",
+                    "owner_kind": "person",
+                    "roles": ["viewer"],
+                    "description": "read only",
+                    "state": "revoked",
+                    "created_at": "2030-01-02T03:04:05Z",
+                    "created_by": "root",
+                    "expires_at": "2030-04-02T03:04:05Z",
+                    "last_used_at": null,
+                    "revoked_at": "2030-01-03T00:00:00Z",
+                    "revoked_by": "root"
+                  },
+                  "meta": {
+                    "trace_id": "tr-0123456789abcdef"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        }
+      }
+    }
+  }
+}
