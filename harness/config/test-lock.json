@@ -141,6 +141,76 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "backend/internal/ingestcheck/testdata/mapping.json::<data>": {
+   "kind": "data",
+   "hash": "0ba361b7ea872e05",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "backend/internal/ingestcheck/testdata/sample/hosts.jsonl::<data>": {
+   "kind": "data",
+   "hash": "470d728fa880fe6c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "backend/internal/ingestcheck/testdata/sample/racks.csv::<data>": {
+   "kind": "data",
+   "hash": "62850757d0e1dafa",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "backend/internal/ingestcheck/testdata/sample/servers.csv::<data>": {
+   "kind": "data",
+   "hash": "53b0a18c44bfee40",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "backend/internal/ingestcheck/testdata/sample/vm-power.csv::<data>": {
+   "kind": "data",
+   "hash": "cc28ac17ac9ed228",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "backend/internal/ingestcheck/testdata/sample/vms.jsonl::<data>": {
+   "kind": "data",
+   "hash": "ac9497f63f87b60e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "backend/internal/ingestcheck/testdata/source.json::<data>": {
+   "kind": "data",
+   "hash": "6b12689b8bfc75dc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "backend/internal/model/testdata/numbering_v1.json::<data>": {
    "kind": "data",
    "hash": "ebc10d73a75456db",
@@ -373,6 +443,68 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunListsAtMostTwentyProblems": {
+   "kind": "test",
+   "hash": "5566c902fd5c9d97",
+   "asserts": 3,
+   "literals": [
+    "b052ddec9323ec94"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268",
+    "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunReadsFilesAndSecondRunChangesNothing": {
+   "kind": "test",
+   "hash": "58efb7531cfa7d27",
+   "asserts": 3,
+   "literals": [
+    "d8f2309fccd617d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunRefusesWhatItCannotRun": {
+   "kind": "test",
+   "hash": "26e7e12824597f4b",
+   "asserts": 3,
+   "literals": [
+    "8d85e8bc88926e92"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-269"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunReportsBadRows": {
+   "kind": "test",
+   "hash": "eda89591893322c7",
+   "asserts": 3,
+   "literals": [
+    "f8fa9d94ff925a40"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268",
+    "REQ-269"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestParseRole": {
@@ -1181,6 +1313,66 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/filesource::TestDatasetWithoutFileIsNotCollected": {
+   "kind": "test",
+   "hash": "62be521bc24f4631",
+   "asserts": 1,
+   "literals": [
+    "f2a898bb8e73506b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestFetchReadsTheFile": {
+   "kind": "test",
+   "hash": "4c960b8db1cbf8ee",
+   "asserts": 1,
+   "literals": [
+    "60fe58e76c4fac38"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestFileThatCannotBeOpenedIsAnError": {
+   "kind": "test",
+   "hash": "986a9ee3ce5842a1",
+   "asserts": 1,
+   "literals": [
+    "e41f4b2ba545e09e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestLargeOrBrokenFilesAreIncomplete": {
+   "kind": "test",
+   "hash": "81c99fe2d8f15a80",
+   "asserts": 2,
+   "literals": [
+    "6eb1b2821d6d0128"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/graph::TestACardinalityBelongsToABindingNotToALinkType": {
    "kind": "test",
@@ -2134,6 +2326,477 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/ingest::TestAttachFeedMergesTwoFiles": {
+   "kind": "test",
+   "hash": "30c29e365dafb577",
+   "asserts": 4,
+   "literals": [
+    "37ad2f8d17937c1e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestBadRowsAreQuarantined": {
+   "kind": "test",
+   "hash": "e3cbdff982e1eb1d",
+   "asserts": 5,
+   "literals": [
+    "4dacfd889a53a869"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCellsOfEveryBaseKindAreConvertedOrReported": {
+   "kind": "test",
+   "hash": "f31a864bdf167b07",
+   "asserts": 4,
+   "literals": [
+    "3a6aedbce2e187ca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263",
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCompileRejectsWrongMappings": {
+   "kind": "test",
+   "hash": "9558e187f2c078dc",
+   "asserts": 2,
+   "literals": [
+    "f0960704461a21ba"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCompileRejectsWrongRefinements": {
+   "kind": "test",
+   "hash": "b3040a509b3c8ec4",
+   "asserts": 2,
+   "literals": [
+    "f37c472546b134d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCSVOdditiesAreReadOrReported": {
+   "kind": "test",
+   "hash": "4944161bc0197a1f",
+   "asserts": 3,
+   "literals": [
+    "9181e8c8f06d5244"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-264",
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFirstRun": {
+   "kind": "test",
+   "hash": "b6f21715f4921949",
+   "asserts": 3,
+   "literals": [
+    "0a8b1308c3ec84c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHostsLinkToServersByNormalisedSerial": {
+   "kind": "test",
+   "hash": "0172f6476dbc3dc8",
+   "asserts": 3,
+   "literals": [
+    "f3d461fae51f9a1b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263",
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdentifiersOfAFeedAreBoundAndAClashIsReported": {
+   "kind": "test",
+   "hash": "da032af2375dc7e8",
+   "asserts": 4,
+   "literals": [
+    "94104edcb3d4766e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265",
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIncompleteCaptureDoesNotCountAbsence": {
+   "kind": "test",
+   "hash": "d50da59d221718f0",
+   "asserts": 2,
+   "literals": [
+    "ca54f6a29703f58c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestLinkKeyTypeAndFilterTestsAreChecked": {
+   "kind": "test",
+   "hash": "50b2eb6a21e73343",
+   "asserts": 3,
+   "literals": [
+    "436d30ba864f0c21"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestLinkProblemsAreReportedAndTheRestIsLinked": {
+   "kind": "test",
+   "hash": "bb3423466de38202",
+   "asserts": 2,
+   "literals": [
+    "1d31317727698019"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265",
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestOneChangedRowChangesOneObject": {
+   "kind": "test",
+   "hash": "281a86fdfa283831",
+   "asserts": 4,
+   "literals": [
+    "6cb2a0d0d0d06732"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-266"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRawChangesCountAddedModifiedUnchanged": {
+   "kind": "test",
+   "hash": "52fcd3726c62b90e",
+   "asserts": 2,
+   "literals": [
+    "11065f76a5de1b72"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-264"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRefinementFiltersFillsAndReplacesBeforeTheFeed": {
+   "kind": "test",
+   "hash": "ec69ede9adb571db",
+   "asserts": 5,
+   "literals": [
+    "3616a0dbc50598fb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263",
+    "REQ-264"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRetiredRowComesBackWithItsObject": {
+   "kind": "test",
+   "hash": "cbcb930d1a6c3d3b",
+   "asserts": 3,
+   "literals": [
+    "c300f36cd9a88f4c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowAccountingBalances": {
+   "kind": "test",
+   "hash": "377d924feaec8c29",
+   "asserts": 3,
+   "literals": [
+    "5bf6b0bec4d677cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-264"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowWithoutRetiringFeedStays": {
+   "kind": "test",
+   "hash": "1601dbbf68560c6e",
+   "asserts": 2,
+   "literals": [
+    "c2d33636a0a78b00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSameInputSameObjectIDs": {
+   "kind": "test",
+   "hash": "d96cdd42835e5187",
+   "asserts": 3,
+   "literals": [
+    "dc110506bdcda45b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSecondLinkThatBreaksCardinalityIsSetAside": {
+   "kind": "test",
+   "hash": "ca6ac2dd227ac686",
+   "asserts": 2,
+   "literals": [
+    "100ea26360845750"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSecondRunChangesNothing": {
+   "kind": "test",
+   "hash": "5a2afb407ea65f8b",
+   "asserts": 4,
+   "literals": [
+    "a191f6a9838c0c32"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-266"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestShapeChangeStopsTheDataset": {
+   "kind": "test",
+   "hash": "89703330fcf11e02",
+   "asserts": 3,
+   "literals": [
+    "ecd39dd1defddab4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSourceDefinitionRefusesWhatThisBuildLacks": {
+   "kind": "test",
+   "hash": "d1e690334b8d0845",
+   "asserts": 1,
+   "literals": [
+    "2dc54d6665347a90"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSourceDefinitionRejectsUnsupported": {
+   "kind": "test",
+   "hash": "1aaa40ffec819bab",
+   "asserts": 1,
+   "literals": [
+    "8768d561505b137c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestVanishedRowRetiresAfterThreeRunsAndADay": {
+   "kind": "test",
+   "hash": "5ccf529f798522b1",
+   "asserts": 5,
+   "literals": [
+    "6cea78eab68525c7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestBadRowsAreReportedAndTheRestIsApplied": {
+   "kind": "test",
+   "hash": "49e074cb87fa389f",
+   "asserts": 8,
+   "literals": [
+    "56aa7b89a91c08bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestChangingOneRowChangesOnlyThatObject": {
+   "kind": "test",
+   "hash": "e15bc938cd24dc6e",
+   "asserts": 6,
+   "literals": [
+    "916d1ab84b4a1d61"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-266"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestFlawedFilesStillGiveABalancedRun": {
+   "kind": "test",
+   "hash": "793ff69a372f0f53",
+   "asserts": 5,
+   "literals": [
+    "db37f6091d8e4881"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestIngestedKGMatchesTheLoadedReference": {
+   "kind": "test",
+   "hash": "f424dee1347d3de4",
+   "asserts": 8,
+   "literals": [
+    "c1741b44b11be46b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestReingestingTheSameFilesChangesNothing": {
+   "kind": "test",
+   "hash": "8563e00c2a39f746",
+   "asserts": 4,
+   "literals": [
+    "504f40bb7df31575"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-266"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingestcheck::TestVanishedRowIsRetiredAfterThreeCompleteCapturesAndADay": {
+   "kind": "test",
+   "hash": "e2fc622e272746a3",
+   "asserts": 9,
+   "literals": [
+    "b3df8b7e635efdb1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/kernel::TestCodeCatalogueIsStable": {
    "kind": "test",
