@@ -26,6 +26,7 @@ touches_protected:
   - harness/config/coverage-floor.json
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
+decision_hash: ad2dc20b7c856d12
 ---
 # ADR-0049 정의 저장소 — 종류를 모르는 저장, 브랜치와 제안, 파일 하나로 보관
 

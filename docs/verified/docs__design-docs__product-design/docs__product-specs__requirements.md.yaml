@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "33a781eb9e65676e"
+hash: "9fefc4453e96552f"
 date: "2026-11-14"
-note: "REQ-296~299(웹 UI)가 REQ-289~295 뒤에 추가됐다. 이 문서의 내용과 충돌하지 않는다."
+note: "정의 저장소 유닛 3개(core.definitions 등)와 REQ-332~341 추가분을 문서와 대조해 확인함"
 text_changed: true
 doc_hash: "06412a77a9acc006"

@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "303098a5308533e2"
+hash: "6f55dc74570eb49d"
 date: "2026-11-14"
-note: "x"
+note: "정의 저장소 유닛 3개(core.definitions 등)와 REQ-332~341 추가분을 문서와 대조해 확인함"
 text_changed: true
-doc_hash: "06b823911173696c"
+doc_hash: "a0ca76039b1ca3ed"
