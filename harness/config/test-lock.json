@@ -6502,6 +6502,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestImpactCommandPrintsAnUpstreamAnswerWithItsSinglePointsAndHiddenSteps": {
+   "kind": "test",
+   "hash": "ed69260c310d3de5",
+   "asserts": 2,
+   "literals": [
+    "a8b126720013f7ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestImpactCommandSaysWhenNothingChangesAndListsUnfilledChannels": {
+   "kind": "test",
+   "hash": "3af79741236ae937",
+   "asserts": 2,
+   "literals": [
+    "1474514fac2a98b8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-306"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestImpactCommandUpstreamTakesATargetAndRefusesAMixedOrEmptyQuestion": {
    "kind": "test",
    "hash": "c90eedd01865ed5f",

@@ -1,6 +1,6 @@
 {
   "core.kernel": 98,
-  "go:adapter.cli": 95.5,
+  "go:adapter.cli": 96,
   "go:adapter.devauth": 98,
   "go:adapter.devload": 90.5,
   "go:adapter.filejournal": 93,
@@ -18,7 +18,7 @@
   "go:core.ingest": 92.5,
   "go:core.kernel": 98,
   "go:core.model": 98,
-  "go:core.query": 90.5,
+  "go:core.query": 92,
   "go:core.worldgen": 96.5,
   "harness": 96.5,
   "web.api": 98,

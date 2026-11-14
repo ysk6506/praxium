@@ -25,6 +25,7 @@ touches_protected:
   - AGENTS.md
   - docs/product-specs/requirements.md
   - harness/config/test-lock.json
+  - harness/config/coverage-floor.json
   - docs/design-docs/adr/0007-kg-model.md
   - docs/design-docs/adr/0010-kg-queries-and-impact.md
 amends:
