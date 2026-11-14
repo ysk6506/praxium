@@ -50,6 +50,16 @@ func TestVersionCommandPrintsWhatTheBuildKnows(t *testing.T) {
 }
 
 // [REQ-282]
+func TestVersionTellsWhetherTheWebUIIsInside(t *testing.T) {
+	for included, want := range map[bool]string{true: "web ui:  included\n", false: "web ui:  not included (placeholder only)\n"} {
+		var stdout bytes.Buffer
+		if code := printVersion(&stdout, included); code != exitOK || !strings.HasSuffix(stdout.String(), want) {
+			t.Errorf("included=%v: code %d, output %q", included, code, stdout.String())
+		}
+	}
+}
+
+// [REQ-282]
 func TestVersionOfABuildWithoutValuesIsDev(t *testing.T) {
 	// The values a plain `go build` leaves are the ones compiled in; the test binary is such a build.
 	if version != "dev" || commit != "unknown" || buildDate != "unknown" {

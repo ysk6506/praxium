@@ -22,8 +22,12 @@ var (
 // whether the web UI is inside. The build date is the commit's time, not the time of the build, so the same commit
 // gives the same program (ADR-0039).
 func runVersion(stdout io.Writer) int {
+	return printVersion(stdout, webui.Built(webui.Files()))
+}
+
+func printVersion(stdout io.Writer, webIncluded bool) int {
 	ui := "not included (placeholder only)"
-	if webui.Built(webui.Files()) {
+	if webIncluded {
 		ui = "included"
 	}
 	fmt.Fprintf(stdout, "praxium %s\ncommit:  %s\nbuilt:   %s\ngo:      %s\nweb ui:  %s\n",

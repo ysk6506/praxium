@@ -3527,6 +3527,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestVersionTellsWhetherTheWebUIIsInside": {
+   "kind": "test",
+   "hash": "08c48a496c7529cc",
+   "asserts": 1,
+   "literals": [
+    "0152fb7601bf81f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestVersionWithArgumentsIsAUsageError": {
    "kind": "test",
    "hash": "c239ea131e707a6f",
