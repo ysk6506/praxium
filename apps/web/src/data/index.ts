@@ -114,12 +114,12 @@ export {
   type PictureNode,
 } from "./impact-picture";
 export {
+  firstRows,
   type ImpactRow,
   impactRows,
-  pageOfRows,
-  ROWS_PER_PAGE,
-  type RowPage,
+  ROWS_STEP,
   type RowSection,
+  type RowsShown,
   sectionsByGrade,
   sortRows,
 } from "./impact-rows";

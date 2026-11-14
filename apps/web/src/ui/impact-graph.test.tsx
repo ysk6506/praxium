@@ -111,11 +111,21 @@ describe("[REQ-354] a grade is drawn as a shape, a word and a color", () => {
 
   it("draws a line of the link by what it rests on: dashed for an assumption, a diamond for a group on the way", async () => {
     const view = await render(<LaneGraph {...graph()} />);
-    const lines = [...view.container.querySelectorAll("line")];
-    expect(lines).toHaveLength(3);
-    expect(lines.filter((l) => l.getAttribute("stroke-dasharray")).length).toBe(1);
-    expect(lines.every((l) => l.getAttribute("class")?.includes("stroke-subtle"))).toBe(true);
-    expect(view.container.querySelectorAll("g[data-step] > polygon")).toHaveLength(1);
+    const groups = [...view.container.querySelectorAll("g[data-edges]")];
+    expect(groups.length).toBeGreaterThan(0);
+    expect(groups.every((g) => g.getAttribute("aria-hidden") === "true")).toBe(true);
+    // A path for a kind of line in a step, not an element for each line.
+    for (const g of groups) expect(g.querySelectorAll("path").length).toBeLessThanOrEqual(3);
+    expect(view.container.querySelectorAll("line")).toHaveLength(0);
+    const paths = [...view.container.querySelectorAll("g[data-edges] > path")];
+    expect(paths.filter((p) => p.getAttribute("stroke-dasharray"))).toHaveLength(1);
+    expect(paths.every((p) => p.getAttribute("class")?.includes("stroke-subtle"))).toBe(true);
+    const segments = paths.flatMap((p) => (p.getAttribute("d") ?? "").match(/M/g) ?? []);
+    // Three links; the mark of the group is a path of its own that opens with `M` too.
+    expect(segments).toHaveLength(4);
+    expect(view.container.querySelectorAll("g[data-step] > g[data-edges]").length).toBe(
+      groups.length,
+    );
     await view.unmount();
   });
 
@@ -326,7 +336,7 @@ describe("[REQ-356] the controls of the spread work whatever the motion", () => 
   });
 });
 
-describe("[REQ-357] the list is a table for each grade, sortable and paged", () => {
+describe("[REQ-357] the list is a table for each grade, sortable, shown in steps", () => {
   const columns = [
     { key: "name", label: "객체", sort: { direction: "ascending" as const } },
     { key: "type", label: "타입", sort: { direction: undefined } },
@@ -337,7 +347,14 @@ describe("[REQ-357] the list is a table for each grade, sortable and paged", () 
       key: "down",
       mark: { shape: "square-solid" as const, tone: "danger" as const, name: "중단" },
       total: 61,
-      rows: [{ id: "a", cells: ["srv-1", "PhysicalServer", "feed-1"] }],
+      rows: [
+        {
+          id: "a",
+          cells: ["srv-1", "PhysicalServer", "feed-1"],
+          evidence: { label: "가정", tone: "warn" as const },
+          notes: ["보이지 않는 객체를 거침"],
+        },
+      ],
     },
     {
       key: "degraded",
@@ -349,17 +366,13 @@ describe("[REQ-357] the list is a table for each grade, sortable and paged", () 
 
   it("has a heading and a named table for each grade, with the sortable columns as buttons and aria-sort", async () => {
     const onSort = vi.fn();
-    const onPage = vi.fn();
+    const onMore = vi.fn();
     const view = await render(
       <GradeList
         sections={sections}
         columns={columns}
         onSort={onSort}
-        page={2}
-        pages={3}
-        pageSize={50}
-        summary="51–61 / 63"
-        onPage={onPage}
+        onMore={onMore}
         empty={<p>없음</p>}
       />,
     );
@@ -374,27 +387,17 @@ describe("[REQ-357] the list is a table for each grade, sortable and paged", () 
     await click(heads[1]?.querySelector("button") as Element);
     expect(onSort).toHaveBeenCalledWith("type");
     expect(view.container.textContent).toContain("srv-1");
-    expect(view.container.textContent).toContain("51–61 / 63");
-    const names = [...view.container.querySelectorAll("button")].map((b) => b.textContent);
-    await click(
-      [...view.container.querySelectorAll("button")].find(
-        (b) => b.textContent === "다음",
-      ) as Element,
+    expect(headings[0]).toContain("전체 61개 중 1개 표시");
+    expect(headings[1]).toContain("전체 2개 중 1개 표시");
+    expect(view.container.textContent).toContain("근거 가정");
+    expect(view.container.textContent).toContain("보이지 않는 객체를 거침");
+    expect(view.container.textContent).not.toContain("다음");
+    const more = [...view.container.querySelectorAll("button")].filter((b) =>
+      b.textContent?.startsWith("더 보기"),
     );
-    expect(onPage).toHaveBeenLastCalledWith(3);
-    await click(
-      [...view.container.querySelectorAll("button")].find(
-        (b) => b.textContent === "이전",
-      ) as Element,
-    );
-    expect(onPage).toHaveBeenLastCalledWith(1);
-    await click(
-      [...view.container.querySelectorAll("button")].find(
-        (b) => b.textContent === "처음",
-      ) as Element,
-    );
-    expect(onPage).toHaveBeenLastCalledWith(1);
-    expect(names).toContain("이전");
+    expect(more).toHaveLength(2);
+    await click(more[0] as Element);
+    expect(onMore).toHaveBeenCalledWith("down");
     await view.unmount();
   });
 
@@ -404,11 +407,7 @@ describe("[REQ-357] the list is a table for each grade, sortable and paged", () 
         sections={[]}
         columns={columns}
         onSort={() => undefined}
-        page={1}
-        pages={1}
-        pageSize={50}
-        summary=""
-        onPage={() => undefined}
+        onMore={() => undefined}
         empty={<p>영향받는 객체가 없습니다</p>}
       />,
     );

@@ -29,7 +29,8 @@ describe("[REQ-354] [REQ-355] the tree becomes the picture the graph is given", 
     expect(root).toMatchObject({ shape: "double-circle", tone: "accent" });
     expect(root?.description).toContain("시작");
     const item = picture.nodes.find((n) => n.description.includes("중단"));
-    expect(item?.description.split(", ")).toHaveLength(5);
+    expect(item?.description.split(", ")).toHaveLength(6);
+    expect(item?.description).toMatch(/근거 (사실|가정|알 수 없음)/);
     expect(picture.lanes.map((l) => l.name)[0]).toBe("설비");
   });
 
@@ -38,7 +39,7 @@ describe("[REQ-354] [REQ-355] the tree becomes the picture the graph is given", 
     const hidden = picture.nodes.find((n) => n.id.startsWith("hidden:"));
     expect(hidden).toMatchObject({ label: "숨김 객체", dashed: true });
     expect(hidden?.description).not.toContain("hidden:");
-    expect(picture.nodes.some((n) => n.description.includes("가정에 근거"))).toBe(true);
+    expect(picture.nodes.some((n) => n.description.includes("근거 가정"))).toBe(true);
     expect(picture.edges.some((e) => e.dashed)).toBe(true);
     expect(picture.edges.some((e) => e.group)).toBe(true);
   });

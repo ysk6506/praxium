@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
+import { Badge, type BadgeTone } from "./Badge";
 import { cx } from "./cx";
 import { GradeMark, type GradeMarkProps } from "./GradeMark";
-import { Pagination } from "./Pagination";
 import { SortTh, Table, TBody, Td, THead, Th, Tr } from "./Table";
 
 export interface LegendItem {
@@ -53,12 +53,16 @@ export interface ListRow {
   readonly id: string;
   /** One cell for each column. A string is written as text; the screen puts a link in a cell where it needs one. */
   readonly cells: readonly ReactNode[];
+  /** The weakest evidence on the path of the row, in the words and the tone the rest of the console uses for a grade. */
+  readonly evidence?: { readonly label: string; readonly tone: BadgeTone };
+  /** What more there is to say of the row, such as that the path went through an object that may not be read. */
+  readonly notes?: readonly string[];
 }
 
 export interface ListSection {
   readonly key: string;
   readonly mark: Omit<GradeMarkProps, "count">;
-  /** How many rows the section has in all, of which `rows` are the page shown. */
+  /** How many rows the section has in all, of which `rows` are shown. */
   readonly total: number;
   readonly rows: readonly ListRow[];
 }
@@ -67,20 +71,16 @@ export interface GradeListProps {
   readonly sections: readonly ListSection[];
   readonly columns: readonly ListColumn[];
   readonly onSort: (key: string) => void;
-  readonly page: number;
-  readonly pages: number;
-  readonly pageSize: number;
-  /** Where the page is among the answer, such as `1–50 / 312`. */
-  readonly summary: string;
-  readonly onPage: (page: number) => void;
+  /** Shows more of a section: the next rows are added to those shown. */
+  readonly onMore: (key: string) => void;
   /** Shown when there is nothing to list. Nothing found is not the same as nothing affected, and the text says so. */
   readonly empty: ReactNode;
 }
 
 /**
  * The answer as tables, a section for each grade, the most severe first. This is the answer itself; the picture is
- * another way to look at it. Every column that can be sorted has a button in its head, and the pages are the same
- * number for every section.
+ * another way to look at it. Every column that can be sorted has a button in its head, and a section shows its first rows, with
+ * a button that shows more of it; there are no page numbers.
  */
 export function GradeList(props: GradeListProps) {
   if (props.sections.length === 0) return <>{props.empty}</>;
@@ -88,8 +88,11 @@ export function GradeList(props: GradeListProps) {
     <div className="flex flex-col gap-6">
       {props.sections.map((section) => (
         <section key={section.key} aria-label={`${section.mark.name} ${section.total}개`}>
-          <h3 className="mb-2 text-sm font-semibold">
+          <h3 className="mb-2 flex flex-wrap items-baseline gap-x-3 text-sm font-semibold">
             <GradeMark {...section.mark} count={section.total} />
+            <span className="font-normal text-muted">
+              전체 {section.total}개 중 {section.rows.length}개 표시
+            </span>
           </h3>
           <Table aria-label={`${section.mark.name} 객체`}>
             <THead>
@@ -113,26 +116,41 @@ export function GradeList(props: GradeListProps) {
               {section.rows.map((row) => (
                 <Tr key={row.id}>
                   {row.cells.map((cell, i) => (
-                    <Td key={props.columns[i]?.key ?? i}>{cell}</Td>
+                    <Td key={props.columns[i]?.key ?? i}>
+                      {cell}
+                      {i === 0 ? <RowFacts row={row} /> : null}
+                    </Td>
                   ))}
                 </Tr>
               ))}
             </TBody>
           </Table>
+          {section.rows.length < section.total ? (
+            <button
+              type="button"
+              onClick={() => props.onMore(section.key)}
+              className="mt-2 min-h-6 cursor-pointer rounded-md border border-control-line bg-surface px-3 py-1 text-sm hover:bg-sunken"
+            >
+              더 보기
+              <span className="sr-only"> ({section.mark.name})</span>
+            </button>
+          ) : null}
         </section>
       ))}
-      <Pagination
-        page={props.page}
-        hasPrevious={props.page > 1}
-        hasNext={props.page < props.pages}
-        onPrevious={() => props.onPage(props.page - 1)}
-        onNext={() => props.onPage(props.page + 1)}
-        pageSize={props.pageSize}
-        pageSizes={[props.pageSize]}
-        onPageSize={() => undefined}
-        summary={props.summary}
-        onFirst={() => props.onPage(1)}
-      />
     </div>
+  );
+}
+
+/** The evidence and the notes of a row, written under its first cell, so they are in the row for a screen reader too. */
+function RowFacts({ row }: { readonly row: ListRow }) {
+  if (row.evidence === undefined && (row.notes === undefined || row.notes.length === 0))
+    return null;
+  return (
+    <span className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+      {row.evidence ? <Badge tone={row.evidence.tone}>근거 {row.evidence.label}</Badge> : null}
+      {row.notes?.map((note) => (
+        <span key={note}>{note}</span>
+      ))}
+    </span>
   );
 }

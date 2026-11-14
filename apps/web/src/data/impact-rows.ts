@@ -8,7 +8,8 @@ import { gradeRank, sortedGrades } from "./impact-grades";
 import type { ImpactTree } from "./impact-tree";
 import type { ImpactSortKey } from "./impact-view";
 
-export const ROWS_PER_PAGE = 50;
+/** How many rows a section shows at first, and how many more each "show more" adds. */
+export const ROWS_STEP = 50;
 
 export interface ImpactRow {
   readonly id: string;
@@ -22,7 +23,12 @@ export interface ImpactRow {
   /** The object just before this one: its name, or nothing for a start or an object the caller may not read. */
   readonly via: string | undefined;
   readonly viaId: string | null;
+  /** The path went through an object the caller may not read, or the object just before is one. */
   readonly viaHidden: boolean;
+  /** The weakest evidence on the path: fact, assumed or unknown, when the answer says. */
+  readonly weakest: string | undefined;
+  /** Other objects the failure also came through. Carried, not shown yet. */
+  readonly also: readonly string[];
   /** The reading stands on an assumption. */
   readonly assumed: boolean;
   readonly delayed: boolean;
@@ -46,7 +52,9 @@ export function impactRows(tree: ImpactTree): ImpactRow[] {
       lost: node.lost,
       via: parent && parent.kind !== "hidden" ? parent.name : undefined,
       viaId: parent && parent.kind !== "hidden" ? parent.id : null,
-      viaHidden: parent?.kind === "hidden",
+      viaHidden: node.viaHidden || parent?.kind === "hidden",
+      weakest: node.weakest,
+      also: node.also,
       assumed: node.assumed,
       delayed: node.delayed,
       single: node.single,
@@ -110,25 +118,20 @@ export function sortRows(
   });
 }
 
-export interface RowPage {
+export interface RowsShown {
   readonly rows: readonly ImpactRow[];
-  /** The page shown, 1-based, kept inside the pages there are. */
-  readonly page: number;
-  readonly pages: number;
   readonly total: number;
+  /** How many rows are shown: what was asked for, kept between 0 and the total. */
+  readonly shown: number;
+  /** Whether "show more" has rows left to show. */
+  readonly more: boolean;
 }
 
-export function pageOfRows(
-  rows: readonly ImpactRow[],
-  page: number,
-  size = ROWS_PER_PAGE,
-): RowPage {
-  const pages = Math.max(1, Math.ceil(rows.length / size));
-  const shown = Math.min(Math.max(1, Math.floor(page)), pages);
-  return {
-    rows: rows.slice((shown - 1) * size, shown * size),
-    page: shown,
-    pages,
-    total: rows.length,
-  };
+/**
+ * The first rows of a section: `count` of them, at least the first step. A section opens with 50 and a person shows
+ * 50 more each time; the count is state of the screen, not of the address.
+ */
+export function firstRows(rows: readonly ImpactRow[], count = ROWS_STEP): RowsShown {
+  const shown = Math.min(rows.length, Math.max(ROWS_STEP, Math.floor(count)));
+  return { rows: rows.slice(0, shown), total: rows.length, shown, more: shown < rows.length };
 }

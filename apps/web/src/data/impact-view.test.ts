@@ -42,7 +42,6 @@ describe("[REQ-353] the state of the impact screen is in the address", () => {
         step: 0,
         all: true,
         sort: { key: "hops", direction: "descending" },
-        page: 3,
         grade: "exposed_direct",
       },
       { ...DEFAULT_IMPACT_VIEW, question: { ...EMPTY_QUESTION, target: obj(7) }, step: 2 },
@@ -58,14 +57,13 @@ describe("[REQ-353] the state of the impact screen is in the address", () => {
   it("reads a value that does not fit as the default", () => {
     const view = read(
       `dead=${obj(1)},not-an-id,${obj(1)},${obj(2).toUpperCase()}&cut=${obj(5)},${lnk(6)}&site=x` +
-        "&reading=wish&hops=0&max=123&view=cards&step=-1&all=yes&sort=color&dir=desc&page=abc&grade=awful&sel=zz&focus=",
+        "&reading=wish&hops=0&max=123&view=cards&step=-1&all=yes&sort=color&dir=desc&grade=awful&sel=zz&focus=",
     );
     expect(view).toEqual({
       ...DEFAULT_IMPACT_VIEW,
       question: { dead: [obj(1)], site: [], cut: [lnk(6)], target: undefined },
     });
-    expect(read("hops=12x&step=1.5&page=0&max=2000").hops).toBeUndefined();
-    expect(read("page=0").page).toBe(1);
+    expect(read("hops=12x&step=1.5&max=2000").hops).toBeUndefined();
     expect(read(`focus=${"x".repeat(501)}`).focus).toBeUndefined();
   });
 

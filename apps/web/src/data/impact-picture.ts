@@ -5,6 +5,7 @@
  */
 
 import { layerName } from "./display";
+import { gradeLabel } from "./format";
 import type { GradeStyle } from "./impact-grades";
 import { gradeStyle, START_STYLE, WAYPOINT_STYLE } from "./impact-grades";
 import type { ImpactGroup, ImpactOverview } from "./impact-group";
@@ -53,6 +54,8 @@ export interface Picture {
 
 const OTHER_NAME = "기타";
 const HIDDEN_NAME = "숨김 객체";
+/** What a row or a node says of a path through an object the caller may not read. */
+export const VIA_HIDDEN = "보이지 않는 객체를 거침";
 
 const laneName = (layer: string): string => (layer === OTHER_LANE ? OTHER_NAME : layerName(layer));
 
@@ -65,7 +68,9 @@ function styleOf(node: ImpactNode): GradeStyle {
 function describe(node: ImpactNode, style: GradeStyle): string {
   if (node.kind === "hidden") return `${HIDDEN_NAME}, ${node.hops}단계`;
   const parts = [node.name, node.type, laneName(node.layer), style.name, `${node.hops}단계`];
-  if (node.assumed) parts.push("가정에 근거");
+  if (node.weakest !== undefined) parts.push(`근거 ${gradeLabel(node.weakest)}`);
+  else if (node.assumed) parts.push("가정에 근거");
+  if (node.viaHidden) parts.push(VIA_HIDDEN);
   if (node.single) parts.push("단일 장애점");
   return parts.join(", ");
 }

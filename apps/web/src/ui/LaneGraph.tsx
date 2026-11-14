@@ -74,6 +74,8 @@ export interface LaneGraphProps {
 /** An SVG has no `<fieldset>` or `<button>`; the roles tell a screen reader what a `<g>` is. */
 const GROUP = { role: "group" } as const;
 const BUTTON = { role: "button" } as const;
+/** The lines are decoration; spread, because the lint rule takes any `<g>` with this for a focusable element. */
+const HIDDEN = { "aria-hidden": true } as const;
 
 const short = (text: string): string =>
   text.length > LABEL_LENGTH ? `${text.slice(0, LABEL_LENGTH - 1)}…` : text;
@@ -87,26 +89,78 @@ interface Spot {
   readonly y: number;
 }
 
-function Edge({ edge, from, to }: { edge: GraphEdge; from: Spot; to: Spot }) {
-  const mx = (from.x + to.x) / 2;
-  const my = (from.y + to.y) / 2;
+const round = (n: number): number => Math.round(n * 10) / 10;
+
+/** Where a line leaves its parent (past the label) and where it meets its child (before the figure). */
+const OUT = 112;
+const IN = 9;
+
+/** The elbow of a line: the x of its upright part, and the two x it runs between. */
+function course(from: Spot, to: Spot): { out: number; mid: number; into: number } {
+  if (to.x > from.x + OUT) {
+    const out = from.x + OUT;
+    const into = to.x - IN;
+    return { out, mid: (out + into) / 2, into };
+  }
+  // The child is in the same column: the line goes up and down the left of the figures.
+  return { out: from.x - IN, mid: from.x - IN - 3, into: to.x - IN };
+}
+
+/** A bent line from a parent to a child: out of the parent, across to the middle, along to the child's row, in. */
+const elbow = (from: Spot, to: Spot): string => {
+  const c = course(from, to);
+  return `M${round(c.out)} ${round(from.y)}H${round(c.mid)}V${round(to.y)}H${round(c.into)}`;
+};
+
+/** A small diamond on the upright part of a line: the failure passed through a redundancy group on this link. */
+const diamond = (from: Spot, to: Spot): string => {
+  const c = course(from, to);
+  const mx = round(c.mid);
+  const my = round((from.y + to.y) / 2);
+  return `M${mx} ${my - 4}l4 4l-4 4l-4 -4z`;
+};
+
+interface Strokes {
+  readonly solid: string;
+  readonly dashed: string;
+  readonly marks: string;
+}
+
+/** The lines of one step as three paths whatever their number: those resting on facts, those that do not, the marks. */
+function strokesOf(edges: readonly GraphEdge[], spots: ReadonlyMap<string, Spot>): Strokes {
+  const solid: string[] = [];
+  const dashed: string[] = [];
+  const marks: string[] = [];
+  for (const e of edges) {
+    const from = spots.get(e.from);
+    const to = spots.get(e.to);
+    if (from === undefined || to === undefined) continue;
+    (e.dashed ? dashed : solid).push(elbow(from, to));
+    if (e.group) marks.push(diamond(from, to));
+  }
+  return { solid: solid.join(""), dashed: dashed.join(""), marks: marks.join("") };
+}
+
+/**
+ * The lines of a step, behind its nodes. A line is decoration: what led to what is told by the name of a node and by
+ * the list, so the lines are hidden from a screen reader. They are in the group of the step they lead to, so they
+ * appear with it, and there is a path for a kind of line, not an element for each line.
+ */
+function EdgePaths({
+  edges,
+  spots,
+}: {
+  readonly edges: readonly GraphEdge[];
+  readonly spots: ReadonlyMap<string, Spot>;
+}) {
+  const { solid, dashed, marks } = strokesOf(edges, spots);
+  const line = "fill-none stroke-subtle stroke-[1.5]";
   return (
-    <>
-      <line
-        x1={from.x}
-        y1={from.y}
-        x2={to.x}
-        y2={to.y}
-        strokeDasharray={edge.dashed ? "4 3" : undefined}
-        className="stroke-subtle stroke-[1.5]"
-      />
-      {edge.group ? (
-        <polygon
-          points={`${mx},${my - 4} ${mx + 4},${my} ${mx},${my + 4} ${mx - 4},${my}`}
-          className="fill-surface stroke-subtle stroke-[1.5]"
-        />
-      ) : null}
-    </>
+    <g {...HIDDEN} data-edges="">
+      {solid === "" ? null : <path d={solid} className={line} />}
+      {dashed === "" ? null : <path d={dashed} strokeDasharray="4 3" className={line} />}
+      {marks === "" ? null : <path d={marks} className="fill-surface stroke-subtle stroke-[1.5]" />}
+    </g>
   );
 }
 
@@ -141,11 +195,7 @@ const LayerBody = memo(function LayerBody({
 }: LayerBodyProps) {
   return (
     <>
-      {edges.map((e) => {
-        const from = spots.get(e.from);
-        const to = spots.get(e.to);
-        return from && to ? <Edge key={`${e.from}>${e.to}`} edge={e} from={from} to={to} /> : null;
-      })}
+      <EdgePaths edges={edges} spots={spots} />
       {nodes.map((n) => {
         const spot = spots.get(n.id) ?? { x: 0, y: 0 };
         /** The props that make a `<g>` a button: spread, because the lint rules do not know an SVG group may be one. */

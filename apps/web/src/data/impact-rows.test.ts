@@ -17,7 +17,7 @@ import {
   WAYPOINT_STYLE,
 } from "./impact-grades";
 import { impactSource } from "./impact-input";
-import { impactRows, pageOfRows, ROWS_PER_PAGE, sectionsByGrade, sortRows } from "./impact-rows";
+import { firstRows, impactRows, ROWS_STEP, sectionsByGrade, sortRows } from "./impact-rows";
 import { countByGrade, countByStep, describeStep, laneFirstStep, lastStep } from "./impact-stats";
 import { buildImpactTree, itemIds } from "./impact-tree";
 
@@ -74,7 +74,7 @@ describe("[REQ-354] a grade is a shape, a word and a color, never a color alone"
   });
 });
 
-describe("[REQ-357] the list has every item, in sections by result, sorted and paged", () => {
+describe("[REQ-357] the list has every item, in sections by result, sorted and shown in steps", () => {
   it("has a row for every item received, also in an answer that is too big to draw", () => {
     const data = impactOfSize(5000);
     const tree = treeOf(data);
@@ -130,18 +130,26 @@ describe("[REQ-357] the list has every item, in sections by result, sorted and p
     expect(basis.findIndex((r) => r.assumed)).toBeGreaterThan(-1);
   });
 
-  it("cuts pages of 50 and keeps the page number inside the pages there are", () => {
+  it("shows the first 50 rows of a section and 50 more each time, never past the total", () => {
     const rows = impactRows(treeOf());
-    expect(ROWS_PER_PAGE).toBe(50);
-    const first = pageOfRows(rows, 1);
+    expect(ROWS_STEP).toBe(50);
+    const first = firstRows(rows);
     expect(first.rows).toHaveLength(50);
-    expect(first.pages).toBe(Math.ceil(rows.length / 50));
-    const last = pageOfRows(rows, 9999);
-    expect(last.page).toBe(first.pages);
-    expect(last.rows).toHaveLength(rows.length - (first.pages - 1) * 50);
-    expect(pageOfRows(rows, -4).page).toBe(1);
-    expect(pageOfRows([], 1)).toMatchObject({ rows: [], page: 1, pages: 1, total: 0 });
-    expect(pageOfRows(rows, 2, 10).rows[0]).toBe(rows[10]);
+    expect(first).toMatchObject({ total: rows.length, shown: 50, more: true });
+    const second = firstRows(rows, 100);
+    expect(second.rows).toHaveLength(100);
+    expect(second.rows[99]).toBe(rows[99]);
+    const all = firstRows(rows, 99999);
+    expect(all).toMatchObject({ shown: rows.length, total: rows.length, more: false });
+    expect(firstRows(rows, -4).shown).toBe(50);
+    expect(firstRows([], 50)).toMatchObject({ rows: [], total: 0, shown: 0, more: false });
+  });
+
+  it("carries the weakest evidence, the hidden object on the way and the other paths of a row", () => {
+    const rows = impactRows(treeOf(smallImpact()));
+    expect(rows.some((r) => r.weakest !== undefined)).toBe(true);
+    expect(rows.every((r) => Array.isArray(r.also))).toBe(true);
+    expect(rows.some((r) => r.viaHidden)).toBe(true);
   });
 });
 

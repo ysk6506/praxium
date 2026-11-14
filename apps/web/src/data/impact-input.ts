@@ -38,6 +38,12 @@ export interface ImpactItemInput {
   readonly hops: number;
   readonly via?: string | null;
   readonly assumption_based: boolean;
+  /** The weakest evidence on the path: fact, assumed or unknown. */
+  readonly weakest_grade?: string;
+  /** The path went through an object the caller may not read. */
+  readonly via_hidden?: boolean;
+  /** The ids of other objects the failure also came through; kept in the model, not shown yet. */
+  readonly also?: readonly string[];
   readonly lost_channels?: readonly string[];
   readonly delay_class?: string;
   readonly path: readonly ImpactStepInput[];
@@ -93,6 +99,12 @@ export interface ImpactRecord {
   readonly grade: string;
   readonly hops: number;
   readonly assumed: boolean;
+  /** The weakest evidence grade on the path (fact, assumed, unknown); undefined when the answer does not say. */
+  readonly weakest: string | undefined;
+  /** The path went through an object the caller may not read. */
+  readonly viaHidden: boolean;
+  /** Other objects the failure also came through. Carried, not shown yet. */
+  readonly also: readonly string[];
   readonly delayed: boolean;
   /** Upstream: the target does not survive the failure of this object alone. */
   readonly single: boolean;
@@ -151,6 +163,9 @@ function downstreamRecord(item: ImpactItemInput): ImpactRecord {
     grade: item.result,
     hops: item.hops,
     assumed: item.assumption_based,
+    weakest: item.weakest_grade,
+    viaHidden: item.via_hidden === true,
+    also: item.also ?? EMPTY,
     delayed: item.delay_class === "delayed",
     single: false,
     lost: item.lost_channels ?? EMPTY,
@@ -175,6 +190,9 @@ function upstreamRecord(item: UpstreamItemInput, reading: ImpactReading): Impact
     grade: effectOf(item, reading),
     hops: item.hops,
     assumed: item.assumption_based,
+    weakest: undefined,
+    viaHidden: false,
+    also: EMPTY,
     delayed: chain.some((s) => s.link?.delay_class === "delayed"),
     single: item.single_point_of_failure,
     lost: EMPTY,

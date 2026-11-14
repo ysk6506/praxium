@@ -37,6 +37,12 @@ export interface ImpactNode {
   readonly parent: string | null;
   readonly children: readonly string[];
   readonly assumed: boolean;
+  /** The weakest evidence grade on the path of the item (fact, assumed, unknown), when the answer says. */
+  readonly weakest: string | undefined;
+  /** The path of the item went through an object the caller may not read. */
+  readonly viaHidden: boolean;
+  /** Other objects the failure also came through (carried, not shown yet). */
+  readonly also: readonly string[];
   readonly delayed: boolean;
   readonly single: boolean;
   readonly lost: readonly string[];
@@ -91,6 +97,9 @@ function draft(id: string, kind: ImpactNodeKind, fields: Partial<Draft>): Draft 
     children: [],
     childIds: [],
     assumed: false,
+    weakest: undefined,
+    viaHidden: false,
+    also: [],
     delayed: false,
     single: false,
     lost: [],
@@ -108,6 +117,9 @@ function addItem(nodes: Map<string, Draft>, rec: ImpactRecord, roots: ReadonlySe
   if (known?.kind === "root") {
     known.grade = rec.grade;
     known.assumed = rec.assumed;
+    known.weakest = rec.weakest;
+    known.viaHidden = rec.viaHidden;
+    known.also = rec.also;
     known.lost = rec.lost;
     return;
   }
@@ -124,6 +136,9 @@ function addItem(nodes: Map<string, Draft>, rec: ImpactRecord, roots: ReadonlySe
       hops: rec.hops,
       parent: parentId,
       assumed: rec.assumed,
+      weakest: rec.weakest,
+      viaHidden: rec.viaHidden,
+      also: rec.also,
       delayed: rec.delayed,
       single: rec.single,
       lost: rec.lost,

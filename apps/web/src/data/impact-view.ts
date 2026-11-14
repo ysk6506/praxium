@@ -51,7 +51,6 @@ export interface ImpactView {
   readonly sort:
     | { readonly key: ImpactSortKey; readonly direction: "ascending" | "descending" }
     | undefined;
-  readonly page: number;
   /** The result code the list is narrowed to. */
   readonly grade: string | undefined;
 }
@@ -69,7 +68,6 @@ export const DEFAULT_IMPACT_VIEW: ImpactView = {
   step: undefined,
   all: false,
   sort: undefined,
-  page: 1,
   grade: undefined,
 };
 
@@ -118,7 +116,6 @@ export function readImpactView(params: URLSearchParams): ImpactView {
     sort: sortKey
       ? { key: sortKey, direction: params.get("dir") === "desc" ? "descending" : "ascending" }
       : undefined,
-    page: wholeNumber(params.get("page"), 1) ?? 1,
     grade: grade !== null && isImpactGrade(grade) ? grade : undefined,
   };
 }
@@ -145,7 +142,6 @@ export function impactViewParams(view: ImpactView): Record<string, string | unde
     all: view.all ? "1" : undefined,
     sort: view.sort?.key,
     dir: view.sort?.direction === "descending" ? "desc" : undefined,
-    page: view.page > 1 ? String(view.page) : undefined,
     grade: view.grade,
   };
 }
