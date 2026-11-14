@@ -131,7 +131,7 @@ follows:
 | 서버 렌더링을 전제한 권고(nonce 기반 CSP, 스트리밍, 서버 측 캐시) | 정적 단일 페이지 앱이고 서버는 HTML을 만들지 않는다 |
 | 서비스 워커, PWA, 오프라인 | 서버가 항상 필요한 도구이고 캐시 갱신 문제만 는다 |
 | 네이티브 `<dialog>`와 `popover`로 Base UI 교체 | 탭, 선택, 체크 박스에도 Base UI를 쓰고 ADR-0035가 정당화했다. 정식 화면을 다시 만들 때 따로 판단한다 |
-| `require-trusted-types-for 'script'` | 위험한 싱크를 `WEB041`이 막는다. React와 Base UI 내부가 호환되는지 검증하지 못했다. 정식 화면에서 다시 본다 |
+| `require-trusted-types-for 'script'` | 위험한 삽입 함수를 `WEB041`이 막는다. React와 Base UI 내부가 호환되는지 검증하지 못했다. 정식 화면에서 다시 본다 |
 | 쿠키 접두사, `SameSite`, HSTS, `Clear-Site-Data` | 쿠키 인증이 없고 TLS를 프락시움이 끝내지 않는다. 정식 인증을 만들 때 다시 본다 |
 
 ## 11. 새 부품을 만들 때 읽을 가이드

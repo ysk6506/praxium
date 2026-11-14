@@ -3072,6 +3072,26 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > waits for a heading that is not there yet, and does not take the focus from a person who moved it meanwhile": {
+   "kind": "test",
+   "hash": "55a676ff5e68e61d",
+   "asserts": 2,
+   "literals": [
+    "\"#/kg/main/types\"",
+    "\"#/kgs\"",
+    "\"[data-other]\"",
+    "\"main\"",
+    "\"main\"",
+    "\"waits for a heading that is not there yet, and does not take the focus from a person who moved it meanwhile\"",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/data/screen.test.tsx::[REQ-315] each screen names the page, and a move moves the focus > writes the title of the page from the route, and the name an object screen reports": {
    "kind": "test",
    "hash": "a8c2ebf490efecfa",
@@ -3097,7 +3117,7 @@
   },
   "apps/web/src/data/screen.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "11173b4dddc3941c",
+   "hash": "ba50a58b35df8629",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3177,7 +3197,7 @@
   },
   "apps/web/src/data/screen.test.tsx::=moved": {
    "kind": "support",
-   "hash": "46825e90ee9d387a",
+   "hash": "5e00f534a40084e3",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3197,7 +3217,7 @@
   },
   "apps/web/src/data/screen.test.tsx::=Page": {
    "kind": "support",
-   "hash": "3028d17dda1c5d20",
+   "hash": "bca5227aab05bfa0",
    "asserts": 0,
    "literals": [],
    "precision": [],

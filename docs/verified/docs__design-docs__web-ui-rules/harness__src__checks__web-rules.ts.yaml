@@ -1,0 +1,7 @@
+doc: "docs/design-docs/web-ui-rules.md"
+target: "harness/src/checks/web-rules.ts"
+hash: "6b2428e547042cf0"
+date: "2026-11-14"
+note: "삽입 함수 용어 정리 뒤 재대조: 규칙 코드와 값 일치"
+text_changed: true
+doc_hash: "78400713ba527af3"

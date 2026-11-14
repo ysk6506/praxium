@@ -15,7 +15,7 @@ covers:
 | 아키텍처 강제 (REQ-021) | `harness/src/checks/architecture.ts` | `ARCH*` |
 | 제3자 라이선스 (함께 나가는 npm 패키지와 자료는 허용 목록 안의 라이선스여야 한다) | `harness/src/checks/licenses.ts` | `LIC*` |
 | REST 계약 (REQ-143, REQ-148) | `harness/src/checks/api-contract.ts` (`architecture` 안에서 실행된다) | `API*` |
-| 웹 UI(`apps/web`)의 의존성 허용 목록, 생성한 API 코드와 계약의 일치, 색 리터럴, 백엔드의 독립, 웹 UI 규칙의 기계 검사(토큰 대비, 위험한 싱크, 외부 주소, 포커스 표시, 움직임, 번들 예산) (REQ-276, REQ-277, REQ-279, REQ-316~REQ-318) | `harness/src/checks/web.ts` (`architecture` 안에서 실행된다. 설정은 `harness/config/web.yaml`) | `WEB*` |
+| 웹 UI(`apps/web`)의 의존성 허용 목록, 생성한 API 코드와 계약의 일치, 색 리터럴, 백엔드의 독립, 웹 UI 규칙의 기계 검사(토큰 대비, 위험한 삽입 함수, 외부 주소, 포커스 표시, 움직임, 번들 예산) (REQ-276, REQ-277, REQ-279, REQ-316~REQ-318) | `harness/src/checks/web.ts` (`architecture` 안에서 실행된다. 설정은 `harness/config/web.yaml`) | `WEB*` |
 | 기술 부채 (REQ-022) | `harness/src/checks/debt.ts` | `DEBT*` |
 | 검사 무시 금지 (무시 주석·건너뛴 테스트·CI `continue-on-error`는 이유와 근거 번호가 있어야 하고 수는 늘 수 없다) | `harness/src/checks/ignores.ts` | `IGN*` |
 | 테스트 변조 방지 (REQ-023) | `harness/src/checks/testguard.ts` | `TEST*` `TCFG*` `TLOCK*` (Go 테스트 함수도) |
@@ -45,7 +45,7 @@ covers:
 
 ## 웹 UI 검사 (ADR-0035)
 
-`architecture` 안에서 도는 `WEB*` 검사가 `apps/web`을 지킨다. 검사 이름 목록은 늘리지 않았다. `WEB001`은 `apps/web/package.json`의 의존성이 허용 목록에 있는지, `WEB010`~`WEB013`은 생성한 API 코드의 계약 해시와 본문 해시와 생성기를 다시 돌린 결과, `WEB020`·`WEB021`은 토큰 파일 밖의 색, `WEB030`~`WEB032`는 백엔드가 `apps/web` 없이 빌드되는지 본다. `WEB040`~`WEB045`는 [웹 UI 규칙](web-ui-rules.md)의 기계 검사다: 토큰의 글자와 테두리 대비(쌍은 `web.yaml`의 `rules.contrast`), 위험한 싱크, 절대 주소, 포커스 표시 제거, 움직임 줄이기, 번들 예산(`pnpm tsx harness/src/checks/web.ts --budget`, CI가 웹 빌드 뒤에 돌린다). 마지막 것은 빌드 결과가 없으면 `pnpm check`에서는 건너뛴다. Base UI를 `ui` 계층에서만 import하는 규칙은 `ARCH020`이다. `tests.yaml`의 `unlocked_globs`(화면 `apps/web/src/screens/**`)에 든 테스트 파일은 잠금과 요구사항 추적에서 빠지고 정적 테스트 규칙은 그대로 받는다.
+`architecture` 안에서 도는 `WEB*` 검사가 `apps/web`을 지킨다. 검사 이름 목록은 늘리지 않았다. `WEB001`은 `apps/web/package.json`의 의존성이 허용 목록에 있는지, `WEB010`~`WEB013`은 생성한 API 코드의 계약 해시와 본문 해시와 생성기를 다시 돌린 결과, `WEB020`·`WEB021`은 토큰 파일 밖의 색, `WEB030`~`WEB032`는 백엔드가 `apps/web` 없이 빌드되는지 본다. `WEB040`~`WEB045`는 [웹 UI 규칙](web-ui-rules.md)의 기계 검사다: 토큰의 글자와 테두리 대비(쌍은 `web.yaml`의 `rules.contrast`), 위험한 삽입 함수, 절대 주소, 포커스 표시 제거, 움직임 줄이기, 번들 예산(`pnpm tsx harness/src/checks/web.ts --budget`, CI가 웹 빌드 뒤에 돌린다). 마지막 것은 빌드 결과가 없으면 `pnpm check`에서는 건너뛴다. Base UI를 `ui` 계층에서만 import하는 규칙은 `ARCH020`이다. `tests.yaml`의 `unlocked_globs`(화면 `apps/web/src/screens/**`)에 든 테스트 파일은 잠금과 요구사항 추적에서 빠지고 정적 테스트 규칙은 그대로 받는다.
 
 ## REST 계약 검사 (ADR-0024)
 

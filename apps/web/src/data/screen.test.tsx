@@ -13,7 +13,7 @@ import {
   useScreenTitle,
 } from "./screen";
 
-const moved = vi.hoisted(() => ({ forward: true }));
+const moved = vi.hoisted(() => ({ forward: true, heading: true }));
 vi.mock("./scroll", async (original) => ({
   ...(await original<typeof import("./scroll")>()),
   lastChangeWasForward: () => moved.forward,
@@ -35,7 +35,7 @@ function Page() {
         다른 곳
       </button>
       <main tabIndex={-1}>
-        <h1 tabIndex={-1}>제목</h1>
+        {moved.heading ? <h1 tabIndex={-1}>제목</h1> : null}
         {route.page === "object" ? <Named /> : null}
       </main>
     </ScreenReportsProvider>
@@ -51,6 +51,7 @@ afterEach(() => {
   document.body.innerHTML = "";
   document.title = "";
   moved.forward = true;
+  moved.heading = true;
 });
 
 describe("[REQ-315] each screen names the page, and a move moves the focus", () => {
@@ -85,6 +86,20 @@ describe("[REQ-315] each screen names the page, and a move moves the focus", () 
     await go("#/kgs", false);
     expect(document.activeElement).toBe(other);
     expect(document.querySelector("[data-said]")?.textContent).toBe("KG 목록 · 프락시움");
+    await view.unmount();
+  });
+
+  it("waits for a heading that is not there yet, and does not take the focus from a person who moved it meanwhile", async () => {
+    replaceHash("#/kgs");
+    moved.heading = false;
+    const view = await render(<Page />);
+    await go("#/kg/main/types", true);
+    expect(document.activeElement).toBe(document.querySelector("main"));
+    const other = document.querySelector("[data-other]") as HTMLElement;
+    other.focus();
+    moved.heading = true;
+    await view.rerender(<Page />);
+    expect(document.activeElement).toBe(other);
     await view.unmount();
   });
 

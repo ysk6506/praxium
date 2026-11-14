@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "a0ca76039b1ca3ed"
+hash: "24d2afb5761e0b38"
 date: "2026-11-14"
-note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
+note: "AGENTS.md의 화면 코드 항목에 웹 UI 규칙 링크가 더해진 것만 바뀜. 신념과 충돌 없음"
 text_changed: false
 doc_hash: "04b2f4f490642c38"
