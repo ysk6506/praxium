@@ -1,10 +1,12 @@
 package cli
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"sort"
 	"strings"
 )
@@ -53,6 +55,8 @@ func fieldLines(name string, v any) []string {
 			lines = append(lines, fmt.Sprintf("%d. %s: %s", i+1, scalar(m["strength"]), keyText(m)))
 		case "properties", "effective_properties":
 			lines = append(lines, propertyText(m))
+		case "bindings":
+			lines = append(lines, bindingText(m))
 		default:
 			return []string{scalar(v)}
 		}
@@ -155,4 +159,86 @@ func healthText(status int) string {
 		return "ok (200)"
 	}
 	return fmt.Sprintf("not ok (%d)", status)
+}
+
+// bindingText writes a binding of a link type as one line: the type that may be at the start, the type that may be at
+// the end and how many links of the type an object may have, so that a person who writes a mapping sees which object
+// types the link joins. A binding with a constraint on a parameter says so.
+func bindingText(b map[string]any) string {
+	names, _ := b["_names"].(map[string]string)
+	out := endText(b["from"], names) + " -> " + endText(b["to"], names) + "  cardinality " + scalar(b["cardinality"])
+	if pc, ok := b["param_constraints"].(map[string]any); ok && len(pc) > 0 {
+		keys := make([]string, 0, len(pc))
+		for k := range pc {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		parts := make([]string, len(keys))
+		for i, k := range keys {
+			parts[i] = k + "=" + scalar(pc[k])
+		}
+		out += "  only with " + strings.Join(parts, " ")
+	}
+	return out
+}
+
+// endText is one end of a binding: the name of the object type, "any object with the trait T", or "any object".
+func endText(v any, names map[string]string) string {
+	e, _ := v.(map[string]any)
+	ref := scalar(e["ref"])
+	name := names[ref]
+	if name == "" {
+		name = shortRef(ref)
+	}
+	switch kind, _ := e["kind"].(string); kind {
+	case "type":
+		return name
+	case "trait":
+		return "any object with the trait " + name
+	}
+	return "any object"
+}
+
+// printLinkTypeView writes a link type with its bindings as lines that name the object types at both ends. The names
+// come from the object types and traits of the model; when they cannot be read the end of the id is shown instead.
+func printLinkTypeView(ctx context.Context, c *Client, w io.Writer, env *Envelope) error {
+	var obj map[string]any
+	if err := json.Unmarshal(env.Data, &obj); err != nil {
+		return transportError{err: err}
+	}
+	names := map[string]string{}
+	for _, path := range []string{kindPaths["object"], kindPaths["trait"]} {
+		for _, row := range readAllRows(ctx, c, path) {
+			names[scalar(row["id"])] = scalar(row["name"])
+		}
+	}
+	bindings, _ := obj["bindings"].([]any)
+	for _, b := range bindings {
+		if m, ok := b.(map[string]any); ok {
+			m["_names"] = names
+		}
+	}
+	return printFields(w, obj)
+}
+
+// readAllRows reads every page of a list; a list that cannot be read gives what was read before the failure.
+func readAllRows(ctx context.Context, c *Client, path string) []map[string]any {
+	var rows []map[string]any
+	query := url.Values{}
+	for {
+		env, err := c.Get(ctx, path, query)
+		if err != nil {
+			return rows
+		}
+		var page []map[string]any
+		if json.Unmarshal(env.Data, &page) != nil {
+			return rows
+		}
+		rows = append(rows, page...)
+		next := nextCursor(env.Meta)
+		if next == "" {
+			return rows
+		}
+		query.Set("cursor", next)
+	}
 }

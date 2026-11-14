@@ -3,6 +3,7 @@ package ingest
 import (
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -72,10 +73,21 @@ func (d *derivation) buildLinks() error {
 // inputs). A feed marked approximate gives assumed, so a link made from its rows is assumed too (ADR-0052).
 func (lp *linkPlan) grade() model.Grade { return model.Lowest(lp.from.grade, lp.to.grade) }
 
+// missingTarget says which value was looked for, in which column of this row and in which column of the other
+// dataset, so the one who reads it can see whether the value is misspelt or the other file lacks the row.
+func (lp *linkPlan) missingTarget(toDS string, row Row) string {
+	vals := make([]string, len(lp.def.From.Columns))
+	for i, c := range lp.def.From.Columns {
+		vals[i] = strconv.Quote(strings.TrimSpace(row.Fields[c]))
+	}
+	return "no row of " + toDS + " has the value " + strings.Join(vals, ", ") + " of column " + strings.Join(lp.def.From.Columns, ", ") +
+		" in its column " + strings.Join(lp.def.To.Columns, ", ") + "; a misspelt value, or the row is missing in that file"
+}
+
 func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string, targets map[string]bool) error {
 	switch len(targets) {
 	case 0:
-		d.problem(ProblemLinkTarget, fromDS, lp.def.ID, row, "no row of "+toDS+" has this key")
+		d.problem(ProblemLinkTarget, fromDS, lp.def.ID, row, lp.missingTarget(toDS, row))
 		return nil
 	case 1:
 	default:
@@ -99,7 +111,7 @@ func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string
 		return err
 	}
 	ref := d.p.Source.ID + "/" + fromDS + "/" + strings.ReplaceAll(row.Key, keySep, "|")
-	d.links[id.String()] = desiredLink{from: srcID, up: graph.LinkUpsert{Type: lp.lt.ID, Src: srcID, Dst: dstID, Grade: lp.grade(),
+	d.links[id.String()] = desiredLink{from: srcID, dataset: fromDS, row: row, up: graph.LinkUpsert{Type: lp.lt.ID, Src: srcID, Dst: dstID, Grade: lp.grade(),
 		Basis: lp.basis, SourceRefs: []string{ref}}}
 	return nil
 }
@@ -124,7 +136,7 @@ func (d *derivation) checkCardinality() {
 		out, in := string(b.Cardinality) == "N:1" || string(b.Cardinality) == "1:1", string(b.Cardinality) == "1:N" || string(b.Cardinality) == "1:1"
 		fe, te := end{l.up.Type.String(), l.up.Src.String()}, end{l.up.Type.String(), l.up.Dst.String()}
 		if (out && perFrom[fe] != "") || (in && perTo[te] != "") {
-			d.problem(ProblemCardinality, "", "", Row{Key: l.up.Src.String()}, "the link of type "+l.up.Type.String()+" to "+l.up.Dst.String()+" would break the cardinality "+string(b.Cardinality))
+			d.problem(ProblemCardinality, l.dataset, "", l.row, d.cardinalityReason(l, b))
 			delete(d.links, id)
 			continue
 		}
@@ -135,6 +147,16 @@ func (d *derivation) checkCardinality() {
 			perTo[te] = id
 		}
 	}
+}
+
+// cardinalityReason names the link by the objects and the link type, not by their ids.
+func (d *derivation) cardinalityReason(l desiredLink, b model.Binding) string {
+	name := l.up.Type.String()
+	if lt, ok := d.p.reg.LinkType(l.up.Type); ok {
+		name = lt.Name
+	}
+	return "the link " + name + " from " + d.objects[l.up.Src.String()].nameFall + " to " + d.objects[l.up.Dst.String()].nameFall +
+		" would break the cardinality " + string(b.Cardinality) + ", so it was not made (the object already has such a link from another row)"
 }
 
 func (d *derivation) bindingOf(u graph.LinkUpsert) (model.Binding, bool) {

@@ -119,10 +119,45 @@ func CheckEncoding(data []byte, parser string) error {
 	if bytes.HasPrefix(data, []byte{0xFF, 0xFE}) || bytes.HasPrefix(data, []byte{0xFE, 0xFF}) {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the file starts with a UTF-16 byte order mark: it is UTF-16 text (Excel's \"Unicode Text\"), which this build does not read. %s", encodingFix(parser))
 	}
+	if order := nulPattern(data); order != "" {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the file has a NUL byte in every other byte (%s), which is how UTF-16 text looks when it has no byte order mark (Excel's \"Unicode Text\" is such a file): it is UTF-16 text, which this build does not read. %s", order, encodingFix(parser))
+	}
 	if i := firstInvalidUTF8(data); i >= 0 {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the file is not UTF-8 text (the byte at offset %d does not begin a valid character): it is probably in a local code page such as EUC-KR or CP949, which this build does not decode. %s", i, encodingFix(parser))
 	}
 	return nil
+}
+
+// nulPattern tells whether the start of the file has NUL bytes at every other place and almost none at the places
+// between, the way UTF-16 text of Latin letters looks: "little-endian" when they are at the odd places, "big-endian"
+// when at the even. A text file has no NUL byte at all, so a few of them in a row of every other byte are enough.
+func nulPattern(data []byte) string {
+	const sample = 2048
+	if len(data) > sample {
+		data = data[:sample]
+	}
+	if len(data) < 8 {
+		return ""
+	}
+	var even, odd int
+	for i, b := range data {
+		if b != 0 {
+			continue
+		}
+		if i%2 == 0 {
+			even++
+		} else {
+			odd++
+		}
+	}
+	half := len(data) / 2
+	switch {
+	case odd*10 >= half*3 && even*20 <= half:
+		return "little-endian"
+	case even*10 >= half*3 && odd*20 <= half:
+		return "big-endian"
+	}
+	return ""
 }
 
 func encodingFix(parser string) string {
