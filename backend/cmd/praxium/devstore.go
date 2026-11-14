@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/ysk6506/praxium/backend/internal/devload"
+	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/memstore"
 	"github.com/ysk6506/praxium/backend/internal/model"
@@ -37,27 +38,37 @@ func openTruth(w wiring, path string) (io.ReadCloser, error) {
 // systemOpen opens a real file for reading.
 func systemOpen(path string) (io.ReadCloser, error) { return os.Open(path) }
 
-// loadDevStore creates the in-memory store of a development server and, when a truth file is named, a production
-// KG filled from it. Without a file the store is empty: there is no KG to read until one is loaded.
+// loadDevStore creates the in-memory store of `dev load-truth` and, when a truth file is named, a production KG
+// filled from it. Without a file the store is empty: there is no KG to read until one is loaded.
 func loadDevStore(ctx context.Context, reg *model.Registry, w wiring, truth string, batch int) (*memstore.Store, *devload.Report, error) {
 	store := memstore.New()
+	rep, err := loadTruth(ctx, store, reg, w, truth, batch)
+	if err != nil {
+		return nil, nil, err
+	}
+	return store, rep, nil
+}
+
+// loadTruth fills a production KG of the store from a truth file. A server in development mode does it for the
+// store it was given: a store that already has the KG refuses (the names of KGs are unique). No file, no load.
+func loadTruth(ctx context.Context, store graph.Store, reg *model.Registry, w wiring, truth string, batch int) (*devload.Report, error) {
 	if truth == "" {
-		return store, nil, nil
+		return nil, nil
 	}
 	in, err := openTruth(w, truth)
 	if err != nil {
-		return nil, nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the truth file")
+		return nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the truth file")
 	}
 	defer in.Close()
 	kg, err := devload.NewKG(ctx, store, reg, w.ids, w.clock, devKGName)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
 	rep, err := devload.Loader{Store: store, Reg: reg, Clock: w.clock, IDs: w.ids, BatchItems: batch}.Load(ctx, kg.ID, in)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	return store, &rep, nil
+	return &rep, nil
 }
 
 // reportLine is the one line a load prints.

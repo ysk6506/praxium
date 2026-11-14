@@ -85,8 +85,17 @@ Go 프로그램은 한 번 빌드해 임시 디렉터리에서 실행한다. 인
 `.github/workflows/ci.yml`이 병합 관문이다. 필수 검사는 `gate` 하나다. main에 병합한 뒤(push)에도 같은 전체 경로가 실행돼야 하고, `test` 잡은 측정한 커버리지를 기록 파일에 기록해(`quality.ts record`가 생성하고, 커밋하지 않는다) 품질 등급표의 커버리지 항목이 "알 수 없음"으로 남지 않게 한다.
 
 - 일반 변경: `lint-types`(Biome와 타입), `test`(테스트와 커버리지를 한 번에 실행하고, 그 커버리지로 구조 검사 전체를 실행한다).
+- `go-sum`: `backend/go.sum`의 줄을 공식 체크섬 데이터베이스에 다시 묻는다(`scripts/verify-go-sum.sh`, ADR-0032). 외부 모듈을 처음 들일 때 데이터베이스를 거치지 않았기 때문이다.
 - 문서(`*.md`)만 바뀐 풀 리퀘스트: `docs`(구조 검사만).
 - `.github/workflows/entropy.yml`은 아무도 푸시하지 않아도 주 1회 구조 검사를 실행한다. 문서는 시간이 지나면 오래된 것이 되고 부채는 기한이 도래한다.
+
+## PostgreSQL이 필요한 Go 테스트 (ADR-0032)
+
+`adapter.pgstore`의 테스트와 `api serve -store postgres`의 기동 테스트는 실제 PostgreSQL 16에서 돈다. 서버의 주소는 환경 변수 `PRAXIUM_TEST_PG_DSN`이 준다. **변수가 없으면 건너뛰지 않고 실패한다**(조용히 통과하는 경로를 두지 않는다). 테스트마다 새 데이터베이스를 만들고 끝나면 지운다.
+
+- 로컬: `scripts/with-postgres.sh <명령>`이 일회용 서버를 소켓에만 띄우고 변수를 정해 명령을 실행한 뒤 서버와 데이터를 지운다. 예: `scripts/with-postgres.sh pnpm check`, `scripts/with-postgres.sh bash -c 'cd backend && go test ./...'`. 서버 프로그램(`initdb`, `pg_ctl`)이 있는 PostgreSQL 16이 필요하고, root이면 비특권 사용자로 띄운다. 변수가 이미 있으면(자기 서버, CI) 명령만 실행한다.
+- CI: `test` 잡의 서비스 컨테이너(`postgres:16`)가 변수를 채운다.
+- 기동 코드의 `os/exec`가 막혀 있어(`restricted_stdlib`) Go 테스트가 서버를 직접 띄우지 못하므로 서버는 테스트 바깥에서 준비한다.
 
 ## 리포지토리 호스트에서 활성화해야 하는 설정 (리포지토리 밖)
 
