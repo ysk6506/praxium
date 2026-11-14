@@ -32,22 +32,22 @@ IT 인프라 정보는 여러 시스템에 나뉘어 있습니다. 자산 대장
 
 ## 지금 되는 것, 아직 안 되는 것
 
-지금 main에서 동작합니다.
+지금 동작하는 것입니다.
 
-- 객체, 링크, 액션 타입의 레지스트리와 표준 모델 데이터(9개 층).
+- 객체, 링크, 액션 타입을 담은 표준 모델(9개 층).
 - 합성 데이터센터 생성기. 같은 시드이면 같은 세계가 나옵니다.
-- 실행 파일에 포함된 웹 UI(임시 콘솔). 타입, 객체 테이블, 객체 상세(근거 등급 포함), 이웃을 읽기 전용으로 보여 줍니다.
+- 실행 파일에 포함된 웹 UI(제품 화면이 따로 생길 때까지 쓰는 임시 화면). 타입, 객체 테이블, 객체 상세(근거 등급 포함), 이웃을 읽기 전용으로 보여 줍니다.
 - 데모 모드(`praxium demo`)와 로컬 모드(`praxium local`).
 - 엑셀, CSV, JSON Lines 소스의 수집(`praxium ingest`).
 - 내장 파일 스토어와 PostgreSQL 스토리지.
-- 사전 정의 질의(closed queries) 3종(`find`, `get`, `neighbors`)을 REST API와 명령줄(CLI)로 조회.
+- 조회 세 가지(객체 찾기 `find`, 하나 읽기 `get`, 이웃 보기 `neighbors`)를 REST API와 명령줄로 실행.
 
 아직 안 됩니다.
 
-- **E2E(엔드투엔드) 프로세스의 정의·위임·측정.** 방향만 있고 설계와 구현이 없습니다. 에이전트가 일하는 기능은 아직 없습니다.
+- **E2E(엔드투엔드) 프로세스의 정의·위임·측정.** E2E 프로세스는 요청부터 완료까지 여러 조직과 시스템을 거치는 업무의 흐름입니다. 방향만 있고 설계와 구현이 없습니다. 에이전트가 일하는 기능은 아직 없습니다.
 - 운영 모드와 실제 인증·권한(SSO, 역할). 지금 서버는 개발용 토큰으로만 뜹니다.
 - 데이터베이스와 REST API 소스, 스케줄 수집.
-- 영향 범위 계산 같은 나머지 사전 정의 질의.
+- 영향 범위 계산 같은 나머지 조회.
 - 매핑을 편집하는 화면. 매핑 정의는 지금 JSON 파일로 직접 씁니다.
 - 정의의 브랜치와 제안, 프락시움 자신의 관측성, 시크릿 암호화.
 
@@ -55,13 +55,43 @@ IT 인프라 정보는 여러 시스템에 나뉘어 있습니다. 자산 대장
 
 ### 1. 다운로드
 
-[최신 릴리스](https://github.com/ysk6506/praxium/releases/latest)에서 자기 운영체제에 맞는 파일(`praxium_<버전>_<os>_<arch>`)을 받습니다. 리눅스와 맥은 `.tar.gz`, 윈도우는 `.zip`입니다. 첫 릴리스(`v0.1.0-alpha.1`)는 곧 나옵니다. 받은 파일은 릴리스의 `SHA256SUMS`로 확인하고 압축을 풉니다.
+[릴리스 페이지](https://github.com/ysk6506/praxium/releases)에서 자기 운영체제에 맞는 압축 파일과 `SHA256SUMS`를 같은 폴더에 받습니다. 파일 이름은 `praxium_<버전>_<운영체제>_<CPU>`이고 `<버전>`에 릴리스의 버전(예: `0.1.0-alpha.1`)을 넣습니다.
+
+| 운영체제 | 파일 |
+|---|---|
+| 리눅스 | `praxium_<버전>_linux_amd64.tar.gz` (arm64는 `linux_arm64`) |
+| 맥 | `praxium_<버전>_darwin_arm64.tar.gz` (Apple 실리콘), `darwin_amd64`(인텔) |
+| 윈도우 | `praxium_<버전>_windows_amd64.zip` |
+
+실행 파일에는 서명이 없습니다. 그래서 맥은 처음 실행할 때 확인되지 않은 개발자의 프로그램이라며 막을 수 있고, 윈도우는 SmartScreen 경고를 띄울 수 있습니다. 받은 파일이 릴리스에 올라온 그대로인지 `SHA256SUMS`로 먼저 확인하세요.
+
+**리눅스**
 
 ```
 sha256sum -c SHA256SUMS --ignore-missing
 tar xzf praxium_<버전>_linux_amd64.tar.gz
 cd praxium_<버전>_linux_amd64
 ./praxium version
+```
+
+**맥** (맥이 실행을 막으면 `xattr` 줄이 풉니다. 막지 않았다면 이 줄은 오류를 내도 괜찮습니다)
+
+```
+grep praxium_<버전>_darwin_arm64.tar.gz SHA256SUMS | shasum -a 256 -c
+tar xzf praxium_<버전>_darwin_arm64.tar.gz
+cd praxium_<버전>_darwin_arm64
+xattr -d com.apple.quarantine ./praxium
+./praxium version
+```
+
+**윈도우** (PowerShell. 처음 두 줄이 보여 주는 해시 값이 같아야 합니다)
+
+```
+Get-FileHash .\praxium_<버전>_windows_amd64.zip
+Select-String windows_amd64 SHA256SUMS
+Expand-Archive .\praxium_<버전>_windows_amd64.zip -DestinationPath .
+cd praxium_<버전>_windows_amd64
+.\praxium.exe version
 ```
 
 ```
@@ -72,7 +102,7 @@ go:      go1.27.4
 web ui:  included
 ```
 
-맥과 윈도우용 파일에는 서명이 없습니다. 처음 실행할 때 운영체제가 확인되지 않은 개발자의 프로그램이라는 경고를 띄웁니다. `SHA256SUMS`로 받은 파일을 확인한 뒤(맥은 `shasum -a 256 <파일>`, 윈도우는 `Get-FileHash <파일>`의 값을 비교합니다), 운영체제의 보안 설정에서 실행을 허용해 주세요.
+이 문서의 나머지 명령은 리눅스와 맥 기준(`./praxium`)입니다. 윈도우에서는 `./praxium`을 `.\praxium.exe`로 바꿔 쓰고, 줄 끝의 `\`는 쓰지 말고 한 줄로 이어 씁니다.
 
 ### 2. 1분 데모
 
@@ -81,39 +111,57 @@ web ui:  included
 ```
 
 ```
+Synthesizing a data center (scale 20000, seed 1) and loading it...
 Praxium demo: the data is synthetic and not connected to any real system. This is not for production.
 Loaded 7236 objects and 12874 links.
 Open this address in a browser (the token is after the #, which a browser does not send to the server):
-http://127.0.0.1:8080/#/connect?token=...
+http://127.0.0.1:8080/#/connect?token=...&demo=1
+The data is in memory and is gone when the demo stops. Press Ctrl+C to stop.
 ```
 
 출력된 주소를 브라우저로 엽니다. 토큰은 주소에 들어 있어서 입력할 것이 없습니다. 타입 목록에서 시작해 객체 테이블, 객체 상세, 이웃 객체로 이동하며 둘러볼 수 있습니다. 데이터는 합성한 것이고 메모리에만 있습니다. 끝내려면 Ctrl+C를 누릅니다.
 
 ### 3. 내 파일로 해 보기
 
-예제 파일을 만들고, 파일을 살펴보고, 읽어 들이고, 결과를 브라우저로 봅니다. 엑셀과 CSV, JSON Lines 파일을 읽습니다.
+예제 파일을 만들고, 파일을 살펴보고, 엑셀 예제와 CSV 예제를 하나의 KG로 읽어 들이고, 결과를 브라우저로 봅니다. `ingest init`이 출력하는 안내와 같은 순서입니다. 엑셀, CSV, JSON Lines 파일을 읽습니다.
 
 ```
 ./praxium ingest init -out ex
 ./praxium ingest inspect -input ex/excel/datacenter.xlsx
+./praxium ingest run -data-dir data -source ex/excel/source.json -mapping ex/excel/mapping.json \
+  -input ds_racks=ex/excel/datacenter.xlsx -input ds_servers=ex/excel/datacenter.xlsx
 ./praxium ingest run -data-dir data -source ex/csv/source.json -mapping ex/csv/mapping.json \
   -input ds_racks=ex/csv/racks.csv -input ds_servers=ex/csv/servers.csv -input ds_hosts=ex/csv/hosts.jsonl \
   -input ds_vms=ex/csv/vms.jsonl -input ds_vm_power=ex/csv/vm-power.csv
 ./praxium local -data-dir data
 ```
 
+윈도우(PowerShell)에서는 `ingest run` 두 줄을 이렇게 한 줄씩 씁니다.
+
+```
+.\praxium.exe ingest run -data-dir data -source ex/excel/source.json -mapping ex/excel/mapping.json -input ds_racks=ex/excel/datacenter.xlsx -input ds_servers=ex/excel/datacenter.xlsx
+.\praxium.exe ingest run -data-dir data -source ex/csv/source.json -mapping ex/csv/mapping.json -input ds_racks=ex/csv/racks.csv -input ds_servers=ex/csv/servers.csv -input ds_hosts=ex/csv/hosts.jsonl -input ds_vms=ex/csv/vms.jsonl -input ds_vm_power=ex/csv/vm-power.csv
+```
+
 - `ingest init`은 예제 소스 정의, 매핑 정의, 샘플 파일(합성한 값)을 씁니다. 다음에 실행할 명령도 알려 줍니다.
 - `ingest inspect`는 매핑을 쓰기 전에 파일의 시트, 컬럼, 값의 모양을 보여 줍니다.
-- `ingest run`은 파일을 읽어 `data` 폴더에 KG로 남깁니다. 파일은 읽기만 합니다.
+- `ingest run`은 파일을 읽어 `data` 폴더에 KG로 남깁니다. 파일은 읽기만 합니다. 엑셀과 CSV는 소스가 달라도 같은 `data` 폴더의 KG 하나(`main`)로 합쳐집니다.
 - `local`은 그 KG를 웹 UI와 API로 보여 주고, 접속 주소를 출력합니다. 서버가 `data` 폴더를 열고 있는 동안에는 `ingest run`을 하지 않습니다.
 
 ```
-ingest source=src_example_files run=1 objects=10 links=8 ... changed=true new_version=true version=kv_df230d8a...
+ingest source=src_example_workbook run=1 objects=5 links=3 ... changed=true new_version=true version=kv_...
+...
+completed without problems
+The result is kept in data (KG main). Look at it with: praxium local -data-dir data
+ingest source=src_example_files run=1 objects=10 links=8 ... changed=true new_version=true version=kv_...
+...
 completed without problems
 The result is kept in data (KG main). Look at it with: praxium local -data-dir data
 ```
 
-자기 데이터에는 소스 정의와 매핑 정의 JSON을 직접 써야 합니다. 예제 파일이 출발점입니다. 형식은 [현실 데이터 수집](docs/design-docs/ingestion.md)에 있습니다.
+`local`이 출력한 주소를 브라우저로 엽니다. 데모와 달리 KG 목록에서 시작하므로 `main`을 골라 타입 목록으로 들어갑니다. 서버(PhysicalServer)는 엑셀 3대와 CSV 3대, 모두 6대가 보입니다.
+
+자기 데이터에는 소스 정의와 매핑 정의 JSON을 직접 써야 합니다. 예제 파일이 출발점이고, 모든 필드와 문제 코드는 [수집 정의 형식](docs/guides/ingest-definitions.md)에 있습니다.
 
 ### 4. 명령 개요
 
@@ -125,24 +173,31 @@ The result is kept in data (KG main). Look at it with: praxium local -data-dir d
 | `local` | 내 파일로 만든 KG를 웹 UI와 API로 보여 줍니다 |
 | `ingest init`, `inspect`, `run` | 예제 만들기, 파일 살펴보기, 파일을 읽어 KG로 만들기 |
 | `kg`, `types`, `object`, `query` | 실행 중인 서버에 KG, 타입, 객체를 묻습니다 |
+| `catalog` | 서버가 가진 목록(층, 값 타입, 링크 의미, 오류 코드 등)을 보여 줍니다 |
+| `health` | 서버가 살아 있고 준비됐는지 확인합니다. `--json`을 붙이면 상태 코드가 나옵니다 |
 | `version` | 버전을 보여 줍니다 |
 
-조회 명령은 서버 주소와 토큰이 필요합니다. `demo`와 `local`이 토큰을 출력합니다.
+조회 명령(`kg`, `types`, `object`, `query`, `catalog`, `health`)은 서버 주소와 토큰이 필요합니다. `demo`와 `local`이 토큰을 출력합니다. 아래 결과는 3단계에서 띄운 `local`(내 파일로 만든 KG)에서 나온 것입니다. `demo`에 같은 명령을 치면 합성 데이터의 서버 145대가 나와서 결과가 다릅니다.
 
 ```
 ./praxium --endpoint http://127.0.0.1:8080 --token <토큰> query find --type PhysicalServer --limit 3
 ```
 
 ```
+OBJECT_TYPE     COUNT
+PhysicalServer  6
+
 OBJECT_ID                             OBJECT_TYPE     DISPLAY_NAME
 obj_2c5803dfabbf12d5fa85aa5b8731fb2b  PhysicalServer  SV-2003
 obj_87366b3a5f92cbee9f0012df38d2674d  PhysicalServer  SV-2001
-...
+obj_b49a31d3475f13a6ae1aa062e02adca8  PhysicalServer  XS-4002
+
+3 shown of 6; --all reads every page
 ```
 
 ### 스토리지
 
-- **내장 파일 스토어**가 기본입니다. `-data-dir` 폴더 하나에 KG를 저장하고 다른 프로그램이 필요 없습니다. 권장 범위는 객체 수십만 개 이하, 서버 한 대입니다(한 번의 측정에 근거한 값이고 기준선이 아닙니다, ADR-0034).
+- **내장 파일 스토어**가 기본입니다. `-data-dir` 폴더 하나에 KG를 저장하고 다른 프로그램이 필요 없습니다. 권장 범위는 객체 수십만 개 이하, 서버 한 대입니다(한 번의 측정에 근거한 값이고 기준선이 아닙니다. 자세한 것은 [결정 기록](docs/design-docs/adr/0034-built-in-file-store-for-the-first-run.md)).
 - **PostgreSQL**은 그보다 큰 규모에 씁니다. `api serve`에 `-store postgres -store-dsn-file <파일>`을 줍니다. 파일에는 연결 문자열 한 줄을 넣습니다. 운영 수준의 설정은 [스토리지의 운영 수준](docs/design-docs/postgres-operations.md)에 있습니다.
 
 ## 핵심 개념
@@ -150,13 +205,13 @@ obj_87366b3a5f92cbee9f0012df38d2674d  PhysicalServer  SV-2001
 용어는 [용어집](docs/design-docs/glossary.md)을 따릅니다.
 
 - **지식 그래프(KG).** 실제 IT 인프라를 객체와 링크로 만든 그래프입니다. 변경 배치를 적용해 상태를 만들고, 이름을 붙여 굳힌 시점을 확정 버전이라 합니다.
-- **근거 등급.** 값과 링크마다 `fact`(사실), `assumed`(가정), `unknown`(알 수 없음) 중 하나가 붙습니다.
+- **근거 등급.** 값과 링크마다 **사실**, **가정**, **알 수 없음** 중 하나가 붙습니다. 코드와 API에서는 `fact`, `assumed`, `unknown`입니다.
 - **표준 모델.** 제품에 들어 있는 객체 타입, 링크 타입, 액션 타입의 목록입니다. 이름은 영어이고, 뼈대는 공개 표준에서 빌렸습니다.
 - **소스와 매핑.** 소스는 데이터를 읽어 오는 현실 시스템이나 파일입니다. 매핑은 소스 데이터셋의 컬럼을 객체 타입의 속성에 잇는 정의입니다.
 
 ## 구조
 
-백엔드는 Go이고 `backend/`에 있습니다. 웹 UI는 같은 리포지토리의 `apps/web`에 있고 실행 파일에 포함됩니다(ADR-0035). 웹 UI는 공개된 REST API만 부르는 임시 콘솔입니다. 클로즈드 베타까지 기능을 눌러 보는 용도이고, 제품의 화면은 따로 만들 계획입니다. 코드는 단위로 나뉘고, 단위가 무엇을 import할 수 있는지는 설정 파일이 정하며 구조 검사가 강제합니다. 서드파티 의존성은 최소로 둡니다. 백엔드의 서드파티 모듈은 PostgreSQL 드라이버 하나이고, 웹 UI의 런타임 의존성은 React와 Base UI입니다. 단위와 의존 방향은 [ARCHITECTURE.md](ARCHITECTURE.md)에 있습니다.
+백엔드는 Go이고 `backend/`에 있습니다. 웹 UI는 같은 리포지토리의 `apps/web`에 있고 실행 파일에 포함됩니다([결정 기록](docs/design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md)). 웹 UI는 공개된 REST API만 부르는 임시 화면입니다. 클로즈드 베타까지 기능을 눌러 보는 용도이고, 제품의 화면은 따로 만들 계획입니다. 코드는 단위로 나뉘고, 단위가 무엇을 import할 수 있는지는 설정 파일이 정하며 구조 검사가 강제합니다. 서드파티 의존성은 최소로 둡니다. 백엔드의 서드파티 모듈은 PostgreSQL 드라이버 하나이고, 웹 UI의 런타임 의존성은 React와 Base UI입니다. 단위와 의존 방향은 [ARCHITECTURE.md](ARCHITECTURE.md)에 있습니다.
 
 ## 로드맵
 

@@ -9,6 +9,7 @@ updates_docs:
   - docs/design-docs/product-design.md
   - AGENTS.md
   - README.md
+  - docs/guides/ingest-definitions.md
 amends:
   - adr: "0004"
     what: 목표 문장의 표현
@@ -17,7 +18,7 @@ touches_protected:
   - AGENTS.md
   - docs/design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md
 amends_tests: []
-decision_hash: 66c530614b3947b0
+decision_hash: 289bff9e6d99607a
 ---
 # ADR-0037 목표 문장을 쉬운 말로 다시 쓰고, README를 제품의 첫 화면으로 다룬다
 
@@ -34,6 +35,9 @@ decision_hash: 66c530614b3947b0
 4. README는 제품의 첫 화면이다. 첫 화면에는 제목, 목표 문장, 상태 안내(초기 개발 단계, 운영 환경에 쓸 수 없음, 문서는 한국어)만 둔다. "지금 되는 것"은 main에서 실제로 실행해 확인한 것만 적고, 빠른 시작은 실제로 실행한 명령과 출력만 적는다. 구현하지 않은 것은 "아직 안 된다"에 구체적으로 적는다.
 5. README는 제품의 첫 화면이므로 합니다체를 쓴다. 조사한 한국어 README의 다수가 이 문체였다. 용어집 8번은 안내서에 한다체를 정하므로 README는 그 규칙의 예외다. 문체를 기계가 검사하지는 않아서 규칙과 설정은 바꾸지 않는다. 목표 문장만은 DOC093이 requirements.md의 문장을 README에서 글자 그대로 찾으므로 README 첫 단락에서도 한다체("~목표다.")로 둔다.
 6. 외부 서비스에 의존하는 배지는 넣지 않는다. CI 배지만 둔다.
+7. 빠른 시작은 운영체제별 명령(리눅스, 맥, 윈도우 PowerShell)을 따로 적고, 줄 잇기(`\`)가 있는 명령은 윈도우용을 한 줄로 따로 준다. 릴리스 링크는 `/releases`로 건다(사전 릴리스만 있으면 `/releases/latest`는 없는 페이지다). 실행 파일에 서명이 없어서 맥은 실행이 막히고 윈도우는 SmartScreen 경고가 날 수 있다는 것을 알리고, 체크섬 확인을 권한다. 운영체제를 이 기계에서 실행해 보지 못한 명령은 문법을 신중히 쓰고 검증 보고에 그렇게 적는다.
+8. 수집 정의 형식(소스 정의와 매핑 정의의 필드, 문제 코드)의 원본은 `docs/guides/ingest-definitions.md`이고, README는 그 문서로 잇는다. 이 문서는 코드와 실제 실행으로 확인한 것만 적는다.
+9. README에는 개발자 용어(ADR 번호, 내부 코드 이름)와 영어 값을 그대로 쓰지 않는다. 근거 등급은 화면의 말(사실, 가정, 알 수 없음)로 적고 코드의 값은 괄호로 덧붙인다.
 
 ## 이유
 
@@ -50,5 +54,6 @@ decision_hash: 66c530614b3947b0
 ## 결과
 
 - README의 문체는 합니다체이고, 첫 단락의 목표 문장만 한다체다. 이 한 줄의 어색함은 DOC093의 일치 조건에서 온다.
+- 수집 정의 형식 문서가 하나 늘고(`docs/guides/ingest-definitions.md`), README의 3단계는 `ingest init`의 안내와 같은 순서로 엑셀과 CSV를 모두 수집한다.
 - 목표 문장은 네 곳(requirements.md, README.md, AGENTS.md, 제품 설계 개요)에서 같다. 앞선 ADR의 본문에 인용된 옛 문장은 당시의 기록으로 남긴다.
 - ADR-0004의 목표 문장 표현이 바뀐다(`amends`). 목표의 내용은 그대로다.
