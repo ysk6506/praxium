@@ -3,6 +3,7 @@ package ingest
 import (
 	"context"
 	"errors"
+	"sort"
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -71,6 +72,7 @@ func (r Runner) Run(ctx context.Context, plan *Plan, kg graph.KGID) (Report, err
 		return *rep, err
 	}
 	d.checkCardinality()
+	d.reportCellIssues(captured)
 	d.rep.WaitingObjects = d.waitingObjects()
 	objects, err := d.objectsDone(seenText(now))
 	if err != nil {
@@ -93,11 +95,14 @@ func seenText(t time.Time) string { return t.UTC().Format("2006-01-02T15:04:05Z"
 type captured struct {
 	keys map[string][]string
 	dups map[string]int
+	// issues are the cells that gave no value, by dataset and the natural key of the row they are in. They are
+	// reported after the rows are classified, so that those of a row a rule filtered out are dropped (ADR-0055).
+	issues map[string]map[string][]CellIssue
 }
 
 // collect is the capture, parse and raw record steps of every dataset.
 func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report, now time.Time) (captured, error) {
-	cap := captured{keys: map[string][]string{}, dups: map[string]int{}}
+	cap := captured{keys: map[string][]string{}, dups: map[string]int{}, issues: map[string]map[string][]CellIssue{}}
 	books := map[string]*Workbook{}
 	for _, ds := range plan.Source.Datasets {
 		dr := rep.dataset(ds.ID)
@@ -149,31 +154,86 @@ type captureInput struct {
 
 func capture(in captureInput) error {
 	ds, t, st, rep, dr, cap, now := in.ds, in.t, in.st, in.rep, in.dr, in.cap, in.now
-	for _, h := range t.Extra {
-		if ds.IgnoreUndeclaredColumns {
-			break
-		}
-		rep.problem(Problem{Kind: ProblemExtraColumn, Dataset: ds.ID, Reason: "the header has a column no dataset column reads: " + h})
-	}
+	reportExtra(rep, ds, t.Extra)
+	unreadableLines := map[int]bool{}
+	hinted := false
 	for _, u := range t.Unreadable {
-		rep.problem(Problem{Kind: ProblemUnreadable, Dataset: ds.ID, Line: u.Line, Where: u.Where, Reason: unreadableReason(u)})
+		unreadableLines[u.Line] = true
+		reason := unreadableReason(u)
+		if u.AllEmpty && !hinted {
+			hinted = true
+			reason += noKeyHint
+		}
+		rep.problem(Problem{Kind: ProblemUnreadable, Dataset: ds.ID, Line: u.Line, Where: u.Where, Reason: reason})
 	}
 	for _, c := range t.CellIssues {
-		rep.problem(Problem{Kind: c.Kind, Dataset: ds.ID, Line: c.Row, Where: c.Where, Reason: c.Reason})
+		if unreadableLines[c.Row] {
+			rep.problem(Problem{Kind: c.Kind, Dataset: ds.ID, Line: c.Row, Where: c.Where, Reason: c.Reason})
+		}
 	}
 	rows, dups := dedupe(t.Rows)
 	for _, du := range dups {
 		rep.problem(Problem{Kind: ProblemDuplicateKey, Dataset: ds.ID, Key: du.Key, Line: du.Line, Where: du.Where, Reason: "a later row has the same key and is used instead"})
+		for _, c := range du.Issues {
+			rep.problem(Problem{Kind: c.Kind, Dataset: ds.ID, Line: c.Row, Where: c.Where, Reason: c.Reason})
+		}
 	}
 	dr.Applied, dr.Received, dr.Unreadable, dr.Read = true, t.Received(), len(t.Unreadable), len(t.Rows)
 	dr.Sheet, dr.SheetState, dr.HiddenRowsRead, dr.HiddenColsRead, dr.Skipped = t.Sheet, t.SheetState, t.HiddenRowsRead, t.HiddenColsRead, t.Skipped
 	cap.dups[ds.ID] = len(dups)
 	for _, row := range rows {
 		cap.keys[ds.ID] = append(cap.keys[ds.ID], row.Key)
+		if len(row.Issues) > 0 {
+			if cap.issues[ds.ID] == nil {
+				cap.issues[ds.ID] = map[string][]CellIssue{}
+			}
+			cap.issues[ds.ID][row.Key] = row.Issues
+		}
 	}
 	ch, err := applyCapture(st.dataset(ds.ID), rows, ds.Deletion, st.Run, now)
 	dr.Raw = ch
 	return err
+}
+
+// noKeyHint is added once to the first unreadable row whose natural key columns are all empty.
+const noKeyHint = "; if rows like this one (a total line under the table, say) are not data, set ignore_rows_without_key to true on the dataset to leave them out without a problem"
+
+// extraHint is added once to the undeclared_column problems of a dataset.
+const extraHint = "; set ignore_undeclared_columns to true on the dataset to leave out the columns of the file that no dataset column reads"
+
+// reportExtra reports the columns of the file that no column of the dataset reads, one problem each; the first one
+// tells how to leave them out.
+func reportExtra(rep *Report, ds Dataset, extra []string) {
+	if ds.IgnoreUndeclaredColumns {
+		return
+	}
+	for i, h := range extra {
+		reason := "the header has a column no dataset column reads: " + h
+		if i == 0 {
+			reason += extraHint
+		}
+		rep.problem(Problem{Kind: ProblemExtraColumn, Dataset: ds.ID, Reason: reason})
+	}
+}
+
+// reportCellIssues reports the cells that gave no value, except those of a row that ended up filtered out by a rule:
+// such a row is nobody's concern, so a cell of it is no problem.
+func (d *derivation) reportCellIssues(c captured) {
+	for _, ds := range d.p.Source.Datasets {
+		keys := make([]string, 0, len(c.issues[ds.ID]))
+		for k := range c.issues[ds.ID] {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+		for _, k := range keys {
+			if f := d.fates[ds.ID][k]; f != nil && f.filtered && !f.used && !f.problem {
+				continue
+			}
+			for _, is := range c.issues[ds.ID][k] {
+				d.rep.problem(Problem{Kind: is.Kind, Dataset: ds.ID, Line: is.Row, Where: is.Where, Reason: is.Reason})
+			}
+		}
+	}
 }
 
 // count classifies the rows received this run (pipeline.md 7): used, a problem, filtered by a rule, or unused. A

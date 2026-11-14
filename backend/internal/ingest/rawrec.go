@@ -28,9 +28,10 @@ type RawChanges struct {
 // Duplicate is a row whose natural key an earlier row of the capture already had. The later row is used; the earlier
 // one is a problem (pipeline.md 3.1: the key repeats, the rule decides which row is used; here the later wins).
 type Duplicate struct {
-	Key   string
-	Line  int
-	Where string
+	Key    string
+	Line   int
+	Where  string
+	Issues []CellIssue
 }
 
 // dedupe keeps the last row of every natural key, in the order of the key, and returns the rows it set aside.
@@ -38,7 +39,7 @@ func dedupe(rows []Row) (kept []Row, dups []Duplicate) {
 	last := map[string]int{}
 	for i, r := range rows {
 		if j, ok := last[r.Key]; ok {
-			dups = append(dups, Duplicate{Key: r.Key, Line: rows[j].Line, Where: rows[j].Where})
+			dups = append(dups, Duplicate{Key: r.Key, Line: rows[j].Line, Where: rows[j].Where, Issues: rows[j].Issues})
 		}
 		last[r.Key] = i
 	}

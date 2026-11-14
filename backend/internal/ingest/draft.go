@@ -142,8 +142,9 @@ func columnNote(c ColumnProfile) string {
 
 func percent(r float64) string { return fmt.Sprintf("%g%%", r*100) }
 
-// naturalKeyNote names the columns that are filled in every row and different in each: the candidates for the key.
-func naturalKeyNote(id string, t TableProfile, named map[string]string) string {
+// keyCandidates names the columns that are filled in every row and different in each, by the names `named` gives the
+// headers of the table: the candidates for the natural key.
+func keyCandidates(t TableProfile, named map[string]string) []string {
 	var cands []string
 	if t.Rows > 0 && t.Rows <= maxDistinct {
 		for _, c := range t.Columns {
@@ -152,6 +153,12 @@ func naturalKeyNote(id string, t TableProfile, named map[string]string) string {
 			}
 		}
 	}
+	return cands
+}
+
+// naturalKeyNote names the columns that are filled in every row and different in each: the candidates for the key.
+func naturalKeyNote(id string, t TableProfile, named map[string]string) string {
+	cands := keyCandidates(t, named)
 	if len(cands) == 0 {
 		return id + ": natural_key is left to you: no single column is filled in every row and different in each, so use the columns that together tell one row from another"
 	}

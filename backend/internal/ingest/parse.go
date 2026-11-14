@@ -12,6 +12,10 @@ import (
 	"strings"
 )
 
+// SkipNoKey is the reason a row is passed over when its natural key columns are all empty and the dataset says to
+// leave such rows out; the count is skipped_no_key in the summary line.
+const SkipNoKey = "no_key"
+
 // keySep joins the values of a natural key of more than one column.
 const keySep = "\x1f"
 
@@ -24,6 +28,9 @@ type Row struct {
 	// Where says where the row is when a line number does not: the range of the row on its sheet (Servers!A12:F12).
 	Where  string
 	Fields map[string]string
+	// Issues are the cells of the row that gave no value (workbooks only). They are reported when the row is known not
+	// to be a row a rule filtered out: a cell of such a row is nobody's concern (ADR-0055).
+	Issues []CellIssue
 }
 
 // with returns a copy of the row with one cell changed.
@@ -44,8 +51,10 @@ type Unreadable struct {
 	// Where is the cell that made the row unreadable, for a workbook (Servers!B12).
 	Where  string
 	Reason string
-	// Column is the natural key column that gave no value, for a row that is unreadable for that reason.
-	Column string
+	// Column is the natural key column that gave no value, for a row that is unreadable for that reason. AllEmpty is
+	// true when every natural key column of the row is empty, the row ignore_rows_without_key would leave out.
+	Column   string
+	AllEmpty bool
 }
 
 // Table is what parsing a capture gives: the rows read and the lines that could not be read.
@@ -204,15 +213,40 @@ func extraHeader(d Dataset, header []string) []string {
 	return out
 }
 
-// addRow stores a row when its natural key is complete; a row without one cannot be a raw record.
-func (t *Table) addRow(d Dataset, line int, fields map[string]string) {
-	parts := make([]string, len(d.NaturalKey))
+// naturalKeyOf tidies the natural key cells of a row. It returns the parts, the first column that is empty (or "")
+// and whether every column is empty.
+func naturalKeyOf(d Dataset, fields map[string]string) (parts []string, empty string, all bool) {
+	parts = make([]string, len(d.NaturalKey))
+	all = true
 	for i, k := range d.NaturalKey {
 		parts[i] = strings.TrimSpace(fields[k])
-		if parts[i] == "" {
-			t.Unreadable = append(t.Unreadable, Unreadable{Line: line, Reason: "missing_natural_key", Column: k})
+		if parts[i] == "" && empty == "" {
+			empty = k
+		}
+		all = all && parts[i] == ""
+	}
+	return parts, empty, all
+}
+
+// skip counts a row that was passed over with its reason; it is no part of the rows received.
+func (t *Table) skip(reason string) {
+	if t.Skipped == nil {
+		t.Skipped = map[string]int{}
+	}
+	t.Skipped[reason]++
+}
+
+// addRow stores a row when its natural key is complete; a row without one cannot be a raw record. A row whose key
+// columns are all empty is passed over without a word when the dataset says so (ignore_rows_without_key).
+func (t *Table) addRow(d Dataset, line int, fields map[string]string) {
+	parts, empty, all := naturalKeyOf(d, fields)
+	if empty != "" {
+		if all && d.IgnoreRowsWithoutKey {
+			t.skip(SkipNoKey)
 			return
 		}
+		t.Unreadable = append(t.Unreadable, Unreadable{Line: line, Reason: "missing_natural_key", Column: empty, AllEmpty: all})
+		return
 	}
 	t.Rows = append(t.Rows, Row{Key: strings.Join(parts, keySep), Line: line, Fields: fields})
 }
