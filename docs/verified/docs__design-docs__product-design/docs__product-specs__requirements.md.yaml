@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "ba9b03cd6266ac34"
+hash: "e87558391730517b"
 date: "2026-11-14"
-note: "main 병합 뒤 REQ-315~331과 332~341 공존을 요구사항 문서와 대조해 확인함"
+note: "요구사항 문서의 용어를 표준어로 고친 뒤 대조해 확인함"
 text_changed: true
 doc_hash: "019854b80cb4930e"
