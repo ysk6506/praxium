@@ -1424,6 +1424,70 @@
         },
         "type": "object"
       },
+      "GroupTouched": {
+        "description": "A redundancy group whose members were hit.",
+        "properties": {
+          "alive": {
+            "description": "Members that are up.",
+            "type": "integer"
+          },
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "group_id": {
+            "description": "The object id of the group.",
+            "type": "string"
+          },
+          "group_type": {
+            "description": "The type of the group.",
+            "type": "string"
+          },
+          "min_alive": {
+            "description": "The least number of members that must be up; null when it is not known.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "mode": {
+            "description": "count or capacity.",
+            "type": "string"
+          },
+          "n": {
+            "description": "Members in all.",
+            "type": "integer"
+          },
+          "slack": {
+            "description": "Members up above min_alive; null when min_alive is not known or the group is not up.",
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
+          "unknown": {
+            "description": "Members whose state is not known.",
+            "type": "integer"
+          },
+          "value": {
+            "description": "up, unknown or down.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "group_id",
+          "group_type",
+          "display_name",
+          "mode",
+          "value",
+          "alive",
+          "unknown",
+          "n",
+          "min_alive",
+          "slack"
+        ],
+        "type": "object"
+      },
       "HealthLive": {
         "description": "The answer of a liveness probe.",
         "properties": {
@@ -1690,6 +1754,381 @@
         "required": [
           "trace_id",
           "result_complete"
+        ],
+        "type": "object"
+      },
+      "ImpactAnswer": {
+        "description": "The answer of impact.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImpactData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ],
+        "type": "object"
+      },
+      "ImpactComputation": {
+        "description": "Whether the calculation ran to its end and what limited it.",
+        "properties": {
+          "complete": {
+            "description": "Whether it ran to its end.",
+            "type": "boolean"
+          },
+          "items_over_cap": {
+            "description": "Whether a reading had more items than max_items.",
+            "type": "boolean"
+          },
+          "max_hops": {
+            "description": "The max_hops of the question; 0 means no limit.",
+            "type": "integer"
+          },
+          "max_items": {
+            "description": "The max_items of the question.",
+            "type": "integer"
+          },
+          "rounds": {
+            "description": "How many rounds the failure spread.",
+            "type": "integer"
+          },
+          "stale_inputs": {
+            "description": "How many observed links are older than max_staleness.",
+            "type": "integer"
+          },
+          "stopped_by": {
+            "description": "time_budget or max_hops when a limit stopped it.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "time_budget_seconds": {
+            "description": "The time budget in seconds.",
+            "type": "number"
+          },
+          "weak_links": {
+            "description": "How many links are not believed in the facts.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "complete",
+          "stopped_by",
+          "rounds",
+          "max_hops",
+          "max_items",
+          "time_budget_seconds",
+          "weak_links",
+          "stale_inputs",
+          "items_over_cap"
+        ],
+        "type": "object"
+      },
+      "ImpactData": {
+        "description": "What impact returns.",
+        "properties": {
+          "computation": {
+            "$ref": "#/components/schemas/ImpactComputation"
+          },
+          "direction": {
+            "description": "downstream or upstream.",
+            "type": "string"
+          },
+          "facts_only": {
+            "$ref": "#/components/schemas/ImpactSection"
+          },
+          "seeds": {
+            "description": "The objects that were made to fail (downstream).",
+            "items": {
+              "$ref": "#/components/schemas/ObjectRef"
+            },
+            "type": "array"
+          },
+          "target": {
+            "$ref": "#/components/schemas/ObjectRef"
+          },
+          "upstream": {
+            "$ref": "#/components/schemas/UpstreamSection"
+          },
+          "with_assumptions": {
+            "$ref": "#/components/schemas/ImpactSection"
+          }
+        },
+        "required": [
+          "direction",
+          "computation"
+        ],
+        "type": "object"
+      },
+      "ImpactItem": {
+        "description": "One affected object with why.",
+        "properties": {
+          "also": {
+            "description": "The other results of the object.",
+            "items": {
+              "description": "A result.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "assumption_based": {
+            "description": "Whether the path stands on a link or a min_alive that is assumed.",
+            "type": "boolean"
+          },
+          "delay_class": {
+            "description": "delayed when a link on the path says the effect comes later.",
+            "type": "string"
+          },
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "hops": {
+            "description": "How many links from the failed object.",
+            "type": "integer"
+          },
+          "lost_channels": {
+            "description": "What the object lost: power, cooling, network, storage, service or management.",
+            "items": {
+              "description": "A channel.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "object_id": {
+            "description": "The object id.",
+            "type": "string"
+          },
+          "object_type": {
+            "description": "The object type.",
+            "type": "string"
+          },
+          "path": {
+            "description": "From the failed object to this one.",
+            "items": {
+              "$ref": "#/components/schemas/PathStep"
+            },
+            "type": "array"
+          },
+          "result": {
+            "description": "The most severe result: down, interrupted, unknown, exposed_direct, exposed_inherited, degraded or unmanageable.",
+            "type": "string"
+          },
+          "unfilled_channels": {
+            "description": "Channels the type needs that no link supplies; they say nothing about this failure.",
+            "items": {
+              "description": "A channel.",
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "via": {
+            "description": "The object just before this one on the path; null when it is the seed.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "via_hidden": {
+            "description": "Whether that object is hidden from the caller.",
+            "type": "boolean"
+          },
+          "weakest_grade": {
+            "description": "The lowest grade on the path.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "result",
+          "also",
+          "lost_channels",
+          "via",
+          "hops",
+          "assumption_based",
+          "weakest_grade",
+          "path"
+        ],
+        "type": "object"
+      },
+      "ImpactRequest": {
+        "description": "The input of impact. Downstream takes dead, dead_links or site_failure; upstream takes target_object_id.",
+        "properties": {
+          "change_seq": {
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "cursor": {
+            "description": "The cursor of the previous page.",
+            "type": "string"
+          },
+          "dead": {
+            "description": "The objects that have failed (downstream). At most 1000.",
+            "items": {
+              "description": "An object id, obj_ and 32 hex digits.",
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "dead_links": {
+            "description": "Links that are cut (downstream). The objects at their ends do not fail; what depends on the link loses it. At most 1000.",
+            "items": {
+              "description": "A link id, lnk_ and 32 hex digits.",
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "dead_scope_id": {
+            "description": "A stored scope; not served yet, the answer is a refusal.",
+            "type": "string"
+          },
+          "direction": {
+            "description": "downstream (default) asks what a failure reaches; upstream asks what the target depends on.",
+            "enum": [
+              "downstream",
+              "upstream"
+            ],
+            "type": "string"
+          },
+          "kg_version_id": {
+            "description": "Read this sealed KG version (time travel).",
+            "type": "string"
+          },
+          "limit": {
+            "description": "The page size; default 100, at most 1000.",
+            "maximum": 1000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "max_hops": {
+            "description": "Stop the spread after this many rounds; 0 or absent means no limit.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "max_items": {
+            "description": "Keep at most this many items of each reading; default 5000, at most 100000.",
+            "maximum": 100000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "max_staleness": {
+            "description": "Refuse values older than this, an ISO 8601 duration.",
+            "type": "string"
+          },
+          "min_seq": {
+            "description": "Wait until this change number is readable.",
+            "minimum": 0,
+            "type": "integer"
+          },
+          "mode": {
+            "description": "both (default), facts_only or with_assumptions: which readings of the evidence are answered.",
+            "enum": [
+              "both",
+              "facts_only",
+              "with_assumptions"
+            ],
+            "type": "string"
+          },
+          "shape": {
+            "description": "summary (default) or items.",
+            "enum": [
+              "summary",
+              "items"
+            ],
+            "type": "string"
+          },
+          "site_failure": {
+            "description": "Objects that fail with everything that is contained in them (downstream). At most 1000.",
+            "items": {
+              "description": "An object id, obj_ and 32 hex digits.",
+              "type": "string"
+            },
+            "maxItems": 1000,
+            "type": "array"
+          },
+          "target_object_id": {
+            "description": "The object whose dependencies are listed (upstream).",
+            "type": "string"
+          },
+          "time_budget": {
+            "description": "Stop the calculation after this time, an ISO 8601 duration; default PT30S.",
+            "type": "string"
+          },
+          "view": {
+            "description": "as_observed (default) or as_designed.",
+            "enum": [
+              "as_observed",
+              "as_designed"
+            ],
+            "type": "string"
+          },
+          "wait_timeout": {
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S.",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ImpactSection": {
+        "description": "The answer of one reading: the counts first, then the items.",
+        "properties": {
+          "counts_by_parent": {
+            "description": "The places the affected objects are contained in, the most affected first.",
+            "items": {
+              "$ref": "#/components/schemas/ParentCount"
+            },
+            "type": "array"
+          },
+          "counts_by_result": {
+            "additionalProperties": {
+              "description": "How many objects.",
+              "type": "integer"
+            },
+            "description": "How many objects have each result.",
+            "type": "object"
+          },
+          "counts_by_type": {
+            "description": "How many objects of each type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            },
+            "type": "array"
+          },
+          "groups_touched": {
+            "description": "The groups whose members were hit.",
+            "items": {
+              "$ref": "#/components/schemas/GroupTouched"
+            },
+            "type": "array"
+          },
+          "items": {
+            "description": "The affected objects of this page, the most severe first; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/ImpactItem"
+            },
+            "type": "array"
+          },
+          "unfilled_channel_objects": {
+            "description": "How many affected objects have a channel that no link supplies.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "counts_by_result",
+          "counts_by_type",
+          "counts_by_parent",
+          "groups_touched",
+          "unfilled_channel_objects"
         ],
         "type": "object"
       },
@@ -3116,6 +3555,109 @@
         ],
         "type": "object"
       },
+      "ParentCount": {
+        "description": "How many affected objects are contained in one place.",
+        "properties": {
+          "count": {
+            "description": "How many affected objects.",
+            "type": "integer"
+          },
+          "display_name": {
+            "description": "The display name of the place.",
+            "type": "string"
+          },
+          "object_id": {
+            "description": "The object id of the place.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "object_id",
+          "display_name",
+          "count"
+        ],
+        "type": "object"
+      },
+      "PathLink": {
+        "description": "The link that carried a failure on to the next object of a path.",
+        "properties": {
+          "basis": {
+            "description": "The basis of the link.",
+            "type": "string"
+          },
+          "delay_class": {
+            "description": "delayed when the link says the effect comes later.",
+            "type": "string"
+          },
+          "grade": {
+            "description": "The grade of the link.",
+            "type": "string"
+          },
+          "link_id": {
+            "description": "The link id, lnk_ and 32 hex digits.",
+            "type": "string"
+          },
+          "link_type": {
+            "description": "The link type.",
+            "type": "string"
+          },
+          "meaning": {
+            "description": "The meaning of the link type.",
+            "type": "string"
+          },
+          "note": {
+            "description": "A note, such as what min_alive of a group stands on.",
+            "type": "string"
+          },
+          "role": {
+            "description": "How the failure went on: dependency, supply, management, group_member, failover, part_follows_whole, whole_needs_part, containment, exposure or group_slack.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "link_id",
+          "link_type",
+          "meaning",
+          "role",
+          "grade",
+          "basis"
+        ],
+        "type": "object"
+      },
+      "PathStep": {
+        "description": "One object of a path. The first step is the object that failed; the others say how the failure reached them.",
+        "properties": {
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "hidden": {
+            "description": "Whether the object is hidden from the caller.",
+            "type": "boolean"
+          },
+          "link": {
+            "$ref": "#/components/schemas/PathLink"
+          },
+          "object_id": {
+            "description": "The object id; null when the caller may not read the object.",
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "object_type": {
+            "description": "The object type.",
+            "type": "string"
+          },
+          "via_group": {
+            "$ref": "#/components/schemas/ObjectRef"
+          }
+        },
+        "required": [
+          "object_id"
+        ],
+        "type": "object"
+      },
       "Principal": {
         "description": "A user (a person) or a service account. Its id is its name: unique among all of them and never changed.",
         "properties": {
@@ -4203,6 +4745,103 @@
         "required": [
           "id",
           "name"
+        ],
+        "type": "object"
+      },
+      "UpstreamItem": {
+        "description": "One object the target depends on, with what happens to the target when that object alone fails.",
+        "properties": {
+          "assumption_based": {
+            "description": "Whether the answer stands on an assumption.",
+            "type": "boolean"
+          },
+          "display_name": {
+            "description": "The display name.",
+            "type": "string"
+          },
+          "effects": {
+            "additionalProperties": {
+              "description": "A result, or none.",
+              "type": "string"
+            },
+            "description": "The result for the target in each reading (none when nothing happens).",
+            "type": "object"
+          },
+          "hops": {
+            "description": "How many dependencies between it and the target.",
+            "type": "integer"
+          },
+          "object_id": {
+            "description": "The object id.",
+            "type": "string"
+          },
+          "object_type": {
+            "description": "The object type.",
+            "type": "string"
+          },
+          "path": {
+            "description": "From this object to the target.",
+            "items": {
+              "$ref": "#/components/schemas/PathStep"
+            },
+            "type": "array"
+          },
+          "single_point_of_failure": {
+            "description": "Whether the target goes down when this object alone fails.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "hops",
+          "effects",
+          "single_point_of_failure",
+          "assumption_based",
+          "path"
+        ],
+        "type": "object"
+      },
+      "UpstreamSection": {
+        "description": "What the target depends on: the counts first, then the items.",
+        "properties": {
+          "counts_by_effect": {
+            "additionalProperties": {
+              "description": "How many dependencies.",
+              "type": "integer"
+            },
+            "description": "How many dependencies have each effect.",
+            "type": "object"
+          },
+          "counts_by_type": {
+            "description": "How many dependencies of each type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            },
+            "type": "array"
+          },
+          "items": {
+            "description": "The dependencies of this page, single points of failure first; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/UpstreamItem"
+            },
+            "type": "array"
+          },
+          "single_points_of_failure": {
+            "description": "How many of them take the target down alone.",
+            "type": "integer"
+          },
+          "total": {
+            "description": "How many dependencies were tried.",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "total",
+          "single_points_of_failure",
+          "counts_by_type",
+          "counts_by_effect"
         ],
         "type": "object"
       },
@@ -7295,6 +7934,302 @@
           }
         },
         "summary": "Ask get",
+        "tags": [
+          "kg"
+        ],
+        "x-long-running": false,
+        "x-required-role": [
+          "read"
+        ],
+        "x-safe": true
+      }
+    },
+    "/v1/kgs/{kg}/queries:impact": {
+      "post": {
+        "description": "The closed query impact: what a failure reaches (direction downstream, the default) or what a target depends on (direction upstream). The answer gives the readings with facts only and with assumptions, each with its counts first.",
+        "operationId": "askImpact",
+        "parameters": [
+          {
+            "description": "A KG id, a KG name, or main for the production KG.",
+            "in": "path",
+            "name": "kg",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "example": {
+                "limit": 100,
+                "mode": "facts_only",
+                "shape": "items",
+                "site_failure": [
+                  "obj_deeeeeb59579815a09a9a6a36dc75e26"
+                ]
+              },
+              "schema": {
+                "$ref": "#/components/schemas/ImpactRequest"
+              }
+            }
+          },
+          "description": "The input of the query.",
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "example": {
+                  "data": {
+                    "computation": {
+                      "complete": true,
+                      "items_over_cap": false,
+                      "max_hops": 0,
+                      "max_items": 5000,
+                      "rounds": 3,
+                      "stale_inputs": 0,
+                      "stopped_by": null,
+                      "time_budget_seconds": 30,
+                      "weak_links": 0
+                    },
+                    "direction": "downstream",
+                    "facts_only": {
+                      "counts_by_parent": [],
+                      "counts_by_result": {
+                        "down": 1,
+                        "exposed_direct": 1
+                      },
+                      "counts_by_type": [
+                        {
+                          "count": 1,
+                          "object_type": "PhysicalServer"
+                        },
+                        {
+                          "count": 1,
+                          "object_type": "PowerSupply"
+                        }
+                      ],
+                      "groups_touched": [
+                        {
+                          "alive": 1,
+                          "display_name": "psu-rack-1-0",
+                          "group_id": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                          "group_type": "PowerRedundancyGroup",
+                          "min_alive": 1,
+                          "mode": "count",
+                          "n": 2,
+                          "slack": 0,
+                          "unknown": 0,
+                          "value": "up"
+                        }
+                      ],
+                      "items": [
+                        {
+                          "also": [],
+                          "assumption_based": false,
+                          "display_name": "psu-1-0a",
+                          "hops": 1,
+                          "lost_channels": [
+                            "power"
+                          ],
+                          "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                          "object_type": "PowerSupply",
+                          "path": [
+                            {
+                              "display_name": "pdu-rack-1a",
+                              "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                              "object_type": "RackPdu"
+                            },
+                            {
+                              "display_name": "psu-1-0a",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "supply"
+                              },
+                              "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                              "object_type": "PowerSupply"
+                            }
+                          ],
+                          "result": "down",
+                          "unfilled_channels": [],
+                          "via": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                          "weakest_grade": "fact"
+                        },
+                        {
+                          "also": [],
+                          "assumption_based": false,
+                          "display_name": "srv-rack-1-0",
+                          "hops": 3,
+                          "lost_channels": [],
+                          "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                          "object_type": "PhysicalServer",
+                          "path": [
+                            {
+                              "display_name": "pdu-rack-1a",
+                              "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                              "object_type": "RackPdu"
+                            },
+                            {
+                              "display_name": "psu-1-0a",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_1014c62a22aa9a31db984b05bc682772",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "role": "supply"
+                              },
+                              "object_id": "obj_49638889332e87c76b2adad24dcdfd22",
+                              "object_type": "PowerSupply"
+                            },
+                            {
+                              "display_name": "psu-rack-1-0",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_2024c62a22aa9a31db984b05bc682773",
+                                "link_type": "MEMBER_OF",
+                                "meaning": "member_of",
+                                "note": "min_alive 1 (fact)",
+                                "role": "group_member"
+                              },
+                              "object_id": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                              "object_type": "PowerRedundancyGroup"
+                            },
+                            {
+                              "display_name": "srv-rack-1-0",
+                              "link": {
+                                "basis": "configured",
+                                "grade": "fact",
+                                "link_id": "lnk_3034c62a22aa9a31db984b05bc682774",
+                                "link_type": "POWERED_BY",
+                                "meaning": "supplied_by",
+                                "note": "failover group or group this object depends on lost members",
+                                "role": "group_slack"
+                              },
+                              "object_id": "obj_0e54625b65d5501a4bdb9af739ac1907",
+                              "object_type": "PhysicalServer"
+                            }
+                          ],
+                          "result": "exposed_direct",
+                          "unfilled_channels": [],
+                          "via": "obj_5c3f0f6f0a0c4f6aa51b8a2a6f9d1c11",
+                          "weakest_grade": "fact"
+                        }
+                      ],
+                      "unfilled_channel_objects": 0
+                    },
+                    "seeds": [
+                      {
+                        "display_name": "pdu-rack-1a",
+                        "object_id": "obj_1dc73fe5b2c774d92ccdd29e687035d5",
+                        "object_type": "RackPdu"
+                      }
+                    ]
+                  },
+                  "meta": {
+                    "as_of": {
+                      "change_seq": 1,
+                      "generation": 1,
+                      "kg": "kg-63033b0ca389c35a",
+                      "sealed_version": null,
+                      "volatile_as_of": "current"
+                    },
+                    "evidence": {
+                      "counts": {
+                        "assumed": 0,
+                        "fact": 2,
+                        "unknown": 0
+                      },
+                      "kinds": [
+                        "configured"
+                      ],
+                      "min_grade": "fact",
+                      "observation_age_seconds": null
+                    },
+                    "freshness": {
+                      "oldest_age_seconds": null,
+                      "state": "no_expected_period",
+                      "worst_source_id": null
+                    },
+                    "hidden": {
+                      "has_hidden": false,
+                      "hidden_passed": false,
+                      "hidden_passed_count": 0,
+                      "hidden_reached": false,
+                      "hidden_reached_count": 0
+                    },
+                    "model_limits": [
+                      "Links that mean connected_to are not followed: reachability to a network anchor is not calculated, so a network path that is lost without a member of a group failing is not found"
+                    ],
+                    "result_complete": {
+                      "next_cursor": null,
+                      "reason": null,
+                      "returned": 2,
+                      "total": 2,
+                      "truncated": false
+                    },
+                    "served_by": {
+                      "role": "api_sql"
+                    },
+                    "trace_id": "tr-0123456789abcdef",
+                    "warnings": []
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ImpactAnswer"
+                }
+              }
+            },
+            "description": "The objects a failure reaches, or the objects the target depends on.",
+            "headers": {
+              "X-Trace-Id": {
+                "$ref": "#/components/headers/TraceId"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "406": {
+            "$ref": "#/components/responses/NotAcceptable"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "413": {
+            "$ref": "#/components/responses/PayloadTooLarge"
+          },
+          "415": {
+            "$ref": "#/components/responses/UnsupportedMediaType"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "summary": "Ask impact",
         "tags": [
           "kg"
         ],

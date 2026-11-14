@@ -1,0 +1,593 @@
+{
+  "components": {
+    "schemas": {
+      "ImpactRequest": {
+        "type": "object",
+        "description": "The input of impact. Downstream takes dead, dead_links or site_failure; upstream takes target_object_id.",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "description": "downstream (default) asks what a failure reaches; upstream asks what the target depends on.",
+            "enum": ["downstream", "upstream"]
+          },
+          "dead": {
+            "type": "array",
+            "description": "The objects that have failed (downstream). At most 1000.",
+            "items": {
+              "type": "string",
+              "description": "An object id, obj_ and 32 hex digits."
+            },
+            "maxItems": 1000
+          },
+          "dead_links": {
+            "type": "array",
+            "description": "Links that are cut (downstream). The objects at their ends do not fail; what depends on the link loses it. At most 1000.",
+            "items": {
+              "type": "string",
+              "description": "A link id, lnk_ and 32 hex digits."
+            },
+            "maxItems": 1000
+          },
+          "site_failure": {
+            "type": "array",
+            "description": "Objects that fail with everything that is contained in them (downstream). At most 1000.",
+            "items": {
+              "type": "string",
+              "description": "An object id, obj_ and 32 hex digits."
+            },
+            "maxItems": 1000
+          },
+          "dead_scope_id": {
+            "type": "string",
+            "description": "A stored scope; not served yet, the answer is a refusal."
+          },
+          "target_object_id": {
+            "type": "string",
+            "description": "The object whose dependencies are listed (upstream)."
+          },
+          "mode": {
+            "type": "string",
+            "description": "both (default), facts_only or with_assumptions: which readings of the evidence are answered.",
+            "enum": ["both", "facts_only", "with_assumptions"]
+          },
+          "max_hops": {
+            "type": "integer",
+            "description": "Stop the spread after this many rounds; 0 or absent means no limit.",
+            "minimum": 0
+          },
+          "max_items": {
+            "type": "integer",
+            "description": "Keep at most this many items of each reading; default 5000, at most 100000.",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "time_budget": {
+            "type": "string",
+            "description": "Stop the calculation after this time, an ISO 8601 duration; default PT30S."
+          },
+          "kg_version_id": {
+            "type": "string",
+            "description": "Read this sealed KG version (time travel)."
+          },
+          "change_seq": {
+            "type": "integer",
+            "description": "Read the state at this change number (time travel).",
+            "minimum": 0
+          },
+          "view": {
+            "type": "string",
+            "description": "as_observed (default) or as_designed.",
+            "enum": ["as_observed", "as_designed"]
+          },
+          "min_seq": {
+            "type": "integer",
+            "description": "Wait until this change number is readable.",
+            "minimum": 0
+          },
+          "wait_timeout": {
+            "type": "string",
+            "description": "How long to wait for min_seq, an ISO 8601 duration such as PT5S."
+          },
+          "max_staleness": {
+            "type": "string",
+            "description": "Refuse values older than this, an ISO 8601 duration."
+          },
+          "shape": {
+            "type": "string",
+            "description": "summary (default) or items.",
+            "enum": ["summary", "items"]
+          },
+          "limit": {
+            "type": "integer",
+            "description": "The page size; default 100, at most 1000.",
+            "minimum": 1,
+            "maximum": 1000
+          },
+          "cursor": {
+            "type": "string",
+            "description": "The cursor of the previous page."
+          }
+        }
+      },
+      "PathLink": {
+        "type": "object",
+        "description": "The link that carried a failure on to the next object of a path.",
+        "properties": {
+          "link_id": {
+            "type": "string",
+            "description": "The link id, lnk_ and 32 hex digits."
+          },
+          "link_type": {
+            "type": "string",
+            "description": "The link type."
+          },
+          "meaning": {
+            "type": "string",
+            "description": "The meaning of the link type."
+          },
+          "role": {
+            "type": "string",
+            "description": "How the failure went on: dependency, supply, management, group_member, failover, part_follows_whole, whole_needs_part, containment, exposure or group_slack."
+          },
+          "grade": {
+            "type": "string",
+            "description": "The grade of the link."
+          },
+          "basis": {
+            "type": "string",
+            "description": "The basis of the link."
+          },
+          "delay_class": {
+            "type": "string",
+            "description": "delayed when the link says the effect comes later."
+          },
+          "note": {
+            "type": "string",
+            "description": "A note, such as what min_alive of a group stands on."
+          }
+        },
+        "required": ["link_id", "link_type", "meaning", "role", "grade", "basis"]
+      },
+      "PathStep": {
+        "type": "object",
+        "description": "One object of a path. The first step is the object that failed; the others say how the failure reached them.",
+        "properties": {
+          "object_id": {
+            "type": ["string", "null"],
+            "description": "The object id; null when the caller may not read the object."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "The object type."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name."
+          },
+          "hidden": {
+            "type": "boolean",
+            "description": "Whether the object is hidden from the caller."
+          },
+          "link": {
+            "$ref": "#/components/schemas/PathLink"
+          },
+          "via_group": {
+            "$ref": "#/components/schemas/ObjectRef"
+          }
+        },
+        "required": ["object_id"]
+      },
+      "ParentCount": {
+        "type": "object",
+        "description": "How many affected objects are contained in one place.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "The object id of the place."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name of the place."
+          },
+          "count": {
+            "type": "integer",
+            "description": "How many affected objects."
+          }
+        },
+        "required": ["object_id", "display_name", "count"]
+      },
+      "GroupTouched": {
+        "type": "object",
+        "description": "A redundancy group whose members were hit.",
+        "properties": {
+          "group_id": {
+            "type": "string",
+            "description": "The object id of the group."
+          },
+          "group_type": {
+            "type": "string",
+            "description": "The type of the group."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name."
+          },
+          "mode": {
+            "type": "string",
+            "description": "count or capacity."
+          },
+          "value": {
+            "type": "string",
+            "description": "up, unknown or down."
+          },
+          "alive": {
+            "type": "integer",
+            "description": "Members that are up."
+          },
+          "unknown": {
+            "type": "integer",
+            "description": "Members whose state is not known."
+          },
+          "n": {
+            "type": "integer",
+            "description": "Members in all."
+          },
+          "min_alive": {
+            "type": ["integer", "null"],
+            "description": "The least number of members that must be up; null when it is not known."
+          },
+          "slack": {
+            "type": ["integer", "null"],
+            "description": "Members up above min_alive; null when min_alive is not known or the group is not up."
+          }
+        },
+        "required": [
+          "group_id",
+          "group_type",
+          "display_name",
+          "mode",
+          "value",
+          "alive",
+          "unknown",
+          "n",
+          "min_alive",
+          "slack"
+        ]
+      },
+      "ImpactItem": {
+        "type": "object",
+        "description": "One affected object with why.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "The object id."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "The object type."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name."
+          },
+          "result": {
+            "type": "string",
+            "description": "The most severe result: down, interrupted, unknown, exposed_direct, exposed_inherited, degraded or unmanageable."
+          },
+          "also": {
+            "type": "array",
+            "description": "The other results of the object.",
+            "items": {
+              "type": "string",
+              "description": "A result."
+            }
+          },
+          "lost_channels": {
+            "type": "array",
+            "description": "What the object lost: power, cooling, network, storage, service or management.",
+            "items": {
+              "type": "string",
+              "description": "A channel."
+            }
+          },
+          "unfilled_channels": {
+            "type": "array",
+            "description": "Channels the type needs that no link supplies; they say nothing about this failure.",
+            "items": {
+              "type": "string",
+              "description": "A channel."
+            }
+          },
+          "delay_class": {
+            "type": "string",
+            "description": "delayed when a link on the path says the effect comes later."
+          },
+          "via": {
+            "type": ["string", "null"],
+            "description": "The object just before this one on the path; null when it is the seed."
+          },
+          "via_hidden": {
+            "type": "boolean",
+            "description": "Whether that object is hidden from the caller."
+          },
+          "hops": {
+            "type": "integer",
+            "description": "How many links from the failed object."
+          },
+          "assumption_based": {
+            "type": "boolean",
+            "description": "Whether the path stands on a link or a min_alive that is assumed."
+          },
+          "weakest_grade": {
+            "type": "string",
+            "description": "The lowest grade on the path."
+          },
+          "path": {
+            "type": "array",
+            "description": "From the failed object to this one.",
+            "items": {
+              "$ref": "#/components/schemas/PathStep"
+            }
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "result",
+          "also",
+          "lost_channels",
+          "via",
+          "hops",
+          "assumption_based",
+          "weakest_grade",
+          "path"
+        ]
+      },
+      "ImpactSection": {
+        "type": "object",
+        "description": "The answer of one reading: the counts first, then the items.",
+        "properties": {
+          "counts_by_result": {
+            "type": "object",
+            "description": "How many objects have each result.",
+            "additionalProperties": {
+              "type": "integer",
+              "description": "How many objects."
+            }
+          },
+          "counts_by_type": {
+            "type": "array",
+            "description": "How many objects of each type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            }
+          },
+          "counts_by_parent": {
+            "type": "array",
+            "description": "The places the affected objects are contained in, the most affected first.",
+            "items": {
+              "$ref": "#/components/schemas/ParentCount"
+            }
+          },
+          "groups_touched": {
+            "type": "array",
+            "description": "The groups whose members were hit.",
+            "items": {
+              "$ref": "#/components/schemas/GroupTouched"
+            }
+          },
+          "unfilled_channel_objects": {
+            "type": "integer",
+            "description": "How many affected objects have a channel that no link supplies."
+          },
+          "items": {
+            "type": "array",
+            "description": "The affected objects of this page, the most severe first; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/ImpactItem"
+            }
+          }
+        },
+        "required": [
+          "counts_by_result",
+          "counts_by_type",
+          "counts_by_parent",
+          "groups_touched",
+          "unfilled_channel_objects"
+        ]
+      },
+      "UpstreamItem": {
+        "type": "object",
+        "description": "One object the target depends on, with what happens to the target when that object alone fails.",
+        "properties": {
+          "object_id": {
+            "type": "string",
+            "description": "The object id."
+          },
+          "object_type": {
+            "type": "string",
+            "description": "The object type."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The display name."
+          },
+          "hops": {
+            "type": "integer",
+            "description": "How many dependencies between it and the target."
+          },
+          "effects": {
+            "type": "object",
+            "description": "The result for the target in each reading (none when nothing happens).",
+            "additionalProperties": {
+              "type": "string",
+              "description": "A result, or none."
+            }
+          },
+          "single_point_of_failure": {
+            "type": "boolean",
+            "description": "Whether the target goes down when this object alone fails."
+          },
+          "assumption_based": {
+            "type": "boolean",
+            "description": "Whether the answer stands on an assumption."
+          },
+          "path": {
+            "type": "array",
+            "description": "From this object to the target.",
+            "items": {
+              "$ref": "#/components/schemas/PathStep"
+            }
+          }
+        },
+        "required": [
+          "object_id",
+          "object_type",
+          "display_name",
+          "hops",
+          "effects",
+          "single_point_of_failure",
+          "assumption_based",
+          "path"
+        ]
+      },
+      "UpstreamSection": {
+        "type": "object",
+        "description": "What the target depends on: the counts first, then the items.",
+        "properties": {
+          "total": {
+            "type": "integer",
+            "description": "How many dependencies were tried."
+          },
+          "single_points_of_failure": {
+            "type": "integer",
+            "description": "How many of them take the target down alone."
+          },
+          "counts_by_type": {
+            "type": "array",
+            "description": "How many dependencies of each type.",
+            "items": {
+              "$ref": "#/components/schemas/TypeCount"
+            }
+          },
+          "counts_by_effect": {
+            "type": "object",
+            "description": "How many dependencies have each effect.",
+            "additionalProperties": {
+              "type": "integer",
+              "description": "How many dependencies."
+            }
+          },
+          "items": {
+            "type": "array",
+            "description": "The dependencies of this page, single points of failure first; absent in the summary shape.",
+            "items": {
+              "$ref": "#/components/schemas/UpstreamItem"
+            }
+          }
+        },
+        "required": ["total", "single_points_of_failure", "counts_by_type", "counts_by_effect"]
+      },
+      "ImpactComputation": {
+        "type": "object",
+        "description": "Whether the calculation ran to its end and what limited it.",
+        "properties": {
+          "complete": {
+            "type": "boolean",
+            "description": "Whether it ran to its end."
+          },
+          "stopped_by": {
+            "type": ["string", "null"],
+            "description": "time_budget or max_hops when a limit stopped it."
+          },
+          "rounds": {
+            "type": "integer",
+            "description": "How many rounds the failure spread."
+          },
+          "max_hops": {
+            "type": "integer",
+            "description": "The max_hops of the question; 0 means no limit."
+          },
+          "max_items": {
+            "type": "integer",
+            "description": "The max_items of the question."
+          },
+          "time_budget_seconds": {
+            "type": "number",
+            "description": "The time budget in seconds."
+          },
+          "weak_links": {
+            "type": "integer",
+            "description": "How many links are not believed in the facts."
+          },
+          "stale_inputs": {
+            "type": "integer",
+            "description": "How many observed links are older than max_staleness."
+          },
+          "items_over_cap": {
+            "type": "boolean",
+            "description": "Whether a reading had more items than max_items."
+          }
+        },
+        "required": [
+          "complete",
+          "stopped_by",
+          "rounds",
+          "max_hops",
+          "max_items",
+          "time_budget_seconds",
+          "weak_links",
+          "stale_inputs",
+          "items_over_cap"
+        ]
+      },
+      "ImpactData": {
+        "type": "object",
+        "description": "What impact returns.",
+        "properties": {
+          "direction": {
+            "type": "string",
+            "description": "downstream or upstream."
+          },
+          "seeds": {
+            "type": "array",
+            "description": "The objects that were made to fail (downstream).",
+            "items": {
+              "$ref": "#/components/schemas/ObjectRef"
+            }
+          },
+          "target": {
+            "$ref": "#/components/schemas/ObjectRef"
+          },
+          "facts_only": {
+            "$ref": "#/components/schemas/ImpactSection"
+          },
+          "with_assumptions": {
+            "$ref": "#/components/schemas/ImpactSection"
+          },
+          "upstream": {
+            "$ref": "#/components/schemas/UpstreamSection"
+          },
+          "computation": {
+            "$ref": "#/components/schemas/ImpactComputation"
+          }
+        },
+        "required": ["direction", "computation"]
+      },
+      "ImpactAnswer": {
+        "type": "object",
+        "description": "The answer of impact.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/ImpactData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/QueryMeta"
+          }
+        },
+        "required": ["data", "meta"]
+      }
+    }
+  }
+}

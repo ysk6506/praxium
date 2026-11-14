@@ -36,6 +36,7 @@ printf 'dev-token-not-a-secret' > /tmp/dev.tok
 /tmp/praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl &
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret kg list
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query find --type PhysicalServer --limit 3
+/tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query impact <객체 ID> --mode facts_only   # 장애가 번지는 범위. --upstream <ID>면 기대는 객체
 ```
 
 릴리스 실행 파일을 받은 사람(소스 없이)이 가장 먼저 치는 명령. `praxium --help`가 모든 명령을 묶음별로 보여 준다. 데모는 토큰을 실행마다 새로 만들어 출력 주소의 `#` 뒤에 넣는다([ADR-0038](docs/design-docs/adr/0038-demo-mode-as-a-supported-feature.md)). 소스에서는 `pnpm web:build /tmp/praxium`으로 같은 실행 파일을 만든다:

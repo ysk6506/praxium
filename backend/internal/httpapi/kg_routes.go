@@ -13,5 +13,6 @@ func kgRoutes() []routeSpec {
 		post("/v1/kgs/{kg}/queries:find", reader, (*call).askFind),
 		post("/v1/kgs/{kg}/queries:get", reader, (*call).askGet),
 		post("/v1/kgs/{kg}/queries:neighbors", reader, (*call).askNeighbors),
+		post("/v1/kgs/{kg}/queries:impact", reader, (*call).askImpact),
 	}
 }

@@ -180,7 +180,7 @@ func runObject(ctx context.Context, c *Client, opts options, w io.Writer) error 
 
 func runQuery(ctx context.Context, c *Client, opts options, w io.Writer) error {
 	if len(opts.rest) < 2 {
-		return usageError{msg: "query needs find, get or neighbors"}
+		return usageError{msg: "query needs find, get, neighbors or impact"}
 	}
 	switch opts.rest[1] {
 	case "find":
@@ -189,6 +189,8 @@ func runQuery(ctx context.Context, c *Client, opts options, w io.Writer) error {
 		return askGet(ctx, c, opts, w)
 	case "neighbors":
 		return askNeighbors(ctx, c, opts, w)
+	case "impact":
+		return askImpact(ctx, c, opts, w)
 	}
 	return usageError{msg: fmt.Sprintf("query has no %q", opts.rest[1])}
 }
