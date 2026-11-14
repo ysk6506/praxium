@@ -36,6 +36,7 @@ export {
   PageHeader,
   Section,
 } from "./layout";
+export { Notice, type NoticeProps, type NoticeTone } from "./Notice";
 export { Pagination } from "./Pagination";
 export { Select } from "./Select";
 export { SpreadControls, type SpreadControlsProps } from "./SpreadControls";
