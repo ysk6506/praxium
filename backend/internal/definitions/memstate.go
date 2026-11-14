@@ -43,19 +43,27 @@ func (s *state) clone() *state {
 	}
 }
 
-func (s *state) export() Data {
+// export is the content as a copy. view is the same without copies of what is never changed (bodies, entries), for
+// a PersistFunc that only reads it.
+func (s *state) export() Data { return s.data(true) }
+
+func (s *state) data(deep bool) Data {
 	d := Data{Head: s.head, Counters: maps.Clone(s.counters)}
+	copyRev, copySet := func(r Revision) Revision { return r }, func(x Set, _ bool) Set { return x }
+	if deep {
+		copyRev, copySet = cloneRevision, cloneSet
+	}
 	for _, it := range s.items {
 		d.Items = append(d.Items, it)
 	}
 	sort.Slice(d.Items, func(i, j int) bool { return d.Items[i].ID < d.Items[j].ID })
 	for _, it := range d.Items {
 		for _, r := range s.revs[it.ID] {
-			d.Revisions = append(d.Revisions, cloneRevision(r))
+			d.Revisions = append(d.Revisions, copyRev(r))
 		}
 	}
 	for _, set := range s.sets {
-		d.Sets = append(d.Sets, cloneSet(set, true))
+		d.Sets = append(d.Sets, copySet(set, true))
 	}
 	for _, b := range s.branches {
 		d.Branches = append(d.Branches, cloneBranch(b))

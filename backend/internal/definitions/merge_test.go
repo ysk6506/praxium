@@ -2,6 +2,7 @@ package definitions
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -45,6 +46,9 @@ func TestABranchThatTouchesAnItemTheMainLineChangedIsStale(t *testing.T) {
 	se, ok := isErr[*StaleError](err)
 	if !ok || code(err) != kernel.CodeConflict || len(se.Items) != 1 || se.Items[0] != a || se.BaseSetNo != 1 || se.HeadSetNo != 2 {
 		t.Fatalf("stale: %v", err)
+	}
+	if !strings.Contains(err.Error(), "stale: D-2 changed 1 item(s) of this branch since its base D-1") {
+		t.Fatalf("the message of the refusal: %v", err)
 	}
 	if head, _, _ := r.svc.Head(ctx); head.No != 2 {
 		t.Fatalf("a refused merge moved the head to D-%d", head.No)
@@ -93,7 +97,7 @@ func TestTheCheckSeesTheWholeMergedSetAndAProblemStopsTheMerge(t *testing.T) {
 	}
 	_, err := r.svc.Merge(ctx, MergeInput{ProposalID: p.ID, Actor: bob, Check: bad, Counters: map[string]int64{"n": 9}})
 	cf, ok := isErr[*CheckFailedError](err)
-	if !ok || code(err) != kernel.CodeInvalidValue || len(cf.Problems) != 2 || cf.Problems[0].Code != "no_good" {
+	if !ok || code(err) != kernel.CodeInvalidValue || len(cf.Problems) != 2 || cf.Problems[0].Code != "no_good" || !strings.Contains(err.Error(), "2 problem(s)") {
 		t.Fatalf("check failure: %v", err)
 	}
 	if len(seen) != 3 || seen[0].Body == nil || seen[0].Kind == "" {

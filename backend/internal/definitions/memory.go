@@ -21,7 +21,8 @@ type Data struct {
 	Proposals []Proposal       `json:"proposals"`
 }
 
-// PersistFunc keeps the new content of a store somewhere durable. It says whether that content did replace the old
+// PersistFunc keeps the new content of a store somewhere durable. It must only read the data and not keep it: the lists
+// share their bodies and entries with the store, to spare a copy of everything at every write. It says whether that content did replace the old
 // one, which tells a failure before that (the store stays as it was) from one after it (the content is the new one, but
 // it is in doubt whether it survives a crash).
 type PersistFunc func(Data) (replaced bool, err error)
@@ -197,7 +198,7 @@ func (m *MemoryStore) Commit(_ context.Context, w Write) error {
 		return err
 	}
 	if m.persist != nil {
-		replaced, err := m.persist(next.export())
+		replaced, err := m.persist(next.data(false))
 		if err != nil {
 			if replaced {
 				m.st = next
