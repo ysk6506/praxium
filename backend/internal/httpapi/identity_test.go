@@ -30,7 +30,7 @@ func idhFits(t *testing.T, method, template string, r reply) {
 func TestAnAdministratorManagesUsersAndTheAnswersFitTheContract(t *testing.T) {
 	r := idhNewRig(t, false)
 	key := []string{"Idempotency-Key", "idh-key-000001"}
-	created := r.send("POST", "/v1/users", idhAdminToken, `{"name":"grace","display_name":"Grace","roles":["viewer"]}`, key...)
+	created := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"grace","display_name":"Grace","roles":["viewer"]}`, key...)
 	if created.status != http.StatusCreated {
 		t.Fatalf("create: %d %s", created.status, created.body)
 	}
@@ -38,34 +38,34 @@ func TestAnAdministratorManagesUsersAndTheAnswersFitTheContract(t *testing.T) {
 	if got := idhData(t, created)["id"]; got != "grace" {
 		t.Fatalf("id = %v", got)
 	}
-	replay := r.send("POST", "/v1/users", idhAdminToken, `{"name":"grace","display_name":"Grace","roles":["viewer"]}`, key...)
+	replay := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"grace","display_name":"Grace","roles":["viewer"]}`, key...)
 	if replay.status != http.StatusCreated || replay.header.Get("Idempotent-Replayed") != "true" || string(replay.body) != string(created.body) {
 		t.Fatalf("the same key and body must replay the answer: %d %s", replay.status, replay.body)
 	}
-	other := r.send("POST", "/v1/users", idhAdminToken, `{"name":"heidi","roles":["viewer"]}`, key...)
+	other := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"heidi","roles":["viewer"]}`, key...)
 	if other.status != http.StatusConflict || other.code(t) != "conflict.idempotency_key_reused" {
 		t.Fatalf("the same key with another body: %d %s", other.status, other.body)
 	}
 	idhFits(t, "POST", "/v1/users", other)
-	taken := r.send("POST", "/v1/users", idhAdminToken, `{"name":"grace","roles":["viewer"]}`, "Idempotency-Key", "idh-key-000002")
+	taken := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"grace","roles":["viewer"]}`, "Idempotency-Key", "idh-key-000002")
 	if taken.status != http.StatusConflict || taken.code(t) != "conflict.state_not_allowed" {
 		t.Fatalf("a name in use: %d %s", taken.status, taken.body)
 	}
-	list := r.send("GET", "/v1/users?sort=-name&limit=2", idhAdminToken, "")
+	list := r.idhSend("GET", "/v1/users?sort=-name&limit=2", idhAdminToken, "")
 	if list.status != 200 {
 		t.Fatalf("list: %d %s", list.status, list.body)
 	}
 	idhFits(t, "GET", "/v1/users", list)
-	disabled := r.send("POST", "/v1/users/grace:disable", idhAdminToken, "", "Idempotency-Key", "idh-key-000003")
+	disabled := r.idhSend("POST", "/v1/users/grace:disable", idhAdminToken, "", "Idempotency-Key", "idh-key-000003")
 	if disabled.status != 200 || idhData(t, disabled)["state"] != "disabled" {
 		t.Fatalf("disable: %d %s", disabled.status, disabled.body)
 	}
 	idhFits(t, "POST", "/v1/users/{user_id}:disable", disabled)
-	account := r.send("POST", "/v1/system-accounts", idhAdminToken, `{"name":"ingest-a","roles":["ingester"]}`, "Idempotency-Key", "idh-key-000004")
+	account := r.idhSend("POST", "/v1/system-accounts", idhAdminToken, `{"name":"ingest-a","roles":["ingester"]}`, "Idempotency-Key", "idh-key-000004")
 	idhFits(t, "POST", "/v1/system-accounts", account)
-	accounts := r.send("GET", "/v1/system-accounts", idhAdminToken, "")
+	accounts := r.idhSend("GET", "/v1/system-accounts", idhAdminToken, "")
 	idhFits(t, "GET", "/v1/system-accounts", accounts)
-	gone := r.send("POST", "/v1/system-accounts/nobody:disable", idhAdminToken, "", "Idempotency-Key", "idh-key-000005")
+	gone := r.idhSend("POST", "/v1/system-accounts/nobody:disable", idhAdminToken, "", "Idempotency-Key", "idh-key-000005")
 	if gone.status != http.StatusNotFound {
 		t.Fatalf("an account that does not exist: %d", gone.status)
 	}
@@ -79,7 +79,7 @@ func TestCreatingAndActingCallsNeedAWellFormedIdempotencyKey(t *testing.T) {
 		if key != "" {
 			headers = []string{"Idempotency-Key", key}
 		}
-		got := r.send("POST", "/v1/users", idhAdminToken, `{"name":"x1","roles":["viewer"]}`, headers...)
+		got := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"x1","roles":["viewer"]}`, headers...)
 		if got.status != 400 || got.code(t) != "invalid_input.idempotency_key_required" {
 			t.Errorf("key %q: %d %s", key, got.status, got.body)
 		}
@@ -91,7 +91,7 @@ func TestANewTokenIsInOneAnswerOnlyAndItsKeyCannotBeUsedAgain(t *testing.T) {
 	r := idhNewRig(t, false)
 	key := []string{"Idempotency-Key", "idh-key-100001"}
 	body := `{"owner":"ada","description":"read only","roles":["viewer"],"expires_in_days":30}`
-	first := r.send("POST", "/v1/tokens", idhAdminToken, body, key...)
+	first := r.idhSend("POST", "/v1/tokens", idhAdminToken, body, key...)
 	if first.status != http.StatusCreated {
 		t.Fatalf("issue: %d %s", first.status, first.body)
 	}
@@ -103,11 +103,11 @@ func TestANewTokenIsInOneAnswerOnlyAndItsKeyCannotBeUsedAgain(t *testing.T) {
 	if first.header.Get("Cache-Control") != "no-store" {
 		t.Fatalf("an answer with a secret must not be cached: %q", first.header.Get("Cache-Control"))
 	}
-	again := r.send("POST", "/v1/tokens", idhAdminToken, body, key...)
+	again := r.idhSend("POST", "/v1/tokens", idhAdminToken, body, key...)
 	if again.status != http.StatusConflict || strings.Contains(string(again.body), secret) {
 		t.Fatalf("the key of an issue must not replay the secret: %d %s", again.status, again.body)
 	}
-	list := r.send("GET", "/v1/tokens", idhAdminToken, "")
+	list := r.idhSend("GET", "/v1/tokens", idhAdminToken, "")
 	idhFits(t, "GET", "/v1/tokens", list)
 	if strings.Contains(string(list.body), secret) || strings.Contains(string(list.body), "idh-new-secret") {
 		t.Fatalf("a list must not hold a secret: %s", list.body)
@@ -120,26 +120,26 @@ func TestANewTokenIsInOneAnswerOnlyAndItsKeyCannotBeUsedAgain(t *testing.T) {
 // [REQ-309]
 func TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce(t *testing.T) {
 	r := idhNewRig(t, false)
-	own := r.send("GET", "/v1/tokens", idhReaderToken, "")
+	own := r.idhSend("GET", "/v1/tokens", idhReaderToken, "")
 	idhFits(t, "GET", "/v1/tokens", own)
 	if strings.Contains(string(own.body), "adm0000000000001") {
 		t.Fatalf("a reader must not see the tokens of others: %s", own.body)
 	}
-	if got := r.send("POST", "/v1/tokens", idhReaderToken, `{"owner":"ada"}`, "Idempotency-Key", "idh-key-200001"); got.status != 403 {
+	if got := r.idhSend("POST", "/v1/tokens", idhReaderToken, `{"owner":"ada"}`, "Idempotency-Key", "idh-key-200001"); got.status != 403 {
 		t.Fatalf("a reader makes no tokens: %d", got.status)
 	}
-	if got := r.send("POST", "/v1/tokens/adm0000000000001:revoke", idhReaderToken, "", "Idempotency-Key", "idh-key-200002"); got.status != 404 {
+	if got := r.idhSend("POST", "/v1/tokens/adm0000000000001:revoke", idhReaderToken, "", "Idempotency-Key", "idh-key-200002"); got.status != 404 {
 		t.Fatalf("the token of another looks absent: %d %s", got.status, got.body)
 	}
-	revoked := r.send("POST", "/v1/tokens/red0000000000001:revoke", idhReaderToken, "", "Idempotency-Key", "idh-key-200003")
+	revoked := r.idhSend("POST", "/v1/tokens/red0000000000001:revoke", idhReaderToken, "", "Idempotency-Key", "idh-key-200003")
 	if revoked.status != 200 || idhData(t, revoked)["state"] != "revoked" {
 		t.Fatalf("revoke own: %d %s", revoked.status, revoked.body)
 	}
 	idhFits(t, "POST", "/v1/tokens/{token_id}:revoke", revoked)
-	if got := r.send("GET", "/v1/tokens/current", idhReaderToken, ""); got.status != 401 {
+	if got := r.idhSend("GET", "/v1/tokens/current", idhReaderToken, ""); got.status != 401 {
 		t.Fatalf("a revoked token: %d", got.status)
 	}
-	if got := r.send("POST", "/v1/tokens/not-a-verb", idhAdminToken, ""); got.status != 404 {
+	if got := r.idhSend("POST", "/v1/tokens/not-a-verb", idhAdminToken, ""); got.status != 404 {
 		t.Fatalf("a path without the verb: %d", got.status)
 	}
 }
@@ -147,7 +147,7 @@ func TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce(t 
 // [REQ-313]
 func TestTheCurrentTokenSaysWhoIsCalling(t *testing.T) {
 	r := idhNewRig(t, false)
-	got := r.send("GET", "/v1/tokens/current", idhReaderToken, "")
+	got := r.idhSend("GET", "/v1/tokens/current", idhReaderToken, "")
 	if got.status != 200 {
 		t.Fatalf("%d %s", got.status, got.body)
 	}
@@ -163,11 +163,11 @@ func TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked(t *testing.T) 
 	r := idhNewRig(t, false)
 	bad := "pxm_0000000000000000_idh-wrong-secret-not-real"
 	for i := 0; i < 2; i++ {
-		if got := r.send("GET", "/v1/roles", bad, ""); got.status != 401 {
+		if got := r.idhSend("GET", "/v1/roles", bad, ""); got.status != 401 {
 			t.Fatalf("a wrong token: %d", got.status)
 		}
 	}
-	blocked := r.send("GET", "/v1/tokens", idhAdminToken, "")
+	blocked := r.idhSend("GET", "/v1/tokens", idhAdminToken, "")
 	if blocked.status != 429 || blocked.header.Get("Retry-After") != "43" {
 		t.Fatalf("a blocked caller: %d, Retry-After %q: %s", blocked.status, blocked.header.Get("Retry-After"), blocked.body)
 	}
@@ -181,7 +181,7 @@ func TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked(t *testing.T) 
 			t.Fatalf("a token is in the log or the answer: %s", secret)
 		}
 	}
-	if got := r.send("GET", "/v1/health/live", "", ""); got.status != 200 {
+	if got := r.idhSend("GET", "/v1/health/live", "", ""); got.status != 200 {
 		t.Fatalf("the probes stay open to a blocked caller: %d", got.status)
 	}
 }
@@ -190,12 +190,12 @@ func TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked(t *testing.T) 
 func TestAMissingTokenIsNotCountedAndASuccessIsReported(t *testing.T) {
 	r := idhNewRig(t, false)
 	for i := 0; i < 5; i++ {
-		r.send("GET", "/v1/roles", "", "")
+		r.idhSend("GET", "/v1/roles", "", "")
 	}
 	if len(r.limiter.fails) != 0 {
 		t.Fatalf("a missing token counted: %v", r.limiter.fails)
 	}
-	r.send("GET", "/v1/roles", idhAdminToken, "")
+	r.idhSend("GET", "/v1/roles", idhAdminToken, "")
 	if r.limiter.passes != 1 {
 		t.Fatalf("passes = %d", r.limiter.passes)
 	}
@@ -204,12 +204,12 @@ func TestAMissingTokenIsNotCountedAndASuccessIsReported(t *testing.T) {
 // [REQ-314]
 func TestBehindAProxyTheLastForwardedAddressIsTheCaller(t *testing.T) {
 	r := idhNewRig(t, true)
-	r.send("GET", "/v1/roles", "pxm_0000000000000000_idh-wrong-secret-not-real", "", "X-Forwarded-For", "198.51.100.1, 198.51.100.77")
+	r.idhSend("GET", "/v1/roles", "pxm_0000000000000000_idh-wrong-secret-not-real", "", "X-Forwarded-For", "198.51.100.1, 198.51.100.77")
 	if r.limiter.fails["198.51.100.77"] != 1 || len(r.limiter.fails) != 1 {
 		t.Fatalf("the key must be the last address: %v", r.limiter.fails)
 	}
 	direct := idhNewRig(t, false)
-	direct.send("GET", "/v1/roles", "pxm_0000000000000000_idh-wrong-secret-not-real", "", "X-Forwarded-For", "198.51.100.1")
+	direct.idhSend("GET", "/v1/roles", "pxm_0000000000000000_idh-wrong-secret-not-real", "", "X-Forwarded-For", "198.51.100.1")
 	if direct.limiter.fails["203.0.113.9"] != 1 {
 		t.Fatalf("without a proxy the header is not believed: %v", direct.limiter.fails)
 	}
@@ -219,7 +219,7 @@ func TestBehindAProxyTheLastForwardedAddressIsTheCaller(t *testing.T) {
 func TestAnAuthenticatorThatCannotAnswerIsAnOutageNotARefusal(t *testing.T) {
 	r := idhNewRig(t, false)
 	r.dir.fail = kernel.Errorf(kernel.CodeInternal, "the store is down: secret-detail-not-real")
-	got := r.send("GET", "/v1/roles", idhAdminToken, "")
+	got := r.idhSend("GET", "/v1/roles", idhAdminToken, "")
 	if got.status != 503 || got.code(t) != "server.unavailable" {
 		t.Fatalf("%d %s", got.status, got.body)
 	}
@@ -249,7 +249,7 @@ func TestBadRequestsToTheManagementRoutesAreRefusedWithAProblem(t *testing.T) {
 	n := 0
 	send := func(method, target, token, body string) reply {
 		n++
-		return r.send(method, target, token, body, "Idempotency-Key", "idh-bad-key-"+string(rune('a'+n)))
+		return r.idhSend(method, target, token, body, "Idempotency-Key", "idh-bad-key-"+string(rune('a'+n)))
 	}
 	cases := []struct {
 		name, method, target, body string
@@ -271,7 +271,7 @@ func TestBadRequestsToTheManagementRoutesAreRefusedWithAProblem(t *testing.T) {
 			t.Errorf("%s: %d, want %d: %s", c.name, got.status, c.status, got.body)
 		}
 	}
-	if got := r.send("POST", "/v1/users", idhAdminToken, `{"name":`, "Idempotency-Key", "idh-bad-json-1"); got.status != 422 {
+	if got := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":`, "Idempotency-Key", "idh-bad-json-1"); got.status != 422 {
 		t.Errorf("a body that is not JSON: %d", got.status)
 	}
 }
@@ -284,7 +284,7 @@ func TestAFailingDirectoryIsAnOutageThatShowsNothingOfTheStore(t *testing.T) {
 		{"GET", "/v1/users", ""}, {"GET", "/v1/tokens", ""},
 		{"POST", "/v1/users", `{"name":"x1","roles":["viewer"]}`}, {"POST", "/v1/tokens", `{"owner":"ada"}`},
 	} {
-		got := r.send(c[0], c[1], idhAdminToken, c[2], "Idempotency-Key", "idh-down-key-1")
+		got := r.idhSend(c[0], c[1], idhAdminToken, c[2], "Idempotency-Key", "idh-down-key-1")
 		if got.status != 503 || strings.Contains(string(got.body), "detail-not-real") {
 			t.Errorf("%s %s: %d %s", c[0], c[1], got.status, got.body)
 		}
@@ -295,13 +295,13 @@ func TestAFailingDirectoryIsAnOutageThatShowsNothingOfTheStore(t *testing.T) {
 func TestACallWhoseFirstTryIsStillRunningIsRefusedNotRepeated(t *testing.T) {
 	r := idhNewRig(t, false)
 	r.dir.broken = kernel.Errorf(kernel.CodeInvalidValue, "a rule")
-	first := r.send("POST", "/v1/users", idhAdminToken, `{"name":"x1","roles":["viewer"]}`, "Idempotency-Key", "idh-retry-key-1")
+	first := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"x1","roles":["viewer"]}`, "Idempotency-Key", "idh-retry-key-1")
 	if first.status != 422 {
 		t.Fatalf("%d", first.status)
 	}
 	// A failed call gives its key back: the retry with the same key runs again.
 	r.dir.broken = nil
-	again := r.send("POST", "/v1/users", idhAdminToken, `{"name":"x1","roles":["viewer"]}`, "Idempotency-Key", "idh-retry-key-1")
+	again := r.idhSend("POST", "/v1/users", idhAdminToken, `{"name":"x1","roles":["viewer"]}`, "Idempotency-Key", "idh-retry-key-1")
 	if again.status != http.StatusCreated {
 		t.Fatalf("the retry of a failed call: %d %s", again.status, again.body)
 	}

@@ -34,12 +34,12 @@ func idhNewDirectory() *idhDirectory {
 	born := time.Date(2030, 1, 2, 0, 0, 0, 0, time.UTC)
 	d.people["root"] = access.Principal{Kind: access.SubjectPerson, ID: "root", Roles: []access.Role{access.RoleAdmin}, CreatedAt: born}
 	d.people["ada"] = access.Principal{Kind: access.SubjectPerson, ID: "ada", Roles: []access.Role{access.RoleViewer}, CreatedAt: born}
-	d.add("root", "adm0000000000001", "idh-admin-secret-not-real", access.RoleAdmin)
-	d.add("ada", "red0000000000001", "idh-reader-secret-not-real", access.RoleViewer)
+	d.idhAdd("root", "adm0000000000001", "idh-admin-secret-not-real", access.RoleAdmin)
+	d.idhAdd("ada", "red0000000000001", "idh-reader-secret-not-real", access.RoleViewer)
 	return d
 }
 
-func (d *idhDirectory) add(owner, id, secret string, role access.Role) {
+func (d *idhDirectory) idhAdd(owner, id, secret string, role access.Role) {
 	d.tokens[id] = access.TokenInfo{ID: id, Owner: owner, OwnerKind: access.SubjectPerson, Roles: []access.Role{role}, State: access.TokenActive,
 		CreatedAt: time.Date(2030, 1, 2, 0, 0, 0, 0, time.UTC), ExpiresAt: time.Date(2030, 4, 2, 0, 0, 0, 0, time.UTC)}
 	d.secrets[secret] = id
@@ -128,7 +128,7 @@ func (d *idhDirectory) IssueToken(_ context.Context, actor access.Subject, req a
 	if len(roles) == 0 {
 		roles = owner.Roles
 	}
-	d.add(req.Owner, id, secret, roles[0])
+	d.idhAdd(req.Owner, id, secret, roles[0])
 	info := d.tokens[id]
 	info.Roles, info.CreatedBy = roles, actor.ID
 	d.tokens[id] = info
@@ -223,7 +223,7 @@ func idhNewRig(t *testing.T, proxy bool) *idhRig {
 }
 
 // send sends a request as the holder of a token ("" for none) with the headers given as pairs.
-func (r *idhRig) send(method, target, token, body string, headers ...string) reply {
+func (r *idhRig) idhSend(method, target, token, body string, headers ...string) reply {
 	r.t.Helper()
 	req := httptest.NewRequest(method, target, strings.NewReader(body))
 	req.RemoteAddr = "203.0.113.9:5555"
