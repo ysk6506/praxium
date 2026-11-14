@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "24d2afb5761e0b38"
+hash: "91f4d342c9fc54ba"
 date: "2026-11-14"
-note: "AGENTS.md의 화면 코드 항목에 웹 UI 규칙 링크가 더해진 것만 바뀜. 신념과 충돌 없음"
+note: "main 반영 뒤 AGENTS.md 재대조: 화면 코드 항목에 웹 UI 규칙 링크가 더해진 것만 다름"
 text_changed: false
 doc_hash: "04b2f4f490642c38"

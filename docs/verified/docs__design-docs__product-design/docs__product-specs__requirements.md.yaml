@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "995952da6dfb6c74"
+hash: "2bc4ed488772bf96"
 date: "2026-11-14"
-note: "요구사항의 REQ-318 문구에서 용어만 바뀜. 제품 설계 개요와 충돌 없음"
+note: "main 반영 뒤 요구사항 재대조: REQ-315~319만 더해짐"
 text_changed: true
-doc_hash: "06412a77a9acc006"
+doc_hash: "019854b80cb4930e"
