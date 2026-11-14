@@ -91,6 +91,7 @@ func (r *rig) run() Report {
 	return rep
 }
 
+// [REQ-263]
 func TestFirstRun(t *testing.T) {
 	r := newRig(t, sourceJSON, mappingJSON)
 	r.files["ds_racks"] = "asset_id,rack_name,total_u\nRK1,rack-a,42\nRK2,rack-b,45\n"

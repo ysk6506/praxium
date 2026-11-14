@@ -95,6 +95,9 @@ func (c *RawChanges) countAbsent(ds *DatasetState, shown map[string]bool, run in
 		}
 	}
 	sort.Strings(keys)
+	if ds.Unseen == nil {
+		ds.Unseen = map[string]Unseen{}
+	}
 	for _, k := range keys {
 		u := ds.Unseen[k]
 		if u.Runs == 0 {
