@@ -55,8 +55,11 @@ func NewLimiter(clock kernel.Clock, cfg LimiterConfig) *Limiter {
 	return &Limiter{clock: clock, cfg: cfg, entries: map[string]*limitEntry{}}
 }
 
+// The key of each call below is where the caller comes from, as the server sees it; it is counted under KeyOf of it.
+
 // Blocked says whether the key is blocked now and for how much longer.
 func (l *Limiter) Blocked(key string) (time.Duration, bool) {
+	key = KeyOf(key)
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	e, ok := l.entries[key]
@@ -71,6 +74,7 @@ func (l *Limiter) Blocked(key string) (time.Duration, bool) {
 
 // Failed counts a refused token. A failure that comes after the window of the last one starts a new count.
 func (l *Limiter) Failed(key string) {
+	key = KeyOf(key)
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	now := l.clock.Now()
@@ -92,6 +96,7 @@ func (l *Limiter) Failed(key string) {
 
 // Succeeded forgets the failures of the key, unless it is blocked: a block runs out by time alone.
 func (l *Limiter) Succeeded(key string) {
+	key = KeyOf(key)
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	if e, ok := l.entries[key]; ok && !e.until.After(l.clock.Now()) {

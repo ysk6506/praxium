@@ -36,6 +36,10 @@
     {
       "name": "kg",
       "description": "Reads of a KG: the KGs, objects, their links and the closed queries."
+    },
+    {
+      "name": "identity",
+      "description": "Users, service accounts and access tokens: who may call the API."
     }
   ]
 }

@@ -1,0 +1,502 @@
+{
+  "components": {
+    "schemas": {
+      "Principal": {
+        "type": "object",
+        "description": "A user (a person) or a service account. Its id is its name: unique among all of them and never changed.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The name, lower-case letters, digits and . _ @ -, at most 64 characters."
+          },
+          "kind": {
+            "type": "string",
+            "description": "person for a user, system_account for a service account.",
+            "enum": [
+              "person",
+              "system_account"
+            ]
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The name to show."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the account is for."
+          },
+          "roles": {
+            "type": "array",
+            "description": "Role names (GET /v1/roles).",
+            "items": {
+              "type": "string"
+            }
+          },
+          "state": {
+            "type": "string",
+            "description": "active or disabled. A disabled principal's tokens are refused at once.",
+            "enum": [
+              "active",
+              "disabled"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When it was made, UTC.",
+            "format": "date-time"
+          },
+          "created_by": {
+            "type": "string",
+            "description": "Who made it: a principal id, or (local operator) for the bootstrap."
+          },
+          "disabled_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When it was disabled, UTC; null while it is active.",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "display_name",
+          "description",
+          "roles",
+          "state",
+          "created_at",
+          "created_by",
+          "disabled_at"
+        ]
+      },
+      "TokenRecord": {
+        "type": "object",
+        "description": "An access token as it is listed. It never holds the secret or its hash: both are only ever in the answer that makes the token, and the hash is nowhere.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The token id: the part of the token after pxm_ and before the secret. It names the token and is not secret."
+          },
+          "owner": {
+            "type": "string",
+            "description": "The id of the principal the token acts as."
+          },
+          "owner_kind": {
+            "type": "string",
+            "description": "person or system_account.",
+            "enum": [
+              "person",
+              "system_account"
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "description": "The roles the token carries. They only narrow the owner's: what a token may do is the roles it carries that the owner still holds.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "What the token is for."
+          },
+          "state": {
+            "type": "string",
+            "description": "active, expired or revoked. Only an active token is accepted.",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When it was made, UTC.",
+            "format": "date-time"
+          },
+          "created_by": {
+            "type": "string",
+            "description": "Who made it."
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "When it stops working, UTC. Every token expires.",
+            "format": "date-time"
+          },
+          "last_used_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When it was last used, to the minute, UTC; null for a token never used.",
+            "format": "date-time"
+          },
+          "revoked_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When it was revoked, UTC.",
+            "format": "date-time"
+          },
+          "revoked_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Who revoked it."
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "owner_kind",
+          "roles",
+          "description",
+          "state",
+          "created_at",
+          "created_by",
+          "expires_at",
+          "last_used_at",
+          "revoked_at",
+          "revoked_by"
+        ]
+      },
+      "IssuedToken": {
+        "type": "object",
+        "description": "A new access token with its secret.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The token id: the part of the token after pxm_ and before the secret. It names the token and is not secret."
+          },
+          "owner": {
+            "type": "string",
+            "description": "The id of the principal the token acts as."
+          },
+          "owner_kind": {
+            "type": "string",
+            "description": "person or system_account.",
+            "enum": [
+              "person",
+              "system_account"
+            ]
+          },
+          "roles": {
+            "type": "array",
+            "description": "The roles the token carries. They only narrow the owner's: what a token may do is the roles it carries that the owner still holds.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "description": "What the token is for."
+          },
+          "state": {
+            "type": "string",
+            "description": "active, expired or revoked. Only an active token is accepted.",
+            "enum": [
+              "active",
+              "expired",
+              "revoked"
+            ]
+          },
+          "created_at": {
+            "type": "string",
+            "description": "When it was made, UTC.",
+            "format": "date-time"
+          },
+          "created_by": {
+            "type": "string",
+            "description": "Who made it."
+          },
+          "expires_at": {
+            "type": "string",
+            "description": "When it stops working, UTC. Every token expires.",
+            "format": "date-time"
+          },
+          "last_used_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When it was last used, to the minute, UTC; null for a token never used.",
+            "format": "date-time"
+          },
+          "revoked_at": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "When it was revoked, UTC.",
+            "format": "date-time"
+          },
+          "revoked_by": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Who revoked it."
+          },
+          "token": {
+            "type": "string",
+            "description": "The whole token, pxm_<id>_<secret>. It is in this answer and in no other: it cannot be read again. Keep it as you keep a password."
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "owner_kind",
+          "roles",
+          "description",
+          "state",
+          "created_at",
+          "created_by",
+          "expires_at",
+          "last_used_at",
+          "revoked_at",
+          "revoked_by",
+          "token"
+        ]
+      },
+      "PrincipalRequest": {
+        "type": "object",
+        "description": "A new user or service account.",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The id of the new principal: ^[a-z0-9][a-z0-9._@-]{0,63}$, unique among users and service accounts."
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The name to show; the id when empty."
+          },
+          "description": {
+            "type": "string",
+            "description": "What it is for."
+          },
+          "roles": {
+            "type": "array",
+            "description": "At least one role. A user cannot hold ingester, a service account cannot hold admin.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "name",
+          "roles"
+        ],
+        "additionalProperties": false
+      },
+      "TokenRequest": {
+        "type": "object",
+        "description": "A new access token for a principal.",
+        "properties": {
+          "owner": {
+            "type": "string",
+            "description": "The id of the principal the token acts as."
+          },
+          "description": {
+            "type": "string",
+            "description": "What the token is for."
+          },
+          "roles": {
+            "type": "array",
+            "description": "The roles of the token; they must be roles the owner holds. Empty means all of the owner's.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "expires_in_days": {
+            "type": "integer",
+            "description": "The lifetime in days, 1 hour to 365 days; 0 or absent means 90 days.",
+            "minimum": 0
+          }
+        },
+        "required": [
+          "owner"
+        ],
+        "additionalProperties": false
+      },
+      "IdentityListMeta": {
+        "type": "object",
+        "description": "The meta of a list of users, service accounts or tokens. The answer is never cached.",
+        "properties": {
+          "trace_id": {
+            "type": "string",
+            "description": "The trace id, the same as the X-Trace-Id header."
+          },
+          "result_complete": {
+            "$ref": "#/components/schemas/ResultComplete"
+          }
+        },
+        "required": [
+          "trace_id",
+          "result_complete"
+        ]
+      },
+      "PrincipalAnswer": {
+        "type": "object",
+        "description": "One user or service account.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/Principal"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "PrincipalList": {
+        "type": "object",
+        "description": "Users or service accounts.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/Principal"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/IdentityListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "TokenAnswer": {
+        "type": "object",
+        "description": "One access token.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TokenRecord"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "IssuedTokenAnswer": {
+        "type": "object",
+        "description": "A new access token with its secret.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/IssuedToken"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "TokenList": {
+        "type": "object",
+        "description": "Access tokens.",
+        "properties": {
+          "data": {
+            "type": "array",
+            "description": "The items of this page.",
+            "items": {
+              "$ref": "#/components/schemas/TokenRecord"
+            }
+          },
+          "meta": {
+            "$ref": "#/components/schemas/IdentityListMeta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "CurrentSubject": {
+        "type": "object",
+        "description": "Who the caller is: the subject the token stands for.",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The principal id."
+          },
+          "kind": {
+            "type": "string",
+            "description": "person or system_account.",
+            "enum": [
+              "person",
+              "system_account"
+            ]
+          },
+          "display_name": {
+            "type": "string",
+            "description": "The name to show."
+          },
+          "roles": {
+            "type": "array",
+            "description": "The roles the caller has in this request: the token's, narrowed to the owner's.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "display_name",
+          "roles"
+        ]
+      },
+      "CurrentToken": {
+        "type": "object",
+        "description": "Who is calling and with which token.",
+        "properties": {
+          "subject": {
+            "$ref": "#/components/schemas/CurrentSubject"
+          },
+          "token": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "description": "The token of this request, as a TokenRecord; null when the server has no token records (a development server)."
+          }
+        },
+        "required": [
+          "subject",
+          "token"
+        ]
+      },
+      "CurrentTokenAnswer": {
+        "type": "object",
+        "description": "Who is calling.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/CurrentToken"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      }
+    }
+  }
+}
