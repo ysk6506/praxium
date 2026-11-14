@@ -43,4 +43,5 @@
 | [ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) | 유효 |  |
 | [ADR-0036 임시 디렉터리는 만든 쪽이 지운다](../design-docs/adr/0036-whoever-makes-a-temporary-directory-removes-it.md) | 유효 |  |
 | [ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다](../design-docs/adr/0038-demo-mode-as-a-supported-feature.md) | 유효 |  |
+| [ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다](../design-docs/adr/0039-release-build-for-five-targets-with-a-reproducible-program.md) | 유효 |  |
 | [ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령](../design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md) | 유효 |  |

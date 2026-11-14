@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "7914b9d9328214f0"
+hash: "1c87d6027f1bdfd6"
 date: "2026-11-14"
-note: "요구사항 표에서 REQ-280~281과 REQ-282~283의 순서만 바꿨고 내용은 그대로임을 다시 읽어 확인"
+note: "ADR-0040: checked; stays accurate"
 text_changed: true
 doc_hash: "06412a77a9acc006"
