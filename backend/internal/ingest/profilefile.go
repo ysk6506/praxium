@@ -30,6 +30,9 @@ type InspectOptions struct {
 	HeaderRows int
 	SampleRows int
 	Limits     Limits
+	// Delimiter is the separator of a CSV file: a comma, tab, semicolon or pipe (as a character or a name); empty is
+	// the comma.
+	Delimiter string
 }
 
 // DefaultSampleRows is how many rows of a table a profile shows.
@@ -44,8 +47,20 @@ func Inspect(data []byte, o InspectOptions, books WorkbookReader) (FileProfile, 
 	fp := FileProfile{Format: o.Format, Bytes: len(data)}
 	switch o.Format {
 	case FormatCSV:
+		delim, err := normalizedDelimiter(o.Delimiter, ParserCSV, "inspect")
+		if err != nil {
+			return fp, err
+		}
+		if err := CheckEncoding(data, ParserCSV); err != nil {
+			return fp, err
+		}
+		o.Delimiter = delim
 		fp.Tables = []TableProfile{profileCSV(data, o)}
+		fp.Notes = delimiterNotes(fp.Tables[0], o)
 	case FormatJSONLines:
+		if err := CheckEncoding(data, ParserJSONLines); err != nil {
+			return fp, err
+		}
 		fp.Tables = []TableProfile{profileJSONLines(data, o)}
 	case FormatXLSX:
 		if books == nil {
@@ -128,6 +143,7 @@ func unnamed(name string, i int) string {
 func profileCSV(data []byte, o InspectOptions) TableProfile {
 	data = bytes.TrimPrefix(data, []byte("\xef\xbb\xbf"))
 	r := csv.NewReader(bytes.NewReader(data))
+	r.Comma = Dataset{Delimiter: o.Delimiter}.comma()
 	r.FieldsPerRecord = -1
 	r.LazyQuotes = true
 	g := &grid{name: "csv", sampleSize: o.SampleRows}

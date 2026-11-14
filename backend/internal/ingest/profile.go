@@ -88,6 +88,8 @@ type FileProfile struct {
 	Bytes  int            `json:"bytes"`
 	Sheets []SheetInfo    `json:"sheets,omitempty"`
 	Tables []TableProfile `json:"tables"`
+	// Notes are things worth knowing about how the file was read (the file looks as if it used another delimiter).
+	Notes []string `json:"notes,omitempty"`
 }
 
 // maxTop is how many frequent values a column lists; maxShape and maxValue cut the length of what is shown.

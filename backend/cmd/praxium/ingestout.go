@@ -15,7 +15,7 @@ func printReport(out io.Writer, r ingest.Report) {
 	for _, d := range r.Datasets {
 		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d%s\n",
 			d.Dataset, d.Collected, d.Received, d.Unreadable, d.Read, d.Used, d.Filtered, d.Problem, d.Unused,
-			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen, sheetFields(d))
+			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen, notReadField(d)+sheetFields(d))
 	}
 	kinds := make([]string, 0, len(r.ProblemCounts))
 	for k := range r.ProblemCounts {
@@ -40,6 +40,15 @@ func whereField(p ingest.Problem) string {
 		return ""
 	}
 	return " where=" + p.Where
+}
+
+// notReadField marks a dataset whose file was not read at all, with the reason: its counts are 0 because nothing was
+// read, not because the file was empty.
+func notReadField(d ingest.DatasetReport) string {
+	if d.NotRead == "" {
+		return ""
+	}
+	return fmt.Sprintf(" not_read=%q", d.NotRead)
 }
 
 // sheetFields is what a dataset read from a workbook adds to its line: the sheet and whether it is hidden, the
