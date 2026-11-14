@@ -9,7 +9,7 @@
 | [ADR-0001 프락시움은 테라리움에서 나온 운영 측 제품이다 — 목표는 초안으로 두고, 테라리움과는 파일 2개로만 연결한다](../design-docs/adr/0001-product-goal-draft-and-seams-with-terrarium.md) | 유효 | 일부 수정: [0004](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) (목표는 초안이 아니다), [0005](../design-docs/adr/0005-separate-product-own-model-verification-outside.md) (테라리움과의 연결, 같은 모델, 목표의 셋째 부분) |
 | [ADR-0002 구조와 하네스는 테라리움의 것을 가져온다 — 기계가 강제하는 규칙, 짧은 지도, 스스로 오래됐음을 감지하는 문서](../design-docs/adr/0002-harness-and-working-rules-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (화면 용어에 대한 작업 규칙을 용어집의 표준 용어로 변경하고 문서 본문에도 적용한다) |
 | [ADR-0003 리포지토리에는 공개된 사실만 둔다 — 내부에서 들은 사실, 실제 데이터, 시크릿은 넣지 않는다](../design-docs/adr/0003-no-internal-facts-no-real-data-no-secrets.md) | 유효 |  |
-| [ADR-0004 제품 목표를 굳히고, 리포지토리는 공개로 두며, 테라리움에서 인계받은 것을 문서 1개로 둔다](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (목표 문장의 표기를 표준 용어로 수정하고 사내를 뺀다. 결정은 그대로다) |
+| [ADR-0004 제품 목표를 굳히고, 리포지토리는 공개로 두며, 테라리움에서 인계받은 것을 문서 1개로 둔다](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (목표 문장의 표기를 표준 용어로 수정하고 사내를 뺀다. 결정은 그대로다), [0037](../design-docs/adr/0037-goal-sentence-in-plain-words-and-readme-as-first-screen.md) (목표 문장의 표현) |
 | [ADR-0005 프락시움은 별도 제품이다 — 모델은 프락시움이 소유하고, 위임 전의 검증은 제품 밖에 둔다](../design-docs/adr/0005-separate-product-own-model-verification-outside.md) | 유효 |  |
 | [ADR-0006 백엔드는 Go, 용도에 맞는 언어와 스토리지 — 클린 아키텍처, 역할 4종, 알파는 백엔드부터](../design-docs/adr/0006-go-backend-clean-architecture-backend-first.md) | 유효 |  |
 | [ADR-0007 KG의 모델: 확장 가능한 타입과 고정된 링크 의미, 채널별 상태, 객체인 이중화 그룹, 근거 등급, 불변 ID, 충분한 표준 모델](../design-docs/adr/0007-kg-model.md) | 유효 |  |
@@ -42,9 +42,12 @@
 | [ADR-0034 내장 파일 스토어 — 추가 전용 로그와 스냅샷으로 PostgreSQL 없이 KG를 저장한다](../design-docs/adr/0034-built-in-file-store-for-the-first-run.md) | 유효 |  |
 | [ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) | 유효 |  |
 | [ADR-0036 임시 디렉터리는 만든 쪽이 지운다](../design-docs/adr/0036-whoever-makes-a-temporary-directory-removes-it.md) | 유효 |  |
+| [ADR-0037 목표 문장을 쉬운 말로 다시 쓰고, README를 제품의 첫 화면으로 다룬다](../design-docs/adr/0037-goal-sentence-in-plain-words-and-readme-as-first-screen.md) | 유효 |  |
 | [ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다](../design-docs/adr/0038-demo-mode-as-a-supported-feature.md) | 유효 | 일부 수정: [0042](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) (5번과 6번의 접속 링크 처리(첫 로드에서만 받던 것을 실행 중에도 받고, 로컬 모드 링크와 접속 표시를 더함)) |
-| [ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다](../design-docs/adr/0039-release-build-for-five-targets-with-a-reproducible-program.md) | 유효 |  |
+| [ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다](../design-docs/adr/0039-release-build-for-five-targets-with-a-reproducible-program.md) | 유효 | 일부 수정: [0047](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) (6번과 9번의 릴리스 워크플로(수동 실행도 릴리스를 만들고 세 작업으로 나뉨)와 릴리스 노트) |
 | [ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령](../design-docs/adr/0040-excel-workbook-source-read-with-the-standard-library.md) | 유효 | 일부 수정: [0041](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) (테스트용 워크북 작성기를 제품이 부르지 않는다는 문장) |
-| [ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) | 유효 |  |
+| [ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) | 유효 | 일부 수정: [0046](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) (ingest init의 CSV 예제가 합격 테스트의 샘플 파일과 같다는 결정) |
 | [ADR-0042 웹 UI의 접속 방식 표시, URL에 담는 상태, 오류 표시, 표시 이름 사전](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) | 유효 |  |
 | [ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) | 유효 |  |
+| [ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다 — 없는 시트와 컬럼, 키 오류, 인코딩, 구분자, 정의 초안](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) | 유효 |  |
+| [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 |  |

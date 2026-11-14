@@ -1,56 +1,6 @@
 {
  "version": 1,
  "entries": {
-  "apps/web/src/api/client.test.ts::<import:983e3f78>": {
-   "kind": "support",
-   "hash": "983e3f784d37b419",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/client.test.ts::<import:dbcbc195>": {
-   "kind": "support",
-   "hash": "dbcbc195e9456d7c",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/client.test.ts::=Seen": {
-   "kind": "support",
-   "hash": "e7b8b8a6b1273c80",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/client.test.ts::=fakeFetch": {
-   "kind": "support",
-   "hash": "ece47bf350b7cd7d",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/client.test.ts::=json": {
-   "kind": "support",
-   "hash": "c717f09b8b14037a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "apps/web/src/api/client.test.ts::[REQ-278] the client builds the request the contract describes > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -314,27 +264,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generated.test.ts::<import:4b162d64>": {
-   "kind": "support",
-   "hash": "4b162d647e20f174",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generated.test.ts::<import:66260af5>": {
-   "kind": "support",
-   "hash": "66260af51f925048",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generated.test.ts::<import:983e3f78>": {
+  "apps/web/src/api/client.test.ts::<import:983e3f78>": {
    "kind": "support",
    "hash": "983e3f784d37b419",
    "asserts": 0,
@@ -344,9 +274,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generated.test.ts::<import:ae457cec>": {
+  "apps/web/src/api/client.test.ts::<import:dbcbc195>": {
    "kind": "support",
-   "hash": "ae457cecf78a45a9",
+   "hash": "dbcbc195e9456d7c",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -354,9 +284,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generated.test.ts::=AnyOperation": {
+  "apps/web/src/api/client.test.ts::=fakeFetch": {
    "kind": "support",
-   "hash": "c66f2bb2ddbd4e75",
+   "hash": "ece47bf350b7cd7d",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -364,9 +294,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generated.test.ts::=functions": {
+  "apps/web/src/api/client.test.ts::=json": {
    "kind": "support",
-   "hash": "1f7090422c8a18df",
+   "hash": "c717f09b8b14037a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/client.test.ts::=Seen": {
+   "kind": "support",
+   "hash": "e7b8b8a6b1273c80",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -432,9 +372,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generator/generator-split.test.ts::<import:3ef762f6>": {
+  "apps/web/src/api/generated.test.ts::<import:4b162d64>": {
    "kind": "support",
-   "hash": "3ef762f6271cd916",
+   "hash": "4b162d647e20f174",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -442,9 +382,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generator/generator-split.test.ts::<import:8fce3352>": {
+  "apps/web/src/api/generated.test.ts::<import:66260af5>": {
    "kind": "support",
-   "hash": "8fce335237c764cd",
+   "hash": "66260af51f925048",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -452,9 +392,39 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generator/generator-split.test.ts::<import:983e3f78>": {
+  "apps/web/src/api/generated.test.ts::<import:983e3f78>": {
    "kind": "support",
    "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::<import:ae457cec>": {
+   "kind": "support",
+   "hash": "ae457cecf78a45a9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::=AnyOperation": {
+   "kind": "support",
+   "hash": "c66f2bb2ddbd4e75",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generated.test.ts::=functions": {
+   "kind": "support",
+   "hash": "1f7090422c8a18df",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -526,9 +496,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generator/generator.test.ts::<import:5f5d4b66>": {
+  "apps/web/src/api/generator/generator-split.test.ts::<import:3ef762f6>": {
    "kind": "support",
-   "hash": "5f5d4b66efe0a723",
+   "hash": "3ef762f6271cd916",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -536,59 +506,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/api/generator/generator.test.ts::<import:983e3f78>": {
+  "apps/web/src/api/generator/generator-split.test.ts::<import:8fce3352>": {
+   "kind": "support",
+   "hash": "8fce335237c764cd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/api/generator/generator-split.test.ts::<import:983e3f78>": {
    "kind": "support",
    "hash": "983e3f784d37b419",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generator/generator.test.ts::<import:b3edef7c>": {
-   "kind": "support",
-   "hash": "b3edef7c2c198c27",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generator/generator.test.ts::<import:c6b9cedb>": {
-   "kind": "support",
-   "hash": "c6b9cedb2e085a92",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generator/generator.test.ts::<import:cab4f9b2>": {
-   "kind": "support",
-   "hash": "cab4f9b23743a052",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generator/generator.test.ts::=doc": {
-   "kind": "support",
-   "hash": "1edd4da3cc2d8a99",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/api/generator/generator.test.ts::=fakeSha": {
-   "kind": "support",
-   "hash": "34a7585a77706a56",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -949,9 +879,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::<import:1eda311a>": {
+  "apps/web/src/api/generator/generator.test.ts::<import:5f5d4b66>": {
    "kind": "support",
-   "hash": "1eda311aa7b1f70c",
+   "hash": "5f5d4b66efe0a723",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -959,27 +889,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::<import:92023283>": {
-   "kind": "support",
-   "hash": "92023283d48df2ba",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/access.test.tsx::<import:94d674cc>": {
-   "kind": "support",
-   "hash": "94d674cc1dc01a3a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/access.test.tsx::<import:983e3f78>": {
+  "apps/web/src/api/generator/generator.test.ts::<import:983e3f78>": {
    "kind": "support",
    "hash": "983e3f784d37b419",
    "asserts": 0,
@@ -989,9 +899,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::<import:b919bd80>": {
+  "apps/web/src/api/generator/generator.test.ts::<import:b3edef7c>": {
    "kind": "support",
-   "hash": "b919bd80f32fd4ea",
+   "hash": "b3edef7c2c198c27",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -999,9 +909,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::<import:f3ac2f58>": {
+  "apps/web/src/api/generator/generator.test.ts::<import:c6b9cedb>": {
    "kind": "support",
-   "hash": "f3ac2f587b8a506a",
+   "hash": "c6b9cedb2e085a92",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1009,9 +919,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::<import:fb83b27e>": {
+  "apps/web/src/api/generator/generator.test.ts::<import:cab4f9b2>": {
    "kind": "support",
-   "hash": "fb83b27ee9b5ee02",
+   "hash": "cab4f9b23743a052",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1019,9 +929,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::=MemoryStorage": {
+  "apps/web/src/api/generator/generator.test.ts::=doc": {
    "kind": "support",
-   "hash": "a1cbdcff0b1116fd",
+   "hash": "1edd4da3cc2d8a99",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1029,19 +939,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::=apiError": {
+  "apps/web/src/api/generator/generator.test.ts::=fakeSha": {
    "kind": "support",
-   "hash": "37b33e4fafb09d42",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/access.test.tsx::=setup": {
-   "kind": "support",
-   "hash": "b444b78c463d1f10",
+   "hash": "34a7585a77706a56",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1339,17 +1239,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::<hook:afterEach>": {
-   "kind": "support",
-   "hash": "4fdef9ee37802613",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/entry.test.tsx::<import:1eda311a>": {
+  "apps/web/src/data/access.test.tsx::<import:1eda311a>": {
    "kind": "support",
    "hash": "1eda311aa7b1f70c",
    "asserts": 0,
@@ -1359,9 +1249,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::<import:90ab63fc>": {
+  "apps/web/src/data/access.test.tsx::<import:92023283>": {
    "kind": "support",
-   "hash": "90ab63fce7b7c50d",
+   "hash": "92023283d48df2ba",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1369,9 +1259,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::<import:a5465db4>": {
+  "apps/web/src/data/access.test.tsx::<import:94d674cc>": {
    "kind": "support",
-   "hash": "a5465db420b71da0",
+   "hash": "94d674cc1dc01a3a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1379,7 +1269,17 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::<import:b919bd80>": {
+  "apps/web/src/data/access.test.tsx::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/access.test.tsx::<import:b919bd80>": {
    "kind": "support",
    "hash": "b919bd80f32fd4ea",
    "asserts": 0,
@@ -1389,9 +1289,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::<import:f5e1dfab>": {
+  "apps/web/src/data/access.test.tsx::<import:f3ac2f58>": {
    "kind": "support",
-   "hash": "f5e1dfabe1e9c81b",
+   "hash": "f3ac2f587b8a506a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1399,7 +1299,27 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::=MemoryStorage": {
+  "apps/web/src/data/access.test.tsx::<import:fb83b27e>": {
+   "kind": "support",
+   "hash": "fb83b27ee9b5ee02",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/access.test.tsx::=apiError": {
+   "kind": "support",
+   "hash": "37b33e4fafb09d42",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/access.test.tsx::=MemoryStorage": {
    "kind": "support",
    "hash": "a1cbdcff0b1116fd",
    "asserts": 0,
@@ -1409,19 +1329,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::=failing": {
+  "apps/web/src/data/access.test.tsx::=setup": {
    "kind": "support",
-   "hash": "db81338e1137eec6",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/entry.test.tsx::=recordingHistory": {
-   "kind": "support",
-   "hash": "dea8645eadac0afe",
+   "hash": "b444b78c463d1f10",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1593,9 +1503,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hashstate.test.tsx::<hook:afterEach>": {
+  "apps/web/src/data/entry.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "18bdadae70bc98bc",
+   "hash": "4fdef9ee37802613",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1603,27 +1513,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hashstate.test.tsx::<import:00b0ee86>": {
-   "kind": "support",
-   "hash": "00b0ee868291652e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hashstate.test.tsx::<import:0cfc55e9>": {
-   "kind": "support",
-   "hash": "0cfc55e92be84761",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hashstate.test.tsx::<import:1eda311a>": {
+  "apps/web/src/data/entry.test.tsx::<import:1eda311a>": {
    "kind": "support",
    "hash": "1eda311aa7b1f70c",
    "asserts": 0,
@@ -1633,9 +1523,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hashstate.test.tsx::<import:42656468>": {
+  "apps/web/src/data/entry.test.tsx::<import:90ab63fc>": {
    "kind": "support",
-   "hash": "42656468c6530219",
+   "hash": "90ab63fce7b7c50d",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1643,9 +1533,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hashstate.test.tsx::<import:8f9c65d1>": {
+  "apps/web/src/data/entry.test.tsx::<import:a5465db4>": {
    "kind": "support",
-   "hash": "8f9c65d1c9f469fe",
+   "hash": "a5465db420b71da0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1653,17 +1543,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hashstate.test.tsx::<import:99d905bb>": {
-   "kind": "support",
-   "hash": "99d905bb27e0d0df",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hashstate.test.tsx::<import:b919bd80>": {
+  "apps/web/src/data/entry.test.tsx::<import:b919bd80>": {
    "kind": "support",
    "hash": "b919bd80f32fd4ea",
    "asserts": 0,
@@ -1673,9 +1553,39 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hashstate.test.tsx::<import:f5e1dfab>": {
+  "apps/web/src/data/entry.test.tsx::<import:f5e1dfab>": {
    "kind": "support",
    "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=failing": {
+   "kind": "support",
+   "hash": "db81338e1137eec6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=MemoryStorage": {
+   "kind": "support",
+   "hash": "a1cbdcff0b1116fd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/entry.test.tsx::=recordingHistory": {
+   "kind": "support",
+   "hash": "dea8645eadac0afe",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1849,9 +1759,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<hook:afterEach>": {
+  "apps/web/src/data/hashstate.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "4ea8ca030a0d50e3",
+   "hash": "18bdadae70bc98bc",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1859,9 +1769,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:0751049e>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:00b0ee86>": {
    "kind": "support",
-   "hash": "0751049ea5b84c00",
+   "hash": "00b0ee868291652e",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1869,9 +1779,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:0e3f22a0>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:0cfc55e9>": {
    "kind": "support",
-   "hash": "0e3f22a008f345f1",
+   "hash": "0cfc55e92be84761",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1879,9 +1789,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:2390bc1d>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:1eda311a>": {
    "kind": "support",
-   "hash": "2390bc1d8e9a1d26",
+   "hash": "1eda311aa7b1f70c",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1889,9 +1799,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:34c21395>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:42656468>": {
    "kind": "support",
-   "hash": "34c21395bfd2f7af",
+   "hash": "42656468c6530219",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1899,9 +1809,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:416b76a5>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:8f9c65d1>": {
    "kind": "support",
-   "hash": "416b76a56aca4896",
+   "hash": "8f9c65d1c9f469fe",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1909,9 +1819,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:4ac736cb>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:99d905bb>": {
    "kind": "support",
-   "hash": "4ac736cb2e0ab707",
+   "hash": "99d905bb27e0d0df",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1919,9 +1829,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:61ac284e>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:b919bd80>": {
    "kind": "support",
-   "hash": "61ac284e788f9ec2",
+   "hash": "b919bd80f32fd4ea",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1929,49 +1839,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/hooks.test.tsx::<import:b329391a>": {
-   "kind": "support",
-   "hash": "b329391a68fd7fa0",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hooks.test.tsx::<import:f5e1dfab>": {
+  "apps/web/src/data/hashstate.test.tsx::<import:f5e1dfab>": {
    "kind": "support",
    "hash": "f5e1dfabe1e9c81b",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hooks.test.tsx::=MemoryStorage": {
-   "kind": "support",
-   "hash": "a1cbdcff0b1116fd",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hooks.test.tsx::=NO_ITEMS": {
-   "kind": "support",
-   "hash": "aa1140e4b58d5309",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/hooks.test.tsx::=list": {
-   "kind": "support",
-   "hash": "2d7b9333f6f8830a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2313,9 +2183,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:03e4da3e>": {
+  "apps/web/src/data/hooks.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "03e4da3efd339a5f",
+   "hash": "4ea8ca030a0d50e3",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2323,9 +2193,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:0f74824d>": {
+  "apps/web/src/data/hooks.test.tsx::<import:0751049e>": {
    "kind": "support",
-   "hash": "0f74824d2cfc6458",
+   "hash": "0751049ea5b84c00",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2333,9 +2203,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:1d36456a>": {
+  "apps/web/src/data/hooks.test.tsx::<import:0e3f22a0>": {
    "kind": "support",
-   "hash": "1d36456af51a5acb",
+   "hash": "0e3f22a008f345f1",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2343,9 +2213,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:2e027896>": {
+  "apps/web/src/data/hooks.test.tsx::<import:2390bc1d>": {
    "kind": "support",
-   "hash": "2e027896631088d4",
+   "hash": "2390bc1d8e9a1d26",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2353,9 +2223,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:3acbb007>": {
+  "apps/web/src/data/hooks.test.tsx::<import:34c21395>": {
    "kind": "support",
-   "hash": "3acbb0075099e9ff",
+   "hash": "34c21395bfd2f7af",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2363,9 +2233,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:690bd448>": {
+  "apps/web/src/data/hooks.test.tsx::<import:416b76a5>": {
    "kind": "support",
-   "hash": "690bd4480b7539ea",
+   "hash": "416b76a56aca4896",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2373,9 +2243,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:739ea8f9>": {
+  "apps/web/src/data/hooks.test.tsx::<import:4ac736cb>": {
    "kind": "support",
-   "hash": "739ea8f906fa3789",
+   "hash": "4ac736cb2e0ab707",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2383,9 +2253,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:983e3f78>": {
+  "apps/web/src/data/hooks.test.tsx::<import:61ac284e>": {
    "kind": "support",
-   "hash": "983e3f784d37b419",
+   "hash": "61ac284e788f9ec2",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2393,9 +2263,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:b0b5fc84>": {
+  "apps/web/src/data/hooks.test.tsx::<import:b329391a>": {
    "kind": "support",
-   "hash": "b0b5fc849e4bc66a",
+   "hash": "b329391a68fd7fa0",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2403,9 +2273,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::<import:b5d5eee0>": {
+  "apps/web/src/data/hooks.test.tsx::<import:f5e1dfab>": {
    "kind": "support",
-   "hash": "b5d5eee0e74ee3f6",
+   "hash": "f5e1dfabe1e9c81b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2413,9 +2283,29 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/pure.test.ts::=apiError": {
+  "apps/web/src/data/hooks.test.tsx::=list": {
    "kind": "support",
-   "hash": "e370a5253f27f31f",
+   "hash": "2d7b9333f6f8830a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::=MemoryStorage": {
+   "kind": "support",
+   "hash": "a1cbdcff0b1116fd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/hooks.test.tsx::=NO_ITEMS": {
+   "kind": "support",
+   "hash": "aa1140e4b58d5309",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3059,9 +2949,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:2b624c57>": {
+  "apps/web/src/data/pure.test.ts::<import:03e4da3e>": {
    "kind": "support",
-   "hash": "2b624c57456b0973",
+   "hash": "03e4da3efd339a5f",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3069,9 +2959,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:31894e95>": {
+  "apps/web/src/data/pure.test.ts::<import:0f74824d>": {
    "kind": "support",
-   "hash": "31894e957f1a9496",
+   "hash": "0f74824d2cfc6458",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3079,9 +2969,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:451fc5f9>": {
+  "apps/web/src/data/pure.test.ts::<import:1d36456a>": {
    "kind": "support",
-   "hash": "451fc5f93d0a68d1",
+   "hash": "1d36456af51a5acb",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3089,9 +2979,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:52e0eb91>": {
+  "apps/web/src/data/pure.test.ts::<import:2e027896>": {
    "kind": "support",
-   "hash": "52e0eb91b4dff996",
+   "hash": "2e027896631088d4",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3099,7 +2989,37 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:983e3f78>": {
+  "apps/web/src/data/pure.test.ts::<import:3acbb007>": {
+   "kind": "support",
+   "hash": "3acbb0075099e9ff",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:690bd448>": {
+   "kind": "support",
+   "hash": "690bd4480b7539ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:739ea8f9>": {
+   "kind": "support",
+   "hash": "739ea8f906fa3789",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/pure.test.ts::<import:983e3f78>": {
    "kind": "support",
    "hash": "983e3f784d37b419",
    "asserts": 0,
@@ -3109,9 +3029,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:d6fb44a8>": {
+  "apps/web/src/data/pure.test.ts::<import:b0b5fc84>": {
    "kind": "support",
-   "hash": "d6fb44a806122648",
+   "hash": "b0b5fc849e4bc66a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3119,9 +3039,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::<import:ed546d4b>": {
+  "apps/web/src/data/pure.test.ts::<import:b5d5eee0>": {
    "kind": "support",
-   "hash": "ed546d4bd2d292a4",
+   "hash": "b5d5eee0e74ee3f6",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3129,29 +3049,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/screenstate.test.tsx::=Listener": {
+  "apps/web/src/data/pure.test.ts::=apiError": {
    "kind": "support",
-   "hash": "ff91bd52dab4b4af",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/screenstate.test.tsx::=fakeWindow": {
-   "kind": "support",
-   "hash": "9f36918143f66633",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/data/screenstate.test.tsx::=params": {
-   "kind": "support",
-   "hash": "ee523d1b300b3c61",
+   "hash": "e370a5253f27f31f",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3710,6 +3610,106 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/data/screenstate.test.tsx::<import:2b624c57>": {
+   "kind": "support",
+   "hash": "2b624c57456b0973",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::<import:31894e95>": {
+   "kind": "support",
+   "hash": "31894e957f1a9496",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::<import:451fc5f9>": {
+   "kind": "support",
+   "hash": "451fc5f93d0a68d1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::<import:52e0eb91>": {
+   "kind": "support",
+   "hash": "52e0eb91b4dff996",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::<import:d6fb44a8>": {
+   "kind": "support",
+   "hash": "d6fb44a806122648",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::<import:ed546d4b>": {
+   "kind": "support",
+   "hash": "ed546d4bd2d292a4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::=fakeWindow": {
+   "kind": "support",
+   "hash": "9f36918143f66633",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::=Listener": {
+   "kind": "support",
+   "hash": "ff91bd52dab4b4af",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/screenstate.test.tsx::=params": {
+   "kind": "support",
+   "hash": "ee523d1b300b3c61",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/test-support/fake-api.ts::<import:21dfcaf0>": {
    "kind": "support",
    "hash": "21dfcaf030001dbf",
@@ -3740,16 +3740,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/test-support/fake-api.ts::=Reply": {
-   "kind": "support",
-   "hash": "8a97a6e09a5b4ddd",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "apps/web/src/test-support/fake-api.ts::=fakeApi": {
    "kind": "support",
    "hash": "4050f4f2c49471bc",
@@ -3763,6 +3753,16 @@
   "apps/web/src/test-support/fake-api.ts::=problem": {
    "kind": "support",
    "hash": "ff222f1a9c23dd83",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/fake-api.ts::=Reply": {
+   "kind": "support",
+   "hash": "8a97a6e09a5b4ddd",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3800,26 +3800,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/test-support/render.tsx::=HookResult": {
-   "kind": "support",
-   "hash": "b796e31ea08db6ca",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/test-support/render.tsx::=Rendered": {
-   "kind": "support",
-   "hash": "f35df30e0f492674",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "apps/web/src/test-support/render.tsx::=click": {
    "kind": "support",
    "hash": "b8b0180cf6a84816",
@@ -3830,9 +3810,29 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/test-support/render.tsx::=HookResult": {
+   "kind": "support",
+   "hash": "b796e31ea08db6ca",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "apps/web/src/test-support/render.tsx::=render": {
    "kind": "support",
    "hash": "43d408d8332e1ac6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/test-support/render.tsx::=Rendered": {
+   "kind": "support",
+   "hash": "f35df30e0f492674",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3853,46 +3853,6 @@
   "apps/web/src/test-support/render.tsx::=settle": {
    "kind": "support",
    "hash": "3d8ebe42d3135fc8",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/banner.test.tsx::<hook:afterEach>": {
-   "kind": "support",
-   "hash": "4fdef9ee37802613",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/banner.test.tsx::<import:d0e06116>": {
-   "kind": "support",
-   "hash": "d0e06116102f191a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/banner.test.tsx::<import:ef29133c>": {
-   "kind": "support",
-   "hash": "ef29133c0edb6025",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/banner.test.tsx::<import:f5e1dfab>": {
-   "kind": "support",
-   "hash": "f5e1dfabe1e9c81b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3932,7 +3892,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/links.test.tsx::<hook:afterEach>": {
+  "apps/web/src/ui/banner.test.tsx::<hook:afterEach>": {
    "kind": "support",
    "hash": "4fdef9ee37802613",
    "asserts": 0,
@@ -3942,9 +3902,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/links.test.tsx::<import:83faae0a>": {
+  "apps/web/src/ui/banner.test.tsx::<import:d0e06116>": {
    "kind": "support",
-   "hash": "83faae0a5a31d9ee",
+   "hash": "d0e06116102f191a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -3952,17 +3912,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/links.test.tsx::<import:b919bd80>": {
-   "kind": "support",
-   "hash": "b919bd80f32fd4ea",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/links.test.tsx::<import:ef29133c>": {
+  "apps/web/src/ui/banner.test.tsx::<import:ef29133c>": {
    "kind": "support",
    "hash": "ef29133c0edb6025",
    "asserts": 0,
@@ -3972,7 +3922,7 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/links.test.tsx::<import:f5e1dfab>": {
+  "apps/web/src/ui/banner.test.tsx::<import:f5e1dfab>": {
    "kind": "support",
    "hash": "f5e1dfabe1e9c81b",
    "asserts": 0,
@@ -4056,9 +4006,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/overflow.test.tsx::<hook:afterEach>": {
+  "apps/web/src/ui/links.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "50e9db3f1c202cac",
+   "hash": "4fdef9ee37802613",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4066,9 +4016,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/overflow.test.tsx::<import:00498bc2>": {
+  "apps/web/src/ui/links.test.tsx::<import:83faae0a>": {
    "kind": "support",
-   "hash": "00498bc2e015ed25",
+   "hash": "83faae0a5a31d9ee",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4076,9 +4026,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/overflow.test.tsx::<import:88d995df>": {
+  "apps/web/src/ui/links.test.tsx::<import:b919bd80>": {
    "kind": "support",
-   "hash": "88d995dfbde9d419",
+   "hash": "b919bd80f32fd4ea",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4086,9 +4036,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/overflow.test.tsx::<import:ef29133c>": {
+  "apps/web/src/ui/links.test.tsx::<import:ef29133c>": {
    "kind": "support",
    "hash": "ef29133c0edb6025",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/links.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4138,9 +4098,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/shell.test.tsx::<hook:afterEach>": {
+  "apps/web/src/ui/overflow.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "4fdef9ee37802613",
+   "hash": "50e9db3f1c202cac",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4148,7 +4108,17 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/shell.test.tsx::<import:88d995df>": {
+  "apps/web/src/ui/overflow.test.tsx::<import:00498bc2>": {
+   "kind": "support",
+   "hash": "00498bc2e015ed25",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/overflow.test.tsx::<import:88d995df>": {
    "kind": "support",
    "hash": "88d995dfbde9d419",
    "asserts": 0,
@@ -4158,19 +4128,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/shell.test.tsx::<import:c2865e69>": {
+  "apps/web/src/ui/overflow.test.tsx::<import:ef29133c>": {
    "kind": "support",
-   "hash": "c2865e69527a2b4d",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/shell.test.tsx::<import:d838e729>": {
-   "kind": "support",
-   "hash": "d838e729ed5fca32",
+   "hash": "ef29133c0edb6025",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4346,9 +4306,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/ui.test.tsx::<import:11f11895>": {
+  "apps/web/src/ui/shell.test.tsx::<hook:afterEach>": {
    "kind": "support",
-   "hash": "11f11895a2e632f2",
+   "hash": "4fdef9ee37802613",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4356,9 +4316,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/ui.test.tsx::<import:39b89727>": {
+  "apps/web/src/ui/shell.test.tsx::<import:88d995df>": {
    "kind": "support",
-   "hash": "39b897279d2853ad",
+   "hash": "88d995dfbde9d419",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4366,9 +4326,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/ui.test.tsx::<import:84c8ed11>": {
+  "apps/web/src/ui/shell.test.tsx::<import:c2865e69>": {
    "kind": "support",
-   "hash": "84c8ed1150d3f633",
+   "hash": "c2865e69527a2b4d",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4376,19 +4336,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/ui.test.tsx::<import:a08bdd01>": {
+  "apps/web/src/ui/shell.test.tsx::<import:d838e729>": {
    "kind": "support",
-   "hash": "a08bdd01891bfda4",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "apps/web/src/ui/ui.test.tsx::<import:b919bd80>": {
-   "kind": "support",
-   "hash": "b919bd80f32fd4ea",
+   "hash": "d838e729ed5fca32",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -4797,6 +4747,56 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/ui/ui.test.tsx::<import:11f11895>": {
+   "kind": "support",
+   "hash": "11f11895a2e632f2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:39b89727>": {
+   "kind": "support",
+   "hash": "39b897279d2853ad",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:84c8ed11>": {
+   "kind": "support",
+   "hash": "84c8ed1150d3f633",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:a08bdd01>": {
+   "kind": "support",
+   "hash": "a08bdd01891bfda4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/ui/ui.test.tsx::<import:b919bd80>": {
+   "kind": "support",
+   "hash": "b919bd80f32fd4ea",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "backend/internal/cli/testdata/find.json::<data>": {
    "kind": "data",
    "hash": "be98823b1a02f411",
@@ -5139,112 +5139,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/cmd/praxium::TestAProductionServerSignsInWithTokensAndKeepsThemAcrossARestart": {
-   "kind": "test",
-   "hash": "cc834f3212bbe2de",
-   "asserts": 17,
-   "literals": [
-    "36a135b4eae1307f"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-309",
-    "REQ-311"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
-   "kind": "test",
-   "hash": "25b25c5d1b2f841b",
-   "asserts": 9,
-   "literals": [
-    "e961a3323ca7d704"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-272"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestAStartThatTakesLongSaysItIsStillWorking": {
-   "kind": "test",
-   "hash": "60f337d6a62fddbb",
-   "asserts": 2,
-   "literals": [
-    "4eb467a8e540e570"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-294"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestATabSeparatedFileIsSaidToNeedTheDelimiterAndReadWithIt": {
-   "kind": "test",
-   "hash": "9d9e56422968c01a",
-   "asserts": 8,
-   "literals": [
-    "94fab942e4a6cd12"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-324"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
-   "kind": "test",
-   "hash": "74c14581e9651876",
-   "asserts": 1,
-   "literals": [
-    "21c6c5d263b2e3df"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-260"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestAWorkbookWithoutTheSheetFailsTheRunAndSaysWhichSheetsItHas": {
-   "kind": "test",
-   "hash": "23eecf7dc189e3b1",
-   "asserts": 7,
-   "literals": [
-    "822a22dc8201f755"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-320"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs": {
-   "kind": "test",
-   "hash": "0bc8b8ac22ea878e",
-   "asserts": 2,
-   "literals": [
-    "1447e4a13ad03dd9"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-289"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/cmd/praxium::TestApiRoutesAndListenFailuresAreReported": {
    "kind": "test",
    "hash": "84ed9b0aa03562b0",
@@ -5393,6 +5287,112 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAProductionServerSignsInWithTokensAndKeepsThemAcrossARestart": {
+   "kind": "test",
+   "hash": "cc834f3212bbe2de",
+   "asserts": 17,
+   "literals": [
+    "36a135b4eae1307f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309",
+    "REQ-311"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
+   "kind": "test",
+   "hash": "25b25c5d1b2f841b",
+   "asserts": 9,
+   "literals": [
+    "e961a3323ca7d704"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAStartThatTakesLongSaysItIsStillWorking": {
+   "kind": "test",
+   "hash": "60f337d6a62fddbb",
+   "asserts": 2,
+   "literals": [
+    "4eb467a8e540e570"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestATabSeparatedFileIsSaidToNeedTheDelimiterAndReadWithIt": {
+   "kind": "test",
+   "hash": "9d9e56422968c01a",
+   "asserts": 8,
+   "literals": [
+    "94fab942e4a6cd12"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-324"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
+   "kind": "test",
+   "hash": "74c14581e9651876",
+   "asserts": 1,
+   "literals": [
+    "21c6c5d263b2e3df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAWorkbookWithoutTheSheetFailsTheRunAndSaysWhichSheetsItHas": {
+   "kind": "test",
+   "hash": "23eecf7dc189e3b1",
+   "asserts": 7,
+   "literals": [
+    "822a22dc8201f755"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-320"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs": {
+   "kind": "test",
+   "hash": "0bc8b8ac22ea878e",
+   "asserts": 2,
+   "literals": [
+    "1447e4a13ad03dd9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestBehindAProxyAPlainNonLoopbackAddressStarts": {
@@ -6778,12 +6778,12 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "go:backend/internal/access::TestRoleTableGrantsEachAbilityToItsRolesOnly": {
+  "go:backend/internal/access::TestRolesAndAbilitiesAgreeWithEachOther": {
    "kind": "test",
-   "hash": "b2fe51a899a73422",
-   "asserts": 3,
+   "hash": "97f3bf0845128cd8",
+   "asserts": 6,
    "literals": [
-    "5d030f24605fb9fa"
+    "1fb9a1b43be3d18d"
    ],
    "precision": [],
    "skips": 0,
@@ -6793,12 +6793,12 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "go:backend/internal/access::TestRolesAndAbilitiesAgreeWithEachOther": {
+  "go:backend/internal/access::TestRoleTableGrantsEachAbilityToItsRolesOnly": {
    "kind": "test",
-   "hash": "97f3bf0845128cd8",
-   "asserts": 6,
+   "hash": "b2fe51a899a73422",
+   "asserts": 3,
    "literals": [
-    "1fb9a1b43be3d18d"
+    "5d030f24605fb9fa"
    ],
    "precision": [],
    "skips": 0,
@@ -7528,6 +7528,21 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/devload::TestAnObjectThatCannotFormItsKeyIsCountedWithTheLinksThatLoseAnEnd": {
+   "kind": "test",
+   "hash": "6da1afcf5eedf887",
+   "asserts": 5,
+   "literals": [
+    "9088967da80b2343"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
   "go:backend/internal/devload::TestAReplayGivesTheSameHashesAndVersion": {
    "kind": "test",
    "hash": "bf69b3bd64a23dcd",
@@ -7564,21 +7579,6 @@
    "asserts": 8,
    "literals": [
     "b5c5913fc8efd769"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-258"
-   ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
-  },
-  "go:backend/internal/devload::TestAnObjectThatCannotFormItsKeyIsCountedWithTheLinksThatLoseAnEnd": {
-   "kind": "test",
-   "hash": "6da1afcf5eedf887",
-   "asserts": 5,
-   "literals": [
-    "9088967da80b2343"
    ],
    "precision": [],
    "skips": 0,
@@ -8421,6 +8421,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestAcceptHeaderNegotiation": {
+   "kind": "test",
+   "hash": "09c25261379f9f17",
+   "asserts": 1,
+   "literals": [
+    "a70018a2e285e67c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAccessLogHasOneStructuredLinePerRequest": {
+   "kind": "test",
+   "hash": "b2102ebda1d2d0e9",
+   "asserts": 5,
+   "literals": [
+    "a49ffcf55db854d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestAFailingDirectoryIsAnOutageThatShowsNothingOfTheStore": {
    "kind": "test",
    "hash": "d27968cfd0aaa5f6",
@@ -8436,6 +8466,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestAllowedActionsFollowTheRoleTable": {
+   "kind": "test",
+   "hash": "ecc4d0319b91becd",
+   "asserts": 4,
+   "literals": [
+    "3f42e8c2994853fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-229"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
   "go:backend/internal/httpapi::TestAMissingTokenIsNotCountedAndASuccessIsReported": {
    "kind": "test",
    "hash": "b22d11f8b494d724",
@@ -8447,6 +8492,36 @@
    "skips": 0,
    "reqs": [
     "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnAdministratorManagesUsersAndTheAnswersFitTheContract": {
+   "kind": "test",
+   "hash": "cd896f89d1a32cd8",
+   "asserts": 19,
+   "literals": [
+    "2cb0ef92078d925b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-313"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnAuthenticatorThatCannotAnswerIsAnOutageNotARefusal": {
+   "kind": "test",
+   "hash": "24b06e7cdf48d3bf",
+   "asserts": 5,
+   "literals": [
+    "fcea6baefb340575"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -8477,6 +8552,36 @@
    "skips": 0,
    "reqs": [
     "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnotherTokenIsShownToItsOwnerAndToAnAdministratorOnly": {
+   "kind": "test",
+   "hash": "fc4f4ed867e5a1a0",
+   "asserts": 7,
+   "literals": [
+    "7c3b5e93c226c253"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-312"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce": {
+   "kind": "test",
+   "hash": "f9e4170b4ccbe16d",
+   "asserts": 10,
+   "literals": [
+    "c36aabde055f4cd0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-309"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -8525,111 +8630,6 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
-  },
-  "go:backend/internal/httpapi::TestAcceptHeaderNegotiation": {
-   "kind": "test",
-   "hash": "09c25261379f9f17",
-   "asserts": 1,
-   "literals": [
-    "a70018a2e285e67c"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-148"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/httpapi::TestAccessLogHasOneStructuredLinePerRequest": {
-   "kind": "test",
-   "hash": "b2102ebda1d2d0e9",
-   "asserts": 5,
-   "literals": [
-    "a49ffcf55db854d3"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-148"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/httpapi::TestAllowedActionsFollowTheRoleTable": {
-   "kind": "test",
-   "hash": "ecc4d0319b91becd",
-   "asserts": 4,
-   "literals": [
-    "3f42e8c2994853fc"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-229"
-   ],
-   "added": "2026-11-13",
-   "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
-  },
-  "go:backend/internal/httpapi::TestAnAdministratorManagesUsersAndTheAnswersFitTheContract": {
-   "kind": "test",
-   "hash": "cd896f89d1a32cd8",
-   "asserts": 19,
-   "literals": [
-    "2cb0ef92078d925b"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-313"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/httpapi::TestAnAuthenticatorThatCannotAnswerIsAnOutageNotARefusal": {
-   "kind": "test",
-   "hash": "24b06e7cdf48d3bf",
-   "asserts": 5,
-   "literals": [
-    "fcea6baefb340575"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-312"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/httpapi::TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce": {
-   "kind": "test",
-   "hash": "f9e4170b4ccbe16d",
-   "asserts": 10,
-   "literals": [
-    "c36aabde055f4cd0"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-309"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/httpapi::TestAnotherTokenIsShownToItsOwnerAndToAnAdministratorOnly": {
-   "kind": "test",
-   "hash": "fc4f4ed867e5a1a0",
-   "asserts": 7,
-   "literals": [
-    "7c3b5e93c226c253"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-312"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
   },
   "go:backend/internal/httpapi::TestBadRequestsToTheManagementRoutesAreRefusedWithAProblem": {
    "kind": "test",
@@ -9066,21 +9066,6 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
-  "go:backend/internal/httpapi::TestServeIsGracefulAndReadyFollowsLife": {
-   "kind": "test",
-   "hash": "d8bc018374f192e6",
-   "asserts": 7,
-   "literals": [
-    "f1b62a42559a9108"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-148"
-   ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "go:backend/internal/httpapi::TestServedRoutesAreExactlyTheContractsOperations": {
    "kind": "test",
    "hash": "564fc2a4227a77d8",
@@ -9092,6 +9077,21 @@
    "skips": 0,
    "reqs": [
     "REQ-143"
+   ],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestServeIsGracefulAndReadyFollowsLife": {
+   "kind": "test",
+   "hash": "d8bc018374f192e6",
+   "asserts": 7,
+   "literals": [
+    "f1b62a42559a9108"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-148"
    ],
    "added": "2026-11-13",
    "amended_by": null
@@ -9351,6 +9351,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/identity::TestAnAddressIsCountedWithItsNetworkForIPv6": {
+   "kind": "test",
+   "hash": "fc3c5d8f67c08366",
+   "asserts": 1,
+   "literals": [
+    "2b67a80e7f5468c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/identity::TestAPlainUseWritesNoAuditLine": {
    "kind": "test",
    "hash": "8281517e69543155",
@@ -9437,21 +9452,6 @@
    "skips": 0,
    "reqs": [
     "REQ-309"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/identity::TestAnAddressIsCountedWithItsNetworkForIPv6": {
-   "kind": "test",
-   "hash": "fc3c5d8f67c08366",
-   "asserts": 1,
-   "literals": [
-    "2b67a80e7f5468c2"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-314"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -9966,51 +9966,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
-   "kind": "test",
-   "hash": "40836a2338ae3490",
-   "asserts": 3,
-   "literals": [
-    "c6abe6714bcf6e1a"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-286"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestASheetTheWorkbookLacksIsReportedWithTheSheetsItHas": {
-   "kind": "test",
-   "hash": "f3eee8479437075f",
-   "asserts": 5,
-   "literals": [
-    "4764752571b5770f"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-320"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestAWorkbookThatCannotBeReadStopsTheRunWithTheDatasetAndTheReason": {
-   "kind": "test",
-   "hash": "036f077b7ec3b2d5",
-   "asserts": 4,
-   "literals": [
-    "8a2d87e8dc45e3bd"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-285"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/internal/ingest::TestAnEmptyNaturalKeyIsReportedWithTheColumnThatIsEmpty": {
    "kind": "test",
    "hash": "582679ad7341c93e",
@@ -10041,6 +9996,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
+   "kind": "test",
+   "hash": "40836a2338ae3490",
+   "asserts": 3,
+   "literals": [
+    "c6abe6714bcf6e1a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestASheetTheWorkbookLacksIsReportedWithTheSheetsItHas": {
+   "kind": "test",
+   "hash": "f3eee8479437075f",
+   "asserts": 5,
+   "literals": [
+    "4764752571b5770f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-320"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAttachFeedMergesTwoFiles": {
    "kind": "test",
    "hash": "30c29e365dafb577",
@@ -10056,6 +10041,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAWorkbookThatCannotBeReadStopsTheRunWithTheDatasetAndTheReason": {
+   "kind": "test",
+   "hash": "036f077b7ec3b2d5",
+   "asserts": 4,
+   "literals": [
+    "8a2d87e8dc45e3bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-285"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestBadRowsAreQuarantined": {
    "kind": "test",
    "hash": "e3cbdff982e1eb1d",
@@ -10066,22 +10066,6 @@
    "precision": [],
    "skips": 0,
    "reqs": [
-    "REQ-268"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestCSVOdditiesAreReadOrReported": {
-   "kind": "test",
-   "hash": "4944161bc0197a1f",
-   "asserts": 3,
-   "literals": [
-    "9181e8c8f06d5244"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-264",
     "REQ-268"
    ],
    "added": "2026-11-14",
@@ -10144,6 +10128,22 @@
    "skips": 0,
    "reqs": [
     "REQ-263"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCSVOdditiesAreReadOrReported": {
+   "kind": "test",
+   "hash": "4944161bc0197a1f",
+   "asserts": 3,
+   "literals": [
+    "9181e8c8f06d5244"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-264",
+    "REQ-268"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -11422,6 +11422,37 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/memstore::TestAnAbandonedApplyGoesAndItsNumbersComeBack": {
+   "kind": "test",
+   "hash": "b89350ee63da9043",
+   "asserts": 7,
+   "literals": [
+    "09925d8c3b875e5e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-246"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/memstore::TestAnUnknownKGIsRefusedByEveryOperation": {
+   "kind": "test",
+   "hash": "53660706ca97555f",
+   "asserts": 16,
+   "literals": [
+    "104fa51ecb800d55"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135"
+   ],
+   "added": "2026-11-13",
+   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
   "go:backend/internal/memstore::TestARecoveredStoreTakesMoreWork": {
    "kind": "test",
    "hash": "f8af6370a34ec21f",
@@ -11481,37 +11512,6 @@
    ],
    "added": "2026-11-14",
    "amended_by": null
-  },
-  "go:backend/internal/memstore::TestAnAbandonedApplyGoesAndItsNumbersComeBack": {
-   "kind": "test",
-   "hash": "b89350ee63da9043",
-   "asserts": 7,
-   "literals": [
-    "09925d8c3b875e5e"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-246"
-   ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
-  },
-  "go:backend/internal/memstore::TestAnUnknownKGIsRefusedByEveryOperation": {
-   "kind": "test",
-   "hash": "53660706ca97555f",
-   "asserts": 16,
-   "literals": [
-    "104fa51ecb800d55"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-132",
-    "REQ-135"
-   ],
-   "added": "2026-11-13",
-   "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
   "go:backend/internal/memstore::TestIdentifiersOfListsTheLiveIdentifiersOfOneObject": {
    "kind": "test",
@@ -11621,6 +11621,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/model::TestBaselineIsSound": {
+   "kind": "test",
+   "hash": "7aed28c6f91f4db0",
+   "asserts": 2,
+   "literals": [
+    "65d0f43223163bcc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestBaseValueTypes": {
    "kind": "test",
    "hash": "4928493935772371",
@@ -11633,19 +11646,6 @@
    "reqs": [
     "REQ-100"
    ],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/model::TestBaselineIsSound": {
-   "kind": "test",
-   "hash": "7aed28c6f91f4db0",
-   "asserts": 2,
-   "literals": [
-    "65d0f43223163bcc"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
    "added": "2026-11-13",
    "amended_by": null
   },
@@ -12421,21 +12421,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/pgstore::TestAStoreClosesItsPoolAndReportsTheFirstFailure": {
-   "kind": "test",
-   "hash": "e8b7cf04b1e19539",
-   "asserts": 1,
-   "literals": [
-    "3a76bea51752fb34"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/internal/pgstore::TestAnUnknownKGIsRefusedByEveryOperation": {
    "kind": "test",
    "hash": "252e9ac052d1d162",
@@ -12448,6 +12433,21 @@
    "reqs": [
     "REQ-132",
     "REQ-135",
+    "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestAStoreClosesItsPoolAndReportsTheFirstFailure": {
+   "kind": "test",
+   "hash": "e8b7cf04b1e19539",
+   "asserts": 1,
+   "literals": [
+    "3a76bea51752fb34"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
     "REQ-270"
    ],
    "added": "2026-11-14",
@@ -12623,21 +12623,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/pgstore::TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns": {
-   "kind": "test",
-   "hash": "467383fc2efd3eda",
-   "asserts": 9,
-   "literals": [
-    "9841e9a5c9a231fc"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/internal/pgstore::TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited": {
    "kind": "test",
    "hash": "574535aa9bbf6098",
@@ -12652,6 +12637,21 @@
    ],
    "added": "2026-11-14",
    "amended_by": "0044-built-in-authentication-with-access-tokens.md"
+  },
+  "go:backend/internal/pgstore::TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns": {
+   "kind": "test",
+   "hash": "467383fc2efd3eda",
+   "asserts": 9,
+   "literals": [
+    "9841e9a5c9a231fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/pgstore::TestOpenFailuresDoNotShowThePassword": {
    "kind": "test",
@@ -13321,32 +13321,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "go:backend/internal/worldgen::TestCSVQuoting": {
-   "kind": "test",
-   "hash": "4a6286e3d3ec928f",
-   "asserts": 1,
-   "literals": [
-    "14c4ade7d18d103d"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/internal/worldgen::TestCSVTablesMatchTruthAndRecordedFlaws": {
-   "kind": "test",
-   "hash": "b995146de7f0d5d0",
-   "asserts": 7,
-   "literals": [
-    "b27e7201aaf36f90"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "go:backend/internal/worldgen::TestChangeStreamReplayReproducesTheMutatedTruth": {
    "kind": "test",
    "hash": "742793a4d725b370",
@@ -13392,6 +13366,32 @@
    "asserts": 3,
    "literals": [
     "e6c7c4296064a0dd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/worldgen::TestCSVQuoting": {
+   "kind": "test",
+   "hash": "4a6286e3d3ec928f",
+   "asserts": 1,
+   "literals": [
+    "14c4ade7d18d103d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/worldgen::TestCSVTablesMatchTruthAndRecordedFlaws": {
+   "kind": "test",
+   "hash": "b995146de7f0d5d0",
+   "asserts": 7,
+   "literals": [
+    "b27e7201aaf36f90"
    ],
    "precision": [],
    "skips": 0,
@@ -14329,9 +14329,29 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/api-breaking.test.ts::=base": {
+   "kind": "support",
+   "hash": "ffa8300c99c91e2c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/api-breaking.test.ts::=GET": {
    "kind": "support",
    "hash": "b7b5892399b8c7a4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=keys": {
+   "kind": "support",
+   "hash": "3aba6be83d7e1a50",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -14352,36 +14372,6 @@
   "harness/src/checks/api-breaking.test.ts::=OK": {
    "kind": "support",
    "hash": "55b144ebebb860f8",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/api-breaking.test.ts::=REASON": {
-   "kind": "support",
-   "hash": "6dca79be4ae0a8ff",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/api-breaking.test.ts::=base": {
-   "kind": "support",
-   "hash": "ffa8300c99c91e2c",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/api-breaking.test.ts::=keys": {
-   "kind": "support",
-   "hash": "3aba6be83d7e1a50",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -14412,6 +14402,16 @@
   "harness/src/checks/api-breaking.test.ts::=put": {
    "kind": "support",
    "hash": "e37437ca417e448b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::=REASON": {
+   "kind": "support",
+   "hash": "6dca79be4ae0a8ff",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -14724,22 +14724,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > API030: a break nobody declared": {
-   "kind": "test",
-   "hash": "57daf96ec6e7b9e1",
-   "asserts": 2,
-   "literals": [
-    "\"API030\"",
-    "\"API030\"",
-    "\"API030: a break nobody declared\"",
-    "\"[GET /v1/health/live#406]\"",
-    "\"[GET /v1/health/live#406]\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > a compatible change passes, with or without a base": {
    "kind": "test",
    "hash": "7eb6c9bd25827ddf",
@@ -14763,6 +14747,22 @@
     "\"API032\"",
     "\"GET /v1/health/live#406\"",
     "\"a declared break passes, and a declaration of nothing is stale (API032)\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-breaking.test.ts::the verdict on a change [REQ-143] > API030: a break nobody declared": {
+   "kind": "test",
+   "hash": "57daf96ec6e7b9e1",
+   "asserts": 2,
+   "literals": [
+    "\"API030\"",
+    "\"API030\"",
+    "\"API030: a break nobody declared\"",
+    "\"[GET /v1/health/live#406]\"",
+    "\"[GET /v1/health/live#406]\""
    ],
    "precision": [],
    "skips": 0,
@@ -14869,16 +14869,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/api-contract.test.ts::=SERVED": {
-   "kind": "support",
-   "hash": "06ee30461189a91d",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/api-contract.test.ts::=at": {
    "kind": "support",
    "hash": "02f92fc185028020",
@@ -14892,6 +14882,16 @@
   "harness/src/checks/api-contract.test.ts::=io": {
    "kind": "support",
    "hash": "d7e38e3f0a6969d4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-contract.test.ts::=SERVED": {
+   "kind": "support",
+   "hash": "06ee30461189a91d",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -15291,46 +15291,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/api-lint.test.ts::=GETS": {
-   "kind": "support",
-   "hash": "75ca482b473fee14",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/api-lint.test.ts::=MUTATIONS": {
-   "kind": "support",
-   "hash": "b94554b707cc2e98",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
-  },
-  "harness/src/checks/api-lint.test.ts::=Mutation": {
-   "kind": "support",
-   "hash": "53e8d2fdb799abf0",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/api-lint.test.ts::=PATCHES": {
-   "kind": "support",
-   "hash": "6d80b9ad669d5170",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/api-lint.test.ts::=catalogue": {
    "kind": "support",
    "hash": "409e9fd7516860cb",
@@ -15351,6 +15311,16 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/api-lint.test.ts::=GETS": {
+   "kind": "support",
+   "hash": "75ca482b473fee14",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/api-lint.test.ts::=lint": {
    "kind": "support",
    "hash": "031ab912d2123255",
@@ -15361,9 +15331,39 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/api-lint.test.ts::=Mutation": {
+   "kind": "support",
+   "hash": "53e8d2fdb799abf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=MUTATIONS": {
+   "kind": "support",
+   "hash": "b94554b707cc2e98",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
+  },
   "harness/src/checks/api-lint.test.ts::=op": {
    "kind": "support",
    "hash": "3b072c1b095d2c83",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-lint.test.ts::=PATCHES": {
+   "kind": "support",
+   "hash": "6d80b9ad669d5170",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -15971,16 +15971,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/api-server.test.ts::=SERVED": {
-   "kind": "support",
-   "hash": "60d87dc225cd4c6a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/api-server.test.ts::=codes": {
    "kind": "support",
    "hash": "8b550c0bd7c2af91",
@@ -15994,6 +15984,16 @@
   "harness/src/checks/api-server.test.ts::=doc": {
    "kind": "support",
    "hash": "62daa3bfc1dd832a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/api-server.test.ts::=SERVED": {
+   "kind": "support",
+   "hash": "60d87dc225cd4c6a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -16825,70 +16825,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > <suite>": {
-   "kind": "support",
-   "hash": "edb4bbfe0a867169",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > =big": {
-   "kind": "support",
-   "hash": "1583f2b6d2e59d93",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > =bigTest": {
-   "kind": "support",
-   "hash": "ea3c34b7f3ef9954",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > =check": {
-   "kind": "support",
-   "hash": "cb98e76c433cfe22",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > a Go floor far under the measured coverage is GOCOV003, a ratcheted one passes": {
-   "kind": "test",
-   "hash": "f255cbfc033d307f",
-   "asserts": 4,
-   "literals": [
-    "\"90\"",
-    "\"90\"",
-    "\"95\"",
-    "\"95\"",
-    "\"97\"",
-    "\"97\"",
-    "\"98\"",
-    "\"98\"",
-    "\"GOCOV003\"",
-    "\"GOCOV003\"",
-    "\"GOCOV003\"",
-    "\"GOCOV003\"",
-    "\"a Go floor far under the measured coverage is GOCOV003, a ratcheted one passes\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/coverage-lag.test.ts::coverage floors may not lag [REQ-023] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -17016,6 +16952,70 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > =big": {
+   "kind": "support",
+   "hash": "1583f2b6d2e59d93",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > =bigTest": {
+   "kind": "support",
+   "hash": "ea3c34b7f3ef9954",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > =check": {
+   "kind": "support",
+   "hash": "cb98e76c433cfe22",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/coverage-lag.test.ts::Go coverage floors may not lag [REQ-023] > a Go floor far under the measured coverage is GOCOV003, a ratcheted one passes": {
+   "kind": "test",
+   "hash": "f255cbfc033d307f",
+   "asserts": 4,
+   "literals": [
+    "\"90\"",
+    "\"90\"",
+    "\"95\"",
+    "\"95\"",
+    "\"97\"",
+    "\"97\"",
+    "\"98\"",
+    "\"98\"",
+    "\"GOCOV003\"",
+    "\"GOCOV003\"",
+    "\"GOCOV003\"",
+    "\"GOCOV003\"",
+    "\"a Go floor far under the measured coverage is GOCOV003, a ratcheted one passes\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/debt.test.ts::<import:0357398d>": {
    "kind": "support",
    "hash": "0357398d02e844af",
@@ -17096,16 +17096,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/debt.test.ts::=TODAY": {
-   "kind": "support",
-   "hash": "71dd2f21d9c3aeb5",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/debt.test.ts::=branchy": {
    "kind": "support",
    "hash": "ad3dbc764f9647e3",
@@ -17159,6 +17149,16 @@
   "harness/src/checks/debt.test.ts::=realConfig": {
    "kind": "support",
    "hash": "0dfde21e47538880",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/debt.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "71dd2f21d9c3aeb5",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -17774,36 +17774,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-amends.test.ts::=NEW": {
-   "kind": "support",
-   "hash": "ecd49f50842f6c7e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/doc-amends.test.ts::=OLD": {
-   "kind": "support",
-   "hash": "21704bc46b42c58a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/doc-amends.test.ts::=WHAT": {
-   "kind": "support",
-   "hash": "ab434296ac2c3f27",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/doc-amends.test.ts::=amendProblems": {
    "kind": "support",
    "hash": "90596a235b0d5079",
@@ -17824,6 +17794,26 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/doc-amends.test.ts::=NEW": {
+   "kind": "support",
+   "hash": "ecd49f50842f6c7e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::=OLD": {
+   "kind": "support",
+   "hash": "21704bc46b42c58a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/doc-amends.test.ts::=pair": {
    "kind": "support",
    "hash": "ddd256ec4e81cb81",
@@ -17834,41 +17824,11 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > <suite>": {
+  "harness/src/checks/doc-amends.test.ts::=WHAT": {
    "kind": "support",
-   "hash": "edb4bbfe0a867169",
+   "hash": "ab434296ac2c3f27",
    "asserts": 0,
    "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > a rich amends without the other side still fails on the amending ADR": {
-   "kind": "test",
-   "hash": "e4cc7d34ed1de71e",
-   "asserts": 1,
-   "literals": [
-    "\"0001\"",
-    "\"0001\"",
-    "\"a rich amends without the other side still fails on the amending ADR\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > rich on both sides passes, and a number that is no ADR fails": {
-   "kind": "test",
-   "hash": "2bf2753646761b51",
-   "asserts": 2,
-   "literals": [
-    "\"0001\"",
-    "\"0002\"",
-    "\"0009\"",
-    "\"0009\"",
-    "\"rich on both sides passes, and a number that is no ADR fails\""
-   ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
@@ -17988,6 +17948,46 @@
     "\"0002-new.md\"",
     "\"0002-new.md\"",
     "\"the back entry carries the phrase when there is one\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > a rich amends without the other side still fails on the amending ADR": {
+   "kind": "test",
+   "hash": "e4cc7d34ed1de71e",
+   "asserts": 1,
+   "literals": [
+    "\"0001\"",
+    "\"0001\"",
+    "\"a rich amends without the other side still fails on the amending ADR\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-amends.test.ts::DOC091 reads the rich form on both sides [REQ-020] > rich on both sides passes, and a number that is no ADR fails": {
+   "kind": "test",
+   "hash": "2bf2753646761b51",
+   "asserts": 2,
+   "literals": [
+    "\"0001\"",
+    "\"0002\"",
+    "\"0009\"",
+    "\"0009\"",
+    "\"rich on both sides passes, and a number that is no ADR fails\""
    ],
    "precision": [],
    "skips": 0,
@@ -18308,16 +18308,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-claims.test.ts::=ROUTES": {
-   "kind": "support",
-   "hash": "1ee4327e54e29d68",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/doc-claims.test.ts::=messages": {
    "kind": "support",
    "hash": "f141728cc23177f7",
@@ -18338,9 +18328,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > <suite>": {
+  "harness/src/checks/doc-claims.test.ts::=ROUTES": {
    "kind": "support",
-   "hash": "edb4bbfe0a867169",
+   "hash": "1ee4327e54e29d68",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -18348,16 +18338,11 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > ADR bodies are not scanned": {
-   "kind": "test",
-   "hash": "22a893c356732d16",
-   "asserts": 1,
-   "literals": [
-    "\"# D\\n`PRAXIUM_GONE` ADR-0999\\n\"",
-    "\"ADR bodies are not scanned\"",
-    "\"docs/index.md\"",
-    "\"fine\""
-   ],
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
@@ -18414,6 +18399,21 @@
     "\"3\"",
     "\"`PATCH /api/worlds/:id` and `GET /api/gone` and `DELETE /api/vcenter/vm`.\"",
     "\"a route fails when the contract lacks it or has it under another method\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-claims.test.ts::what a document names must exist [REQ-020] > ADR bodies are not scanned": {
+   "kind": "test",
+   "hash": "22a893c356732d16",
+   "asserts": 1,
+   "literals": [
+    "\"# D\\n`PRAXIUM_GONE` ADR-0999\\n\"",
+    "\"ADR bodies are not scanned\"",
+    "\"docs/index.md\"",
+    "\"fine\""
    ],
    "precision": [],
    "skips": 0,
@@ -18731,9 +18731,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-diff.test.ts::=NEW_ADR": {
+  "harness/src/checks/doc-diff.test.ts::=base": {
    "kind": "support",
-   "hash": "336139dbe2a4f1bd",
+   "hash": "ac3ec48b9e4507b5",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -18741,9 +18741,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-diff.test.ts::=base": {
+  "harness/src/checks/doc-diff.test.ts::=NEW_ADR": {
    "kind": "support",
-   "hash": "ac3ec48b9e4507b5",
+   "hash": "336139dbe2a4f1bd",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -18916,16 +18916,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-facts.test.ts::=ROUTES": {
-   "kind": "support",
-   "hash": "87f1ccf57c33c8a8",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/doc-facts.test.ts::=fact": {
    "kind": "support",
    "hash": "534eec3f7fa88d99",
@@ -18949,6 +18939,16 @@
   "harness/src/checks/doc-facts.test.ts::=repo": {
    "kind": "support",
    "hash": "1b8aef3f1a166dfa",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-facts.test.ts::=ROUTES": {
+   "kind": "support",
+   "hash": "87f1ccf57c33c8a8",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -19481,9 +19481,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-generated.test.ts::=INDEX_TEXT": {
+  "harness/src/checks/doc-generated.test.ts::=committed": {
    "kind": "support",
-   "hash": "8509352ea55335f1",
+   "hash": "a44d56795f4a40e3",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -19491,9 +19491,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/doc-generated.test.ts::=committed": {
+  "harness/src/checks/doc-generated.test.ts::=INDEX_TEXT": {
    "kind": "support",
-   "hash": "a44d56795f4a40e3",
+   "hash": "8509352ea55335f1",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -20487,16 +20487,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/doc-stamps.test.ts::=TODAY": {
-   "kind": "support",
-   "hash": "d7f2c951477a106c",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/doc-stamps.test.ts::=crowd": {
    "kind": "support",
    "hash": "2fc2f8cb02cad521",
@@ -20510,6 +20500,16 @@
   "harness/src/checks/doc-stamps.test.ts::=names": {
    "kind": "support",
    "hash": "9b60097487a8daf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/doc-stamps.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "d7f2c951477a106c",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -21205,16 +21205,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/docs-main.test.ts::=TODAY": {
-   "kind": "support",
-   "hash": "c21c406035953da1",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/docs-main.test.ts::=adrRepo": {
    "kind": "support",
    "hash": "6665cf1f48b6817d",
@@ -21258,6 +21248,16 @@
   "harness/src/checks/docs-main.test.ts::=realConfig": {
    "kind": "support",
    "hash": "c119bd1c43e4f785",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/docs-main.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "c21c406035953da1",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -21458,26 +21458,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/docs.test.ts::=MODULE": {
-   "kind": "support",
-   "hash": "69f32a9f49853bdd",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/docs.test.ts::=TODAY": {
-   "kind": "support",
-   "hash": "71dd2f21d9c3aeb5",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/docs.test.ts::=adrRepo": {
    "kind": "support",
    "hash": "d2c43f177e216755",
@@ -21528,9 +21508,29 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/docs.test.ts::=MODULE": {
+   "kind": "support",
+   "hash": "69f32a9f49853bdd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/docs.test.ts::=realConfig": {
    "kind": "support",
    "hash": "c119bd1c43e4f785",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/docs.test.ts::=TODAY": {
+   "kind": "support",
+   "hash": "71dd2f21d9c3aeb5",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -22162,36 +22162,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-arch.test.ts::=KERNEL": {
-   "kind": "support",
-   "hash": "b16c1b9aaed887ca",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-arch.test.ts::=MODEL": {
-   "kind": "support",
-   "hash": "a6cceaa1100d2521",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-arch.test.ts::=OTHER": {
-   "kind": "support",
-   "hash": "aa5d1337ef4a87a2",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-arch.test.ts::=check": {
    "kind": "support",
    "hash": "167b647cacc480d3",
@@ -22225,6 +22195,36 @@
   "harness/src/checks/go-arch.test.ts::=imp": {
    "kind": "support",
    "hash": "cbce06f3d3f25897",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-arch.test.ts::=KERNEL": {
+   "kind": "support",
+   "hash": "b16c1b9aaed887ca",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-arch.test.ts::=MODEL": {
+   "kind": "support",
+   "hash": "a6cceaa1100d2521",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-arch.test.ts::=OTHER": {
+   "kind": "support",
+   "hash": "aa5d1337ef4a87a2",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -22793,36 +22793,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-audit.test.ts::=KERNEL": {
-   "kind": "support",
-   "hash": "b16c1b9aaed887ca",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-audit.test.ts::=MODEL": {
-   "kind": "support",
-   "hash": "a6cceaa1100d2521",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-audit.test.ts::=OTHER": {
-   "kind": "support",
-   "hash": "aa5d1337ef4a87a2",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-audit.test.ts::=arch": {
    "kind": "support",
    "hash": "40b29b3090f0bb9b",
@@ -22873,9 +22843,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-audit.test.ts::Go import paths are read as written [REQ-021] > <suite>": {
+  "harness/src/checks/go-audit.test.ts::=KERNEL": {
    "kind": "support",
-   "hash": "edb4bbfe0a867169",
+   "hash": "b16c1b9aaed887ca",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -22883,62 +22853,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-audit.test.ts::Go import paths are read as written [REQ-021] > a path with a space or any other odd character is refused, plain paths are not": {
-   "kind": "test",
-   "hash": "3fdd60bb550407a1",
-   "asserts": 5,
-   "literals": [
-    "\"GOARCH054\"",
-    "\"GOARCH054\"",
-    "\"GOARCH054\"",
-    "\"GOARCH054\"",
-    "\"\\\"encoding/json\\\"\"",
-    "\"\\\"encoding/json\\\"\"",
-    "\"\\\"example.test/app/internal/kernel\\\"\"",
-    "\"\\\"example.test/app/internal/kernel\\\"\"",
-    "\"\\\"fmt \\\"\"",
-    "\"\\\"fmt \\\"\"",
-    "\"\\\"fmt\\\"\"",
-    "\"\\\"fmt\\\"\"",
-    "\"\\\"math/rand/v2x\\\"\"",
-    "\"\\\"math/rand/v2x\\\"\"",
-    "\"`fmt\\u0000`\"",
-    "\"`fmt\\u0000`\"",
-    "\"`fmt`\"",
-    "\"`fmt`\"",
-    "\"a path with a space or any other odd character is refused, plain paths are not\""
-   ],
+  "harness/src/checks/go-audit.test.ts::=MODEL": {
+   "kind": "support",
+   "hash": "a6cceaa1100d2521",
+   "asserts": 0,
+   "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-audit.test.ts::Go import paths are read as written [REQ-021] > a path written with an escape is refused, whichever rule it would have dodged": {
-   "kind": "test",
-   "hash": "a549e02fa9097807",
-   "asserts": 2,
-   "literals": [
-    "\"\"",
-    "\"\"",
-    "\")\"",
-    "\"4\"",
-    "\"4\"",
-    "\"5\"",
-    "\"5\"",
-    "\"6\"",
-    "\"6\"",
-    "\"GOARCH054\"",
-    "\"GOARCH054\"",
-    "\"GOARCH054\"",
-    "\"GOARCH054\"",
-    "\"\\t_ \\\"un\\\\x73afe\\\"\"",
-    "\"\\to \\\"o\\\\x73\\\"\"",
-    "\"\\tt \\\"ti\\\\x6de\\\"\"",
-    "\"a path written with an escape is refused, whichever rule it would have dodged\"",
-    "\"func f() { _, _ = o.LookupEnv(\\\"HOME\\\"); _ = t.Now() }\"",
-    "\"import (\"",
-    "\"package model\""
-   ],
+  "harness/src/checks/go-audit.test.ts::=OTHER": {
+   "kind": "support",
+   "hash": "aa5d1337ef4a87a2",
+   "asserts": 0,
+   "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
@@ -23208,6 +23137,77 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/go-audit.test.ts::Go import paths are read as written [REQ-021] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-audit.test.ts::Go import paths are read as written [REQ-021] > a path with a space or any other odd character is refused, plain paths are not": {
+   "kind": "test",
+   "hash": "3fdd60bb550407a1",
+   "asserts": 5,
+   "literals": [
+    "\"GOARCH054\"",
+    "\"GOARCH054\"",
+    "\"GOARCH054\"",
+    "\"GOARCH054\"",
+    "\"\\\"encoding/json\\\"\"",
+    "\"\\\"encoding/json\\\"\"",
+    "\"\\\"example.test/app/internal/kernel\\\"\"",
+    "\"\\\"example.test/app/internal/kernel\\\"\"",
+    "\"\\\"fmt \\\"\"",
+    "\"\\\"fmt \\\"\"",
+    "\"\\\"fmt\\\"\"",
+    "\"\\\"fmt\\\"\"",
+    "\"\\\"math/rand/v2x\\\"\"",
+    "\"\\\"math/rand/v2x\\\"\"",
+    "\"`fmt\\u0000`\"",
+    "\"`fmt\\u0000`\"",
+    "\"`fmt`\"",
+    "\"`fmt`\"",
+    "\"a path with a space or any other odd character is refused, plain paths are not\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-audit.test.ts::Go import paths are read as written [REQ-021] > a path written with an escape is refused, whichever rule it would have dodged": {
+   "kind": "test",
+   "hash": "a549e02fa9097807",
+   "asserts": 2,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\")\"",
+    "\"4\"",
+    "\"4\"",
+    "\"5\"",
+    "\"5\"",
+    "\"6\"",
+    "\"6\"",
+    "\"GOARCH054\"",
+    "\"GOARCH054\"",
+    "\"GOARCH054\"",
+    "\"GOARCH054\"",
+    "\"\\t_ \\\"un\\\\x73afe\\\"\"",
+    "\"\\to \\\"o\\\\x73\\\"\"",
+    "\"\\tt \\\"ti\\\\x6de\\\"\"",
+    "\"a path written with an escape is refused, whichever rule it would have dodged\"",
+    "\"func f() { _, _ = o.LookupEnv(\\\"HOME\\\"); _ = t.Now() }\"",
+    "\"import (\"",
+    "\"package model\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/go-audit.test.ts::imports only tests may have are declared apart [REQ-021] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -23301,39 +23301,19 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =CASES": {
-   "kind": "support",
-   "hash": "bd6bbfe713a63e44",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =KEY": {
-   "kind": "support",
-   "hash": "7e39f6de8b04bd08",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =SUITE": {
-   "kind": "support",
-   "hash": "b00292b022462c4c",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =caller": {
    "kind": "support",
    "hash": "5ff53eb805059be9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =CASES": {
+   "kind": "support",
+   "hash": "bd6bbfe713a63e44",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -23371,9 +23351,29 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =KEY": {
+   "kind": "support",
+   "hash": "7e39f6de8b04bd08",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =suite": {
    "kind": "support",
    "hash": "a395b4ab7b050f99",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-audit.test.ts::test support that locked tests lean on is fingerprinted [REQ-023] > =SUITE": {
+   "kind": "support",
+   "hash": "b00292b022462c4c",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -23545,16 +23545,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-cover.test.ts::=MODEL": {
-   "kind": "support",
-   "hash": "a6cceaa1100d2521",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-cover.test.ts::=codes": {
    "kind": "support",
    "hash": "29c0ad815474cbaf",
@@ -23568,6 +23558,16 @@
   "harness/src/checks/go-cover.test.ts::=configOf": {
    "kind": "support",
    "hash": "e9b4221b80f1a1f7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-cover.test.ts::=MODEL": {
+   "kind": "support",
+   "hash": "a6cceaa1100d2521",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -23958,16 +23958,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-debt.test.ts::=MODEL": {
-   "kind": "support",
-   "hash": "a6cceaa1100d2521",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-debt.test.ts::=body": {
    "kind": "support",
    "hash": "3e2bc9606a3b8976",
@@ -23991,6 +23981,16 @@
   "harness/src/checks/go-debt.test.ts::=fn": {
    "kind": "support",
    "hash": "9d7b8612eb367774",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-debt.test.ts::=MODEL": {
+   "kind": "support",
+   "hash": "a6cceaa1100d2521",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -24625,9 +24625,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-deps.test.ts::Go modules: go.mod against the table and the contract [REQ-239] > =ROW": {
+  "harness/src/checks/go-deps.test.ts::Go modules: go.mod against the table and the contract [REQ-239] > =healthy": {
    "kind": "support",
-   "hash": "60a64a4ae8773b9a",
+   "hash": "47c2260c9b0f4b0b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -24635,9 +24635,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-deps.test.ts::Go modules: go.mod against the table and the contract [REQ-239] > =healthy": {
+  "harness/src/checks/go-deps.test.ts::Go modules: go.mod against the table and the contract [REQ-239] > =ROW": {
    "kind": "support",
-   "hash": "47c2260c9b0f4b0b",
+   "hash": "60a64a4ae8773b9a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -24967,9 +24967,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-ignores.test.ts::=MODEL": {
+  "harness/src/checks/go-ignores.test.ts::=codes": {
    "kind": "support",
-   "hash": "a6cceaa1100d2521",
+   "hash": "00167746f29a2f69",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -24977,9 +24977,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-ignores.test.ts::=codes": {
+  "harness/src/checks/go-ignores.test.ts::=MODEL": {
    "kind": "support",
-   "hash": "00167746f29a2f69",
+   "hash": "a6cceaa1100d2521",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -25124,20 +25124,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-ignores.test.ts::Go ignores: skipped tests [REQ-023] > Skip in production code is something else": {
-   "kind": "test",
-   "hash": "ec8a3a36eddc8576",
-   "asserts": 1,
-   "literals": [
-    "\"Skip in production code is something else\"",
-    "\"func f(l list) { l.Skip(1) }\"",
-    "\"func f(l list) { l.Skip(1) }\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-ignores.test.ts::Go ignores: skipped tests [REQ-023] > a bare skip and a testing.Short gate are reported": {
    "kind": "test",
    "hash": "f690d0bb662d6b6a",
@@ -25184,6 +25170,20 @@
     "\"t.SkipNow()\"",
     "\"t.Skipf(\\\"no %s\\\", \\\"x\\\") // waits for the fixture work, ADR-0001\"",
     "\"t.Skipf(\\\"no %s\\\", \\\"x\\\") // waits for the fixture work, ADR-0001\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-ignores.test.ts::Go ignores: skipped tests [REQ-023] > Skip in production code is something else": {
+   "kind": "test",
+   "hash": "ec8a3a36eddc8576",
+   "asserts": 1,
+   "literals": [
+    "\"Skip in production code is something else\"",
+    "\"func f(l list) { l.Skip(1) }\"",
+    "\"func f(l list) { l.Skip(1) }\""
    ],
    "precision": [],
    "skips": 0,
@@ -25848,9 +25848,39 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/go-lock.test.ts::=codes": {
+   "kind": "support",
+   "hash": "5c3aefeaa67e236e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/go-lock.test.ts::=COUNTS": {
    "kind": "support",
    "hash": "699965174e185a43",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-lock.test.ts::=edit": {
+   "kind": "support",
+   "hash": "17582ba1ace08f40",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-lock.test.ts::=entries": {
+   "kind": "support",
+   "hash": "64b2b004d695396b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -25898,66 +25928,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-lock.test.ts::=PKG": {
-   "kind": "support",
-   "hash": "5f8c2de1ff05af5a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-lock.test.ts::=REAL": {
-   "kind": "support",
-   "hash": "63811c58bfe4d972",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-lock.test.ts::=REASON": {
-   "kind": "support",
-   "hash": "8376f6b2227a02ba",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-lock.test.ts::=codes": {
-   "kind": "support",
-   "hash": "5c3aefeaa67e236e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-lock.test.ts::=edit": {
-   "kind": "support",
-   "hash": "17582ba1ace08f40",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-lock.test.ts::=entries": {
-   "kind": "support",
-   "hash": "64b2b004d695396b",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-lock.test.ts::=lockedRepo": {
    "kind": "support",
    "hash": "53241301762f67a0",
@@ -25978,9 +25948,39 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/go-lock.test.ts::=PKG": {
+   "kind": "support",
+   "hash": "5f8c2de1ff05af5a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/go-lock.test.ts::=read": {
    "kind": "support",
    "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-lock.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-lock.test.ts::=REASON": {
+   "kind": "support",
+   "hash": "8376f6b2227a02ba",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -26449,9 +26449,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-test-rules.test.ts::=FILE": {
+  "harness/src/checks/go-test-rules.test.ts::=codesOf": {
    "kind": "support",
-   "hash": "da5098ea5df3f9d7",
+   "hash": "1ed3607ea3192afa",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -26459,9 +26459,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-test-rules.test.ts::=codesOf": {
+  "harness/src/checks/go-test-rules.test.ts::=FILE": {
    "kind": "support",
-   "hash": "1ed3607ea3192afa",
+   "hash": "da5098ea5df3f9d7",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -26768,39 +26768,19 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-test-units.test.ts::=FILE": {
-   "kind": "support",
-   "hash": "75cfd5a74237efd9",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-test-units.test.ts::=PKG": {
-   "kind": "support",
-   "hash": "5f8c2de1ff05af5a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-test-units.test.ts::=TWO": {
-   "kind": "support",
-   "hash": "1718a282f4c28fee",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-test-units.test.ts::=digestOf": {
    "kind": "support",
    "hash": "4ff77ff82c64623f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-test-units.test.ts::=FILE": {
+   "kind": "support",
+   "hash": "75cfd5a74237efd9",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -26828,9 +26808,29 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/go-test-units.test.ts::=PKG": {
+   "kind": "support",
+   "hash": "5f8c2de1ff05af5a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/go-test-units.test.ts::=src": {
    "kind": "support",
    "hash": "bb42271f992f2345",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-test-units.test.ts::=TWO": {
+   "kind": "support",
+   "hash": "1718a282f4c28fee",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -27633,29 +27633,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-test-units.test.ts::Go test units: which functions are tests, and how they are named [REQ-023] > Test, Fuzz and Example functions are units named by package folder and function": {
-   "kind": "test",
-   "hash": "a7e2725d059e8862",
-   "asserts": 1,
-   "literals": [
-    "\"Test, Fuzz and Example functions are units named by package folder and function\"",
-    "\"TestDouble\"",
-    "\"func (s *thing) TestMethod(t *testing.T) { t.Fatal(7) }\"",
-    "\"func BenchmarkFive(b *testing.B) { b.Fatal(5) }\"",
-    "\"func ExampleThree() {\\n\\t// Output: 3\\n}\"",
-    "\"func Example_four() {\\n\\t// Output: 4\\n}\"",
-    "\"func FuzzTwo(f *testing.F) { f.Fuzz(func(t *testing.T, s string) { t.Error(s) }) }\"",
-    "\"func TestMain(m *testing.M) { m.Run() }\"",
-    "\"func TestOne(t *testing.T) { t.Fatal(1) }\"",
-    "\"func Testify(t *testing.T) { t.Fatal(6) }\"",
-    "\"func helper(t *testing.T) { t.Fatal(8) }\"",
-    "\"type thing struct{}\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-test-units.test.ts::Go test units: which functions are tests, and how they are named [REQ-023] > a repository without Go code has no Go tests": {
    "kind": "test",
    "hash": "c026eb2183532cba",
@@ -27685,6 +27662,29 @@
     "\"moving a test to another file of the package changes nothing, two with one name are told apart\"",
     "\"package model\"",
     "\"package model_test\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-test-units.test.ts::Go test units: which functions are tests, and how they are named [REQ-023] > Test, Fuzz and Example functions are units named by package folder and function": {
+   "kind": "test",
+   "hash": "a7e2725d059e8862",
+   "asserts": 1,
+   "literals": [
+    "\"Test, Fuzz and Example functions are units named by package folder and function\"",
+    "\"TestDouble\"",
+    "\"func (s *thing) TestMethod(t *testing.T) { t.Fatal(7) }\"",
+    "\"func BenchmarkFive(b *testing.B) { b.Fatal(5) }\"",
+    "\"func ExampleThree() {\\n\\t// Output: 3\\n}\"",
+    "\"func Example_four() {\\n\\t// Output: 4\\n}\"",
+    "\"func FuzzTwo(f *testing.F) { f.Fuzz(func(t *testing.T, s string) { t.Error(s) }) }\"",
+    "\"func TestMain(m *testing.M) { m.Run() }\"",
+    "\"func TestOne(t *testing.T) { t.Fatal(1) }\"",
+    "\"func Testify(t *testing.T) { t.Fatal(6) }\"",
+    "\"func helper(t *testing.T) { t.Fatal(8) }\"",
+    "\"type thing struct{}\""
    ],
    "precision": [],
    "skips": 0,
@@ -27803,9 +27803,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-tools.test.ts::=MODEL": {
+  "harness/src/checks/go-tools.test.ts::=check": {
    "kind": "support",
-   "hash": "a6cceaa1100d2521",
+   "hash": "22b22981262b0630",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -27813,9 +27813,9 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-tools.test.ts::=check": {
+  "harness/src/checks/go-tools.test.ts::=MODEL": {
    "kind": "support",
-   "hash": "22b22981262b0630",
+   "hash": "a6cceaa1100d2521",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -28071,36 +28071,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/go-traceability.test.ts::=MODEL": {
-   "kind": "support",
-   "hash": "d2ed98422803edd3",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-traceability.test.ts::=REQS": {
-   "kind": "support",
-   "hash": "ce737b9b9e146b01",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/go-traceability.test.ts::=TS_SPEC": {
-   "kind": "support",
-   "hash": "33459b6ad4d3164f",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/go-traceability.test.ts::=codes": {
    "kind": "support",
    "hash": "c981f16d22ef1ae1",
@@ -28121,6 +28091,16 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/go-traceability.test.ts::=MODEL": {
+   "kind": "support",
+   "hash": "d2ed98422803edd3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/go-traceability.test.ts::=real": {
    "kind": "support",
    "hash": "ad76168ba143e5c4",
@@ -28134,6 +28114,26 @@
   "harness/src/checks/go-traceability.test.ts::=repo": {
    "kind": "support",
    "hash": "6311c4b67fd1095e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-traceability.test.ts::=REQS": {
+   "kind": "support",
+   "hash": "ce737b9b9e146b01",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/go-traceability.test.ts::=TS_SPEC": {
+   "kind": "support",
+   "hash": "33459b6ad4d3164f",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -28401,29 +28401,19 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/ignores.test.ts::=BASELINE": {
-   "kind": "support",
-   "hash": "fcae100300742c88",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/ignores.test.ts::=NOT_REASON_ONLY": {
-   "kind": "support",
-   "hash": "f8384457e9cecdf9",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/ignores.test.ts::=adr": {
    "kind": "support",
    "hash": "c8ab79fdbf657eb9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ignores.test.ts::=BASELINE": {
+   "kind": "support",
+   "hash": "fcae100300742c88",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -28444,6 +28434,16 @@
   "harness/src/checks/ignores.test.ts::=debtItem": {
    "kind": "support",
    "hash": "a6b88c6928ad73f5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ignores.test.ts::=NOT_REASON_ONLY": {
+   "kind": "support",
+   "hash": "f8384457e9cecdf9",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -28743,6 +28743,21 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > @ts-expect-error in a test file needs a reason only; in other code it needs a basis too": {
+   "kind": "test",
+   "hash": "1e9bbcc57f4472b9",
+   "asserts": 2,
+   "literals": [
+    "\"// @ts-expect-error: the type test asserts this compile error\\nexport const x: number = 'a';\\n\"",
+    "\"@ts-expect-error in a test file needs a reason only; in other code it needs a basis too\"",
+    "\"IGN002\"",
+    "\"IGN002\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > %s with a reason but no TD or ADR fails (IGN002)": {
    "kind": "test",
    "hash": "7fae8205742f0cc5",
@@ -28793,21 +28808,6 @@
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/ignores.test.ts::no silent ignores: suppression comments [REQ-022] > @ts-expect-error in a test file needs a reason only; in other code it needs a basis too": {
-   "kind": "test",
-   "hash": "1e9bbcc57f4472b9",
-   "asserts": 2,
-   "literals": [
-    "\"// @ts-expect-error: the type test asserts this compile error\\nexport const x: number = 'a';\\n\"",
-    "\"@ts-expect-error in a test file needs a reason only; in other code it needs a basis too\"",
-    "\"IGN002\"",
-    "\"IGN002\""
-   ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
@@ -29345,26 +29345,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/licenses.test.ts::=CONFIG": {
-   "kind": "support",
-   "hash": "52e28e58ad0953c7",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/licenses.test.ts::=MIT_TEXT": {
-   "kind": "support",
-   "hash": "74f38b5b35003e32",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/licenses.test.ts::=codes": {
    "kind": "support",
    "hash": "63ca80349f9dcfd7",
@@ -29375,9 +29355,29 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/licenses.test.ts::=CONFIG": {
+   "kind": "support",
+   "hash": "52e28e58ad0953c7",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/licenses.test.ts::=dep": {
    "kind": "support",
    "hash": "3da8e5b2ccff32a1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::=MIT_TEXT": {
+   "kind": "support",
+   "hash": "74f38b5b35003e32",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -29425,6 +29425,20 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/licenses.test.ts::asset manifest > a good entry passes and appears in the notices": {
+   "kind": "test",
+   "hash": "13a01167e0940938",
+   "asserts": 2,
+   "literals": [
+    "\"Some schemas\"",
+    "\"Some schemas\"",
+    "\"a good entry passes and appears in the notices\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/licenses.test.ts::asset manifest > LIC001 for a denied asset license, LIC004 for a missing file or field": {
    "kind": "test",
    "hash": "f6ad9e8e042e28fc",
@@ -29441,20 +29455,6 @@
     "\"LIC004\"",
     "\"data/gone.bin\"",
     "\"data/gone.bin\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/licenses.test.ts::asset manifest > a good entry passes and appears in the notices": {
-   "kind": "test",
-   "hash": "13a01167e0940938",
-   "asserts": 2,
-   "literals": [
-    "\"Some schemas\"",
-    "\"Some schemas\"",
-    "\"a good entry passes and appears in the notices\""
    ],
    "precision": [],
    "skips": 0,
@@ -29585,24 +29585,76 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/licenses.test.ts::licenses check > LIC001: UNLICENSED fails, and so does a transitive dependency": {
+  "harness/src/checks/licenses.test.ts::licenses check > allowed licenses pass; dev-only dependencies are not looked at": {
    "kind": "test",
-   "hash": "06573a97b8495fc7",
+   "hash": "1af845a15b8625e7",
+   "asserts": 1,
+   "literals": [
+    "\"MIT\"",
+    "\"a\"",
+    "\"a\"",
+    "\"allowed licenses pass; dev-only dependencies are not looked at\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::licenses check > an exception for another version does not apply": {
+   "kind": "test",
+   "hash": "6fce9c4daf92030f",
+   "asserts": 1,
+   "literals": [
+    "\"2.0.0\"",
+    "\"GPL-3.0-only\"",
+    "\"GPL-3.0-only\"",
+    "\"LIC001\"",
+    "\"LIC001\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"an exception for another version does not apply\"",
+    "\"x\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::licenses check > an exception with a reason lets one package through and is printed every run": {
+   "kind": "test",
+   "hash": "a0ebb7ed317b813e",
    "asserts": 2,
    "literals": [
-    "\"0\"",
-    "\"0\"",
-    "\"1.0.0\"",
-    "\"LIC001\"",
-    "\"LIC001\"",
-    "\"LIC001: UNLICENSED fails, and so does a transitive dependency\"",
-    "\"MIT\"",
-    "\"UNLICENSED\"",
+    "\"GPL-3.0-only\"",
+    "\"GPL-3.0-only\"",
+    "\"\\n\"",
+    "\"\\n\"",
     "\"a\"",
     "\"a\"",
-    "\"b\"",
-    "\"b@1.0.0\"",
-    "\"b@1.0.0\""
+    "\"a\"",
+    "\"a@1.0.0: GPL-3.0-only (used only as a separate program)\"",
+    "\"a@1.0.0: GPL-3.0-only (used only as a separate program)\"",
+    "\"an exception with a reason lets one package through and is printed every run\"",
+    "\"used only as a separate program\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::licenses check > an OR expression with one allowed side passes": {
+   "kind": "test",
+   "hash": "b0c5646330907cb5",
+   "asserts": 1,
+   "literals": [
+    "\"(GPL-3.0-only OR MIT)\"",
+    "\"(GPL-3.0-only OR MIT)\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"a\"",
+    "\"an OR expression with one allowed side passes\""
    ],
    "precision": [],
    "skips": 0,
@@ -29626,6 +29678,30 @@
     "\"a@1.0.0\"",
     "\"record an exception with a reason\"",
     "\"record an exception with a reason\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::licenses check > LIC001: UNLICENSED fails, and so does a transitive dependency": {
+   "kind": "test",
+   "hash": "06573a97b8495fc7",
+   "asserts": 2,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"1.0.0\"",
+    "\"LIC001\"",
+    "\"LIC001\"",
+    "\"LIC001: UNLICENSED fails, and so does a transitive dependency\"",
+    "\"MIT\"",
+    "\"UNLICENSED\"",
+    "\"a\"",
+    "\"a\"",
+    "\"b\"",
+    "\"b@1.0.0\"",
+    "\"b@1.0.0\""
    ],
    "precision": [],
    "skips": 0,
@@ -29677,82 +29753,6 @@
     "\"a\"",
     "\"a@1.0.0\"",
     "\"patches/a.patch\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/licenses.test.ts::licenses check > allowed licenses pass; dev-only dependencies are not looked at": {
-   "kind": "test",
-   "hash": "1af845a15b8625e7",
-   "asserts": 1,
-   "literals": [
-    "\"MIT\"",
-    "\"a\"",
-    "\"a\"",
-    "\"allowed licenses pass; dev-only dependencies are not looked at\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/licenses.test.ts::licenses check > an OR expression with one allowed side passes": {
-   "kind": "test",
-   "hash": "b0c5646330907cb5",
-   "asserts": 1,
-   "literals": [
-    "\"(GPL-3.0-only OR MIT)\"",
-    "\"(GPL-3.0-only OR MIT)\"",
-    "\"a\"",
-    "\"a\"",
-    "\"a\"",
-    "\"a\"",
-    "\"an OR expression with one allowed side passes\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/licenses.test.ts::licenses check > an exception for another version does not apply": {
-   "kind": "test",
-   "hash": "6fce9c4daf92030f",
-   "asserts": 1,
-   "literals": [
-    "\"2.0.0\"",
-    "\"GPL-3.0-only\"",
-    "\"GPL-3.0-only\"",
-    "\"LIC001\"",
-    "\"LIC001\"",
-    "\"a\"",
-    "\"a\"",
-    "\"a\"",
-    "\"an exception for another version does not apply\"",
-    "\"x\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/licenses.test.ts::licenses check > an exception with a reason lets one package through and is printed every run": {
-   "kind": "test",
-   "hash": "a0ebb7ed317b813e",
-   "asserts": 2,
-   "literals": [
-    "\"GPL-3.0-only\"",
-    "\"GPL-3.0-only\"",
-    "\"\\n\"",
-    "\"\\n\"",
-    "\"a\"",
-    "\"a\"",
-    "\"a\"",
-    "\"a@1.0.0: GPL-3.0-only (used only as a separate program)\"",
-    "\"a@1.0.0: GPL-3.0-only (used only as a separate program)\"",
-    "\"an exception with a reason lets one package through and is printed every run\"",
-    "\"used only as a separate program\""
    ],
    "precision": [],
    "skips": 0,
@@ -29896,22 +29896,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/licenses.test.ts::references to outside material > LIC004 when the file a reference names does not exist": {
-   "kind": "test",
-   "hash": "ca53dcdf095e15d9",
-   "asserts": 1,
-   "literals": [
-    "\"LIC004 when the file a reference names does not exist\"",
-    "\"LIC004\"",
-    "\"LIC004\"",
-    "\"data/gone.ts\"",
-    "\"data/gone.ts\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/licenses.test.ts::references to outside material > a reference is written in its own section and is not a component": {
    "kind": "test",
    "hash": "7f64c62ec59da140",
@@ -29925,6 +29909,22 @@
     "\"a reference is written in its own section and is not a component\"",
     "\"data/shapes.ts\"",
     "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/licenses.test.ts::references to outside material > LIC004 when the file a reference names does not exist": {
+   "kind": "test",
+   "hash": "ca53dcdf095e15d9",
+   "asserts": 1,
+   "literals": [
+    "\"LIC004 when the file a reference names does not exist\"",
+    "\"LIC004\"",
+    "\"LIC004\"",
+    "\"data/gone.ts\"",
+    "\"data/gone.ts\""
    ],
    "precision": [],
    "skips": 0,
@@ -30011,26 +30011,6 @@
    "added": "2026-11-13",
    "amended_by": null
   },
-  "harness/src/checks/quality-go.test.ts::=MODEL": {
-   "kind": "support",
-   "hash": "4434b6f69f8ca71a",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/checks/quality-go.test.ts::=TS_PART": {
-   "kind": "support",
-   "hash": "bd9eeb39ed1348f5",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/checks/quality-go.test.ts::=bigFunction": {
    "kind": "support",
    "hash": "d3570ab27ebe0304",
@@ -30044,6 +30024,16 @@
   "harness/src/checks/quality-go.test.ts::=factsOf": {
    "kind": "support",
    "hash": "62f06804d1b4024e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/quality-go.test.ts::=MODEL": {
+   "kind": "support",
+   "hash": "4434b6f69f8ca71a",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -30071,11 +30061,52 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "harness/src/checks/quality-go.test.ts::=TS_PART": {
+   "kind": "support",
+   "hash": "bd9eeb39ed1348f5",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
   "harness/src/checks/quality-go.test.ts::Go units in the quality table [REQ-024] > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/checks/quality-go.test.ts::Go units in the quality table [REQ-024] > a debt item may name a Go unit, and only one that exists": {
+   "kind": "test",
+   "hash": "fb0a8894765f0048",
+   "asserts": 3,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"2026-01-01\"",
+    "\"2099-01-01\"",
+    "\"QUAL003\"",
+    "\"QUAL003\"",
+    "\"TD-0001\"",
+    "\"a debt item may name a Go unit, and only one that exists\"",
+    "\"c\"",
+    "\"docs/exec-plans/tech-debt.yaml\"",
+    "\"go:core.model\"",
+    "\"go:core.model\"",
+    "\"go:core.model\"",
+    "\"go:core.model\"",
+    "\"go:core.model\"",
+    "\"go:core.model\"",
+    "\"go:core.nope\"",
+    "\"low\"",
+    "\"open\"",
+    "\"t\""
+   ],
    "precision": [],
    "skips": 0,
    "added": "2026-11-13",
@@ -30140,37 +30171,6 @@
    "skips": 0,
    "added": "2026-11-13",
    "amended_by": "0029-standard-terms-in-documents-and-screens.md"
-  },
-  "harness/src/checks/quality-go.test.ts::Go units in the quality table [REQ-024] > a debt item may name a Go unit, and only one that exists": {
-   "kind": "test",
-   "hash": "fb0a8894765f0048",
-   "asserts": 3,
-   "literals": [
-    "\"1\"",
-    "\"1\"",
-    "\"2026-01-01\"",
-    "\"2099-01-01\"",
-    "\"QUAL003\"",
-    "\"QUAL003\"",
-    "\"TD-0001\"",
-    "\"a debt item may name a Go unit, and only one that exists\"",
-    "\"c\"",
-    "\"docs/exec-plans/tech-debt.yaml\"",
-    "\"go:core.model\"",
-    "\"go:core.model\"",
-    "\"go:core.model\"",
-    "\"go:core.model\"",
-    "\"go:core.model\"",
-    "\"go:core.model\"",
-    "\"go:core.nope\"",
-    "\"low\"",
-    "\"open\"",
-    "\"t\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
   },
   "harness/src/checks/quality-go.test.ts::Go units in the quality table [REQ-024] > a recorded Go coverage below the floor is D, at or above it is A": {
    "kind": "test",
@@ -30409,26 +30409,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/quality.test.ts::=MEMBER": {
-   "kind": "support",
-   "hash": "1a4b185e2aafa445",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/quality.test.ts::=TABLE": {
-   "kind": "support",
-   "hash": "c2d298b2d2c7f6c2",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/quality.test.ts::=doc": {
    "kind": "support",
    "hash": "b8269100f9bffb92",
@@ -30469,6 +30449,16 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/quality.test.ts::=MEMBER": {
+   "kind": "support",
+   "hash": "1a4b185e2aafa445",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/quality.test.ts::=real": {
    "kind": "support",
    "hash": "ef21c3fbc4720b61",
@@ -30492,6 +30482,16 @@
   "harness/src/checks/quality.test.ts::=stamp": {
    "kind": "support",
    "hash": "7e6418cff6bcf822",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/quality.test.ts::=TABLE": {
+   "kind": "support",
+   "hash": "c2d298b2d2c7f6c2",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -31346,36 +31346,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/ratchets.test.ts::=REAL": {
-   "kind": "support",
-   "hash": "63811c58bfe4d972",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/ratchets.test.ts::=REQS": {
-   "kind": "support",
-   "hash": "1df56de733124fd1",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/ratchets.test.ts::=SPEC": {
-   "kind": "support",
-   "hash": "38d40d34c0f42e02",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/ratchets.test.ts::=addAdr": {
    "kind": "support",
    "hash": "52feb46976e8fcbe",
@@ -31429,6 +31399,36 @@
   "harness/src/checks/ratchets.test.ts::=read": {
    "kind": "support",
    "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=REQS": {
+   "kind": "support",
+   "hash": "1df56de733124fd1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::=SPEC": {
+   "kind": "support",
+   "hash": "38d40d34c0f42e02",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -31733,22 +31733,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > CODEOWNERS must cover every protected path": {
-   "kind": "test",
-   "hash": "ee14f8d213215184",
-   "asserts": 2,
-   "literals": [
-    "\".github/CODEOWNERS\"",
-    "\"/harness/** @o\\n\"",
-    "\"CODEOWNERS must cover every protected path\"",
-    "\"PROT003\"",
-    "\"PROT003\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > a sealed ADR added in the same change authorizes the path or its pattern": {
    "kind": "test",
    "hash": "7323b9bcffade2bb",
@@ -31822,6 +31806,22 @@
     "\"harness/config/x.yaml\"",
     "\"harness/config/x.yaml\"",
     "\"limit: 999\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/ratchets.test.ts::protected paths [REQ-021] > CODEOWNERS must cover every protected path": {
+   "kind": "test",
+   "hash": "ee14f8d213215184",
+   "asserts": 2,
+   "literals": [
+    "\".github/CODEOWNERS\"",
+    "\"/harness/** @o\\n\"",
+    "\"CODEOWNERS must cover every protected path\"",
+    "\"PROT003\"",
+    "\"PROT003\""
    ],
    "precision": [],
    "skips": 0,
@@ -31999,16 +31999,6 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/checks/test-config.test.ts::=REAL": {
-   "kind": "support",
-   "hash": "63811c58bfe4d972",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/checks/test-config.test.ts::=configCodes": {
    "kind": "support",
    "hash": "b274d8cd0803203e",
@@ -32022,6 +32012,16 @@
   "harness/src/checks/test-config.test.ts::=read": {
    "kind": "support",
    "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/test-config.test.ts::=REAL": {
+   "kind": "support",
+   "hash": "63811c58bfe4d972",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -32246,9 +32246,49 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/testguard.test.ts::=codes": {
+   "kind": "support",
+   "hash": "3cd455e89dec3ee4",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=edit": {
+   "kind": "support",
+   "hash": "87fe88db4eb0e9e1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/testguard.test.ts::=GOOD": {
    "kind": "support",
    "hash": "dae05bcb61fece22",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=guardRepo": {
+   "kind": "support",
+   "hash": "1afbee9b9faf60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/testguard.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -32279,46 +32319,6 @@
   "harness/src/checks/testguard.test.ts::=TEST_FILE": {
    "kind": "support",
    "hash": "661535d331e14b9c",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/testguard.test.ts::=codes": {
-   "kind": "support",
-   "hash": "3cd455e89dec3ee4",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/testguard.test.ts::=edit": {
-   "kind": "support",
-   "hash": "87fe88db4eb0e9e1",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/testguard.test.ts::=guardRepo": {
-   "kind": "support",
-   "hash": "1afbee9b9faf60bb",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/testguard.test.ts::=read": {
-   "kind": "support",
-   "hash": "a02ca9415c6b60bb",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -32476,6 +32476,21 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > the amendment ADR can be named by file name or by its repository path": {
+   "kind": "test",
+   "hash": "397aa7ec9b5cfb1d",
+   "asserts": 2,
+   "literals": [
+    "\"0009-amend.md\"",
+    "\"docs/design-docs/adr/0009-amend.md\"",
+    "\"docs/design-docs/adr/0009-amend.md\"",
+    "\"the amendment ADR can be named by file name or by its repository path\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > the CLI reports refusals with the way forward": {
    "kind": "test",
    "hash": "e0468169d28d9357",
@@ -32500,21 +32515,6 @@
     "\"requirement changed\"",
     "\"requirement changed\"",
     "\"the CLI reports refusals with the way forward\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/testguard.test.ts::test integrity: amendments [REQ-023] > the amendment ADR can be named by file name or by its repository path": {
-   "kind": "test",
-   "hash": "397aa7ec9b5cfb1d",
-   "asserts": 2,
-   "literals": [
-    "\"0009-amend.md\"",
-    "\"docs/design-docs/adr/0009-amend.md\"",
-    "\"docs/design-docs/adr/0009-amend.md\"",
-    "\"the amendment ADR can be named by file name or by its repository path\""
    ],
    "precision": [],
    "skips": 0,
@@ -33177,9 +33177,29 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/checks/traceability.test.ts::=read": {
+   "kind": "support",
+   "hash": "a02ca9415c6b60bb",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
   "harness/src/checks/traceability.test.ts::=REAL": {
    "kind": "support",
    "hash": "63811c58bfe4d972",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/checks/traceability.test.ts::=repo": {
+   "kind": "support",
+   "hash": "f072f7e647f6a4f9",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -33200,26 +33220,6 @@
   "harness/src/checks/traceability.test.ts::=SPEC": {
    "kind": "support",
    "hash": "38d40d34c0f42e02",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/traceability.test.ts::=read": {
-   "kind": "support",
-   "hash": "a02ca9415c6b60bb",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/checks/traceability.test.ts::=repo": {
-   "kind": "support",
-   "hash": "f072f7e647f6a4f9",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -33619,9 +33619,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "harness/src/checks/web.test.ts::=CONFIG": {
+  "harness/src/checks/web.test.ts::=codes": {
    "kind": "support",
-   "hash": "631cbf1d132dc365",
+   "hash": "5d1b98ca26b81095",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -33629,9 +33629,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "harness/src/checks/web.test.ts::=codes": {
+  "harness/src/checks/web.test.ts::=CONFIG": {
    "kind": "support",
-   "hash": "5d1b98ca26b81095",
+   "hash": "631cbf1d132dc365",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -34799,36 +34799,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "harness/src/scratch.test.ts::=HOOK": {
-   "kind": "support",
-   "hash": "7c8ee71041501c9b",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "harness/src/scratch.test.ts::=MAKES_TEMP": {
-   "kind": "support",
-   "hash": "d0275ef85b1ac97e",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "harness/src/scratch.test.ts::=SRC": {
-   "kind": "support",
-   "hash": "a3a12bdf53464f09",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "harness/src/scratch.test.ts::=deadPid": {
    "kind": "support",
    "hash": "654d22144910c73b",
@@ -34839,9 +34809,29 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "harness/src/scratch.test.ts::=HOOK": {
+   "kind": "support",
+   "hash": "7c8ee71041501c9b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "harness/src/scratch.test.ts::=importsOf": {
    "kind": "support",
    "hash": "1b628d80c7aa27a2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=MAKES_TEMP": {
+   "kind": "support",
+   "hash": "d0275ef85b1ac97e",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -34872,6 +34862,16 @@
   "harness/src/scratch.test.ts::=sources": {
    "kind": "support",
    "hash": "cd3355e824de697f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=SRC": {
+   "kind": "support",
+   "hash": "a3a12bdf53464f09",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -35065,29 +35065,19 @@
    "added": "2026-11-13",
    "amended_by": "0024-rest-contract-becomes-a-document-the-machine-keeps.md"
   },
-  "harness/src/test-support/api-fixture.ts::=FEATURE_TABLE": {
-   "kind": "support",
-   "hash": "70e09c860be131ad",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
-  "harness/src/test-support/api-fixture.ts::=PLANNED": {
-   "kind": "support",
-   "hash": "48ee7cc2dc8e2998",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-13",
-   "amended_by": null
-  },
   "harness/src/test-support/api-fixture.ts::=apiRepo": {
    "kind": "support",
    "hash": "bea53e684d5399ca",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=FEATURE_TABLE": {
+   "kind": "support",
+   "hash": "70e09c860be131ad",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -35108,6 +35098,16 @@
   "harness/src/test-support/api-fixture.ts::=operation": {
    "kind": "support",
    "hash": "f30e28da8997a108",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-13",
+   "amended_by": null
+  },
+  "harness/src/test-support/api-fixture.ts::=PLANNED": {
+   "kind": "support",
+   "hash": "48ee7cc2dc8e2998",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -35225,29 +35225,19 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/test-support/docs-repo.ts::=ADR_DIR": {
-   "kind": "support",
-   "hash": "25e7cfc61835c91b",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
-  "harness/src/test-support/docs-repo.ts::=TODAY": {
-   "kind": "support",
-   "hash": "4122d770c4a1dd89",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-12",
-   "amended_by": null
-  },
   "harness/src/test-support/docs-repo.ts::=adr": {
    "kind": "support",
    "hash": "c175256b54361036",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=ADR_DIR": {
+   "kind": "support",
+   "hash": "25e7cfc61835c91b",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -35278,6 +35268,16 @@
   "harness/src/test-support/docs-repo.ts::=realConfig": {
    "kind": "support",
    "hash": "c119bd1c43e4f785",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/test-support/docs-repo.ts::=TODAY": {
+   "kind": "support",
+   "hash": "4122d770c4a1dd89",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -35445,9 +35445,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/test-support/mini-repo.ts::=DEMO_ARCHITECTURE": {
+  "harness/src/test-support/mini-repo.ts::=commitAll": {
    "kind": "support",
-   "hash": "5df57656d1217319",
+   "hash": "30962ef2a072c8b4",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -35455,9 +35455,9 @@
    "added": "2026-11-12",
    "amended_by": null
   },
-  "harness/src/test-support/mini-repo.ts::=commitAll": {
+  "harness/src/test-support/mini-repo.ts::=DEMO_ARCHITECTURE": {
    "kind": "support",
-   "hash": "30962ef2a072c8b4",
+   "hash": "5df57656d1217319",
    "asserts": 0,
    "literals": [],
    "precision": [],

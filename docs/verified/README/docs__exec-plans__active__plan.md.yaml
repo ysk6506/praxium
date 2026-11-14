@@ -2,6 +2,6 @@ doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
 hash: "2cc3efb439b14311"
 date: "2026-11-14"
-note: "내장 인증(ADR-0044): 새 유닛 3개, 요구사항 REQ-307~314, 계획의 경로 수를 확인했고 이 문서의 내용과 어긋나지 않는다"
-text_changed: false
-doc_hash: "63f2152de7eb6009"
+note: "병합 뒤 확인: 내장 인증(ADR-0044)과 REQ-307~314, 수집 사용성 요구가 이 문서와 어긋나지 않는다"
+text_changed: true
+doc_hash: "2b531a7f310f2750"

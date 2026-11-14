@@ -70,8 +70,9 @@ covers:
 
 ### 안내
 
+- [수집 정의 형식 — 내 엑셀과 CSV를 소스 정의와 매핑 정의로 설명하는 법](guides/ingest-definitions.md)
 - [서버 운영하기 — 첫 관리자, 사용자와 토큰, 운영 모드의 시작 조건](guides/operate-the-server.md)
-- [릴리스 만들기 — 태그를 푸시하면 다섯 대상의 실행 파일이 GitHub 릴리스로 나가요](guides/release.md)
+- [릴리스 만들기 — 태그를 푸시하거나 Actions 화면에서 수동 실행하면 다섯 대상의 실행 파일이 GitHub 릴리스로 나가요](guides/release.md)
 
 ### 계획
 
@@ -82,6 +83,7 @@ covers:
 - [설계 조사 — 결정의 근거가 된 조사의 요약과 한계](references/design-research.md)
 - [테라리움에서 넘겨받은 것 — 요구사항, 설계 결정, 풀리지 않은 쟁점](references/from-terrarium.md)
 - [테라리움에 남아 있던 제품 책임자의 요구 — KG 기반의 출발 요구](references/owner-requirements-from-terrarium.md)
+- [v0.1.0-alpha.1 릴리스 노트](releases/v0.1.0-alpha.1.md)
 
 <!-- docs-list:end -->
 
