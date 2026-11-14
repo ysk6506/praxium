@@ -25506,6 +25506,409 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/scratch-signal.test.ts::<import:220d16c9>": {
+   "kind": "support",
+   "hash": "220d16c95dffcadd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:7cba47b9>": {
+   "kind": "support",
+   "hash": "7cba47b9b6b9a010",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:cede6801>": {
+   "kind": "support",
+   "hash": "cede6801644cbf82",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::a run that is stopped removes its folder [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::a run that is stopped removes its folder [REQ-024] > SIGTERM removes the folder and the process still ends by the signal": {
+   "kind": "test",
+   "hash": "2910295b148a63d2",
+   "asserts": 3,
+   "literals": [
+    "\"--import\"",
+    "\"-e\"",
+    "\"../..\"",
+    "\"SIGTERM removes the folder and the process still ends by the signal\"",
+    "\"SIGTERM\"",
+    "\"SIGTERM\"",
+    "\"SIGTERM\"",
+    "\"data\"",
+    "\"exit\"",
+    "\"scratch-signal-\"",
+    "\"scratch.ts\"",
+    "\"tsx\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:64cf5377>": {
+   "kind": "support",
+   "hash": "64cf5377250d1fbd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:a261edf0>": {
+   "kind": "support",
+   "hash": "a261edf027ea5f70",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:dadea52c>": {
+   "kind": "support",
+   "hash": "dadea52c48bf739a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:ef086a73>": {
+   "kind": "support",
+   "hash": "ef086a734d4c031a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=DAY": {
+   "kind": "support",
+   "hash": "56e01abffb2558fd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=deadPid": {
+   "kind": "support",
+   "hash": "654d22144910c73b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=HOOK": {
+   "kind": "support",
+   "hash": "7c8ee71041501c9b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=importsOf": {
+   "kind": "support",
+   "hash": "1b628d80c7aa27a2",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=MAKES_TEMP": {
+   "kind": "support",
+   "hash": "d0275ef85b1ac97e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=reachesHook": {
+   "kind": "support",
+   "hash": "06e0c4a43b40897b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=runFolder": {
+   "kind": "support",
+   "hash": "c63654af19ddffe1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=sources": {
+   "kind": "support",
+   "hash": "cd3355e824de697f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::=SRC": {
+   "kind": "support",
+   "hash": "a3a12bdf53464f09",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::nothing is made outside the scratch [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::nothing is made outside the scratch [REQ-024] > a test file or support module that makes temporary folders imports the hook, directly or through another support module": {
+   "kind": "test",
+   "hash": "e37849c69a0a7cee",
+   "asserts": 2,
+   "literals": [
+    "\".test.ts\"",
+    "\"3\"",
+    "\"3\"",
+    "\"a test file or support module that makes temporary folders imports the hook, directly or through another support module\"",
+    "\"scratch.test.ts\"",
+    "\"scratch.ts\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::nothing is made outside the scratch [REQ-024] > code of the checks gets its folders from the scratch, never from mkdtemp": {
+   "kind": "test",
+   "hash": "ecf701b4bf85b75c",
+   "asserts": 1,
+   "literals": [
+    "\".test.ts\"",
+    "\"code of the checks gets its folders from the scratch, never from mkdtemp\"",
+    "\"scratch.test.ts\"",
+    "\"scratch.ts\"",
+    "\"utf8\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::the scratch folder of a run [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::the scratch folder of a run [REQ-024] > a parent that does not exist has nothing to sweep": {
+   "kind": "test",
+   "hash": "5a25e507f33f1595",
+   "asserts": 1,
+   "literals": [
+    "\"a parent that does not exist has nothing to sweep\"",
+    "\"no-such-parent-folder\"",
+    "\"no-such-parent-folder\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::the scratch folder of a run [REQ-024] > a scratch is made below the parent and disposing removes all of it, twice is fine": {
+   "kind": "test",
+   "hash": "20ecf9b54b57049a",
+   "asserts": 3,
+   "literals": [
+    "\"a scratch is made below the parent and disposing removes all of it, twice is fine\"",
+    "\"a\"",
+    "\"a.txt\"",
+    "\"scratch-base-\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::the scratch folder of a run [REQ-024] > a test file that uses the support code makes its folders below the scratch": {
+   "kind": "test",
+   "hash": "ad4314d1a47a32a2",
+   "asserts": 3,
+   "literals": [
+    "\"a test file that uses the support code makes its folders below the scratch\"",
+    "\"package.json\"",
+    "\"package.json\"",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::the scratch folder of a run [REQ-024] > opening a scratch sweeps what a killed run left": {
+   "kind": "test",
+   "hash": "d9265f59bbe847a8",
+   "asserts": 2,
+   "literals": [
+    "\"3\"",
+    "\"opening a scratch sweeps what a killed run left\"",
+    "\"scratch-open-\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch.test.ts::the scratch folder of a run [REQ-024] > the sweep removes an old folder of a finished run and nothing else": {
+   "kind": "test",
+   "hash": "4a0cf4c97b759bb3",
+   "asserts": 2,
+   "literals": [
+    "\"2\"",
+    "\"2\"",
+    "\"2\"",
+    "\"praxium-mini-old\"",
+    "\"scratch-sweep-\"",
+    "\"the sweep removes an old folder of a finished run and nothing else\"",
+    "false",
+    "false",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "harness/src/test-support/api-fixture.ts::<import:15d03698>": {
    "kind": "support",
    "hash": "15d03698d767df03",
@@ -25886,6 +26289,16 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/test-support/mini-repo.ts::<import:cb0c922e>": {
+   "kind": "support",
+   "hash": "cb0c922ed11c760a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "harness/src/test-support/mini-repo.ts::<import:e65b41ba>": {
    "kind": "support",
    "hash": "e65b41baa016e435",
@@ -25954,6 +26367,86 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-12",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::<hook:afterAll>": {
+   "kind": "support",
+   "hash": "7490f5a3b7f01321",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::<import:644086d0>": {
+   "kind": "support",
+   "hash": "644086d0f13b3f72",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::<import:da053585>": {
+   "kind": "support",
+   "hash": "da053585b8c08b7f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::<stmt:20503645>": {
+   "kind": "support",
+   "hash": "2050364563bec516",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::<stmt:206cdaad>": {
+   "kind": "support",
+   "hash": "206cdaadfcd4b42a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::=before": {
+   "kind": "support",
+   "hash": "c385b57631343fa8",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::=release": {
+   "kind": "support",
+   "hash": "04839f1105718622",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/test-support/scratch-hook.ts::=scratch": {
+   "kind": "support",
+   "hash": "dc1f3e015633aa76",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
    "amended_by": null
   },
   "harness/src/ts-ast.test.ts::<import:7fcd7466>": {
