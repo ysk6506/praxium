@@ -23,7 +23,7 @@ covers:
 ```
 pnpm install
 pnpm check        # lint + 타입 + 테스트 + 모든 구조 검사(Go의 gofmt, vet, 시험 포함). 이게 통과해야 끝난 것.
-cd backend && go test ./... && go vet ./...   # Go만 빨리 볼 때. Go 1.24 이상이 있어야 한다.
+cd backend && go test ./... && go vet ./...   # Go만 빨리 볼 때. Go 1.27.4 이상이 있어야 한다.
 go run ./backend/cmd/praxium worldgen -scale 100000   # 지어낸 세계(생성기). 인자는 docs/design-docs/worldgen.md
 ```
 
