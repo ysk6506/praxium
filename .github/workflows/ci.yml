@@ -121,6 +121,8 @@ jobs:
         run: pnpm web:gen-api --check
       - name: Build the web UI and the program with it
         run: scripts/build-with-web.sh "$RUNNER_TEMP/praxium"
+      - name: Size budget of the web build (WEB045)
+        run: pnpm tsx harness/src/checks/web.ts --budget
       # The quality table's coverage column is read from a record made here, from the coverage this job just measured
       # (docs/generated/coverage-record.json, not committed). Without it every coverage cell says "unknown".
       - name: Record the measured coverage

@@ -11,6 +11,9 @@
  * WEB030 the placeholder page of the embed folder is missing
  * WEB031 Go code or a module file names apps/web: the backend must build without it
  * WEB032 git does not ignore the real build output in the embed folder (or ignores the placeholder)
+ * WEB040 the contrast of a pair of tokens is too low (web-colors.ts)
+ * WEB041 an unsafe sink; WEB042 an absolute address; WEB043 the focus outline removed; WEB044 motion that does not
+ *        stop for prefers-reduced-motion; WEB045 the build is over its size budget (web-rules.ts)
  *
  * That `@base-ui/react` is imported by the ui layer alone is ARCH020 (architecture.yaml, third_party).
  */
@@ -29,6 +32,7 @@ import {
   type Violation,
   violation,
 } from "../common";
+import { budgetViolations, rulesViolations, type WebRules } from "./web-rules";
 
 const CONFIG_PATH = "harness/config/web.yaml";
 
@@ -38,6 +42,8 @@ export interface WebConfig {
   readonly dev_dependencies: readonly string[];
   readonly token_file: string;
   readonly scan: readonly string[];
+  /** The rules of docs/design-docs/web-ui-rules.md that a machine checks (ADR-0045); see web-rules.ts. */
+  readonly rules?: WebRules;
   readonly contract: string;
   readonly generated_dir: string;
   readonly generator_script: string;
@@ -316,12 +322,19 @@ export function run(root: string): Violation[] {
     ...regenerationViolations(root, config),
     ...colorViolations(root, config),
     ...backendViolations(root, config),
+    ...rulesViolations(root, config),
   ];
 }
 
+/** `--budget` measures the build output of apps/web (CI runs it after the web build); with none, it fails. */
 export function main(argv: readonly string[]): number {
   const { flags } = parseArgs(argv);
-  return finish("web", run(findRoot(flag(flags, "root"))));
+  const root = findRoot(flag(flags, "root"));
+  if (flags.has("budget")) {
+    const rules = loadWebConfig(root).rules;
+    return finish("web-budget", rules ? budgetViolations(root, rules, true) : []);
+  }
+  return finish("web", run(root));
 }
 
 if (isMain(import.meta.url)) process.exit(main(process.argv.slice(2)));
