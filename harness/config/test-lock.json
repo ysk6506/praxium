@@ -2434,6 +2434,38 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestHostsLinkToServersByNormalisedSerial": {
+   "kind": "test",
+   "hash": "0172f6476dbc3dc8",
+   "asserts": 3,
+   "literals": [
+    "f3d461fae51f9a1b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263",
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdentifiersOfAFeedAreBoundAndAClashIsReported": {
+   "kind": "test",
+   "hash": "da032af2375dc7e8",
+   "asserts": 4,
+   "literals": [
+    "94104edcb3d4766e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265",
+    "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestIncompleteCaptureDoesNotCountAbsence": {
    "kind": "test",
    "hash": "d50da59d221718f0",
@@ -2445,6 +2477,21 @@
    "skips": 0,
    "reqs": [
     "REQ-267"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestLinkKeyTypeAndFilterTestsAreChecked": {
+   "kind": "test",
+   "hash": "50b2eb6a21e73343",
+   "asserts": 3,
+   "literals": [
+    "436d30ba864f0c21"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -2571,6 +2618,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestSecondLinkThatBreaksCardinalityIsSetAside": {
+   "kind": "test",
+   "hash": "ca6ac2dd227ac686",
+   "asserts": 2,
+   "literals": [
+    "100ea26360845750"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestSecondRunChangesNothing": {
    "kind": "test",
    "hash": "5a2afb407ea65f8b",
@@ -2597,6 +2659,21 @@
    "skips": 0,
    "reqs": [
     "REQ-268"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSourceDefinitionRefusesWhatThisBuildLacks": {
+   "kind": "test",
+   "hash": "d1e690334b8d0845",
+   "asserts": 1,
+   "literals": [
+    "2dc54d6665347a90"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-263"
    ],
    "added": "2026-11-14",
    "amended_by": null
