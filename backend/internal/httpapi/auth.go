@@ -121,7 +121,7 @@ func (c *call) refuseToken(key, reason, code string) {
 }
 
 func (c *call) authAudit(event, reason string) {
-	c.s.log.Warn(event, "audit", true, "event", event, "reason", reason, "remote", c.clientKey(),
+	c.s.log.Warn("audit", "audit", true, "event", event, "reason", reason, "remote", c.clientKey(),
 		"path", c.r.URL.Path, "trace_id", c.trace)
 }
 

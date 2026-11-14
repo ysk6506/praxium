@@ -76,7 +76,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "The token id: the part of the token after pxm_ and before the secret. It names the token and is not secret."
+            "description": "The token id: the start of the token before its secret, pxm_ and 16 hex characters. It names the token and is not secret."
           },
           "owner": {
             "type": "string",
@@ -169,7 +169,7 @@
         "properties": {
           "id": {
             "type": "string",
-            "description": "The token id: the part of the token after pxm_ and before the secret. It names the token and is not secret."
+            "description": "The token id: the start of the token before its secret, pxm_ and 16 hex characters. It names the token and is not secret."
           },
           "owner": {
             "type": "string",

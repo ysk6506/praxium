@@ -32,7 +32,7 @@ var pathSamples = map[string]string{
 	"type_id": "ot.site", "link_type_id": "lt.located_in", "action_type_id": "ac.acknowledge_alarm",
 	"trait_id": "tr.common", "scheme_id": "is.array_system_id", "code": "auth.token_missing",
 	"kg": "main", "object_id": sampleRackID,
-	"user_id": "ada", "account_id": "ingest-demo", "token_id": "0123456789abcdef",
+	"user_id": "ada", "account_id": "ingest-demo", "token_id": "pxm_0123456789abcdef",
 }
 
 // sampleSpec overrides what a sample would otherwise be.

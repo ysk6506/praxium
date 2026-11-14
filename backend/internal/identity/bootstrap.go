@@ -62,13 +62,20 @@ func (s *Service) makeFirstAdministrator(ctx context.Context, req access.Princip
 	return principal, issued, err
 }
 
-func (s *Service) refuseWhenAdministered(ctx context.Context) error {
+// HasAdministrator says whether an enabled administrator exists. A server in production mode does not start
+// without one: nobody could manage it.
+func (s *Service) HasAdministrator(ctx context.Context) (bool, error) {
 	found := false
 	err := s.store.Scan(ctx, kindSubject, func(_ string, data []byte, _ int64) error {
 		rec, err := decodeSubject(data)
 		found = found || rec.isAdmin()
 		return err
 	})
+	return found, err
+}
+
+func (s *Service) refuseWhenAdministered(ctx context.Context) error {
+	found, err := s.HasAdministrator(ctx)
 	if err != nil {
 		return err
 	}

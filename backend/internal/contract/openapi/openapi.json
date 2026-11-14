@@ -1716,7 +1716,7 @@
             "type": "string"
           },
           "id": {
-            "description": "The token id: the part of the token after pxm_ and before the secret. It names the token and is not secret.",
+            "description": "The token id: the start of the token before its secret, pxm_ and 16 hex characters. It names the token and is not secret.",
             "type": "string"
           },
           "last_used_at": {
@@ -3930,7 +3930,7 @@
             "type": "string"
           },
           "id": {
-            "description": "The token id: the part of the token after pxm_ and before the secret. It names the token and is not secret.",
+            "description": "The token id: the start of the token before its secret, pxm_ and 16 hex characters. It names the token and is not secret.",
             "type": "string"
           },
           "last_used_at": {
@@ -9303,7 +9303,7 @@
                       "created_by": "root",
                       "description": "read only",
                       "expires_at": "2030-04-02T03:04:05Z",
-                      "id": "0123456789abcdef",
+                      "id": "pxm_0123456789abcdef",
                       "last_used_at": null,
                       "owner": "ada",
                       "owner_kind": "person",
@@ -9410,7 +9410,7 @@
                     "created_by": "root",
                     "description": "read only",
                     "expires_at": "2030-04-02T03:04:05Z",
-                    "id": "0123456789abcdef",
+                    "id": "pxm_0123456789abcdef",
                     "last_used_at": null,
                     "owner": "ada",
                     "owner_kind": "person",
@@ -9510,7 +9510,7 @@
                       "created_by": "root",
                       "description": "read only",
                       "expires_at": "2030-04-02T03:04:05Z",
-                      "id": "0123456789abcdef",
+                      "id": "pxm_0123456789abcdef",
                       "last_used_at": null,
                       "owner": "ada",
                       "owner_kind": "person",
@@ -9599,7 +9599,7 @@
                     "created_by": "root",
                     "description": "read only",
                     "expires_at": "2030-04-02T03:04:05Z",
-                    "id": "0123456789abcdef",
+                    "id": "pxm_0123456789abcdef",
                     "last_used_at": null,
                     "owner": "ada",
                     "owner_kind": "person",
