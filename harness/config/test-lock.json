@@ -6666,6 +6666,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestModelHelpersSayWhatTheyCannotDo": {
+   "kind": "test",
+   "hash": "3b7e48e1f04cf8f6",
+   "asserts": 4,
+   "literals": [
+    "2393c1afdb1efb47"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-368"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestModelHistoryLimit": {
    "kind": "test",
    "hash": "93e6c422d4d31b1f",

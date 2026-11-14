@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/definitionsfile"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
 // [REQ-367] [REQ-368]
@@ -224,5 +226,24 @@ func TestModelFlagsAreChecked(t *testing.T) {
 		if code, _, _ := modelCmd(t, d, c, "-data-dir", dir, "-set", "99"); code == exitOK {
 			t.Errorf("%s of a set that does not exist should be refused", c)
 		}
+	}
+}
+
+// [REQ-368]
+func TestModelHelpersSayWhatTheyCannotDo(t *testing.T) {
+	if err := printJSON(io.Discard, make(chan int)); err == nil {
+		t.Errorf("a value that is not JSON is an error, not an empty answer")
+	}
+	entries := map[string]helpEntry{}
+	modelHelpEntries(entries)
+	if fs := entries["model check"].flags(); fs.Lookup("file") == nil || fs.Lookup("json") == nil {
+		t.Errorf("the help of a command lists its flags")
+	}
+	base, err := model.StandardDefinitions()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := targetNameOf(base, model.OverlayTarget{Kind: model.TargetObjectType, ID: "ot.no_such"}); got != "ot.no_such" {
+		t.Errorf("a target the model does not have is named by its id: %s", got)
 	}
 }
