@@ -69,11 +69,11 @@ func (d *derivation) buildLinks() error {
 func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string, targets map[string]bool) error {
 	switch len(targets) {
 	case 0:
-		d.problem(ProblemLinkTarget, fromDS, lp.def.ID, row.Key, row.Line, "no row of "+toDS+" has this key")
+		d.problem(ProblemLinkTarget, fromDS, lp.def.ID, row, "no row of "+toDS+" has this key")
 		return nil
 	case 1:
 	default:
-		d.problem(ProblemLinkAmbiguous, fromDS, lp.def.ID, row.Key, row.Line, "rows of "+toDS+" with this key are different objects")
+		d.problem(ProblemLinkAmbiguous, fromDS, lp.def.ID, row, "rows of "+toDS+" with this key are different objects")
 		return nil
 	}
 	var dst string
@@ -118,7 +118,7 @@ func (d *derivation) checkCardinality() {
 		out, in := string(b.Cardinality) == "N:1" || string(b.Cardinality) == "1:1", string(b.Cardinality) == "1:N" || string(b.Cardinality) == "1:1"
 		fe, te := end{l.up.Type.String(), l.up.Src.String()}, end{l.up.Type.String(), l.up.Dst.String()}
 		if (out && perFrom[fe] != "") || (in && perTo[te] != "") {
-			d.problem(ProblemCardinality, "", "", l.up.Src.String(), 0, "the link of type "+l.up.Type.String()+" to "+l.up.Dst.String()+" would break the cardinality "+string(b.Cardinality))
+			d.problem(ProblemCardinality, "", "", Row{Key: l.up.Src.String()}, "the link of type "+l.up.Type.String()+" to "+l.up.Dst.String()+" would break the cardinality "+string(b.Cardinality))
 			delete(d.links, id)
 			continue
 		}

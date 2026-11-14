@@ -4,6 +4,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // The kinds of a cell of a workbook. A cell that has no value is not stored at all.
@@ -198,4 +200,15 @@ func (s Sheet) UsedRange() (row1, col1, row2, col2 int) {
 		}
 	}
 	return row1, col1, row2, col2
+}
+
+// check refuses a limit below 0; a nil set of limits is all defaults.
+func (l *Limits) check(source string) error {
+	if l == nil {
+		return nil
+	}
+	if l.MaxUncompressedBytes < 0 || l.MaxRowsPerSheet < 0 || l.MaxColumnsPerSheet < 0 || l.MaxCellChars < 0 || l.MaxSharedStrings < 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: a limit cannot be below 0", source)
+	}
+	return nil
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/memstore"
 	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/xlsx"
 )
 
 const ingestUsage = `usage: praxium ingest run -source <source.json> -mapping <mapping.json> -input <dataset>=<file> [-input ...] [-times N]
@@ -137,7 +138,7 @@ func ingestRun(f ingestFlags, stdout io.Writer, w wiring) error {
 		opener = func(p string) (io.ReadCloser, error) { return openTruth(w, p) }
 	}
 	runner := ingest.Runner{Store: store, Reg: reg, Clock: w.clock, IDs: w.ids, States: ingest.NewMemStateStore(),
-		Fetcher: filesource.Source{Open: opener, Files: f.inputs}}
+		Fetcher: filesource.Source{Open: opener, Files: f.inputs}, Workbooks: xlsx.Reader{}}
 	for i := 0; i < f.times; i++ {
 		rep, err := runner.Run(ctx, plan, kg.ID)
 		if err != nil {
@@ -153,9 +154,9 @@ func printReport(out io.Writer, r ingest.Report) {
 	fmt.Fprintf(out, "ingest source=%s run=%d objects=%d links=%d volatile=%d retired_objects=%d retired_links=%d changed=%t new_version=%t version=%s graph_hash=%s\n",
 		r.SourceID, r.Run, r.Objects, r.Links, r.VolatileValues, r.RetiredObjects, r.RetiredLinks, r.Changed, r.NewVersion, r.VersionID, r.GraphHash)
 	for _, d := range r.Datasets {
-		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d\n",
+		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d%s\n",
 			d.Dataset, d.Collected, d.Received, d.Unreadable, d.Read, d.Used, d.Filtered, d.Problem, d.Unused,
-			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen)
+			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen, sheetFields(d))
 	}
 	kinds := make([]string, 0, len(r.ProblemCounts))
 	for k := range r.ProblemCounts {
@@ -170,6 +171,35 @@ func printReport(out io.Writer, r ingest.Report) {
 			fmt.Fprintf(out, "  ... %d more listed in the report\n", len(r.Problems)-i)
 			break
 		}
-		fmt.Fprintf(out, "  problem %s dataset=%s key=%s line=%d: %s\n", p.Kind, p.Dataset, p.Key, p.Line, p.Reason)
+		fmt.Fprintf(out, "  problem %s dataset=%s key=%s line=%d%s: %s\n", p.Kind, p.Dataset, p.Key, p.Line, whereField(p), p.Reason)
 	}
+}
+
+// whereField is the place of a problem in a workbook, when it has one.
+func whereField(p ingest.Problem) string {
+	if p.Where == "" {
+		return ""
+	}
+	return " where=" + p.Where
+}
+
+// sheetFields is what a dataset read from a workbook adds to its line: the sheet and whether it is hidden, the
+// hidden rows and columns that were read, and the rows that were passed over with their reasons.
+func sheetFields(d ingest.DatasetReport) string {
+	if d.Sheet == "" {
+		return ""
+	}
+	out := fmt.Sprintf(" sheet=%q sheet_state=%s", d.Sheet, d.SheetState)
+	if d.HiddenRowsRead > 0 || d.HiddenColsRead > 0 {
+		out += fmt.Sprintf(" hidden_rows_read=%d hidden_columns_read=%d", d.HiddenRowsRead, d.HiddenColsRead)
+	}
+	reasons := make([]string, 0, len(d.Skipped))
+	for k := range d.Skipped {
+		reasons = append(reasons, k)
+	}
+	sort.Strings(reasons)
+	for _, k := range reasons {
+		out += fmt.Sprintf(" skipped_%s=%d", k, d.Skipped[k])
+	}
+	return out
 }

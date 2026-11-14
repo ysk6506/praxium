@@ -18,7 +18,19 @@ const (
 	ProblemLinkAmbiguous    = "link_target_ambiguous"
 	ProblemCardinality      = "cardinality"
 	ProblemExtraColumn      = "undeclared_column"
+	// The problems of a cell of a workbook that gave no value (the row is still read).
+	ProblemCellError      = "cell_error"
+	ProblemFormulaNoValue = "formula_without_value"
 )
+
+// CellIssue is a cell of a mapped column that gave no value: an error the cell shows (#N/A), or a formula the file
+// stored no value for.
+type CellIssue struct {
+	Kind   string
+	Where  string
+	Row    int
+	Reason string
+}
 
 // Problem is one thing set aside. Key is the natural key of the row (its parts joined with |).
 type Problem struct {
@@ -27,7 +39,9 @@ type Problem struct {
 	Feed    string `json:"feed,omitempty"`
 	Key     string `json:"key,omitempty"`
 	Line    int    `json:"line,omitempty"`
-	Reason  string `json:"reason"`
+	// Where is the place in a workbook: the sheet and the cell or the range of the row (Servers!C12).
+	Where  string `json:"where,omitempty"`
+	Reason string `json:"reason"`
 }
 
 // maxProblemSamples bounds the problems a report lists; the counts by kind are always complete.
@@ -52,6 +66,13 @@ type DatasetReport struct {
 	// UsedWithProblem is the rows counted as used that also had a problem; it is not part of the sum.
 	UsedWithProblem int        `json:"used_with_problem"`
 	Raw             RawChanges `json:"raw"`
+	// The rest is for a dataset read from a workbook: the sheet, its state, how many hidden rows and hidden columns
+	// the mapping read, and the rows passed over (blank_row, hidden_row, after_end), which are no part of the count.
+	Sheet          string         `json:"sheet,omitempty"`
+	SheetState     string         `json:"sheet_state,omitempty"`
+	HiddenRowsRead int            `json:"hidden_rows_read,omitempty"`
+	HiddenColsRead int            `json:"hidden_columns_read,omitempty"`
+	Skipped        map[string]int `json:"skipped,omitempty"`
 }
 
 // Balanced tells whether the counts add up as pipeline.md 7 says.
