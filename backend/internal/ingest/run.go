@@ -118,6 +118,10 @@ func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report,
 		if err != nil {
 			return cap, err
 		}
+		if table.OverRows {
+			rep.problem(Problem{Kind: ProblemIncomplete, Dataset: ds.ID, Reason: rowLimitReason(plan.Source.Limits)})
+			continue
+		}
 		if table.Reason != "" || len(table.Missing) > 0 {
 			reason := shapeReason(table)
 			dr.NotRead = reason
@@ -210,7 +214,7 @@ func (r Runner) parse(plan *Plan, ds Dataset, c Capture, books map[string]*Workb
 		if err := CheckEncoding(c.Data, ds.Parser); err != nil {
 			return Table{}, kernel.Errorf(kernel.CodeInvalidValue, "dataset %s: %s", ds.ID, plainMessage(err))
 		}
-		return Parse(ds, c.Data), nil
+		return ParseLimited(ds, c.Data, rowLimit(plan.Source.Limits)), nil
 	}
 	wb, ok := books[c.Hash]
 	if !ok {
@@ -228,6 +232,18 @@ func (r Runner) parse(plan *Plan, ds Dataset, c Capture, books map[string]*Workb
 		books[c.Hash] = wb
 	}
 	return ParseSheet(ds, wb), nil
+}
+
+func rowLimit(l *Limits) int {
+	if l == nil {
+		return DefaultMaxRowsPerDataset
+	}
+	return l.WithDefaults().MaxRowsPerDataset
+}
+
+// rowLimitReason is the reason of the incomplete capture of a file that has more rows than the limit.
+func rowLimitReason(l *Limits) string {
+	return "the file has more than " + itoa(rowLimit(l)) + " data rows, the most a dataset may have (limits.max_rows_per_dataset of the source definition); nothing of it was used"
 }
 
 // plainMessage is the text of an error without the codes of the errors it wraps.

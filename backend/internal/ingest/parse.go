@@ -74,6 +74,9 @@ type Table struct {
 	HiddenColsRead int
 	Skipped        map[string]int
 	CellIssues     []CellIssue
+	// OverRows is true when the file has more data rows than the limit it was read with: the reading stopped one
+	// row over the limit, and what was read is not to be used (ADR-0052).
+	OverRows bool
 }
 
 // Received is every data line of the capture, read or not.
@@ -81,14 +84,26 @@ func (t Table) Received() int { return len(t.Rows) + len(t.Unreadable) }
 
 // Parse turns the bytes of a capture into a table by the parser of the dataset. It is a function of the bytes and
 // the dataset: the same file gives the same table.
-func Parse(d Dataset, data []byte) Table {
+func Parse(d Dataset, data []byte) Table { return ParseLimited(d, data, 0) }
+
+// ParseLimited is Parse that stops at the first row over maxRows data rows (read or unreadable) and says so in
+// OverRows, so a file with more rows than a run may hold is never held whole in memory. 0 is no limit.
+func ParseLimited(d Dataset, data []byte, maxRows int) Table {
 	if d.Parser == ParserCSV {
-		return parseCSV(d, data)
+		return parseCSV(d, data, maxRows)
 	}
-	return parseJSONLines(d, data)
+	return parseJSONLines(d, data, maxRows)
 }
 
-func parseCSV(d Dataset, data []byte) Table {
+// over tells whether the table already has more rows than the limit, and marks it when it does.
+func (t *Table) over(maxRows int) bool {
+	if maxRows > 0 && t.Received() > maxRows {
+		t.OverRows = true
+	}
+	return t.OverRows
+}
+
+func parseCSV(d Dataset, data []byte, maxRows int) Table {
 	data = bytes.TrimPrefix(data, []byte("\xef\xbb\xbf"))
 	r := csv.NewReader(bytes.NewReader(data))
 	r.Comma = d.comma()
@@ -112,6 +127,9 @@ func parseCSV(d Dataset, data []byte) Table {
 		return t
 	}
 	for {
+		if t.over(maxRows) {
+			return t
+		}
 		rec, err := r.Read()
 		if errors.Is(err, io.EOF) {
 			return t
@@ -194,7 +212,7 @@ func (t *Table) addRow(d Dataset, line int, fields map[string]string) {
 	t.Rows = append(t.Rows, Row{Key: strings.Join(parts, keySep), Line: line, Fields: fields})
 }
 
-func parseJSONLines(d Dataset, data []byte) Table {
+func parseJSONLines(d Dataset, data []byte, maxRows int) Table {
 	var t Table
 	br := bufio.NewReader(bytes.NewReader(data))
 	for line := 1; ; line++ {
@@ -202,7 +220,7 @@ func parseJSONLines(d Dataset, data []byte) Table {
 		if len(bytes.TrimSpace(text)) > 0 {
 			t.jsonLine(d, line, text)
 		}
-		if err != nil {
+		if err != nil || t.over(maxRows) {
 			return t
 		}
 	}

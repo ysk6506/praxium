@@ -338,3 +338,58 @@ func TestAVanishedRowAndAFilteredRowAreWaitingObjectsInTheSameCount(t *testing.T
 		t.Fatalf("waiting %d retired %d", rep.WaitingObjects, rep.RetiredObjects)
 	}
 }
+
+func withRowLimit(n string) string {
+	return strings.Replace(sourceJSON, `"adapter":"file",`, `"adapter":"file","limits":{"max_rows_per_dataset":`+n+`},`, 1)
+}
+
+// [REQ-361]
+func TestAFileWithMoreRowsThanTheLimitIsAnIncompleteCaptureAndUsesNothing(t *testing.T) {
+	r := newRig(t, withRowLimit("2"), mappingJSON)
+	r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+	if rep := r.run(); rep.ProblemCounts[ProblemIncomplete] != 0 || rep.Objects != 6 {
+		t.Fatalf("a file with exactly the limit: objects %d problems %v", rep.Objects, rep.ProblemCounts)
+	}
+	r.files["ds_racks"] = racksV1 + "RK3,rack-c,42\n"
+	r.files["ds_vms"] = vmsV1 + `{"instance_uuid":"vm-3","name":"vm-three","cpu":1}` + "\n"
+	r.clock.Advance(100 * time.Hour)
+	rep := r.run()
+	if rep.ProblemCounts[ProblemIncomplete] != 2 || rep.RetiredObjects != 0 {
+		t.Fatalf("problems %v retired %d", rep.ProblemCounts, rep.RetiredObjects)
+	}
+	for _, p := range rep.Problems {
+		if p.Kind == ProblemIncomplete && !strings.Contains(p.Reason, "more than 2 data rows") || p.Kind == ProblemIncomplete && !strings.Contains(p.Reason, "max_rows_per_dataset") {
+			t.Errorf("the reason does not say the limit: %q", p.Reason)
+		}
+	}
+	if _, ok := r.rows()["rack-c"]; ok {
+		t.Error("rows of a file over the limit were used")
+	}
+	if d := r.dataset(rep, "ds_racks"); d.Read != 0 || !d.Collected || d.Applied {
+		t.Errorf("%+v", d)
+	}
+}
+
+// [REQ-361]
+func TestUnreadableLinesCountForTheRowLimit(t *testing.T) {
+	r := newRig(t, withRowLimit("2"), mappingJSON)
+	r.files["ds_racks"] = "asset_id,rack_name,total_u\nRK1,rack-a,42\nRK2,rack-b\nRK3,rack-c,42\n"
+	if rep := r.run(); rep.ProblemCounts[ProblemIncomplete] != 1 {
+		t.Fatalf("problems %v", rep.ProblemCounts)
+	}
+}
+
+// [REQ-361]
+func TestTheRowLimitHasADefaultLikeTheSheetsAndCannotBeNegative(t *testing.T) {
+	var l *Limits
+	if rowLimit(l) != DefaultMaxRowsPerSheet || rowLimit(&Limits{}) != 200_000 || rowLimit(&Limits{MaxRowsPerDataset: 7}) != 7 {
+		t.Error("the default or the setting is not what the sheets have")
+	}
+	if _, err := ParseSource(strings.NewReader(withRowLimit("-1"))); err == nil {
+		t.Error("a negative limit was accepted")
+	}
+	tab := ParseLimited(Dataset{Parser: ParserCSV, NaturalKey: []string{"a"}, Columns: []Column{{Name: "a", Paths: []string{"a"}}}}, []byte("a\n1\n2\n3\n4\n"), 2)
+	if !tab.OverRows || len(tab.Rows) > 3 {
+		t.Errorf("the reading did not stop near the limit: %d rows, over %t", len(tab.Rows), tab.OverRows)
+	}
+}

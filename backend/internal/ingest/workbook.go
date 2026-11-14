@@ -81,6 +81,9 @@ type Limits struct {
 	MaxColumnsPerSheet   int   `json:"max_columns_per_sheet,omitempty"`
 	MaxCellChars         int   `json:"max_cell_chars,omitempty"`
 	MaxSharedStrings     int   `json:"max_shared_strings,omitempty"`
+	// MaxRowsPerDataset is the most data rows a CSV or JSON Lines dataset may have (the counterpart of
+	// MaxRowsPerSheet for a workbook, ADR-0052). A file over it is an incomplete capture and nothing of it is used.
+	MaxRowsPerDataset int `json:"max_rows_per_dataset,omitempty"`
 }
 
 // The defaults of the limits. Excel itself allows 1,048,576 rows, 16,384 columns and 32,767 characters in a cell;
@@ -91,6 +94,8 @@ const (
 	DefaultMaxColumnsPerSheet   = 1_024
 	DefaultMaxCellChars         = 32_767
 	DefaultMaxSharedStrings     = 2_000_000
+	// DefaultMaxRowsPerDataset is the default of the rows of a CSV or JSON Lines dataset, the same as for a sheet.
+	DefaultMaxRowsPerDataset = DefaultMaxRowsPerSheet
 )
 
 // WithDefaults gives the limits with every unset one at its default.
@@ -109,6 +114,9 @@ func (l Limits) WithDefaults() Limits {
 	}
 	if l.MaxSharedStrings <= 0 {
 		l.MaxSharedStrings = DefaultMaxSharedStrings
+	}
+	if l.MaxRowsPerDataset <= 0 {
+		l.MaxRowsPerDataset = DefaultMaxRowsPerDataset
 	}
 	return l
 }
@@ -207,7 +215,7 @@ func (l *Limits) check(source string) error {
 	if l == nil {
 		return nil
 	}
-	if l.MaxUncompressedBytes < 0 || l.MaxRowsPerSheet < 0 || l.MaxColumnsPerSheet < 0 || l.MaxCellChars < 0 || l.MaxSharedStrings < 0 {
+	if l.MaxUncompressedBytes < 0 || l.MaxRowsPerSheet < 0 || l.MaxColumnsPerSheet < 0 || l.MaxCellChars < 0 || l.MaxSharedStrings < 0 || l.MaxRowsPerDataset < 0 {
 		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: a limit cannot be below 0", source)
 	}
 	return nil
