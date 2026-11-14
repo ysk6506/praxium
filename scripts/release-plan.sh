@@ -11,12 +11,16 @@
 #   RUN_REF        the ref the workflow was run on (github.ref, e.g. refs/heads/main or refs/tags/v1.0.0)
 #   MAIN_BRANCH    the ref a release may be run from (default refs/heads/main)
 #   MAIN_REF       the main branch to look for commits in (default refs/remotes/origin/main)
+#   DOCS_CHECK_DIR the checkout that holds the harness and node_modules (default: the current directory)
 #   GITHUB_OUTPUT  where the answers go (default: standard output)
 #
 # Answers (name=value lines): mode (tag-push, manual or snapshot), tag (v...; empty for a snapshot), sha, publish.
 # A manual release must be run on the main branch (its scripts and notes are the ones that were reviewed and
 # merged; a snapshot may be run on any ref) and be a commit of the main branch (an ancestor of its tip, or its tip), and its tag must not
 # exist yet; a pushed tag is taken as it is. The tags that exist are those the checkout fetched.
+# A run that publishes (a tag push or a manual release) also needs the documents that are marked `recheck: release` to be
+# re-read for it: the docs check in its release mode runs on the checkout of the ref that was run, and a stale one
+# refuses the release (ADR-0056). A snapshot publishes nothing and is not asked.
 set -euo pipefail
 
 fail() { echo "release-plan: $*" >&2; exit 1; }
@@ -60,6 +64,14 @@ case "$event" in
     ;;
   *) fail "the event '$event' is not push or workflow_dispatch" ;;
 esac
+
+# The docs contract is in the checkout of every ref of this repository; a checkout without it has no documents to ask.
+if [ "$publish" = true ] && [ -f "$PWD/harness/config/docs.yaml" ]; then
+  tsx="${DOCS_CHECK_DIR:-.}/node_modules/.bin/tsx"
+  [ -x "$tsx" ] || fail "the docs check cannot run for this release: $tsx is missing (run pnpm install --frozen-lockfile first)"
+  "$tsx" "${DOCS_CHECK_DIR:-.}/harness/src/checks/docs.ts" --release --root "$PWD" >&2 ||
+    fail "the documents are not ready for a release (see the DOC013 lines above): read each document against what it follows, fix it, run the reverify command it names, merge that to the main branch, then run the release again"
+fi
 
 {
   echo "mode=$mode"
