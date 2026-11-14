@@ -44,6 +44,10 @@ Reading the output:
                         files give the same hash.
   dataset ...           one line per dataset: the rows of the file. received = read + unreadable. read = used +
                         filtered (by a rule of the mapping) + problem + unused (no feed uses the row).
+                        used_with_problem: used rows that also had a problem. cells_left_out: wrong cells
+                        (invalid_value) that were left out: a wrong cell that is no part of an identity key does not
+                        drop the row, its object is made without that value, so the row stays used. A row dropped for
+                        a problem is counted in problem.
                         raw_added, raw_modified, raw_unchanged, raw_deleted, raw_unseen: what changed against the
                         previous run (unseen: not in the file this time, not yet retired).
                         not_read="...": the file of this dataset was not read at all, and why (the workbook has no

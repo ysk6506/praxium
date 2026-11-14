@@ -13,8 +13,8 @@ func printReport(out io.Writer, r ingest.Report) {
 	fmt.Fprintf(out, "ingest source=%s run=%d objects=%d links=%d volatile=%d retired_objects=%d retired_links=%d changed=%t new_version=%t version=%s graph_hash=%s\n",
 		r.SourceID, r.Run, r.Objects, r.Links, r.VolatileValues, r.RetiredObjects, r.RetiredLinks, r.Changed, r.NewVersion, r.VersionID, r.GraphHash)
 	for _, d := range r.Datasets {
-		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d%s\n",
-			d.Dataset, d.Collected, d.Received, d.Unreadable, d.Read, d.Used, d.Filtered, d.Problem, d.Unused,
+		fmt.Fprintf(out, "  dataset %s collected=%t received=%d unreadable=%d read=%d used=%d filtered=%d problem=%d unused=%d used_with_problem=%d cells_left_out=%d raw_added=%d raw_modified=%d raw_unchanged=%d raw_deleted=%d raw_unseen=%d%s\n",
+			d.Dataset, d.Collected, d.Received, d.Unreadable, d.Read, d.Used, d.Filtered, d.Problem, d.Unused, d.UsedWithProblem, d.CellsLeftOut,
 			d.Raw.Added, d.Raw.Modified, d.Raw.Unchanged, d.Raw.Deleted, d.Raw.Unseen, notReadField(d)+sheetFields(d))
 	}
 	kinds := make([]string, 0, len(r.ProblemCounts))

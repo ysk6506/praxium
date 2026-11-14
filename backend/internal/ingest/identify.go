@@ -1,6 +1,7 @@
 package ingest
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -32,7 +33,7 @@ func formKeys(fp *feedPlan, reg *model.Registry, row Row) (formed []formedKey, w
 			}
 			v, err := model.NormalizeValue(kp.vt, cell)
 			if err != nil || v == "" {
-				why = append(why, "key "+k.name+": column "+kp.column+" has a value that does not fit its value type")
+				why = append(why, "key "+k.name+": column "+kp.column+" has the value "+strconv.Quote(cell)+", which does not fit its value type")
 				ok = false
 				break
 			}

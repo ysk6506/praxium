@@ -194,10 +194,9 @@ func TestBadRowsAreQuarantined(t *testing.T) {
 		t.Fatalf("problems %v", rep.ProblemCounts)
 	}
 	rows := r.rows()
-	if _, ok := rows["vm-one"]; ok {
-		t.Error("a row with an invalid value was applied")
-	}
-	for _, want := range []string{"rack-a", "rack-b", "SV1", "vm-two"} {
+	// ADR-0052: a wrong cell that is no part of an identity key does not drop the row: the object is made, only the
+	// value is left out.
+	for _, want := range []string{"rack-a", "rack-b", "SV1", "vm-one", "vm-two"} {
 		if _, ok := rows[want]; !ok {
 			t.Errorf("%s was not applied", want)
 		}
