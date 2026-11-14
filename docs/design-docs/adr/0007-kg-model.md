@@ -14,6 +14,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 8401e824b9e38ded
+amended_by:
+  - adr: "0043"
+    what: 필요한 채널을 채우는 링크가 없으면 알 수 없음이 된다는 문장
 ---
 # ADR-0007 KG의 모델: 확장 가능한 타입과 고정된 링크 의미, 채널별 상태, 객체인 이중화 그룹, 근거 등급, 불변 ID, 충분한 표준 모델
 

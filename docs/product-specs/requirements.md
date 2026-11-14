@@ -116,7 +116,7 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | ID | 요구사항 |
 |---|---|
 | REQ-140 | **예정(ADR-0010)** 질의는 사전 정의 질의(closed queries) 13종이다. 모든 응답에 KG 버전, 신선도, 근거 등급, 잘렸는지가 붙는다. 첫 3개(`find`, `get`, `neighbors`)의 몫은 REQ-250부터 REQ-254까지이고, 그것을 경로로 제공하는 몫은 REQ-255와 REQ-256이다. |
-| REQ-141 | **예정(ADR-0010)** 영향 범위는 링크 의미와 이중화 그룹의 3값으로 계산한다. 사실만 쓴 응답과 가정을 포함한 응답을 따로 주고, 정할 수 없는 것은 알 수 없음으로 준다. |
+| REQ-141 | **예정(ADR-0010)** 영향 범위는 링크 의미와 이중화 그룹의 3값으로 계산한다. 사실만 쓴 응답과 가정을 포함한 응답을 따로 주고, 정할 수 없는 것은 알 수 없음으로 준다. `impact`(연결성 제외)의 몫은 REQ-300부터 REQ-306까지이다(ADR-0043). 연결성(`connected_to`)과 `exposure`, `paths`는 남아 있다. |
 | REQ-142 | **예정(ADR-0010)** 스위치의 ECMP·BGP·LACP까지 고려한 영향 범위는 1초 안에, 설비 문제가 VM·앱·서비스에 미치는 범위는 수 초 안에 응답한다. 클로즈드 베타에서 측정해서 확인한다. |
 | REQ-143 | REST API는 버전이 있는 계약(OpenAPI 3.1)이고 계약이 먼저다. 계약은 `core.contract`에 조각(fragment)으로 두고 기계가 병합해 내장한다. 하네스가 계약의 규칙(`API001`~)을 린트하고, 병합한 것이 조각과 같은지, 호환성을 깨는 변경에 선언이 있는지, 아직 없는 경로의 등록부가 맞는지, 서버가 계약대로 응답하는지 차단한다(ADR-0024). |
 | REQ-144 | **예정(ADR-0010)** 새 KG 버전에서 바뀐 것을 다른 시스템에 알리는 변경 알림을 발행한다. |
@@ -272,6 +272,13 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-293 | `praxium ingest init -out <폴더>`는 실행 파일에 담긴 예제를 쓴다: CSV와 JSON Lines의 소스 정의, 매핑 정의, 샘플 파일, 엑셀의 소스 정의와 매핑 정의와 샘플 워크북(그 자리에서 만든다). 이미 있는 파일은 덮어쓰지 않고 모두 쓰거나 하나도 쓰지 않는다. 다음에 칠 명령(`ingest inspect`, `ingest run -data-dir`, `local`)을 출력한다 | ADR-0041, `backend/cmd/praxium/ingestinit_test.go` |
 | REQ-294 | `praxium local -data-dir <폴더>`는 그 폴더의 KG를 내장 파일 스토어로 열어 127.0.0.1(`-addr`)에서 API와 웹 UI를 낸다. 데모와 같은 접속 방식(실행마다 새 토큰, 프래그먼트 `#/connect?token=…&mode=local`)이고 합성 데이터를 넣지 않는다. 폴더나 KG가 없으면 먼저 `ingest run -data-dir`을 하라고 안내하며, 포트 검사와 루프백이 아닌 주소 경고는 데모와 같다. 시작 출력은 한 사람이 자기 컴퓨터에서 쓰는 용도이고 인증이 약하며 운영용이 아님을 밝힌다. 데모와 `local`의 시작은 오래 걸리면 몇 초마다 진행을 알린다 | ADR-0041, `backend/cmd/praxium/local_test.go`, `backend/cmd/praxium/help_test.go` |
 | REQ-295 | `/v1`의 응답은 `X-Content-Type-Options: nosniff`와 `Referrer-Policy: no-referrer`를 가진다(JSON 응답이라 CSP는 두지 않는다). 릴리스의 `SHA256SUMS`는 파일 이름순으로 정렬하고, 릴리스 확인 스크립트는 `local`과 `ingest init → ingest run -data-dir → local` 흐름을 확인한다 | ADR-0041, `backend/internal/httpapi/errordetail_test.go` |
+| REQ-300 | `impact`는 실패한 객체(`dead`), 끊긴 링크(`dead_links`), 사이트 장애(`site_failure`, 담긴 객체까지)에서 시작해 링크 의미(`runs_on`, `requires`, `supplied_by`, `realized_by`, `part_of`, `member_of`, `managed_by`, `contained_in`)대로 장애를 전파하고, 상태를 채널마다 3값으로 최소 고정점까지 라운드별로 구한다. 응답은 장애가 없을 때와 비교한 차이이고, 장애가 없는 상태에서는 아무것도 바뀌지 않는다. `connected_to`의 연결성은 계산하지 않는다. REQ-141에서 분리한 요구다(ADR-0043). |
+| REQ-301 | 이중화 그룹은 구성원 수와 `min_alive`로 계산한다. 정상 구성원이 `min_alive` 이상이면 그룹은 정상이고, 여유(slack)가 줄면 `exposed_direct`(그룹이 여유를 잃음), `exposed_inherited`(그것에 기대는 객체), `degraded`(일부만 잃음)로 알린다. `min_alive`를 모르면 가능한 모든 값에서 같을 때만 값을 낸다. 용량 모드의 그룹은 구성원이 모두 정상일 때만 정상이고, 아니면 알 수 없음과 경고 `capacity_group_unknown`을 준다. REQ-141에서 분리한 요구다(ADR-0043). |
+| REQ-302 | `mode`는 `facts_only`, `with_assumptions`, `both`이다. 사실만 쓴 응답은 `assumed` 링크를 알 수 없음으로 읽고, 가정 포함 응답은 사실처럼 쓴다. 약한 링크(가정, 알 수 없음, `max_staleness`를 넘은 관측)는 알 수 없음만 넘기고 장애는 넘기지 않는다. 사실만 쓴 응답에서 확정된 결과는 가정 포함 응답에서도 같고, 가정에 기댄 항목에는 `assumption_based`와 가장 약한 등급을 붙인다(ADR-0043). |
+| REQ-303 | 항목마다 결과(`down`, `interrupted`, `unknown`, `exposed_direct`, `exposed_inherited`, `degraded`, `unmanageable`)와 잃은 채널, 직전 원인(`via`), 원인까지 거슬러 올라간 경로(링크마다 의미, 등급, 근거)를 준다. 필요한 채널에 `supplied_by` 링크가 없는 객체는 알 수 없음이 아니라 항목의 `unfilled_channels`로 나열하고 결과 요약에 `unfilled_channel_objects`로 센다. 수는 읽을 수 없는 객체를 뺀 수이고 경로의 숨김 단계는 `hidden`으로만 나온다(ADR-0043). |
+| REQ-304 | 요청마다 `max_hops`, `max_items`(기본 5000), `time_budget`(기본 30초)으로 계산을 제한한다. 제한에 걸리면 `result_complete`에 이유(`max_hops`, `time_budget`)를 싣고 `computation`에 완료 여부와 멈춘 이유를 준다. 개수 요약은 항목 상한과 상관없이 전체를 센다. 시드가 1,000개를 넘거나, 없거나, 읽을 수 없는 객체이거나, 방향과 어긋난 필드가 있거나, `dead_scope_id`를 쓰면 고정된 코드로 거절한다(ADR-0043). |
+| REQ-305 | `direction: upstream`과 `target_object_id`로 대상이 기대는 객체를 구하고, 후보마다 그 하나만 장애가 났을 때의 결과를 두 읽기 모두에서 계산해 `single_point_of_failure`를 준다. 후보는 2,000개까지이다(ADR-0043). |
+| REQ-306 | `POST /v1/kgs/{kg}/queries:impact`가 계약대로 제공되고(계약 조각, 합쳐진 `openapi.json`, 서버, 웹 생성 코드가 일치), `praxium query impact`가 요약, 영향 종류별 묶음, 경로 순서의 사람용 출력과 `--json`과 사용 예와 읽는 법이 있는 `--help`를 제공한다. 같은 질문의 답은 메모리, 파일, PostgreSQL 스토어에서 같다(ADR-0043). |
 
 ## 범위 밖
 

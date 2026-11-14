@@ -14,6 +14,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 2b95405a5b961880
+amended_by:
+  - adr: "0043"
+    what: 영향 범위 응답의 필드와 한도를 정하지 않은 부분
 ---
 # ADR-0010 KG 질의 — 사전 정의 질의, 영향 범위의 의미, 프로젝션과 엔진
 
