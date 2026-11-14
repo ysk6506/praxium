@@ -35,3 +35,4 @@
 | [ADR-0027 KG를 API와 명령줄로 읽는다](../design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md) | 유효 |  |
 | [ADR-0028 감사에서 나온 검사 허점을 메운다](../design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md) | 유효 |  |
 | [ADR-0029 문서와 화면의 말을 표준 용어로 통일하고, 옛 표기가 돌아오지 못하게 검사한다](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) | 유효 |  |
+| [ADR-0033 파일 소스 하나를 KG까지 싣는 수집의 첫 한 줄](../design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md) | 유효 |  |
