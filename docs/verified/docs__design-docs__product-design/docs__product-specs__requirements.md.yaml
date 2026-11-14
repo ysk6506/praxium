@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "70b03ce186def22b"
+hash: "edaeffcb1e3b219b"
 date: "2026-11-14"
-note: "요구사항 330번대(정의 저장소)와 350번대(영향 범위 화면의 부품)가 함께 들어감. 제품 설계의 범위와 용어는 바뀌지 않아 그대로 둠"
+note: "REQ-342~349(조직 속성, 모델 유닛만)가 요구사항에 공존함을 대조했다. 개요의 내용은 바꿀 것이 없다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

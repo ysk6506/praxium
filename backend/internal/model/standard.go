@@ -79,7 +79,31 @@ func requireStandard(defs Definitions) error {
 			return kernel.Errorf(CodeNotStandard, "action type %s is in namespace %s, not std", a.ID, a.Namespace)
 		}
 	}
-	return nil
+	return requireStandardProperties(defs)
+}
+
+// requireStandardProperties rejects a property of the standard files that says
+// a namespace: a standard property is in its owner's, and an organisation's
+// property comes from an overlay (overlay.go).
+func requireStandardProperties(defs Definitions) error {
+	var err error
+	check := func(props []Property) {
+		for _, p := range props {
+			if p.Namespace != "" && err == nil {
+				err = kernel.Errorf(CodeNotStandard, "property %s is in namespace %s, not std", p.ID, p.Namespace)
+			}
+		}
+	}
+	for _, t := range defs.Traits {
+		check(t.Properties)
+	}
+	for _, t := range defs.ObjectTypes {
+		check(t.Properties)
+	}
+	for _, l := range defs.LinkTypes {
+		check(l.Properties)
+	}
+	return err
 }
 
 // objectsFile is the shape of one file under objects/.

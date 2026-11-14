@@ -89,6 +89,20 @@ const (
 	CodeActionRef kernel.Code = "model_action_ref"
 	// CodeValueInvalid is a value that a value type rejects.
 	CodeValueInvalid kernel.Code = "model_value_invalid"
+	// CodeOverlayTarget is an overlay whose target is missing, unknown, in sys or not a standard definition.
+	CodeOverlayTarget kernel.Code = "model_overlay_target"
+	// CodeOverlayName is an organisation property whose id, name or alias breaks the naming rule.
+	CodeOverlayName kernel.Code = "model_overlay_name"
+	// CodeOverlayNumber is an organisation property without a number or with one outside the organisation range.
+	CodeOverlayNumber kernel.Code = "model_overlay_number"
+	// CodeOverlayField is a field or a value of an overlay that organisation properties do not take yet.
+	CodeOverlayField kernel.Code = "model_overlay_field"
+	// CodeOverlayValueType is an organisation property whose value type is one that a flat file cannot give.
+	CodeOverlayValueType kernel.Code = "model_overlay_value_type"
+	// CodeOverlayLimit is an overlay that is over one of the size limits.
+	CodeOverlayLimit kernel.Code = "model_overlay_limit"
+	// CodeOverlayDuplicate is a target or a property id that two overlays, or one, repeat.
+	CodeOverlayDuplicate kernel.Code = "model_overlay_duplicate"
 )
 
 var catalogue = map[kernel.Code]string{
@@ -131,6 +145,13 @@ var catalogue = map[kernel.Code]string{
 	CodeActionRisk:          "The risk axes of an action do not fit each other.",
 	CodeActionRef:           "An action points at something that does not exist.",
 	CodeValueInvalid:        "A value type rejects the value.",
+	CodeOverlayTarget:       "An overlay needs a standard object type or trait as its target.",
+	CodeOverlayName:         "An organisation property needs an id from pr.org. and a name of the form org.snake_case.",
+	CodeOverlayNumber:       "An organisation property needs a number of 100000 or more.",
+	CodeOverlayField:        "An overlay uses a field or a value that organisation properties do not take.",
+	CodeOverlayValueType:    "An organisation property takes a text, number, truth, time, enum or quantity value type.",
+	CodeOverlayLimit:        "An overlay is over a size limit.",
+	CodeOverlayDuplicate:    "An overlay target or a property id is used twice.",
 }
 
 // Codes lists the codes of this unit, sorted.

@@ -49,8 +49,7 @@ func (c *checker) checkAliases(what string, form NameForm, aliases []string) {
 // checkProperty checks one property wherever it sits: a type, a trait or a link type.
 func (c *checker) checkProperty(p *Property, owner string) {
 	what := "property " + p.ID.String() + " of " + owner
-	c.requireName(what, FormSnake, p.Name)
-	c.checkAliases(what, FormSnake, p.Aliases)
+	c.checkPropertyNaming(what, p)
 	base, known := c.baseOf(p.ValueType)
 	if !known {
 		c.fail(CodeValueTypeUnknown, "%s uses the value type %q, which does not exist", what, p.ValueType)
@@ -59,7 +58,39 @@ func (c *checker) checkProperty(p *Property, owner string) {
 		c.checkScopeKey(what, p, base)
 	}
 	c.checkClasses(what, p)
-	c.checkLife(what, p.Status, p.SupersededBy.String(), p.ID.String(), lookupIn(c.props))
+	c.checkPropertyLife(what, p)
+}
+
+// checkPropertyNaming checks the namespace of a property and the form of its
+// name and aliases, which follow the namespace (names.go).
+func (c *checker) checkPropertyNaming(what string, p *Property) {
+	if p.Namespace != "" && p.Namespace != NamespaceOrg && p.Namespace != NamespaceExt {
+		c.fail(CodeClosedList, "%s has namespace %q: a property is in its owner's namespace (left out), org or ext", what, p.Namespace)
+		return
+	}
+	switch {
+	case p.Name == "":
+		c.fail(CodeRequiredField, "%s has no name", what)
+	case !ValidPropertyName(p.Namespace, p.Name):
+		c.fail(CodeNameInvalid, "%s has the name %q, which does not have the form %s", what, p.Name, propertyNameForm(p.Namespace))
+	}
+	for _, alias := range p.Aliases {
+		if !ValidPropertyName(p.Namespace, alias) {
+			c.fail(CodeNameInvalid, "%s has the alias %q, which does not have the form %s", what, alias, propertyNameForm(p.Namespace))
+		}
+	}
+}
+
+// checkPropertyLife is checkLife with one relief: an org or ext property may
+// be deprecated without a successor. That is how an organisation retires a
+// property it added, since its number and name are never given up (a standard
+// property must name what replaces it).
+func (c *checker) checkPropertyLife(what string, p *Property) {
+	successor := p.SupersededBy.String()
+	if p.Namespace != "" && successor == "" && statusOf(p.Status) == StatusDeprecated {
+		return
+	}
+	c.checkLife(what, p.Status, successor, p.ID.String(), lookupIn(c.props))
 }
 
 func (c *checker) checkEnumAndUnit(what string, p *Property, base BaseKind) {
