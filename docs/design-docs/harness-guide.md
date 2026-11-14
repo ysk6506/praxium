@@ -65,6 +65,10 @@ Go 프로그램은 한 번 빌드해 임시 디렉터리에서 실행한다. 인
 - **잠금에 포함하는 지원 코드(ADR-0028).** 테스트가 의존하는 비테스트 코드는 `go.locked_support`(패키지 디렉터리 또는 파일)에 적는다. 그 디렉터리의 비테스트 파일은 `package.Name`으로 참조하는 테스트(그 디렉터리의 테스트는 이름만으로도)의 지문에 포함된다. 지금은 적합성 테스트의 케이스 표(`backend/internal/graphcheck`)와 테스트가 사용하는 `graph/fixture.go`, `graph/scratch.go`이고, 케이스를 삭제하거나 단언을 약화하거나 추가하면 그것을 실행하는 테스트의 `TLOCK001`이 발생한다. 케이스의 이름과 순서는 `TestSuiteCaseNamesAreFixed`가 별도로 고정한다. 한계는 다음 항목과 같다.
 - **한계.** 함수 이름으로 참조하는 범위를 넓게 잡아 지문은 관대하지 않고 오히려 엄격하다: 테스트가 사용하는 도우미의 본문을 수정해도 그 도우미를 쓰는 모든 테스트에서 걸린다. 다른 패키지의 도우미는 `locked_support`에 적은 것만 확인한다. 컴파일러가 아는 타입 해석은 하지 않는다. `testdata/`가 아닌 곳의 파일은 `go:embed`로 참조될 때만 확인한다.
 
+## 임시 디렉터리 (ADR-0036)
+
+임시 디렉터리는 만든 쪽이 지운다. 테스트 지원 코드(`harness/src/test-support`)를 import하는 테스트 파일은 `scratch-hook.ts`가 `TMPDIR`을 `<tmp>/praxium-scratch/run-<pid>-<임의 문자>/`로 바꾸고 파일이 끝날 때(실패와 시간 초과 포함) 지운다. 검사 코드는 `harness/src/scratch.ts`의 `openScratch`로 디렉터리를 얻고 `finally`에서 지운다. 강제 종료로 남은 것은 다음 실행이 시작할 때 지운다: 마지막 수정이 하루를 넘고 소유 프로세스가 없는 `run-*`만이고, 살아 있는 실행의 것과 다른 접두사의 것은 건드리지 않는다. 새 테스트 파일이 `mkdtempSync`나 `tmpdir()`을 쓰면 지원 코드를 import해야 한다(`scratch.test.ts`가 확인한다).
+
 ## 명령
 
 - `pnpm check` — 전부 실행. 끝나기 전에 반드시 통과.
