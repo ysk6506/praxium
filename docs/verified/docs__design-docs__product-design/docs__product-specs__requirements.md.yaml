@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "2747a98c7bff624a"
+hash: "ca88f99ff5524f12"
 date: "2026-11-14"
-note: "용어를 표준 용어로 고친 뒤 다시 확인"
+note: "요구사항 REQ-366~373(조직 속성 명령과 시작 배선)을 추가한 뒤 설계 문서와 대조했다. 합치기 뒤 다시 확인"
 text_changed: true
 doc_hash: "019854b80cb4930e"

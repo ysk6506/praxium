@@ -300,6 +300,14 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-329 | `ingest`와 `ingest run --help`는 정의 형식의 안내서(docs/guides/ingest-definitions.md)를 가리키고, `ingest run --help`는 요약 줄의 항목(`not_read`, `skipped_blank_row`, `skipped_hidden_row`, `skipped_after_end`와 문제의 종류)을 한 줄씩 설명한다 | ADR-0046, `backend/cmd/praxium/ingestusability_test.go` |
 | REQ-330 | `ingest init`은 예제 폴더에 형식 안내서(`ingest-definitions.md`)도 쓴다. 쓰는 사본은 docs/guides/ingest-definitions.md와 같다 | ADR-0046, `backend/cmd/praxium/ingestguide_test.go` |
 | REQ-331 | 새 옵션(`delimiter`, `ignore_undeclared_columns`, 컬럼의 `note`)은 모두 선택이다. 옛 정의 파일은 그대로 읽히고 같은 입력이면 같은 `graph_hash`가 나온다 | ADR-0046, `backend/internal/ingest/usability_test.go` |
+| REQ-358 | 식별 키가 아닌 칸의 값이 속성 타입에 맞지 않아도 수집은 행을 버리지 않는다. 객체는 만들고 그 속성만 비운다(빈 칸과 같게 다루므로 전에 맞던 값을 붙들지 않는다). 그 칸은 `invalid_value`(셀 주소 포함)로 알리고 그 객체를 가리키는 링크는 정상으로 만든다. 식별 키의 구성 요소가 틀리거나 비면 그 행에서 객체를 만들 수 없고(`missing_identity`) 메시지가 식별 키의 일부라서임을 말한다. 속성만 빠진 행은 `used`이고 요약 줄에 `used_with_problem`과 `cells_left_out`으로 행이 빠진 `problem`과 따로 보인다 | ADR-0052, `backend/internal/ingest/semantics_test.go`, `backend/cmd/praxium/ingestsemantics_test.go` |
+| REQ-359 | `key_name`은 이름표일 뿐이다. 객체가 같은지는 타입과 식별 키 구성 요소의 참조(속성 ID나 스킴 ID)의 순서 있는 목록과 값으로만 정해지고, 같은 객체를 가리키는 피드 가운데 한쪽에만 `key_name`을 주거나 서로 다른 이름을 줘도 같은 객체이다. 객체 ID와 `graph_hash`는 바뀌지 않는다 | ADR-0052, `backend/internal/ingest/semantics_test.go` |
+| REQ-360 | 정제의 `filter`가 걸러낸 행의 객체도 바로 닫지 않고 파일에서 사라진 행과 같은 규칙(완전한 수집에서 연속 3번과 24시간, `deletion: none`이면 닫지 않음)으로 닫는다. 기다리는 동안 객체와 링크는 그대로이고 걸러진 행으로 새 객체가 만들어지지는 않는다. 요약 줄은 닫은 객체 수(`retired_objects`)와 닫히기를 기다리는 객체 수(`waiting_objects`)를 보인다 | ADR-0052, `backend/internal/ingest/semantics_test.go`, `backend/cmd/praxium/ingestsemantics_test.go` |
+| REQ-361 | CSV와 JSON Lines에 데이터셋당 행 수 한도가 있다. 기본은 엑셀의 시트와 같은 200,000행이고 소스 정의의 `limits.max_rows_per_dataset`으로 바꾼다(0보다 작으면 거절). 넘으면 파일 크기 한도와 같이 불완전한 수집으로 표시하고 이유에 한도와 필드 이름을 말하며 그 데이터셋의 어떤 행도 쓰지 않고 사라진 행으로 세지도 않는다. 읽는 쪽은 한도를 한 행 넘으면 멈춰서 파일 전체를 메모리에 올리지 않는다. 행 수별 최대 메모리를 ADR에 적는다 | ADR-0052, `backend/internal/ingest/semantics_test.go` |
+| REQ-362 | `filter`의 `in`과 `not_in`은 칸과 목록 값의 앞뒤 공백을 무시하고 비교한다(`not_empty`와 자연 키처럼). 대소문자와 가운데 공백은 그대로 비교한다 | ADR-0052, `backend/internal/ingest/semantics_test.go` |
+| REQ-363 | 링크의 근거 등급은 링크 정의가 읽은 두 피드의 등급 가운데 낮은 쪽이다. 한쪽 피드에 `approximate`가 있으면 링크는 `assumed`이고 아니면 `fact`이다(파이프라인 설계 5.3의 "도출한 링크의 등급은 사용된 입력 중 가장 낮은 등급") | ADR-0052, `backend/internal/ingest/semantics_test.go` |
+| REQ-364 | 수집 정의 형식 안내서(docs/guides/ingest-definitions.md)와 실행 파일에 담는 사본이 새 동작(행이 빠지는 경우와 속성만 빠지는 경우, `key_name`의 뜻, 걸러진 행의 객체가 닫히는 규칙, 행 수 한도, 요약 줄의 새 항목)과 실제 출력에 맞고 서로 같다. `ingest run --help`가 새 요약 항목을 설명한다 | ADR-0052, `backend/cmd/praxium/ingestguide_test.go`, `backend/cmd/praxium/ingestkeep_test.go` |
+| REQ-365 | 이 변경 때문에 옛 정의 파일은 그대로 읽히고, 같은 입력이면 객체 ID와 `graph_hash`가 달라지지 않는다. 데이터 폴더의 수집 상태 안의 식별 색인(서명)만 바뀌므로 알파 2의 데이터 폴더는 다시 수집한다 | ADR-0052, `backend/internal/ingest/semantics_test.go`, `backend/internal/ingestcheck/accept_test.go` |
 | REQ-307 | 접근 토큰은 `pxm_` + 토큰 ID + 운영체제 엔트로피에서 만든 256비트 비밀이다. 서버는 도메인 접두어를 붙인 SHA-256만 저장하고 상수 시간으로 비교한다. 모든 토큰은 만료하고(기본 90일, 1시간~365일) 폐기할 수 있으며, 폐기·만료·비활성화는 다음 요청부터 거부한다. 비밀번호와 기본 계정은 없다(ADR-0044). |
 | REQ-308 | 첫 관리자는 서버 기계에서 `praxium admin bootstrap`으로 만들고 토큰은 한 번만 출력한다. 활성 관리자가 있으면 거절하고, 동시에 둘이 성공할 수 없다. 잃은 토큰은 서버 기계의 `admin issue-token`으로 다시 받는다(ADR-0044). |
 | REQ-309 | 토큰이 가진 역할은 토큰의 역할과 소유자의 현재 역할의 교집합이다. 관리 경로(`/v1/users`, `/v1/system-accounts`, 토큰 발급)는 `admin`만, 사용자는 `ingester`를 서비스 계정은 `admin`을 가질 수 없고 마지막 활성 관리자는 비활성화할 수 없다(ADR-0044). |
@@ -308,6 +316,20 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-312 | 관리 REST API(`/v1/users`, `/v1/system-accounts`, `/v1/tokens`, `/v1/tokens/{token_id}`)와 CLI(`praxium whoami`, `praxium admin …`)를 제공한다. 만들고 행동하는 POST는 `Idempotency-Key`가 필수이고 발급한 토큰의 응답은 다시 재생하지 않는다(ADR-0044). |
 | REQ-313 | 어떤 로그, 오류, 응답, 목록에도 토큰과 비밀과 해시가 나오지 않는다. 인증과 관리 사건은 `audit: true` 로그로 남는다(ADR-0044). |
 | REQ-314 | 같은 주소에서 거절된 토큰이 쌓이면 그 주소의 거절된 토큰에 일정 시간 429와 `Retry-After`로 답하고 더 세지 않는다. 유효한 토큰은 차단 중인 주소에서도 통과하고 성공은 실패 횟수를 지우지 않는다. 인증 저장소가 응답하지 못하면 401이 아니라 503이다(ADR-0044). |
+
+### 영향 범위 화면의 부품 (350번대)
+영향 범위를 보이는 화면에 연결하기 전의 순수 계산(`apps/web/src/data`)과 그래프·목록 부품(`apps/web/src/ui`)이다. 화면과 실제 API 호출은 엔진이 병합된 뒤의 일이다. 지금의 모양은 임시이고 남는 것은 동작, 계산, 부품의 구조, 접근성 규칙이다(ADR-0051).
+
+| ID | 요구사항 | 근거·테스트 |
+|---|---|---|
+| REQ-350 | 영향 범위 응답의 항목은 시작 객체를 뿌리로 하는 원인 트리가 된다. 항목의 바로 앞 원인이 부모이고, 경로에만 있는 객체는 경유 노드, 읽을 수 없는 객체는 이름 없는 숨김 노드이며, 위쪽 방향은 대상 객체가 뿌리인 같은 트리다. 노드는 층을 열로, 트리를 깊이 먼저 도는 순서를 줄로 놓이고, 같은 입력이면 항목이 어떤 순서로 도착해도 같은 좌표다. 자식은 부모보다 위에 놓이지 않고 한 칸에 두 노드가 놓이지 않는다 | ADR-0051, `apps/web/src/data/impact-tree.test.ts` |
+| REQ-351 | 노드가 300개를 넘으면 그래프는 같은 부모 묶음 아래의 같은 타입 노드를 하나의 묶음으로 보인다. 모든 노드는 묶음 하나에 들어가 묶음의 개수 합이 노드 수와 같고, 묶음은 개수와 등급 구성과 구성원(심각한 순)을 가진다 | ADR-0051, `apps/web/src/data/impact-group.test.ts` |
+| REQ-352 | 퍼짐 재생의 상태(단계, 재생, 정지)와 전이는 순수 함수이고 시간은 밖에서 받는다. 한 박자는 250~700ms이고 전체는 4초를 넘지 않는다(단계가 많으면 한 박자에 여러 단계를 보인다). 재생·멈춤·다시 보기·슬라이더 이동이 있고, 등급별·단계별 개수와 단계의 설명 문장을 센다 | ADR-0051, `apps/web/src/data/impact-spread.test.ts`, `apps/web/src/data/impact-rows.test.ts`, `apps/web/src/data/impact-picture.test.tsx` |
+| REQ-353 | 영향 범위 화면의 질문(시작 객체, 위치 단위 장애, 끊긴 링크, 대상)과 보기 상태(읽기, 단계 한도, 받는 항목 수, 목록·그래프, 확대, 선택, 단계, 정렬, 쪽, 등급)는 `#/kg/{kg}/impact?...`의 쿼리에 담긴다. 기본값은 쓰지 않고, 모르는 값과 형식이 틀린 ID는 기본값으로 읽으며, 쓴 주소는 같은 상태로 읽힌다. 화면은 요약 요청과 항목 요청 둘을 이 상태에서 만든다 | ADR-0051, `apps/web/src/data/impact-view.test.ts` |
+| REQ-354 | 그래프와 범례와 목록은 등급을 모양, 글자, 색으로 함께 나타내고 색은 테마의 토큰만 쓴다. 간선은 부모에서 자식으로 가는 꺾은선이고 단계의 그룹 안에서 모양별로 `<path>` 하나에 이어 붙이며(장식이라 `aria-hidden`), 근거 등급을 선 모양(실선, 점선)으로, 이중화 그룹을 거침을 선 위의 표지로 나타낸다. 경로에서 가장 약한 근거와 보이지 않는 객체를 거침은 목록 행과 노드의 이름에 나온다. 단계마다 층 하나(`<g>`)의 투명도로 나타나고 아직 닿지 않은 층은 키보드와 화면 낭독기에서 빠진다. 화면에는 등급 이름을 "이중화 상실"로 쓴다 | ADR-0051, `apps/web/src/ui/impact-graph.test.tsx`, `apps/web/src/data/impact-rows.test.ts` |
+| REQ-355 | 그래프는 이름 있는 영역이고 안의 노드는 이름(이름, 타입, 층, 등급, 단계)을 가진 버튼이다. 탭 정지는 하나이고 방향키(오른쪽 자식, 왼쪽 부모, 위아래 같은 열, Home과 End)로 옮기며 Enter와 Space로 고르고 Esc로 푼다. 고른 노드는 재생 중이 아닐 때 알림 영역이 읽고, 목록으로 건너뛰는 단추가 있다 | ADR-0051, `apps/web/src/ui/impact-graph.test.tsx` |
+| REQ-356 | 움직임을 줄인 설정에서는 처음 열 때 재생하지 않고 끝 단계로 열리며 단계 사이의 전환이 없다. 재생·멈춤·다시 보기·슬라이더는 그대로 동작하고 재생하면 한 박자씩 즉시 바뀐다 | ADR-0051, `apps/web/src/data/impact-spread.test.ts`, `apps/web/src/data/impact-picture.test.tsx`, `apps/web/src/ui/impact-graph.test.tsx` |
+| REQ-357 | 영향 범위의 목록은 받은 항목 전부를 등급별 구역(심각한 순)과 정렬 가능한 열로 보이고, 구역마다 이름 있는 표와 개수("전체 M개 중 K개 표시")를 가진다. 구역은 처음 50개를 보이고 구역별 "더 보기"가 50개씩 이어서 보이며 쪽 번호와 펼침 상태의 주소 저장은 없다. 항목이 없을 때는 없다는 사실을 알린다 | ADR-0051, `apps/web/src/data/impact-rows.test.ts`, `apps/web/src/ui/impact-graph.test.tsx` |
 
 ### 정의 저장소 (330번대)
 

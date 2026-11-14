@@ -66,6 +66,102 @@ export {
   shortId,
 } from "./format";
 export {
+  GRADE_STYLES,
+  type GradeShape,
+  type GradeStyle,
+  type GradeTone,
+  gradeRank,
+  gradeStyle,
+  IMPACT_GRADES,
+  type ImpactGrade,
+  impactGradeName,
+  isImpactGrade,
+  START_STYLE,
+  sortedGrades,
+  WAYPOINT_STYLE,
+} from "./impact-grades";
+export {
+  buildOverview,
+  type ImpactGroup,
+  type ImpactOverview,
+  needsOverview,
+  OVERVIEW_THRESHOLD,
+} from "./impact-group";
+export {
+  type ImpactDataInput,
+  type ImpactDirection,
+  type ImpactReading,
+  impactSource,
+} from "./impact-input";
+export {
+  LANE_ORDER,
+  LANE_WIDTH,
+  type Lane,
+  type Layout,
+  type LayoutInput,
+  layoutEdges,
+  layoutLanes,
+  type Placed,
+  type PlacedEdge,
+  ROW_HEIGHT,
+} from "./impact-layout";
+export {
+  nodePicture,
+  overviewPicture,
+  type Picture,
+  type PictureEdge,
+  type PictureLane,
+  type PictureNode,
+} from "./impact-picture";
+export {
+  firstRows,
+  type ImpactRow,
+  impactRows,
+  ROWS_STEP,
+  type RowSection,
+  type RowsShown,
+  sectionsByGrade,
+  sortRows,
+} from "./impact-rows";
+export {
+  initialSpread,
+  type SpreadAction,
+  type SpreadPlan,
+  type SpreadState,
+  spreadDuration,
+  spreadPlan,
+  spreadReducer,
+} from "./impact-spread";
+export {
+  countByGrade,
+  countByStep,
+  describeStep,
+  type GradeCount,
+  laneFirstStep,
+  lastStep,
+  type StepCount,
+} from "./impact-stats";
+export {
+  buildImpactTree,
+  type ImpactEdge,
+  type ImpactNode,
+  type ImpactTree,
+  itemIds,
+} from "./impact-tree";
+export {
+  DEFAULT_IMPACT_VIEW,
+  type ImpactRequestBody,
+  type ImpactSortKey,
+  type ImpactView,
+  impactAddress,
+  impactViewParams,
+  isAnswerable,
+  itemsRequest,
+  readImpactAddress,
+  readImpactView,
+  summaryRequest,
+} from "./impact-view";
+export {
   groupKey,
   groupNeighbors,
   groupTotals,
@@ -117,3 +213,4 @@ export {
   typesViewParams,
 } from "./urlstate";
 export type { AsyncResult, AsyncState } from "./useAsync";
+export { type Spread, useReducedMotion, useSpread } from "./useSpread";

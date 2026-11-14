@@ -35,6 +35,8 @@ type objAcc struct {
 	creates  bool
 	watched  bool
 	retires  bool
+	// live is true when a row of the file that no rule filtered out and that is not on its way out shows the object.
+	live     bool
 	nameFall string
 }
 
@@ -45,11 +47,14 @@ type fate struct{ used, problem, filtered bool }
 // refine, feed, identify and link. It reads the state and the plan and gives the desired objects; it writes the
 // identity index of the state, which the caller saves only when the batch was applied.
 type derivation struct {
-	p       *Plan
-	st      *State
-	rep     *Report
-	now     time.Time
-	rows    map[string][]Row
+	p    *Plan
+	st   *State
+	rep  *Report
+	now  time.Time
+	rows map[string][]Row
+	// held is, by refinement, the rows a rule filtered out of it (or out of an earlier refinement it reads) whose
+	// object is still waited for: only those of an object that already exists and whose time is not up are fed.
+	held    map[string][]Row
 	fates   map[string]map[string]*fate
 	objects map[string]*objAcc
 	// rowObj is the object of every row, by feed and natural key.
@@ -65,7 +70,7 @@ type desiredLink struct {
 }
 
 func newDerivation(p *Plan, st *State, rep *Report, now time.Time) *derivation {
-	return &derivation{p: p, st: st, rep: rep, now: now, rows: map[string][]Row{}, fates: map[string]map[string]*fate{},
+	return &derivation{p: p, st: st, rep: rep, now: now, rows: map[string][]Row{}, held: map[string][]Row{}, fates: map[string]map[string]*fate{},
 		objects: map[string]*objAcc{}, rowObj: map[string]map[string]string{}, identOwner: map[string]string{}, links: map[string]desiredLink{}}
 }
 
@@ -92,12 +97,13 @@ func (d *derivation) materialize() {
 		d.rows[ds.ID] = rows
 	}
 	for _, r := range d.p.refs {
-		kept, dropped := refineRows(r, d.rows[r.Input])
-		d.rows[r.ID] = kept
+		kept, held, dropped := refineRows(r, d.rows[r.Input], d.held[r.Input])
+		d.rows[r.ID], d.held[r.ID] = kept, held
 		for k := range dropped {
 			d.fates[d.p.roots[r.ID]][k].filtered = true
 		}
 	}
+	d.settleFiltered()
 }
 
 // feeds runs the feeds that create objects first, then those that only attach values, so that a value finds its
@@ -114,6 +120,11 @@ func (d *derivation) feeds() error {
 					return err
 				}
 			}
+			for _, row := range d.held[fp.feed.Dataset] {
+				if err := d.feedHeld(fp, row); err != nil {
+					return err
+				}
+			}
 		}
 	}
 	return nil
@@ -123,20 +134,16 @@ func (d *derivation) fate(fp *feedPlan, row Row) *fate {
 	return d.fates[d.p.roots[fp.feed.Dataset]][row.Key]
 }
 
-// feedRow maps one row: its values, its identity and the object it belongs to. A row that cannot be mapped is
-// set aside with the reason and nothing of it is used.
+// feedRow maps one row: its identity, the object it belongs to and its values. A row that has no identity (a part of
+// every key is empty or wrong), or that belongs to no object, is set aside with the reason and nothing of it is used.
+// A cell that is wrong but is no part of an identity key only costs the object that value: the object is made, the
+// attribute stays empty as if the cell were empty, and the cell is reported (ADR-0052).
 func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 	root, f := d.p.roots[fp.feed.Dataset], d.fate(fp, row)
-	contribs, err := d.values(fp, row, root)
-	if err != nil {
-		f.problem = true
-		d.problem(ProblemInvalidValue, root, fp.feed.ID, row, chainText(err))
-		return nil
-	}
 	formed, why := formKeys(fp, d.p.reg, row)
 	if len(formed) == 0 {
 		f.problem = true
-		d.problem(ProblemMissingIdentity, root, fp.feed.ID, row, strings.Join(why, "; "))
+		d.problem(ProblemMissingIdentity, root, fp.feed.ID, row, noIdentityReason(why))
 		return nil
 	}
 	res, found, err := identify(fp, d.st, formed)
@@ -149,6 +156,7 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 		d.problem(ProblemOrphanValue, root, fp.feed.ID, row, "no object of type "+fp.typ.Name+" has this identity")
 		return nil
 	}
+	contribs, left := d.values(fp, row, root)
 	if acc == nil {
 		acc = d.newObject(fp, res, row, root)
 	}
@@ -156,10 +164,21 @@ func (d *derivation) feedRow(fp *feedPlan, row Row) error {
 		f.problem = true
 		d.problem(ProblemIdentityConflict, root, fp.feed.ID, row, c)
 	}
+	for _, reason := range left {
+		f.problem = true
+		d.rep.dataset(root).CellsLeftOut++
+		d.problem(ProblemInvalidValue, root, fp.feed.ID, row, reason)
+	}
 	d.attach(fp, acc, formed, contribs, row)
 	d.rowObj[fp.feed.ID][row.Key] = res.id.String()
 	f.used = true
+	acc.live = acc.live || d.st.dataset(root).Unseen[row.Key].Runs == 0
 	return nil
+}
+
+// noIdentityReason says why a row gave no object: a column of every identity key is empty or its value is wrong.
+func noIdentityReason(why []string) string {
+	return strings.Join(why, "; ") + ". A column of an identity key is part of what names the object, so no object could be made from this row"
 }
 
 // newObject starts the account of an object that a creating feed has a row for. The key it was first seen with is the
@@ -217,9 +236,9 @@ func (d *derivation) claim(acc *objAcc, scheme, value string, fp *feedPlan, row 
 }
 
 // values converts the cells a feed maps. An empty cell gives no value: the feed does not hold the attribute then,
-// and another feed's value, or none, is what the object has (pipeline.md 3.2).
-func (d *derivation) values(fp *feedPlan, row Row, root string) ([]contrib, error) {
-	var out []contrib
+// and another feed's value, or none, is what the object has (pipeline.md 3.2). A cell that is wrong gives no value
+// either, and its reason is returned: the object is still made and the attribute is empty, as for an empty cell.
+func (d *derivation) values(fp *feedPlan, row Row, root string) (out []contrib, left []string) {
 	for i := range fp.attrs {
 		a := &fp.attrs[i]
 		cell := row.Fields[a.column]
@@ -228,12 +247,14 @@ func (d *derivation) values(fp *feedPlan, row Row, root string) ([]contrib, erro
 		}
 		v, err := convertCell(a.valueSpec, cell)
 		if err != nil {
-			return nil, kernel.Wrap(kernel.CodeInvalidValue, err, "attribute "+a.prop.Name)
+			reason := chainText(kernel.Wrap(kernel.CodeInvalidValue, err, "attribute "+a.prop.Name))
+			left = append(left, reason+"; the object is made without this value (the attribute is empty)")
+			continue
 		}
 		out = append(out, contrib{rank: a.rank, run: d.runOf(root, row.Key), feed: fp.index, attr: a, value: v, text: cell,
 			grade: fp.grade, basis: fp.basis, feedID: fp.feed.ID})
 	}
-	return out, nil
+	return out, left
 }
 
 func (d *derivation) runOf(root, key string) int {

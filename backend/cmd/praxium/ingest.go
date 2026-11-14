@@ -39,11 +39,18 @@ does not define is an error.
 Reading the output:
   ingest ...            one line per run. objects, links: what the run made or kept alive. volatile: values of
                         attributes that change all the time and keep no history. retired_objects, retired_links:
-                        closed in this run. changed: whether the KG changed; new_version: whether a version was
+                        closed in this run. waiting_objects: objects that no row shows any
+                        more, or that only rows a filter of the mapping sets aside show: they wait to be closed, since
+                        a row that is gone or filtered out closes its object only after 3 complete runs in a row and
+                        24 hours. changed: whether the KG changed; new_version: whether a version was
                         sealed. version, graph_hash: the sealed version and a hash of the whole graph; the same
                         files give the same hash.
   dataset ...           one line per dataset: the rows of the file. received = read + unreadable. read = used +
                         filtered (by a rule of the mapping) + problem + unused (no feed uses the row).
+                        used_with_problem: used rows that also had a problem. cells_left_out: wrong cells
+                        (invalid_value) that were left out: a wrong cell that is no part of an identity key does not
+                        drop the row, its object is made without that value, so the row stays used. A row dropped for
+                        a problem is counted in problem.
                         raw_added, raw_modified, raw_unchanged, raw_deleted, raw_unseen: what changed against the
                         previous run (unseen: not in the file this time, not yet retired).
                         not_read="...": the file of this dataset was not read at all, and why (the workbook has no

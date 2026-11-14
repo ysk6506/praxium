@@ -7,6 +7,25 @@ export { Badge, type BadgeTone } from "./Badge";
 export { Button, ButtonLink, type ButtonVariant } from "./Button";
 export { Checkbox } from "./Checkbox";
 export { Dialog } from "./Dialog";
+export type { GlyphShape, GlyphTone } from "./Glyph";
+export {
+  GradeLegend,
+  GradeList,
+  type LegendItem,
+  type ListColumn,
+  type ListRow,
+  type ListSection,
+} from "./GradeList";
+export { GradeMark, type GradeMarkProps } from "./GradeMark";
+export {
+  type GraphEdge,
+  type GraphLane,
+  type GraphNode,
+  LANE_WIDTH as GRAPH_LANE_WIDTH,
+  LaneGraph,
+  type LaneGraphProps,
+  ROW_HEIGHT as GRAPH_ROW_HEIGHT,
+} from "./LaneGraph";
 export {
   AppShell,
   Coded,
@@ -19,6 +38,7 @@ export {
 } from "./layout";
 export { Pagination } from "./Pagination";
 export { Select } from "./Select";
+export { SpreadControls, type SpreadControlsProps } from "./SpreadControls";
 export { EmptyState, ErrorState, LoadingState } from "./states";
 export { SortTh, Table, TBody, Td, THead, Th, Tr } from "./Table";
 export { type TabItem, Tabs } from "./Tabs";

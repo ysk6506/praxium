@@ -1,13 +1,17 @@
 package ingest
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
-// formedKey is one identity key of a row with its values tidied by the value types of its parts.
+// formedKey is one identity key of a row with its values tidied by the value types of its parts. sig is what the
+// identity index matches on: the type and, for each part in order, what the part refers to (the property or the
+// scheme) and its value. The name of the key (key_name) is a label for messages and takes no part in it, so two feeds
+// that give the same property or scheme parts find the same object whatever they call the key (ADR-0052).
 type formedKey struct {
 	plan  *keyPlan
 	parts []graph.KeyPart
@@ -22,7 +26,7 @@ func formKeys(fp *feedPlan, reg *model.Registry, row Row) (formed []formedKey, w
 		k := &fp.keys[i]
 		fk := formedKey{plan: k}
 		ok := true
-		sigParts := []string{fp.typ.ID.String(), k.name}
+		sigParts := []string{fp.typ.ID.String()}
 		for _, kp := range k.parts {
 			cell := strings.TrimSpace(row.Fields[kp.column])
 			if cell == "" {
@@ -32,12 +36,12 @@ func formKeys(fp *feedPlan, reg *model.Registry, row Row) (formed []formedKey, w
 			}
 			v, err := model.NormalizeValue(kp.vt, cell)
 			if err != nil || v == "" {
-				why = append(why, "key "+k.name+": column "+kp.column+" has a value that does not fit its value type")
+				why = append(why, "key "+k.name+": column "+kp.column+" has the value "+strconv.Quote(cell)+", which does not fit its value type")
 				ok = false
 				break
 			}
 			fk.parts = append(fk.parts, graph.KeyPart{Kind: kp.kind, Ref: kp.ref, Value: v})
-			sigParts = append(sigParts, v)
+			sigParts = append(sigParts, string(kp.kind), kp.ref, v)
 		}
 		if ok {
 			fk.sig = strings.Join(sigParts, keySep)
