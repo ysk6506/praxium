@@ -3424,6 +3424,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestApiServeWithoutAModeSaysWhatToRunInsteadWithoutDebtNumbers": {
+   "kind": "test",
+   "hash": "86678d26705b7f43",
+   "asserts": 2,
+   "literals": [
+    "8529d2733d5ec061"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes": {
    "kind": "test",
    "hash": "fe2c9b49d714e4ff",
@@ -3469,6 +3484,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAStartThatTakesLongSaysItIsStillWorking": {
+   "kind": "test",
+   "hash": "60f337d6a62fddbb",
+   "asserts": 2,
+   "literals": [
+    "4eb467a8e540e570"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
    "kind": "test",
    "hash": "74c14581e9651876",
@@ -3484,6 +3514,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs": {
+   "kind": "test",
+   "hash": "0bc8b8ac22ea878e",
+   "asserts": 2,
+   "literals": [
+    "1447e4a13ad03dd9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestContractCommandAssemblesAndChecks": {
    "kind": "test",
    "hash": "37f69ec23cfda2f8",
@@ -3497,6 +3542,21 @@
     "REQ-143"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoChecksTheFormOfTheAddressBeforeAnythingElse": {
+   "kind": "test",
+   "hash": "f76b9be88f6d2a8b",
+   "asserts": 1,
+   "literals": [
+    "3a18e43baf4b136c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestDemoFillsTheKGAndTheAPIAnswers": {
@@ -3693,6 +3753,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestEveryCommandAnswersHelpWithUsageFlagsAndAnExample": {
+   "kind": "test",
+   "hash": "0cad00f836b38551",
+   "asserts": 6,
+   "literals": [
+    "56a323502dd5de86"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestFilesThatAreNoWorkbookGiveAClearErrorWhateverTheyAreNamed": {
    "kind": "test",
    "hash": "891b02e0b6f20e76",
@@ -3720,6 +3795,96 @@
    "skips": 0,
    "reqs": [
     "REQ-288"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestGlobalFlagsMayFollowTheCommand": {
+   "kind": "test",
+   "hash": "4509713927106351",
+   "asserts": 4,
+   "literals": [
+    "514d9421a77cb45d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirKeepsTheKGAndTheStateAcrossRuns": {
+   "kind": "test",
+   "hash": "5110c5556164b595",
+   "asserts": 6,
+   "literals": [
+    "b6a2ffb337fafbe4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirRefusesADemoFolderAndALockedOne": {
+   "kind": "test",
+   "hash": "52a4b960699d1047",
+   "asserts": 6,
+   "literals": [
+    "b7a81468760ddbc1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirRefusesAFolderThatDoesNotFitItsState": {
+   "kind": "test",
+   "hash": "dd9525c7aa7f29ed",
+   "asserts": 5,
+   "literals": [
+    "3957f50dfccbd5cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInitNeverOverwritesAndRefusesBadArguments": {
+   "kind": "test",
+   "hash": "d55d7c8b3462e220",
+   "asserts": 6,
+   "literals": [
+    "ee929327bf30fe10"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-293"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestInitWritesExamplesThatRunAndSaysWhatToTypeNext": {
+   "kind": "test",
+   "hash": "d6b1dfd436a15ee7",
+   "asserts": 5,
+   "literals": [
+    "ddaaf514548ae589"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-293"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -3784,6 +3949,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunExitCodesAndTheLastLine": {
+   "kind": "test",
+   "hash": "9cdbbd84a3fc6605",
+   "asserts": 6,
+   "literals": [
+    "67265127e056467c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestRunHelpExplainsTheOutputAndTheExitCodes": {
+   "kind": "test",
+   "hash": "208e833c7097b79a",
+   "asserts": 2,
+   "literals": [
+    "35c758ffd6c1ffd8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunListsAtMostTwentyProblems": {
    "kind": "test",
    "hash": "5566c902fd5c9d97",
@@ -3831,6 +4026,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunRefusesAnInputOfAnUndefinedDataset": {
+   "kind": "test",
+   "hash": "47ba9cc1ab837ce4",
+   "asserts": 2,
+   "literals": [
+    "c2556fd707a73e0b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunRefusesWhatItCannotRun": {
    "kind": "test",
    "hash": "26e7e12824597f4b",
@@ -3862,6 +4072,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunSaysWhatItDidNotCollectAndWhetherItKeptTheResult": {
+   "kind": "test",
+   "hash": "71c367184f43cbb7",
+   "asserts": 2,
+   "literals": [
+    "e8cab5d7d3512096"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestRunStopsAtALimitOfTheSourceAndNamesIt": {
    "kind": "test",
    "hash": "082816416197f389",
@@ -3877,6 +4102,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestVerdictLineIsGrammatical": {
+   "kind": "test",
+   "hash": "afe2546521b13752",
+   "asserts": 1,
+   "literals": [
+    "3138cd4e82e47f31"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-292"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIsLoopbackAddr": {
    "kind": "test",
    "hash": "8e34cd1851942078",
@@ -3888,6 +4128,81 @@
    "skips": 0,
    "reqs": [
     "REQ-280"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalChecksThePortBeforeAnythingAndRefusesBadArguments": {
+   "kind": "test",
+   "hash": "59acb2559f41f563",
+   "asserts": 4,
+   "literals": [
+    "d25b56e37ac48bd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalExplainsABuildWithoutTheWebUI": {
+   "kind": "test",
+   "hash": "9079eff0d59b7611",
+   "asserts": 6,
+   "literals": [
+    "fe5f96b9acaaf323"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalSaysWhatToDoWhenThereIsNothingToServe": {
+   "kind": "test",
+   "hash": "2960998bbbc65e87",
+   "asserts": 1,
+   "literals": [
+    "f4345305e33f22e8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalServesTheKGOfAFolderWithoutMakingUpData": {
+   "kind": "test",
+   "hash": "3a472f23b5d8a3a2",
+   "asserts": 8,
+   "literals": [
+    "36f489517c2e0c29"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalWarnsForANonLoopbackAddress": {
+   "kind": "test",
+   "hash": "ec04de948859ea1b",
+   "asserts": 5,
+   "literals": [
+    "69deaf23dabe9d77"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -3961,6 +4276,21 @@
    "skips": 0,
    "reqs": [
     "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestRolesThatDoNothingSayTheyAreNotImplemented": {
+   "kind": "test",
+   "hash": "db5ffb1c531901d3",
+   "asserts": 1,
+   "literals": [
+    "a8ce0d6a66a04998"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -4106,6 +4436,21 @@
    "reqs": [
     "REQ-260",
     "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTopLevelHelpListsEveryCommandInGroups": {
+   "kind": "test",
+   "hash": "a5c288c528d73226",
+   "asserts": 5,
+   "literals": [
+    "33f7a06ceb7b1f49"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -4280,6 +4625,66 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestACauseListsEachRejectedFieldWithItsPlainParams": {
+   "kind": "test",
+   "hash": "f274075e204ca2b4",
+   "asserts": 1,
+   "literals": [
+    "08e2bbb575b92c49"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAnErrorLineFallsBackToWhatAnOlderServerGaveAndToFieldErrors": {
+   "kind": "test",
+   "hash": "51a003f87a5b75a6",
+   "asserts": 3,
+   "literals": [
+    "613889f700f2d4a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestAnErrorLineSaysWhatTheServerSaidWasWrong": {
+   "kind": "test",
+   "hash": "7db9550ec3082444",
+   "asserts": 3,
+   "literals": [
+    "22ca7d9acba37a50"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestCausesNameWhatWasNotFoundForEveryKindOfResource": {
+   "kind": "test",
+   "hash": "29d423cce2a0da90",
+   "asserts": 1,
+   "literals": [
+    "a1c59630394f6343"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestClientFlagsAreRecognisedBeforeTheCommand": {
    "kind": "test",
    "hash": "bb0556fecf32adc6",
@@ -4309,6 +4714,51 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
+  },
+  "go:backend/internal/cli::TestGlobalFlagsAfterTheCommandAndTheHelpOfAClientCommand": {
+   "kind": "test",
+   "hash": "5b5bb825cd742142",
+   "asserts": 3,
+   "literals": [
+    "1ddcec0c6150a24f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestGlobalFlagsMayStandAfterTheCommandInEveryForm": {
+   "kind": "test",
+   "hash": "effd15d2bf8f6b1e",
+   "asserts": 3,
+   "literals": [
+    "ebb90b4888ee9960"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestHelpAndUsageLineOfClientCommands": {
+   "kind": "test",
+   "hash": "439b3a5235980516",
+   "asserts": 3,
+   "literals": [
+    "a4a1eb87d9b823d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/cli::TestKGCommandsAskTheRoutesTheyName": {
    "kind": "test",
@@ -5668,6 +6118,36 @@
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
+  "go:backend/internal/httpapi::TestANotFoundAnswerSaysWhatWasNotFound": {
+   "kind": "test",
+   "hash": "8521290be39ec968",
+   "asserts": 4,
+   "literals": [
+    "2351eb3b94fe4b10"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestARefusedValueNamesTheFieldAndSaysWhy": {
+   "kind": "test",
+   "hash": "54e768f4ae39a857",
+   "asserts": 6,
+   "literals": [
+    "fa0f6c4bf542b19b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestAStoreThatFailsIsAServerProblem": {
    "kind": "test",
    "hash": "262c4d66f6cbd3b3",
@@ -6118,6 +6598,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/httpapi::TestTheAPIAnswersCarryNoSniffAndNoReferrerHeaders": {
+   "kind": "test",
+   "hash": "276d78aae8f686d7",
+   "asserts": 2,
+   "literals": [
+    "8c8409e846446136"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-295"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestTraceIDComesFromTraceparentOrIsMade": {
    "kind": "test",
    "hash": "24f9bf87f5643ae1",
@@ -6431,6 +6926,51 @@
    "skips": 0,
    "reqs": [
     "REQ-286"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFileStateStoreKeepsAStateAcrossOpens": {
+   "kind": "test",
+   "hash": "0e1fa2947549ac9f",
+   "asserts": 8,
+   "literals": [
+    "1e32fb05c9910fab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFileStateStoreLeavesTheOldFileWhenAWriteFails": {
+   "kind": "test",
+   "hash": "62dbe549c8ab79a4",
+   "asserts": 7,
+   "literals": [
+    "e4ff523d5cc4de3b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestFileStateStoreRefusesAFileItDoesNotKnow": {
+   "kind": "test",
+   "hash": "67bfb1f2b2604c5c",
+   "asserts": 2,
+   "literals": [
+    "515163fd804c11df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
    ],
    "added": "2026-11-14",
    "amended_by": null
@@ -8905,6 +9445,21 @@
     "REQ-135",
     "REQ-248",
     "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/query::TestAFieldErrorKeepsItsMessageAndNamesTheField": {
+   "kind": "test",
+   "hash": "47d8a8e4a834e986",
+   "asserts": 3,
+   "literals": [
+    "461a664f5a34ef85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-290"
    ],
    "added": "2026-11-14",
    "amended_by": null
