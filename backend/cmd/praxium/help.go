@@ -27,7 +27,7 @@ Get started
 Look at the data (these ask a running server; see the global flags below)
   kg        List the KGs of the server and show one
   types     List and show the types of the model (object, link, action types)
-  query     Find objects, get one, or walk the links around one
+  query     Find objects, get one, walk the links around one, or ask what a failure reaches (impact)
   object    Get one object, or its links, by id
   catalog   Show the catalogs of the API (layers, roles, error codes, ...)
   health    Check that the server is alive and ready

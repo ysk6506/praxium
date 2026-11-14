@@ -39,7 +39,7 @@ func (c *call) failErr(err error) {
 	}
 	switch code {
 	case query.CodeObjectNotFound:
-		c.notFound("object", first(c.r.PathValue("object_id"), c.asked))
+		c.notFound("object", first(c.r.PathValue("object_id"), c.asked, query.MissingID(err)))
 	case graph.CodeKGNotFound:
 		c.notFound("kg", c.r.PathValue("kg"))
 	case graph.CodeGenerationChanged:
@@ -98,14 +98,16 @@ type queryProblem struct {
 }
 
 var queryProblems = map[kernel.Code]queryProblem{
-	query.CodeHiddenFilter:     {"permission.hidden_attribute", detail},
-	query.CodeVolatileFilter:   {"invalid_input.filter_field_unknown", detail},
-	query.CodeFilterField:      {"invalid_input.filter_field_unknown", detail},
-	query.CodeFilterOp:         {"invalid_input.filter_op_unknown", detail},
-	query.CodeIncludeUnknown:   {"invalid_input.include_unknown", detail},
-	query.CodeCursorInvalid:    {"invalid_input.cursor_invalid", func(error) map[string]any { return nil }},
-	query.CodeLimitInvalid:     {"invalid_input.limit_invalid", func(error) map[string]any { return map[string]any{"min": 1, "max": query.MaxLimit} }},
-	query.CodeScopeUnsupported: {"invalid_input.param_invalid", func(err error) map[string]any { return map[string]any{"param": "scope_id", "detail": err.Error()} }},
+	query.CodeHiddenFilter:   {"permission.hidden_attribute", detail},
+	query.CodeVolatileFilter: {"invalid_input.filter_field_unknown", detail},
+	query.CodeFilterField:    {"invalid_input.filter_field_unknown", detail},
+	query.CodeFilterOp:       {"invalid_input.filter_op_unknown", detail},
+	query.CodeIncludeUnknown: {"invalid_input.include_unknown", detail},
+	query.CodeCursorInvalid:  {"invalid_input.cursor_invalid", func(error) map[string]any { return nil }},
+	query.CodeLimitInvalid:   {"invalid_input.limit_invalid", func(error) map[string]any { return map[string]any{"min": 1, "max": query.MaxLimit} }},
+	query.CodeScopeUnsupported: {"invalid_input.param_invalid", func(err error) map[string]any {
+		return map[string]any{"param": first(query.ParamOf(err), "scope_id"), "detail": err.Error()}
+	}},
 }
 
 // graphReady says whether the server has a store; without one the KG routes answer 503.
