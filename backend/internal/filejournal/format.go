@@ -10,7 +10,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
-// The format (docs/design-docs/kg-file-store.md). Numbers are big-endian.
+// The format (ADR-0034). Numbers are big-endian.
 //
 // A file starts with a header of 20 bytes, whose layout every version keeps, so that a version that reads it first checks
 // the checksum (a damaged header is damage) and then the version (a good header of another version is a file of

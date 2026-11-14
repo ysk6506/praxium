@@ -49,7 +49,7 @@ func namesOf(d *fakeDisk, prefix string) []string {
 
 // A snapshot that is damaged anywhere, or cut at any length, is passed over for the one before it and the log: every
 // record is still there.
-// [REQ-272]
+// [REQ-274]
 func TestADamagedNewestSnapshotIsReplacedByTheOneBeforeIt(t *testing.T) {
 	base, want := closedDisk(t)
 	snaps := namesOf(base, "snap-")
@@ -77,7 +77,7 @@ func TestADamagedNewestSnapshotIsReplacedByTheOneBeforeIt(t *testing.T) {
 }
 
 // Both snapshots damaged leaves a log that does not reach back to the start: that is an error, not a guess.
-// [REQ-272]
+// [REQ-274]
 func TestWithNoWholeSnapshotAndAGapInTheLogRecoveryStops(t *testing.T) {
 	base, _ := closedDisk(t)
 	for _, n := range namesOf(base, "snap-") {
@@ -91,7 +91,7 @@ func TestWithNoWholeSnapshotAndAGapInTheLogRecoveryStops(t *testing.T) {
 }
 
 // Damage inside the log, with whole records after it, is never skipped.
-// [REQ-272]
+// [REQ-273]
 func TestDamageInTheMiddleOfTheLogStopsRecovery(t *testing.T) {
 	d := newFakeDisk()
 	j := openEmpty(t, d)
@@ -109,7 +109,7 @@ func TestDamageInTheMiddleOfTheLogStopsRecovery(t *testing.T) {
 }
 
 // A whole record with the wrong number, and a segment that is missing, are damage too.
-// [REQ-272]
+// [REQ-273]
 func TestARecordOutOfPlaceAndAMissingSegmentAreDamage(t *testing.T) {
 	d := newFakeDisk()
 	j := openEmpty(t, d)

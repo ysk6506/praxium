@@ -112,7 +112,7 @@ func (w *cutWriter) Write(p []byte) (int, error) {
 }
 
 // A snapshot whose writer fails, wherever it fails, is an error.
-// [REQ-272]
+// [REQ-274]
 func TestASnapshotWhoseWriterFailsIsAnError(t *testing.T) {
 	r := newJRig(t, Options{}, 3)
 	r.play()

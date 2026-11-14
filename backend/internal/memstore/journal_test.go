@@ -266,7 +266,7 @@ func TestAFailedAppendLeavesTheStoreAsItWasAndShutsItToWrites(t *testing.T) {
 }
 
 // A snapshot that cannot be written does not fail the write that asked for it; the error is kept to be seen.
-// [REQ-272]
+// [REQ-274]
 func TestAFailedSnapshotLeavesTheWritesWorking(t *testing.T) {
 	r := newJRig(t, Options{CheckpointBytes: 1}, 0)
 	r.j.failCkpt = true
