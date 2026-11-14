@@ -22,7 +22,7 @@ export function Pagination(props: PaginationProps) {
         <Select
           label="페이지당 개수"
           value={props.pageSize}
-          options={props.pageSizes.map((n) => ({ value: n, label: `${n}개씩` }))}
+          options={props.pageSizes.map((n) => ({ value: n, label: `페이지당 ${n}개` }))}
           onChange={props.onPageSize}
         />
         <Button onClick={props.onPrevious} disabled={!props.hasPrevious}>

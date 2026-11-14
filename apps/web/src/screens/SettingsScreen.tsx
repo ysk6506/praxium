@@ -30,8 +30,8 @@ export function SettingsScreen() {
             autoComplete="off"
             value={draft}
             onChange={(event) => setDraft(event.target.value)}
-            placeholder={saved ? "새 토큰으로 바꾸려면 입력하세요" : "서버를 띄울 때 지정한 토큰"}
-            description="서버를 띄울 때 -dev-token-file로 지정한 값입니다. 이 브라우저에 보관되고, 모든 API 요청의 Authorization 헤더에 실립니다."
+            placeholder={saved ? "새 토큰으로 바꾸려면 입력하십시오" : "서버를 시작할 때 지정한 토큰"}
+            description="서버를 시작할 때 -dev-token-file로 지정한 값입니다. 이 브라우저에 저장되며, 모든 API 요청의 Authorization 헤더에 실립니다."
           />
           <div className="flex gap-2">
             <Button type="submit" variant="primary" disabled={draft.trim() === ""}>
@@ -39,7 +39,7 @@ export function SettingsScreen() {
             </Button>
             {saved ? (
               <Button variant="ghost" onClick={() => connection.clear()}>
-                보관한 토큰 지우기
+                저장된 토큰 삭제
               </Button>
             ) : null}
           </div>
@@ -48,7 +48,7 @@ export function SettingsScreen() {
       <Section title="현재 상태">
         <KeyValues
           items={[
-            ["토큰", saved ? "이 브라우저에 보관되어 있습니다" : "없습니다"],
+            ["토큰", saved ? "이 브라우저에 저장되어 있습니다" : "없습니다"],
             ["API 서버", globalThis.location.origin],
             ["인증 방식", "개발용 토큰(개발 모드 서버만 받습니다)"],
           ]}

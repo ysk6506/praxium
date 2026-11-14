@@ -42,7 +42,7 @@ export function KgsScreen() {
   const kgs = useKgs();
   return (
     <>
-      <PageHeader title="KG 선택" subtitle="읽을 지식 그래프(KG)를 고르세요." />
+      <PageHeader title="KG 선택" subtitle="읽을 지식 그래프(KG)를 선택하십시오." />
       <Async result={kgs} loadingLabel="KG를 불러오는 중">
         {(list) =>
           list.length === 0 ? (

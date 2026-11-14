@@ -26,19 +26,19 @@ const BY_CODE: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "messa
     kind: "auth",
     title: "토큰이 없습니다",
     message: "요청에 토큰이 실리지 않았습니다.",
-    hint: "접속 설정에서 개발용 토큰을 입력하세요.",
+    hint: "접속 설정에서 개발용 토큰을 입력하십시오.",
   },
   "auth.token_invalid": {
     kind: "auth",
-    title: "토큰이 맞지 않습니다",
+    title: "토큰이 올바르지 않습니다",
     message: "서버가 이 토큰을 받아들이지 않았습니다.",
-    hint: "접속 설정에서 서버를 띄울 때 지정한 토큰을 다시 입력하세요.",
+    hint: "접속 설정에서 서버를 시작할 때 지정한 토큰을 다시 입력하십시오.",
   },
   "auth.token_expired": {
     kind: "auth",
     title: "토큰이 만료되었습니다",
     message: "토큰의 유효 기간이 지났습니다.",
-    hint: "접속 설정에서 새 토큰을 입력하세요.",
+    hint: "접속 설정에서 새 토큰을 입력하십시오.",
   },
   "not_found.resource": {
     kind: "notFound",
@@ -49,19 +49,19 @@ const BY_CODE: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "messa
     kind: "permission",
     title: "권한이 없습니다",
     message: "이 토큰의 역할로는 이 데이터를 읽을 수 없습니다.",
-    hint: "읽기(read) 역할이 있는 토큰으로 접속하세요.",
+    hint: "읽기(read) 역할이 있는 토큰으로 접속하십시오.",
   },
   "invalid_input.cursor_invalid": {
     kind: "input",
-    title: "페이지 위치가 맞지 않습니다",
-    message: "다음 페이지를 가리키는 값이 더는 쓸 수 없습니다.",
-    hint: "첫 페이지부터 다시 보세요.",
+    title: "페이지 위치가 올바르지 않습니다",
+    message: "다음 페이지를 가리키는 값이 더는 사용할 수 없습니다.",
+    hint: "첫 페이지부터 다시 보십시오.",
   },
   "stale.projection_not_ready": {
     kind: "server",
     title: "아직 읽을 수 없습니다",
     message: "서버가 이 데이터를 아직 준비하지 못했습니다.",
-    hint: "잠시 뒤에 다시 시도하세요.",
+    hint: "잠시 후에 다시 시도하십시오.",
   },
 };
 
@@ -79,7 +79,7 @@ const BY_GROUP: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "mess
   not_found: { kind: "notFound", title: "찾을 수 없습니다", message: "요청한 항목이 없습니다." },
   invalid_input: {
     kind: "input",
-    title: "요청이 맞지 않습니다",
+    title: "요청이 올바르지 않습니다",
     message: "서버가 요청의 값을 받아들이지 않았습니다.",
   },
   conflict: {
@@ -95,7 +95,7 @@ const BY_GROUP: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "mess
   rate_limited: {
     kind: "server",
     title: "요청이 너무 많습니다",
-    message: "잠시 뒤에 다시 시도하세요.",
+    message: "잠시 후에 다시 시도하십시오.",
   },
   server: {
     kind: "server",
@@ -110,7 +110,7 @@ export function describeError(error: unknown): ErrorView {
     return {
       kind: "other",
       title: "예기치 않은 오류",
-      message: error instanceof Error ? error.message : "알 수 없는 오류가 났습니다.",
+      message: error instanceof Error ? error.message : "알 수 없는 오류가 발생했습니다.",
     };
   }
   const base = { code: error.code, status: error.status, traceId: error.traceId };
@@ -120,7 +120,7 @@ export function describeError(error: unknown): ErrorView {
       kind: "network",
       title: "서버에 연결하지 못했습니다",
       message: "API 서버가 응답하지 않습니다.",
-      hint: "서버가 실행 중인지, 이 화면을 연 주소가 서버의 주소인지 확인하세요.",
+      hint: "서버가 실행 중인지, 이 화면을 연 주소가 서버의 주소인지 확인하십시오.",
     };
   }
   if (error.code === CLIENT_CODES.badResponse) {
@@ -129,7 +129,7 @@ export function describeError(error: unknown): ErrorView {
       kind: "server",
       title: "응답을 읽을 수 없습니다",
       message: `서버가 API 형식이 아닌 응답을 보냈습니다(HTTP ${error.status}).`,
-      hint: "프락시와 서버 설정을 확인하세요.",
+      hint: "프록시와 서버 설정을 확인하십시오.",
     };
   }
   const known = BY_CODE[error.code];

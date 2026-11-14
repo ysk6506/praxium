@@ -72,8 +72,8 @@ function ColumnPicker(props: {
     <Dialog
       open={props.open}
       onOpenChange={props.onOpenChange}
-      title="표에 보일 속성"
-      description="고른 속성이 열로 나옵니다."
+      title="컬럼 선택"
+      description="선택한 속성이 테이블의 컬럼으로 표시됩니다."
     >
       <div className="max-h-80 overflow-auto pr-1">
         {props.properties.map((p) => (
@@ -170,7 +170,7 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
         subtitle={typeDetail.state.data?.description}
         actions={
           candidates.length > 0 ? (
-            <Button onClick={() => setPickerOpen(true)}>열 고르기 ({columns.length})</Button>
+            <Button onClick={() => setPickerOpen(true)}>컬럼 선택 ({columns.length})</Button>
           ) : undefined
         }
       />
@@ -187,10 +187,10 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
             <EmptyState
               title="이 타입의 객체가 없습니다"
               action={
-                pager.hasPrevious ? <Button onClick={pager.first}>첫 쪽으로</Button> : undefined
+                pager.hasPrevious ? <Button onClick={pager.first}>첫 페이지로</Button> : undefined
               }
             >
-              KG에 {type} 객체가 아직 없습니다. 하위 타입의 객체는 표에 넣지 않습니다.
+              KG에 {type} 객체가 아직 없습니다. 하위 타입의 객체는 테이블에 포함하지 않습니다.
             </EmptyState>
           ) : (
             <>

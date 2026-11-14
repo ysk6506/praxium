@@ -61,7 +61,7 @@ export function App() {
       footer={
         token ? (
           <Button variant="ghost" onClick={() => connection.clear()}>
-            토큰 지우기
+            토큰 삭제
           </Button>
         ) : (
           "토큰이 없습니다"

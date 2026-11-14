@@ -2,6 +2,6 @@ doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
 hash: "8633716ed44e3d3b"
 date: "2026-11-14"
-note: "code list holds both ingest and pgstore; plan.md row 7 lists both"
+note: "화면 문구 표준화에 맞춰 대조했다"
 text_changed: true
-doc_hash: "05fb2a0b817b0255"
+doc_hash: "63f2152de7eb6009"

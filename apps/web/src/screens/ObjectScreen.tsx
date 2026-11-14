@@ -91,7 +91,7 @@ function IdentifiersTab({ data }: { readonly data: GetData }) {
   if (ids.length === 0)
     return (
       <EmptyState title="식별자가 없습니다">
-        이 객체에는 바깥 식별자가 등록되어 있지 않습니다.
+        이 객체에는 외부 식별자가 등록되어 있지 않습니다.
       </EmptyState>
     );
   return (
