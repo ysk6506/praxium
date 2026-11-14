@@ -94,15 +94,15 @@ func TestImpactSaysWhenALimitCutTheAnswer(t *testing.T) {
 	}
 }
 
-// (j) The HA pair of a storage array goes down with one rack PDU. The truth says why: the array is
-// wired to both PDUs directly (two POWERED_BY links to the array, none through a group of power
-// supplies), its controllers and its HA pair are parts of the array without a power path of their
-// own, so in the model the two PDUs are in series for the array and the pair follows its whole.
-// The generator makes the structure, the engine reads it right. A server of the same rack, fed
-// through a group of two power supplies, stays up on the same failure.
+// (j) One rack PDU does not stop a storage array; it costs the array its redundancy. The truth says
+// why: the array is fed through a group of two power supplies (one on each PDU of its rack), like a
+// server, and its controllers and its HA pair are parts of the array without a power path of their
+// own. With one PDU the array, and what runs on it, lose their redundancy and stay up; with both
+// PDUs the array is down and its controllers and its HA pair follow their whole. The generator makes
+// the structure, the engine reads it right.
 //
 // [REQ-300] [REQ-301]
-func TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries(t *testing.T) {
+func TestImpactAnArrayLosesRedundancyWithOnePduAndGoesDownWithBoth(t *testing.T) {
 	w := loadImpactWorld(t, itSeed, itScale)
 	tr := w.itTruthOf()
 	var rk itRack
@@ -121,15 +121,25 @@ func TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSe
 			array = p
 		}
 	}
-	// the power paths, from the truth: the array is fed by the two PDUs and by nothing else
+	// the power paths, from the truth: the array is fed by one group of two power supplies, each on a PDU of its rack
 	feeds := tr.itOutTo(array, "lt.powered_by")
-	if len(feeds) != 2 || feeds[0] == feeds[1] {
+	if len(feeds) != 1 || tr.objs[feeds[0]].Type != "ot.power_redundancy_group" {
 		t.Fatalf("the array's feeds: %v", feeds)
 	}
-	for _, f := range feeds {
-		if tr.objs[f].Type != "ot.rack_pdu" || f != rk.pdu[0] && f != rk.pdu[1] {
-			t.Fatalf("a feed of the array that is not a PDU of its rack: %s", tr.objs[f].Type)
+	supplies := tr.itInFrom(feeds[0], "lt.member_of")
+	if len(supplies) != 2 {
+		t.Fatalf("%d power supplies in the group of the array", len(supplies))
+	}
+	onPdu := map[string]bool{}
+	for _, ps := range supplies {
+		pdus := tr.itOutTo(ps, "lt.powered_by")
+		if tr.objs[ps].Type != "ot.power_supply" || len(pdus) != 1 || pdus[0] != rk.pdu[0] && pdus[0] != rk.pdu[1] {
+			t.Fatalf("a power supply of the array that is not on a PDU of its rack: %s", tr.objs[ps].Type)
 		}
+		onPdu[pdus[0]] = true
+	}
+	if len(onPdu) != 2 {
+		t.Fatalf("the two power supplies of the array are on %d PDU", len(onPdu))
 	}
 	ctls := tr.itInFrom(array, "lt.part_of")
 	var controllers, pairs []string
@@ -149,14 +159,26 @@ func TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSe
 			t.Fatalf("controller %s has a power path of its own or is part of something else", tr.objs[c].itName())
 		}
 	}
-	// the engine, on each PDU alone: the array, both controllers and the pair go down; the dual-fed server does not
+	// the engine, on each PDU alone: the array loses its redundancy (directly) and is not down, its controllers
+	// and its pair are not touched, what runs on it loses its redundancy (inherited) and is not down
 	for side := 0; side < 2; side++ {
 		a := w.itImpact(query.ImpactInput{Dead: w.itIDsOf(tr, rk.pdu[side]), MaxItems: 100000})
 		for name, sec := range map[string]*query.ImpactSection{"facts_only": a.Data.FactsOnly, "with_assumptions": a.Data.WithAssumptions} {
 			got := itNamed(sec)
-			for _, id := range append([]string{array, pairs[0]}, controllers...) {
-				if got[tr.objs[id].itName()] != query.ResultDown {
-					t.Fatalf("side %d, %s: %s is %q", side, name, tr.objs[id].itName(), got[tr.objs[id].itName()])
+			if r := got[tr.objs[array].itName()]; r != query.ResultExposedDirect {
+				t.Fatalf("side %d, %s: the array is %q", side, name, r)
+			}
+			for _, id := range append([]string{pairs[0]}, controllers...) {
+				if r := got[tr.objs[id].itName()]; r != "" {
+					t.Fatalf("side %d, %s: %s is %q", side, name, tr.objs[id].itName(), r)
+				}
+			}
+			for _, it := range sec.Items {
+				switch it.ObjectType {
+				case "StoragePool", "StorageVolume", "Datastore", "VirtualDisk", "VirtualMachine":
+					if it.Result != query.ResultExposedInherited {
+						t.Fatalf("side %d, %s: %s %s is %q", side, name, it.ObjectType, it.DisplayName, it.Result)
+					}
 				}
 			}
 			if r := got[tr.objs[rk.servers[0]].itName()]; r == query.ResultDown {
@@ -164,13 +186,24 @@ func TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSe
 			}
 		}
 	}
-	// the path of a controller shows the two steps: supply from the PDU to the array, then part follows whole
-	a := w.itImpact(query.ImpactInput{Dead: w.itIDsOf(tr, rk.pdu[0]), Mode: query.ModeFactsOnly, MaxItems: 100000})
-	for _, it := range a.Data.FactsOnly.Items {
+	// on both PDUs: the array, both controllers and the pair go down
+	both := w.itImpact(query.ImpactInput{Dead: w.itIDsOf(tr, rk.pdu[0], rk.pdu[1]), Mode: query.ModeFactsOnly, MaxItems: 100000})
+	got := itNamed(both.Data.FactsOnly)
+	for _, id := range append([]string{array, pairs[0]}, controllers...) {
+		if got[tr.objs[id].itName()] != query.ResultDown {
+			t.Fatalf("both PDUs: %s is %q", tr.objs[id].itName(), got[tr.objs[id].itName()])
+		}
+	}
+	// the path of a controller shows the steps: the PDU feeds a power supply, the supply is a member of the
+	// group, the group is a part the array needs, and the controller (part) follows its whole
+	for _, it := range both.Data.FactsOnly.Items {
 		if it.ObjectType != "ArrayController" {
 			continue
 		}
-		if len(it.Path) != 3 || it.Path[1].Link == nil || it.Path[1].Link.Role != "supply" || it.Path[2].Link == nil || it.Path[2].Link.Role != "part_follows_whole" || it.Path[1].ObjectType != "StorageArray" {
+		n := len(it.Path)
+		if n != 5 || it.Path[1].Link == nil || it.Path[1].Link.Role != "supply" || it.Path[1].ObjectType != "PowerSupply" ||
+			it.Path[2].ObjectType != "PowerRedundancyGroup" || it.Path[3].ObjectType != "StorageArray" ||
+			it.Path[4].Link == nil || it.Path[4].Link.Role != "part_follows_whole" {
 			t.Fatalf("path of %s: %+v", it.DisplayName, it.Path)
 		}
 	}

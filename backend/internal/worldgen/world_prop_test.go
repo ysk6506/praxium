@@ -51,8 +51,10 @@ func TestSameParametersSameBytes(t *testing.T) {
 	}
 }
 
+// A world grows by whole racks, so at a small scale it can differ from the requested scale by half a rack.
+// A small sample is therefore placed away from the sizes where the number of racks changes.
 func TestScaleIsClose(t *testing.T) {
-	for _, scale := range []int64{3000, 20000, 150000} {
+	for _, scale := range []int64{4000, 20000, 150000} {
 		w := smallWorld(t, 1, scale, nil)
 		var c Counts
 		if err := w.Generate(&c); err != nil {
