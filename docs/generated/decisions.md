@@ -12,7 +12,7 @@
 | [ADR-0004 제품 목표를 굳히고, 리포지토리는 공개로 두며, 테라리움에서 인계받은 것을 문서 1개로 둔다](../design-docs/adr/0004-goal-confirmed-and-handover-from-terrarium.md) | 유효 | 일부 수정: [0029](../design-docs/adr/0029-standard-terms-in-documents-and-screens.md) (목표 문장의 표기를 표준 용어로 수정하고 사내를 뺀다. 결정은 그대로다), [0037](../design-docs/adr/0037-goal-sentence-in-plain-words-and-readme-as-first-screen.md) (목표 문장의 표현) |
 | [ADR-0005 프락시움은 별도 제품이다 — 모델은 프락시움이 소유하고, 위임 전의 검증은 제품 밖에 둔다](../design-docs/adr/0005-separate-product-own-model-verification-outside.md) | 유효 |  |
 | [ADR-0006 백엔드는 Go, 용도에 맞는 언어와 스토리지 — 클린 아키텍처, 역할 4종, 알파는 백엔드부터](../design-docs/adr/0006-go-backend-clean-architecture-backend-first.md) | 유효 |  |
-| [ADR-0007 KG의 모델: 확장 가능한 타입과 고정된 링크 의미, 채널별 상태, 객체인 이중화 그룹, 근거 등급, 불변 ID, 충분한 표준 모델](../design-docs/adr/0007-kg-model.md) | 유효 | 일부 수정: [0043](../design-docs/adr/0043-impact-query-propagation-redundancy-and-limits.md) (필요한 채널을 채우는 링크가 없으면 알 수 없음이 된다는 문장) |
+| [ADR-0007 KG의 모델: 확장 가능한 타입과 고정된 링크 의미, 채널별 상태, 객체인 이중화 그룹, 근거 등급, 불변 ID, 충분한 표준 모델](../design-docs/adr/0007-kg-model.md) | 유효 | 일부 수정: [0043](../design-docs/adr/0043-impact-query-propagation-redundancy-and-limits.md) (필요한 채널을 채우는 링크가 없으면 알 수 없음이 된다는 문장), [0050](../design-docs/adr/0050-org-properties-as-overlays-in-the-model.md) (17번의 삭제 규칙(조직 속성은 삭제하지 않고 폐기로만 둔다)) |
 | [ADR-0008 현실 데이터 수집: 어댑터와 프리셋, 수집 방식 4가지, 변경을 입력받아 변경을 출력하는 실행기 하나, 속성 단위로 객체를 구축하는 피드, 읽기 전용 3중 장치, 안전장치](../design-docs/adr/0008-ingestion.md) | 유효 |  |
 | [ADR-0009 KG의 저장과 버전 — 진실은 PostgreSQL에, 불변 버전, 차이와 적용](../design-docs/adr/0009-kg-storage-and-versions.md) | 유효 | 일부 수정: [0025](../design-docs/adr/0025-kg-stands-on-a-sequence-of-changes-storage-port-and-reference-implementation.md) (링크의 내용 해시에 등급과 근거의 종류가 포함되고, 일부만 적용된 배치는 롤백하고 중단한다) |
 | [ADR-0010 KG 질의 — 사전 정의 질의, 영향 범위의 의미, 프로젝션과 엔진](../design-docs/adr/0010-kg-queries-and-impact.md) | 유효 | 일부 수정: [0043](../design-docs/adr/0043-impact-query-propagation-redundancy-and-limits.md) (영향 범위 응답의 필드와 한도를 정하지 않은 부분) |
@@ -54,4 +54,5 @@
 | [ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다 — 없는 시트와 컬럼, 키 오류, 인코딩, 구분자, 정의 초안](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) | 유효 |  |
 | [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 |  |
 | [ADR-0049 정의 저장소 — 종류를 모르는 저장, 브랜치와 제안, 파일 하나로 보관](../design-docs/adr/0049-definitions-store-kind-agnostic-with-branches-and-one-file.md) | 유효 |  |
+| [ADR-0050 조직 속성을 오버레이로 모델에 더한다](../design-docs/adr/0050-org-properties-as-overlays-in-the-model.md) | 유효 |  |
 | [ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)](../design-docs/adr/0051-impact-view-parts-svg-without-new-dependencies.md) | 유효 |  |
