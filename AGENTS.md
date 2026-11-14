@@ -14,7 +14,7 @@ IT 인프라를 믿을 수 있는 지식 그래프(KG)로 만드는 오픈소스
 ## 시작하기 (3분)
 
 0. 제품 설계 개요: [product-design.md](docs/design-docs/product-design.md) — 제품의 가치, 원칙, 쟁점별 답, 순서, 설계 문서 지도. 설계와 구현 전에 먼저 읽는다.
-1. 요구사항: [requirements.md](docs/product-specs/requirements.md) — 목표와 `REQ-NNN`.
+1. 요구사항: [requirements.md](docs/product-specs/requirements.md) — 목표와 영역별 문서(`requirements-<영역>.md`)의 목록. 번호는 `REQ-NNN`이고 전체에서 하나뿐이다.
 2. 구조: [ARCHITECTURE.md](ARCHITECTURE.md) — 유닛과 의존 방향.
 3. 문서 색인: [docs/index.md](docs/index.md)
 4. 현재 진행 중인 작업: [진행 중 계획](docs/exec-plans/active/plan.md)

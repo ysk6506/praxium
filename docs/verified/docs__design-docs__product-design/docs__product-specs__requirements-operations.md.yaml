@@ -1,0 +1,7 @@
+doc: "docs/design-docs/product-design.md"
+target: "docs/product-specs/requirements-operations.md"
+hash: "19f6a07ebd885590"
+date: "2026-11-14"
+note: "운영과 관측(150대, 180대, 190대, 200~208)은 개요의 운영 항목과 일치. 이번에 문서를 나누며 줄을 그대로 옮겼고 어긋나는 곳이 없어 개요는 고치지 않았다"
+text_changed: true
+doc_hash: "019854b80cb4930e"

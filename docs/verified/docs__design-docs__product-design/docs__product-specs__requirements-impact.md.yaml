@@ -1,0 +1,7 @@
+doc: "docs/design-docs/product-design.md"
+target: "docs/product-specs/requirements-impact.md"
+hash: "fb0e075520c2da61"
+date: "2026-11-14"
+note: "영향 범위(300대, 350대, 374~381)는 개요 순서의 영향 범위 단계와 일치. 이번에 문서를 나누며 줄을 그대로 옮겼고 어긋나는 곳이 없어 개요는 고치지 않았다"
+text_changed: true
+doc_hash: "019854b80cb4930e"

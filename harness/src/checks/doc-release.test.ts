@@ -4,7 +4,7 @@ import { describe, expect, test } from "vitest";
 import { findRoot, splitFrontMatter } from "../common";
 import { docsRepo, front, TODAY } from "../test-support/docs-repo";
 import { followEntries } from "./doc-targets";
-import { report, reverify, run } from "./docs";
+import { discoverDocs, loadDocsConfig, report, reverify, run } from "./docs";
 
 /** A guide that follows docs/spec.md as `follows` says, verified once against it. */
 function repoFollowing(follows: unknown[]): string {
@@ -148,12 +148,31 @@ describe("the product design overview is re-read at the release [REQ-395]", () =
     );
     const entries = followEntries(data ?? {}).map((e) => `${path.basename(e.glob)}:${e.recheck}`);
     expect(entries).toEqual([
-      "requirements.md:release",
+      "requirements*.md:release",
       "0005-separate-product-own-model-verification-outside.md:change",
     ]);
   });
 
-  test("the real repository passes the release check", () => {
-    expect(run(findRoot(), undefined, true)).toEqual([]);
+  test("the release check of the real repository adds DOC013 and nothing else", () => {
+    const root = findRoot();
+    const plain = run(root).map((v) => `${v.code} ${v.path} ${v.message}`);
+    const release = run(root, undefined, true)
+      .filter((v) => v.code !== "DOC013")
+      .map((v) => `${v.code} ${v.path} ${v.message}`);
+    expect(release).toEqual(plain);
+  });
+
+  test("only the product design overview has a release relation, and only to the requirements", () => {
+    const root = findRoot();
+    const config = loadDocsConfig(root);
+    const found = discoverDocs(root, config).flatMap((file) => {
+      const { data } = splitFrontMatter(readFileSync(path.join(root, file), "utf8"));
+      return followEntries(data ?? {})
+        .filter((e) => e.recheck === "release")
+        .map((e) => `${file} -> ${e.glob}`);
+    });
+    expect(found).toEqual([
+      "docs/design-docs/product-design.md -> docs/product-specs/requirements*.md",
+    ]);
   });
 });

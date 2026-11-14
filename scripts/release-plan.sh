@@ -65,12 +65,14 @@ case "$event" in
   *) fail "the event '$event' is not push or workflow_dispatch" ;;
 esac
 
-# The docs contract is in the checkout of every ref of this repository; a checkout without it has no documents to ask.
+# The docs contract is in the checkout of every ref of this repository; a checkout without it has no documents to ask, and the run says so.
 if [ "$publish" = true ] && [ -f "$PWD/harness/config/docs.yaml" ]; then
   tsx="${DOCS_CHECK_DIR:-.}/node_modules/.bin/tsx"
   [ -x "$tsx" ] || fail "the docs check cannot run for this release: $tsx is missing (run pnpm install --frozen-lockfile first)"
   "$tsx" "${DOCS_CHECK_DIR:-.}/harness/src/checks/docs.ts" --release --root "$PWD" >&2 ||
     fail "the documents are not ready for a release (see the DOC013 lines above): read each document against what it follows, fix it, run the reverify command it names, merge that to the main branch, then run the release again"
+elif [ "$publish" = true ]; then
+  echo "release-plan: skipped the docs check for this release: this checkout has no harness/config/docs.yaml (no document contract)" >&2
 fi
 
 {

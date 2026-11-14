@@ -84,6 +84,8 @@ Go 프로그램은 한 번 빌드해 임시 디렉터리에서 실행한다. 인
 - `pnpm tsx harness/src/checks/docs.ts generate` — [결정 목록](../generated/decisions.md)과 [색인](../index.md)의 문서 목록을 한 번에 다시 생성한다. 변경은 이 파일들을 커밋하지 않는다: 오래되면 알림만 나오고, 손으로 수정하면 `DOC099`로 실패한다.
 - `pnpm tsx harness/src/checks/docs.ts reverify <문서> --note "…"` — 문서가 오래된 대상 모두에 `docs/verified/` 기록을 쓴다. `--target <경로>`는 한 대상만 쓴다 (`DOC010`, `DOC011`). 대상이 이미 가진 기록과 같은 메모는 거절하고, 한 번에 10개를 넘는 대상은 `--target`으로 나눠 각각 자기 메모를 적게 한다 (ADR-0028).
 - `pnpm tsx harness/src/checks/docs.ts --release` — 릴리스 검사. 문서 검사 전체에, `recheck: release`인 `follows` 관계의 낡은 기록을 실패(`DOC013`)로 세는 것을 더한다. 보통 검사에서는 같은 것이 알림(`DOC103`)이고 종료 코드에 영향이 없다. 릴리스 워크플로의 `plan` 단계가 태그와 릴리스를 만들 때 이 명령을 워크플로를 실행한 ref의 문서에 돌린다([릴리스 안내서](../guides/release.md), ADR-0056).
+- `recheck: release`는 지금 제품 설계 개요가 요구사항 문서(`requirements*.md`)를 따르는 관계에만 쓴다. 실제 저장소 전체에서 이 관계가 그 하나뿐임을 잠긴 테스트(`doc-release.test.ts`)가 확인한다. 다른 문서가 변경마다의 확인을 피하려고 이 표기를 쓰지 못하게 하는 장치이고, 넓히려면 그 테스트를 `amends_tests`로 고치는 결정이 필요하다 (ADR-0056).
+- 요구사항은 `docs/product-specs/requirements.md`(입구)와 `requirements-<영역>.md`에 있다. 추적 검사(`TRACE*`)와 문서의 `REQ-NNN` 참조 검사는 모두를 읽고, 같은 번호가 두 곳에 있으면 `TRACE004`로 실패한다 (ADR-0063).
 - `pnpm tsx harness/src/checks/docs.ts seal-adr <ADR>` — 결정 기록을 확정한다. 확정한 뒤에는 본문을 수정할 수 없다 (`DOC070`).
 - `pnpm tsx harness/src/checks/docs.ts link-amends <ADR>` — 새 ADR의 `amends`가 가리키는 ADR에 `amended_by`를 남긴다 (`DOC091`).
 - `pnpm tsx harness/src/checks/docs.ts audit-queue` — 본문이 바뀌지 않은 채 다시 확인만 된 문서를 감사받은 지 오래된 순으로 보여 준다. 읽은 뒤 `docs.ts audit <문서> --note "한 줄"`.

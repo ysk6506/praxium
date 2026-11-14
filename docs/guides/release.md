@@ -90,10 +90,10 @@ gh run download <실행 번호> -n release-files -D /tmp/praxium-artifact
 
 ```
 pnpm tsx harness/src/checks/docs.ts --release
-pnpm tsx harness/src/checks/docs.ts reverify docs/design-docs/product-design.md --target docs/product-specs/requirements.md --note "<무엇과 대조했고 무엇을 고쳤는지, 또는 왜 고칠 것이 없는지>"
+pnpm tsx harness/src/checks/docs.ts reverify docs/design-docs/product-design.md --target docs/product-specs/requirements-<영역>.md --note "<무엇과 대조했고 무엇을 고쳤는지, 또는 왜 고칠 것이 없는지>"
 ```
 
-   `--note`는 확인한 내용을 적는 자리예요. "그대로 둠" 같은 한 줄이 아니라, 지난 릴리스 이후 요구사항에서 어떤 `REQ`가 바뀌었는지 보고 개요의 어느 절과 대조했는지, 무엇을 고쳤는지(고칠 것이 없으면 그 이유)를 적어요.
+   `--note`는 확인한 내용을 적는 자리예요. "그대로 둠" 같은 한 줄이 아니라, 지난 릴리스 이후 요구사항 문서(`requirements.md`와 `requirements-<영역>.md`)에서 어떤 `REQ`가 바뀌었는지 보고 개요의 어느 절과 대조했는지, 무엇을 고쳤는지(고칠 것이 없으면 그 이유)를 적어요.
 2. 내려받으려는 커밋이 메인 브랜치에 있고 그 커밋의 CI(`gate`)가 통과했는지 확인해요.
 3. 처음 한 번은 스냅숏 실행(4절)이 성공했는지 확인해요.
 4. `docs/releases/<태그>.md`에 릴리스 노트를 써서 메인에 병합해요(없어도 되지만 쓰기를 권해요). 노트에 서명을 아직 하지 않았다는 말을 적어요. 맥과 윈도우는 처음 실행할 때 확인되지 않은 개발자라는 경고가 뜰 수 있고, 내려받은 사람이 확인할 수 있는 것은 `SHA256SUMS`뿐이에요(ADR-0039).

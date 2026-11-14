@@ -98,3 +98,25 @@ func TestReleasePlanRefusesAReleaseWhenAReleaseRelationIsStale(t *testing.T) {
 		}
 	}
 }
+
+// [REQ-396]
+func TestReleasePlanSaysSoWhenTheCheckoutHasNoDocumentContract(t *testing.T) {
+	r := newPlanRepo(t)
+	vars := [][]string{
+		{"EVENT_NAME=workflow_dispatch", "RUN_SHA=" + r.tip, "RUN_REF=refs/heads/main", "INPUT_VERSION=0.2.0"},
+		{"EVENT_NAME=push", "REF_NAME=v0.2.0", "RUN_SHA=" + r.tip},
+	}
+	for _, v := range vars {
+		got, stderr, err := runReleasePlan(t, r, v...)
+		if err != nil || got["publish"] != "true" {
+			t.Errorf("a repository with no document contract still releases: err = %v, answers %v\n%s", err, got, stderr)
+		}
+		if !strings.Contains(stderr, "skipped the docs check") || !strings.Contains(stderr, "harness/config/docs.yaml") {
+			t.Errorf("the skip is not said: %q", stderr)
+		}
+	}
+	got, stderr, err := runReleasePlan(t, r, "EVENT_NAME=workflow_dispatch", "RUN_SHA="+r.sideOnly)
+	if err != nil || got["mode"] != "snapshot" || strings.Contains(stderr, "skipped the docs check") {
+		t.Errorf("a snapshot is not asked and says nothing: err = %v, answers %v, %q", err, got, stderr)
+	}
+}

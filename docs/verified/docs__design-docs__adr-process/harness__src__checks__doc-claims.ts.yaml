@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-claims.ts"
-hash: "2b900f46f85023b7"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
+hash: "10228563e1ca8086"
+date: "2026-11-14"
+note: "REQ-NNN 참조 검사가 요구사항 문서 전체를 읽음: 결정 추종 절에 입구와 영역 문서, TRACE004를 적음"
 text_changed: true
-doc_hash: "57f525cdc5d61411"
+doc_hash: "a02f62c9a77f6e21"
