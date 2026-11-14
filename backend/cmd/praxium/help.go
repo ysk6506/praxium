@@ -36,6 +36,9 @@ Bring in your data
   ingest init      Write example definitions and sample files (CSV and Excel) to try the steps
   ingest inspect   Look at a CSV, JSON Lines or Excel file before writing a mapping for it
   ingest run       Read files into a KG, with -data-dir so the result is kept
+  model check      Check a file of your own properties for the standard types (organization properties)
+  model apply      Store them in the data folder, so ingest run, local and api serve use them
+  model show       Show the stored properties (also: model export, model history)
 
 Run a server
   api serve    The REST API server: production with built-in sign-in (access tokens), or development mode
@@ -79,6 +82,7 @@ func commandHelps() map[string]helpEntry {
 	ingestHelpEntries(out)
 	initHelpEntries(out)
 	inspectHelpEntries(out)
+	modelHelpEntries(out)
 	localHelpEntries(out)
 	adminHelpEntries(out)
 	return out
@@ -161,7 +165,7 @@ func flagProblem(err error) error {
 var knownCommands = map[string]bool{
 	"demo": true, "local": true, "dev": true, "ingest": true, "api": true, "contract": true, "worldgen": true, "version": true,
 	"worker": true, "collector": true, "health": true, "types": true, "catalog": true, "kg": true, "object": true, "query": true,
-	"admin": true, "whoami": true,
+	"admin": true, "whoami": true, "model": true,
 }
 
 // runHelp answers the command lines that are about help, and the first words nothing answers. handled is false for

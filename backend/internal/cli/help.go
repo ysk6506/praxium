@@ -203,10 +203,12 @@ flags:
   --text X                   objects whose name contains X
   --identifier scheme:value  the object that holds this identifier
   --attr name.op=value       a condition on an attribute (op: equals, in, prefix, range); may repeat.
-                             in takes a comma list, range takes from..to
+                             in takes a comma list, range takes from..to. The operation is what follows the last
+                             dot, so an organization property is written org.management_department.equals=Team1
 
 example:
   praxium query find --type PhysicalServer --attr power_state.equals=on --limit 5
+  praxium query find --type PhysicalServer --attr org.management_department.equals=Team1
 
 ` + readFlagsHelp},
 	"query get": {

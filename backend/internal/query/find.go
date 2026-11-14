@@ -420,8 +420,8 @@ func (e *Engine) textMatches(r *read, text string, row graph.ObjectRow, cap mode
 	info := e.types.byNo[row.TypeNo]
 	for no, a := range row.Attrs {
 		s, isText := a.Value.(string)
-		prop := info.byAttr[no]
-		if !isText || !r.designed(a.Basis) || SensitivityRank(prop.EffectiveSensitivity()) > SensitivityRank(cap) {
+		prop, known := info.byAttr[no]
+		if !known || !isText || !r.designed(a.Basis) || SensitivityRank(prop.EffectiveSensitivity()) > SensitivityRank(cap) {
 			continue
 		}
 		if strings.Contains(strings.ToLower(s), text) {
