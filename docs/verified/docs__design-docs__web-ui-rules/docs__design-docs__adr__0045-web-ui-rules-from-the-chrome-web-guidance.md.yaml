@@ -1,7 +1,7 @@
 doc: "docs/design-docs/web-ui-rules.md"
 target: "docs/design-docs/adr/0045-web-ui-rules-from-the-chrome-web-guidance.md"
-hash: "59686ec6a0336522"
+hash: "ab66ca5ef2c9b630"
 date: "2026-11-14"
-note: "삽입 함수 용어 정리 뒤 재대조: 규칙 코드와 값 일치"
+note: "용어 정리(테스트, 삽입 함수)만 바뀜"
 text_changed: true
-doc_hash: "78400713ba527af3"
+doc_hash: "a0dc9c358a7e2976"

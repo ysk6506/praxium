@@ -36,7 +36,7 @@ touches_protected:
 amends:
   - adr: "0035"
     what: 6번 검사 표(WEB040~WEB045를 더함)와 2번의 응답 헤더(CSP 항목과 두 헤더를 더함)
-decision_hash: 59686ec6a0336522
+decision_hash: ab66ca5ef2c9b630
 ---
 # ADR-0045 웹 UI 규칙을 Chrome 팀의 웹 가이드에서 추려 문서와 검사로 둔다
 
@@ -56,7 +56,7 @@ decision_hash: 59686ec6a0336522
    | 규칙 | 내용 |
    |---|---|
    | `WEB040` | 토큰의 글자/배경 쌍은 4.5:1, 테두리와 포커스 링은 3:1 이상(라이트와 다크). 쌍은 설정에 선언하고 oklch를 sRGB로 바꾸는 계산은 `web-colors.ts`에 의존성 없이 구현했다 |
-   | `WEB041` | 위험한 싱크: `innerHTML`·`outerHTML` 대입, `dangerouslySetInnerHTML`, `insertAdjacentHTML`, `setHTMLUnsafe`, `document.write`, `eval`, `new Function`, 문자열 `setTimeout`(테스트 파일 제외) |
+   | `WEB041` | 위험한 삽입 함수: `innerHTML`·`outerHTML` 대입, `dangerouslySetInnerHTML`, `insertAdjacentHTML`, `setHTMLUnsafe`, `document.write`, `eval`, `new Function`, 문자열 `setTimeout`(테스트 파일 제외) |
    | `WEB042` | `apps/web/src`와 `index.html`의 `http(s)://` 절대 주소(허용 목록 없음. 테스트 픽스처 세 파일만 파일 단위로 제외) |
    | `WEB043` | `outline-none`과 `outline: none`은 같은 요소에 `focus-visible` 대체가 있어야 한다 |
    | `WEB044` | 움직이는 CSS가 있으면 `prefers-reduced-motion` 처리가 있어야 하고 `animate-`는 `motion-safe:` 뒤에서만 쓴다 |
@@ -79,7 +79,7 @@ decision_hash: 59686ec6a0336522
 
 ### 따르지 않기로 한 것(보류)
 
-- `aria-sort="none"` 제거: 잠긴 시험(`apps/web/src/ui/shell.test.tsx`)이 `"none"`을 단언한다. 시험을 바꾸려면 요구사항이 바뀐 것이어야 하고 그럴 만한 문제가 아니다(스크린 리더 동작에 영향이 작다). 정식 화면에서 다시 본다.
+- `aria-sort="none"` 제거: 잠긴 테스트(`apps/web/src/ui/shell.test.tsx`)이 `"none"`을 단언한다. 테스트을 바꾸려면 요구사항이 바뀐 것이어야 하고 그럴 만한 문제가 아니다(스크린 리더 동작에 영향이 작다). 정식 화면에서 다시 본다.
 - 입력기 조합 중 `Enter` 무시(`isComposing`): 지금 `Enter`로 동작하는 직접 만든 핸들러가 없다. 만들 때 적용한다(문서 4절).
 - `vh`를 `dvh`로: 이 도구는 데스크톱 중심이다. 새로 쓰는 코드부터 적용한다.
 - Trusted Types 강제, 코드 분할, 로컬 스토리지 토큰: 문서 10절과 7절, ADR-0035의 결과에 이유가 있다.
@@ -87,7 +87,7 @@ decision_hash: 59686ec6a0336522
 ## 이유
 
 - 가이드를 실행 중에 부르게 하면 폐쇄망과 의존성 최소 원칙을 깬다. 추린 문서는 에이전트가 읽는 양이 적고 프락시움의 조건(버릴 화면 계층, 셀프 호스팅)을 반영한다.
-- 규칙을 문서에만 두면 낡는다. 기계로 확실히 확인되는 것(대비 계산, 위험한 싱크, 주소, 예산)은 검사가 지키고, 에이전트는 실패 메시지로 규칙을 배운다.
+- 규칙을 문서에만 두면 낡는다. 기계로 확실히 확인되는 것(대비 계산, 위험한 삽입 함수, 주소, 예산)은 검사가 지키고, 에이전트는 실패 메시지로 규칙을 배운다.
 - 지원 하한을 새로 정하지 않고 Tailwind의 요구에 맞춘 것은, 그 아래로 내려갈 수 없고 위로 올릴 이유도 없기 때문이다.
 
 ## 버린 대안

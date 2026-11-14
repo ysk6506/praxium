@@ -38,8 +38,8 @@ follows:
 |---|---|---|
 | `index.html`에 `lang="ko"`, `viewport`(확대를 막지 않는다), `color-scheme` 메타를 둔다 | `guides/html/html`, `guides/visual-design/dark-mode` | 쓰는 쪽 |
 | 화면마다 `document.title`을 `"<대상> · <종류> · 프락시움"` 형식으로 갱신한다. 화면은 `useScreenTitle(titleOf(...))`로 이름을 알린다 | `guides/accessibility/accessibility`(WCAG 2.4.2) | `apps/web/src/data/screen.test.tsx` |
-| 사용자가 링크나 버튼으로 화면을 옮기면 포커스를 새 화면의 `h1`로 옮긴다. 같은 화면 안의 쿼리 변경(탭, 검색, 정렬, 페이지)에서는 옮기지 않는다 | 같은 곳(WCAG 2.4.3) | 같은 시험 |
-| 뒤로 가기와 앞으로 가기에서는 포커스를 두고 `aria-live="polite"` 영역으로 도착한 화면의 이름을 알린다 | 같은 곳(WCAG 4.1.3) | 같은 시험 |
+| 사용자가 링크나 버튼으로 화면을 옮기면 포커스를 새 화면의 `h1`로 옮긴다. 같은 화면 안의 쿼리 변경(탭, 검색, 정렬, 페이지)에서는 옮기지 않는다 | 같은 곳(WCAG 2.4.3) | 같은 테스트 |
+| 뒤로 가기와 앞으로 가기에서는 포커스를 두고 `aria-live="polite"` 영역으로 도착한 화면의 이름을 알린다 | 같은 곳(WCAG 4.1.3) | 같은 테스트 |
 | 화면마다 `h1` 하나, 구역은 `h2`, 단계를 건너뛰지 않는다. `main`은 하나이고 `nav`가 여럿이면 `aria-label`로 구별한다 | `guides/accessibility/accessibility` | 쓰는 쪽 |
 | 이동은 `<a href>`, 동작은 `<button type="button">`. `div`에 `onClick`을 달지 않는다 | `guides/html/html` | Biome의 접근성 규칙 |
 | 이동 경로는 `<nav aria-label>` 안의 `<ol>`이다 | `guides/ui-components/breadcrumbs` | `PageHeader` |
@@ -66,7 +66,7 @@ follows:
 |---|---|---|
 | 모든 입력에 보이는 `<label>`을 연결하고, 도움말은 설명으로 연결한다. 자리표시자를 라벨로 쓰지 않는다(`TextField`) | `guides/forms/forms` | 쓰는 쪽 |
 | 검색과 필터는 `<search>`로 감싸고 `type="search"`를 쓴다. 식별자나 이름을 치는 입력에는 `spellCheck={false}`와 `autoComplete="off"`를 둔다 | `guides/forms/forms`, `guides/html/html` | 쓰는 쪽 |
-| 검증은 사용자가 입력을 마친 뒤(`blur`)와 제출 때 한다. 입력 중에는 오류를 지우기만 한다. 제출에 실패하면 첫 오류로 포커스를 옮긴다. 제출 버튼을 미리 비활성화하지 않는다 | `guides/forms/validate-input-after-interaction`, `guides/accessibility/accessible-error-announcement` | 쓰는 쪽 |
+| 검증은 사용자가 입력을 마친 뒤(`blur`)와 제출 때 한다. 입력 중에는 오류를 삭제하기만 한다. 제출에 실패하면 첫 오류로 포커스를 옮긴다. 제출 버튼을 미리 비활성화하지 않는다 | `guides/forms/validate-input-after-interaction`, `guides/accessibility/accessible-error-announcement` | 쓰는 쪽 |
 | `Enter`로 제출하거나 실행하는 입력은 입력기 조합 중(`event.isComposing`, Safari에서는 `keyCode === 229`)의 `Enter`를 무시한다. 한국어는 `Enter`로 글자를 확정한다 | `guides/forms/ime-safe-enter-submit` | 쓰는 쪽 |
 | 오류는 `role="alert"`, 읽는 중은 `<output>`으로 알린다. 읽는 중을 긴급 알림으로 쓰지 않는다 | `guides/accessibility/accessibility` | `ErrorState`, `LoadingState` |
 
@@ -75,9 +75,9 @@ follows:
 | 규칙 | 근거 가이드 | 확인 |
 |---|---|---|
 | 테이블에는 이름(`aria-label` 또는 `caption`)을 주고 열 머리글은 `th scope="col"`이다. 레이아웃에 표를 쓰지 않는다 | `guides/ui-atoms/responsive-table` | `Table` |
-| 가로로 스크롤되는 테이블은 키보드로 닿아야 한다: 넘칠 때 스크롤 영역에 `tabIndex={0}`, `role="region"`, 이름을 준다 | 같은 곳(WCAG 2.1.1) | `Table`의 넘침 시험 |
-| 정렬하는 열은 `th` 안에 `button`을 두고 정렬 중인 열에 `aria-sort`를 단다. 정렬하지 않는 열에는 `aria-sort="none"`을 달지 않는 것이 가이드의 권고이지만 `SortTh`는 지금 달고 있다(잠긴 시험이 단언한다, ADR-0045의 보류) | `guides/ui-behaviors/sortable-table` | 쓰는 쪽 |
-| 대화 상자는 `ui`의 `Dialog`(Base UI)를 쓴다. 포커스 가두기와 `Esc`, 닫을 때 포커스 복귀를 직접 짜지 않는다. 닫기 수단이 눈에 보여야 한다 | `guides/ui-components/dialog` | `Dialog` 시험 |
+| 가로로 스크롤되는 테이블은 키보드로 닿아야 한다: 넘칠 때 스크롤 영역에 `tabIndex={0}`, `role="region"`, 이름을 준다 | 같은 곳(WCAG 2.1.1) | `Table`의 넘침 테스트 |
+| 정렬하는 열은 `th` 안에 `button`을 두고 정렬 중인 열에 `aria-sort`를 단다. 정렬하지 않는 열에는 `aria-sort="none"`을 달지 않는 것이 가이드의 권고이지만 `SortTh`는 지금 달고 있다(잠긴 테스트이 단언한다, ADR-0045의 보류) | `guides/ui-behaviors/sortable-table` | 쓰는 쪽 |
+| 대화 상자는 `ui`의 `Dialog`(Base UI)를 쓴다. 포커스 가두기와 `Esc`, 닫을 때 포커스 복귀를 직접 짜지 않는다. 닫기 수단이 눈에 보여야 한다 | `guides/ui-components/dialog` | `Dialog` 테스트 |
 | 탭은 같은 화면 안의 보기 전환에만 쓰고 화면 이동에는 쓰지 않는다 | `guides/ui-components/tabs` | 쓰는 쪽 |
 
 ## 6. CSS
