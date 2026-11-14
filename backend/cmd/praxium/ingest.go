@@ -20,7 +20,8 @@ const ingestUsage = `usage: praxium ingest run -source <source.json> -mapping <m
   One ingestion run of a file source (ADR-0033): capture, parse, raw record changes, refinement, feeds,
   identification, links and apply, into a KG in a store that lives as long as this command. -times repeats
   the run on the same files in the same store to show that a second run changes nothing.
-  The files are only read. The definitions are JSON data (docs/design-docs/ingestion.md).
+  The files are only read. The definitions are JSON data (docs/design-docs/ingestion.md). A dataset whose parser is
+  xlsx reads a sheet of an Excel workbook (ADR-0040); several datasets can name the same workbook.
 `
 
 // ingestFlags is what the command line of one ingestion run says.
@@ -69,10 +70,13 @@ func (f *ingestFlags) set(flag, v string) error {
 	return nil
 }
 
-// runIngest is `praxium ingest ...`: only `run` exists.
+// runIngest is `praxium ingest ...`: run and inspect.
 func runIngest(args []string, stdout, stderr io.Writer, w wiring) int {
+	if len(args) >= 1 && args[0] == "inspect" {
+		return runInspect(args[1:], stdout, stderr, w)
+	}
 	if len(args) < 1 || args[0] != "run" {
-		fmt.Fprint(stderr, ingestUsage)
+		fmt.Fprint(stderr, ingestUsage, inspectUsage)
 		return exitUsage
 	}
 	f, err := parseIngestRun(args[1:])

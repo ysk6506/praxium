@@ -1,0 +1,62 @@
+{
+  "refinements": [
+    {
+      "id": "rf_servers",
+      "input": "ds_servers",
+      "ops": [{ "op": "filter", "column": "asset_id", "not_in": ["합계"] }]
+    }
+  ],
+  "feeds": [
+    {
+      "id": "f_rack",
+      "dataset": "ds_racks",
+      "object_type": "Rack",
+      "creates_objects": true,
+      "basis": "declared",
+      "attributes": [
+        { "attribute": "name", "column": "rack_name" },
+        { "attribute": "total_u", "column": "total_u" },
+        { "attribute": "asset_tag", "column": "asset_id" }
+      ],
+      "identity": [
+        {
+          "key_name": "asset_tag",
+          "components": [{ "property": "asset_tag", "column": "asset_id" }],
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "id": "f_server",
+      "dataset": "rf_servers",
+      "object_type": "PhysicalServer",
+      "creates_objects": true,
+      "basis": "observed",
+      "attributes": [
+        { "attribute": "name", "column": "asset_id" },
+        { "attribute": "manufacturer", "column": "manufacturer" },
+        { "attribute": "serial_number", "column": "serial" },
+        { "attribute": "power_state", "column": "power_state" }
+      ],
+      "identity": [
+        {
+          "components": [
+            { "property": "manufacturer", "column": "manufacturer" },
+            { "property": "serial_number", "column": "serial" }
+          ],
+          "priority": 1
+        }
+      ]
+    }
+  ],
+  "links": [
+    {
+      "id": "l_mounted",
+      "link_type": "MOUNTED_IN",
+      "from": { "feed": "f_server", "columns": ["rack_asset_id"] },
+      "to": { "feed": "f_rack", "columns": ["asset_id"] },
+      "condition": "same_key",
+      "basis": "declared"
+    }
+  ]
+}
