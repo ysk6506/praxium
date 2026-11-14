@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "63b5e3b264e34897"
+hash: "91f4d342c9fc54ba"
 date: "2026-11-14"
-note: "main에 병합한 뒤 AGENTS.md를 다시 읽었다. main과의 차이는 첫 단락의 목표 문장뿐이고 이 문서의 신념과 줄 수 한도에 영향이 없다"
+note: "main 반영 뒤 AGENTS.md 재대조: 화면 코드 항목에 웹 UI 규칙 링크가 더해진 것만 다름"
 text_changed: false
 doc_hash: "04b2f4f490642c38"

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "01774658a21398a3"
+hash: "2ea481cf3defb85f"
 date: "2026-11-14"
-note: "병합 뒤 확인: 내장 인증(ADR-0044)과 REQ-307~314, 수집 사용성 요구가 이 문서와 어긋나지 않는다"
+note: "main 반영 뒤 요구사항 재대조: REQ-315~319와 REQ-320~331 공존"
 text_changed: true
 doc_hash: "019854b80cb4930e"

@@ -15,7 +15,7 @@ export function Checkbox({ checked, onChange, children }: CheckboxProps) {
         id={id}
         checked={checked}
         onCheckedChange={(next) => onChange(next)}
-        className="flex size-4 shrink-0 items-center justify-center rounded-sm border border-line-strong bg-surface data-[checked]:border-accent data-[checked]:bg-accent"
+        className="flex size-4 shrink-0 items-center justify-center rounded-sm border border-control-line bg-surface data-[checked]:border-accent data-[checked]:bg-accent"
       >
         <BaseCheckbox.Indicator className="text-xs leading-none text-accent-fg">
           ✓
