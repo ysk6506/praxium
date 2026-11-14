@@ -5,7 +5,7 @@ import { useToken } from "./connection";
 import { describeError, type ErrorView } from "./errors";
 
 export type AsyncState<T> =
-  | { readonly status: "loading"; readonly data: T | undefined }
+  | { readonly status: "loading"; readonly data: T | undefined; readonly attempt: number }
   | { readonly status: "ready"; readonly data: T }
   | { readonly status: "error"; readonly error: ErrorView; readonly data: T | undefined };
 
@@ -28,13 +28,17 @@ export function useAsync<T>(
   enabled = true,
 ): AsyncResult<T> {
   const token = useToken();
-  const [state, setState] = useState<AsyncState<T>>({ status: "loading", data: undefined });
+  const [state, setState] = useState<AsyncState<T>>({
+    status: "loading",
+    data: undefined,
+    attempt: 0,
+  });
   const [round, setRound] = useState(0);
 
   useEffect(() => {
     if (!enabled) return;
     const controller = new AbortController();
-    setState((previous) => ({ status: "loading", data: previous.data }));
+    setState((previous) => ({ status: "loading", data: previous.data, attempt: round }));
     load(createClient({ token, signal: controller.signal }), controller.signal)
       .then((data) => {
         if (!controller.signal.aborted) setState({ status: "ready", data });

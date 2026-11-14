@@ -9,7 +9,12 @@ export interface Asked {
   readonly authorization: string | null;
 }
 
-export type Answer = { status?: number; body?: unknown; problem?: boolean } | (() => Answer);
+export interface Reply {
+  status?: number;
+  body?: unknown;
+  problem?: boolean;
+}
+export type Answer = Reply | (() => Reply);
 
 export function fakeApi(routes: Record<string, Answer>): { asked: Asked[]; restore: () => void } {
   const asked: Asked[] = [];
@@ -53,7 +58,7 @@ export function fakeApi(routes: Record<string, Answer>): { asked: Asked[]; resto
   return { asked, restore: () => vi.unstubAllGlobals() };
 }
 
-export const problem = (status: number, code: string, title = "Problem"): Answer => ({
+export const problem = (status: number, code: string, title = "Problem"): Reply => ({
   status,
   problem: true,
   body: { type: `/v1/problems/${code}`, title, status, code, trace_id: "tr-test" },
