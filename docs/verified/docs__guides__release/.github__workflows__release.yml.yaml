@@ -1,0 +1,7 @@
+doc: "docs/guides/release.md"
+target: ".github/workflows/release.yml"
+hash: "a572f7767105a330"
+date: "2026-11-14"
+note: "스크립트 두 개와 워크플로의 인자, 산출물 이름, 절차를 코드와 대조해 확인"
+text_changed: true
+doc_hash: "13b42f7dc8ad046c"

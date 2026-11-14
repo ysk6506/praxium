@@ -74,6 +74,9 @@ func run(args []string, stdout, stderr io.Writer, d deps) int {
 		fmt.Fprintf(stdout, "praxium %s\n", version)
 		return exitOK
 	}
+	if len(args) == 1 && args[0] == "version" {
+		return runVersion(stdout)
+	}
 	if len(args) > 0 && args[0] == "worldgen" {
 		return runWorldgen(args[1:], stdout, stderr, d)
 	}

@@ -3322,6 +3322,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestReleaseBuildRefusesWhatIsNotSemanticVersioning": {
+   "kind": "test",
+   "hash": "aad1e202a655f500",
+   "asserts": 2,
+   "literals": [
+    "1a85dcb8504d525e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleaseBuildSetsTheVersionAndIsReproducible": {
+   "kind": "test",
+   "hash": "a6ec6f66e2900fa3",
+   "asserts": 10,
+   "literals": [
+    "e4aa47fffaa3b54b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestRunStartsEveryRole": {
    "kind": "test",
    "hash": "1d6d4a84ba54a795",
@@ -3463,6 +3493,51 @@
    "reqs": [
     "REQ-260",
     "REQ-270"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionCommandPrintsWhatTheBuildKnows": {
+   "kind": "test",
+   "hash": "2354444fb0e181d4",
+   "asserts": 2,
+   "literals": [
+    "94b722dfee05d11c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionOfABuildWithoutValuesIsDev": {
+   "kind": "test",
+   "hash": "b80383d3045729db",
+   "asserts": 3,
+   "literals": [
+    "5bf15a6df23692eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestVersionWithArgumentsIsAUsageError": {
+   "kind": "test",
+   "hash": "c239ea131e707a6f",
+   "asserts": 1,
+   "literals": [
+    "708543c6788dca8b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-282"
    ],
    "added": "2026-11-14",
    "amended_by": null
