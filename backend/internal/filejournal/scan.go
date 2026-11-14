@@ -21,14 +21,33 @@ type segScan struct {
 	bytes int64
 }
 
+// scanner holds the state of the reading of one segment.
+type scanner struct {
+	name    string
+	br      *bufio.Reader
+	skip    uint64
+	apply   func([]byte) error
+	res     segScan
+	payload []byte
+}
+
+// recordState is what the reading of one record found.
+type recordState int
+
+const (
+	recordGood recordState = iota
+	recordEnd
+	recordBroken
+)
+
 // scanSegment reads the segment called name. A record with a number above skip goes to apply; it must not keep the
 // payload, which is reused. A broken record at the end, with nothing whole after it, is a torn end (the crash cut
 // the write that was in flight, which nobody was told had worked); a broken record with whole records after it is
 // damage, and so is a whole record with the wrong number: both stop the reading with CodeCorrupt.
 func scanSegment(name string, rc io.Reader, nameFirst, skip uint64, apply func([]byte) error) (segScan, error) {
-	br := bufio.NewReaderSize(rc, 1<<20)
+	sc := &scanner{name: name, br: bufio.NewReaderSize(rc, 1<<20), skip: skip, apply: apply}
 	hdr := make([]byte, headerLen)
-	n, err := io.ReadFull(br, hdr)
+	n, err := io.ReadFull(sc.br, hdr)
 	if err != nil && err != io.EOF && err != io.ErrUnexpectedEOF {
 		return segScan{}, kernel.Wrap(CodeIO, err, "cannot read "+name)
 	}
@@ -36,65 +55,95 @@ func scanSegment(name string, rc io.Reader, nameFirst, skip uint64, apply func([
 	if herr != nil {
 		return segScan{}, herr
 	}
-	res := segScan{header: state, first: first, next: nameFirst}
+	sc.res = segScan{header: state, first: first, next: nameFirst}
 	if state != headerOK {
 		// A header that is cut short or garbled: whatever follows may still hold whole records, which is damage.
-		rest, _ := io.ReadAll(br)
+		rest, _ := io.ReadAll(sc.br)
 		if validFrameAfter(append(hdr[:n:n], rest...), 0) {
 			return segScan{}, kernel.Errorf(CodeCorrupt, "%s has a damaged header but whole records after it", name)
 		}
-		res.torn = true
-		return res, nil
+		sc.res.torn = true
+		return sc.res, nil
 	}
 	if first != nameFirst {
 		return segScan{}, kernel.Errorf(CodeCorrupt, "%s starts at record %d, its name says %d", name, first, nameFirst)
 	}
-	res.next = first
-	var payload []byte
+	sc.res.next = first
+	return sc.records()
+}
+
+// records reads records until the end of the file or the first broken one.
+func (sc *scanner) records() (segScan, error) {
 	for {
-		var h [frameLen]byte
-		hn, err := io.ReadFull(br, h[:])
-		if err == io.EOF {
-			return res, nil
-		}
-		if err != nil && err != io.ErrUnexpectedEOF {
-			return segScan{}, kernel.Wrap(CodeIO, err, "cannot read "+name)
-		}
-		tail := append([]byte(nil), h[:hn]...)
-		if hn == frameLen {
-			length, sum, recno := frameHeader(h[:])
-			if length <= maxRecord {
-				payload = grow(payload, int(length))
-				pn, err := io.ReadFull(br, payload)
-				if err != nil && err != io.ErrUnexpectedEOF && err != io.EOF {
-					return segScan{}, kernel.Wrap(CodeIO, err, "cannot read "+name)
-				}
-				if pn == int(length) && frameSum(h[:], payload) == sum {
-					if recno != res.next {
-						return segScan{}, kernel.Errorf(CodeCorrupt, "%s holds record %d where record %d belongs", name, recno, res.next)
-					}
-					if recno > skip {
-						if err := apply(payload); err != nil {
-							return segScan{}, err
-						}
-						res.bytes += frameLen + int64(length)
-					}
-					res.next++
-					continue
-				}
-				tail = append(tail, payload[:pn]...)
-			}
-		}
-		rest, err := io.ReadAll(br)
+		state, tail, err := sc.record()
 		if err != nil {
-			return segScan{}, kernel.Wrap(CodeIO, err, "cannot read "+name)
+			return segScan{}, err
 		}
-		if validFrameAfter(append(tail, rest...), res.next) {
-			return segScan{}, kernel.Errorf(CodeCorrupt, "record %d of %s is damaged, and whole records follow it: this is not a cut write", res.next, name)
+		switch state {
+		case recordGood:
+			continue
+		case recordEnd:
+			return sc.res, nil
 		}
-		res.torn = true
-		return res, nil
+		return sc.broken(tail)
 	}
+}
+
+// broken decides what a broken record is: a torn end, or damage.
+func (sc *scanner) broken(tail []byte) (segScan, error) {
+	rest, err := io.ReadAll(sc.br)
+	if err != nil {
+		return segScan{}, kernel.Wrap(CodeIO, err, "cannot read "+sc.name)
+	}
+	if validFrameAfter(append(tail, rest...), sc.res.next) {
+		return segScan{}, kernel.Errorf(CodeCorrupt, "record %d of %s is damaged, and whole records follow it: this is not a cut write", sc.res.next, sc.name)
+	}
+	sc.res.torn = true
+	return sc.res, nil
+}
+
+// record reads one record. For a broken one it returns the bytes read so far.
+func (sc *scanner) record() (recordState, []byte, error) {
+	var h [frameLen]byte
+	hn, err := io.ReadFull(sc.br, h[:])
+	if err == io.EOF {
+		return recordEnd, nil, nil
+	}
+	if err != nil && err != io.ErrUnexpectedEOF {
+		return 0, nil, kernel.Wrap(CodeIO, err, "cannot read "+sc.name)
+	}
+	tail := append([]byte(nil), h[:hn]...)
+	if hn < frameLen {
+		return recordBroken, tail, nil
+	}
+	length, sum, recno := frameHeader(h[:])
+	if length > maxRecord {
+		return recordBroken, tail, nil
+	}
+	sc.payload = grow(sc.payload, int(length))
+	pn, err := io.ReadFull(sc.br, sc.payload)
+	if err != nil && err != io.ErrUnexpectedEOF && err != io.EOF {
+		return 0, nil, kernel.Wrap(CodeIO, err, "cannot read "+sc.name)
+	}
+	if pn != int(length) || frameSum(h[:], sc.payload) != sum {
+		return recordBroken, append(tail, sc.payload[:pn]...), nil
+	}
+	return recordGood, nil, sc.take(recno, int64(length))
+}
+
+// take accepts a whole record: it must be the expected one.
+func (sc *scanner) take(recno uint64, length int64) error {
+	if recno != sc.res.next {
+		return kernel.Errorf(CodeCorrupt, "%s holds record %d where record %d belongs", sc.name, recno, sc.res.next)
+	}
+	if recno > sc.skip {
+		if err := sc.apply(sc.payload); err != nil {
+			return err
+		}
+		sc.res.bytes += frameLen + length
+	}
+	sc.res.next++
+	return nil
 }
 
 func grow(b []byte, n int) []byte {

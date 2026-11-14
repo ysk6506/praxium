@@ -106,17 +106,11 @@ func (s *Store) CreateKG(_ context.Context, kg graph.KG) (graph.KG, error) {
 
 // createKG checks and adds a KG; log says whether the journal gets a record first (a replay does not).
 func (s *Store) createKG(kg graph.KG, log bool) (graph.KG, error) {
-	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
-		return graph.KG{}, kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
+	if err := s.checkNewKG(kg); err != nil {
+		return graph.KG{}, err
 	}
 	if kg.State == "" {
 		kg.State = graph.StateBuilding
-	}
-	for _, other := range s.kgs {
-		if other.kg.ID == kg.ID || other.kg.Name == kg.Name || kg.Name == graph.MainAlias ||
-			(kg.Role == graph.RoleProduction && other.kg.Role == graph.RoleProduction) {
-			return graph.KG{}, kernel.Errorf(kernel.CodeConflict, "KG %q conflicts with one that exists", kg.Name)
-		}
 	}
 	kg.Generation = 1
 	if log {
@@ -127,6 +121,20 @@ func (s *Store) createKG(kg graph.KG, log bool) (graph.KG, error) {
 	s.kgs[kg.ID] = newState(kg)
 	s.created = append(s.created, kg.ID)
 	return kg, nil
+}
+
+// checkNewKG refuses a KG that is incomplete or conflicts with one that exists.
+func (s *Store) checkNewKG(kg graph.KG) error {
+	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
+		return kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
+	}
+	for _, other := range s.kgs {
+		if other.kg.ID == kg.ID || other.kg.Name == kg.Name || kg.Name == graph.MainAlias ||
+			(kg.Role == graph.RoleProduction && other.kg.Role == graph.RoleProduction) {
+			return kernel.Errorf(kernel.CodeConflict, "KG %q conflicts with one that exists", kg.Name)
+		}
+	}
+	return nil
 }
 
 func newState(kg graph.KG) *kgState {

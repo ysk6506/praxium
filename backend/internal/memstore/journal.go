@@ -134,62 +134,78 @@ func (s *Store) replay(rec []byte) error {
 	}
 	switch rec[1] {
 	case kindCreateKG:
-		var w wCreate
-		if err := decodeRecord(rec, &w); err != nil {
-			return err
-		}
-		d := &ids{}
-		kg := d.kgRow(w.KG)
-		if d.err != nil {
-			return d.err
-		}
-		_, err := s.createKG(kg, false)
-		return err
+		return s.replayCreate(rec)
 	case kindChunk:
 		return s.replayChunk(rec)
 	case kindAbandon:
-		var w wAbandon
-		if err := decodeRecord(rec, &w); err != nil {
-			return err
-		}
-		d := &ids{}
-		st, err := s.state(d.kg(w.KG))
-		if err == nil && d.err == nil {
-			st.abandon(d.head(w.Head))
-		}
-		return firstErr(err, d.err)
+		return s.replayAbandon(rec)
 	case kindSeal:
-		var w wSeal
-		if err := decodeRecord(rec, &w); err != nil {
-			return err
-		}
-		d := &ids{}
-		st, err := s.state(d.kg(w.KG))
-		if err != nil || d.err != nil {
-			return firstErr(err, d.err)
-		}
-		v, head := d.versionRow(w.Version), d.head(w.Head)
-		if d.err != nil {
-			return d.err
-		}
-		if err := st.checkSeal(v); err != nil {
-			return err
-		}
-		st.seal(v, w.Order, head)
-		return nil
+		return s.replaySeal(rec)
 	case kindRestore:
-		var w wRestore
-		if err := decodeRecord(rec, &w); err != nil {
-			return err
-		}
-		d := &ids{}
-		st, err := s.state(d.kg(w.KG))
-		if err == nil && d.err == nil {
-			st.restore(w.ToSeq, d.head(w.Head), w.Now)
-		}
-		return firstErr(err, d.err)
+		return s.replayRestore(rec)
 	}
 	return kernel.Errorf(kernel.CodeUnsupported, "a journal record has kind %d, which this build does not know", rec[1])
+}
+
+func (s *Store) replayCreate(rec []byte) error {
+	var w wCreate
+	if err := decodeRecord(rec, &w); err != nil {
+		return err
+	}
+	d := &ids{}
+	kg := d.kgRow(w.KG)
+	if d.err != nil {
+		return d.err
+	}
+	_, err := s.createKG(kg, false)
+	return err
+}
+
+func (s *Store) replayAbandon(rec []byte) error {
+	var w wAbandon
+	if err := decodeRecord(rec, &w); err != nil {
+		return err
+	}
+	d := &ids{}
+	st, err := s.state(d.kg(w.KG))
+	if err == nil && d.err == nil {
+		st.abandon(d.head(w.Head))
+	}
+	return firstErr(err, d.err)
+}
+
+func (s *Store) replaySeal(rec []byte) error {
+	var w wSeal
+	if err := decodeRecord(rec, &w); err != nil {
+		return err
+	}
+	d := &ids{}
+	st, err := s.state(d.kg(w.KG))
+	if err != nil || d.err != nil {
+		return firstErr(err, d.err)
+	}
+	v, head := d.versionRow(w.Version), d.head(w.Head)
+	if d.err != nil {
+		return d.err
+	}
+	if err := st.checkSeal(v); err != nil {
+		return err
+	}
+	st.seal(v, w.Order, head)
+	return nil
+}
+
+func (s *Store) replayRestore(rec []byte) error {
+	var w wRestore
+	if err := decodeRecord(rec, &w); err != nil {
+		return err
+	}
+	d := &ids{}
+	st, err := s.state(d.kg(w.KG))
+	if err == nil && d.err == nil {
+		st.restore(w.ToSeq, d.head(w.Head), w.Now)
+	}
+	return firstErr(err, d.err)
 }
 
 func firstErr(errs ...error) error {

@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "838b2366d333390a"
+hash: "0546be4674972a57"
 date: "2026-11-14"
-note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
+note: "용어 정리 후 다시 확인함(ADR-0034 반영)"
 text_changed: true
 doc_hash: "06412a77a9acc006"

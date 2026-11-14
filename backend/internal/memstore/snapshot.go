@@ -169,15 +169,14 @@ func (st *kgState) writeRows(enc *gob.Encoder) error {
 
 // writeObjectsAndLinks writes the row chains in id order, each chain oldest row first.
 func (st *kgState) writeObjectsAndLinks(enc *gob.Encoder) error {
-	var objs []wObject
-	flush := func(force bool) error {
-		if len(objs) == 0 || (!force && len(objs) < partRows) {
-			return nil
-		}
-		err := enc.Encode(snapPart{Kind: partObjects, Objects: objs})
-		objs = objs[:0]
+	if err := st.writeObjects(enc); err != nil {
 		return err
 	}
+	return st.writeLinks(enc)
+}
+
+func (st *kgState) writeObjects(enc *gob.Encoder) error {
+	var objs []wObject
 	for _, id := range st.objIDs {
 		for i := range st.objects[id] {
 			w, err := toWireObject(&st.objects[id][i])
@@ -185,14 +184,21 @@ func (st *kgState) writeObjectsAndLinks(enc *gob.Encoder) error {
 				return err
 			}
 			objs = append(objs, *w)
-			if err := flush(false); err != nil {
-				return err
+			if len(objs) >= partRows {
+				if err := enc.Encode(snapPart{Kind: partObjects, Objects: objs}); err != nil {
+					return err
+				}
+				objs = objs[:0]
 			}
 		}
 	}
-	if err := flush(true); err != nil {
-		return err
+	if len(objs) == 0 {
+		return nil
 	}
+	return enc.Encode(snapPart{Kind: partObjects, Objects: objs})
+}
+
+func (st *kgState) writeLinks(enc *gob.Encoder) error {
 	var links []wLink
 	for _, id := range st.lnkIDs {
 		for i := range st.links[id] {
@@ -215,46 +221,71 @@ func (st *kgState) writeObjectsAndLinks(enc *gob.Encoder) error {
 	return enc.Encode(snapPart{Kind: partLinks, Links: links})
 }
 
+// snapLoader holds the KG that the parts being read belong to.
+type snapLoader struct {
+	s   *Store
+	cur *kgState
+}
+
 // loadSnapshot reads a snapshot into the empty store.
 func (s *Store) loadSnapshot(r io.Reader) error {
 	dec := gob.NewDecoder(r)
-	var cur *kgState
+	ld := &snapLoader{s: s}
 	for first := true; ; first = false {
 		var p snapPart
 		if err := dec.Decode(&p); err != nil {
 			return kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the snapshot")
 		}
-		switch {
-		case first && (p.Kind != partHeader || p.Header == nil):
-			return kernel.Errorf(kernel.CodeInvalidValue, "the snapshot does not begin with its header")
-		case first && p.Header.Format != snapFormat:
-			return kernel.Errorf(kernel.CodeUnsupported, "the snapshot has state format %d; this build reads %d only", p.Header.Format, snapFormat)
-		case p.Kind == partEnd:
-			return nil
-		case p.Kind == partKG && p.KG != nil:
-			d := &ids{}
-			kg, head := d.kgRow(p.KG.KG), d.head(p.KG.Head)
-			if d.err != nil {
-				return d.err
-			}
-			cur = newState(kg)
-			cur.head, cur.attempt = head, p.KG.Attempt
-			cur.gens = nil
-			s.kgs[kg.ID] = cur
-			s.created = append(s.created, kg.ID)
-		case p.Kind == partEndKG && cur != nil:
-			cur.reindexIdents()
-			cur.dirty = true
-			cur.rebuild()
-			cur = nil
-		case cur != nil && p.Kind != partHeader:
-			if err := cur.loadPart(p); err != nil {
-				return err
-			}
-		case !first:
-			return kernel.Errorf(kernel.CodeInvalidValue, "the snapshot has a part %q where none belongs", p.Kind)
+		done, err := ld.part(p, first)
+		if err != nil || done {
+			return err
 		}
 	}
+}
+
+// part handles one part and says whether the snapshot is at its end.
+func (l *snapLoader) part(p snapPart, first bool) (bool, error) {
+	switch {
+	case first:
+		return false, checkSnapHeader(p)
+	case p.Kind == partEnd:
+		return true, nil
+	case p.Kind == partKG && p.KG != nil:
+		return false, l.startKG(p.KG)
+	case p.Kind == partEndKG && l.cur != nil:
+		l.cur.reindexIdents()
+		l.cur.dirty = true
+		l.cur.rebuild()
+		l.cur = nil
+		return false, nil
+	case l.cur != nil && p.Kind != partHeader:
+		return false, l.cur.loadPart(p)
+	}
+	return false, kernel.Errorf(kernel.CodeInvalidValue, "the snapshot has a part %q where none belongs", p.Kind)
+}
+
+func checkSnapHeader(p snapPart) error {
+	if p.Kind != partHeader || p.Header == nil {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the snapshot does not begin with its header")
+	}
+	if p.Header.Format != snapFormat {
+		return kernel.Errorf(kernel.CodeUnsupported, "the snapshot has state format %d; this build reads %d only", p.Header.Format, snapFormat)
+	}
+	return nil
+}
+
+func (l *snapLoader) startKG(w *snapKG) error {
+	d := &ids{}
+	kg, head := d.kgRow(w.KG), d.head(w.Head)
+	if d.err != nil {
+		return d.err
+	}
+	l.cur = newState(kg)
+	l.cur.head, l.cur.attempt = head, w.Attempt
+	l.cur.gens = nil
+	l.s.kgs[kg.ID] = l.cur
+	l.s.created = append(l.s.created, kg.ID)
+	return nil
 }
 
 func (st *kgState) loadPart(p snapPart) error {

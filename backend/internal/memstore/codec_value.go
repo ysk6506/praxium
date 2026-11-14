@@ -32,38 +32,46 @@ func putValue(b []byte, v any) ([]byte, error) {
 		}
 		return append(b, tagFalse), nil
 	case string:
-		b = append(b, tagString)
-		b = binary.AppendUvarint(b, uint64(len(x)))
-		return append(b, x...), nil
+		return putText(append(b, tagString), x), nil
 	case int64:
 		return binary.AppendVarint(append(b, tagInt), x), nil
 	case []any:
-		b = binary.AppendUvarint(append(b, tagList), uint64(len(x)))
-		var err error
-		for _, e := range x {
-			if b, err = putValue(b, e); err != nil {
-				return nil, err
-			}
-		}
-		return b, nil
+		return putList(b, x)
 	case map[string]any:
-		b = binary.AppendUvarint(append(b, tagMap), uint64(len(x)))
-		keys := make([]string, 0, len(x))
-		for k := range x {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		var err error
-		for _, k := range keys {
-			b = binary.AppendUvarint(b, uint64(len(k)))
-			b = append(b, k...)
-			if b, err = putValue(b, x[k]); err != nil {
-				return nil, err
-			}
-		}
-		return b, nil
+		return putMap(b, x)
 	}
 	return nil, kernel.Errorf(kernel.CodeInvalidValue, "the journal cannot write a value of Go type %T", v)
+}
+
+func putText(b []byte, s string) []byte {
+	return append(binary.AppendUvarint(b, uint64(len(s))), s...)
+}
+
+func putList(b []byte, x []any) ([]byte, error) {
+	b = binary.AppendUvarint(append(b, tagList), uint64(len(x)))
+	var err error
+	for _, e := range x {
+		if b, err = putValue(b, e); err != nil {
+			return nil, err
+		}
+	}
+	return b, nil
+}
+
+func putMap(b []byte, x map[string]any) ([]byte, error) {
+	b = binary.AppendUvarint(append(b, tagMap), uint64(len(x)))
+	keys := make([]string, 0, len(x))
+	for k := range x {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	var err error
+	for _, k := range keys {
+		if b, err = putValue(putText(b, k), x[k]); err != nil {
+			return nil, err
+		}
+	}
+	return b, nil
 }
 
 // valueReader reads the form back.
@@ -116,31 +124,43 @@ func (r *valueReader) value() any {
 	case tagString:
 		return r.text()
 	case tagInt:
-		v, n := binary.Varint(r.b)
-		if n <= 0 {
-			r.fail()
-			return nil
-		}
-		r.b = r.b[n:]
-		return v
+		return r.integer()
 	case tagList:
-		n := r.uvarint()
-		out := make([]any, 0, n)
-		for i := 0; i < n && r.err == nil; i++ {
-			out = append(out, r.value())
-		}
-		return out
+		return r.list()
 	case tagMap:
-		n := r.uvarint()
-		out := make(map[string]any, n)
-		for i := 0; i < n && r.err == nil; i++ {
-			k := r.text()
-			out[k] = r.value()
-		}
-		return out
+		return r.object()
 	}
 	r.fail()
 	return nil
+}
+
+func (r *valueReader) integer() any {
+	v, n := binary.Varint(r.b)
+	if n <= 0 {
+		r.fail()
+		return nil
+	}
+	r.b = r.b[n:]
+	return v
+}
+
+func (r *valueReader) list() any {
+	n := r.uvarint()
+	out := make([]any, 0, n)
+	for i := 0; i < n && r.err == nil; i++ {
+		out = append(out, r.value())
+	}
+	return out
+}
+
+func (r *valueReader) object() any {
+	n := r.uvarint()
+	out := make(map[string]any, n)
+	for i := 0; i < n && r.err == nil; i++ {
+		k := r.text()
+		out[k] = r.value()
+	}
+	return out
 }
 
 // readValue reads one value from b, which must hold nothing else.
