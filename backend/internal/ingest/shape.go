@@ -2,6 +2,7 @@ package ingest
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"strings"
 	"unicode/utf8"
@@ -223,4 +224,17 @@ func editDistance(a, b string) int {
 		prev = cur
 	}
 	return prev[len(rb)]
+}
+
+// chainText is an error in the words of a person: the messages of the chain without the codes in front of them, so a
+// wrapped error does not say "invalid_value:" twice.
+func chainText(err error) string {
+	var ke *kernel.Error
+	if !errors.As(err, &ke) {
+		return err.Error()
+	}
+	if ke.Cause == nil {
+		return ke.Message
+	}
+	return ke.Message + ": " + chainText(ke.Cause)
 }

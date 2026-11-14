@@ -1,7 +1,9 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"sort"
 	"strings"
@@ -49,7 +51,7 @@ func fieldLines(name string, v any) []string {
 		switch name {
 		case "identity_keys":
 			lines = append(lines, fmt.Sprintf("%d. %s: %s", i+1, scalar(m["strength"]), keyText(m)))
-		case "properties":
+		case "properties", "effective_properties":
 			lines = append(lines, propertyText(m))
 		default:
 			return []string{scalar(v)}
@@ -78,14 +80,30 @@ func keyText(key map[string]any) string {
 		m, _ := c.(map[string]any)
 		switch kind, _ := m["kind"].(string); kind {
 		case "property":
-			parts = append(parts, "property "+shortRef(m["ref"]))
+			parts = append(parts, "property "+refName(key, m["ref"]))
 		case "set":
 			parts = append(parts, "the set of the objects a "+shortRef(m["ref"])+" link reaches")
 		default:
 			parts = append(parts, "link "+shortRef(m["ref"]))
 		}
 	}
-	return strings.Join(parts, " + ")
+	text := strings.Join(parts, " + ")
+	for _, c := range comps {
+		if m, _ := c.(map[string]any); m["kind"] != "property" {
+			return text + " (not usable in file ingestion)"
+		}
+	}
+	return text
+}
+
+// refName is the name of a property a key names: the one the view looked up, or the end of its id.
+func refName(key map[string]any, ref any) string {
+	if names, ok := key["_names"].(map[string]string); ok {
+		if n := names[scalar(ref)]; n != "" {
+			return n
+		}
+	}
+	return shortRef(ref)
 }
 
 // propertyText writes a property: its name, value type, whether it is required and its unit.
@@ -97,7 +115,38 @@ func propertyText(p map[string]any) string {
 	if unit, _ := p["unit"].(string); unit != "" {
 		out += ", unit " + unit
 	}
+	if vals, _ := p["enum_values"].([]any); len(vals) > 0 {
+		out += ", values " + scalar(vals)
+	}
 	return out + ")"
+}
+
+// printTypeView writes an object type for a person who writes a mapping: the properties the type has in the end (its
+// own, its ancestors' and its traits'), and the identity keys by the names of the properties, with the keys that
+// have a link in them marked as not usable in file ingestion.
+func printTypeView(w io.Writer, env *Envelope) error {
+	var obj map[string]any
+	if err := json.Unmarshal(env.Data, &obj); err != nil {
+		return transportError{err: err}
+	}
+	names := map[string]string{}
+	eff, _ := obj["effective_properties"].([]any)
+	for _, p := range eff {
+		if m, ok := p.(map[string]any); ok {
+			names[scalar(m["id"])] = scalar(m["name"])
+		}
+	}
+	if len(eff) > 0 {
+		obj["properties"] = eff
+		delete(obj, "effective_properties")
+	}
+	keys, _ := obj["identity_keys"].([]any)
+	for _, k := range keys {
+		if m, ok := k.(map[string]any); ok {
+			m["_names"] = names
+		}
+	}
+	return printFields(w, obj)
 }
 
 // healthText is the state of one probe: ok for 200, and what the server said otherwise.

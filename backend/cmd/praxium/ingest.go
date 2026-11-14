@@ -24,9 +24,8 @@ const ingestRunUsage = "usage: praxium ingest run -source <source.json> -mapping
 const ingestRunBody = `Reads files into a KG: capture, parse, raw record changes, refinement, feeds, identification, links and apply
 (ADR-0033). The files are only read. The source definition says which datasets there are and how each file is parsed
 (CSV, JSON Lines, or a sheet of an Excel workbook); the mapping definition says which objects and links they make.
-Both are JSON files. The format of both, field by field, is in docs/guides/ingest-definitions.md ("praxium ingest init"
-writes a copy of that guide, ingest-definitions.md, next to the examples, so you have it with the program). "praxium
-ingest inspect -input <file> -emit-source" drafts the source definition of a file.
+Both are JSON files. The format of both, field by field, is in docs/guides/ingest-definitions.md of the Praxium
+repository. "praxium ingest inspect -input <file> -emit-source" drafts the source definition of a file.
 
 Without -data-dir the KG lives in memory only while this command runs. With -data-dir <folder> the KG is built in
 that folder (the built-in file store) and what the run learned (which rows it saw, how often a row was missing) is
@@ -114,12 +113,11 @@ func newIngestRunFlags(f *ingestFlags) *flag.FlagSet {
 // ingestHelpEntries are the help entries of this file's commands.
 func ingestHelpEntries(out map[string]helpEntry) {
 	out["ingest"] = helpEntry{usage: "usage: praxium ingest init|inspect|run ...", body: `Bring in your data: files in, a KG out.
-  init      write example definitions, sample files and the guide to the definitions, to try the steps
+  init      write example definitions and sample files, to try the steps
   inspect   look at a file before writing a mapping for it (-emit-source drafts its source definition)
   run       read files into a KG (-data-dir keeps the result)
 The two definition files (source.json: the datasets and how each file is read; mapping.json: the objects and links they
-make) are described field by field in docs/guides/ingest-definitions.md; "praxium ingest init" writes a copy of it
-(ingest-definitions.md) so it is with the program.
+make) are described field by field in docs/guides/ingest-definitions.md of the Praxium repository.
 Run "praxium ingest <command> --help" for the flags.
 `}
 	out["ingest run"] = helpEntry{usage: ingestRunUsage, body: ingestRunBody, flags: func() *flag.FlagSet { return newIngestRunFlags(&ingestFlags{inputs: inputList{}}) }}

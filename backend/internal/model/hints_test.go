@@ -12,7 +12,7 @@ func TestTheModelDescribesTheIdentityKeysAndSchemesOfATypeForMessages(t *testing
 		t.Fatal(err)
 	}
 	rack, _ := reg.ObjectTypeByName("Rack")
-	if got := strings.Join(reg.DescribeIdentityKeys(rack.ID), "; "); got != "link LOCATED_IN + property name (strong); property asset_tag (weak)" {
+	if got := strings.Join(reg.DescribeIdentityKeys(rack.ID), "; "); got != "link LOCATED_IN + property name (strong; not usable in file ingestion); property asset_tag (weak)" {
 		t.Fatalf("%q", got)
 	}
 	server, _ := reg.ObjectTypeByName("PhysicalServer")
@@ -31,5 +31,28 @@ func TestTheModelDescribesTheIdentityKeysAndSchemesOfATypeForMessages(t *testing
 	}
 	if reg.DescribeIdentityKeys(ObjectTypeID{}) != nil {
 		t.Fatal("a type that does not exist has no keys")
+	}
+}
+
+// [REQ-321]
+func TestAKeyThatNamesWhatTheRegistryLacksIsStillDescribed(t *testing.T) {
+	reg, err := LoadStandard()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := reg.describeKey(IdentityKey{Scheme: IdentifierSchemeID{}}); !strings.HasPrefix(got, "scheme ") {
+		t.Errorf("%q", got)
+	}
+	if got := reg.describeComponent(KeyComponent{Set: true}); !strings.HasPrefix(got, "the set of the objects a ") {
+		t.Errorf("%q", got)
+	}
+	if got := reg.describeComponent(KeyComponent{Context: LinkTypeID{}}); !strings.HasPrefix(got, "link ") {
+		t.Errorf("%q", got)
+	}
+	if got := reg.describeComponent(KeyComponent{Property: PropertyID{}}); !strings.HasPrefix(got, "link ") {
+		t.Errorf("%q", got)
+	}
+	if reg.SchemeKeyNames(ObjectTypeID{}) != nil {
+		t.Error("a type that does not exist has no scheme keys")
 	}
 }

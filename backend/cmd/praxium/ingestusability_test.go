@@ -198,7 +198,7 @@ func TestTheTableFormShowsNestedValuesAndTheJSONFormIsUnchanged(t *testing.T) {
 		t.Fatalf("health: %d %s", code, out)
 	}
 	code, out = demoCLI(r, "types", "get", "Rack")
-	for _, want := range []string{"1. strong: link located_in + property name", "2. weak: property asset_tag", "total_u (integer, required)", "width_mm (quantity, unit mm)"} {
+	for _, want := range []string{"1. strong: link located_in + property name (not usable in file ingestion)", "2. weak: property asset_tag", "total_u (integer, required)", "width_mm (quantity, unit mm)", "name (string", "2. weak: property asset_tag"} {
 		if code != 0 || !strings.Contains(out, want) {
 			t.Errorf("types get must show %q: %d\n%s", want, code, out)
 		}

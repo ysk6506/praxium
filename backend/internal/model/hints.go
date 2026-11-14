@@ -36,7 +36,14 @@ func (r *Registry) SchemeKeyNames(id ObjectTypeID) []string {
 func (r *Registry) DescribeIdentityKeys(id ObjectTypeID) []string {
 	var out []string
 	for _, k := range r.IdentityKeys(id) {
-		out = append(out, r.describeKey(k)+" ("+string(k.Strength)+")")
+		note := string(k.Strength)
+		for _, c := range k.Components {
+			if c.Property.IsZero() {
+				note += "; not usable in file ingestion"
+				break
+			}
+		}
+		out = append(out, r.describeKey(k)+" ("+note+")")
 	}
 	return out
 }

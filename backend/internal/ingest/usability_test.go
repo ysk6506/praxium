@@ -94,7 +94,7 @@ func TestRefusedKeysAndSchemesListWhatTheModelAllows(t *testing.T) {
 		want          []string
 	}{
 		{"a key of properties the type does not have", feedJSON("Rack", name, `{"components":[{"property":"name","column":"rack_name"}],"priority":1}`, ""),
-			[]string{"identity keys of Rack are", "link LOCATED_IN + property name (strong)", "property asset_tag (weak)", `"scheme"`}},
+			[]string{"identity keys of Rack are", "link LOCATED_IN + property name (strong; not usable in file ingestion)", "property asset_tag (weak)", `"scheme"`}},
 		{"a scheme the model lacks", feedJSON("PhysicalServer", name, `{"scheme":"asset_tag","column":"asset_id"}`, ""),
 			[]string{"is no identifier scheme", "that are an identity key of PhysicalServer: bmc_mac, redfish_system_id", "vm_instance_uuid"}},
 		{"a scheme that is no key of the type", feedJSON("Rack", name, `{"scheme":"bmc_mac","column":"asset_id"}`, ""),
@@ -370,5 +370,26 @@ func TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas(t *testing.T) {
 		if d.NotRead != "" {
 			t.Fatalf("%+v", d)
 		}
+	}
+}
+
+// [REQ-327]
+func TestAnInvalidValueIsReportedWithOneCodePrefix(t *testing.T) {
+	r := newRig(t, sourceJSON, mappingJSON)
+	r.files["ds_racks"] = "asset_id,rack_name,total_u\nRK1,rack-a,tall\n"
+	r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state\nSV1,sn1,Z,RK1,sleeping\n"
+	r.files["ds_vms"] = ""
+	rep := r.run()
+	found := false
+	for _, p := range rep.Problems {
+		if p.Kind == ProblemInvalidValue {
+			found = true
+			if strings.Count(p.Reason, "invalid_value") != 0 || !strings.HasPrefix(p.Reason, "attribute ") {
+				t.Errorf("%q", p.Reason)
+			}
+		}
+	}
+	if !found {
+		t.Fatalf("%+v", rep.Problems)
 	}
 }

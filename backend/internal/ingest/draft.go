@@ -33,22 +33,9 @@ func DraftSource(p FileProfile, file, delimiter string) Draft {
 		if isSheet && (info.State != SheetVisible || info.Kind != SheetKindWorksheet) {
 			continue
 		}
-		ds := Dataset{ID: uniqueID("ds_"+slug(datasetStem(t, stem, isSheet), fmt.Sprintf("sheet_%d", info.Index)), used), Name: t.Name}
-		ds.Parser = parserOf(p.Format)
-		switch {
-		case isSheet:
-			ds.Sheet = &SheetOptions{Name: t.Name, HeaderRow: t.HeaderRow}
-			if t.HeaderRows > 1 {
-				ds.Sheet.HeaderRows = t.HeaderRows
-			}
-		case ds.Parser == ParserCSV && delimiter != "" && delimiter != ",":
-			ds.Delimiter = delimiter
-		}
-		var named map[string]string
-		ds.Columns, named = draftColumns(t)
-		ds.NaturalKey = []string{NaturalKeyPlaceholder}
+		ds, note := draftDataset(p.Format, t, info, isSheet, stem, delimiter, used)
 		d.Source.Datasets = append(d.Source.Datasets, ds)
-		d.Notes = append(d.Notes, naturalKeyNote(ds.ID, t, named))
+		d.Notes = append(d.Notes, note)
 	}
 	for _, s := range p.Sheets {
 		if s.State != SheetVisible && s.Rows > 0 {
@@ -56,6 +43,24 @@ func DraftSource(p FileProfile, file, delimiter string) Draft {
 		}
 	}
 	return d
+}
+
+// draftDataset makes the dataset of one table, and the note about its natural key.
+func draftDataset(format string, t TableProfile, info SheetInfo, isSheet bool, stem, delimiter string, used map[string]bool) (Dataset, string) {
+	ds := Dataset{ID: uniqueID("ds_"+slug(datasetStem(t, stem, isSheet), fmt.Sprintf("sheet_%d", info.Index)), used), Name: t.Name, Parser: parserOf(format)}
+	switch {
+	case isSheet:
+		ds.Sheet = &SheetOptions{Name: t.Name, HeaderRow: t.HeaderRow}
+		if t.HeaderRows > 1 {
+			ds.Sheet.HeaderRows = t.HeaderRows
+		}
+	case ds.Parser == ParserCSV && delimiter != "" && delimiter != ",":
+		ds.Delimiter = delimiter
+	}
+	var named map[string]string
+	ds.Columns, named = draftColumns(t)
+	ds.NaturalKey = []string{NaturalKeyPlaceholder}
+	return ds, naturalKeyNote(ds.ID, t, named)
 }
 
 func datasetStem(t TableProfile, stem string, isSheet bool) string {

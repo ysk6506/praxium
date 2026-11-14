@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "33a781eb9e65676e"
+hash: "b5d8ecbd2af6c985"
 date: "2026-11-14"
-note: "REQ-296~299(웹 UI)가 REQ-289~295 뒤에 추가됐다. 이 문서의 내용과 충돌하지 않는다."
+note: "요구사항 표의 수집 사용성 항목(REQ-320~329, 331) 문구를 표준 용어로 고쳤다. 제품 설계 개요의 수집 설명과 어긋나지 않는다"
 text_changed: true
 doc_hash: "06412a77a9acc006"

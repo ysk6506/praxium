@@ -289,9 +289,16 @@ func runTypes(ctx context.Context, c *Client, opts options, w io.Writer) error {
 		if *include != "" {
 			query.Set("include", *include)
 		}
+		readable := !opts.asJSON && *kind == "object"
+		if readable && *include == "" {
+			query.Set("include", "effective_properties")
+		}
 		env, err := c.Get(ctx, path+"/"+url.PathEscape(positional[0]), query)
 		if err != nil {
 			return err
+		}
+		if readable {
+			return printTypeView(w, env)
 		}
 		return printOne(w, env, opts.asJSON)
 	}
