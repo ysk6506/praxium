@@ -12,6 +12,17 @@ type routeSpec struct {
 	path   string
 	roles  []string
 	handle func(*call)
+	// mux is the pattern the router gets when it differs from path: the router has no `{id}:verb` segment, so an
+	// action path is routed on `{name}` and the handler reads the verb (ADR-0044). Routes() still shows path.
+	mux string
+}
+
+// muxPath is the pattern to register with the router.
+func (r routeSpec) muxPath() string {
+	if r.mux != "" {
+		return r.mux
+	}
+	return r.path
 }
 
 // Route is the public face of a routeSpec: what `praxium api routes` prints.
@@ -72,7 +83,8 @@ func (s *Server) routeSpecs() []routeSpec {
 		get("/v1/layers", reader, listHandler(func(l *registryLists) *listDef { return l.layers })),
 	}
 	specs = append(specs, registryRoutes()...)
-	return append(specs, kgRoutes()...)
+	specs = append(specs, kgRoutes()...)
+	return append(specs, identityRoutes()...)
 }
 
 // registryRoutes are the read routes of the type registry (rest-api-resources-data.md).

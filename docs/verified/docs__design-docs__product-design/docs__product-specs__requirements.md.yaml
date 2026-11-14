@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "2ea481cf3defb85f"
+hash: "75212c44d5f4feb0"
 date: "2026-11-14"
-note: "main 반영 뒤 요구사항 재대조: REQ-315~319와 REQ-320~331 공존"
+note: "병합과 속도 제한 변경 뒤 확인: 내용이 어긋나지 않는다"
 text_changed: true
 doc_hash: "019854b80cb4930e"

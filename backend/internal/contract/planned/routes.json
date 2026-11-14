@@ -1338,30 +1338,6 @@
       "status": "planned"
     },
     {
-      "method": "GET",
-      "path": "/v1/system-accounts",
-      "feature": "수집기를 등록하고 토큰을 바꾸기",
-      "adr": "ADR-0012",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
-      "path": "/v1/system-accounts",
-      "feature": "서비스 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
-      "adr": "ADR-0012",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
-      "path": "/v1/system-accounts/{account_id}:disable",
-      "feature": "서비스 계정(`ingester` 포함), 토큰 바꾸기, 끄기",
-      "adr": "ADR-0012",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
       "method": "POST",
       "path": "/v1/system-accounts/{account_id}:rotate-token",
       "feature": "서비스 계정(`ingester` 포함), 토큰 바꾸기, 끄기",

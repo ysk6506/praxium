@@ -38,8 +38,12 @@ Bring in your data
   ingest run       Read files into a KG, with -data-dir so the result is kept
 
 Run a server
-  api serve    The REST API server (development mode only for now; see praxium api serve --help)
+  api serve    The REST API server: production with built-in sign-in (access tokens), or development mode
   api routes   List the routes the server registers
+
+Sign-in (access tokens; there are no passwords)
+  admin      Make the first administrator (bootstrap), and manage users, service accounts and tokens
+  whoami     Say who your access token is
 
 Tools
   worldgen   Generate a synthetic world (what praxium demo shows)
@@ -48,7 +52,7 @@ Tools
 
 Use "praxium <command> --help" for the flags and examples of a command.
 
-Global flags of the commands that ask a server (kg, types, query, object, catalog, health), before or after the command:
+Global flags of the commands that ask a server (kg, types, query, object, catalog, health, whoami, admin user|account|token), before or after the command:
   --endpoint URL   the server (default http://127.0.0.1:8080; environment PRAXIUM_ENDPOINT)
   --token TOKEN    the access token (environment PRAXIUM_TOKEN); praxium demo and praxium local print theirs
   --config FILE    a JSON file {"endpoint": "...", "token": "..."} (environment PRAXIUM_CONFIG)
@@ -76,6 +80,7 @@ func commandHelps() map[string]helpEntry {
 	initHelpEntries(out)
 	inspectHelpEntries(out)
 	localHelpEntries(out)
+	adminHelpEntries(out)
 	return out
 }
 
@@ -156,6 +161,7 @@ func flagProblem(err error) error {
 var knownCommands = map[string]bool{
 	"demo": true, "local": true, "dev": true, "ingest": true, "api": true, "contract": true, "worldgen": true, "version": true,
 	"worker": true, "collector": true, "health": true, "types": true, "catalog": true, "kg": true, "object": true, "query": true,
+	"admin": true, "whoami": true,
 }
 
 // runHelp answers the command lines that are about help, and the first words nothing answers. handled is false for
