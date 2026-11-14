@@ -14,10 +14,12 @@ import {
   objectsViewParams,
   orderedColumns,
   PAGE_SIZES,
+  type ResultComplete,
   type RowDetail,
   readObjectsView,
   routeHash,
   shortId,
+  type Trail,
   tabStorage,
   useHashParams,
   useObjectPage,
@@ -154,6 +156,86 @@ function ObjectRows(props: {
   );
 }
 
+interface PageNav {
+  readonly trail: Trail;
+  readonly show: (next: Partial<ObjectsView>) => void;
+  readonly hasPrevious: boolean;
+  readonly previousPage: number;
+  readonly previousCursor: string | undefined;
+  readonly toFirst: () => void;
+}
+
+/** The rows of a page of objects and the paging under them. */
+function PageBody(props: {
+  readonly kg: string;
+  readonly type: string;
+  readonly view: ObjectsView;
+  readonly items: readonly FindItem[];
+  readonly info: ResultComplete;
+  readonly columns: readonly string[];
+  readonly nav: PageNav;
+}) {
+  const { kg, type, view, items, info, columns, nav } = props;
+  const { trail, show, hasPrevious, previousPage, previousCursor, toFirst } = nav;
+  if (items.length === 0) {
+    return (
+      <EmptyState
+        title="이 타입의 객체가 없습니다"
+        action={view.page > 1 ? <Button onClick={toFirst}>첫 페이지로</Button> : undefined}
+      >
+        KG에 {type} 객체가 아직 없습니다. {SUBTYPE_NOTE}
+      </EmptyState>
+    );
+  }
+  return (
+    <>
+      <ObjectRows kg={kg} items={items} columns={columns} />
+      <Pagination
+        page={view.page}
+        hasPrevious={hasPrevious}
+        hasNext={info.next_cursor != null}
+        onPrevious={() => show({ page: previousPage, cursor: previousCursor })}
+        onNext={() => {
+          if (info.next_cursor == null) return;
+          if (view.cursor !== undefined) trail.set(view.page, view.cursor);
+          trail.set(view.page + 1, info.next_cursor);
+          show({ page: view.page + 1, cursor: info.next_cursor });
+        }}
+        onFirst={toFirst}
+        pageSize={view.size}
+        pageSizes={PAGE_SIZES}
+        onPageSize={(size) => show({ size, page: 1, cursor: undefined })}
+        summary={summaryOf(view.page, view.size, items.length, info.total)}
+      />
+      <p className="mt-2 text-xs text-muted">{SUBTYPE_NOTE}</p>
+    </>
+  );
+}
+
+/** The columns of the table: the ones the address names, else the defaults, in the order the dialog lists them. */
+function useColumns(
+  properties: Parameters<typeof orderedColumns>[0] | undefined,
+  view: ObjectsView,
+  set: ReturnType<typeof useHashParams>["set"],
+) {
+  const ordered = properties ? orderedColumns(properties) : [];
+  const candidates = properties ? columnCandidates(properties) : [];
+  let columns: string[] = [];
+  if (properties) {
+    columns = view.columns
+      ? ordered.map((c) => c.name).filter((n) => view.columns?.includes(n))
+      : defaultColumns(properties);
+  }
+  const toggle = (name: string, on: boolean) =>
+    set(
+      objectsViewParams({
+        ...view,
+        columns: ordered.map((c) => c.name).filter((n) => (n === name ? on : columns.includes(n))),
+      }),
+    );
+  return { ordered, candidates, columns, toggle };
+}
+
 /** The objects of one type as a table: a page at a time, with the attributes the person picked as columns. */
 export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type: string }) {
   const { params, set } = useHashParams();
@@ -167,20 +249,7 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
   );
   const properties = typeDetail.state.data?.effective_properties;
 
-  const ordered = properties ? orderedColumns(properties) : [];
-  const candidates = properties ? columnCandidates(properties) : [];
-  const columns = view.columns
-    ? ordered.map((c) => c.name).filter((n) => view.columns?.includes(n))
-    : properties
-      ? defaultColumns(properties)
-      : [];
-  const toggle = (name: string, on: boolean) =>
-    set(
-      objectsViewParams({
-        ...view,
-        columns: ordered.map((c) => c.name).filter((n) => (n === name ? on : columns.includes(n))),
-      }),
-    );
+  const { ordered, candidates, columns, toggle } = useColumns(properties, view, set);
 
   const show = (next: Partial<ObjectsView>): void => {
     set(objectsViewParams({ ...view, ...next }), "push");
@@ -226,38 +295,17 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
         back={{ label: "객체 타입 목록으로", href: routeHash({ page: "types", kg }) }}
         recover={recover}
       >
-        {({ items, page: info }) =>
-          items.length === 0 ? (
-            <EmptyState
-              title="이 타입의 객체가 없습니다"
-              action={view.page > 1 ? <Button onClick={toFirst}>첫 페이지로</Button> : undefined}
-            >
-              KG에 {type} 객체가 아직 없습니다. {SUBTYPE_NOTE}
-            </EmptyState>
-          ) : (
-            <>
-              <ObjectRows kg={kg} items={items} columns={columns} />
-              <Pagination
-                page={view.page}
-                hasPrevious={hasPrevious}
-                hasNext={info.next_cursor != null}
-                onPrevious={() => show({ page: previousPage, cursor: previousCursor })}
-                onNext={() => {
-                  if (info.next_cursor == null) return;
-                  if (view.cursor !== undefined) trail.set(view.page, view.cursor);
-                  trail.set(view.page + 1, info.next_cursor);
-                  show({ page: view.page + 1, cursor: info.next_cursor });
-                }}
-                onFirst={toFirst}
-                pageSize={view.size}
-                pageSizes={PAGE_SIZES}
-                onPageSize={(size) => show({ size, page: 1, cursor: undefined })}
-                summary={summaryOf(view.page, view.size, items.length, info.total)}
-              />
-              <p className="mt-2 text-xs text-muted">{SUBTYPE_NOTE}</p>
-            </>
-          )
-        }
+        {({ items, page: info }) => (
+          <PageBody
+            kg={kg}
+            type={type}
+            view={view}
+            items={items}
+            info={info}
+            columns={columns}
+            nav={{ trail, show, hasPrevious, previousPage, previousCursor, toFirst }}
+          />
+        )}
       </Async>
     </>
   );

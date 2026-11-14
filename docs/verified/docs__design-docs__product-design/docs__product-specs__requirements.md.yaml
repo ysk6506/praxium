@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "1c87d6027f1bdfd6"
+hash: "a3109d25ab152504"
 date: "2026-11-14"
-note: "ADR-0040: checked; stays accurate"
+note: "요구사항 REQ-296~299(웹 UI 접속 방식, URL 상태, 오류 원인, 표시 이름)가 추가됐다. 제품 설계 개요의 내용과 충돌하지 않는다."
 text_changed: true
 doc_hash: "06412a77a9acc006"

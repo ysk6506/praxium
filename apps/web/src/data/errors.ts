@@ -184,11 +184,18 @@ const RESOURCES: Readonly<Record<string, { object: string; subject: string }>> =
   kg: { object: "KG를", subject: "KG가" },
   object: { object: "객체를", subject: "객체가" },
   object_type: { object: "객체 타입을", subject: "객체 타입이" },
+  link_type: { object: "링크 타입을", subject: "링크 타입이" },
+  action_type: { object: "액션 타입을", subject: "액션 타입이" },
+  trait: { object: "특성을", subject: "특성이" },
+  identifier_scheme: { object: "식별자 체계를", subject: "식별자 체계가" },
+  problem: { object: "오류 코드를", subject: "오류 코드가" },
+  route: { object: "경로를", subject: "경로가" },
 };
 
 /**
  * What a screen knows about what it asked for, by the resource name the server uses (`kg`, `object`, `object_type`).
- * The server says that something was not found; the screen says what it was looking for.
+ * The server names the resource and, in `params.id`, the value it did not find; the screen's own names are for a
+ * server that does not send the value yet.
  */
 export type Names = Readonly<Partial<Record<"kg" | "object" | "object_type", string>>>;
 
@@ -197,7 +204,13 @@ export function withNames(view: ErrorView, names: Names): ErrorView {
   if (view.kind !== "notFound") return view;
   const resource = typeof view.params?.resource === "string" ? view.params.resource : undefined;
   const known = resource ? RESOURCES[resource] : undefined;
-  const name = resource ? names[resource as keyof Names] : undefined;
+  const sent = view.params?.id;
+  const name =
+    typeof sent === "string" && sent !== ""
+      ? sent
+      : resource
+        ? names[resource as keyof Names]
+        : undefined;
   if (!known || !name) return view;
   return {
     ...view,
@@ -211,7 +224,7 @@ export function withNames(view: ErrorView, names: Names): ErrorView {
 }
 
 const FIELD_KEYS = ["field", "pointer", "parameter"];
-const MESSAGE_KEYS = ["detail", "message", "reason"];
+const MESSAGE_KEYS = ["message", "detail", "reason"];
 const SHOWN_AS_FACT = new Set([...FIELD_KEYS, ...MESSAGE_KEYS]);
 
 const firstText = (params: ErrorView["params"], keys: readonly string[]): string | undefined => {

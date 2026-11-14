@@ -91,7 +91,16 @@ export function withParams(
   return `#${pathOf(hash)}${query === "" ? "" : `?${query}`}`;
 }
 
-const SECTIONS = new Set(["types", "objects"]);
+/** Whether the parts of a path name a screen. */
+function isKnownPath(parts: readonly string[]): boolean {
+  const [head, kg, section, third, extra] = parts;
+  if (parts.length === 0) return true;
+  if (head === "kgs" || head === "settings") return parts.length === 1;
+  if (head !== "kg" || kg === undefined || extra !== undefined) return false;
+  return (
+    section === undefined || section === "types" || (section === "objects" && third !== undefined)
+  );
+}
 
 /**
  * The route of an address hash, including the one for an address that names no screen: `notFound` with the path as it
@@ -103,18 +112,8 @@ export function resolveRoute(hash: string, hasToken: boolean): Route {
   if (!hasToken) return route;
   const path = pathOf(hash);
   const parts = path.split("/").filter(Boolean).map(decode);
-  const [head, kg, section, third, extra] = parts;
-  if (parts.length === 0 || head === "kgs" || head === "settings") {
-    return parts.length > 1 ? { page: "notFound", path } : route;
-  }
-  if (head === "connect") return { page: "settings" };
-  const known =
-    head === "kg" &&
-    kg !== undefined &&
-    extra === undefined &&
-    (section === undefined ||
-      (SECTIONS.has(section) && (section === "objects" ? third !== undefined : true)));
-  return known ? route : { page: "notFound", path };
+  if (parts[0] === "connect") return { page: "settings" };
+  return isKnownPath(parts) ? route : { page: "notFound", path };
 }
 
 /**

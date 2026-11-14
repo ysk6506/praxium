@@ -49,6 +49,61 @@ function countText(view: TypesView, total: number, filled: number, shown: number
   return `전체 ${formatCount(total)}개 타입(객체가 있는 타입 ${formatCount(filled)}개)`;
 }
 
+/** The table of types, or the word that none matches; its column headers sort it. */
+function TypesTable(props: {
+  readonly kg: string;
+  readonly view: TypesView;
+  readonly shown: readonly TypeEntry[];
+  readonly update: (next: TypesView) => void;
+}) {
+  const { kg, view, shown, update } = props;
+  if (shown.length === 0) {
+    return (
+      <EmptyState title="맞는 타입이 없습니다">
+        {view.onlyFilled
+          ? "‘객체가 있는 타입만’을 끄거나 검색어를 바꿔 보십시오."
+          : "검색어를 바꿔 보십시오."}
+      </EmptyState>
+    );
+  }
+  const sortOf = (key: TypeSortKey) => (view.sort?.key === key ? view.sort.direction : undefined);
+  const sortBy = (key: TypeSortKey) => () => update({ ...view, sort: nextSort(view.sort, key) });
+  return (
+    <Table aria-label="객체 타입">
+      <THead>
+        <Tr>
+          <SortTh sort={sortOf("name")} onSort={sortBy("name")}>
+            타입
+          </SortTh>
+          <SortTh sort={sortOf("layer")} onSort={sortBy("layer")}>
+            계층
+          </SortTh>
+          <Th>설명</Th>
+          <SortTh className="text-right" sort={sortOf("count")} onSort={sortBy("count")}>
+            객체 수
+          </SortTh>
+        </Tr>
+      </THead>
+      <TBody>
+        {shown.map((t) => (
+          <Tr key={t.name}>
+            <Td>
+              <a href={routeHash({ page: "objects", kg, type: t.name })} className="font-medium">
+                {t.name}
+              </a>
+            </Td>
+            <Td>
+              <Badge title={t.layer}>{layerName(t.layer)}</Badge>
+            </Td>
+            <Td className="text-muted">{t.description}</Td>
+            <Td className="text-right tabular-nums">{formatCount(t.count)}</Td>
+          </Tr>
+        ))}
+      </TBody>
+    </Table>
+  );
+}
+
 /** The object types of the model with how many objects the chosen KG holds of each. */
 export function TypesScreen({ kg }: { readonly kg: string }) {
   const catalog = useTypeCatalog(kg);
@@ -67,8 +122,6 @@ export function TypesScreen({ kg }: { readonly kg: string }) {
         : [],
     [all, view],
   );
-  const sortOf = (key: TypeSortKey) => (view.sort?.key === key ? view.sort.direction : undefined);
-  const sortBy = (key: TypeSortKey) => () => update({ ...view, sort: nextSort(view.sort, key) });
   return (
     <>
       <PageHeader
@@ -108,49 +161,7 @@ export function TypesScreen({ kg }: { readonly kg: string }) {
                 )}
               </span>
             </div>
-            {shown.length === 0 ? (
-              <EmptyState title="맞는 타입이 없습니다">
-                {view.onlyFilled
-                  ? "‘객체가 있는 타입만’을 끄거나 검색어를 바꿔 보십시오."
-                  : "검색어를 바꿔 보십시오."}
-              </EmptyState>
-            ) : (
-              <Table aria-label="객체 타입">
-                <THead>
-                  <Tr>
-                    <SortTh sort={sortOf("name")} onSort={sortBy("name")}>
-                      타입
-                    </SortTh>
-                    <SortTh sort={sortOf("layer")} onSort={sortBy("layer")}>
-                      계층
-                    </SortTh>
-                    <Th>설명</Th>
-                    <SortTh className="text-right" sort={sortOf("count")} onSort={sortBy("count")}>
-                      객체 수
-                    </SortTh>
-                  </Tr>
-                </THead>
-                <TBody>
-                  {shown.map((t) => (
-                    <Tr key={t.name}>
-                      <Td>
-                        <a
-                          href={routeHash({ page: "objects", kg, type: t.name })}
-                          className="font-medium"
-                        >
-                          {t.name}
-                        </a>
-                      </Td>
-                      <Td>
-                        <Badge title={t.layer}>{layerName(t.layer)}</Badge>
-                      </Td>
-                      <Td className="text-muted">{t.description}</Td>
-                      <Td className="text-right tabular-nums">{formatCount(t.count)}</Td>
-                    </Tr>
-                  ))}
-                </TBody>
-              </Table>
-            )}
+            <TypesTable kg={kg} view={view} shown={shown} update={update} />
           </>
         )}
       </Async>
