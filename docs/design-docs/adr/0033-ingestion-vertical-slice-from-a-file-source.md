@@ -24,6 +24,9 @@ touches_protected:
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
 decision_hash: 4896f2b03f8e29eb
+amended_by:
+  - adr: "0041"
+    what: ingest run의 스토리지가 명령이 도는 동안만 있다는 결과
 ---
 # ADR-0033 파일 소스 하나를 KG까지 적재하는 수집의 최소 구현
 

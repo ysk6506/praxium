@@ -59,6 +59,13 @@ func (s *Server) traceMiddleware(next http.Handler) http.Handler {
 			id = s.ids.Next("tr")
 		}
 		w.Header().Set("X-Trace-Id", id)
+		if strings.HasPrefix(r.URL.Path, apiPrefix) {
+			// The answers of the API are JSON and never a page: the browser must not guess another type, and no
+			// address the caller came from goes out. No Content-Security-Policy: it governs documents the browser
+			// renders, and nothing the API answers is one (ADR-0041).
+			w.Header().Set("X-Content-Type-Options", "nosniff")
+			w.Header().Set("Referrer-Policy", "no-referrer")
+		}
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), traceKey, id)))
 	})
 }

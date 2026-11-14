@@ -17,7 +17,7 @@ func (c *call) objectTypeDetail() {
 		}
 	}
 	if !ok {
-		c.notFound("object_type")
+		c.notFound("object_type", requested)
 		return
 	}
 	include, valid := c.getQuery(objectTypeIncludes)
@@ -79,7 +79,7 @@ func (c *call) linkTypeDetail() {
 	requested := c.r.PathValue("link_type_id")
 	lt, ok := c.findLinkType(requested)
 	if !ok {
-		c.notFound("link_type")
+		c.notFound("link_type", requested)
 		return
 	}
 	if _, valid := c.getQuery(nil); !valid {
@@ -105,7 +105,7 @@ func (c *call) linkTypeBindings() {
 	requested := c.r.PathValue("link_type_id")
 	lt, ok := c.findLinkType(requested)
 	if !ok {
-		c.notFound("link_type")
+		c.notFound("link_type", requested)
 		return
 	}
 	def := &listDef{}
@@ -126,7 +126,7 @@ func (c *call) actionTypeDetail() {
 		}
 	}
 	if !ok {
-		c.notFound("action_type")
+		c.notFound("action_type", requested)
 		return
 	}
 	if _, valid := c.getQuery(nil); !valid {
@@ -144,7 +144,7 @@ func (c *call) traitDetail() {
 		}
 	}
 	if !ok {
-		c.notFound("trait")
+		c.notFound("trait", requested)
 		return
 	}
 	if _, valid := c.getQuery(nil); !valid {
@@ -168,7 +168,7 @@ func (c *call) schemeDetail() {
 		}
 	}
 	if !ok {
-		c.notFound("identifier_scheme")
+		c.notFound("identifier_scheme", requested)
 		return
 	}
 	if _, valid := c.getQuery(nil); !valid {

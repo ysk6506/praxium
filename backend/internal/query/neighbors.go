@@ -126,7 +126,7 @@ func (e *Engine) planWalk(in NeighborsInput) (*walkPlan, error) {
 		p.steps = DefaultMaxSteps
 	}
 	if p.steps < 1 || p.steps > MaxSteps {
-		return nil, kernel.Errorf(CodeInput, "max_steps %d is outside 1 to %d", p.steps, MaxSteps)
+		return nil, inputf("max_steps", "max_steps %d is outside 1 to %d", p.steps, MaxSteps)
 	}
 	switch in.Direction {
 	case "", DirBoth:
@@ -136,7 +136,7 @@ func (e *Engine) planWalk(in NeighborsInput) (*walkPlan, error) {
 	case DirIn:
 		p.dir = graph.In
 	default:
-		return nil, kernel.Errorf(CodeInput, "direction %q is not out, in or both", in.Direction)
+		return nil, inputf("direction", "direction %q is not out, in or both", in.Direction)
 	}
 	var err error
 	if p.linkTypes, err = e.linkTypeSet(in.LinkTypes); err != nil {
@@ -159,7 +159,7 @@ func (e *Engine) linkTypeSet(names []string) (map[int]bool, error) {
 	for _, n := range names {
 		lt, ok := e.reg.LinkTypeByName(n)
 		if !ok {
-			return nil, kernel.Errorf(CodeInput, "no link type %q", n)
+			return nil, inputf("link_types", "no link type %q", n)
 		}
 		set[lt.LinkTypeNo] = true
 	}
@@ -177,7 +177,7 @@ func meaningSet(names []string) (map[model.Meaning]bool, error) {
 	set := map[model.Meaning]bool{}
 	for _, m := range names {
 		if !known[model.Meaning(m)] {
-			return nil, kernel.Errorf(CodeInput, "no link meaning %q", m)
+			return nil, inputf("meanings", "no link meaning %q", m)
 		}
 		set[model.Meaning(m)] = true
 	}
@@ -193,7 +193,7 @@ func (e *Engine) peerTypeSet(names []string) (map[int]bool, error) {
 	for _, n := range names {
 		root, ok := e.types.byName[n]
 		if !ok {
-			return nil, kernel.Errorf(CodeInput, "no object type %q", n)
+			return nil, inputf("peer_types", "no object type %q", n)
 		}
 		for _, t := range e.types.all {
 			if t.ancestors[root.typ.ID] {

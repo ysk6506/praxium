@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/cmd/praxium/worldgen.go"
-hash: "ac0f83a190a5b1c3"
-date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
-text_changed: true
-doc_hash: "774dc0e1b13d86d0"
+hash: "2bb14e1b1a619dd7"
+date: "2026-11-14"
+note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
+text_changed: false
+doc_hash: "ad0fd0d54ae8d74f"

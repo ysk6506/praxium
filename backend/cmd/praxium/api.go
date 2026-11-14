@@ -62,6 +62,12 @@ func systemWiring() wiring {
 
 // execute runs a command line: the commands of the API and its client first, then everything run knows.
 func execute(args []string, stdout, stderr io.Writer, w wiring) int {
+	if code, handled := runHelp(args, stdout, stderr); handled {
+		return code
+	}
+	if code, handled := runNotYet(args, stderr); handled {
+		return code
+	}
 	if len(args) > 0 {
 		if code, handled := runCommand(args, stdout, stderr, w); handled {
 			return code
@@ -74,10 +80,12 @@ func execute(args []string, stdout, stderr io.Writer, w wiring) int {
 // is false for everything else, which the caller leaves to run.
 func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, handled bool) {
 	switch {
-	case args[0] == "api" && len(args) >= 2 && (args[1] == "serve" || args[1] == "routes"):
-		return runAPI(args[1:], stdout, stderr, w), true
+	case args[0] == "api":
+		return runAPICommand(args, stdout, stderr, w)
 	case args[0] == "demo":
 		return runDemo(args[1:], stdout, stderr, w), true
+	case args[0] == "local":
+		return runLocal(args[1:], stdout, stderr, w), true
 	case args[0] == "dev":
 		return runDev(args[1:], stdout, stderr, w), true
 	case args[0] == "ingest":
@@ -90,13 +98,45 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 	return 0, false
 }
 
+// runAPICommand handles `praxium api ...`: serve and routes run, an unknown word is a usage error, and help
+// (or no word) is left to the help handler.
+func runAPICommand(args []string, stdout, stderr io.Writer, w wiring) (int, bool) {
+	if len(args) < 2 || helpFlagWord(args[1]) {
+		return 0, false
+	}
+	if args[1] == "serve" || args[1] == "routes" {
+		return runAPI(args[1:], stdout, stderr, w), true
+	}
+	return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "api has no command %q", args[1]), "api"), true
+}
+
 // envDevToken names the variable that may carry the development token; the
 // token file flag is the safer way and wins over it.
 const envDevToken = "PRAXIUM_DEV_TOKEN"
 
-const apiUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-store memory|postgres|file] [-store-dsn-file file] [-store-data-dir dir]\n" +
-	"                          [-dev-token-file file] [-dev-subject id] [-dev-roles r1,r2] [-dev-truth file] [-web=false]\n" +
-	"       praxium api routes --json\n"
+const apiServeUsage = "usage: praxium api serve [-addr host:port] [-mode development|production] [-store memory|postgres|file] [flags]"
+
+const apiServeBody = `Runs the REST API server (docs/design-docs/rest-api.md) and, unless -web=false, the web UI at / (ADR-0035).
+
+Only development mode starts for now: production mode needs a real authenticator, which does not exist yet. To look
+around use "praxium demo" (a made-up data center, no setup) or "praxium local" (your own KG, built with praxium ingest
+run); for development use -mode development with a token file, as below. Development mode takes one access token
+from -dev-token-file (a file with the token; the environment variable PRAXIUM_DEV_TOKEN also works, the file wins)
+and treats a caller with it as the subject -dev-subject with the roles -dev-roles.
+
+-store file keeps the KG in a data folder (-store-data-dir, ADR-0034); -store postgres reads the connection string
+from a file (-store-dsn-file) so no secret is in the process list.
+
+example:
+  praxium worldgen -scale 500 -seed 7 -out /tmp/world
+  printf 'dev-token-not-a-secret' > /tmp/dev.tok
+  praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl
+`
+
+// apiHelpEntries are the help entries of this file's commands.
+func apiHelpEntries(out map[string]helpEntry) {
+	out["api serve"] = helpEntry{usage: apiServeUsage, body: apiServeBody, flags: func() *flag.FlagSet { return newServeFlags(&serveOptions{}) }}
+}
 
 // runAPI handles `praxium api serve` and `praxium api routes`; runCommand sends nothing else here.
 func runAPI(args []string, stdout, stderr io.Writer, d wiring) int {
@@ -104,7 +144,11 @@ func runAPI(args []string, stdout, stderr io.Writer, d wiring) int {
 		return runRoutes(args[1:], stdout, stderr)
 	}
 	if err := serveAPI(args[1:], stderr, d); err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
+		var bad usageProblem
+		if errors.As(err, &bad) {
+			fmt.Fprintf(stderr, "%s\nFor details: praxium api serve --help\n", apiServeUsage)
+		}
 		return exitFailure
 	}
 	return exitOK
@@ -113,13 +157,12 @@ func runAPI(args []string, stdout, stderr io.Writer, d wiring) int {
 // runRoutes prints the routes the server registers, for the conformance check.
 func runRoutes(args []string, stdout, stderr io.Writer) int {
 	if len(args) != 1 || args[0] != "--json" {
-		fmt.Fprint(stderr, apiUsage)
-		return exitUsage
+		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "api routes wants --json"), "api routes")
 	}
 	enc := json.NewEncoder(stdout)
 	enc.SetIndent("", "  ")
 	if err := enc.Encode(map[string]any{"routes": httpapi.Routes()}); err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
 	}
 	return exitOK
@@ -135,27 +178,40 @@ type serveOptions struct {
 	store, storeDSNFile, storeDataDir string
 	// web is whether the server also serves the embedded web UI at / (ADR-0035).
 	web bool
+	// modeSet is whether -mode was on the command line: a start with no -mode at all is told how to get going.
+	modeSet bool
+}
+
+// usageProblem is an error of the command line of api serve: the message is followed by the usage line.
+type usageProblem struct{ error }
+
+func (e usageProblem) Unwrap() error { return e.error }
+
+func newServeFlags(o *serveOptions) *flag.FlagSet {
+	fs := flag.NewFlagSet("api serve", flag.ContinueOnError)
+	fs.SetOutput(io.Discard)
+	fs.StringVar(&o.addr, "addr", "127.0.0.1:8080", "where to listen, host:port")
+	fs.StringVar(&o.mode, "mode", devauth.ModeProduction, "development or production; only development starts for now")
+	fs.StringVar(&o.tokenFile, "dev-token-file", "", "development mode: the file that holds the access token (at least 16 characters; environment PRAXIUM_DEV_TOKEN works too)")
+	fs.StringVar(&o.subject, "dev-subject", "dev-user", "development mode: the subject a caller with the token is")
+	fs.StringVar(&o.roles, "dev-roles", "viewer", "development mode: the roles of that subject, comma separated")
+	fs.StringVar(&o.truth, "dev-truth", "", "development mode: a truth file of praxium worldgen to load into the KG before serving")
+	fs.StringVar(&o.store, "store", storeMemory, "memory, postgres or file")
+	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "-store postgres: the file that holds the connection string")
+	fs.BoolVar(&o.web, "web", true, "serve the web UI at / (false: the API only)")
+	fs.StringVar(&o.storeDataDir, "store-data-dir", "", "-store file: the data folder that keeps the KG")
+	return fs
 }
 
 func parseServe(args []string) (serveOptions, error) {
-	fs := flag.NewFlagSet("api serve", flag.ContinueOnError)
-	fs.SetOutput(io.Discard)
 	var o serveOptions
-	fs.StringVar(&o.addr, "addr", "127.0.0.1:8080", "")
-	fs.StringVar(&o.mode, "mode", devauth.ModeProduction, "")
-	fs.StringVar(&o.tokenFile, "dev-token-file", "", "")
-	fs.StringVar(&o.subject, "dev-subject", "dev-user", "")
-	fs.StringVar(&o.roles, "dev-roles", "viewer", "")
-	fs.StringVar(&o.truth, "dev-truth", "", "")
-	fs.StringVar(&o.store, "store", storeMemory, "")
-	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "")
-	fs.BoolVar(&o.web, "web", true, "")
-	fs.StringVar(&o.storeDataDir, "store-data-dir", "", "")
+	fs := newServeFlags(&o)
 	if err := fs.Parse(args); err != nil {
-		return o, kernel.Wrap(kernel.CodeInvalidValue, err, "bad flags for api serve")
+		return o, usageProblem{kernel.Wrap(kernel.CodeInvalidValue, flagProblem(err), "bad flags for api serve")}
 	}
+	fs.Visit(func(f *flag.Flag) { o.modeSet = o.modeSet || f.Name == "mode" })
 	if fs.NArg() != 0 {
-		return o, kernel.Errorf(kernel.CodeInvalidValue, "api serve takes no arguments")
+		return o, usageProblem{kernel.Errorf(kernel.CodeInvalidValue, "api serve takes no arguments")}
 	}
 	return o, nil
 }
@@ -199,11 +255,22 @@ func requireRealAuthenticator(o serveOptions) error {
 	case devauth.ModeDevelopment:
 		return nil
 	case devauth.ModeProduction:
-		return kernel.Errorf(kernel.CodeInvalidValue,
-			"mode production needs a real authenticator (TD-0010), which does not exist yet; the production store exists (-store postgres, TD-0011 is closed) "+
-				"but a server never starts in production mode without the authenticator; use -mode development for a development server")
+		return productionRefusal(o)
 	}
 	return kernel.Errorf(kernel.CodeInvalidValue, "unknown -mode %q: use development or production", o.mode)
+}
+
+// productionRefusal is the answer to a start in production mode, which is also what a bare `praxium api serve` asks
+// for: it says what to run instead. The detail of what production lacks follows only when production was asked for.
+func productionRefusal(o serveOptions) error {
+	way := "production mode is not available yet: the sign-in (authentication) is not implemented. " +
+		"To try Praxium run `praxium demo`; for your own data run `praxium local`; for development use `-mode development`."
+	if !o.modeSet {
+		return kernel.Errorf(kernel.CodeInvalidValue, "%s", way)
+	}
+	return kernel.Errorf(kernel.CodeInvalidValue,
+		"%s (Details: production mode needs a real authenticator (TD-0010), which does not exist yet; the production store exists (-store postgres, TD-0011 is closed) "+
+			"but a server never starts in production mode without the authenticator.)", way)
 }
 
 func serveAPI(args []string, stderr io.Writer, d wiring) error {
@@ -345,7 +412,7 @@ func runContract(args []string, stdout, stderr io.Writer) int {
 	}
 	data, err := contract.Assemble(contract.Files(), contract.PartsDir)
 	if err != nil {
-		fmt.Fprintf(stderr, "praxium: %v\n", err)
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
 		return exitFailure
 	}
 	if args[0] == "assemble" {

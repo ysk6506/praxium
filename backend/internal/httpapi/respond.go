@@ -21,6 +21,8 @@ type call struct {
 	trace   string
 	authed  bool
 	subject access.Subject
+	// asked is the object the question named in its body, for the answer of a missing object.
+	asked string
 }
 
 // writeJSON writes a JSON body with its status and media type.

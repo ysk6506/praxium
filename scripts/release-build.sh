@@ -132,6 +132,7 @@ for t in "${target_list[@]}"; do
   echo "packed $archive"
 done
 
-(cd "$out" && sha256sum "${sums[@]}" > SHA256SUMS)
+# The lines are in the order of the file names, so the list reads the same however the targets were given.
+(cd "$out" && printf '%s\n' "${sums[@]}" | LC_ALL=C sort | xargs sha256sum > SHA256SUMS)
 echo "wrote $out:"
 (cd "$out" && ls -l --block-size=K "${sums[@]}" SHA256SUMS | awk '{print "  " $5 "  " $9}')

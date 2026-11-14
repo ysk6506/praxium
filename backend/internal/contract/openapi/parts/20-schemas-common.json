@@ -22,7 +22,7 @@
           },
           "params": {
             "type": "object",
-            "description": "The values a screen needs to write the message."
+            "description": "The values a screen needs to write the message. not_found.resource has resource (what kind of thing) and id (what the request asked for). invalid_input.field has message (a plain English sentence) and, when the server knows it, field (the field of the request that was refused); detail is the same with the internal code in front."
           },
           "trace_id": {
             "type": "string",

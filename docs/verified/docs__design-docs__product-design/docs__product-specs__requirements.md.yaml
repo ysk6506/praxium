@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "1c87d6027f1bdfd6"
+hash: "24f72c38c238ae80"
 date: "2026-11-14"
-note: "ADR-0040: checked; stays accurate"
+note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
 text_changed: true
 doc_hash: "06412a77a9acc006"

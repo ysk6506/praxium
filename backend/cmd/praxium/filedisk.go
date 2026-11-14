@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/ysk6506/praxium/backend/internal/filejournal"
+	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
@@ -104,4 +105,18 @@ func (d fileDisk) SyncDir() error {
 		return nil
 	}
 	return err
+}
+
+// stateDisk is the data folder as the ingestion state file needs it (ingest.StateDisk): the same folder the journal
+// of the file store lives in, under the lock the journal holds.
+type stateDisk struct{ fileDisk }
+
+var _ ingest.StateDisk = stateDisk{}
+
+// ReadWhole returns a whole file of the folder.
+func (d stateDisk) ReadWhole(name string) ([]byte, error) { return os.ReadFile(d.path(name)) }
+
+// Create makes a new file for writing and fails when the name exists.
+func (d stateDisk) Create(name string) (ingest.StateFile, error) {
+	return os.OpenFile(d.path(name), os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o640)
 }

@@ -31,6 +31,9 @@ touches_protected:
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
 decision_hash: bd7091c5b7f7d33d
+amended_by:
+  - adr: "0041"
+    what: 테스트용 워크북 작성기를 제품이 부르지 않는다는 문장
 ---
 # ADR-0040 엑셀 워크북을 표준 라이브러리로 읽는 소스와 살펴보기 명령
 

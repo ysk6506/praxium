@@ -15,7 +15,7 @@ covers:
 
 ## 1. 무엇이 나가요
 
-태그 하나가 릴리스 하나예요. 릴리스에는 대상마다 압축 파일 하나와 `SHA256SUMS`가 붙어요.
+태그 하나가 릴리스 하나예요. 릴리스에는 대상마다 압축 파일 하나와 `SHA256SUMS`(파일 이름 순서로 정렬)가 붙어요.
 
 | 대상 | 파일 | 안에 든 것 |
 |---|---|---|
@@ -40,7 +40,7 @@ scripts/release-smoke.sh /tmp/praxium-release/praxium_0.1.0-alpha.1_linux_amd64.
 ```
 
 - `--out`의 폴더는 비어 있거나 없어야 해요. 기본은 `dist/release`예요(커밋되지 않아요).
-- `release-smoke.sh`는 압축을 풀어 `praxium version`을 확인하고 서버와 `praxium demo`를 차례로 띄워 `/`가 웹 UI로 200을 주는지 봐요. 이 컴퓨터의 운영체제에 맞는 파일만 테스트할 수 있어요.
+- `release-smoke.sh`는 압축을 풀어 `praxium version`과 `--help`를 확인하고, `ingest init`으로 만든 예제를 `ingest inspect`와 `ingest run`(엑셀과 CSV)으로 수집한 뒤 `praxium local`로 띄워 API가 수집한 객체를 주는지 보고, 서버와 `praxium demo`를 차례로 띄워 `/`가 웹 UI로 200을 주는지 봐요. 이 컴퓨터의 운영체제에 맞는 파일만 테스트할 수 있어요.
 - 같은 커밋을 다시 빌드하면 같은 해시가 나와요(같은 Go 버전일 때). 두 번 만들어 `SHA256SUMS`를 비교해 보세요.
 - 컴파일만 확인하려면 `scripts/release-build.sh --compile-only`예요. 웹도 압축도 하지 않고 평소 CI가 같은 명령을 돌려요.
 
@@ -78,6 +78,8 @@ sha256sum -c --ignore-missing SHA256SUMS
 tar -xzf praxium_0.1.0-alpha.1_linux_amd64.tar.gz
 ./praxium_0.1.0-alpha.1_linux_amd64/praxium version
 ```
+
+내려받은 뒤 가장 쉬운 첫 단계는 `praxium demo`예요. 가상의 데이터로 서버를 띄우고, 토큰이 들어 있는 링크를 출력해요. 링크를 브라우저로 열면 되고 Ctrl+C로 끝내요. 그다음에는 `praxium --help`로 명령을 둘러봐요. 자기 파일을 넣어 보려면 `praxium ingest init -out ex`로 예제를 만들고, `praxium ingest run -data-dir data ...`로 수집한 뒤 `praxium local -data-dir data`로 열어요(ADR-0041).
 
 ## 6. 잘못됐을 때
 
