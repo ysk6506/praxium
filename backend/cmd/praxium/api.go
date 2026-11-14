@@ -73,6 +73,8 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 		return runAPI(args[1:], stdout, stderr, w), true
 	case args[0] == "dev":
 		return runDev(args[1:], stdout, stderr, w), true
+	case args[0] == "ingest":
+		return runIngest(args[1:], stdout, stderr, w), true
 	case args[0] == "contract":
 		return runContract(args[1:], stdout, stderr), true
 	case cli.IsClientCommand(args[0]) || cli.IsClientFlag(args[0]):

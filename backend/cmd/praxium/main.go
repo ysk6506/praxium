@@ -10,6 +10,7 @@
 //	praxium contract assemble|check    the OpenAPI document of the API
 //	praxium health | types | catalog   the command line client of the API
 //	praxium worldgen [flags]
+//	praxium ingest run -source f -mapping f -input dataset=file
 //	praxium --version
 //
 // A bare role name wires the kernel, logs one structured line and exits; only
