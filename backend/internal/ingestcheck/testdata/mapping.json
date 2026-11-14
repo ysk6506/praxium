@@ -1,25 +1,106 @@
 {
   "feeds": [
-    {"id": "f_rack", "dataset": "ds_racks", "object_type": "Rack", "creates_objects": true, "retires_objects": true, "basis": "declared",
-     "attributes": [{"attribute": "name", "column": "rack_name"}, {"attribute": "total_u", "column": "total_u"}, {"attribute": "asset_tag", "column": "asset_id"}],
-     "identity": [{"key_name": "asset_tag", "components": [{"property": "asset_tag", "column": "asset_id"}], "priority": 1}]},
-    {"id": "f_server", "dataset": "ds_servers", "object_type": "PhysicalServer", "creates_objects": true, "retires_objects": true, "basis": "observed",
-     "attributes": [{"attribute": "name", "column": "asset_id"}, {"attribute": "manufacturer", "column": "manufacturer"},
-                    {"attribute": "serial_number", "column": "serial"}, {"attribute": "power_state", "column": "power_state"}],
-     "identity": [{"components": [{"property": "manufacturer", "column": "manufacturer"}, {"property": "serial_number", "column": "serial"}], "priority": 1}]},
-    {"id": "f_host", "dataset": "ds_hosts", "object_type": "HypervisorHost", "creates_objects": true, "retires_objects": true, "basis": "observed",
-     "attributes": [{"attribute": "name", "column": "hostname"}, {"attribute": "hostname", "column": "hostname"}, {"attribute": "connection_state", "column": "connection"}],
-     "identity": [{"scheme": "host_id", "column": "host_id", "priority": 1}]},
-    {"id": "f_vm", "dataset": "ds_vms", "object_type": "VirtualMachine", "creates_objects": true, "retires_objects": true, "basis": "observed",
-     "attributes": [{"attribute": "name", "column": "name"}],
-     "identity": [{"scheme": "vm_instance_uuid", "column": "instance_uuid", "priority": 1}]},
-    {"id": "f_vm_power", "dataset": "ds_vm_power", "object_type": "VirtualMachine", "basis": "observed",
-     "attributes": [{"attribute": "power_state", "column": "power_state"}],
-     "identity": [{"scheme": "vm_instance_uuid", "column": "instance_uuid", "priority": 1}]}
+    {
+      "id": "f_rack",
+      "dataset": "ds_racks",
+      "object_type": "Rack",
+      "creates_objects": true,
+      "retires_objects": true,
+      "basis": "declared",
+      "attributes": [
+        { "attribute": "name", "column": "rack_name" },
+        { "attribute": "total_u", "column": "total_u" },
+        { "attribute": "asset_tag", "column": "asset_id" }
+      ],
+      "identity": [
+        {
+          "key_name": "asset_tag",
+          "components": [{ "property": "asset_tag", "column": "asset_id" }],
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "id": "f_server",
+      "dataset": "ds_servers",
+      "object_type": "PhysicalServer",
+      "creates_objects": true,
+      "retires_objects": true,
+      "basis": "observed",
+      "attributes": [
+        { "attribute": "name", "column": "asset_id" },
+        { "attribute": "manufacturer", "column": "manufacturer" },
+        { "attribute": "serial_number", "column": "serial" },
+        { "attribute": "power_state", "column": "power_state" }
+      ],
+      "identity": [
+        {
+          "components": [
+            { "property": "manufacturer", "column": "manufacturer" },
+            { "property": "serial_number", "column": "serial" }
+          ],
+          "priority": 1
+        }
+      ]
+    },
+    {
+      "id": "f_host",
+      "dataset": "ds_hosts",
+      "object_type": "HypervisorHost",
+      "creates_objects": true,
+      "retires_objects": true,
+      "basis": "observed",
+      "attributes": [
+        { "attribute": "name", "column": "hostname" },
+        { "attribute": "hostname", "column": "hostname" },
+        { "attribute": "connection_state", "column": "connection" }
+      ],
+      "identity": [{ "scheme": "host_id", "column": "host_id", "priority": 1 }]
+    },
+    {
+      "id": "f_vm",
+      "dataset": "ds_vms",
+      "object_type": "VirtualMachine",
+      "creates_objects": true,
+      "retires_objects": true,
+      "basis": "observed",
+      "attributes": [{ "attribute": "name", "column": "name" }],
+      "identity": [{ "scheme": "vm_instance_uuid", "column": "instance_uuid", "priority": 1 }]
+    },
+    {
+      "id": "f_vm_power",
+      "dataset": "ds_vm_power",
+      "object_type": "VirtualMachine",
+      "basis": "observed",
+      "attributes": [{ "attribute": "power_state", "column": "power_state" }],
+      "identity": [{ "scheme": "vm_instance_uuid", "column": "instance_uuid", "priority": 1 }]
+    }
   ],
   "links": [
-    {"id": "l_server_rack", "link_type": "MOUNTED_IN", "from": {"feed": "f_server", "columns": ["rack_asset_id"]}, "to": {"feed": "f_rack", "columns": ["asset_id"]}, "condition": "same_key", "basis": "declared"},
-    {"id": "l_vm_host", "link_type": "RUNS_ON", "from": {"feed": "f_vm", "columns": ["host_id"]}, "to": {"feed": "f_host", "columns": ["host_id"]}, "condition": "same_key", "basis": "observed"},
-    {"id": "l_host_server", "link_type": "RUNS_ON", "from": {"feed": "f_host", "columns": ["serial"]}, "to": {"feed": "f_server", "columns": ["serial"]}, "condition": "same_key", "key_type": "serial_number", "basis": "observed"}
+    {
+      "id": "l_server_rack",
+      "link_type": "MOUNTED_IN",
+      "from": { "feed": "f_server", "columns": ["rack_asset_id"] },
+      "to": { "feed": "f_rack", "columns": ["asset_id"] },
+      "condition": "same_key",
+      "basis": "declared"
+    },
+    {
+      "id": "l_vm_host",
+      "link_type": "RUNS_ON",
+      "from": { "feed": "f_vm", "columns": ["host_id"] },
+      "to": { "feed": "f_host", "columns": ["host_id"] },
+      "condition": "same_key",
+      "basis": "observed"
+    },
+    {
+      "id": "l_host_server",
+      "link_type": "RUNS_ON",
+      "from": { "feed": "f_host", "columns": ["serial"] },
+      "to": { "feed": "f_server", "columns": ["serial"] },
+      "condition": "same_key",
+      "key_type": "serial_number",
+      "basis": "observed"
+    }
   ]
 }

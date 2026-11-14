@@ -326,3 +326,105 @@ func TestRetiredRowComesBackWithItsObject(t *testing.T) {
 		t.Fatalf("back %v id %v problems %v", ok, back.ID == id, rep.ProblemCounts)
 	}
 }
+
+// [REQ-263] [REQ-264]
+func TestRefinementFiltersFillsAndReplacesBeforeTheFeed(t *testing.T) {
+	mp := strings.Replace(mappingJSON, `{"feeds":[`, `{"refinements":[{"id":"r_racks","input":"ds_racks","ops":[
+ {"op":"filter","column":"total_u","not_in":["45"]},
+ {"op":"replace","column":"rack_name","function":"upper"},
+ {"op":"replace","column":"rack_name","function":"map","map":{"RACK-A":"first-rack"}},
+ {"op":"fill_empty","column":"total_u","value":"42"}]}],"feeds":[`, 1)
+	mp = strings.Replace(mp, `"id":"f_rack","dataset":"ds_racks"`, `"id":"f_rack","dataset":"r_racks"`, 1)
+	r := newRig(t, sourceJSON, mp)
+	r.files["ds_racks"] = racksV1 + "RK3,rack-c,\n"
+	r.files["ds_servers"], r.files["ds_vms"] = serversV1, vmsV1
+	rep := r.run()
+	rows := r.rows()
+	if _, ok := rows["first-rack"]; !ok {
+		t.Errorf("the map did not rename the rack: %v", rows)
+	}
+	if _, ok := rows["RACK-C"]; !ok {
+		t.Error("the fill or the upper-casing was lost")
+	}
+	if _, ok := rows["rack-b"]; ok || rows["RACK-B"].ID != (graph.ObjectID{}) {
+		t.Error("the filtered row was applied")
+	}
+	for _, d := range rep.Datasets {
+		if !d.Balanced() {
+			t.Errorf("%s does not balance: %+v", d.Dataset, d)
+		}
+	}
+}
+
+// [REQ-263]
+func TestCompileRejectsWrongRefinements(t *testing.T) {
+	reg := newRig(t, sourceJSON, mappingJSON).runner.Reg
+	src, _ := ParseSource(strings.NewReader(sourceJSON))
+	for name, op := range map[string]string{
+		"unknown operation":  `{"op":"explode","column":"rack_name"}`,
+		"unknown column":     `{"op":"filter","column":"nope","not_empty":true}`,
+		"empty filter":       `{"op":"filter","column":"rack_name"}`,
+		"fill without value": `{"op":"fill_empty","column":"rack_name"}`,
+		"unknown function":   `{"op":"replace","column":"rack_name","function":"rot13"}`,
+		"map without map":    `{"op":"replace","column":"rack_name","function":"map"}`,
+	} {
+		text := strings.Replace(mappingJSON, `{"feeds":[`, `{"refinements":[{"id":"r","input":"ds_racks","ops":[`+op+`]}],"feeds":[`, 1)
+		m, err := ParseMapping(strings.NewReader(text))
+		if err == nil {
+			_, err = Compile(reg, src, m)
+		}
+		if err == nil {
+			t.Errorf("%s: accepted", name)
+		}
+	}
+}
+
+// [REQ-263] [REQ-268]
+func TestCellsOfEveryBaseKindAreConvertedOrReported(t *testing.T) {
+	src := strings.Replace(sourceJSON, `{"name":"power_state"}]}`, `{"name":"power_state"},{"name":"watts"},{"name":"made"},{"name":"state"}]}`, 1)
+	src = strings.Replace(src, `{"name":"vcpu","paths":["cpu"]}`, `{"name":"vcpu","paths":["cpu"]},{"name":"ha"}`, 1)
+	mp := strings.Replace(mappingJSON, `{"attribute":"name","column":"asset_id"}]`, `{"attribute":"name","column":"asset_id"},{"attribute":"typical_power_w","column":"watts"},{"attribute":"production_date","column":"made"},{"attribute":"lifecycle_state","column":"state"}]`, 1)
+	mp = strings.Replace(mp, `{"attribute":"vcpu_count","column":"vcpu"}`, `{"attribute":"vcpu_count","column":"vcpu"},{"attribute":"ha_protected","column":"ha"}`, 1)
+	r := newRig(t, src, mp)
+	r.files["ds_racks"] = racksV1
+	r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state,watts,made,state\n" +
+		"SV1,sn100,Zorvane,RK1,on,1500.5,2022-03-29T00:00:00Z,active\n" +
+		"SV2,sn200,Zorvane,RK2,off,heavy,2022-03-29T00:00:00Z,active\n" +
+		"SV3,sn300,Zorvane,RK2,off,100,last week,active\n" +
+		"SV4,sn400,Zorvane,RK2,off,100,2022-03-29T00:00:00Z,no-such-state\n"
+	r.files["ds_vms"] = `{"instance_uuid":"vm-1","name":"vm-one","cpu":4,"ha":true}` + "\n" + `{"instance_uuid":"vm-2","name":"vm-two","cpu":2,"ha":"maybe"}` + "\n"
+	rep := r.run()
+	if rep.ProblemCounts[ProblemInvalidValue] != 4 {
+		t.Fatalf("problems %v", rep.ProblemCounts)
+	}
+	rows := r.rows()
+	if _, ok := rows["SV1"]; !ok {
+		t.Error("the good row was lost")
+	}
+	if _, ok := rows["vm-one"]; !ok {
+		t.Error("the boolean row was lost")
+	}
+}
+
+// [REQ-265] [REQ-268]
+func TestLinkProblemsAreReportedAndTheRestIsLinked(t *testing.T) {
+	r := loaded(t)
+	r.files["ds_servers"] = "asset_id,serial_no,manufacturer,rack_asset_id,power_state\nSV1,sn100,Zorvane,RK1,on\nSV2,sn200,Zorvane,RK9,off\n"
+	rep := r.run()
+	if rep.ProblemCounts[ProblemLinkTarget] != 1 || rep.Links != 1 {
+		t.Fatalf("links %d problems %v", rep.Links, rep.ProblemCounts)
+	}
+}
+
+// [REQ-264] [REQ-268]
+func TestCSVOdditiesAreReadOrReported(t *testing.T) {
+	r := loaded(t)
+	r.files["ds_racks"] = "\xef\xbb\xbfasset_id,rack_name,total_u,extra\nRK1,\"rack, a\",42,x\nRK2,\"rack-b,45,y\n"
+	rep := r.run()
+	if _, ok := r.rows()["rack, a"]; !ok {
+		t.Error("the byte order mark or the quoted comma broke the first row")
+	}
+	if rep.ProblemCounts[ProblemExtraColumn] != 1 || rep.ProblemCounts[ProblemUnreadable] == 0 {
+		t.Errorf("problems %v", rep.ProblemCounts)
+	}
+}

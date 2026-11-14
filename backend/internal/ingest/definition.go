@@ -166,13 +166,3 @@ func (d *Dataset) checkColumns(where string) ([]string, error) {
 	}
 	return names, nil
 }
-
-// Dataset finds a dataset of the source by id.
-func (s Source) Dataset(id string) (Dataset, bool) {
-	for _, d := range s.Datasets {
-		if d.ID == id {
-			return d, true
-		}
-	}
-	return Dataset{}, false
-}

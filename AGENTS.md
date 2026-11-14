@@ -38,6 +38,16 @@ printf 'dev-token-not-a-secret' > /tmp/dev.tok
 /tmp/praxium --endpoint http://127.0.0.1:8080 --token dev-token-not-a-secret query find --type PhysicalServer --limit 3
 ```
 
+파일 소스 하나를 수집 파이프라인으로 KG에 넣는 가장 짧은 길(소스 정의와 매핑 정의는 JSON 데이터이고 견본 파일은 지어낸 값이다, [ADR-0033](docs/design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md)). `-times 2`는 같은 파일로 한 번 더 돌려 둘째 실행이 아무것도 바꾸지 않음을 보인다:
+
+```
+cd backend && go build -o /tmp/praxium ./cmd/praxium
+D=internal/ingestcheck/testdata
+/tmp/praxium ingest run -source $D/source.json -mapping $D/mapping.json -times 2 \
+  -input ds_racks=$D/sample/racks.csv -input ds_servers=$D/sample/servers.csv \
+  -input ds_hosts=$D/sample/hosts.jsonl -input ds_vms=$D/sample/vms.jsonl -input ds_vm_power=$D/sample/vm-power.csv
+```
+
 CI가 합치기 관문이다: main에는 풀 리퀘스트로만 들어가고, 필수 검사 `gate`가 초록일 때만 합친다. 문서(`*.md`)만 바꾼 풀 리퀘스트는 가벼운 경로를 타서 구조 검사만 돈다([ADR-0002](docs/design-docs/adr/0002-harness-and-working-rules-from-terrarium.md)).
 
 실패 메시지는 `problem`과 `fix`를 알려준다. 메시지를 믿고 그대로 고친다.
