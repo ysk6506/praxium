@@ -28,8 +28,9 @@ type RawChanges struct {
 // Duplicate is a row whose natural key an earlier row of the capture already had. The later row is used; the earlier
 // one is a problem (pipeline.md 3.1: the key repeats, the rule decides which row is used; here the later wins).
 type Duplicate struct {
-	Key  string
-	Line int
+	Key   string
+	Line  int
+	Where string
 }
 
 // dedupe keeps the last row of every natural key, in the order of the key, and returns the rows it set aside.
@@ -37,7 +38,7 @@ func dedupe(rows []Row) (kept []Row, dups []Duplicate) {
 	last := map[string]int{}
 	for i, r := range rows {
 		if j, ok := last[r.Key]; ok {
-			dups = append(dups, Duplicate{Key: r.Key, Line: rows[j].Line})
+			dups = append(dups, Duplicate{Key: r.Key, Line: rows[j].Line, Where: rows[j].Where})
 		}
 		last[r.Key] = i
 	}
@@ -72,14 +73,16 @@ func applyCapture(ds *DatasetState, rows []Row, deletion string, run int, now ti
 		case old == nil:
 			ch.Added++
 		case old.Hash == hash:
+			// the content is the same, so the record stays; where it stands in the file may have moved
 			ch.Unchanged++
+			old.Line, old.Where = r.Line, r.Where
 			continue
 		default:
 			ch.Modified++
 			old.ToRun = run
 			ds.Closed = append(ds.Closed, *old)
 		}
-		ds.Open[r.Key] = &RawRecord{Key: r.Key, Hash: hash, Line: r.Line, Fields: r.Fields, FromRun: run}
+		ds.Open[r.Key] = &RawRecord{Key: r.Key, Hash: hash, Line: r.Line, Where: r.Where, Fields: r.Fields, FromRun: run}
 	}
 	if deletion == DeletionAbsentInFull {
 		ch.countAbsent(ds, shown, run, now)

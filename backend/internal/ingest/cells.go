@@ -14,6 +14,7 @@ import (
 // The value is checked the way the graph checks it, so a bad cell is found here, in the row it belongs to, and
 // does not stop the whole batch.
 func convertCell(s valueSpec, text string) (any, error) {
+	text = dateAsTime(s, text)
 	v, err := convertBase(s, text)
 	if err != nil {
 		return nil, err
@@ -25,6 +26,19 @@ func convertCell(s valueSpec, text string) (any, error) {
 		return nil, err
 	}
 	return text, nil
+}
+
+// dateAsTime gives a date with no time of the day (the form a date cell of a workbook has, 2026-03-14) the time it
+// stands for, midnight UTC, when the property is a time; every other text is as it was.
+func dateAsTime(s valueSpec, text string) string {
+	if s.base != model.BaseTime {
+		return text
+	}
+	trimmed := strings.TrimSpace(text)
+	if _, err := time.Parse("2006-01-02", trimmed); err != nil {
+		return text
+	}
+	return trimmed + "T00:00:00Z"
 }
 
 // convertBase checks a cell by its base kind. It returns the value for the kinds that have a Go value of their own and

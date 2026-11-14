@@ -1,0 +1,37 @@
+{
+  "id": "src_example_workbook",
+  "name": "example workbook",
+  "adapter": "file",
+  "limits": { "max_rows_per_sheet": 50000 },
+  "datasets": [
+    {
+      "id": "ds_racks",
+      "parser": "xlsx",
+      "sheet": { "name": "랙" },
+      "natural_key": ["asset_id"],
+      "columns": [
+        { "name": "asset_id", "paths": ["자산번호"] },
+        { "name": "rack_name", "paths": ["이름"] },
+        { "name": "total_u", "paths": ["높이(U)"] }
+      ]
+    },
+    {
+      "id": "ds_servers",
+      "parser": "xlsx",
+      "sheet": {
+        "name": "서버 목록",
+        "header_row": 3,
+        "merged_cells": "fill",
+        "stop_after_blank_rows": 2
+      },
+      "natural_key": ["asset_id"],
+      "columns": [
+        { "name": "asset_id", "paths": ["자산번호"] },
+        { "name": "serial", "paths": ["시리얼"] },
+        { "name": "manufacturer", "paths": ["제조사"] },
+        { "name": "rack_asset_id", "paths": ["랙"] },
+        { "name": "power_state", "paths": ["전원"], "optional": true }
+      ]
+    }
+  ]
+}

@@ -13,6 +13,7 @@ import (
 const (
 	ParserCSV       = "csv"
 	ParserJSONLines = "json_lines"
+	ParserXLSX      = "xlsx"
 )
 
 // The deletion rules of a dataset (ingestion.md 3.1); the slice has the first and the last.
@@ -41,6 +42,8 @@ type Dataset struct {
 	NaturalKey  []string `json:"natural_key"`
 	Deletion    string   `json:"deletion,omitempty"`
 	Columns     []Column `json:"columns"`
+	// Sheet says which sheet of a workbook the dataset is and how its rows are laid out. Only the xlsx parser has it.
+	Sheet *SheetOptions `json:"sheet,omitempty"`
 }
 
 // Source is a place data comes from (ingestion.md 3.1) with the datasets it gives.
@@ -50,6 +53,8 @@ type Source struct {
 	Adapter   string    `json:"adapter"`
 	Collector string    `json:"collector,omitempty"`
 	Datasets  []Dataset `json:"datasets"`
+	// Limits are the safety limits of the readers of workbook files; an unset one is the default.
+	Limits *Limits `json:"limits,omitempty"`
 }
 
 // decodeStrict reads one JSON document and refuses a field it does not know: a misspelt field of a definition
@@ -89,6 +94,9 @@ func (s Source) normalized() (Source, error) {
 	}
 	if s.Collector == "" {
 		s.Collector = "in_product"
+	}
+	if err := s.Limits.check(s.ID); err != nil {
+		return Source{}, err
 	}
 	if len(s.Datasets) == 0 {
 		return Source{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s has no dataset", s.ID)
@@ -131,6 +139,9 @@ func (d Dataset) normalized(source string) (Dataset, error) {
 	if err != nil {
 		return d, err
 	}
+	if d.Sheet, err = d.Sheet.normalized(d.Parser, where); err != nil {
+		return d, err
+	}
 	if len(d.NaturalKey) == 0 {
 		return d, kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key is empty, so the order of the rows would decide the result", where)
 	}
@@ -147,8 +158,8 @@ func (d Dataset) checkSupported(where string) error {
 	if d.Kind != "raw" || d.ReceiveMode != "snapshot" {
 		return kernel.Errorf(kernel.CodeUnsupported, "%s: only raw datasets received as snapshot exist in this build", where)
 	}
-	if d.Parser != ParserCSV && d.Parser != ParserJSONLines {
-		return kernel.Errorf(kernel.CodeUnsupported, "%s: parser %q is not in this build (csv, json_lines)", where, d.Parser)
+	if d.Parser != ParserCSV && d.Parser != ParserJSONLines && d.Parser != ParserXLSX {
+		return kernel.Errorf(kernel.CodeUnsupported, "%s: parser %q is not in this build (csv, json_lines, xlsx)", where, d.Parser)
 	}
 	if d.Deletion != DeletionAbsentInFull && d.Deletion != DeletionNone {
 		return kernel.Errorf(kernel.CodeUnsupported, "%s: deletion %q is not in this build", where, d.Deletion)

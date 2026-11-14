@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "2c675c3cd6092a9d"
+hash: "ebe41f7dac214c07"
 date: "2026-11-14"
-note: "용어 정리 후 다시 확인함(ADR-0034 반영)"
+note: "ADR-0040: checked; stays accurate"
 text_changed: false
-doc_hash: "05fb2a0b817b0255"
+doc_hash: "63f2152de7eb6009"

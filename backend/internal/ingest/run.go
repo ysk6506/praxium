@@ -2,6 +2,7 @@ package ingest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -37,6 +38,8 @@ type Runner struct {
 	Keys    graph.KeyProvider
 	Fetcher Fetcher
 	States  StateStore
+	// Workbooks reads the files of the datasets that have the xlsx parser; without it such a dataset cannot be run.
+	Workbooks WorkbookReader
 	// ChunkRows bounds the chunks of the batch; 0 means the default of the graph unit.
 	ChunkRows int
 }
@@ -95,6 +98,7 @@ type captured struct {
 // collect is the capture, parse and raw record steps of every dataset.
 func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report, now time.Time) (captured, error) {
 	cap := captured{keys: map[string][]string{}, dups: map[string]int{}}
+	books := map[string]*Workbook{}
 	for _, ds := range plan.Source.Datasets {
 		dr := rep.dataset(ds.ID)
 		c, err := r.Fetcher.Fetch(ctx, plan.Source.ID, ds)
@@ -110,9 +114,12 @@ func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report,
 			rep.problem(Problem{Kind: ProblemIncomplete, Dataset: ds.ID, Reason: c.Reason})
 			continue
 		}
-		table := Parse(ds, c.Data)
-		if len(table.Missing) > 0 {
-			rep.problem(Problem{Kind: ProblemShapeChanged, Dataset: ds.ID, Reason: fmt.Sprintf("the file lacks the columns %v", table.Missing)})
+		table, err := r.parse(plan, ds, c, books)
+		if err != nil {
+			return cap, err
+		}
+		if table.Reason != "" || len(table.Missing) > 0 {
+			rep.problem(Problem{Kind: ProblemShapeChanged, Dataset: ds.ID, Reason: shapeReason(table)})
 			continue
 		}
 		if err := capture(captureInput{ds, table, st, rep, dr, &cap, now}); err != nil {
@@ -140,13 +147,17 @@ func capture(in captureInput) error {
 		rep.problem(Problem{Kind: ProblemExtraColumn, Dataset: ds.ID, Reason: "the header has a column no dataset column reads: " + h})
 	}
 	for _, u := range t.Unreadable {
-		rep.problem(Problem{Kind: ProblemUnreadable, Dataset: ds.ID, Line: u.Line, Reason: u.Reason})
+		rep.problem(Problem{Kind: ProblemUnreadable, Dataset: ds.ID, Line: u.Line, Where: u.Where, Reason: u.Reason})
+	}
+	for _, c := range t.CellIssues {
+		rep.problem(Problem{Kind: c.Kind, Dataset: ds.ID, Line: c.Row, Where: c.Where, Reason: c.Reason})
 	}
 	rows, dups := dedupe(t.Rows)
 	for _, du := range dups {
-		rep.problem(Problem{Kind: ProblemDuplicateKey, Dataset: ds.ID, Key: du.Key, Line: du.Line, Reason: "a later row has the same key and is used instead"})
+		rep.problem(Problem{Kind: ProblemDuplicateKey, Dataset: ds.ID, Key: du.Key, Line: du.Line, Where: du.Where, Reason: "a later row has the same key and is used instead"})
 	}
 	dr.Applied, dr.Received, dr.Unreadable, dr.Read = true, t.Received(), len(t.Unreadable), len(t.Rows)
+	dr.Sheet, dr.SheetState, dr.HiddenRowsRead, dr.HiddenColsRead, dr.Skipped = t.Sheet, t.SheetState, t.HiddenRowsRead, t.HiddenColsRead, t.Skipped
 	cap.dups[ds.ID] = len(dups)
 	for _, row := range rows {
 		cap.keys[ds.ID] = append(cap.keys[ds.ID], row.Key)
@@ -184,4 +195,49 @@ func (d *derivation) count(c captured) {
 			}
 		}
 	}
+}
+
+// shapeReason says why a table cannot be used: the sheet is not there, or columns are missing.
+func shapeReason(t Table) string {
+	if t.Reason != "" {
+		return t.Reason
+	}
+	return fmt.Sprintf("the file lacks the columns %v", t.Missing)
+}
+
+// parse turns a capture into a table by the parser of its dataset. A workbook is read once for all the datasets
+// that name it, so a workbook with a sheet for each dataset is unpacked once. A workbook that cannot be read, or is
+// over a safety limit, stops the run: nothing of it can be trusted, and the error says which dataset and why.
+func (r Runner) parse(plan *Plan, ds Dataset, c Capture, books map[string]*Workbook) (Table, error) {
+	if ds.Parser != ParserXLSX {
+		return Parse(ds, c.Data), nil
+	}
+	wb, ok := books[c.Hash]
+	if !ok {
+		if r.Workbooks == nil {
+			return Table{}, kernel.Errorf(kernel.CodeUnsupported, "dataset %s: this run has no reader of workbook files", ds.ID)
+		}
+		var limits Limits
+		if plan.Source.Limits != nil {
+			limits = *plan.Source.Limits
+		}
+		var err error
+		if wb, err = r.Workbooks.ReadWorkbook(c.Data, limits); err != nil {
+			return Table{}, kernel.Errorf(kernel.CodeOf(err), "dataset %s: %s", ds.ID, plainMessage(err))
+		}
+		books[c.Hash] = wb
+	}
+	return ParseSheet(ds, wb), nil
+}
+
+// plainMessage is the text of an error without the codes of the errors it wraps.
+func plainMessage(err error) string {
+	var ke *kernel.Error
+	if !errors.As(err, &ke) {
+		return err.Error()
+	}
+	if ke.Cause != nil {
+		return ke.Message + ": " + ke.Cause.Error()
+	}
+	return ke.Message
 }

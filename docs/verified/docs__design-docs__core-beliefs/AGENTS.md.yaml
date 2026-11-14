@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "fa9e781adcc395b9"
+hash: "06b823911173696c"
 date: "2026-11-14"
-note: "AGENTS.md의 데모 모드 예시 문장을 다듬었다. 핵심 신념과 충돌하지 않는다"
+note: "ADR-0040: checked; stays accurate"
 text_changed: false
 doc_hash: "04b2f4f490642c38"
