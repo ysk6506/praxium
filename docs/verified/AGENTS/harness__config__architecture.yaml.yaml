@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "b9845e89beefebcf"
+hash: "112f87e356acf73e"
 date: "2026-11-14"
-note: "architecture.yaml gained adapter.pgstore and lib/pq beside the ingest units; AGENTS text unchanged and still correct"
-text_changed: true
+note: "파일 스토어(ADR-0034, REQ-271~274)와 새 유닛 adapter.filejournal을 반영해 다시 읽고 확인함"
+text_changed: false
 doc_hash: "388cb5a3fb37da85"

@@ -237,6 +237,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestADevelopmentServerOnTheFileStoreKeepsTheKGAcrossRestarts": {
+   "kind": "test",
+   "hash": "61bb1ead88f29c3d",
+   "asserts": 11,
+   "literals": [
+    "dc86b4292b8f5b63"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-260",
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerRefusesATruthFileItCannotLoad": {
    "kind": "test",
    "hash": "f6e7e8db7a9bc164",
@@ -280,6 +296,36 @@
     "REQ-260"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAFileStoreAfterAKillAndACutRecord": {
+   "kind": "test",
+   "hash": "cb981f4f5f59bd8d",
+   "asserts": 11,
+   "literals": [
+    "c89b0ec43eabe25a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAFileStoreKeepsItsKGInARealFolder": {
+   "kind": "test",
+   "hash": "13a8d4ebe33c3028",
+   "asserts": 9,
+   "literals": [
+    "3f9be09564049521"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestApiRoutesAndListenFailuresAreReported": {
@@ -385,6 +431,21 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
+   "kind": "test",
+   "hash": "25b25c5d1b2f841b",
+   "asserts": 9,
+   "literals": [
+    "e961a3323ca7d704"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestATruthFileTheEnvironmentCannotReadStopsTheLoad": {
@@ -618,6 +679,81 @@
     "REQ-245"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheDefaultStoreStaysInMemory": {
+   "kind": "test",
+   "hash": "536a079dacf49d08",
+   "asserts": 1,
+   "literals": [
+    "bd7bf9fed714e7d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheFileDiskDoesWhatTheJournalAsks": {
+   "kind": "test",
+   "hash": "889f366b1eea7cf7",
+   "asserts": 21,
+   "literals": [
+    "4c816497cdd54d7d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheFileStoreFlagsAreChecked": {
+   "kind": "test",
+   "hash": "7d7f804e33151839",
+   "asserts": 2,
+   "literals": [
+    "4fd70ca289432492"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheLockOfADataFolder": {
+   "kind": "test",
+   "hash": "b7c9cfb6dd01930d",
+   "asserts": 10,
+   "literals": [
+    "189b2ea177e2874c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheRecoveryLogWarnsOnlyWhenSomethingWasLost": {
+   "kind": "test",
+   "hash": "9a75923e405ecd0a",
+   "asserts": 2,
+   "literals": [
+    "1c4f5809b4d42049"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestTheStoreFlagsAreCheckedAndTheDSNNeverShows": {
@@ -1360,6 +1496,246 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/filejournal::TestADamagedNewestSnapshotIsReplacedByTheOneBeforeIt": {
+   "kind": "test",
+   "hash": "c2fa086e3577d7bc",
+   "asserts": 6,
+   "literals": [
+    "38dcd23fdaf30a17"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestAFileOfAnUnknownVersionIsNotOpened": {
+   "kind": "test",
+   "hash": "08c60edf6c6f8f14",
+   "asserts": 3,
+   "literals": [
+    "381c1361d97a4fb2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestARecordOutOfPlaceAndAMissingSegmentAreDamage": {
+   "kind": "test",
+   "hash": "c10dae9c420317a4",
+   "asserts": 7,
+   "literals": [
+    "01ea94a0fefbef32"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestAStoreReopenedOnTheSameFolderIsTheSameStore": {
+   "kind": "test",
+   "hash": "4a07417fa2d4d8a0",
+   "asserts": 4,
+   "literals": [
+    "5f678baee825895f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestAStoreThatWasNotClosedIsReadBackFromTheLog": {
+   "kind": "test",
+   "hash": "8fe5f4e26c9245f5",
+   "asserts": 6,
+   "literals": [
+    "c1cbf04ccd1a39ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestDamageInTheMiddleOfTheLogStopsRecovery": {
+   "kind": "test",
+   "hash": "e8c8308c1712d580",
+   "asserts": 3,
+   "literals": [
+    "b96bcf76ee2e6feb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestFileStorePassesTheSuite": {
+   "kind": "test",
+   "hash": "2e7c9b6a9a9fa1dd",
+   "asserts": 1,
+   "literals": [
+    "f73f52aab85a899a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestJournalRefusesWritesAfterAFailure": {
+   "kind": "test",
+   "hash": "981d549a0ce0ba2d",
+   "asserts": 8,
+   "literals": [
+    "a273446c30c860d5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestLeftoversAreRemovedAndCodesHaveMeanings": {
+   "kind": "test",
+   "hash": "c9b711904886fa71",
+   "asserts": 6,
+   "literals": [
+    "c293aaed1f23b423"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestNoiseAfterTheLastRecordIsDroppedAndTheLogGoesOn": {
+   "kind": "test",
+   "hash": "f1a096ee3faa0fe7",
+   "asserts": 8,
+   "literals": [
+    "ab93b075637ba584"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestPowerCutAtEveryOperation": {
+   "kind": "test",
+   "hash": "ea73ced1cab3395b",
+   "asserts": 4,
+   "literals": [
+    "403ac0cccdba2c0d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestTheFolderOpensInOneJournalAtATime": {
+   "kind": "test",
+   "hash": "7e94f3dad78faf5b",
+   "asserts": 6,
+   "literals": [
+    "b5ed17959c777d16"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestTheJournalRefusesCallsOutOfOrder": {
+   "kind": "test",
+   "hash": "46d46b8bdf909165",
+   "asserts": 13,
+   "literals": [
+    "e80ffcc87ace606d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestTheStoreAfterAPowerCutHoldsEveryAnsweredWrite": {
+   "kind": "test",
+   "hash": "cb440e088006a125",
+   "asserts": 5,
+   "literals": [
+    "81521ad96e59f819"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestWithNoWholeSnapshotAndAGapInTheLogRecoveryStops": {
+   "kind": "test",
+   "hash": "16da4a62edf2d470",
+   "asserts": 3,
+   "literals": [
+    "0767162866b185c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/filejournal::TestWriteCutAtEveryByte": {
+   "kind": "test",
+   "hash": "55c418f7ee9f23b4",
+   "asserts": 4,
+   "literals": [
+    "d335469084f7f61d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/filesource::TestDatasetWithoutFileIsNotCollected": {
    "kind": "test",
@@ -3256,6 +3632,66 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/memstore::TestAChunkThatCannotBeWrittenOrReadIsRefused": {
+   "kind": "test",
+   "hash": "bb7c29ae3fbc60cf",
+   "asserts": 4,
+   "literals": [
+    "866d8b3b15549be8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAFailedAppendLeavesTheStoreAsItWasAndShutsItToWrites": {
+   "kind": "test",
+   "hash": "d3c4c5c8edf60380",
+   "asserts": 9,
+   "literals": [
+    "bc6f70bf028d7f2c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-272"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAFailedSnapshotLeavesTheWritesWorking": {
+   "kind": "test",
+   "hash": "f283d3cced5df9ea",
+   "asserts": 8,
+   "literals": [
+    "f055e92c659cf83f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAJournaledStoreComesBackAsItWas": {
+   "kind": "test",
+   "hash": "fb84742f4ad99015",
+   "asserts": 9,
+   "literals": [
+    "4c433562366590ef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestAnAbandonedApplyGoesAndItsNumbersComeBack": {
    "kind": "test",
    "hash": "b89350ee63da9043",
@@ -3287,6 +3723,21 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/memstore::TestARecoveredStoreTakesMoreWork": {
+   "kind": "test",
+   "hash": "f8af6370a34ec21f",
+   "asserts": 8,
+   "literals": [
+    "4501624f9648cdcb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestARestoreRaisesTheGenerationAndCutsLaterRows": {
    "kind": "test",
    "hash": "f1e692dcbcbb9eed",
@@ -3301,6 +3752,36 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/memstore::TestASnapshotWhoseWriterFailsIsAnError": {
+   "kind": "test",
+   "hash": "82b93adbddeb732d",
+   "asserts": 3,
+   "literals": [
+    "cee7f7c6b15fb85e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-274"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestAStoreWithoutAJournalIsUnchanged": {
+   "kind": "test",
+   "hash": "57c23ac84b7a8d1d",
+   "asserts": 2,
+   "literals": [
+    "ce12430bc28344f6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/memstore::TestIdentifiersOfListsTheLiveIdentifiersOfOneObject": {
    "kind": "test",
@@ -3317,6 +3798,36 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/memstore::TestIdentityEventsSurviveTheWire": {
+   "kind": "test",
+   "hash": "5a28a5d6150e30f0",
+   "asserts": 3,
+   "literals": [
+    "26010cef31887915"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/memstore::TestRecordsAndSnapshotsThatMakeNoSenseAreRefused": {
+   "kind": "test",
+   "hash": "9cd82b48244ccfd5",
+   "asserts": 26,
+   "literals": [
+    "9348075b32830076"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-273"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestTheCatalogAndLeaseRefuseBadInput": {
    "kind": "test",
    "hash": "4c1e7440fed2b3b6",
@@ -3332,6 +3843,21 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/memstore::TestValuesRoundTripInTheirOwnForm": {
+   "kind": "test",
+   "hash": "e4f81b302cda9d03",
+   "asserts": 5,
+   "literals": [
+    "be6b2bd0391d88e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-271"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
   },
   "go:backend/internal/memstore::TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead": {
    "kind": "test",

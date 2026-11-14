@@ -49,6 +49,8 @@ type Store struct {
 	kgs     map[graph.KGID]*kgState
 	created []graph.KGID
 	changed chan struct{}
+	// journal is the journal of a store opened with Open; nil for a store that lives in memory only.
+	journal
 }
 
 var _ graph.Store = (*Store)(nil)
@@ -95,25 +97,51 @@ func (st *kgState) rebuild() {
 func (s *Store) CreateKG(_ context.Context, kg graph.KG) (graph.KG, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
-		return graph.KG{}, kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
+	kg, err := s.createKG(kg, true)
+	if err == nil {
+		s.maybeCheckpoint()
+	}
+	return kg, err
+}
+
+// createKG checks and adds a KG; log says whether the journal gets a record first (a replay does not).
+func (s *Store) createKG(kg graph.KG, log bool) (graph.KG, error) {
+	if err := s.checkNewKG(kg); err != nil {
+		return graph.KG{}, err
 	}
 	if kg.State == "" {
 		kg.State = graph.StateBuilding
 	}
+	kg.Generation = 1
+	if log {
+		if err := s.persist(kindCreateKG, wCreate{KG: wireKG(kg)}); err != nil {
+			return graph.KG{}, err
+		}
+	}
+	s.kgs[kg.ID] = newState(kg)
+	s.created = append(s.created, kg.ID)
+	return kg, nil
+}
+
+// checkNewKG refuses a KG that is incomplete or conflicts with one that exists.
+func (s *Store) checkNewKG(kg graph.KG) error {
+	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
+		return kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
+	}
 	for _, other := range s.kgs {
 		if other.kg.ID == kg.ID || other.kg.Name == kg.Name || kg.Name == graph.MainAlias ||
 			(kg.Role == graph.RoleProduction && other.kg.Role == graph.RoleProduction) {
-			return graph.KG{}, kernel.Errorf(kernel.CodeConflict, "KG %q conflicts with one that exists", kg.Name)
+			return kernel.Errorf(kernel.CodeConflict, "KG %q conflicts with one that exists", kg.Name)
 		}
 	}
-	kg.Generation = 1
-	s.kgs[kg.ID] = &kgState{kg: kg, head: graph.Head{KG: kg.ID},
+	return nil
+}
+
+func newState(kg graph.KG) *kgState {
+	return &kgState{kg: kg, head: graph.Head{KG: kg.ID},
 		objects: map[graph.ObjectID][]graph.ObjectRow{}, links: map[graph.LinkID][]graph.LinkRow{},
 		byObject: map[graph.ObjectID]map[graph.LinkID]bool{}, volatile: map[volKey]graph.VolatileRow{},
 		entries: map[int64][]graph.ChangeEntry{}, gens: []graph.GenerationEvent{{Generation: 1, At: kg.CreatedAt}}}
-	s.created = append(s.created, kg.ID)
-	return kg, nil
 }
 
 // GetKG implements graph.Catalog.

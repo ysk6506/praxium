@@ -59,6 +59,8 @@ go:
     # Adapters sit outside the core and never import each other: only the composition root joins them.
     # The file adapter: reads the bytes of a file into a capture; the operating system is reached through an opener the composition root gives (ADR-0033).
     adapter.filesource: {path: backend/internal/filesource, may_import: [core.kernel, core.ingest]}
+    # The file journal of the built-in file store (ADR-0034): an append-only log and snapshots in one data folder, reached through a Disk interface that the composition root implements. It meets the in-memory store only through method signatures, never by import; its tests run the conformance suite on a store with this journal.
+    adapter.filejournal: {path: backend/internal/filejournal, may_import: [core.kernel], test_may_import: [core.graph, adapter.graphcheck, adapter.memstore]}
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}

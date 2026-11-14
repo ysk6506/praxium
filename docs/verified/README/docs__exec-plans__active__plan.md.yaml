@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "8633716ed44e3d3b"
+hash: "2c675c3cd6092a9d"
 date: "2026-11-14"
-note: "code list holds both ingest and pgstore; plan.md row 7 lists both"
-text_changed: true
+note: "용어 정리 후 다시 확인함(ADR-0034 반영)"
+text_changed: false
 doc_hash: "05fb2a0b817b0255"

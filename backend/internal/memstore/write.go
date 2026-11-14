@@ -9,7 +9,8 @@ import (
 )
 
 // ApplyChunk implements graph.Writer. The whole call is atomic: the checks run
-// before the first row moves.
+// before the first row moves, and with a journal the chunk is on stable storage
+// before it is applied.
 func (s *Store) ApplyChunk(_ context.Context, w graph.ChunkWrite) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -20,26 +21,50 @@ func (s *Store) ApplyChunk(_ context.Context, w graph.ChunkWrite) error {
 	if err := st.guard(w.Generation, w.ExpectedSeq, w.Lease, w.Now); err != nil {
 		return err
 	}
+	seq, err := st.checkChunk(w)
+	if err != nil {
+		return err
+	}
+	if s.j != nil {
+		wire, err := toWireChunk(w)
+		if err != nil {
+			return err
+		}
+		if err := s.persist(kindChunk, wire); err != nil {
+			return err
+		}
+	}
+	st.commitChunk(w, seq)
+	s.notify()
+	s.maybeCheckpoint()
+	return nil
+}
+
+// checkChunk runs the checks of a chunk that need the state only (not the lease) and returns its change number.
+func (st *kgState) checkChunk(w graph.ChunkWrite) (int64, error) {
 	seq := int64(0)
 	if w.Batch != nil {
 		seq = w.Batch.Seq
 		if seq != st.head.AppliedSeq+1 || w.Head.AppliedSeq != seq {
-			return kernel.Errorf(graph.CodeHeadMoved, "chunk %d does not follow applied_seq %d", seq, st.head.AppliedSeq)
+			return 0, kernel.Errorf(graph.CodeHeadMoved, "chunk %d does not follow applied_seq %d", seq, st.head.AppliedSeq)
 		}
 	} else if w.Head.AppliedSeq != st.head.AppliedSeq {
-		return kernel.Errorf(graph.CodeHeadMoved, "a chunk without rows may not move applied_seq")
+		return 0, kernel.Errorf(graph.CodeHeadMoved, "a chunk without rows may not move applied_seq")
 	}
-	if err := st.checkClosings(w, seq); err != nil {
-		return err
-	}
+	return seq, st.checkClosings(w, seq)
+}
+
+// commitChunk moves the rows and the head. The checks have passed.
+func (st *kgState) commitChunk(w graph.ChunkWrite, seq int64) {
 	st.applyRows(w, seq)
 	st.head = w.Head.Clone()
+	if w.Batch != nil && w.Batch.Attempt > st.attempt {
+		st.attempt = w.Batch.Attempt
+	}
 	if w.Serve {
 		st.kg.State = graph.StateServing
 	}
 	st.rebuild()
-	s.notify()
-	return nil
 }
 
 // checkClosings verifies that every row the chunk closes is open and is the
@@ -152,10 +177,18 @@ func (s *Store) AbandonApply(_ context.Context, w graph.AbandonWrite) error {
 	if w.Head.AppliedSeq != st.head.ReadableThrough {
 		return kernel.Errorf(kernel.CodeInvalidValue, "an abandoned apply goes back to readable_through %d", st.head.ReadableThrough)
 	}
-	st.truncate(st.head.ReadableThrough)
-	st.head = w.Head.Clone()
-	st.rebuild()
+	if err := s.persist(kindAbandon, wAbandon{KG: w.KG.String(), Head: wireHead(w.Head)}); err != nil {
+		return err
+	}
+	st.abandon(w.Head)
+	s.maybeCheckpoint()
 	return nil
+}
+
+func (st *kgState) abandon(head graph.Head) {
+	st.truncate(st.head.ReadableThrough)
+	st.head = head.Clone()
+	st.rebuild()
 }
 
 // Seal implements graph.Writer.
@@ -169,16 +202,31 @@ func (s *Store) Seal(_ context.Context, w graph.SealWrite) error {
 	if err := st.guard(w.Generation, w.ExpectedSeq, w.Lease, w.Now); err != nil {
 		return err
 	}
+	if err := st.checkSeal(w.Version); err != nil {
+		return err
+	}
+	if err := s.persist(kindSeal, wSeal{KG: w.KG.String(), Version: wireVersion(w.Version), Order: w.Order, Head: wireHead(w.Head)}); err != nil {
+		return err
+	}
+	st.seal(w.Version, w.Order, w.Head)
+	s.maybeCheckpoint()
+	return nil
+}
+
+func (st *kgState) checkSeal(v graph.Version) error {
 	if st.head.AppliedSeq != st.head.ReadableThrough || st.head.Open() {
 		return kernel.Errorf(graph.CodeSealNotReady, "applied_seq %d, readable_through %d", st.head.AppliedSeq, st.head.ReadableThrough)
 	}
-	if w.Version.No != len(st.versions)+1 || w.Version.SealedSeq != st.head.ReadableThrough {
-		return kernel.Errorf(kernel.CodeInvalidValue, "version %d at %d does not follow the %d sealed versions", w.Version.No, w.Version.SealedSeq, len(st.versions))
+	if v.No != len(st.versions)+1 || v.SealedSeq != st.head.ReadableThrough {
+		return kernel.Errorf(kernel.CodeInvalidValue, "version %d at %d does not follow the %d sealed versions", v.No, v.SealedSeq, len(st.versions))
 	}
-	st.versions = append(st.versions, cloneVersion(w.Version))
-	st.order = append(st.order, w.Order)
-	st.head = w.Head.Clone()
 	return nil
+}
+
+func (st *kgState) seal(v graph.Version, order graph.OrderEvent, head graph.Head) {
+	st.versions = append(st.versions, cloneVersion(v))
+	st.order = append(st.order, order)
+	st.head = head.Clone()
 }
 
 // Restore implements graph.Catalog.
@@ -192,6 +240,16 @@ func (s *Store) Restore(_ context.Context, id graph.KGID, toSeq int64, head grap
 	if toSeq < 0 || toSeq > st.head.ReadableThrough {
 		return graph.KG{}, kernel.Errorf(graph.CodeNotReadable, "cannot restore to %d", toSeq)
 	}
+	if err := s.persist(kindRestore, wRestore{KG: id.String(), ToSeq: toSeq, Head: wireHead(head), Now: now}); err != nil {
+		return graph.KG{}, err
+	}
+	st.restore(toSeq, head, now)
+	s.notify()
+	s.maybeCheckpoint()
+	return st.kg, nil
+}
+
+func (st *kgState) restore(toSeq int64, head graph.Head, now time.Time) {
 	st.truncate(toSeq)
 	kept := st.order[:0]
 	for _, e := range st.order {
@@ -211,8 +269,6 @@ func (s *Store) Restore(_ context.Context, id graph.KGID, toSeq int64, head grap
 	st.gens = append(st.gens, graph.GenerationEvent{Generation: st.kg.Generation, RestoredTo: toSeq, At: now})
 	st.head = head.Clone()
 	st.rebuild()
-	s.notify()
-	return st.kg, nil
 }
 
 // truncate removes every row that began after seq and reopens the rows that
