@@ -50,7 +50,7 @@ amends_tests:
   - go:backend/internal/httpapi::TestWithoutAnAuthenticatorOnlyTheOpenRoutesAnswer
   - go:backend/internal/pgstore::TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited
 test_change_reason: 운영 모드가 시작하게 되어 늘 거부한다는 단언이 틀려졌고, 계약에 경로가 더해져 경로마다 쓰는 표본과 역할 단언이 달라져야 하며, 마이그레이션이 하나 더 생겨 단계의 번호와 개수를 고정값으로 쓴 테스트가 틀려졌다. 어느 단언도 약해지지 않았다.
-decision_hash: d9aab8343af5b9ad
+decision_hash: cccb82d2b99096cc
 ---
 # ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건
 

@@ -8668,7 +8668,7 @@
   },
   "go:backend/internal/httpapi::TestACallWhoseFirstTryIsStillRunningIsRefusedNotRepeated": {
    "kind": "test",
-   "hash": "c3da59d89b03e22d",
+   "hash": "d9ec216d1edabfc6",
    "asserts": 3,
    "literals": [
     "b1f350662143a0e2"
@@ -8713,7 +8713,7 @@
   },
   "go:backend/internal/httpapi::TestAFailingDirectoryIsAnOutageThatShowsNothingOfTheStore": {
    "kind": "test",
-   "hash": "d27968cfd0aaa5f6",
+   "hash": "1662c1d12b9b4ab8",
    "asserts": 2,
    "literals": [
     "db56943a2138a05f"
@@ -8741,12 +8741,12 @@
    "added": "2026-11-13",
    "amended_by": "0027-reading-the-kg-through-the-api-and-the-command-line.md"
   },
-  "go:backend/internal/httpapi::TestAMissingTokenIsNotCountedAndASuccessIsReported": {
+  "go:backend/internal/httpapi::TestAMissingTokenIsNotCounted": {
    "kind": "test",
-   "hash": "b22d11f8b494d724",
-   "asserts": 3,
+   "hash": "0a3c4e93b94d1a17",
+   "asserts": 2,
    "literals": [
-    "cb577fcf76150fca"
+    "6d323a13d7f63a5c"
    ],
    "precision": [],
    "skips": 0,
@@ -8758,7 +8758,7 @@
   },
   "go:backend/internal/httpapi::TestAnAdministratorManagesUsersAndTheAnswersFitTheContract": {
    "kind": "test",
-   "hash": "cd896f89d1a32cd8",
+   "hash": "4c2248a3380b07fb",
    "asserts": 19,
    "literals": [
     "2cb0ef92078d925b"
@@ -8773,7 +8773,7 @@
   },
   "go:backend/internal/httpapi::TestAnAuthenticatorThatCannotAnswerIsAnOutageNotARefusal": {
    "kind": "test",
-   "hash": "24b06e7cdf48d3bf",
+   "hash": "df53c3faa6911442",
    "asserts": 5,
    "literals": [
     "fcea6baefb340575"
@@ -8788,7 +8788,7 @@
   },
   "go:backend/internal/httpapi::TestANewTokenIsInOneAnswerOnlyAndItsKeyCannotBeUsedAgain": {
    "kind": "test",
-   "hash": "1d849df1e23a99f0",
+   "hash": "57588d710397760b",
    "asserts": 10,
    "literals": [
     "f1cf808b96fd0a68"
@@ -8818,7 +8818,7 @@
   },
   "go:backend/internal/httpapi::TestAnotherTokenIsShownToItsOwnerAndToAnAdministratorOnly": {
    "kind": "test",
-   "hash": "fc4f4ed867e5a1a0",
+   "hash": "2a6bb8e519667b59",
    "asserts": 7,
    "literals": [
     "7c3b5e93c226c253"
@@ -8833,7 +8833,7 @@
   },
   "go:backend/internal/httpapi::TestAnOwnerSeesAndRevokesOnlyItsOwnTokensAndARevokedTokenIsRefusedAtOnce": {
    "kind": "test",
-   "hash": "f9e4170b4ccbe16d",
+   "hash": "4e372fba8a21ee2b",
    "asserts": 10,
    "literals": [
     "c36aabde055f4cd0"
@@ -8848,10 +8848,10 @@
   },
   "go:backend/internal/httpapi::TestARefusedTokenIsLoggedWithoutItAndAFailingCallerIsBlocked": {
    "kind": "test",
-   "hash": "507d5f0d51f90a20",
-   "asserts": 7,
+   "hash": "cecaf45de1175a56",
+   "asserts": 10,
    "literals": [
-    "f7b639426ff9565d"
+    "7eccb1a139978858"
    ],
    "precision": [],
    "skips": 0,
@@ -8893,7 +8893,7 @@
   },
   "go:backend/internal/httpapi::TestBadRequestsToTheManagementRoutesAreRefusedWithAProblem": {
    "kind": "test",
-   "hash": "a27714f73d7ba4d6",
+   "hash": "63b75d7008216fcd",
    "asserts": 3,
    "literals": [
     "8ee9c4fe981c9ca6"
@@ -8908,7 +8908,7 @@
   },
   "go:backend/internal/httpapi::TestBehindAProxyTheLastForwardedAddressIsTheCaller": {
    "kind": "test",
-   "hash": "452f000355788b32",
+   "hash": "54e085af9132db8c",
    "asserts": 4,
    "literals": [
     "98721ef83f7d1b89"
@@ -8968,7 +8968,7 @@
   },
   "go:backend/internal/httpapi::TestCreatingAndActingCallsNeedAWellFormedIdempotencyKey": {
    "kind": "test",
-   "hash": "6c32fa255631c989",
+   "hash": "1e1caeecca9d0fe1",
    "asserts": 3,
    "literals": [
     "950acc7aa43998a6"
@@ -9388,7 +9388,7 @@
   },
   "go:backend/internal/httpapi::TestTheCurrentTokenSaysWhoIsCalling": {
    "kind": "test",
-   "hash": "7ec5444b305ee7fc",
+   "hash": "52adfa34f1cf57c4",
    "asserts": 5,
    "literals": [
     "b2377d2f4fac82ac"
@@ -9851,12 +9851,12 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/identity::TestOnlyFailuresInARowWithinTheWindowCountAndAGoodTokenClearsThem": {
+  "go:backend/internal/identity::TestOnlyFailuresWithinTheWindowCountAndTheyRunOutByTime": {
    "kind": "test",
-   "hash": "bf71504f4b407019",
-   "asserts": 4,
+   "hash": "01d9e769d0284aa0",
+   "asserts": 5,
    "literals": [
-    "5e4aa25d804b2bf8"
+    "1d2799b17c15c039"
    ],
    "precision": [],
    "skips": 0,

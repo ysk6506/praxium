@@ -1,7 +1,7 @@
 doc: "docs/guides/operate-the-server.md"
 target: "docs/design-docs/adr/0044-built-in-authentication-with-access-tokens.md"
-hash: "d9aab8343af5b9ad"
+hash: "cccb82d2b99096cc"
 date: "2026-11-14"
-note: "내장 인증(ADR-0044): 새 유닛 3개, 요구사항 REQ-307~314, 계획의 경로 수를 확인했고 이 문서의 내용과 어긋나지 않는다"
+note: "병합과 속도 제한 변경 뒤 확인: 내용이 어긋나지 않는다"
 text_changed: true
-doc_hash: "2cea3c3ab86c4258"
+doc_hash: "08e59ca86b135fef"

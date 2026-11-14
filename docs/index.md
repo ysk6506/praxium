@@ -66,6 +66,7 @@ covers:
 - [프락시움 자신의 관측성과 운영 가능성 — 신호, 진단, 운영 액션, 권한과 기록](design-docs/self-observability.md)
 - [표준 모델의 요약 — 9개 층의 타입, 링크, 액션](design-docs/standard-model.md)
 - [임시 콘솔 — 클로즈드 베타까지 기능을 눌러 보는, 삭제 쉬운 테스트용 화면](design-docs/temporary-console.md)
+- [웹 UI 규칙 — 임시 콘솔의 화면 코드를 짤 때 지키는 것](design-docs/web-ui-rules.md)
 - [합성 세계 생성기 — 같은 시드이면 같은 데이터센터, 정답과 소스 보기와 변경 스트림과 분포 프로파일](design-docs/worldgen.md)
 
 ### 안내

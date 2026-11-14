@@ -40,7 +40,7 @@
 | [ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다 — 드라이버 lib/pq, 직접 만든 마이그레이션 실행기, 진짜 서버로 하는 테스트](../design-docs/adr/0032-postgresql-adapter-closes-the-storage-port-and-td-0011.md) | 유효 |  |
 | [ADR-0033 파일 소스 하나를 KG까지 적재하는 수집의 최소 구현](../design-docs/adr/0033-ingestion-vertical-slice-from-a-file-source.md) | 유효 | 일부 수정: [0041](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) (ingest run의 스토리지가 명령이 도는 동안만 있다는 결과) |
 | [ADR-0034 내장 파일 스토어 — 추가 전용 로그와 스냅샷으로 PostgreSQL 없이 KG를 저장한다](../design-docs/adr/0034-built-in-file-store-for-the-first-run.md) | 유효 |  |
-| [ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) | 유효 |  |
+| [ADR-0035 임시 콘솔을 apps/web의 웹 UI로 만들고 실행 파일에 담아 제공한다](../design-docs/adr/0035-web-ui-in-apps-web-embedded-in-the-program.md) | 유효 | 일부 수정: [0045](../design-docs/adr/0045-web-ui-rules-from-the-chrome-web-guidance.md) (6번 검사 표(WEB040~WEB045를 더함)와 2번의 응답 헤더(CSP 항목과 두 헤더를 더함)) |
 | [ADR-0036 임시 디렉터리는 만든 쪽이 지운다](../design-docs/adr/0036-whoever-makes-a-temporary-directory-removes-it.md) | 유효 |  |
 | [ADR-0037 목표 문장을 쉬운 말로 다시 쓰고, README를 제품의 첫 화면으로 다룬다](../design-docs/adr/0037-goal-sentence-in-plain-words-and-readme-as-first-screen.md) | 유효 |  |
 | [ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다](../design-docs/adr/0038-demo-mode-as-a-supported-feature.md) | 유효 | 일부 수정: [0042](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) (5번과 6번의 접속 링크 처리(첫 로드에서만 받던 것을 실행 중에도 받고, 로컬 모드 링크와 접속 표시를 더함)) |
@@ -49,5 +49,6 @@
 | [ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기](../design-docs/adr/0041-cli-usability-local-mode-and-keeping-ingestion-results.md) | 유효 | 일부 수정: [0046](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) (ingest init의 CSV 예제가 합격 테스트의 샘플 파일과 같다는 결정) |
 | [ADR-0042 웹 UI의 접속 방식 표시, URL에 담는 상태, 오류 표시, 표시 이름 사전](../design-docs/adr/0042-web-ui-access-modes-url-state-errors-and-display-names.md) | 유효 |  |
 | [ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건](../design-docs/adr/0044-built-in-authentication-with-access-tokens.md) | 유효 |  |
+| [ADR-0045 웹 UI 규칙을 Chrome 팀의 웹 가이드에서 추려 문서와 검사로 둔다](../design-docs/adr/0045-web-ui-rules-from-the-chrome-web-guidance.md) | 유효 |  |
 | [ADR-0046 자기 파일을 처음 수집할 때 조용히 틀리지 않는다 — 없는 시트와 컬럼, 키 오류, 인코딩, 구분자, 정의 초안](../design-docs/adr/0046-ingestion-usability-from-the-first-own-file.md) | 유효 |  |
 | [ADR-0047 릴리스를 수동 실행으로도 낸다 — 버전과 커밋을 입력받아 태그와 릴리스를 함께 만든다](../design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md) | 유효 |  |
