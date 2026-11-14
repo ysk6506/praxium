@@ -3,7 +3,6 @@ package ingest
 import (
 	"context"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -119,7 +118,9 @@ func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report,
 			return cap, err
 		}
 		if table.Reason != "" || len(table.Missing) > 0 {
-			rep.problem(Problem{Kind: ProblemShapeChanged, Dataset: ds.ID, Reason: shapeReason(table)})
+			reason := shapeReason(table)
+			dr.NotRead = reason
+			rep.problem(Problem{Kind: ProblemShapeChanged, Dataset: ds.ID, Reason: reason})
 			continue
 		}
 		if err := capture(captureInput{ds, table, st, rep, dr, &cap, now}); err != nil {
@@ -144,10 +145,13 @@ type captureInput struct {
 func capture(in captureInput) error {
 	ds, t, st, rep, dr, cap, now := in.ds, in.t, in.st, in.rep, in.dr, in.cap, in.now
 	for _, h := range t.Extra {
+		if ds.IgnoreUndeclaredColumns {
+			break
+		}
 		rep.problem(Problem{Kind: ProblemExtraColumn, Dataset: ds.ID, Reason: "the header has a column no dataset column reads: " + h})
 	}
 	for _, u := range t.Unreadable {
-		rep.problem(Problem{Kind: ProblemUnreadable, Dataset: ds.ID, Line: u.Line, Where: u.Where, Reason: u.Reason})
+		rep.problem(Problem{Kind: ProblemUnreadable, Dataset: ds.ID, Line: u.Line, Where: u.Where, Reason: unreadableReason(u)})
 	}
 	for _, c := range t.CellIssues {
 		rep.problem(Problem{Kind: c.Kind, Dataset: ds.ID, Line: c.Row, Where: c.Where, Reason: c.Reason})
@@ -197,19 +201,14 @@ func (d *derivation) count(c captured) {
 	}
 }
 
-// shapeReason says why a table cannot be used: the sheet is not there, or columns are missing.
-func shapeReason(t Table) string {
-	if t.Reason != "" {
-		return t.Reason
-	}
-	return fmt.Sprintf("the file lacks the columns %v", t.Missing)
-}
-
 // parse turns a capture into a table by the parser of its dataset. A workbook is read once for all the datasets
 // that name it, so a workbook with a sheet for each dataset is unpacked once. A workbook that cannot be read, or is
 // over a safety limit, stops the run: nothing of it can be trusted, and the error says which dataset and why.
 func (r Runner) parse(plan *Plan, ds Dataset, c Capture, books map[string]*Workbook) (Table, error) {
 	if ds.Parser != ParserXLSX {
+		if err := CheckEncoding(c.Data, ds.Parser); err != nil {
+			return Table{}, kernel.Errorf(kernel.CodeInvalidValue, "dataset %s: %s", ds.ID, plainMessage(err))
+		}
 		return Parse(ds, c.Data), nil
 	}
 	wb, ok := books[c.Hash]

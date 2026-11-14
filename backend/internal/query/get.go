@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -210,7 +211,7 @@ func (e *Engine) resolveObject(ctx context.Context, r *read, in GetInput) (graph
 	case in.Identifier != nil:
 		scheme, ok := e.reg.IdentifierSchemeByName(in.Identifier.Scheme)
 		if !ok {
-			return graph.ObjectID{}, inputf("identifier.scheme", "no identifier scheme %q", in.Identifier.Scheme)
+			return graph.ObjectID{}, inputf("identifier.scheme", "no identifier scheme %q; the schemes are: %s", in.Identifier.Scheme, strings.Join(e.reg.IdentifierSchemeNames(), ", "))
 		}
 		recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), in.Identifier.Value)
 		if err != nil {

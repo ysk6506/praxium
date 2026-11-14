@@ -251,7 +251,7 @@ func (e *Engine) planAttr(a AttrFilter, candidates []*typeInfo, f ReadFilter) (a
 func (e *Engine) planIdentifier(ctx context.Context, r *read, p *findPlan, id IdentifierFilter) error {
 	scheme, ok := e.reg.IdentifierSchemeByName(id.Scheme)
 	if !ok {
-		return inputf("identifier.scheme", "no identifier scheme %q", id.Scheme)
+		return inputf("identifier.scheme", "no identifier scheme %q; the schemes are: %s", id.Scheme, strings.Join(e.reg.IdentifierSchemeNames(), ", "))
 	}
 	recs, err := r.snap.Identifiers(ctx, scheme.ID.String(), id.Value)
 	if err != nil {
