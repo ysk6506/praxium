@@ -91,7 +91,16 @@ export {
   useRoute,
   withParams,
 } from "./router";
-export { forwardNavigation, watchScroll } from "./scroll";
+export {
+  fallbackTitle,
+  PRODUCT,
+  ScreenReportsProvider,
+  screenKey,
+  titleOf,
+  useScreen,
+  useScreenTitle,
+} from "./screen";
+export { forwardNavigation, lastChangeWasForward, watchScroll } from "./scroll";
 export {
   createTrail,
   nextSort,

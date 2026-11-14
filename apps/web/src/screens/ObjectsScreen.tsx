@@ -21,10 +21,12 @@ import {
   shortId,
   type Trail,
   tabStorage,
+  titleOf,
   useHashParams,
   useObjectPage,
   useObjectTypeDetail,
   useRowDetails,
+  useScreenTitle,
 } from "../data";
 import {
   Button,
@@ -241,6 +243,7 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
   const { params, set } = useHashParams();
   const view = readObjectsView(params);
   const typeDetail = useObjectTypeDetail(type);
+  useScreenTitle(titleOf(`${type} 객체`, kg));
   const page = useObjectPage(kg, type, view.size, view.cursor);
   const [pickerOpen, setPickerOpen] = useState(false);
   const trail = useMemo(
