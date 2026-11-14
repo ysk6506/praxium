@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
+	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
 // attrNo is the number of an attribute of a type, by name.
@@ -391,5 +392,27 @@ func TestTheRowLimitHasADefaultLikeTheSheetsAndCannotBeNegative(t *testing.T) {
 	tab := ParseLimited(Dataset{Parser: ParserCSV, NaturalKey: []string{"a"}, Columns: []Column{{Name: "a", Paths: []string{"a"}}}}, []byte("a\n1\n2\n3\n4\n"), 2)
 	if !tab.OverRows || len(tab.Rows) > 3 {
 		t.Errorf("the reading did not stop near the limit: %d rows, over %t", len(tab.Rows), tab.OverRows)
+	}
+}
+
+// [REQ-365]
+func TestALinkIsAsCertainAsTheLowestFeedItWasMadeFrom(t *testing.T) {
+	for name, c := range map[string]struct {
+		from, to string
+		want     model.Grade
+	}{
+		"neither feed approximate": {`"id":"f_server",`, `"id":"f_rack",`, model.GradeFact},
+		"the from feed":            {`"approximate":true,"id":"f_server",`, `"id":"f_rack",`, model.GradeAssumed},
+		"the to feed":              {`"id":"f_server",`, `"approximate":true,"id":"f_rack",`, model.GradeAssumed},
+	} {
+		mp := strings.Replace(mappingJSON, `"id":"f_server",`, c.from, 1)
+		mp = strings.Replace(mp, `"id":"f_rack",`, c.to, 1)
+		r := newRig(t, sourceJSON, mp)
+		r.files["ds_racks"], r.files["ds_servers"], r.files["ds_vms"] = racksV1, serversV1, vmsV1
+		r.run()
+		links := r.linksOf("SV1")
+		if len(links) != 1 || links[0].Grade != c.want {
+			t.Errorf("%s: links %+v, want grade %s", name, links, c.want)
+		}
 	}
 }

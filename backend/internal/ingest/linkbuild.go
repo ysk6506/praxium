@@ -67,6 +67,11 @@ func (d *derivation) buildLinks() error {
 	return nil
 }
 
+// grade is the evidence grade of the links of a definition: the lowest grade of the feeds it reads, since a link is
+// no more certain than the rows it was made from (pipeline.md 5.3: the grade of a derived link is the lowest of the
+// inputs). A feed marked approximate gives assumed, so a link made from its rows is assumed too (ADR-0052).
+func (lp *linkPlan) grade() model.Grade { return model.Lowest(lp.from.grade, lp.to.grade) }
+
 func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string, targets map[string]bool) error {
 	switch len(targets) {
 	case 0:
@@ -94,7 +99,7 @@ func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string
 		return err
 	}
 	ref := d.p.Source.ID + "/" + fromDS + "/" + strings.ReplaceAll(row.Key, keySep, "|")
-	d.links[id.String()] = desiredLink{from: srcID, up: graph.LinkUpsert{Type: lp.lt.ID, Src: srcID, Dst: dstID, Grade: model.GradeFact,
+	d.links[id.String()] = desiredLink{from: srcID, up: graph.LinkUpsert{Type: lp.lt.ID, Src: srcID, Dst: dstID, Grade: lp.grade(),
 		Basis: lp.basis, SourceRefs: []string{ref}}}
 	return nil
 }
