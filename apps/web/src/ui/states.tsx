@@ -48,28 +48,43 @@ export interface ErrorStateProps {
   readonly title: string;
   readonly message: string;
   readonly hint?: string;
-  /** Facts for whoever has to look into it: code, status, trace id. */
+  /** What the server said about the cause, to be read at once: the field, its message. */
+  readonly facts?: readonly (readonly [label: string, value: string])[];
+  /** Facts for whoever has to look into it (code, status, trace id), folded under "자세히". */
   readonly details?: readonly (readonly [label: string, value: string])[];
   readonly action?: ReactNode;
 }
 
 /** The read failed. The title says what, the hint says what to do, the details are for the person who reports it. */
-export function ErrorState({ title, message, hint, details, action }: ErrorStateProps) {
+export function ErrorState({ title, message, hint, facts, details, action }: ErrorStateProps) {
   return (
     <div role="alert">
       <Frame tone="danger">
         <p className="font-semibold text-danger">{title}</p>
         <p className="max-w-prose text-sm text-fg">{message}</p>
         {hint ? <p className="max-w-prose text-sm text-muted">{hint}</p> : null}
-        {details && details.length > 0 ? (
-          <dl className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-0.5 text-xs text-muted">
-            {details.map(([label, value]) => (
-              <div key={label} className="flex gap-1">
-                <dt>{label}</dt>
-                <dd className="font-mono">{value}</dd>
+        {facts && facts.length > 0 ? (
+          <dl className="mt-1 flex max-w-prose flex-col gap-0.5 text-sm">
+            {facts.map(([label, value]) => (
+              <div key={label} className="flex flex-wrap justify-center gap-x-2">
+                <dt className="text-muted">{label}</dt>
+                <dd className="font-mono break-all">{value}</dd>
               </div>
             ))}
           </dl>
+        ) : null}
+        {details && details.length > 0 ? (
+          <details className="mt-2 max-w-full text-xs text-muted">
+            <summary className="cursor-pointer select-none">자세히</summary>
+            <dl className="mt-1 flex flex-col gap-0.5">
+              {details.map(([label, value]) => (
+                <div key={`${label}=${value}`} className="flex flex-wrap justify-center gap-x-2">
+                  <dt>{label}</dt>
+                  <dd className="font-mono break-all">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </details>
         ) : null}
         {action ? <div className="mt-3">{action}</div> : null}
       </Frame>

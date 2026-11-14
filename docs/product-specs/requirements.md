@@ -11,7 +11,7 @@ follows:
 
 ## 제품 목표 (ADR-0001, ADR-0004, ADR-0005)
 
-**실제 IT 인프라를 믿을 수 있는 지식 그래프(KG)로 만들고, 그 위에서 AI 에이전트가 수행하는 엔드투엔드(E2E) 운영 업무를 정의·위임·측정하는 오픈소스 플랫폼.**
+**IT 인프라를 믿을 수 있는 지식 그래프(KG)로 만드는 오픈소스 플랫폼. 그 위에서 AI 에이전트에게 운영 업무를 위임하고 결과를 측정하는 것이 목표다.**
 
 제품 책임자가 확인한 목표다(ADR-0004). 설계 결정은 이 목표를 기준으로 내린다.
 
@@ -272,6 +272,10 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-293 | `praxium ingest init -out <폴더>`는 실행 파일에 담긴 예제를 쓴다: CSV와 JSON Lines의 소스 정의, 매핑 정의, 샘플 파일, 엑셀의 소스 정의와 매핑 정의와 샘플 워크북(그 자리에서 만든다). 이미 있는 파일은 덮어쓰지 않고 모두 쓰거나 하나도 쓰지 않는다. 다음에 칠 명령(`ingest inspect`, `ingest run -data-dir`, `local`)을 출력한다 | ADR-0041, `backend/cmd/praxium/ingestinit_test.go` |
 | REQ-294 | `praxium local -data-dir <폴더>`는 그 폴더의 KG를 내장 파일 스토어로 열어 127.0.0.1(`-addr`)에서 API와 웹 UI를 낸다. 데모와 같은 접속 방식(실행마다 새 토큰, 프래그먼트 `#/connect?token=…&mode=local`)이고 합성 데이터를 넣지 않는다. 폴더나 KG가 없으면 먼저 `ingest run -data-dir`을 하라고 안내하며, 포트 검사와 루프백이 아닌 주소 경고는 데모와 같다. 시작 출력은 한 사람이 자기 컴퓨터에서 쓰는 용도이고 인증이 약하며 운영용이 아님을 밝힌다. 데모와 `local`의 시작은 오래 걸리면 몇 초마다 진행을 알린다 | ADR-0041, `backend/cmd/praxium/local_test.go`, `backend/cmd/praxium/help_test.go` |
 | REQ-295 | `/v1`의 응답은 `X-Content-Type-Options: nosniff`와 `Referrer-Policy: no-referrer`를 가진다(JSON 응답이라 CSP는 두지 않는다). 릴리스의 `SHA256SUMS`는 파일 이름순으로 정렬하고, 릴리스 확인 스크립트는 `local`과 `ingest init → ingest run -data-dir → local` 흐름을 확인한다 | ADR-0041, `backend/internal/httpapi/errordetail_test.go` |
+| REQ-296 | 웹 UI는 접속 방식 셋(데모 링크 `#/connect?token=…&demo=1`, 로컬 모드 링크 `…&mode=local`, 직접 입력한 개발용 토큰)을 구분해 기억한다. 접속 링크는 첫 로드뿐 아니라 열려 있는 탭의 주소가 바뀔 때도 받아 토큰을 저장하고 주소에서 지우며, 이전 토큰으로 받은 화면 상태와 데이터는 비운다. 데모와 로컬 모드는 배너와 배지로 보이고, 토큰을 지우거나 다른 토큰을 입력하면 저장된 접속 표시도 지운다. 인증 오류는 데모와 로컬 모드이면 새 주소를 열라고, 직접 입력한 토큰이면 토큰을 다시 입력하라고 안내하고, 접속 설정 화면은 세 방식을 설명한다 | ADR-0042, `apps/web/src/data/access.test.tsx` |
+| REQ-297 | 웹 UI의 화면 이동은 새 화면을 맨 위에서 열고 뒤로 가기에서는 이전 위치를 되살린다. 객체 테이블의 페이지 위치, 페이지당 개수, 선택한 컬럼과 타입 목록의 검색어, 객체가 있는 타입만 보는 토글, 정렬은 주소의 쿼리에 담겨 뒤로 가기, 새로 고침, 링크 공유에서 유지된다. 모르는 경로는 "페이지를 찾을 수 없습니다"와 돌아갈 링크를 보이고, 모르는 `tab` 값은 기본 탭으로 가며 주소를 고쳐 쓴다 | ADR-0042, `apps/web/src/data/screenstate.test.tsx` |
+| REQ-298 | 웹 UI의 오류 화면은 서버 오류 응답이 싣는 원인(필드 이름, 메시지)을 바로 보이고, 찾을 수 없다는 오류는 무엇을 못 찾았는지(KG, 객체, 객체 타입의 이름이나 ID)를 문구에 넣는다. 오류 코드, HTTP 상태, 추적 ID와 나머지 값은 "자세히" 안에 접어 둔다 | ADR-0042, `apps/web/src/data/access.test.tsx`, `apps/web/src/ui/shell.test.tsx` |
+| REQ-299 | 웹 UI는 제품이 정한 닫힌 값(계층, 근거 등급과 종류, 신선도, KG의 상태와 역할, 링크 방향)을 한 곳의 사전에 둔 한국어 표시 이름으로 보이고 원래 값은 툴팁으로 둔다. 속성 이름과 값, 타입 이름은 모델의 데이터이므로 그대로 보인다. 화면은 본문으로 건너뛰기, 좁은 폭에서 접히는 메뉴, 타입 목록의 컬럼 정렬, 테이블과 같은 순서의 컬럼 선택, 넓은 테이블의 가로 스크롤 단서를 가진다. 페이지는 "N페이지"로 쓴다 | ADR-0042, `apps/web/src/data/screenstate.test.tsx`, `apps/web/src/ui/shell.test.tsx` |
 | REQ-300 | `impact`는 실패한 객체(`dead`), 끊긴 링크(`dead_links`), 사이트 장애(`site_failure`, 담긴 객체까지)에서 시작해 링크 의미(`runs_on`, `requires`, `supplied_by`, `realized_by`, `part_of`, `member_of`, `managed_by`, `contained_in`)대로 장애를 전파하고, 상태를 채널마다 3값으로 최소 고정점까지 라운드별로 구한다. 응답은 장애가 없을 때와 비교한 차이이고, 장애가 없는 상태에서는 아무것도 바뀌지 않는다. `connected_to`의 연결성은 계산하지 않는다. REQ-141에서 분리한 요구다(ADR-0043). |
 | REQ-301 | 이중화 그룹은 구성원 수와 `min_alive`로 계산한다. 정상 구성원이 `min_alive` 이상이면 그룹은 정상이고, 여유(slack)가 줄면 `exposed_direct`(그룹이 여유를 잃음), `exposed_inherited`(그것에 기대는 객체), `degraded`(일부만 잃음)로 알린다. `min_alive`를 모르면 가능한 모든 값에서 같을 때만 값을 낸다. 용량 모드의 그룹은 구성원이 모두 정상일 때만 정상이고, 아니면 알 수 없음과 경고 `capacity_group_unknown`을 준다. REQ-141에서 분리한 요구다(ADR-0043). |
 | REQ-302 | `mode`는 `facts_only`, `with_assumptions`, `both`이다. 사실만 쓴 응답은 `assumed` 링크를 알 수 없음으로 읽고, 가정 포함 응답은 사실처럼 쓴다. 약한 링크(가정, 알 수 없음, `max_staleness`를 넘은 관측)는 알 수 없음만 넘기고 장애는 넘기지 않는다. 사실만 쓴 응답에서 확정된 결과는 가정 포함 응답에서도 같고, 가정에 기댄 항목에는 `assumption_based`와 가장 약한 등급을 붙인다(ADR-0043). |

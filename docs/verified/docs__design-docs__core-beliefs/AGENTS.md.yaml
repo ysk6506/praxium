@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "1061420c1f9e3b48"
+hash: "90622b576fe2fc7a"
 date: "2026-11-14"
-note: "AGENTS.md에 query impact 실행 예 한 줄이 늘었을 뿐, 핵심 믿음과 무관함을 확인"
+note: "main 병합 후 AGENTS.md를 다시 읽었다. query impact 실행 예 한 줄이 늘었을 뿐 신념과 줄 수 한도(120)에 영향이 없다"
 text_changed: false
 doc_hash: "04b2f4f490642c38"
