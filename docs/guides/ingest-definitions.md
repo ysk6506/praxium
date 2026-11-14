@@ -106,7 +106,15 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 
 엑셀 파일이 이 한도를 넘으면 실행이 오류로 멈추고 어느 한도인지 알려 준다. 필드 이름과 기본값은 `max_uncompressed_bytes`(268435456), `max_rows_per_sheet`(200000), `max_columns_per_sheet`(1024), `max_cell_chars`(32767), `max_shared_strings`(2000000)이다. 0보다 작으면 거절한다.
 
-CSV와 JSON Lines에는 `max_rows_per_dataset`(기본 200000, 엑셀의 시트와 같다)이 있다. 데이터 행(읽은 행과 읽을 수 없는 줄)이 이보다 많으면 그 데이터셋은 쓰지 않고(`incomplete_capture`), 이전 실행의 데이터는 그대로 두며 사라진 행으로 세지도 않는다. 이유에 한도와 필드 이름이 나온다. 한도를 올리기 전에 메모리를 본다. 컬럼 10개의 CSV를 `ingest run`(`-data-dir` 없이)으로 읽는 데 든 최대 메모리는 5만 행에 약 0.6GB, 10만 행에 약 1.2GB, 20만 행에 약 2.6GB였다(ADR-0052).
+CSV와 JSON Lines에는 `max_rows_per_dataset`(기본 200000, 엑셀의 시트와 같다)이 있다. 데이터 행(읽은 행과 읽을 수 없는 줄)이 이보다 많으면 그 데이터셋은 쓰지 않고(`incomplete_capture`), 이전 실행의 데이터는 그대로 두며 사라진 행으로 세지도 않는다. 이유에 한도와 필드 이름이 나온다. 큰 파일은 메모리를 많이 쓴다. 컬럼 10개의 CSV를 `ingest run`(`-data-dir` 없이)으로 읽을 때 잰 최대 메모리는 다음과 같다(ADR-0052). 행 1,000개에 약 12~13MB이고 행 수에 거의 비례한다.
+
+| 행 수 | 최대 메모리 |
+|---|---|
+| 50,000 | 586MB |
+| 100,000 | 1,178MB |
+| 200,000 | 2,637MB |
+
+메모리가 모자라면 `limits.max_rows_per_dataset`을 낮추거나 파일을 나눈다. 한도를 올리기 전에도 이 표를 본다.
 
 ## 3. 매핑 정의 (mapping.json)
 

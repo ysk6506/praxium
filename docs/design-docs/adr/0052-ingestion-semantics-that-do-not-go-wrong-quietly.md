@@ -20,7 +20,7 @@ touches_protected:
 amends_tests:
   - go:backend/internal/ingest::TestBadRowsAreQuarantined
 test_change_reason: 식별 키가 아닌 칸 하나의 값이 틀리면 행을 통째로 버리던 동작을 객체는 만들고 그 속성만 비우는 것으로 바꾼다. 이 테스트는 틀린 칸(vcpu 값 many)의 행의 객체가 만들어지지 않아야 한다고 단언했으므로 그 객체가 만들어진다는 단언으로 바꾼다. 문제 수와 나머지 행의 단언은 그대로다
-decision_hash: b88c8fbfa66934c5
+decision_hash: 81da88a5c7fc7ca9
 ---
 # ADR-0052 수집에서 조용히 틀리거나 한 실수가 크게 번지는 동작을 고친다
 
@@ -88,5 +88,7 @@ decision_hash: b88c8fbfa66934c5
 | 200,000 | 16.9MB | 2,637MB | 29.4초 |
 
 행 수에 거의 비례한다(행당 약 13KB). 그보다 큰 파일은 돌리지 않았다.
+
+**기본값을 20만으로 둔 이유.** 엑셀의 시트 한도(`max_rows_per_sheet`)와 같게 두어, 같은 데이터를 엑셀로 올리든 CSV로 올리든 한도가 같다. 위 표처럼 20만 행은 메모리를 2.6GB가량 쓰므로 놀랄 수 있다. 그래서 가이드(2.7)에 이 표와 "메모리가 모자라면 `limits.max_rows_per_dataset`을 낮추거나 파일을 나눈다"를 적었다. 읽은 행을 메모리에 쌓지 않고 흘려 보내 메모리를 줄이는 일은 이 변경의 범위가 아니고 다음 일이다.
 
 새 서드파티 의존성이 없다. `harness/config`의 규칙, 한도, 허용 목록은 바꾸지 않았다. 바뀐 보호 경로는 요구사항 표(REQ-358~365 추가)와 잠긴 테스트(`test-lock.json`: 바꾼 테스트 하나의 해시와 새 테스트의 잠금)다.

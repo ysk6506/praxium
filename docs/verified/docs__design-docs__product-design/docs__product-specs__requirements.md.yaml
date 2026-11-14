@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "4737bfbb62453411"
+hash: "e0ba3529b77c3fd4"
 date: "2026-11-14"
-note: "ADR-0052에 맞춰 본문과 대상(코드, 요구사항)을 다시 읽고 확인했다"
+note: "병합 뒤 REQ-300~365의 공존과 ADR-0052의 수집 동작을 다시 읽고 대조해 확인함"
 text_changed: true
 doc_hash: "019854b80cb4930e"

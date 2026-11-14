@@ -146,14 +146,19 @@ func parseCSV(d Dataset, data []byte, maxRows int) Table {
 			t.Unreadable = append(t.Unreadable, Unreadable{Line: line, Reason: "wrong_field_count"})
 			continue
 		}
-		fields := make(map[string]string, len(d.Columns))
-		for _, c := range d.Columns {
-			if i, ok := idx[c.Name]; ok {
-				fields[c.Name] = rec[i]
-			}
-		}
-		t.addRow(d, line, fields)
+		t.addRow(d, line, csvFields(d, idx, rec))
 	}
+}
+
+// csvFields picks the declared columns out of one record.
+func csvFields(d Dataset, idx map[string]int, rec []string) map[string]string {
+	fields := make(map[string]string, len(d.Columns))
+	for _, c := range d.Columns {
+		if i, ok := idx[c.Name]; ok {
+			fields[c.Name] = rec[i]
+		}
+	}
+	return fields
 }
 
 func requiredColumns(d Dataset) []string {

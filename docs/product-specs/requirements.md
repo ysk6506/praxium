@@ -317,6 +317,21 @@ REQ-002와 REQ-003은 프런트엔드 리포지토리의 것이 된다. 프런�
 | REQ-313 | 어떤 로그, 오류, 응답, 목록에도 토큰과 비밀과 해시가 나오지 않는다. 인증과 관리 사건은 `audit: true` 로그로 남는다(ADR-0044). |
 | REQ-314 | 같은 주소에서 거절된 토큰이 쌓이면 그 주소의 거절된 토큰에 일정 시간 429와 `Retry-After`로 답하고 더 세지 않는다. 유효한 토큰은 차단 중인 주소에서도 통과하고 성공은 실패 횟수를 지우지 않는다. 인증 저장소가 응답하지 못하면 401이 아니라 503이다(ADR-0044). |
 
+### 정의 저장소 (330번대)
+
+| ID | 요구사항 | 근거 |
+|---|---|---|
+| REQ-332 | 정의 저장소(`core.definitions`)는 정의의 종류를 모른다. 항목은 바뀌지 않는 ID, `kind`(뜻을 모르는 문자열), 이름을 갖고, 리비전은 쓰기만 한다(리비전 번호, 내용 해시, 스키마 버전, 정규화한 본문, 만든 사람, 메시지, 시각). 본문은 JSON 객체 하나여야 하고 정규화해서 해시하므로 같은 내용이면 같은 해시다(키 순서, 공백, 같은 수의 다른 표기와 무관). 내용이 지금과 같으면 새 리비전을 만들지 않고, 되돌려서 같아진 내용도 리비전 번호는 새로 오른다. 본문 크기, 세트의 항목 수, 열린 브랜치 수 같은 한도는 생성 때 받고 넘으면 어느 한도인지 말한다 | ADR-0049, `backend/internal/definitions/body_test.go`, `backend/internal/definitions/apply_test.go` |
+| REQ-333 | 정의 세트 `D-n`은 바뀌지 않는다. 내용 해시는 호출자가 주는 기준 해시와 정렬한 (항목 ID, 내용 해시) 목록으로 계산하고, 항목의 순서와 부모와 리비전 번호에 무관하다. 항목이 하나도 없으면 해시는 기준 해시 그대로다(기준만 있던 기존 데이터와 같은 값) | ADR-0049, `backend/internal/definitions/body_test.go`, `backend/internal/definitions/apply_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-334 | 메인 브랜치의 머리는 기대한 값일 때만 옮겨진다(compare-and-swap). 직접 적용은 기대한 머리와 변경 목록을 받아 새 항목, 리비전, 세트, 원장, 머리를 원자적 쓰기 한 번으로 쓰고, 바뀐 것이 없으면 아무것도 쓰지 않고 그렇다고 알린다 | ADR-0049, `backend/internal/definitions/apply_test.go`, `backend/internal/definitions/store_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-335 | 번호 원장은 이름 붙은 단조 증가 카운터다. 시작 값은 호출자가 주고, 세트를 만드는 같은 쓰기에서 오르며, 버려진 쓰기(머리 충돌, 한도 위반, 검사 실패, 디스크 실패) 뒤에도 내려가거나 따로 오르지 않는다 | ADR-0049, `backend/internal/definitions/apply_test.go`, `backend/internal/definitions/store_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-336 | 브랜치는 기준 세트와 바뀐 항목(추가, 수정, 삭제)만 갖는다. 고칠 때마다 저장되고 버전으로 동시 수정을 막는다(읽은 버전이 아니면 거절). 기준과 같아진 항목은 브랜치에서 빠진다. 브랜치를 얹은 "초안 상태의 전체 항목"을 읽을 수 있다 | ADR-0049, `backend/internal/definitions/branch_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-337 | 제안은 브랜치와 일대일이고 `draft → in_review → approved → merged`, 어느 때나(병합 전) `closed`로만 간다. 내용을 고치면 `draft`로 돌아가고 승인은 무효가 된다. 승인은 본 내용의 해시에 묶이고, 작성자(브랜치를 고친 모든 주체와 그들을 대신하는 주체)는 자기 제안을 승인하지 못한다. 호출자가 넘기는 정책이 단독 승인을 허용하면 할 수 있고 그 사실이 승인 기록에 남는다. 누가 어떤 역할인지는 이 유닛이 모른다 | ADR-0049, `backend/internal/definitions/proposal_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-338 | 병합은 승인된 제안의 브랜치를 머리에 얹어 새 세트를 만든다. 브랜치의 기준 이후 머리에서 같은 항목이 바뀌었으면 `stale`로 거절하고(3-way 병합과 충돌 풀기는 하지 않는다), 겹치지 않으면 합친다. 병합 직전에 호출자가 준 검사 함수가 합쳐진 세트 전체를 받고, 오류가 있으면 아무것도 쓰지 않고 오류 목록을 돌려준다. 세트, 리비전, 원장, 머리, 브랜치와 제안의 상태는 원자적 쓰기 한 번이다 | ADR-0049, `backend/internal/definitions/merge_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-339 | 지난 세트 `D-N`의 내용으로 새 브랜치와 제안(`origin: restore`)을 만드는 복원이 있다. 세트는 지우지도 고치지도 않으며, 병합하면 머리 뒤에 새 세트와 새 리비전 번호가 생긴다. 머리가 이미 그 내용이면 "할 일 없음"으로 답한다 | ADR-0049, `backend/internal/definitions/merge_test.go`, `backend/internal/definitionscheck/definitionscheck_test.go` |
+| REQ-340 | 저장 포트는 "원자적 쓰기 한 번"(리비전 여러 개, 세트, 원장, 머리, 브랜치와 제안의 상태가 전부 되거나 전혀 안 된다)을 표현해 PostgreSQL 어댑터가 한 트랜잭션으로 구현할 수 있다. 기준 구현인 메모리 어댑터와, 데이터 폴더의 `definitions.json` 하나(형식 이름과 버전을 가진다)를 임시 파일에 쓰고 동기화한 뒤 이름을 바꿔 교체하는 파일 어댑터가 있다. 파일이 없으면 정의 없음이고, 알 수 없는 버전이나 깨진 파일은 이유를 말하고 거절하며 덮어쓰지 않는다. 내장 파일 스토어의 저널과 스냅샷 형식은 건드리지 않는다 | ADR-0049, `backend/internal/definitions/store_test.go`, `backend/internal/definitions/fault_test.go`, `backend/internal/definitionsfile/store_test.go` |
+| REQ-341 | 정의 저장소의 적합성 사례가 있고 메모리 어댑터와 파일 어댑터가 모두 통과한다: 머리 충돌, 같은 내용의 두 번 쓰기, 원장, 세트 해시의 결정성, 중간 실패 때 부분 쓰기가 없는지, `stale` 거절과 병합, 자기 승인 거절과 단독 승인, 상태 전이의 금지된 경로, 리버트, 재시작 뒤의 상태. 결함이 있는 저장소를 사례가 잡는지도 테스트한다 | ADR-0049, `backend/internal/definitionscheck/definitionscheck_test.go`, `backend/internal/definitionscheck/flawed_test.go` |
+
 ## 범위 밖
 
 - 위임하기 전에 에이전트와 하네스를 검증하는 일. 사용자가 제품 밖(실험장)에서 독립적으로 한다. 프락시움은 실험장을 호출하지 않고 그 결과를 조건으로 삼지 않는다(ADR-0005).

@@ -1,6 +1,8 @@
 {
   "core.kernel": 98,
   "go:adapter.cli": 96,
+  "go:adapter.definitionscheck": 98,
+  "go:adapter.definitionsfile": 96.5,
   "go:adapter.devauth": 98,
   "go:adapter.devload": 90.5,
   "go:adapter.filejournal": 93,
@@ -16,6 +18,7 @@
   "go:cmd.praxium": 95,
   "go:core.access": 96,
   "go:core.contract": 91.5,
+  "go:core.definitions": 97,
   "go:core.graph": 91,
   "go:core.identity": 91,
   "go:core.ingest": 92.5,
