@@ -131,7 +131,7 @@ function ObjectRows(props: {
                 </div>
               </Td>
               <Td>
-                <Mono>{identifierText(detail)}</Mono>
+                <Mono className="whitespace-nowrap break-normal">{identifierText(detail)}</Mono>
               </Td>
               {props.columns.map((c) => (
                 <Td key={c}>{attributeCell(detail, c)}</Td>
