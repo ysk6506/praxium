@@ -45,7 +45,7 @@ follows:
 | `kind` | 설명 | 소속 (access-control.md 9-1) |
 |---|---|---|
 | `type` | 객체·링크·액션 타입(`org`와 `ext`). 속성, 바인딩, 식별 키를 포함해요 | `ext`는 그 타입, `org`는 `model_steward` |
-| `type_overlay` | 제품 표준(`std`) 타입의 오버레이: 속성 추가, 바인딩 추가, 표시 이름, 숨기기 | `org`처럼 `model_steward` |
+| `type_overlay` | 제품 표준(`std`) 객체 타입이나 특성의 오버레이. 지금은 속성 추가만 구현했어요(본문은 아래). 바인딩 추가, 숨기기는 나중이에요 | `org`처럼 `model_steward` |
 | `source` | 소스 설정(어댑터, 프리셋의 이름과 버전, 시크릿 참조) | 그 소스 |
 | `dataset`, `refinement` | 소스 안의 테이블 하나 / 고정된 연산 목록으로 데이터셋을 다듬는 정제 | 소속 소스 |
 | `feed` | 피드: 데이터셋 하나에서 객체 타입 하나로의 매핑(완전성 선언 `completeness_declaration` 포함) | 소스와 타입 둘 (5절) |
@@ -92,6 +92,8 @@ follows:
 | `guard_values` | 값 | 값의 이름 |
 
 그 밖의 항목은 통째로 하나로 봐요. 항목 안의 필드 단위 자동 병합은 하지 않아요.
+
+**`type_overlay`의 본문**(`schema_version` 1, [ADR-0050](adr/0050-org-properties-as-overlays-in-the-model.md))은 `target`(`kind`가 `object_type`이나 `trait`, `id`)과 `properties`예요. `item_id`는 `ov.`와 대상 ID이고 대상 하나에 항목 하나라서, 다른 타입을 고치는 두 사람은 충돌하지 않아요. 속성은 표준 속성과 같은 필드에서 `id`(`pr.org.`로 시작), `attr_no`(100000 이상, 저장소가 처음 저장할 때 발급), `name`(`org.snake_case`), `aliases`, `value_type`, `unit`, `enum_values`, `change_class`(`static`과 `slow`), `sensitivity`, `status`, `display_names`, `description`만 받아요. 항목의 내용 해시는 이 모든 필드를 덮고, 정의 세트의 `content_hash`는 항목이 없으면 표준 모델의 해시와 같아요(항목이 있으면 표준 해시와 항목 목록의 해시). 같은 속성을 이름이나 자료형을 바꾸어 다시 쓸 때의 분류는 11절의 표를 따라요.
 
 ## 4. 제안의 진행 절차
 
@@ -384,6 +386,6 @@ items/<kind>/<name>   항목 파일: item_id, schema_version, body
 
 ## 18. 관련 결정과 요구사항
 
-- 결정: [ADR-0014](adr/0014-definitions-branches-revert.md). 이어진 것은 ADR-0006(Go, 역할 4종, 알파의 범위), ADR-0015(역량 질문, 충족률), ADR-0007(이름 공간 `org`/`ext`/`std`와 `sys`, 호환성을 깨는 변경의 순서), ADR-0018(시크릿을 복호화하는 일), ADR-0008(안전장치, 드라이 런, 출처 따라가기), ADR-0009(KG 버전 ID, 결정성), ADR-0012(역할과 범위, 승인, 감사), ADR-0013(사용 통계, 타임라인).
-- 요구사항: REQ-119(정의의 버전과 브랜치), REQ-128(충돌), REQ-129(리버트), REQ-109(호환성을 깨는 변경과 마이그레이션), REQ-171(정의의 테스트), REQ-172(정의의 계보와 누가 쓰나), REQ-194(드라이 런의 검사에 충족률과 목표).
+- 결정: [ADR-0014](adr/0014-definitions-branches-revert.md). 이어진 것은 ADR-0006(Go, 역할 4종, 알파의 범위), ADR-0015(역량 질문, 충족률), ADR-0007(이름 공간 `org`/`ext`/`std`와 `sys`, 호환성을 깨는 변경의 순서), ADR-0018(시크릿을 복호화하는 일), ADR-0008(안전장치, 드라이 런, 출처 따라가기), ADR-0009(KG 버전 ID, 결정성), ADR-0012(역할과 범위, 승인, 감사), ADR-0013(사용 통계, 타임라인), ADR-0050(`type_overlay`의 본문과 해시).
+- 요구사항: REQ-119(정의의 버전과 브랜치), REQ-128(충돌), REQ-129(리버트), REQ-109(호환성을 깨는 변경과 마이그레이션), REQ-171(정의의 테스트), REQ-172(정의의 계보와 누가 쓰나), REQ-194(드라이 런의 검사에 충족률과 목표), REQ-342~349(조직 속성의 오버레이).
 - 같이 읽을 문서: [에이전트 규모의 정의 관리](definitions-at-agent-scale.md), [정의의 계보](definitions-lineage.md), [권한 설계](access-control.md), [KG의 저장과 버전](kg-storage.md), [KG 질의](kg-queries.md), [KG 운영](kg-operations.md), [데이터 관측성](data-observability.md), [KG의 모델](kg-model.md), [역량 질문](competency-questions.md), [현실 데이터 수집](ingestion.md).

@@ -14,6 +14,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 8401e824b9e38ded
+amended_by:
+  - adr: "0050"
+    what: 17번의 삭제 규칙(조직 속성은 삭제하지 않고 폐기로만 둔다)
 ---
 # ADR-0007 KG의 모델: 확장 가능한 타입과 고정된 링크 의미, 채널별 상태, 객체인 이중화 그룹, 근거 등급, 불변 ID, 충분한 표준 모델
 
