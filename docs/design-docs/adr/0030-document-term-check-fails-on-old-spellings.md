@@ -55,6 +55,8 @@ amends:
   - adr: "0029"
     what: 문서 용어 검사의 모드를 보고에서 실패로 전환한다
 touches_protected:
+  - docs/design-docs/adr/0031-go-toolchain-on-a-supported-version.md
+  - harness/src/checks/quality.ts
   - harness/config/ui-words.yaml
   - AGENTS.md
   - docs/product-specs/requirements.md
@@ -88,7 +90,7 @@ touches_protected:
   - docs/design-docs/adr/0028-close-the-gaps-the-audit-found-in-the-checks.md
   - docs/design-docs/adr/0029-standard-terms-in-documents-and-screens.md
 amends_tests: []
-decision_hash: 471007ca14918ba7
+decision_hash: 05528f372da8e306
 ---
 # ADR-0030 문서 용어 검사를 실패 모드로 전환한다 — 정비를 마쳤으므로 옛 표기가 다시 쓰이면 병합할 수 없다
 
@@ -103,6 +105,7 @@ ADR-0029는 문서와 화면에 표준 용어를 쓰기로 하고, 문서 용어
 3. **ADR의 본문에서 사실과 어긋난 표기 두 곳을 결정에 맞췄다.** ADR-0020은 고정 채널을 한 곳에서 4종, 다른 곳에서 6종이라고 적었다. 표준 모델의 데이터와 ADR-0007의 결정이 6종이므로 6종으로 통일했다. ADR-0026은 읽기 워터마크를 가리켜야 할 두 곳에서 소스 커서라고 적었다. 그 두 곳을 읽기 워터마크로 맞췄다.
 4. **용어를 통일하고 용어집에 반영했다.** 건수 대조(옛 표기 `수 맞춤`), 정합성 대조(`정합 대조`), KG 질의(`KG에 묻기`), 리비전(항목의 `판`), 보충 문서(`덧붙임 문서`)를 용어집에 추가하거나 옛 표기 열에 올렸다. 헬스 상태는 6종이며 `affected_upstream`을 포함한다고 용어집에 적었다. 메시지 로그 스토리지, 롤백 액션, 리버트의 구분도 문서 전체에서 하나로 맞췄다. 롤백은 상태를 이전 시점으로 되감는 일과 되감을 수 있는 운영 액션에만 쓰고, 리버트는 새 변경으로 이전 변경을 취소하는 일에만 쓴다.
 5. **문서의 사실 오류 몇 곳을 바로잡았다.** `worldgen.md`는 MLAG를 생성하지 않는다고 적으면서 `MlagDomain`을 생성한다고도 적었다. 코드(`backend/internal/worldgen`)가 `MlagDomain`을 생성하므로 생성하는 쪽으로 맞췄다. `requirements.md`의 번호 영역 설명은 218~240이라고 적었지만 표는 REQ-262까지다. 범위 표기만 실제에 맞췄다. REST API 예시 문서의 명령줄 도구 이름은 실제 실행 파일 이름 `praxium`으로 바꿨다. ADR 작성 절차의 테스트 표 열 이름은 하네스가 읽는 `테스트 파일`로 맞췄다.
+6. **생성기가 쓰는 두 문구를 표준 용어로 바꿨다.** `harness/src/checks/quality.ts`가 `docs/generated/quality.md`에 쓰는 안내 문구의 `재지 않는`을 "측정하지 않는"으로, `장부`를 "대장"으로 고쳤다(옛 표기는 이 ADR의 표기 규칙에 걸려, 생성 문서를 다시 만들 때마다 검사가 실패했다). 사용자에게 보이는 문구만 바꿨고 로직, 규칙, 한도는 그대로다. 이 문구를 단언하는 테스트는 없어 `amends_tests`는 비어 있다. 설계 책임자의 승인을 받았다. 같은 이유로 main에서 병합된 ADR-0031의 `되돌리기 쉽다`를 "리버트하기 쉽다"로 고쳤다(뜻은 같다).
 
 ## 이유
 - 보고 모드로는 옛 표기가 다시 들어와도 변경이 병합된다. 전환이 끝났으므로 재발을 막는 것은 실패 모드뿐이다.
@@ -115,6 +118,6 @@ ADR-0029는 문서와 화면에 표준 용어를 쓰기로 하고, 문서 용어
 - **용어 정비와 모드 전환을 다른 변경으로 나누기**: 정비가 끝난 상태와 전환이 같은 변경에 있어야 `pnpm check`가 정비 결과를 바로 검증한다.
 
 ## 결과
-- `harness/config/ui-words.yaml`: `documents.mode`가 `fail`이다. 다른 변경은 없다. 하네스의 소스와 테스트는 바뀌지 않았다.
+- `harness/config/ui-words.yaml`: `documents.mode`가 `fail`이다. 다른 변경은 없다. 하네스는 `quality.ts`의 생성 문구 두 곳(결정 6)만 바뀌었고 테스트는 바뀌지 않았다.
 - 문서에 옛 표기가 있으면 `WORD003`이 실패하고 쓸 용어를 알려 준다. 문서를 수정할 때는 용어집의 표를 먼저 본다.
 - 이 변경은 문서와 ADR의 표기를 수정하므로 본문이 바뀐 ADR은 모두 다시 확정했고, 확인 기록(`docs/verified/`)과 생성 문서는 명령으로 다시 만들었다.
