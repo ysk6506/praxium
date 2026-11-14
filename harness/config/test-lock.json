@@ -6096,6 +6096,111 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestReleasePlanDecidesTheModeTheTagAndTheCommit": {
+   "kind": "test",
+   "hash": "28ebfade345adf2a",
+   "asserts": 4,
+   "literals": [
+    "916828ae0892f88b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePlanRefusesWhatIsNotSafeToRelease": {
+   "kind": "test",
+   "hash": "064d3c86af7cc71d",
+   "asserts": 3,
+   "literals": [
+    "74bcb57b5a3ffd9c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishChecksTheCommitOfTheNewTag": {
+   "kind": "test",
+   "hash": "b449172fe2a425c7",
+   "asserts": 9,
+   "literals": [
+    "bb8374ff5eb84f89"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishForAManualReleaseTargetsTheCommitAndReadsTheNotesFile": {
+   "kind": "test",
+   "hash": "d07cd7977e0d0658",
+   "asserts": 16,
+   "literals": [
+    "2d45e43f24a951a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishForATagPushUsesGeneratedNotesAndChecksTheTag": {
+   "kind": "test",
+   "hash": "f7fccc9eed7dd831",
+   "asserts": 17,
+   "literals": [
+    "59ca961f06b3786f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishPublishesNothingWhenSomethingIsWrong": {
+   "kind": "test",
+   "hash": "c9f6c608f01ff6d1",
+   "asserts": 9,
+   "literals": [
+    "110a25b2003f8c0b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishTakesANotesFileWithoutFrontMatterAsItIs": {
+   "kind": "test",
+   "hash": "4b57add4b0167b4d",
+   "asserts": 7,
+   "literals": [
+    "9a7588db9b6c440f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestRolesThatDoNothingSayTheyAreNotImplemented": {
    "kind": "test",
    "hash": "db5ffb1c531901d3",
@@ -6591,6 +6696,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/cli::TestHealthInTheTableFormGivesOneLinePerProbe": {
+   "kind": "test",
+   "hash": "b607cab21048aa78",
+   "asserts": 1,
+   "literals": [
+    "d992ad4e6c5186e8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/internal/cli::TestHelpAndUsageLineOfClientCommands": {
    "kind": "test",
    "hash": "439b3a5235980516",
@@ -6739,6 +6859,36 @@
     "REQ-245"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTypesGetNeedsOneNameAndReadsAnObject": {
+   "kind": "test",
+   "hash": "600af84603c60053",
+   "asserts": 3,
+   "literals": [
+    "c3a39c3b522ac0f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/cli::TestTypesGetShowsTheEffectivePropertiesAndKeysByName": {
+   "kind": "test",
+   "hash": "79a0d0e7921b45da",
+   "asserts": 6,
+   "literals": [
+    "f22c3d033751dcb0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-328"
+   ],
+   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/internal/cli::TestTypesListPrintsATableOrJSONAndFollowsCursors": {
