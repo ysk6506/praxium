@@ -6,7 +6,7 @@
  */
 
 import { gradeRank } from "./impact-grades";
-import type { ImpactNode, ImpactTree } from "./impact-tree";
+import { compareText, type ImpactNode, type ImpactTree } from "./impact-tree";
 
 /** More nodes than this, and the picture starts as an overview. */
 export const OVERVIEW_THRESHOLD = 300;
@@ -46,8 +46,6 @@ type Open = {
   members: ImpactNode[];
   children: Set<string>;
 };
-
-const compareText = (a: string, b: string): number => (a < b ? -1 : a > b ? 1 : 0);
 
 const bySeverity = (a: ImpactNode, b: ImpactNode): number =>
   gradeRank(a.grade) - gradeRank(b.grade) || compareText(a.id, b.id);

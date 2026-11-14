@@ -1,0 +1,4 @@
+doc: "docs/design-docs/core-beliefs.md"
+date: "2026-11-14"
+note: "11개 신념을 docs.yaml(120줄, 만료 기한), debt.yaml(예산), package.json(ratchet), REQ-001, ADR-0001·0002·0003과 한 줄씩 견줬다. 틀린 곳 없음"
+doc_hash: "04b2f4f490642c38"
