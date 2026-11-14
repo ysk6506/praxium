@@ -4,10 +4,10 @@
  * the table of routes against the contract and the planned registry, and the server against the contract.
  * Codes API001-API099; see the api-*.ts files for each.
  */
-import { existsSync, mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
-import { tmpdir } from "node:os";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { git, type Violation, violation } from "../common";
+import { openScratch, type Scratch } from "../scratch";
 import { type Assembler, checkAssembled, checkKeywords } from "./api-assembled";
 import { type BaseReader, checkBreaking, type NewAdr, readDeclarations } from "./api-breaking";
 import { type ApiConfig, loadApiConfig } from "./api-config";
@@ -29,12 +29,15 @@ export interface ApiIo {
 
 export function defaultIo(root: string, config: ApiConfig, base: string | undefined): ApiIo {
   const cwd = path.join(root, config.go_root);
-  const dir = mkdtempSync(path.join(tmpdir(), "praxium-api-"));
-  const program = path.join(dir, "praxium");
+  // Made at the first build, so an io that only reads git (or is never used) leaves nothing behind.
+  let scratch: Scratch | undefined;
+  let program = "";
   let built: string | null | undefined;
   // One build serves both commands: the first call compiles, the rest only run the program.
   const exec = (args: readonly string[]): { ok: boolean; stdout: string; stderr: string } => {
     if (built === undefined) {
+      scratch = openScratch();
+      program = path.join(scratch.dir, "praxium");
       const build = runTool(cwd, "go", ["build", "-o", program, config.program]);
       built = build.ok ? program : build.stderr || "go is not installed";
     }
@@ -53,7 +56,7 @@ export function defaultIo(root: string, config: ApiConfig, base: string | undefi
       return routes ? { routes } : { error: (result.stderr || result.stdout).trim() };
     },
     base: base ? gitBase(root, base) : null,
-    dispose: () => rmSync(dir, { recursive: true, force: true }),
+    dispose: () => scratch?.dispose(),
   };
 }
 
