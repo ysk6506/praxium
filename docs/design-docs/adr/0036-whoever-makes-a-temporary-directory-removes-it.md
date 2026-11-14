@@ -4,11 +4,13 @@ kind: decision
 status: active
 enforced_by:
   - harness/src/scratch.test.ts
+  - harness/src/scratch-signal.test.ts
 updates_docs:
   - docs/design-docs/harness-guide.md
 touches_protected:
   - harness/src/scratch.ts
   - harness/src/scratch.test.ts
+  - harness/src/scratch-signal.test.ts
   - harness/src/test-support/scratch-hook.ts
   - harness/src/test-support/mini-repo.ts
   - harness/src/checks/api-contract.ts

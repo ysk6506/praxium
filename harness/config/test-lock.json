@@ -25506,6 +25506,103 @@
    "added": "2026-11-12",
    "amended_by": null
   },
+  "harness/src/scratch-signal.test.ts::<import:220d16c9>": {
+   "kind": "support",
+   "hash": "220d16c95dffcadd",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:30102eeb>": {
+   "kind": "support",
+   "hash": "30102eeb700389a0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:7cba47b9>": {
+   "kind": "support",
+   "hash": "7cba47b9b6b9a010",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:cede6801>": {
+   "kind": "support",
+   "hash": "cede6801644cbf82",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::<import:fc38e4e0>": {
+   "kind": "support",
+   "hash": "fc38e4e01244139f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::a run that is stopped removes its folder [REQ-024] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/scratch-signal.test.ts::a run that is stopped removes its folder [REQ-024] > SIGTERM removes the folder and the process still ends by the signal": {
+   "kind": "test",
+   "hash": "2910295b148a63d2",
+   "asserts": 3,
+   "literals": [
+    "\"--import\"",
+    "\"-e\"",
+    "\"../..\"",
+    "\"SIGTERM removes the folder and the process still ends by the signal\"",
+    "\"SIGTERM\"",
+    "\"SIGTERM\"",
+    "\"SIGTERM\"",
+    "\"data\"",
+    "\"exit\"",
+    "\"scratch-signal-\"",
+    "\"scratch.ts\"",
+    "\"tsx\"",
+    "false",
+    "false",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "harness/src/scratch.test.ts::<import:30102eeb>": {
    "kind": "support",
    "hash": "30102eeb700389a0",

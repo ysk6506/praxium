@@ -62,5 +62,21 @@ export function openScratch(base: string = tmpdir(), nowMs: number = Date.now())
   mkdirSync(parent, { recursive: true });
   sweepStale(parent, nowMs);
   const dir = mkdtempSync(path.join(parent, `run-${process.pid}-`));
-  return { dir, dispose: () => rmSync(dir, { recursive: true, force: true }) };
+  const remove = (): void => rmSync(dir, { recursive: true, force: true });
+  // A run that is stopped (not killed) is still told: remove the folder, then stop as the signal says.
+  const onSignal = (signal: NodeJS.Signals): void => {
+    remove();
+    process.kill(process.pid, signal);
+  };
+  const signals: NodeJS.Signals[] = ["SIGTERM", "SIGINT", "SIGHUP"];
+  for (const signal of signals) process.once(signal, onSignal);
+  process.once("exit", remove);
+  return {
+    dir,
+    dispose: () => {
+      for (const signal of signals) process.removeListener(signal, onSignal);
+      process.removeListener("exit", remove);
+      remove();
+    },
+  };
 }
