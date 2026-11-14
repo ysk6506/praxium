@@ -1,0 +1,7 @@
+doc: "docs/releases/v0.1.0-alpha.1.md"
+target: "docs/design-docs/adr/0047-release-by-manual-run-with-version-and-commit.md"
+hash: "6b97dedf32ecd263"
+date: "2026-11-14"
+note: "ADR-0047 문구만 바뀜(용어). 노트 본문과 무관함을 확인"
+text_changed: false
+doc_hash: "d0676ea748469c1f"

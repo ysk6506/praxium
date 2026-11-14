@@ -12,6 +12,9 @@ touches_protected:
   - .github/workflows/release.yml
   - docs/product-specs/requirements.md
 decision_hash: c2d307a2bbea0868
+amended_by:
+  - adr: "0047"
+    what: 6번과 9번의 릴리스 워크플로(수동 실행도 릴리스를 만들고 세 작업으로 나뉨)와 릴리스 노트
 ---
 # ADR-0039 릴리스는 다섯 대상의 실행 파일 하나씩을 재현 가능하게 빌드해 GitHub 릴리스로 낸다
 

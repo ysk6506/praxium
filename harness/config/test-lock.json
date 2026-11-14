@@ -5991,6 +5991,96 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestReleasePlanDecidesTheModeTheTagAndTheCommit": {
+   "kind": "test",
+   "hash": "eb87e18378ca4e6f",
+   "asserts": 4,
+   "literals": [
+    "7b2d64b4de8bdf36"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePlanRefusesWhatIsNotSafeToRelease": {
+   "kind": "test",
+   "hash": "b385a64ca8b76e95",
+   "asserts": 3,
+   "literals": [
+    "1cfaa0d7909be342"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishForAManualReleaseTargetsTheCommitAndReadsTheNotesFile": {
+   "kind": "test",
+   "hash": "b10b3fd017786b3e",
+   "asserts": 16,
+   "literals": [
+    "c0bef15538c96f85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishForATagPushUsesGeneratedNotesAndChecksTheTag": {
+   "kind": "test",
+   "hash": "d2e92c4882105105",
+   "asserts": 17,
+   "literals": [
+    "d2bc956b2565cb54"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishPublishesNothingWhenSomethingIsWrong": {
+   "kind": "test",
+   "hash": "d99f05ae042e254a",
+   "asserts": 9,
+   "literals": [
+    "4f8f56c585cce3b1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestReleasePublishTakesANotesFileWithoutFrontMatterAsItIs": {
+   "kind": "test",
+   "hash": "c26d36928a11056f",
+   "asserts": 7,
+   "literals": [
+    "3cf076292d739b85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-283"
+   ],
+   "added": "2026-11-14",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestRolesThatDoNothingSayTheyAreNotImplemented": {
    "kind": "test",
    "hash": "db5ffb1c531901d3",

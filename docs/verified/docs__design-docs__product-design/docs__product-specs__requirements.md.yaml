@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "33a781eb9e65676e"
+hash: "f3c23775f3fcdd97"
 date: "2026-11-14"
-note: "REQ-296~299(웹 UI)가 REQ-289~295 뒤에 추가됐다. 이 문서의 내용과 충돌하지 않는다."
+note: "REQ-283만 바뀜(릴리스 수동 실행). 릴리스 내용은 이 문서에 없어 수정할 것이 없음을 확인"
 text_changed: true
 doc_hash: "06412a77a9acc006"
