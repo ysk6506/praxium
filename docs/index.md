@@ -85,6 +85,7 @@ covers:
 - [테라리움에서 넘겨받은 것 — 요구사항, 설계 결정, 풀리지 않은 쟁점](references/from-terrarium.md)
 - [테라리움에 남아 있던 제품 책임자의 요구 — KG 기반의 출발 요구](references/owner-requirements-from-terrarium.md)
 - [v0.1.0-alpha.1 릴리스 노트](releases/v0.1.0-alpha.1.md)
+- [v0.1.0-alpha.2 릴리스 노트](releases/v0.1.0-alpha.2.md)
 
 <!-- docs-list:end -->
 
