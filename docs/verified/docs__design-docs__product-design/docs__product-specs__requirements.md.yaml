@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "9fefc4453e96552f"
+hash: "ba9b03cd6266ac34"
 date: "2026-11-14"
-note: "정의 저장소 유닛 3개(core.definitions 등)와 REQ-332~341 추가분을 문서와 대조해 확인함"
+note: "main 병합 뒤 REQ-315~331과 332~341 공존을 요구사항 문서와 대조해 확인함"
 text_changed: true
-doc_hash: "06412a77a9acc006"
+doc_hash: "019854b80cb4930e"

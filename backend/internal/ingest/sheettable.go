@@ -180,6 +180,7 @@ func newScan(d Dataset, o SheetOptions, g *sheetGrid, t *Table) *sheetScan {
 	}
 	idx, missing := csvIndex(nd, header)
 	t.Missing = missing
+	t.Header, t.HeaderRow = nonBlank(header), o.HeaderRow
 	for _, h := range extraHeader(nd, header) {
 		if h != "" {
 			t.Extra = append(t.Extra, h)
@@ -322,7 +323,7 @@ func (s *sheetScan) read(r *SheetRow) {
 		parts[i] = strings.TrimSpace(fields[k])
 		if parts[i] == "" {
 			ref := QualifiedRef(s.g.sh.Name, CellRef(r.Number, s.colOf(k)))
-			s.t.Unreadable = append(s.t.Unreadable, Unreadable{Line: r.Number, Where: ref, Reason: "missing_natural_key"})
+			s.t.Unreadable = append(s.t.Unreadable, Unreadable{Line: r.Number, Where: ref, Reason: "missing_natural_key", Column: k})
 			return
 		}
 	}

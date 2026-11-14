@@ -20,7 +20,8 @@ export function LoadingState({ label = "불러오는 중" }: { readonly label?: 
     <output className="flex items-center justify-center gap-2 py-10 text-sm text-muted">
       <span
         aria-hidden
-        className="size-4 animate-spin rounded-full border-2 border-line-strong border-t-accent"
+        data-spinner
+        className="size-4 motion-safe:animate-spin rounded-full border-2 border-line-strong border-t-accent"
       />
       {label}
     </output>

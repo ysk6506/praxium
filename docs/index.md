@@ -14,6 +14,7 @@ covers:
 - [AGENTS.md](../AGENTS.md) — 에이전트 진입점, 절대 규칙
 - [ARCHITECTURE.md](../ARCHITECTURE.md) — 유닛과 의존 방향
 - [요구사항](product-specs/requirements.md) — 목표와 `REQ-NNN`의 단일 출처
+- [수집 정의 형식](guides/ingest-definitions.md) — 내 엑셀·CSV를 소스 정의와 매핑 정의로 설명하는 법 (필드, 문제 코드, 따라 하기)
 - [제품 설계 한 장](design-docs/product-design.md) — 값, 원칙, 넘겨받은 과제, 순서
 - [테라리움에서 넘겨받은 것](references/from-terrarium.md) — 그때의 요구사항, 설계 결정, 해결되지 않은 쟁점 (출발 자료)
 - [품질 등급표](generated/quality.md) — 유닛별 등급 A~D (하네스가 생성한 문서)

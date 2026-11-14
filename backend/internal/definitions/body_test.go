@@ -65,14 +65,14 @@ func TestSetHashIsTheBaselineWithoutItemsAndDoesNotDependOnOrder(t *testing.T) {
 }
 
 // [REQ-336]
-func TestOverlayHashFollowsTheChangesAndNotTheOrder(t *testing.T) {
+func TestBranchChangesHashFollowsTheChangesAndNotTheOrder(t *testing.T) {
 	a := BranchEntry{ItemID: "a", Op: OpAdd, ContentHash: "1"}
 	b := BranchEntry{ItemID: "b", Op: OpRemove}
-	x, _ := OverlayHash([]BranchEntry{a, b})
-	y, _ := OverlayHash([]BranchEntry{b, a})
-	none, _ := OverlayHash(nil)
+	x, _ := BranchChangesHash([]BranchEntry{a, b})
+	y, _ := BranchChangesHash([]BranchEntry{b, a})
+	none, _ := BranchChangesHash(nil)
 	a.ContentHash = "2"
-	z, _ := OverlayHash([]BranchEntry{a, b})
+	z, _ := BranchChangesHash([]BranchEntry{a, b})
 	if x != y || x == z || none == "" || none == x {
 		t.Fatalf("hashes: %s %s %s %q", x, y, z, none)
 	}

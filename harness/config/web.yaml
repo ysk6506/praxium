@@ -13,6 +13,48 @@ dev_dependencies: ["@tailwindcss/vite", "@types/react", "@types/react-dom", happ
 token_file: apps/web/src/ui/tokens.css
 scan: [apps/web/src, apps/web/config, apps/web/index.html]
 
+# What docs/design-docs/web-ui-rules.md says and a machine can check (WEB040 to WEB045, ADR-0045).
+rules:
+  scan: [apps/web/src, apps/web/index.html]
+  # WEB040: text over its background needs 4.5:1 and the edge of a control or the focus ring 3:1 (WCAG 2.2 AA),
+  # in the light and in the dark theme. Pairs are token names without the --px- prefix.
+  contrast:
+    - {on: fg, background: canvas, min: 4.5}
+    - {on: fg, background: surface, min: 4.5}
+    - {on: fg, background: sunken, min: 4.5}
+    - {on: muted, background: canvas, min: 4.5}
+    - {on: muted, background: surface, min: 4.5}
+    - {on: muted, background: sunken, min: 4.5}
+    - {on: subtle, background: canvas, min: 4.5}
+    - {on: subtle, background: surface, min: 4.5}
+    - {on: subtle, background: sunken, min: 4.5}
+    - {on: accent, background: canvas, min: 4.5}
+    - {on: accent, background: surface, min: 4.5}
+    - {on: accent, background: sunken, min: 4.5}
+    - {on: accent, background: accent-soft, min: 4.5}
+    - {on: accent-fg, background: accent, min: 4.5}
+    - {on: ok, background: surface, min: 4.5}
+    - {on: ok, background: ok-soft, min: 4.5}
+    - {on: warn, background: surface, min: 4.5}
+    - {on: warn, background: warn-soft, min: 4.5}
+    - {on: danger, background: surface, min: 4.5}
+    - {on: danger, background: danger-soft, min: 4.5}
+    - {on: control-line, background: canvas, min: 3.0, note: edge of an input, a select, a checkbox, a button}
+    - {on: control-line, background: surface, min: 3.0, note: edge of an input, a select, a checkbox, a button}
+    - {on: control-line, background: sunken, min: 3.0, note: edge of an input, a select, a checkbox, a button}
+    - {on: accent, background: canvas, min: 3.0, note: focus ring}
+    - {on: accent, background: surface, min: 3.0, note: focus ring}
+  # WEB042: the files of tests in which an absolute address is a fixture, one by one (never a folder).
+  external_url_exempt:
+    - apps/web/src/api/client.test.ts
+    - apps/web/src/data/screenstate.test.tsx
+    - apps/web/src/test-support/fake-api.ts
+  # WEB045: gzipped size of the build (`pnpm --filter @praxium/web build`, then `web.ts --budget`). Today: JS 143 KB, CSS 6 KB.
+  budget:
+    dist: apps/web/dist/assets
+    js_gzip_bytes: 170000
+    css_gzip_bytes: 10000
+
 # The generated API layer must be what the contract generates (WEB010, WEB011, WEB012).
 contract: backend/internal/contract/openapi/openapi.json
 generated_dir: apps/web/src/api/generated

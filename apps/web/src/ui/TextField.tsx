@@ -15,7 +15,7 @@ export function TextField({ label, description, mono, ...rest }: TextFieldProps)
       <Field.Label className="text-sm font-medium text-fg">{label}</Field.Label>
       <Field.Control
         className={cx(
-          "h-8 w-full rounded-md border border-line-strong bg-surface px-2.5 text-sm text-fg",
+          "min-h-8 w-full rounded-md border border-control-line bg-surface px-2.5 text-sm text-fg",
           "placeholder:text-subtle",
           mono && "font-mono",
         )}

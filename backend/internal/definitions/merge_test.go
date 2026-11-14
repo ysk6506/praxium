@@ -127,7 +127,7 @@ func TestAMergeThatChangesNothingOnTheHeadMakesNoSet(t *testing.T) {
 	body := []byte(`{"v":1}`)
 	hash, _ := RevisionHash("source", 1, body)
 	br.Entries = []BranchEntry{{ItemID: a, Op: OpModify, Kind: "source", Name: "a", SchemaVersion: 1, Body: body, ContentHash: hash}}
-	br.ContentHash, _ = OverlayHash(br.Entries)
+	br.ContentHash, _ = BranchChangesHash(br.Entries)
 	p.ContentHash, p.State = br.ContentHash, ProposalApproved
 	write := Write{Branches: []BranchWrite{{Branch: br, Expect: br.Version}}, Proposals: []ProposalWrite{{Proposal: p, Expect: p.Version}}}
 	if err := r.store.Commit(ctx, write); err != nil {

@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"strconv"
 	"strings"
+	"text/tabwriter"
 )
 
 // IsClientCommand says whether the first word of the command line is a client command.
@@ -31,6 +32,9 @@ func IsClientFlag(word string) bool {
 // A wrong command line adds its one usage line and where the help is, never the whole list.
 func Run(args []string, env Env, stdout, stderr io.Writer, httpClient *http.Client) int {
 	opts, err := parseGlobal(args, env)
+	if len(opts.rest) > 0 && localCommands[opts.rest[0]] {
+		err = usageError{msg: unknownCommandMessage(opts.rest[0])}
+	}
 	if err == nil {
 		if text, asked := helpOf(opts.rest); asked {
 			fmt.Fprint(stdout, text)
@@ -181,7 +185,20 @@ func run(opts options, stdout io.Writer, httpClient *http.Client) error {
 	case "query":
 		return runQuery(ctx, client, opts, stdout)
 	}
-	return usageError{msg: fmt.Sprintf("unknown command %q", opts.rest[0])}
+	return usageError{msg: unknownCommandMessage(opts.rest[0])}
+}
+
+// localCommands are the commands that run on this computer and never ask a server, so the flags that say which server
+// to ask (--endpoint, --token, --config, --json) are not theirs.
+var localCommands = map[string]bool{"ingest": true, "demo": true, "local": true, "worldgen": true, "api": true, "contract": true, "version": true, "dev": true}
+
+// unknownCommandMessage names the command that is not one of the commands that ask a server. A command that does not
+// ask one, written after the flags of one, is the mistake of a person who thinks it takes them.
+func unknownCommandMessage(word string) string {
+	if localCommands[word] {
+		return fmt.Sprintf("%s does not ask a server, so it does not take --endpoint, --token, --config or --json; write %s first, then its own flags", word, word)
+	}
+	return fmt.Sprintf("unknown command %q", word)
 }
 
 func runHealth(ctx context.Context, c *Client, opts options, w io.Writer) error {
@@ -199,13 +216,23 @@ func runHealth(ctx context.Context, c *Client, opts options, w io.Writer) error 
 		if err := printJSON(w, results); err != nil {
 			return err
 		}
-	} else if err := printFields(w, results); err != nil {
+	} else if err := printHealth(w, results); err != nil {
 		return err
 	}
 	if failed {
 		return &ProblemError{Status: http.StatusServiceUnavailable, Code: "server.unavailable", Title: "the server is not ready"}
 	}
 	return nil
+}
+
+// printHealth writes one line for each probe: its name and whether it answered 200.
+func printHealth(w io.Writer, results map[string]any) error {
+	tw := tabwriter.NewWriter(w, 0, 4, 2, ' ', 0)
+	for _, probe := range []string{"live", "ready", "started"} {
+		status, _ := results[probe].(int)
+		fmt.Fprintf(tw, "%s\t%s\n", probe, healthText(status))
+	}
+	return tw.Flush()
 }
 
 // kindPaths maps the --kind of types to the route.
@@ -255,20 +282,40 @@ func runTypes(ctx context.Context, c *Client, opts options, w io.Writer) error {
 		}
 		return listAll(ctx, c, listRequest{path: path, query: query, all: *all, asJSON: opts.asJSON, columns: kindColumns[*kind]}, w)
 	case "get":
-		if len(positional) != 1 {
-			return usageError{msg: "types get needs one id or name"}
-		}
-		query := url.Values{}
-		if *include != "" {
-			query.Set("include", *include)
-		}
-		env, err := c.Get(ctx, path+"/"+url.PathEscape(positional[0]), query)
-		if err != nil {
-			return err
-		}
-		return printOne(w, env, opts.asJSON)
+		return getType(ctx, c, typeGet{path: path, id: positional, include: *include, readable: !opts.asJSON && *kind == "object", asJSON: opts.asJSON}, w)
 	}
 	return usageError{msg: fmt.Sprintf("types has no %q", opts.rest[1])}
+}
+
+// typeGet is one `types get`: the kind's path, the positional arguments and how to show the type.
+type typeGet struct {
+	path     string
+	id       []string
+	include  string
+	readable bool
+	asJSON   bool
+}
+
+// getType reads one type; the table of an object type shows its effective properties and keys as readable lines.
+func getType(ctx context.Context, c *Client, g typeGet, w io.Writer) error {
+	if len(g.id) != 1 {
+		return usageError{msg: "types get needs one id or name"}
+	}
+	query := url.Values{}
+	if g.include != "" {
+		query.Set("include", g.include)
+	}
+	if g.readable && g.include == "" {
+		query.Set("include", "effective_properties")
+	}
+	env, err := c.Get(ctx, g.path+"/"+url.PathEscape(g.id[0]), query)
+	if err != nil {
+		return err
+	}
+	if g.readable {
+		return printTypeView(w, env)
+	}
+	return printOne(w, env, g.asJSON)
 }
 
 // listQuery turns --filter field.op=value into filter[field][op]=value.

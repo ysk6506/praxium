@@ -63,6 +63,9 @@ type DatasetReport struct {
 	Filtered    int  `json:"filtered"`
 	Problem     int  `json:"problem"`
 	Unused      int  `json:"unused"`
+	// NotRead says why the file of a collected dataset was not read at all: the sheet is not there, or the header lacks
+	// a column the dataset declares. The same text is the shape_changed problem; the counts of the line are then 0.
+	NotRead string `json:"not_read,omitempty"`
 	// UsedWithProblem is the rows counted as used that also had a problem; it is not part of the sum.
 	UsedWithProblem int        `json:"used_with_problem"`
 	Raw             RawChanges `json:"raw"`

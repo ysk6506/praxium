@@ -41,3 +41,25 @@
     outline-offset: 2px;
   }
 }
+
+/*
+ * What a person who asked the system for less motion or for fewer colors gets (WCAG 2.3.3, 1.4.1; ADR-0045).
+ * The only thing that moves is the spinner, which is written `motion-safe:` where it is used; color changes stay.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* In forced colors the system replaces every color and drops backgrounds: what a background said needs a mark. */
+@media (forced-colors: active) {
+  a[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+  }
+
+  [data-spinner] {
+    border-top-color: Highlight;
+  }
+}

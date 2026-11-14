@@ -308,7 +308,7 @@ func TestCatalogsServeTheClosedLists(t *testing.T) {
 	tests := map[string]int{
 		"/v1/catalog/link-meanings": len(model.Meanings()), "/v1/catalog/channels": len(model.Channels()),
 		"/v1/catalog/error-codes": len(contract.ProblemCodes()), "/v1/catalog/reason-codes": len(contract.ReasonCodes()),
-		"/v1/roles": len(access.Roles()), "/v1/layers": len(model.Layers()), "/v1/catalog": 6,
+		"/v1/roles": len(access.Roles()), "/v1/layers": len(model.Layers()), "/v1/catalog": 7,
 	}
 	for target, want := range tests {
 		if got := count(target); got != want {

@@ -214,15 +214,15 @@ func SetHash(baseline string, entries []SetEntry) (string, error) {
 	return h.String(), nil
 }
 
-// OverlayHash is the content hash of what a branch changes: the sorted (item ID, operation, content hash) triples.
+// BranchChangesHash is the content hash of what a branch changes: the sorted (item ID, operation, content hash) triples.
 // The approvals of a proposal are tied to it.
-func OverlayHash(entries []BranchEntry) (string, error) {
+func BranchChangesHash(entries []BranchEntry) (string, error) {
 	rows := make([][]string, len(entries))
 	for i, e := range entries {
 		rows[i] = []string{e.ItemID, string(e.Op), e.ContentHash}
 	}
 	sort.Slice(rows, func(i, j int) bool { return rows[i][0] < rows[j][0] })
-	h, err := kernel.ContentHash([]any{"praxium.defoverlay.v1", rows})
+	h, err := kernel.ContentHash([]any{"praxium.defbranch.v1", rows})
 	if err != nil {
 		return "", err
 	}

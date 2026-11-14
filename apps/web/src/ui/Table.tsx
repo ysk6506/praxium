@@ -35,7 +35,15 @@ export function Table({ className, children, ...rest }: ComponentProps<"table">)
   return (
     <div>
       <div className="relative rounded-lg border border-line bg-surface">
-        <div ref={frame} onScroll={measure} className="overflow-x-auto rounded-lg">
+        <div
+          ref={frame}
+          onScroll={measure}
+          className="overflow-x-auto rounded-lg"
+          // Where the columns do not fit, the frame scrolls: a keyboard must be able to reach it (WCAG 2.1.1).
+          {...(overflow.start || overflow.end
+            ? { tabIndex: 0, role: "region", "aria-label": rest["aria-label"] }
+            : {})}
+        >
           <table className={cx("w-full border-collapse text-left text-sm", className)} {...rest}>
             {children}
           </table>

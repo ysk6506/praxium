@@ -3,9 +3,11 @@ import {
   forgetToken,
   type Route,
   routeHash,
+  ScreenReportsProvider,
   useEntryMode,
   useHash,
   useRoute,
+  useScreen,
   useToken,
 } from "./data";
 import {
@@ -44,12 +46,13 @@ function Screen({ route, go }: { readonly route: Route; readonly go: (route: Rou
     case "kgs":
       return <KgsScreen />;
     case "types":
-      return <TypesScreen kg={route.kg} />;
+      return <TypesScreen key={route.kg} kg={route.kg} />;
     case "objects":
       return <ObjectsScreen key={`${route.kg}/${route.type}`} kg={route.kg} type={route.type} />;
     case "object":
       return (
         <ObjectScreen
+          key={`${route.kg}/${route.id}`}
           kg={route.kg}
           id={route.id}
           tab={route.tab}
@@ -66,6 +69,7 @@ export function App() {
   const mode = useEntryMode();
   const hash = useHash();
   const { route, go } = useRoute(token !== "");
+  const screen = useScreen(route);
   const kg = currentKg(route);
   const notice = noticeOf(mode);
   const nav = (
@@ -103,6 +107,7 @@ export function App() {
       }
       banner={notice?.notice}
       place={hash}
+      announcement={screen.announcement}
       nav={nav}
       footer={
         token ? (
@@ -115,7 +120,9 @@ export function App() {
       }
     >
       {/* A new token (another server run, a pasted address) is a new session: nothing of the old one stays on screen. */}
-      <Screen key={token} route={route} go={go} />
+      <ScreenReportsProvider value={screen.report}>
+        <Screen key={token} route={route} go={go} />
+      </ScreenReportsProvider>
     </AppShell>
   );
 }

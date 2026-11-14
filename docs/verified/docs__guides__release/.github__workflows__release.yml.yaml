@@ -1,7 +1,7 @@
 doc: "docs/guides/release.md"
 target: ".github/workflows/release.yml"
-hash: "a572f7767105a330"
+hash: "39287906809d576d"
 date: "2026-11-14"
-note: "스크립트 두 개와 워크플로의 인자, 산출물 이름, 절차를 코드와 대조해 확인"
+note: "메인 브랜치에서만 릴리스, 태그 확인 방식, 게시 뒤 확인을 가이드에 반영"
 text_changed: true
-doc_hash: "13b42f7dc8ad046c"
+doc_hash: "7b57d824dee1927e"

@@ -85,7 +85,7 @@ func (s *Service) writeNewBranch(ctx context.Context, in openBranch) (Branch, Pr
 	if err != nil {
 		return Branch{}, Proposal{}, err
 	}
-	hash, err := OverlayHash(in.entries)
+	hash, err := BranchChangesHash(in.entries)
 	if err != nil {
 		return Branch{}, Proposal{}, err
 	}
@@ -147,7 +147,7 @@ func (s *Service) EditBranch(ctx context.Context, in EditBranchInput) (Branch, P
 	if err != nil {
 		return Branch{}, Proposal{}, err
 	}
-	hash, err := OverlayHash(entries)
+	hash, err := BranchChangesHash(entries)
 	if err != nil {
 		return Branch{}, Proposal{}, err
 	}

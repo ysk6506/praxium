@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "06412a77a9acc006"
+hash: "019854b80cb4930e"
 date: "2026-11-14"
-note: "product-design.md의 코드 상태 서술(1절 11행, 표 21행)을 plan.md 5~7행과 ARCHITECTURE.md 단위 표, decisions.md(ADR-0019~0033)에 대조해 다시 확인했다: 구현 덩어리와 알파 1 진행 중이라는 상태가 계획과 일치하고, 진행 상태는 계획 링크로 가리킨다"
-text_changed: true
+note: "제품 설계 개요에서 바뀐 곳은 목표 문장의 표현뿐이다. 계획의 순서와 상태는 영향이 없음을 확인했다"
+text_changed: false
 doc_hash: "8633716ed44e3d3b"

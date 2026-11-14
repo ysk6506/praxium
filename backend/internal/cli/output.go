@@ -27,9 +27,17 @@ func scalar(v any) string {
 		return fmt.Sprintf("%g", x)
 	case bool:
 		return fmt.Sprintf("%t", x)
+	case int:
+		return fmt.Sprintf("%d", x)
+	case map[string]any:
+		return mapText(x)
 	case []any:
 		parts := make([]string, 0, len(x))
 		for _, item := range x {
+			if m, ok := item.(map[string]any); ok {
+				parts = append(parts, "("+mapText(m)+")")
+				continue
+			}
 			parts = append(parts, scalar(item))
 		}
 		return strings.Join(parts, ",")
@@ -75,7 +83,13 @@ func printFields(w io.Writer, obj map[string]any) error {
 	sort.Strings(names)
 	tw := tabwriter.NewWriter(w, 0, 4, 2, ' ', 0)
 	for _, name := range names {
-		fmt.Fprintf(tw, "%s\t%s\n", name, scalar(obj[name]))
+		for i, line := range fieldLines(name, obj[name]) {
+			label := name
+			if i > 0 {
+				label = ""
+			}
+			fmt.Fprintf(tw, "%s\t%s\n", label, line)
+		}
 	}
 	return tw.Flush()
 }

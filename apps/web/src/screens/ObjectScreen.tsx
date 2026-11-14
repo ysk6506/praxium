@@ -17,8 +17,10 @@ import {
   type ObjectDetail,
   type ObjectTab,
   routeHash,
+  titleOf,
   useNeighbors,
   useObject,
+  useScreenTitle,
 } from "../data";
 import {
   Badge,
@@ -288,6 +290,9 @@ export interface ObjectScreenProps {
 /** One object: its attributes and identifiers, the evidence behind them, and its neighbors by link type. */
 export function ObjectScreen({ kg, id, tab, onTab }: ObjectScreenProps) {
   const object = useObject(kg, id);
+  const named = object.state.data?.data.object;
+  // A person who reads the object's name in the tab knows which object this is: its name, then its type.
+  useScreenTitle(named ? titleOf(named.display_name, named.object_type) : undefined);
   return (
     <Async
       result={object}

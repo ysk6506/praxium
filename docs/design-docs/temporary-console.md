@@ -43,6 +43,7 @@ follows:
 - **빌드와 실행.** `scripts/build-with-web.sh`(`pnpm web:build`)가 웹 빌드, 임베드 폴더로 복사, Go 빌드를 한 번에 해요. `praxium api serve`가 `/v1` 밖의 GET과 HEAD에 웹 UI를 내고, `-web=false`면 API만 내요. 화면이 없는 빌드는 그 사실을 알리는 페이지를 내요. 개발 중에는 `pnpm --filter @praxium/web dev`가 `/v1`을 `127.0.0.1:8080`으로 넘겨요.
 - **주소.** 화면의 주소는 `#` 뒤에 있어요(`#/kg/main/types/PhysicalServer`). 서버는 정적 파일과 `index.html`만 내요. `/v1`은 절대 화면으로 대체하지 않아요.
 - **같은 출처.** 화면과 API가 같은 주소에서 나오므로 CORS 허용이 필요 없어요.
+- **규칙.** 화면 코드는 [웹 UI 규칙](web-ui-rules.md)을 따라요(지원 브라우저, 접근성, 보안 헤더, 번들 예산).
 - **글과 모양.** 문구는 한국어이고 시스템 글꼴을 써요(한국어 글꼴이 앞). 어두운 모드는 시스템 설정을 따르고 모든 조작은 키보드로 돼요.
 
 ## 5. 화면 목록

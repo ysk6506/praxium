@@ -8,7 +8,9 @@ export default defineConfig({
   plugins: [tailwindcss()],
   esbuild: { jsx: "automatic" },
   build: {
-    target: "es2022",
+    // The oldest browsers the page is made for (docs/design-docs/web-ui-rules.md, ADR-0045): the floor Tailwind CSS v4
+    // documents. A named list, not an ES year, so the output follows the browsers and not a language edition.
+    target: ["chrome111", "edge111", "firefox128", "safari16.4"],
     sourcemap: false,
     cssCodeSplit: false,
     rollupOptions: {

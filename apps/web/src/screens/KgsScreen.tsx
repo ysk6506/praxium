@@ -1,5 +1,13 @@
 import type { KG } from "../data";
-import { formatTimestamp, kgRoleName, kgStateName, routeHash, useKgs } from "../data";
+import {
+  formatTimestamp,
+  kgRoleName,
+  kgStateName,
+  routeHash,
+  titleOf,
+  useKgs,
+  useScreenTitle,
+} from "../data";
 import { Badge, EmptyState, Mono, PageHeader, Table, TBody, Td, THead, Th, Tr } from "../ui";
 import { Async } from "./Async";
 
@@ -48,6 +56,7 @@ function KgRow({ kg }: { readonly kg: KG }) {
 /** The KGs the token may read. Choosing one opens its object types. */
 export function KgsScreen() {
   const kgs = useKgs();
+  useScreenTitle(titleOf("KG 목록"));
   return (
     <>
       <PageHeader
