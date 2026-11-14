@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "80f57bfe1adceafa"
+hash: "42cc6c2ef864588d"
 date: "2026-11-14"
-note: "영향 범위 화면(ADR-0051) 병합 뒤 REQ-300~365의 공존을 다시 대조해 확인함"
+note: "origin/main의 ADR-0052 요구사항과 REQ-374~381이 함께 들어간 뒤 다시 읽음, 제품 설계와 어긋나지 않음"
 text_changed: true
 doc_hash: "019854b80cb4930e"
