@@ -1,36 +1,18 @@
-/** How values of the API are written on a screen. Pure functions; the words are the glossary's. */
-
-const GRADE_LABELS: Readonly<Record<string, string>> = {
-  fact: "사실",
-  assumed: "가정",
-  unknown: "알 수 없음",
-};
-
-const BASIS_LABELS: Readonly<Record<string, string>> = {
-  observed: "관측",
-  declared: "기재",
-  derived: "파생",
-  configured: "설정",
-};
-
-const DIRECTION_LABELS: Readonly<Record<string, string>> = {
-  out: "나가는 링크",
-  in: "들어오는 링크",
-  both: "양방향",
-};
+/** How values of the API are written on a screen. Pure functions; the words are the glossary's (`display.ts`). */
+import { BASIS_NAMES, DIRECTION_NAMES, GRADE_NAMES } from "./display";
 
 /** The value-less cell. */
 export const EMPTY_CELL = "—";
 
 /** The evidence grade as the glossary words it: 사실, 가정, 알 수 없음. Unknown grades are shown as they come. */
 export const gradeLabel = (grade: string | null | undefined): string =>
-  grade == null ? EMPTY_CELL : (GRADE_LABELS[grade] ?? grade);
+  grade == null ? EMPTY_CELL : (GRADE_NAMES[grade] ?? grade);
 
 export const basisLabel = (basis: string | null | undefined): string =>
-  basis == null ? EMPTY_CELL : (BASIS_LABELS[basis] ?? basis);
+  basis == null ? EMPTY_CELL : (BASIS_NAMES[basis] ?? basis);
 
 export const directionLabel = (direction: string): string =>
-  DIRECTION_LABELS[direction] ?? direction;
+  DIRECTION_NAMES[direction] ?? direction;
 
 /** Which tone a grade gets in a badge. */
 export function gradeTone(grade: string | null | undefined): "ok" | "warn" | "neutral" {

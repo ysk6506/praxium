@@ -18,6 +18,9 @@ touches_protected:
   - docs/product-specs/requirements.md
   - harness/config/test-lock.json
 decision_hash: 3147333fbe3a4045
+amended_by:
+  - adr: "0042"
+    what: 5번과 6번의 접속 링크 처리(첫 로드에서만 받던 것을 실행 중에도 받고, 로컬 모드 링크와 접속 표시를 더함)
 ---
 # ADR-0038 데모 모드를 정식 기능으로 둔다
 

@@ -1,5 +1,5 @@
 /** One read of the API as a state a screen can draw: loading, ready or failed. */
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient, type Requester } from "../api";
 import { useToken } from "./connection";
 import { describeError, type ErrorView } from "./errors";
@@ -21,7 +21,9 @@ const isAbort = (error: unknown): boolean =>
 /**
  * Run `load` when it changes (and the token), and again on `reload()`. Callers give `load` its identity with
  * `useCallback`, so it changes exactly when its inputs do. An answer that comes after that, or after the screen left,
- * is dropped. `load` gets a client that carries the token and the abort signal.
+ * is dropped. `load` gets a client that carries the token and the abort signal. What was shown stays while a read
+ * repeats for the same token, and goes when the token changes: it was read with another token (another server run, a
+ * pasted address), and showing it under the new one would mislead.
  */
 export function useAsync<T>(
   load: (client: Requester, signal: AbortSignal) => Promise<T>,
@@ -34,11 +36,18 @@ export function useAsync<T>(
     attempt: 0,
   });
   const [round, setRound] = useState(0);
+  const readWith = useRef(token);
 
   useEffect(() => {
     if (!enabled) return;
     const controller = new AbortController();
-    setState((previous) => ({ status: "loading", data: previous.data, attempt: round }));
+    const sameToken = readWith.current === token;
+    readWith.current = token;
+    setState((previous) => ({
+      status: "loading",
+      data: sameToken ? previous.data : undefined,
+      attempt: round,
+    }));
     load(createClient({ token, signal: controller.signal }), controller.signal)
       .then((data) => {
         if (!controller.signal.aborted) setState({ status: "ready", data });

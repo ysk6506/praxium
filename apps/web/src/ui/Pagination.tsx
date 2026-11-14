@@ -12,6 +12,8 @@ export interface PaginationProps {
   readonly onPageSize: (size: number) => void;
   /** Where the page is among the whole result, such as `1–25 / 312`. */
   readonly summary: string;
+  /** Back to page 1; given, it adds a button that shows when the page is not the first. */
+  readonly onFirst?: () => void;
 }
 
 export function Pagination(props: PaginationProps) {
@@ -25,11 +27,12 @@ export function Pagination(props: PaginationProps) {
           options={props.pageSizes.map((n) => ({ value: n, label: `페이지당 ${n}개` }))}
           onChange={props.onPageSize}
         />
+        {props.onFirst && props.page > 1 ? <Button onClick={props.onFirst}>처음</Button> : null}
         <Button onClick={props.onPrevious} disabled={!props.hasPrevious}>
           이전
         </Button>
-        <span aria-live="polite" className="min-w-12 text-center text-muted">
-          {props.page}쪽
+        <span aria-live="polite" className="min-w-16 text-center text-muted">
+          {props.page}페이지
         </span>
         <Button onClick={props.onNext} disabled={!props.hasNext}>
           다음

@@ -153,3 +153,17 @@ export function groupNeighbors(data: NeighborsData): NeighborGroupView[] {
   }
   return [...groups.values()];
 }
+
+/** How many links a link type and direction have in all, not only among the ones loaded: the sum of the API's groups. */
+export function groupTotals(data: NeighborsData): ReadonlyMap<string, number> {
+  const totals = new Map<string, number>();
+  for (const group of data.groups) {
+    const key = `${group.link_type}\u0000${group.direction}`;
+    totals.set(key, (totals.get(key) ?? 0) + group.count);
+  }
+  return totals;
+}
+
+/** The key of a group in `groupTotals`. */
+export const groupKey = (linkType: string, direction: string): string =>
+  `${linkType}\u0000${direction}`;
