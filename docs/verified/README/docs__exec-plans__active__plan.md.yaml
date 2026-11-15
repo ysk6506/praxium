@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "2cc3efb439b14311"
-date: "2026-11-14"
-note: "병합 뒤 확인: 내장 인증(ADR-0044)과 REQ-307~314, 수집 사용성 요구가 이 문서와 어긋나지 않는다"
+hash: "cbf3b58a9e921338"
+date: "2026-11-15"
+note: "plan과 AGENTS.md의 변경과 대조함. 소개 문장을 현재 코드는 읽기만 한다로 고쳤다"
 text_changed: true
-doc_hash: "2b531a7f310f2750"
+doc_hash: "5eab0b903c155b70"

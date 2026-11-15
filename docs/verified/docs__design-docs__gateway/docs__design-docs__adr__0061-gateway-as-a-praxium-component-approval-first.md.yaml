@@ -1,0 +1,7 @@
+doc: "docs/design-docs/gateway.md"
+target: "docs/design-docs/adr/0061-gateway-as-a-praxium-component-approval-first.md"
+hash: "2f0729fd84f8c38e"
+date: "2026-11-15"
+note: "ADR-0061 본문을 용어 검사에 맞게 고친 뒤 다시 대조해 읽음. 내용은 같다"
+text_changed: true
+doc_hash: "c7ca20c662c594c3"

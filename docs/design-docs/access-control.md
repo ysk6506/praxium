@@ -161,7 +161,7 @@ SSO에서 그룹이 바뀌거나 사용자가 삭제되면 프락시움은 그 �
 
 ### 6-2. 판정은 한 곳에서 해요
 
-HTTP API, MCP, 워커가 모두 같은 판정을 호출해요. 판정은 코어의 한 단위가 맡고 그 단위는 기반 단위만 import해요(ADR-0006). 같은 판정이 화면을 위한 **허용 작업 힌트**(`GET /v1/me`, 응답의 `meta.allowed_actions`)도 제공해요. 힌트는 `[{action, allowed, reason_code}]`이고 차단 사유 코드는 고정 목록이에요: `forbidden.role`, `forbidden.scope`, `conflict.state`, `blocked.approval_required`, `blocked.limit`, `unavailable.degraded`([REST API 설계](rest-api.md) 4절). 힌트일 뿐이고 판정은 요청마다 다시 해요. 정책은 **제품에 내장된 데이터**예요. 규칙 테이블로 두고 한 곳에서 해석해요. 관리자는 정책을 수정할 수 없고 권한 부여만 수정해요. 허용하는 규칙이 하나도 없으면 거절해요.
+HTTP API, MCP, 워커가 모두 같은 판정을 호출해요. 게이트웨이도 같은 판정을 쓰는 호출자가 돼요(ADR-0061, [게이트웨이 설계](gateway.md)). 실행의 권한과 시작한 사람의 역할의 관계, 새 역할이 필요한지는 아직 정하지 않았어요(ADR-0012는 새 역할을 결정 기록으로만 더해요). 판정은 코어의 한 단위가 맡고 그 단위는 기반 단위만 import해요(ADR-0006). 같은 판정이 화면을 위한 **허용 작업 힌트**(`GET /v1/me`, 응답의 `meta.allowed_actions`)도 제공해요. 힌트는 `[{action, allowed, reason_code}]`이고 차단 사유 코드는 고정 목록이에요: `forbidden.role`, `forbidden.scope`, `conflict.state`, `blocked.approval_required`, `blocked.limit`, `unavailable.degraded`([REST API 설계](rest-api.md) 4절). 힌트일 뿐이고 판정은 요청마다 다시 해요. 정책은 **제품에 내장된 데이터**예요. 규칙 테이블로 두고 한 곳에서 해석해요. 관리자는 정책을 수정할 수 없고 권한 부여만 수정해요. 허용하는 규칙이 하나도 없으면 거절해요.
 
 규칙의 필드: `action`과 `required_role`(4절의 행과 필요한 역할), `scope_check`(범위에 포함되어야 하는 대상: `object_type`, `source`, `item`, `none`), `conditions`(추가 조건. 예: `actor_is_not_author`, `grade_within_limit`).
 

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/product-design.md"
+target: "docs/product-specs/requirements-gateway.md"
+hash: "065801b3081fb28c"
+date: "2026-11-15"
+note: "용어를 고친 뒤 개요와 requirements-gateway 를 다시 대조함. 어긋나는 곳이 없다"
+text_changed: true
+doc_hash: "dbdb2419c1901ff2"

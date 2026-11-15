@@ -13,6 +13,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 9f617af4352fa59d
+amended_by:
+  - adr: "0061"
+    what: 운영 액션의 위임과 게이트웨이의 정렬
 ---
 # ADR-0017 프락시움 자신의 관측성과 운영 가능성 — 에이전트가 관측하고, 진단하고, 정해진 운영 액션으로 운영할 수 있게 만든다
 

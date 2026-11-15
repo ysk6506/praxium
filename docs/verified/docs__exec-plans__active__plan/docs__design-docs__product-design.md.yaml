@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "019854b80cb4930e"
-date: "2026-11-14"
-note: "제품 설계 개요에서 바뀐 곳은 목표 문장의 표현뿐이다. 계획의 순서와 상태는 영향이 없음을 확인했다"
+hash: "dbdb2419c1901ff2"
+date: "2026-11-15"
+note: "ADR-0061 본문을 용어 검사에 맞게 고친 뒤 다시 대조해 읽음. 내용은 같다"
 text_changed: false
-doc_hash: "8633716ed44e3d3b"
+doc_hash: "cbf3b58a9e921338"
