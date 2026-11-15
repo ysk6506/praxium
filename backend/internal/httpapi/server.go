@@ -58,6 +58,16 @@ type Config struct {
 	UI fs.FS
 	// Version is the build version, reported by capabilities later and logged now.
 	Version string
+	// Mounts are handlers of other adapters that the composition root puts in front of the routes and the web UI, for
+	// the addresses they say they own (the MCP interface: /mcp and /.well-known/, ADR-0062). They sit inside the trace,
+	// the access log and the recovery, and outside the body check of this server, which has its own order of checks.
+	Mounts []Mount
+}
+
+// Mount is an address space handed to another handler: Match says which paths are its own.
+type Mount struct {
+	Match   func(path string) bool
+	Handler http.Handler
 }
 
 // Server serves the contract. Build it with New; it is safe for concurrent use.
@@ -73,6 +83,7 @@ type Server struct {
 	maxBody    int64
 	grace      time.Duration
 	version    string
+	mounts     []Mount
 	mux        *http.ServeMux
 	handler    http.Handler
 	lists      *registryLists
@@ -91,7 +102,7 @@ func New(cfg Config) (*Server, error) {
 	}
 	s := &Server{
 		reg: cfg.Registry, authz: cfg.Authorizer, clock: cfg.Clock,
-		ids: cfg.IDs, log: cfg.Logger, kgs: cfg.KGs, ui: cfg.UI, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
+		ids: cfg.IDs, log: cfg.Logger, kgs: cfg.KGs, ui: cfg.UI, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version, mounts: cfg.Mounts,
 		mux: http.NewServeMux(), dir: cfg.Directory, trustProxy: cfg.TrustProxy, idem: newIdemCache(cfg.Clock),
 	}
 	if s.authz == nil {

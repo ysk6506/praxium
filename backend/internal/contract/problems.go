@@ -31,6 +31,7 @@ var problemCodes = []ProblemCode{
 	{"permission.not_in_scope", "permission", 403, "The subject holds the role but not for this resource."},
 	{"permission.self_approval", "permission", 403, "A subject cannot approve what it changed itself."},
 	{"permission.hidden_attribute", "permission", 403, "The request filters or groups by an attribute the subject may not read."},
+	{"permission.mcp_not_allowed", "permission", 403, "The MCP interface does not take this token: its subject must hold the viewer role and no other (in production, as a service account)."},
 	{"not_found.resource", "not_found", 404, "The resource does not exist or is not visible to the subject."},
 	{"invalid_input.field", "invalid_input", 422, "One or more fields of the input are wrong; see errors."},
 	{"invalid_input.field_format", "invalid_input", 422, "A field has the wrong format."},
