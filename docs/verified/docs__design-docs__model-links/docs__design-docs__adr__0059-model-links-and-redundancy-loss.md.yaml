@@ -1,0 +1,7 @@
+doc: "docs/design-docs/model-links.md"
+target: "docs/design-docs/adr/0059-model-links-and-redundancy-loss.md"
+hash: "ce377c708dc571fb"
+date: "2026-11-15"
+note: "ADR-0059의 용어를 고친 뒤 model-links.md를 다시 읽고 ADR의 결정 항목과 맞춰 보았다. 내용은 바꾸지 않았다."
+text_changed: true
+doc_hash: "0a1fe149fc915375"
