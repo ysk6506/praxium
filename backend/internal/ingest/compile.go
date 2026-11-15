@@ -76,6 +76,7 @@ type linkPlan struct {
 	from, to *feedPlan
 	keyType  model.ValueTypeID
 	basis    model.Basis
+	attrs    []linkAttrPlan
 }
 
 func bad(format string, args ...any) error {
@@ -338,7 +339,10 @@ func (p *Plan) compileLink(d LinkDef, feeds map[string]*feedPlan) (*linkPlan, er
 			return nil, bad("link definition %s: basis %q is not a basis", d.ID, d.Basis)
 		}
 	}
-	return lp, p.linkKeyType(lp)
+	if err := p.linkKeyType(lp); err != nil {
+		return nil, err
+	}
+	return lp, p.compileLinkAttrs(lp)
 }
 
 func (p *Plan) linkKeyType(lp *linkPlan) error {

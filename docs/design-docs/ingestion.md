@@ -317,6 +317,8 @@ held ─(release)─▶ 쌓인 것을 한도 있는 배치로 나눠 순서대�
 
 ## 12. 알려진 한계, 미결 사항
 
+**링크의 속성(ADR-0066, 구현).** 수집 매핑의 링크 정의가 `attributes`로 링크 타입의 속성을 채워요. 컬럼은 시작 쪽 피드의 행에서 읽고, 고정값은 근거 등급이 "가정"이에요. 틀린 칸은 그 값만 비우고 링크는 만들어요. 같은 링크를 다시 만들 때 속성이 다르면 `link_conflict`로 알려요. 문법과 규칙은 [파이프라인 설계](pipeline.md) 5.2에, 한계는 같은 곳에 적었어요. 한계는 넷이에요: 끝 쪽 행의 값을 읽지 못함, 같은 두 객체 사이의 같은 타입 링크가 하나뿐(판별자 없음), 소스 사이의 덮어쓰기, 정제 `fill_empty`로 채운 값이 사실이 되는 구멍.
+
 **예정(ADR-0059).** 일반 규칙으로만 통과한 링크의 알림, 임계를 주지 않는 소스의 기본 가정, 가상화 관리 도구의 관계 매핑 표(인스턴스에서 확인되기 전에는 초안)가 더해질 예정이에요. 자세한 내용은 [표준 모델의 바인딩과 이중화 상실의 설계](model-links.md)에 있어요. 아직 구현하지 않았어요.
 - 여러 제품의 내부 동작과 부하 특성, 스트림 소스의 전달 보장은 일부만 확인했어요. 모든 소스가 중복과 순서 뒤바뀜을 일으킨다고 전제해요.
 - [기본값 표](defaults.md)에 있는 숫자는 기본값(설정)이고 클로즈드 베타에서 측정해서 수정해요. 표에 없는 숫자(압축비, 시트 수 같은 안전 한도)는 가정이에요.
@@ -326,4 +328,4 @@ held ─(release)─▶ 쌓인 것을 한도 있는 배치로 나눠 순서대�
 - 푸시 수집의 보낸 쪽 이벤트 ID는 `dedupe_window`(기본 7일) 안에서만 중복을 막아요. 그보다 늦은 재전송은 키와 내용 해시, 이벤트 시각이 막아요.
 
 ## 13. 관련 결정과 요구사항
-- [ADR-0005](adr/0005-separate-product-own-model-verification-outside.md) 별도 제품, [ADR-0006](adr/0006-go-backend-clean-architecture-backend-first.md) 언어와 역할 4종, [ADR-0007](adr/0007-kg-model.md) 모델, [ADR-0008](adr/0008-ingestion.md) 이 문서의 결정, [ADR-0040](adr/0040-excel-workbook-source-read-with-the-standard-library.md) 엑셀 소스, [ADR-0046](adr/0046-ingestion-usability-from-the-first-own-file.md) 첫 수집의 사용성, [ADR-0009](adr/0009-kg-storage-and-versions.md) 저장, [ADR-0010](adr/0010-kg-queries-and-impact.md) 질의, [ADR-0011](adr/0011-kg-operations.md) 운영, [ADR-0012](adr/0012-access-control.md) 권한. ADR-0013은 관측, ADR-0014는 정의의 버전과 브랜치예요. 요구사항: REQ-110~REQ-118, REQ-120, REQ-121, REQ-123, REQ-124, REQ-127, REQ-170, REQ-173, REQ-174, REQ-175, REQ-224(푸시 수집), REQ-228(문서, 트리, 행), REQ-284~REQ-288(엑셀과 살펴보기), REQ-320~REQ-331(첫 수집의 사용성). 뒤 문서: [파이프라인 설계](pipeline.md), [수집 확장](ingestion-extensions.md).
+- [ADR-0005](adr/0005-separate-product-own-model-verification-outside.md) 별도 제품, [ADR-0006](adr/0006-go-backend-clean-architecture-backend-first.md) 언어와 역할 4종, [ADR-0007](adr/0007-kg-model.md) 모델, [ADR-0008](adr/0008-ingestion.md) 이 문서의 결정, [ADR-0040](adr/0040-excel-workbook-source-read-with-the-standard-library.md) 엑셀 소스, [ADR-0046](adr/0046-ingestion-usability-from-the-first-own-file.md) 첫 수집의 사용성, [ADR-0009](adr/0009-kg-storage-and-versions.md) 저장, [ADR-0010](adr/0010-kg-queries-and-impact.md) 질의, [ADR-0011](adr/0011-kg-operations.md) 운영, [ADR-0012](adr/0012-access-control.md) 권한. ADR-0013은 관측, ADR-0014는 정의의 버전과 브랜치예요. 요구사항: REQ-110~REQ-118, REQ-120, REQ-121, REQ-123, REQ-124, REQ-127, REQ-170, REQ-173, REQ-174, REQ-175, REQ-224(푸시 수집), REQ-228(문서, 트리, 행), REQ-284~REQ-288(엑셀과 살펴보기), REQ-320~REQ-331(첫 수집의 사용성), REQ-435(링크의 속성, [ADR-0066](adr/0066-link-params-live-in-link-attributes-and-ingestion-fills-them.md)). 뒤 문서: [파이프라인 설계](pipeline.md), [수집 확장](ingestion-extensions.md).

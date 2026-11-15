@@ -1,0 +1,7 @@
+doc: "docs/design-docs/model-links.md"
+target: "docs/design-docs/adr/0066-link-params-live-in-link-attributes-and-ingestion-fills-them.md"
+hash: "73a451a644af82b9"
+date: "2026-11-15"
+note: "ADR-0066과 대조: 2절 첫 문단과 10절의 0단계 전 미결을 이 결정의 내용(링크의 속성에 값을 둠, 수집 매핑이 채움은 구현, sets_param과 계산은 예정)으로 고쳤다"
+text_changed: true
+doc_hash: "35ee96eb22482e55"
