@@ -25,10 +25,7 @@
                 "type": "boolean"
               }
             },
-            "required": [
-              "result_complete",
-              "truncated"
-            ],
+            "required": ["result_complete", "truncated"],
             "additionalProperties": false
           },
           "next": {
@@ -50,11 +47,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "id",
-                  "kind",
-                  "display_name"
-                ],
+                "required": ["id", "kind", "display_name"],
                 "additionalProperties": false
               },
               "roles": {
@@ -67,22 +60,13 @@
                 "type": "object",
                 "properties": {
                   "id": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
+                    "type": ["string", "null"]
                   },
                   "expires_at": {
-                    "type": [
-                      "string",
-                      "null"
-                    ]
+                    "type": ["string", "null"]
                   }
                 },
-                "required": [
-                  "id",
-                  "expires_at"
-                ],
+                "required": ["id", "expires_at"],
                 "additionalProperties": false
               },
               "limits": {
@@ -95,10 +79,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "enforced",
-                  "note"
-                ],
+                "required": ["enforced", "note"],
                 "additionalProperties": false
               },
               "server": {
@@ -145,29 +126,15 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "version",
-                  "hash"
-                ],
+                "required": ["version", "hash"],
                 "additionalProperties": false
               }
             },
-            "required": [
-              "account",
-              "roles",
-              "token",
-              "limits",
-              "server",
-              "model"
-            ],
+            "required": ["account", "roles", "token", "limits", "server", "model"],
             "additionalProperties": false
           }
         },
-        "required": [
-          "meta",
-          "next",
-          "data"
-        ],
+        "required": ["meta", "next", "data"],
         "additionalProperties": false
       },
       "annotations": {

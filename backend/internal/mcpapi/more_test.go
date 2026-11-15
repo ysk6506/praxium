@@ -166,7 +166,7 @@ func refusingTool() Tool {
 	}
 }
 
-// [REQ-510] The params and the fields of a refusal are cleaned as a whole.
+// The params and the fields of a refusal are cleaned as a whole.
 func TestRefusalParamsAreCleanedDeeply(t *testing.T) {
 	rg := newRig(t, func(c *Config) { c.Tools = []Tool{refusingTool()} })
 	r := rg.do(legacyCall(t, tokViewer, version2511, "tools/call", map[string]any{"name": "kg_refuse"}))

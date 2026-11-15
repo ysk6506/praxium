@@ -20156,16 +20156,14 @@
   },
   "go:backend/internal/mcpapi::TestRefusalParamsAreCleanedDeeply": {
    "kind": "test",
-   "hash": "30a52babf00e7f9b",
+   "hash": "ee13d8d359b27355",
    "asserts": 4,
    "literals": [
     "ad00e9827de45cec"
    ],
    "precision": [],
    "skips": 0,
-   "reqs": [
-    "REQ-510"
-   ],
+   "reqs": [],
    "added": "2026-11-15",
    "amended_by": null
   },
