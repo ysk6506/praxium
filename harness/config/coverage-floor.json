@@ -23,6 +23,7 @@
   "go:core.identity": 91,
   "go:core.ingest": 92.5,
   "go:core.kernel": 98,
+  "go:core.kgread": 93.5,
   "go:core.model": 98,
   "go:core.query": 92,
   "go:core.worldgen": 96.5,

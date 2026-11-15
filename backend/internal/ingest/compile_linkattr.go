@@ -61,18 +61,10 @@ func (p *Plan) compileLinkAttrs(lp *linkPlan) error {
 }
 
 func (p *Plan) linkAttrPlan(lp *linkPlan, a LinkAttrMap, pr model.Property, cols []string) (linkAttrPlan, error) {
-	id := lp.def.ID
-	switch {
-	case a.Column != "" && a.Value != nil:
-		return linkAttrPlan{}, bad("link definition %s: attribute %s has a column and a fixed value; write one of the two", id, a.Attribute)
-	case a.Column == "" && a.Value == nil:
-		return linkAttrPlan{}, bad("link definition %s: attribute %s has neither a \"column\" nor a \"value\"; write one of the two", id, a.Attribute)
-	case a.Value != nil && strings.TrimSpace(*a.Value) == "":
-		return linkAttrPlan{}, bad("link definition %s: attribute %s has an empty fixed value, which gives no value; write the value, or remove the attribute", id, a.Attribute)
-	case a.Column != "" && !slices.Contains(cols, a.Column):
-		return linkAttrPlan{}, bad("link definition %s: attribute %s reads column %q, which dataset %s (the one feed %s reads, the From end) does not have; its columns are: %s",
-			id, a.Attribute, a.Column, lp.from.feed.Dataset, lp.from.feed.ID, columnList(cols))
+	if err := checkLinkAttrForm(lp, a, cols); err != nil {
+		return linkAttrPlan{}, err
 	}
+	id := lp.def.ID
 	vt, ok := p.reg.ValueType(pr.ValueType)
 	if !ok || !supportedBase(vt.Base) {
 		return linkAttrPlan{}, kernel.Errorf(kernel.CodeUnsupported, "link definition %s: attribute %s has a value of kind %s, which a flat file cell does not give", id, a.Attribute, vt.Base)
@@ -87,4 +79,22 @@ func (p *Plan) linkAttrPlan(lp *linkPlan, a LinkAttrMap, pr model.Property, cols
 	}
 	ap.fixed, ap.fixedText, ap.isFixed = v, *a.Value, true
 	return ap, nil
+}
+
+// checkLinkAttrForm checks what the definition says of one attribute before the model is asked: a column or a fixed
+// value, one of the two, and the column is one of the From feed's dataset.
+func checkLinkAttrForm(lp *linkPlan, a LinkAttrMap, cols []string) error {
+	id := lp.def.ID
+	switch {
+	case a.Column != "" && a.Value != nil:
+		return bad("link definition %s: attribute %s has a column and a fixed value; write one of the two", id, a.Attribute)
+	case a.Column == "" && a.Value == nil:
+		return bad("link definition %s: attribute %s has neither a \"column\" nor a \"value\"; write one of the two", id, a.Attribute)
+	case a.Value != nil && strings.TrimSpace(*a.Value) == "":
+		return bad("link definition %s: attribute %s has an empty fixed value, which gives no value; write the value, or remove the attribute", id, a.Attribute)
+	case a.Column != "" && !slices.Contains(cols, a.Column):
+		return bad("link definition %s: attribute %s reads column %q, which dataset %s (the one feed %s reads, the From end) does not have; its columns are: %s",
+			id, a.Attribute, a.Column, lp.from.feed.Dataset, lp.from.feed.ID, columnList(cols))
+	}
+	return nil
 }

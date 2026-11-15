@@ -37,7 +37,6 @@ func (lp *linkPlan) linkKey(row Row, columns []string) (string, bool) {
 func (d *derivation) buildLinks() error {
 	for _, lp := range d.p.links {
 		index := map[string]map[string]bool{}
-		toDS := d.p.roots[lp.to.feed.Dataset]
 		for _, row := range d.withHeld(lp.to.feed.Dataset) {
 			obj, ok := d.rowObj[lp.to.feed.ID][row.Key]
 			if !ok {
@@ -50,7 +49,7 @@ func (d *derivation) buildLinks() error {
 				index[k][obj] = true
 			}
 		}
-		if err := d.linksFrom(lp, index, toDS); err != nil {
+		if err := d.linksFrom(lp, index); err != nil {
 			return err
 		}
 	}
@@ -59,8 +58,7 @@ func (d *derivation) buildLinks() error {
 
 // linksFrom makes the links of a definition from the rows of its From feed: the rows that are shown first, then the
 // rows a rule filtered out whose object is waited for (a row of the second kind makes its links but reports nothing).
-func (d *derivation) linksFrom(lp *linkPlan, index map[string]map[string]bool, toDS string) error {
-	fromDS := d.p.roots[lp.from.feed.Dataset]
+func (d *derivation) linksFrom(lp *linkPlan, index map[string]map[string]bool) error {
 	for _, set := range []struct {
 		rows []Row
 		held bool
@@ -74,7 +72,7 @@ func (d *derivation) linksFrom(lp *linkPlan, index map[string]map[string]bool, t
 			if !ok {
 				continue
 			}
-			if err := d.link(lp, fromDS, toDS, row, src, index[k], set.held); err != nil {
+			if err := d.link(lp, row, src, index[k], set.held); err != nil {
 				return err
 			}
 		}
@@ -98,7 +96,8 @@ func (lp *linkPlan) missingTarget(toDS string, row Row) string {
 		" in its column " + strings.Join(lp.def.To.Columns, ", ") + "; a misspelt value, or the row is missing in that file"
 }
 
-func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string, targets map[string]bool, held bool) error {
+func (d *derivation) link(lp *linkPlan, row Row, src string, targets map[string]bool, held bool) error {
+	fromDS, toDS := d.p.roots[lp.from.feed.Dataset], d.p.roots[lp.to.feed.Dataset]
 	switch len(targets) {
 	case 0:
 		d.problem(ProblemLinkTarget, fromDS, lp.def.ID, row, lp.missingTarget(toDS, row))

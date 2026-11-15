@@ -333,16 +333,25 @@ func (p *Plan) compileLink(d LinkDef, feeds map[string]*feedPlan) (*linkPlan, er
 		return nil, err
 	}
 	lp := &linkPlan{def: d, lt: lt, from: from, to: to, basis: model.BasisDerived}
-	if d.Basis != "" {
-		lp.basis = model.Basis(d.Basis)
-		if !lp.basis.Valid() {
-			return nil, bad("link definition %s: basis %q is not a basis", d.ID, d.Basis)
-		}
+	if err := lp.checkBasis(); err != nil {
+		return nil, err
 	}
 	if err := p.linkKeyType(lp); err != nil {
 		return nil, err
 	}
 	return lp, p.compileLinkAttrs(lp)
+}
+
+// checkBasis takes the basis the definition names, when it names one.
+func (lp *linkPlan) checkBasis() error {
+	if lp.def.Basis == "" {
+		return nil
+	}
+	lp.basis = model.Basis(lp.def.Basis)
+	if !lp.basis.Valid() {
+		return bad("link definition %s: basis %q is not a basis", lp.def.ID, lp.def.Basis)
+	}
+	return nil
 }
 
 func (p *Plan) linkKeyType(lp *linkPlan) error {
