@@ -25,6 +25,9 @@ amends_tests:
   - go:backend/internal/readcheck::TestImpactHAPairOfAnArrayGoesDownWithOnePduBecauseTheArrayIsWiredToBothInSeries
 test_change_reason: 합성 세계의 스토리지 어레이가 전원 장치 둘과 전원 이중화 그룹을 갖게 되어 세계가 바뀐다. 골든 세계의 객체와 링크 수와 해시, 규모 검사가 쓰는 가장 작은 규모의 입력, 어레이가 PDU 하나로 내려가는지 단언하던 영향 범위 시나리오의 기대값이 새 세계의 값으로 바뀐다. 단언의 종류와 강도는 그대로이거나 더 세밀해진다
 decision_hash: 9e16a9c05def95a6
+amended_by:
+  - adr: "0059"
+    what: 전원 장치의 `PART_OF`를 어레이까지 넓히지 않는다는 한계. 그룹이 장비에 속하는 `PART_OF`의 기본값과 바인딩 확장이 예정이 된다.
 ---
 # ADR-0057 합성 세계의 스토리지 어레이에 전원 이중화 그룹을 둔다
 
