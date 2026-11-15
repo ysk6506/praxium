@@ -26,8 +26,6 @@ updates_docs:
 touches_protected:
   - docs/design-docs/adr/**
   - harness/config/architecture.yaml
-  - harness/config/coverage-floor.json
-  - harness/config/test-lock.json
   - docs/product-specs/requirements.md
   - docs/product-specs/requirements-*.md
 amends:
