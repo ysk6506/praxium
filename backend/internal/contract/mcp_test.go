@@ -10,7 +10,6 @@ import (
 
 var toolName = regexp.MustCompile(`^kg_[a-z][a-z0-9_]*$`)
 
-// [REQ-501]
 func TestMCPToolContractIsWellFormed(t *testing.T) {
 	doc, err := MCPTools()
 	if err != nil {
@@ -53,7 +52,6 @@ func TestMCPToolContractIsWellFormed(t *testing.T) {
 	}
 }
 
-// [REQ-508]
 func TestMCPTokenRefusalCodeIsInTheCatalogue(t *testing.T) {
 	p, ok := LookupProblem("permission.mcp_not_allowed")
 	if !ok || p.Status != 403 || p.Group != "permission" {

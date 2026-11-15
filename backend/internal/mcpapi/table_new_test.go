@@ -47,7 +47,6 @@ func toolNames(t *testing.T, res map[string]any) []string {
 	return out
 }
 
-// [REQ-503]
 func TestTableNewVersionRows1To7(t *testing.T) {
 	rg := newRig(t)
 	t.Run("N1 initialize is the older handshake whatever the header", func(t *testing.T) {
@@ -104,7 +103,6 @@ func TestTableNewVersionRows1To7(t *testing.T) {
 	})
 }
 
-// [REQ-503]
 func TestTableNewVersionRows8To10(t *testing.T) {
 	rg := newRig(t)
 	t.Run("N8 the header and the _meta name different versions", func(t *testing.T) {
@@ -139,7 +137,7 @@ func failingTool() Tool {
 	}
 }
 
-// [REQ-503] N11 and N12 are values recommended in kg-mcp.md and not confirmed with a real client or a conformance suite.
+// N11 and N12 are values recommended in kg-mcp.md and not confirmed with a real client or a conformance suite.
 func TestTableNewVersionRows11To13(t *testing.T) {
 	rg := newRig(t, func(c *Config) { c.Tools = []Tool{failingTool()} })
 	t.Run("N11 an unknown tool is -32602 with the names of the tools (recommended value, not confirmed)", func(t *testing.T) {

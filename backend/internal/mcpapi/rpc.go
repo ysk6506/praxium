@@ -43,20 +43,10 @@ func readRequest(tree any) (*rpcRequest, *rpcError) {
 	if !ok {
 		return nil, &rpcError{Code: codeInvalidRequest, Message: "The body must be one JSON-RPC message, not a batch or a bare value."}
 	}
-	for key := range obj {
-		for _, member := range rpcMembers {
-			if key != member && strings.EqualFold(key, member) {
-				return nil, &rpcError{Code: codeInvalidRequest, Message: "A member name has the wrong letter case; names are matched exactly."}
-			}
-		}
+	if e := checkMembers(obj); e != nil {
+		return nil, e
 	}
-	if v, ok := obj["jsonrpc"].(string); !ok || v != "2.0" {
-		return nil, &rpcError{Code: codeInvalidRequest, Message: `The member "jsonrpc" must be "2.0".`}
-	}
-	method, ok := obj["method"].(string)
-	if !ok || method == "" {
-		return nil, &rpcError{Code: codeInvalidRequest, Message: `The member "method" must be a non-empty string.`}
-	}
+	method, _ := obj["method"].(string)
 	req := &rpcRequest{method: method}
 	if raw, present := obj["id"]; present {
 		id, err := idOf(raw)
@@ -73,6 +63,24 @@ func readRequest(tree any) (*rpcRequest, *rpcError) {
 		req.params = params
 	}
 	return req, nil
+}
+
+// checkMembers refuses a member name in the wrong letter case, and a message without "jsonrpc": "2.0" or a method.
+func checkMembers(obj map[string]any) *rpcError {
+	for key := range obj {
+		for _, member := range rpcMembers {
+			if key != member && strings.EqualFold(key, member) {
+				return &rpcError{Code: codeInvalidRequest, Message: "A member name has the wrong letter case; names are matched exactly."}
+			}
+		}
+	}
+	if v, ok := obj["jsonrpc"].(string); !ok || v != "2.0" {
+		return &rpcError{Code: codeInvalidRequest, Message: `The member "jsonrpc" must be "2.0".`}
+	}
+	if method, ok := obj["method"].(string); !ok || method == "" {
+		return &rpcError{Code: codeInvalidRequest, Message: `The member "method" must be a non-empty string.`}
+	}
+	return nil
 }
 
 // idOf checks an id (a string or a number; null is not one) and gives it back as it is to be echoed.

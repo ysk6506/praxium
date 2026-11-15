@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "9b1d3cd39673c585"
+hash: "a7780be6a32f6a6d"
 date: "2026-11-15"
-note: "architecture.yaml에 core.kgread 유닛과 adapter.http의 import 한 줄만 더했다. AGENTS.md는 유닛 목록을 적지 않고 구조 계약을 가리키므로 고칠 곳이 없다"
-text_changed: true
+note: "adapter.mcp 단위가 architecture.yaml에 추가됨; AGENTS.md 내용은 그대로 유효"
+text_changed: false
 doc_hash: "8c057e5315c7a8b7"

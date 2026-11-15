@@ -237,6 +237,9 @@ func (p *jsonParser) str() (any, error) {
 	return nil, errSyntax
 }
 
+// simpleEscapes are the escapes of one character.
+var simpleEscapes = map[byte]byte{'"': '"', '\\': '\\', '/': '/', 'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t'}
+
 // escape reads the escape sequence at the position (a backslash) into b.
 func (p *jsonParser) escape(b *strings.Builder) error {
 	p.pos++
@@ -245,32 +248,38 @@ func (p *jsonParser) escape(b *strings.Builder) error {
 	}
 	c := p.data[p.pos]
 	p.pos++
-	if simple, ok := map[byte]byte{'"': '"', '\\': '\\', '/': '/', 'b': '\b', 'f': '\f', 'n': '\n', 'r': '\r', 't': '\t'}[c]; ok {
+	if simple, ok := simpleEscapes[c]; ok {
 		b.WriteByte(simple)
 		return nil
 	}
 	if c != 'u' {
 		return errSyntax
 	}
-	r, ok := p.hex4()
+	r, ok := p.unicodeEscape()
 	if !ok {
 		return errSyntax
 	}
-	if utf16.IsSurrogate(r) {
-		low := rune(0)
-		if r < 0xDC00 && p.peek() == '\\' && p.pos+1 < len(p.data) && p.data[p.pos+1] == 'u' {
-			p.pos += 2
-			low, ok = p.hex4()
-		}
-		if !ok || low == 0 {
-			return errSyntax
-		}
-		if r = utf16.DecodeRune(r, low); r == utf8.RuneError {
-			return errSyntax
-		}
-	}
 	b.WriteRune(r)
 	return nil
+}
+
+// unicodeEscape reads the four digits after \u, and for a high surrogate the \u escape of the low one that must follow.
+// A surrogate alone, or a pair that is not one, is not text.
+func (p *jsonParser) unicodeEscape() (rune, bool) {
+	r, ok := p.hex4()
+	if !ok || !utf16.IsSurrogate(r) {
+		return r, ok
+	}
+	if r >= 0xDC00 || p.peek() != '\\' || p.pos+1 >= len(p.data) || p.data[p.pos+1] != 'u' {
+		return 0, false
+	}
+	p.pos += 2
+	low, ok := p.hex4()
+	if !ok {
+		return 0, false
+	}
+	pair := utf16.DecodeRune(r, low)
+	return pair, pair != utf8.RuneError
 }
 
 // hex4 reads four hexadecimal digits.

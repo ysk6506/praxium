@@ -12,7 +12,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/contract"
 )
 
-// [REQ-500] [REQ-501] The code and the contract file say the same: names, descriptions, schemas, annotations.
+// The code and the contract file say the same: names, descriptions, schemas, annotations.
 func TestRegistryMatchesTheContractFile(t *testing.T) {
 	doc, err := contract.MCPTools()
 	if err != nil {
@@ -49,7 +49,7 @@ func sameJSON(t *testing.T, a, b []byte) bool {
 	return reflect.DeepEqual(x, y)
 }
 
-// [REQ-500] tools/list of /mcp is exactly the tools of the contract file, in every version, even if the registry holds
+// tools/list of /mcp is exactly the tools of the contract file, in every version, even if the registry holds
 // tools of other kinds; those can be neither listed nor called.
 func TestToolsListEqualsTheContractAndHidesOtherKinds(t *testing.T) {
 	foreign := Tool{
@@ -83,7 +83,7 @@ func TestToolsListEqualsTheContractAndHidesOtherKinds(t *testing.T) {
 	}
 }
 
-// [REQ-500] The order of tools/list is the same call after call.
+// The order of tools/list is the same call after call.
 func TestToolsListOrderIsFixed(t *testing.T) {
 	extra := func(name string) Tool {
 		return Tool{Name: name, Description: "x", Kind: KindKGRead, Input: []byte(`{"type":"object"}`), Output: []byte(`{"type":"object"}`)}
@@ -101,7 +101,7 @@ func TestToolsListOrderIsFixed(t *testing.T) {
 	}
 }
 
-// [REQ-501] Every tool has the read-only annotations in the list.
+// Every tool has the read-only annotations in the list.
 func TestToolsAreAnnotatedReadOnly(t *testing.T) {
 	rg := newRig(t)
 	list, _ := rg.do(modernCall(t, tokViewer, "tools/list", nil)).result(t)["tools"].([]any)
@@ -185,7 +185,7 @@ func TestWhoamiGivesTheExpiryOfATokenOfTheDirectory(t *testing.T) {
 	}
 }
 
-// [REQ-518] [REQ-507] The structured result and the text blocks hold the same JSON in the order meta, next, data, and
+// [REQ-518] The structured result and the text blocks hold the same JSON in the order meta, next, data, and
 // the first block is the fixed line.
 func TestResultShapeIsMetaNextData(t *testing.T) {
 	rg := newRig(t)
@@ -204,7 +204,7 @@ func TestResultShapeIsMetaNextData(t *testing.T) {
 	}
 }
 
-// [REQ-508] A tool's refusal is a result with isError, a text and no structuredContent; the words of the caller in it
+// A tool's refusal is a result with isError, a text and no structuredContent; the words of the caller in it
 // are cleaned.
 func TestToolRefusalIsAnErrorResult(t *testing.T) {
 	rg := newRig(t)
@@ -225,7 +225,7 @@ func TestToolRefusalIsAnErrorResult(t *testing.T) {
 	}
 }
 
-// [REQ-508] Arguments that are not an object are a protocol error; a name that is not a string cannot match the
+// Arguments that are not an object are a protocol error; a name that is not a string cannot match the
 // Mcp-Name header of the new version and is a mismatch there, and a protocol error in the older versions.
 func TestMalformedCallIsAProtocolError(t *testing.T) {
 	rg := newRig(t)
@@ -243,7 +243,7 @@ func TestMalformedCallIsAProtocolError(t *testing.T) {
 	}
 }
 
-// [REQ-510] The name the caller sent is cleaned where the error repeats it.
+// The name the caller sent is cleaned where the error repeats it.
 func TestUnknownToolNameIsCleanedWhereRepeated(t *testing.T) {
 	rg := newRig(t)
 	name := "kg_x\u202e\u200b\u0007" + strings.Repeat("y", 200)
@@ -259,7 +259,7 @@ func TestUnknownToolNameIsCleanedWhereRepeated(t *testing.T) {
 	}
 }
 
-// [REQ-514] One line is written for each call of a tool, with the fields of the record and none of the arguments.
+// One line is written for each call of a tool, with the fields of the record and none of the arguments.
 func TestReadRecordIsOneLinePerCall(t *testing.T) {
 	rg := newRig(t)
 	callWhoami(t, rg, tokService)
@@ -279,7 +279,7 @@ func TestReadRecordIsOneLinePerCall(t *testing.T) {
 	}
 }
 
-// [REQ-514] The client's own words and the trace parent are cleaned and cut.
+// The client's own words and the trace parent are cleaned and cut.
 func TestReadRecordCleansTheClientsWords(t *testing.T) {
 	rg := newRig(t)
 	m := meta()
@@ -309,7 +309,7 @@ func TestWhoamiShowsTheCountsByVersion(t *testing.T) {
 	}
 }
 
-// [REQ-500] A handler needs its parts.
+// A handler needs its parts.
 func TestNewNeedsItsParts(t *testing.T) {
 	if _, err := New(Config{}); err == nil {
 		t.Error("a handler with no clock, ids, logger or gate is refused")

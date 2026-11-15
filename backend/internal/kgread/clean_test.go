@@ -5,7 +5,6 @@ import (
 	"testing"
 )
 
-// [REQ-510]
 func TestCleanTextTakesOutWhatHidesAnInstruction(t *testing.T) {
 	cases := []struct {
 		name, in, want string
@@ -27,7 +26,6 @@ func TestCleanTextTakesOutWhatHidesAnInstruction(t *testing.T) {
 	}
 }
 
-// [REQ-510]
 func TestCleanTextCutsAndSaysSo(t *testing.T) {
 	got, cut := CleanText(strings.Repeat("가", 10), 4)
 	if got != "가가가가" || !cut {

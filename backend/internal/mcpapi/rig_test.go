@@ -211,6 +211,8 @@ func meta() map[string]any {
 	}
 }
 
+type jsonRaw = json.RawMessage
+
 func jsonUnmarshal(data []byte, v any) error { return json.Unmarshal(data, v) }
 
 func jsonOf(t *testing.T, v any) string {

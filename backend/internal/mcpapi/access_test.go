@@ -6,7 +6,6 @@ import (
 	"testing"
 )
 
-// [REQ-502]
 func TestTokenRuleOutsideProduction(t *testing.T) {
 	rg := newRig(t)
 	for token, want := range map[string]int{tokViewer: 200, tokService: 200, tokAdmin: 403, tokTwoRoles: 403, tokSvcEdit: 403} {
@@ -20,7 +19,6 @@ func TestTokenRuleOutsideProduction(t *testing.T) {
 	}
 }
 
-// [REQ-502]
 func TestTokenRuleInProductionTakesServiceAccountsOnly(t *testing.T) {
 	rg := newRig(t, func(c *Config) { c.ServiceAccountsOnly = true })
 	if r := rg.do(modernCall(t, tokService, "tools/list", nil)); r.status != 200 {
@@ -43,7 +41,7 @@ func TestTokenRuleInProductionTakesServiceAccountsOnly(t *testing.T) {
 	}
 }
 
-// [REQ-502] [REQ-505]
+// [REQ-505]
 func TestDisabledInterfaceAnswersJSON404(t *testing.T) {
 	rg := newRig(t, func(c *Config) { c.Enabled = false })
 	for _, p := range []string{"/mcp", "/mcp/x", "/.well-known/oauth-protected-resource", "/.well-known/openid-configuration", "/.well-known"} {
@@ -93,7 +91,7 @@ func TestRowX4TokenRefusalsAre401WithAProblem(t *testing.T) {
 	}
 }
 
-// [REQ-503] Row X5, X6, X7, X8, X9: the rows of the transport that no version changes.
+// Row X5, X6, X7, X8, X9: the rows of the transport that no version changes.
 func TestTransportRowsX5ToX9(t *testing.T) {
 	rg := newRig(t)
 	t.Run("X5 a batch is -32600 with 400", func(t *testing.T) {
@@ -131,7 +129,7 @@ func TestTransportRowsX5ToX9(t *testing.T) {
 	})
 }
 
-// [REQ-503] Row X3: a refused Origin is 403 in every version, whatever the version headers say.
+// Row X3: a refused Origin is 403 in every version, whatever the version headers say.
 func TestRowX3OriginIsRefusedInEveryVersion(t *testing.T) {
 	rg := newRig(t)
 	for _, c := range []call{goodCall(t), legacyCall(t, tokViewer, version2511, "ping", nil), legacyCall(t, tokViewer, "", "ping", nil)} {

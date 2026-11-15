@@ -187,19 +187,24 @@ func FuzzParseStrict(f *testing.F) {
 	}
 	f.Fuzz(func(t *testing.T, data []byte) {
 		got, err := parseStrict(data)
-		if err != nil {
-			return
-		}
-		if !json.Valid(data) {
-			t.Fatalf("parseStrict accepted what encoding/json refuses: %q", data)
-		}
-		again, err := json.Marshal(got)
-		if err != nil {
-			t.Fatalf("an accepted value must be written out: %v", err)
-		}
-		back, err := parseStrict(again)
-		if err != nil || jsonOf(t, back) != string(again) {
-			t.Fatalf("an accepted value must read back the same: %q -> %q (%v)", data, again, err)
+		if err == nil {
+			checkAccepted(t, data, got)
 		}
 	})
+}
+
+// checkAccepted holds what must be true of a value the parser accepted.
+func checkAccepted(t *testing.T, data []byte, got any) {
+	t.Helper()
+	if !json.Valid(data) {
+		t.Fatalf("parseStrict accepted what encoding/json refuses: %q", data)
+	}
+	again, err := json.Marshal(got)
+	if err != nil {
+		t.Fatalf("an accepted value must be written out: %v", err)
+	}
+	back, err := parseStrict(again)
+	if err != nil || jsonOf(t, back) != string(again) {
+		t.Fatalf("an accepted value must read back the same: %q -> %q (%v)", data, again, err)
+	}
 }

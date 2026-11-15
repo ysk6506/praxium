@@ -14,7 +14,6 @@ func initializeBody(t *testing.T, version string) string {
 	})
 }
 
-// [REQ-503]
 func TestTableOlderVersionRows1To4(t *testing.T) {
 	rg := newRig(t)
 	for _, v := range legacyVersions {
@@ -51,7 +50,7 @@ func TestTableOlderVersionRows1To4(t *testing.T) {
 	})
 }
 
-// [REQ-503] O5, O8 and O9 are values recommended in kg-mcp.md and not confirmed with a real client or a conformance suite.
+// O5, O8 and O9 are values recommended in kg-mcp.md and not confirmed with a real client or a conformance suite.
 func TestTableOlderVersionRows5To9(t *testing.T) {
 	rg := newRig(t)
 	for _, v := range legacyVersions {
@@ -90,7 +89,7 @@ func TestTableOlderVersionRows5To9(t *testing.T) {
 	}
 }
 
-// [REQ-503] [REQ-504]
+// [REQ-504]
 func TestTableNoVersionHeaderRows(t *testing.T) {
 	rg := newRig(t)
 	t.Run("H1 initialize with no header is the older handshake", func(t *testing.T) {
@@ -121,7 +120,7 @@ func TestTableNoVersionHeaderRows(t *testing.T) {
 	}
 }
 
-// [REQ-503] [REQ-504]
+// [REQ-504]
 func TestTableUnsupportedVersionRows(t *testing.T) {
 	rg := newRig(t)
 	for _, v := range []string{"2024-11-05", "2025-03-26", "bogus", "2099-01-01"} {

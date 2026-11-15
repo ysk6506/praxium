@@ -141,7 +141,7 @@ func TestSecurity09NoTokenNoAnswer(t *testing.T) {
 	}
 }
 
-// [REQ-503] [REQ-515] Security test 10 and rows X1 and X2: the other methods are 405 with Allow: POST, and no CORS.
+// [REQ-515] Security test 10 and rows X1 and X2: the other methods are 405 with Allow: POST, and no CORS.
 func TestSecurity10OtherMethods(t *testing.T) {
 	rg := newRig(t)
 	for _, m := range []string{"GET", "DELETE", "OPTIONS", "PUT", "PATCH", "HEAD"} {
@@ -162,7 +162,7 @@ func TestSecurity10OtherMethods(t *testing.T) {
 	}
 }
 
-// [REQ-503] [REQ-515] Security test 11: a version the server does not speak, and a header that differs from the _meta.
+// [REQ-515] Security test 11: a version the server does not speak, and a header that differs from the _meta.
 func TestSecurity11UnsupportedVersionAndMismatch(t *testing.T) {
 	rg := newRig(t)
 	r := rg.do(legacyCall(t, tokViewer, "2024-11-05", "tools/list", nil))
@@ -184,7 +184,7 @@ func TestSecurity11UnsupportedVersionAndMismatch(t *testing.T) {
 	}
 }
 
-// [REQ-503] [REQ-515] Security test 12: an unknown method is 404 with -32601, a notification is 202.
+// [REQ-515] Security test 12: an unknown method is 404 with -32601, a notification is 202.
 func TestSecurity12UnknownMethodAndNotification(t *testing.T) {
 	rg := newRig(t)
 	wantRPCError(t, rg.do(modernCall(t, tokViewer, "no/such/method", nil)), http.StatusNotFound, codeMethodNotFound)
@@ -194,7 +194,7 @@ func TestSecurity12UnknownMethodAndNotification(t *testing.T) {
 	}
 }
 
-// [REQ-503] [REQ-515] Security test 15 and row X10: a session id or a stream position in the request is not read and
+// [REQ-515] Security test 15 and row X10: a session id or a stream position in the request is not read and
 // no session id is made, in any version.
 func TestSecurity15SessionID(t *testing.T) {
 	rg := newRig(t)
