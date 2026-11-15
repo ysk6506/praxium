@@ -11,6 +11,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/access"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/kgread"
 	"github.com/ysk6506/praxium/backend/internal/model"
 	"github.com/ysk6506/praxium/backend/internal/query"
 )
@@ -62,10 +63,8 @@ type Config struct {
 // Server serves the contract. Build it with New; it is safe for concurrent use.
 type Server struct {
 	reg        *model.Registry
-	authn      access.Authenticator
 	authz      access.Authorizer
 	dir        access.Directory
-	limiter    access.FailureLimiter
 	idem       *idemCache
 	trustProxy bool
 	clock      kernel.Clock
@@ -77,7 +76,8 @@ type Server struct {
 	mux        *http.ServeMux
 	handler    http.Handler
 	lists      *registryLists
-	queries    *query.Engine
+	gate       kgread.Gate
+	read       *kgread.Service
 	kgs        KGSource
 	ui         fs.FS
 	started    atomic.Bool
@@ -90,9 +90,9 @@ func New(cfg Config) (*Server, error) {
 		return nil, kernel.Errorf(kernel.CodeInvalidValue, "a server needs a registry, a clock, an id generator and a logger")
 	}
 	s := &Server{
-		reg: cfg.Registry, authn: cfg.Authenticator, authz: cfg.Authorizer, clock: cfg.Clock,
-		ids: cfg.IDs, log: cfg.Logger, queries: cfg.Queries, kgs: cfg.KGs, ui: cfg.UI, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
-		mux: http.NewServeMux(), dir: cfg.Directory, limiter: cfg.Limiter, trustProxy: cfg.TrustProxy, idem: newIdemCache(cfg.Clock),
+		reg: cfg.Registry, authz: cfg.Authorizer, clock: cfg.Clock,
+		ids: cfg.IDs, log: cfg.Logger, kgs: cfg.KGs, ui: cfg.UI, maxBody: cfg.MaxBodyBytes, grace: cfg.Grace, version: cfg.Version,
+		mux: http.NewServeMux(), dir: cfg.Directory, trustProxy: cfg.TrustProxy, idem: newIdemCache(cfg.Clock),
 	}
 	if s.authz == nil {
 		s.authz = access.RoleTable{}
@@ -103,6 +103,8 @@ func New(cfg Config) (*Server, error) {
 	if s.grace <= 0 {
 		s.grace = DefaultGrace
 	}
+	s.gate = kgread.Gate{Authn: cfg.Authenticator, Authz: s.authz, Limiter: cfg.Limiter, Log: s.log}
+	s.read = &kgread.Service{Registry: s.reg, Queries: cfg.Queries, KGs: cfg.KGs, Log: s.log}
 	s.lists = buildRegistryLists(s.reg)
 	for _, spec := range s.routeSpecs() {
 		s.mux.HandleFunc(spec.method+" "+spec.muxPath(), s.wrap(spec))
