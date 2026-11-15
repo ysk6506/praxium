@@ -19360,6 +19360,227 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/kgread::TestAnObjectIsExpectedWhereABodyIsNotOne": {
+   "kind": "test",
+   "hash": "f75b0105ded4329c",
+   "asserts": 4,
+   "literals": [
+    "5c06bb2ae13f632a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestAskFind": {
+   "kind": "test",
+   "hash": "692bdfd19c9b3a83",
+   "asserts": 7,
+   "literals": [
+    "477c3e4ff71f9999"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestAskGetAndNotFound": {
+   "kind": "test",
+   "hash": "7a675ef4ad44e6b9",
+   "asserts": 6,
+   "literals": [
+    "bffc9f7df7db936f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestAskNeighborsAndImpact": {
+   "kind": "test",
+   "hash": "1eff53364d991018",
+   "asserts": 4,
+   "literals": [
+    "f5868e45e01b0213"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestBodyOverTheLimit": {
+   "kind": "test",
+   "hash": "6cd16a675ce33d33",
+   "asserts": 3,
+   "literals": [
+    "e540098efcbb1ecd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestCatalogViews": {
+   "kind": "test",
+   "hash": "0f7c2264eb38ccdb",
+   "asserts": 12,
+   "literals": [
+    "e659d6339244f88f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateAuthenticatesAGoodToken": {
+   "kind": "test",
+   "hash": "e053d168a6a1d56f",
+   "asserts": 2,
+   "literals": [
+    "d35dea83f5bb8e3f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateAuthorizesByRole": {
+   "kind": "test",
+   "hash": "f19559bc3fd3f363",
+   "asserts": 2,
+   "literals": [
+    "4bffc3f375542a10"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateCountsRefusalsAndBlocksTheAddress": {
+   "kind": "test",
+   "hash": "20f9a0b4ffacd871",
+   "asserts": 5,
+   "literals": [
+    "62a3d28a4b38a99f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateRefusesWhatIsNotAGoodToken": {
+   "kind": "test",
+   "hash": "6118c39913881c25",
+   "asserts": 2,
+   "literals": [
+    "8651bbbf5e9e0657"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGetNamesTheObjectOfThePath": {
+   "kind": "test",
+   "hash": "618a3efb42c8600c",
+   "asserts": 2,
+   "literals": [
+    "f2fbf984795166ca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestInputProblems": {
+   "kind": "test",
+   "hash": "d387f6fa195f09a8",
+   "asserts": 5,
+   "literals": [
+    "28d0b22a6b65b469"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestOptIntAndDurations": {
+   "kind": "test",
+   "hash": "8f514f4f1635799e",
+   "asserts": 5,
+   "literals": [
+    "77345f379fbbc7e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestPlainMessage": {
+   "kind": "test",
+   "hash": "e4663ea0cb1daba9",
+   "asserts": 3,
+   "literals": [
+    "938d6cedacf5f0bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestReadFilterIsTheDefaultGrant": {
+   "kind": "test",
+   "hash": "6908b100aa147b95",
+   "asserts": 2,
+   "literals": [
+    "6dab827a9b2262cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestRefuseMapsErrorsToCodes": {
+   "kind": "test",
+   "hash": "77d83e156395d3df",
+   "asserts": 4,
+   "literals": [
+    "1ab24a2d4fb206d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestWithoutAStoreEveryReadIsUnavailable": {
+   "kind": "test",
+   "hash": "c54b6d7ee68fb9f5",
+   "asserts": 1,
+   "literals": [
+    "c6604b5ef01413a1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber": {
    "kind": "test",
    "hash": "f74b9f522f689033",

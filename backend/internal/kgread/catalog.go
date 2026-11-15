@@ -1,8 +1,9 @@
-package httpapi
+package kgread
 
 import (
 	"encoding/json"
 
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
@@ -60,18 +61,18 @@ type bindingView struct {
 	ParamDefaults    map[string]string   `json:"param_defaults,omitempty"`
 }
 
-type boundLinkView struct {
+type BoundLinkView struct {
 	LinkType string      `json:"link_type"`
 	Binding  bindingView `json:"binding"`
 }
 
-type typeRef struct {
+type TypeRef struct {
 	ID   string `json:"id"`
 	Name string `json:"name"`
 }
 
 // strs gives a list that is never null in JSON.
-func strs(in []string) []string {
+func Strs(in []string) []string {
 	if in == nil {
 		return []string{}
 	}
@@ -79,7 +80,7 @@ func strs(in []string) []string {
 }
 
 // opt gives a pointer for an empty-means-absent text, so JSON shows null.
-func opt(s string) *string {
+func Opt(s string) *string {
 	if s == "" {
 		return nil
 	}
@@ -92,15 +93,15 @@ func propertyOf(p model.Property) propertyView {
 		status = string(model.StatusActive)
 	}
 	return propertyView{
-		ID: p.ID.String(), AttrNo: p.AttrNo, Name: p.Name, Aliases: strs(p.Aliases),
-		ValueType: p.ValueType.String(), Unit: opt(p.Unit), EnumValues: strs(p.EnumValues),
+		ID: p.ID.String(), AttrNo: p.AttrNo, Name: p.Name, Aliases: Strs(p.Aliases),
+		ValueType: p.ValueType.String(), Unit: Opt(p.Unit), EnumValues: Strs(p.EnumValues),
 		Required: p.Required, ChangeClass: string(p.ChangeClass), Sensitivity: string(p.EffectiveSensitivity()),
 		HistoryKind: string(p.EffectiveHistory()), ScopeKey: p.ScopeKey, Status: status,
-		SupersededBy: opt(p.SupersededBy.String()), Description: p.Description,
+		SupersededBy: Opt(p.SupersededBy.String()), Description: p.Description,
 	}
 }
 
-func propertiesOf(in []model.Property) []propertyView {
+func PropertiesOf(in []model.Property) []propertyView {
 	out := make([]propertyView, 0, len(in))
 	for _, p := range in {
 		out = append(out, propertyOf(p))
@@ -108,16 +109,16 @@ func propertiesOf(in []model.Property) []propertyView {
 	return out
 }
 
-func needsOf(in []model.Need) []needView {
+func NeedsOf(in []model.Need) []needView {
 	out := make([]needView, 0, len(in))
 	for _, n := range in {
-		out = append(out, needView{Channel: string(n.Channel), Strength: opt(string(n.Strength))})
+		out = append(out, needView{Channel: string(n.Channel), Strength: Opt(string(n.Strength))})
 	}
 	return out
 }
 
 func keyOf(k model.IdentityKey) identityKeyView {
-	v := identityKeyView{Strength: string(k.Strength), Scheme: opt(k.Scheme.String()), Components: []keyComponentView{}}
+	v := identityKeyView{Strength: string(k.Strength), Scheme: Opt(k.Scheme.String()), Components: []keyComponentView{}}
 	for _, c := range k.Components {
 		switch {
 		case !c.Property.IsZero():
@@ -131,7 +132,7 @@ func keyOf(k model.IdentityKey) identityKeyView {
 	return v
 }
 
-func keysOf(in []model.IdentityKey) []identityKeyView {
+func KeysOf(in []model.IdentityKey) []identityKeyView {
 	out := make([]identityKeyView, 0, len(in))
 	for _, k := range in {
 		out = append(out, keyOf(k))
@@ -140,7 +141,7 @@ func keysOf(in []model.IdentityKey) []identityKeyView {
 }
 
 func endpointOf(e model.Endpoint) endpointView {
-	return endpointView{Kind: string(e.Kind), Ref: opt(e.Ref)}
+	return endpointView{Kind: string(e.Kind), Ref: Opt(e.Ref)}
 }
 
 func endpointsOf(in []model.Endpoint) []endpointView {
@@ -151,10 +152,10 @@ func endpointsOf(in []model.Endpoint) []endpointView {
 	return out
 }
 
-func bindingOf(b model.Binding) bindingView {
+func BindingOf(b model.Binding) bindingView {
 	constraints := map[string][]string{}
 	for k, v := range b.ParamConstraints {
-		constraints[k] = strs(v)
+		constraints[k] = Strs(v)
 	}
 	return bindingView{
 		ID: b.ID.String(), From: endpointOf(b.From), To: endpointOf(b.To),
@@ -162,10 +163,10 @@ func bindingOf(b model.Binding) bindingView {
 	}
 }
 
-func bindingsOf(in []model.Binding) []bindingView {
+func BindingsOf(in []model.Binding) []bindingView {
 	out := make([]bindingView, 0, len(in))
 	for _, b := range in {
-		out = append(out, bindingOf(b))
+		out = append(out, BindingOf(b))
 	}
 	return out
 }
@@ -178,7 +179,7 @@ func displayNames(in map[string]string) map[string]string {
 }
 
 // toMap turns a view into the map a list row keeps, through its JSON form.
-func toMap(v any) map[string]any {
+func ToMap(v any) map[string]any {
 	data, err := json.Marshal(v)
 	if err != nil {
 		return map[string]any{}
@@ -188,4 +189,96 @@ func toMap(v any) map[string]any {
 		return map[string]any{}
 	}
 	return out
+}
+
+// objectTypeSummary is the shape of an item of GET /v1/object-types.
+func ObjectTypeSummary(t model.ObjectType) map[string]any {
+	return map[string]any{
+		"id": t.ID.String(), "type_no": t.TypeNo, "name": t.Name, "aliases": Strs(t.Aliases),
+		"namespace": string(t.Namespace), "layer": string(t.Layer), "tier": string(t.EffectiveTier()),
+		"parent": Opt(t.Parent.String()), "traits": traitIDs(t.Traits), "status": string(t.Status),
+		"superseded_by": Opt(t.SupersededBy.String()), "description": t.Description,
+		"standard_ref": t.StandardRef, "display_names": displayNames(t.DisplayNames),
+	}
+}
+
+func traitIDs(in []model.TraitID) []string {
+	out := make([]string, 0, len(in))
+	for _, id := range in {
+		out = append(out, id.String())
+	}
+	return out
+}
+
+// covered lists the ids of the object types an end of a binding or an action covers:
+// a type and its subtypes, the types that carry a trait, or every type.
+func Covered(reg *model.Registry, all []string, e model.Endpoint) []string {
+	switch e.Kind {
+	case model.EndpointAny:
+		return all
+	case model.EndpointType:
+		out := []string{e.Ref}
+		id, err := kernel.ParseID[model.ObjectTypeKind](e.Ref)
+		if err != nil {
+			return out
+		}
+		for _, sub := range reg.Subtypes(id) {
+			out = append(out, sub.ID.String())
+		}
+		return out
+	case model.EndpointTrait:
+		id, err := kernel.ParseID[model.TraitKind](e.Ref)
+		if err != nil {
+			return nil
+		}
+		var out []string
+		for _, t := range reg.TypesWithTrait(id) {
+			out = append(out, t.ID.String())
+		}
+		return out
+	}
+	return nil
+}
+
+func LinkTypeSummary(l model.LinkType) map[string]any {
+	params := map[string]string{}
+	for k, v := range l.MeaningParams {
+		params[k] = v
+	}
+	return map[string]any{
+		"id": l.ID.String(), "link_type_no": l.LinkTypeNo, "name": l.Name, "aliases": Strs(l.Aliases),
+		"namespace": string(l.Namespace), "meaning": string(l.Meaning), "meaning_params": params,
+		"delay_class": string(l.EffectiveDelay()), "status": string(l.Status),
+		"superseded_by": Opt(l.SupersededBy.String()), "description": l.Description, "binding_count": len(l.Bindings),
+	}
+}
+
+func ActionTypeView(a model.ActionType) map[string]any {
+	return map[string]any{
+		"id": a.ID.String(), "name": a.Name, "aliases": Strs(a.Aliases), "namespace": string(a.Namespace),
+		"applies_to": ToAny(endpointsOf(a.AppliesTo)), "mutates": a.Mutates, "reversibility": Opt(string(a.Reversibility)),
+		"disruption": string(a.Disruption), "physical": a.Physical, "declared_effects": Strs(a.DeclaredEffects),
+		"inverse": Opt(a.Inverse.String()), "description": a.Description, "status": string(a.Status),
+		"superseded_by": Opt(a.SupersededBy.String()),
+	}
+}
+
+// toAny passes a view through JSON so it nests inside a map like any other value.
+func ToAny(v any) any {
+	m := ToMap(map[string]any{"v": v})
+	return m["v"]
+}
+
+func TraitView(t model.Trait) map[string]any {
+	return map[string]any{
+		"id": t.ID.String(), "name": t.Name, "aliases": Strs(t.Aliases), "description": t.Description,
+		"properties": ToAny(PropertiesOf(t.Properties)), "needs": ToAny(NeedsOf(t.Needs)),
+	}
+}
+
+func SchemeView(s model.IdentifierScheme) map[string]any {
+	return map[string]any{
+		"id": s.ID.String(), "name": s.Name, "aliases": Strs(s.Aliases), "namespace": string(s.Namespace),
+		"normalizer": s.Normalizer.String(), "description": s.Description,
+	}
 }

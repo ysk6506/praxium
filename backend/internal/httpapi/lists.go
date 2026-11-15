@@ -5,7 +5,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/access"
 	"github.com/ysk6506/praxium/backend/internal/contract"
-	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/kgread"
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
@@ -70,25 +70,6 @@ func finish(d *listDef) *listDef {
 	return d
 }
 
-// objectTypeSummary is the shape of an item of GET /v1/object-types.
-func objectTypeSummary(t model.ObjectType) map[string]any {
-	return map[string]any{
-		"id": t.ID.String(), "type_no": t.TypeNo, "name": t.Name, "aliases": strs(t.Aliases),
-		"namespace": string(t.Namespace), "layer": string(t.Layer), "tier": string(t.EffectiveTier()),
-		"parent": opt(t.Parent.String()), "traits": traitIDs(t.Traits), "status": string(t.Status),
-		"superseded_by": opt(t.SupersededBy.String()), "description": t.Description,
-		"standard_ref": t.StandardRef, "display_names": displayNames(t.DisplayNames),
-	}
-}
-
-func traitIDs(in []model.TraitID) []string {
-	out := make([]string, 0, len(in))
-	for _, id := range in {
-		out = append(out, id.String())
-	}
-	return out
-}
-
 func objectTypeList(reg *model.Registry) *listDef {
 	d := &listDef{
 		filters: map[string][]string{
@@ -110,7 +91,7 @@ func objectTypeList(reg *model.Registry) *listDef {
 			subtypeOf = append(subtypeOf, a.String())
 		}
 		d.rows = append(d.rows, row{
-			id: t.ID.String(), out: objectTypeSummary(t),
+			id: t.ID.String(), out: kgread.ObjectTypeSummary(t),
 			vals: map[string]any{
 				"layer": string(t.Layer), "namespace": string(t.Namespace), "status": string(t.Status),
 				"tier": string(t.EffectiveTier()), "name": t.Name, "trait": carried, "parent": t.Parent.String(),
@@ -119,49 +100,6 @@ func objectTypeList(reg *model.Registry) *listDef {
 		})
 	}
 	return finish(d)
-}
-
-// covered lists the ids of the object types an end of a binding or an action covers:
-// a type and its subtypes, the types that carry a trait, or every type.
-func covered(reg *model.Registry, all []string, e model.Endpoint) []string {
-	switch e.Kind {
-	case model.EndpointAny:
-		return all
-	case model.EndpointType:
-		out := []string{e.Ref}
-		id, err := kernel.ParseID[model.ObjectTypeKind](e.Ref)
-		if err != nil {
-			return out
-		}
-		for _, sub := range reg.Subtypes(id) {
-			out = append(out, sub.ID.String())
-		}
-		return out
-	case model.EndpointTrait:
-		id, err := kernel.ParseID[model.TraitKind](e.Ref)
-		if err != nil {
-			return nil
-		}
-		var out []string
-		for _, t := range reg.TypesWithTrait(id) {
-			out = append(out, t.ID.String())
-		}
-		return out
-	}
-	return nil
-}
-
-func linkTypeSummary(l model.LinkType) map[string]any {
-	params := map[string]string{}
-	for k, v := range l.MeaningParams {
-		params[k] = v
-	}
-	return map[string]any{
-		"id": l.ID.String(), "link_type_no": l.LinkTypeNo, "name": l.Name, "aliases": strs(l.Aliases),
-		"namespace": string(l.Namespace), "meaning": string(l.Meaning), "meaning_params": params,
-		"delay_class": string(l.EffectiveDelay()), "status": string(l.Status),
-		"superseded_by": opt(l.SupersededBy.String()), "description": l.Description, "binding_count": len(l.Bindings),
-	}
 }
 
 func linkTypeList(reg *model.Registry, l *registryLists) *listDef {
@@ -175,15 +113,15 @@ func linkTypeList(reg *model.Registry, l *registryLists) *listDef {
 	for _, lt := range reg.LinkTypes() {
 		from, to := map[string]bool{}, map[string]bool{}
 		for _, b := range lt.Bindings {
-			for _, id := range covered(reg, l.typeIDs, b.From) {
+			for _, id := range kgread.Covered(reg, l.typeIDs, b.From) {
 				from[id] = true
 			}
-			for _, id := range covered(reg, l.typeIDs, b.To) {
+			for _, id := range kgread.Covered(reg, l.typeIDs, b.To) {
 				to[id] = true
 			}
 		}
 		d.rows = append(d.rows, row{
-			id: lt.ID.String(), out: linkTypeSummary(lt),
+			id: lt.ID.String(), out: kgread.LinkTypeSummary(lt),
 			vals: map[string]any{
 				"meaning": string(lt.Meaning), "namespace": string(lt.Namespace), "status": string(lt.Status),
 				"delay_class": string(lt.EffectiveDelay()), "name": lt.Name, "link_type_no": lt.LinkTypeNo,
@@ -203,22 +141,6 @@ func sortedKeys(set map[string]bool) []string {
 	return out
 }
 
-func actionTypeView(a model.ActionType) map[string]any {
-	return map[string]any{
-		"id": a.ID.String(), "name": a.Name, "aliases": strs(a.Aliases), "namespace": string(a.Namespace),
-		"applies_to": toAny(endpointsOf(a.AppliesTo)), "mutates": a.Mutates, "reversibility": opt(string(a.Reversibility)),
-		"disruption": string(a.Disruption), "physical": a.Physical, "declared_effects": strs(a.DeclaredEffects),
-		"inverse": opt(a.Inverse.String()), "description": a.Description, "status": string(a.Status),
-		"superseded_by": opt(a.SupersededBy.String()),
-	}
-}
-
-// toAny passes a view through JSON so it nests inside a map like any other value.
-func toAny(v any) any {
-	m := toMap(map[string]any{"v": v})
-	return m["v"]
-}
-
 func actionTypeList(reg *model.Registry, l *registryLists) *listDef {
 	d := &listDef{
 		filters: map[string][]string{
@@ -229,12 +151,12 @@ func actionTypeList(reg *model.Registry, l *registryLists) *listDef {
 	for _, a := range reg.ActionTypes() {
 		cover := map[string]bool{}
 		for _, e := range a.AppliesTo {
-			for _, id := range covered(reg, l.typeIDs, e) {
+			for _, id := range kgread.Covered(reg, l.typeIDs, e) {
 				cover[id] = true
 			}
 		}
 		d.rows = append(d.rows, row{
-			id: a.ID.String(), out: actionTypeView(a),
+			id: a.ID.String(), out: kgread.ActionTypeView(a),
 			vals: map[string]any{
 				"namespace": string(a.Namespace), "status": string(a.Status), "disruption": string(a.Disruption),
 				"name": a.Name, "applies_to": sortedKeys(cover),
@@ -244,26 +166,12 @@ func actionTypeList(reg *model.Registry, l *registryLists) *listDef {
 	return finish(d)
 }
 
-func traitView(t model.Trait) map[string]any {
-	return map[string]any{
-		"id": t.ID.String(), "name": t.Name, "aliases": strs(t.Aliases), "description": t.Description,
-		"properties": toAny(propertiesOf(t.Properties)), "needs": toAny(needsOf(t.Needs)),
-	}
-}
-
 func traitList(reg *model.Registry) *listDef {
 	d := &listDef{filters: map[string][]string{"name": opsText}, sorts: []string{"name"}, defSort: []string{"name"}}
 	for _, t := range reg.Traits() {
-		d.rows = append(d.rows, row{id: t.ID.String(), out: traitView(t), vals: map[string]any{"name": t.Name}})
+		d.rows = append(d.rows, row{id: t.ID.String(), out: kgread.TraitView(t), vals: map[string]any{"name": t.Name}})
 	}
 	return finish(d)
-}
-
-func schemeView(s model.IdentifierScheme) map[string]any {
-	return map[string]any{
-		"id": s.ID.String(), "name": s.Name, "aliases": strs(s.Aliases), "namespace": string(s.Namespace),
-		"normalizer": s.Normalizer.String(), "description": s.Description,
-	}
 }
 
 func schemeList(reg *model.Registry) *listDef {
@@ -273,7 +181,7 @@ func schemeList(reg *model.Registry) *listDef {
 	}
 	for _, s := range reg.IdentifierSchemes() {
 		d.rows = append(d.rows, row{
-			id: s.ID.String(), out: schemeView(s),
+			id: s.ID.String(), out: kgread.SchemeView(s),
 			vals: map[string]any{"namespace": string(s.Namespace), "name": s.Name},
 		})
 	}
@@ -333,13 +241,13 @@ func meaningList() *listDef {
 	for _, spec := range model.MeaningSpecs() {
 		params := []map[string]any{}
 		for _, p := range spec.Params {
-			params = append(params, map[string]any{"name": p.Name, "kind": string(p.Kind), "values": strs(p.Values)})
+			params = append(params, map[string]any{"name": p.Name, "kind": string(p.Kind), "values": kgread.Strs(p.Values)})
 		}
 		d.rows = append(d.rows, row{
 			id: string(spec.Meaning), vals: map[string]any{},
 			out: map[string]any{
-				"meaning": string(spec.Meaning), "from_channel": opt(string(spec.From)), "to_channel": opt(string(spec.To)),
-				"from_param": opt(spec.FromParam), "spreads": spec.Spreads(), "params": toAny(params),
+				"meaning": string(spec.Meaning), "from_channel": kgread.Opt(string(spec.From)), "to_channel": kgread.Opt(string(spec.To)),
+				"from_param": kgread.Opt(spec.FromParam), "spreads": spec.Spreads(), "params": kgread.ToAny(params),
 			},
 		})
 	}

@@ -219,33 +219,34 @@ REST의 `shape`는 `summary`(개수만)와 `items`예요. 기본 `summary`로 `k
 - 판 처리 표의 미확인 칸(N11, N12, N13, O5, O8, O9). 실제 클라이언트나 적합성 테스트로 확인하고 값을 확정해요.
 - `brief`와 `full`이 싣는 필드, REST의 읽기 조건 인자를 툴에 노출할지, `mode: both`의 한 벌 줄이기.
 - 값의 정리와 자르기가 `structuredContent`에도 걸리는지. 걸리면 "`data`는 REST와 같은 내용"이 아니게 되고 에이전트가 정리된 값을 다음 호출의 조건으로 쓰면 맞지 않을 수 있어요. 안 걸리면 `content`만 정리해서 모델에 가는 글은 안전하지만, `structuredContent`를 그대로 모델에 넘기는 클라이언트에서는 정리가 빠져요.
-- 정의 읽기 툴의 이름과 접두어, 새 오류 코드(받지 않는 토큰)의 이름, 공통 유닛의 이름(8.2절의 `core.readuse`는 작업 이름), 토큰 만료를 미리 알리는 방법(응답의 `warnings`와 서버 로그를 후보로 둠), 이 인터페이스를 `plan.md`의 어느 차수에 넣을지, 옛 판을 끝내는 정책의 날짜, 연결 안내의 하네스별 설정 예.
+- 정의 읽기 툴의 이름과 접두어, 새 오류 코드(받지 않는 토큰)의 이름, 토큰 만료를 미리 알리는 방법(응답의 `warnings`와 서버 로그를 후보로 둠), 이 인터페이스를 `plan.md`의 어느 차수에 넣을지, 옛 판을 끝내는 정책의 날짜, 연결 안내의 하네스별 설정 예.
 
 **측정 뒤에 정함** (에이전트 평가용 과제 모음이 먼저 있어야 재요. 3단계 전에 만들어요)
 - 결과 크기 상한(약 8천 토큰), `content`에 JSON을 한 번 더 실을지(클라이언트가 두 자리를 모두 모델에 넘기면 토큰이 두 배), 계정별 한도와 동시 계산 상한과 주체별 읽은 객체 수 상한의 값, `ttlMs`, 시간 예산 10초, 상위 20개, 큰 KG에서 `kg_impact`가 쓸 만한 규모.
 
 ## 8. 코드의 자리
 
-### 8.1 지금 `httpapi` 안에 있는 것
+### 8.1 `httpapi`에서 `core.kgread`로 옮긴 것
 
-구조 계약은 어댑터끼리의 import를 막아서 "REST와 같은 코드"를 지키려면 아래를 함께 쓰는 자리로 옮겨야 해요(파일을 읽어 확인한 목록).
+구조 계약은 어댑터끼리의 import를 막아서 "REST와 같은 코드"를 지키려면 아래를 함께 쓰는 자리로 옮겨야 해요. 옮기는 변경(구현 순서 1)에서 파일을 읽어 정한 결과예요. REST의 동작은 바뀌지 않았고 기존 테스트가 그대로 통과해요.
 
-| 파일 | 옮길 것 | 새 자리 |
+| 파일 | 옮긴 것(`backend/internal/kgread`) | `httpapi`에 남은 것과 이유 |
 |---|---|---|
-| `auth.go` | 토큰 → 주체(`authenticate`, `askAuthenticator`, 실패 제한 `refuseToken`·`isRefusal`, 감사 줄 `authAudit`, 역할 판정 `authorize`·`satisfies`)를 HTTP와 무관한 함수로. `clientKey`는 `net`을 쓰므로 3항을 보세요 | 공통 유닛 |
-| `kg_source.go` | 읽기 필터 `readFilter`, 질의 오류 → 오류 코드의 대응(`failErr`와 `queryProblems`, `fieldParams`, `plainMessage`), 엔벨로프 변환 `metaOf`, 기간 해석(`parseDuration`, `durationUnit`, `optInt`). `commonOf`는 GET의 쿼리 문자열 쪽이라 MCP에는 안 쓰고 REST에 남아요 | 공통 유닛 |
-| `kg_questions.go` | 본문 구조체(`commonBody`, `findBody`, `getBody`, `neighborsBody`, `impactBody`, `attrBody`, `identBody`)와 본문 쪽의 공통 입력 `commonBody.common`, 해석(`readBody`의 모르는 필드 거절, `identOf`), 질의 호출(`askFind`, `askGet`, `askNeighbors`, `askImpact`)의 입력 해석 부분 | 공통 유닛 |
-| `lists.go`, `views.go`, `handlers_registry.go` | `kg_catalog`가 쓰는 모델 목록과 뷰(`objectTypeList`, `linkTypeList`, `schemeList`와 `propertyView` 등). 목록의 내용을 만드는 부분만 | 공통 유닛 |
-| 그 밖의 파일(`problem.go`, `middleware.go`, `server.go`, `ui.go`, `respond.go`, `handlers*.go`, `routes.go` 등) | HTTP 전용이라 그대로. 파일마다 옮길지는 구현 때 한 번 더 읽고 정해요 | `httpapi` |
+| `auth.go` | 토큰 → 주체와 실패 제한, 감사 줄, 역할 판정(`Gate.Authenticate`, `Gate.Authorize`, `Gate.Satisfies`), 역할 상수 | `clientKey`(`net`을 씀), `Authorization` 헤더 읽기, `Retry-After` 헤더 쓰기. 호출자의 주소는 문자열 하나(`Caller.Key`)로 넘겨요 |
+| `kg_source.go` | 읽기 필터(`Service.ReadFilter`), 질의 오류 → 오류 코드의 대응(`Service.Refuse`, `queryProblems`, `fieldParams`, `PlainMessage`), 엔벨로프 변환 `MetaOf`, 기간 해석 `ParseDuration`, `OptInt`, `KGSource`, 저장소가 없는 상태(`Service.Ready`) | `commonOf`와 `kgParams`(GET의 쿼리 문자열), `kgOK`(ETag와 304) |
+| `kg_questions.go` | 본문 구조체, 모르는 필드 거절을 포함한 해석(`DecodeBody`), 공통 입력, 식별자 해석, 질문 넷의 입력 해석과 호출(`Service.AskFind`, `AskGet`, `AskNeighbors`, `AskImpact`) | 본문 읽기에서 크기 한도 오류를 `BodyTooLargeError`로 바꾸는 얇은 겹(`net/http`의 오류를 알아야 해요) |
+| `kg_handlers.go` | 질의 호출(`Service.Find`, `Get`, `Neighbors`, `Impact`)과 결과의 `meta` 변환 | 필터와 쿼리 문자열 해석(`filter[..][..]`, `include`, `max_steps`)과 KG 목록. URL에 묶여 있고 MCP는 JSON 인자를 써요 |
+| `views.go`, `lists.go`, `handlers_registry.go` | `kg_catalog`가 쓸 모델 목록의 내용: 뷰 타입 전부, 타입 요약(`ObjectTypeSummary`, `LinkTypeSummary`, `TraitView`, `SchemeView`, `ActionTypeView`), 타입 끝의 덮는 범위 `Covered` | 목록의 틀(`listDef`, `row`, 필터·정렬·페이지·커서)과 필터용 값. 쿼리 문자열과 커서 규칙이라 REST 전용이에요 |
+| 그 밖의 파일(`problem.go`, `middleware.go`, `server.go`, `ui.go`, `respond.go`, `handlers*.go`, `routes.go` 등) | 없음 | HTTP 전용이라 그대로 |
 
-REST의 동작은 **공통 유닛으로 옮기는 변경에서는** 바뀌지 않아야 하고 기존 테스트가 그대로 통과해야 해요. 영향 범위의 순서와 계정별 한도는 그다음 변경에서 바뀌어요.
+REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아니어서 생기는 타입 오류의 `params.expected`가 Go 타입 이름(`httpapi.findBody`)이었는데, 내부 이름이 새던 것이라 `object`로 바로잡았어요. 다른 필드의 `expected`는 그대로예요. 영향 범위의 순서와 계정별 한도는 그다음 변경에서 바뀌어요.
 
 ### 8.2 새 유닛과 계층
 
-| 유닛(작업 이름) | 위치 | 계층·import | 하는 일 |
+| 유닛 | 위치 | 계층·import | 하는 일 |
 |---|---|---|---|
-| `core.readuse` | `backend/internal/readuse` | 코어. `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access`. 어댑터와 `net`, `net/http`를 import하지 않음 | 위 표의 것. 입력은 "주체와 원본 JSON 인자", 결과는 "결과나 목록의 오류 코드". 계정별 한도와 프로세스 전체의 동시 계산 상한 |
-| `adapter.mcp` | `backend/internal/mcpapi` | 어댑터. `core.kernel`, `core.contract`, `core.access`, `core.readuse`(필요한 만큼). `adapter.http`를 import하지 않음 | **전송과 판 처리만**: JSON-RPC 한 겹, `POST /mcp`, 판 처리 표, 헤더와 출처 검증, JSON 응답 |
+| `core.kgread` | `backend/internal/kgread` | 코어. `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access`. 어댑터와 `net`, `net/http`를 import하지 않음 | 위 표의 것. 입력은 "주체와 원본 JSON 인자", 결과는 "결과나 목록의 오류 코드". 계정별 한도와 프로세스 전체의 동시 계산 상한 |
+| `adapter.mcp` | `backend/internal/mcpapi` | 어댑터. `core.kernel`, `core.contract`, `core.access`, `core.kgread`(필요한 만큼). `adapter.http`를 import하지 않음 | **전송과 판 처리만**: JSON-RPC 한 겹, `POST /mcp`, 판 처리 표, 헤더와 출처 검증, JSON 응답 |
 | 툴 등록부 | `mcpapi` 안의 전송과 분리된 패키지나 파일 | 같은 유닛 | 이름, 설명, 입력·출력 스키마, 실행 함수. 전송을 모르고 "주체, 이름, 원본 인자 → 중립 결과(글 블록, 구조화 값, 오류 표시)"의 모양이에요 |
 
 - 지금 `httpapi`는 `core.identity`를 import하지 않고 `core.access`의 포트(`Authenticator`)만 써요. 공통 유닛도 같아요. `kg_whoami`의 만료일은 `Subject`에 없고 `access.Directory`에서 읽어야 해요. 개발용 인증기(`demo`, `local`)에는 `Directory`가 없어서 이때는 만료일을 비워요.
@@ -255,10 +256,10 @@ REST의 동작은 **공통 유닛으로 옮기는 변경에서는** 바뀌지 �
 
 ### 8.3 구조 계약에서 바뀌는 것
 
-보호 경로이므로 구현하는 변경이 ADR-0062를 `touches_protected`에 적어요. 이 문서 작업은 구조 계약을 바꾸지 않아요.
+보호 경로이므로 구현하는 변경이 새 결정 기록으로 바꿔요(첫 변경은 ADR-0067). 공통 유닛으로 옮기는 변경은 `core.kgread`를 더하고 `adapter.http`의 `may_import`에 넣었어요(아래에서 `adapter.mcp`만 남아요).
 
-- `harness/config/architecture.yaml`: 유닛 `core.readuse`와 `adapter.mcp`를 더하고, `adapter.http`의 `may_import`에 `core.readuse`를 더해요. `restricted_stdlib`의 `net/http`와 `net`에 `adapter.mcp`를 더할지는 어댑터가 `net`을 쓰는지에 따라 정해요(`adapter.http`가 이미 있어요). 서드파티는 계속 `lib/pq` 하나예요.
-- `ARCHITECTURE.md`: 유닛 표에 두 행을 더하고, `core.contract` 행의 "MCP 툴은 이후에 추가한다"를 채우고, `adapter.http` 행의 설명에서 옮긴 것을 줄여요.
+- `harness/config/architecture.yaml`: 유닛 `adapter.mcp`를 더해요(`core.kgread`는 더했어요). `restricted_stdlib`의 `net/http`와 `net`에 `adapter.mcp`를 더할지는 어댑터가 `net`을 쓰는지에 따라 정해요(`adapter.http`가 이미 있어요). 서드파티는 계속 `lib/pq` 하나예요.
+- `ARCHITECTURE.md`: 유닛 표에 `adapter.mcp` 행을 더하고(`core.kgread` 행은 더했어요), `core.contract` 행의 "MCP 툴은 이후에 추가한다"를 채우고, `adapter.http` 행의 설명에서 옮긴 것을 줄여요.
 - `core.contract`: 툴 정의의 계약 파일(이름, 설명, 입력·출력 스키마, 읽기 전용 주석, `/mcp`가 내는 툴 목록)과 코드의 등록부를 대조하는 검사를 더해요. 출력 스키마는 REST 응답의 스키마와 같은 원본에서 나와요. `/mcp`는 OpenAPI 밖이라 경로 대조 테스트의 예외 목록에 올려요.
 
 ## 9. 한도와 기록
