@@ -12,6 +12,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 7a0870e63962bac3
+amended_by:
+  - adr: "0061"
+    what: 현실을 바꾸는 경로가 없다는 전제와 가용성
 ---
 # ADR-0011 KG를 운영한다: 문제는 규칙으로 해결하고, 질의는 중단되지 않고, 스트림이 중단돼도 잃지 않는다
 

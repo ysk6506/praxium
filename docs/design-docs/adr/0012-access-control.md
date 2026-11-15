@@ -13,6 +13,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 78153c955042b1fc
+amended_by:
+  - adr: "0061"
+    what: 판단 지점에 게이트웨이가 더해진다
 ---
 # ADR-0012 권한: 사내 SSO의 사람과 그룹에, 제품 내장 역할을, 범위와 함께, 관리자가 부여한다
 

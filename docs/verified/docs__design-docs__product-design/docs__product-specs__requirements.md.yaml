@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "3ea3cab3fb6b8991"
-date: "2026-11-14"
-note: "입구 문서로 줄어듦: 목표, 기반, 프로세스, 범위 밖과 영역 목록. 개요 1~2절의 기둥과 원칙, 지도와 대조해 어긋남 없음. 새 REQ-394~397은 문서 확인 시점과 문서 구조에 관한 것"
+hash: "92d5a590e5a6f13e"
+date: "2026-11-15"
+note: "개요의 순서 표와 지도를 requirements 와 다시 대조함. 게이트웨이 요구사항 범위와 문서 지도를 더했다"
 text_changed: true
-doc_hash: "019854b80cb4930e"
+doc_hash: "8e695bd22acd457d"

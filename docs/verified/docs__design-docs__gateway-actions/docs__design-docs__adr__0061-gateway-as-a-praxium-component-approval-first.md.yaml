@@ -1,0 +1,7 @@
+doc: "docs/design-docs/gateway-actions.md"
+target: "docs/design-docs/adr/0061-gateway-as-a-praxium-component-approval-first.md"
+hash: "95037e8a1a4a7810"
+date: "2026-11-15"
+note: "ADR-0061의 고친 두 곳(조직 로그 수집이 멈췄을 때의 동작을 결정으로 옮김, 하위 에이전트 문장의 낱말을 이어가기 번호로 고침)과 대조했다. 이 문서에는 해당 내용이 없어 바꿀 곳이 없다."
+text_changed: true
+doc_hash: "c8e291c147e72ccb"

@@ -1,0 +1,7 @@
+doc: "docs/design-docs/gateway-actions.md"
+target: "backend/internal/model/standard/actions.json"
+hash: "4b7d97385d6a54b4"
+date: "2026-11-15"
+note: "actions.json의 바꾸는 액션 95개와 표의 행 수와 집계를 대조함. 1차 대상 10개와 경계 2개가 3절과 같다"
+text_changed: true
+doc_hash: "f1b8fef501de0102"
