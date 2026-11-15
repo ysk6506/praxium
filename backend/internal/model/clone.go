@@ -67,6 +67,7 @@ func (b Binding) Clone() Binding {
 		}
 		b.ParamConstraints = constraints
 	}
+	b.ParamDefaults = maps.Clone(b.ParamDefaults)
 	return b
 }
 

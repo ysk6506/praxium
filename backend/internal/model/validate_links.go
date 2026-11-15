@@ -95,6 +95,7 @@ func (c *checker) checkBindings(what string, l *LinkType, bindingIDs map[Binding
 		}
 		seen[bindingKey{b.From, b.To}] = true
 		c.checkConstraints(bwhat, l, b)
+		c.checkDefaults(bwhat, l, b)
 	}
 }
 
@@ -154,6 +155,49 @@ func (c *checker) checkConstraintValues(what string, l *LinkType, param ParamSpe
 		case fixed != "" && value != fixed:
 			c.fail(CodeBindingConstraint, "%s: %s allows %q but the link type fixes it to %q", what, param.Name, value, fixed)
 		}
+	}
+}
+
+// allowedValues is what a link of the binding may say for an enum parameter: the link type's value if it fixes one,
+// else the values the binding narrows to, else every value of the parameter.
+func allowedValues(l *LinkType, b *Binding, param ParamSpec) []string {
+	if fixed := l.MeaningParams[param.Name]; fixed != "" {
+		return []string{fixed}
+	}
+	if values := b.ParamConstraints[param.Name]; len(values) > 0 {
+		return values
+	}
+	return param.Values
+}
+
+// checkDefaults checks the parameter defaults of a binding. A default names an enum parameter of the meaning and
+// is one of the values the binding allows. A binding that allows several values, none of which is the default of
+// the meaning, must say which one a link takes: the meaning cannot be guessed for it.
+func (c *checker) checkDefaults(what string, l *LinkType, b *Binding) {
+	spec, ok := SpecOf(l.Meaning)
+	if !ok {
+		return
+	}
+	names := make([]string, 0, len(b.ParamDefaults))
+	for name := range b.ParamDefaults {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	for _, name := range names {
+		param, found := spec.Param(name)
+		switch {
+		case !found || param.Kind != ParamEnum:
+			c.fail(CodeBindingConstraint, "%s gives a default for %q, which is not an enum parameter of %s", what, name, l.Meaning)
+		case !oneOf(b.ParamDefaults[name], allowedValues(l, b, param)):
+			c.fail(CodeBindingConstraint, "%s: the default of %s is %q, which is not one of the values it allows: %v", what, name, b.ParamDefaults[name], allowedValues(l, b, param))
+		}
+	}
+	for _, param := range spec.Params {
+		allowed := allowedValues(l, b, param)
+		if param.Default == "" || len(allowed) < 2 || oneOf(param.Default, allowed) || b.ParamDefaults[param.Name] != "" {
+			continue
+		}
+		c.fail(CodeBindingConstraint, "%s allows %v for %s, which leaves out %q, the default of the meaning: it needs param_defaults for %s", what, allowed, param.Name, param.Default, param.Name)
 	}
 }
 

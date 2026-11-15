@@ -17,6 +17,9 @@ type ParamSpec struct {
 	Name   string
 	Kind   ParamKind
 	Values []string // the allowed values of an enum parameter
+	// Default is the value of the meaning when nothing narrower says one (the last step of ResolveParams). Only
+	// the parameters the impact query reads have one.
+	Default string
 }
 
 // MeaningSpec says how a meaning spreads state: which channel of the start
@@ -32,9 +35,9 @@ type MeaningSpec struct {
 }
 
 var (
-	paramStrength = ParamSpec{Name: "strength", Kind: ParamEnum, Values: []string{"hard", "soft"}}
+	paramStrength = ParamSpec{Name: "strength", Kind: ParamEnum, Values: []string{"hard", "soft"}, Default: "hard"}
 	paramResource = ParamSpec{Name: "resource", Kind: ParamEnum, Values: []string{"power", "cooling", "network", "storage"}}
-	paramWhole    = ParamSpec{Name: "whole_needs_part", Kind: ParamEnum, Values: []string{"hard", "soft", "none"}}
+	paramWhole    = ParamSpec{Name: "whole_needs_part", Kind: ParamEnum, Values: []string{"hard", "soft", "none"}, Default: "none"}
 	paramFailover = ParamSpec{Name: "failover_to", Kind: ParamTypeRef}
 	paramDemand   = ParamSpec{Name: "demand", Kind: ParamNumber}
 	paramWeight   = ParamSpec{Name: "weight", Kind: ParamNumber}

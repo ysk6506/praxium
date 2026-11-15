@@ -8,7 +8,7 @@ import (
 )
 
 // The hash of the standard model; the organisation model never changes it when there is none.
-const standardModelHash = "712b5ae602cd347af9b4eecaa975b3637b5e96ccaa9d8682064d31749a07f98a"
+const standardModelHash = "2d42f2f343d9316bd8711733bc54fa0da17512cdd92315f65841568f9d74a6bf"
 
 // [REQ-346]
 func TestStandardHashIsTheSameWithNoOverlay(t *testing.T) {

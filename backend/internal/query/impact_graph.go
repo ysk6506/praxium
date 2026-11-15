@@ -336,7 +336,8 @@ func (l *loader) addLink(row graph.LinkRow) {
 	l.wire(lt, src, dst, idx)
 }
 
-// params resolves the parameters of a link's meaning: the link type fixes some, the binding of the two types narrows the rest.
+// paramsOf resolves the parameters of a link's meaning once for each pair of types. The model decides: the link
+// type fixes some, and the binding of the two types gives the rest (model.ResolveParams has the order).
 func (l *loader) paramsOf(lt model.LinkType, src, dst int32) linkParams {
 	sn, dn := &l.g.nodes[src], &l.g.nodes[dst]
 	key := [3]int{lt.LinkTypeNo, sn.typeNo, dn.typeNo}
@@ -344,36 +345,11 @@ func (l *loader) paramsOf(lt model.LinkType, src, dst int32) linkParams {
 		return p
 	}
 	p := linkParams{whole: "none", resource: lt.MeaningParams["resource"]}
-	var constraints map[string][]string
-	if b, ok := l.e.reg.BindingFor(l.e.types.byNo[sn.typeNo].typ.ID, l.e.types.byNo[dn.typeNo].typ.ID, lt.ID); ok {
-		constraints = b.ParamConstraints
+	if got, ok := l.e.reg.ParamsFor(l.e.types.byNo[sn.typeNo].typ.ID, l.e.types.byNo[dn.typeNo].typ.ID, lt.ID, nil); ok {
+		p = linkParams{soft: got.Strength == "soft", whole: got.WholeNeedsPart, resource: got.Resource, failover: got.FailoverTo}
 	}
-	strength := lt.MeaningParams["strength"]
-	if strength == "" && len(constraints["strength"]) == 1 {
-		strength = constraints["strength"][0]
-	}
-	p.soft = strength == "soft"
-	whole := lt.MeaningParams["whole_needs_part"]
-	if whole == "" {
-		whole = pickWhole(constraints["whole_needs_part"])
-	}
-	if whole != "" {
-		p.whole = whole
-	}
-	p.failover = constraints["failover_to"]
 	l.params[key] = p
 	return p
-}
-
-// pickWhole reads the allowed values of whole_needs_part: one value is that value; several are read as the weaker, soft.
-func pickWhole(values []string) string {
-	switch len(values) {
-	case 0:
-		return ""
-	case 1:
-		return values[0]
-	}
-	return "soft"
 }
 
 // wire turns a link into the edges it means.

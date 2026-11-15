@@ -788,6 +788,14 @@
             "description": "The values this binding accepts for a parameter of the meaning.",
             "type": "object"
           },
+          "param_defaults": {
+            "additionalProperties": {
+              "description": "The value.",
+              "type": "string"
+            },
+            "description": "The value a link takes for a parameter of the meaning when nothing says otherwise. Left out when the binding gives none.",
+            "type": "object"
+          },
           "to": {
             "$ref": "#/components/schemas/Endpoint"
           }

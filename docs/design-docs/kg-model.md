@@ -95,7 +95,7 @@ follows:
 | delay_class | 링크 타입 | `immediate` / `delayed`. 전파가 늦게 나타나면 응답에 표시만 해요(14절) |
 | from, to | 바인딩 | 출발과 도착. 타입이나 특성으로 지정해요 |
 | cardinality | 바인딩 | 카디널리티 `1:1`, `1:N`, `N:1`, `N:M` (출발:도착) |
-| param_constraints | 바인딩 | 매개 값의 제약 (예: 이 바인딩에서는 `strength`가 `hard`만) |
+| param_constraints, param_defaults | 바인딩 | 매개 값의 제약 (예: 이 바인딩에서는 `strength`가 `hard`만)과, 링크가 값을 쓰지 않았을 때 쓰는 기본값. 기본값은 허용 값 중 하나이고, 허용 값이 여럿인데 링크 의미의 기본값이 그 안에 없으면 반드시 있어야 해요 (예: `VirtualDisk` → `VirtualMachine`의 `PART_OF`는 `whole_needs_part`가 `hard`와 `soft`이고 기본값이 `soft`) |
 
 카디널리티와 제약이 바인딩에 붙어서 `RUNS_ON` 같은 일반 이름을 여러 층에 걸쳐 사용해요. 예: `RUNS_ON`은 `VirtualMachine` → `HypervisorHost`(N:1, `failover_to` 허용), `Pod` → `ClusterNode`(N:1), `OperatingSystem` → `VirtualMachine` 또는 `PhysicalServer`(N:1)를 바인딩으로 가져요.
 

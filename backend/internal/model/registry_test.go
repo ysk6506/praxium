@@ -332,7 +332,7 @@ func TestBindingsForAPair(t *testing.T) {
 		return out
 	}
 	got := ids(r.BindingsFor(otID("ot.server"), otID("ot.rack")))
-	want := []string{"bd.mounted_in.mountable.rack", "bd.mounted_in.server.rack", "bd.powered_by.powered.any"}
+	want := []string{"bd.mounted_in.server.rack", "bd.mounted_in.mountable.rack", "bd.powered_by.powered.any"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("server to rack (by type, by trait, to any object): %v, want %v", got, want)
 	}

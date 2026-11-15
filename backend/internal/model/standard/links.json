@@ -2969,6 +2969,9 @@
         "cardinality": "N:1",
         "param_constraints": {
           "whole_needs_part": ["hard", "soft"]
+        },
+        "param_defaults": {
+          "whole_needs_part": "soft"
         }
       },
       {
@@ -4059,7 +4062,7 @@
           "kind": "type",
           "ref": "ot.virtualization_manager"
         },
-        "cardinality": "N:1"
+        "cardinality": "N:M"
       },
       {
         "id": "bd.managed_by.datastore.virtualization_manager",
@@ -6613,7 +6616,7 @@
           "kind": "type",
           "ref": "ot.failure_domain"
         },
-        "cardinality": "N:1"
+        "cardinality": "N:M"
       },
       {
         "id": "bd.in_failure_domain.any.failure_domain",

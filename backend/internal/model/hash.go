@@ -210,13 +210,21 @@ func bindingTree(b Binding) (string, any) {
 	for name, values := range b.ParamConstraints {
 		constraints[name] = sortedStrings(values)
 	}
-	return b.ID.String(), map[string]any{
+	tree := map[string]any{
 		"id":          b.ID.String(),
 		"from":        endpointTree(b.From),
 		"to":          endpointTree(b.To),
 		"cardinality": string(b.Cardinality),
 		"constraints": constraints,
 	}
+	if len(b.ParamDefaults) > 0 {
+		defaults := map[string]any{}
+		for name, value := range b.ParamDefaults {
+			defaults[name] = value
+		}
+		tree["defaults"] = defaults
+	}
+	return b.ID.String(), tree
 }
 
 func linkTypeTree(l LinkType) map[string]any {

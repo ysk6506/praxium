@@ -31,6 +31,9 @@ amends:
     what: 전원 장치의 `PART_OF`를 어레이까지 넓히지 않는다는 한계. 그룹이 장비에 속하는 `PART_OF`의 기본값과 바인딩 확장이 예정이 된다.
 amends_tests: []
 decision_hash: fecbf273d2dec345
+amended_by:
+  - adr: "0065"
+    what: 0단계에서 세 바인딩을 N:M으로 넓힌다는 부분. 둘만 넓히고 Circuit→Organization은 N:1로 둔다.
 ---
 # ADR-0059 표준 모델의 바인딩과 이중화 상실의 계산을 보강한다
 

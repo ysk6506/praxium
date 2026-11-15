@@ -197,6 +197,14 @@
                 "description": "A value."
               }
             }
+          },
+          "param_defaults": {
+            "type": "object",
+            "description": "The value a link takes for a parameter of the meaning when nothing says otherwise. Left out when the binding gives none.",
+            "additionalProperties": {
+              "type": "string",
+              "description": "The value."
+            }
           }
         },
         "required": ["id", "from", "to", "cardinality", "param_constraints"]
