@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "019854b80cb4930e"
-date: "2026-11-14"
-note: "제품 설계 개요에서 바뀐 곳은 목표 문장의 표현뿐이다. 계획의 순서와 상태는 영향이 없음을 확인했다"
-text_changed: false
-doc_hash: "8633716ed44e3d3b"
+hash: "8e695bd22acd457d"
+date: "2026-11-15"
+note: "product-design의 순서 표와 게이트웨이 순서를 같게 맞춤"
+text_changed: true
+doc_hash: "4ef8896c309e8022"

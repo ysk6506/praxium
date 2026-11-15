@@ -232,7 +232,7 @@ data: {"proposal_id": "prop_31", "from": "in_review", "to": "approved", "blocker
 **이유.** 사전 정의 질의에는 비용 등급이 있어요. 한도를 숨기면 화면이 무엇을 줄여야 하는지 알 수 없어요. 이 헤더는 아직 초안이라 이름이 바뀔 수 있어요(6절).
 
 ### 3-12. REST와 MCP는 같은 유스케이스 위의 두 어댑터
-권한 판단과 오류 `code`가 같고, 응답 엔벨로프는 MCP가 줄인 봉투(`{meta, next, data}`)를 써요(ADR-0062). 대응표는 5-6이에요.
+권한 판단과 오류 `code`가 같고, 응답 엔벨로프는 MCP가 줄인 엔벨로프(`{meta, next, data}`)를 써요(ADR-0062). 대응표는 5-6이에요.
 
 ### 3-13. 대량 읽기와 내보내기
 **규칙.** 범위 하나를 한 KG 버전에서 통째로 읽는 `bulk_read`와 정의 세트의 내보내기는 작업(3-7)이에요. 성공하면 `result.href`에서 페이지 단위로 내려받아요. 한 줄에 JSON 하나인 스트림(`application/x-ndjson`)이고 첫 줄이 엔벨로프(`meta`)예요. 중간에 끊겨도 `cursor`로 이어서 받아요. 숨김 규칙이 적용돼요. `bulk_read`는 `viewer`에게 별도 허가가 있어야 하고 사용한 사람이 감사 로그에 남아요(ADR-0012).
@@ -346,7 +346,7 @@ praxium job get job_4d2 --wait            # 끝날 때까지 기다려요
 - 출력은 기본이 JSON이고 `--output table`도 있어요. 종료 코드는 오류 그룹을 따라가요. 로그인은 사용자면 디바이스 인가 플로우(4절), 시스템이면 서비스 계정의 토큰이에요.
 
 ### 5-6. MCP와의 대응
-MCP 서버는 같은 유스케이스 위의 얇은 계층이에요. **KG의 MCP 인터페이스(`/mcp`)는 영구히 읽기 전용이에요.** KG를 수정하는 경로가 없고 툴 이름은 `kg_`에 사전 정의 질의의 이름을 붙여요. 툴은 `kg`(기본 `main`)를 받아요. 첫 묶음은 여섯 개이고 재수집과 기대와 대조는 첫 묶음에 없어요(ADR-0062, [KG의 읽기 전용 MCP 인터페이스](kg-mcp.md)). 운영 MCP 인터페이스는 `/mcp`와 다른 것이고 액션이 있어요([프락시움 자신의 관측성](self-observability.md)).
+MCP 서버는 같은 유스케이스 위의 얇은 계층이에요. **KG의 MCP 인터페이스(`/mcp`)는 영구히 읽기 전용이에요.** 게이트웨이(ADR-0061)는 다른 주소의 다른 구성요소이고 이 MCP 서버가 아니에요. KG를 수정하는 경로가 없고 툴 이름은 `kg_`에 사전 정의 질의의 이름을 붙여요. 툴은 `kg`(기본 `main`)를 받아요. 첫 릴리스는 툴 여섯 개이고, 재수집과 소스를 다시 읽는 값 확인은 `/mcp`에 얹지 않아요(ADR-0062, [KG의 읽기 전용 MCP 인터페이스](kg-mcp.md)). 운영 MCP 인터페이스는 `/mcp`와 다른 것이고 액션이 있어요([프락시움 자신의 관측성](self-observability.md)).
 
 | 사전 정의 질의 | REST | MCP 툴 | 차이점 |
 |---|---|---|---|
@@ -357,12 +357,12 @@ MCP 서버는 같은 유스케이스 위의 얇은 계층이에요. **KG의 MCP 
 | `quality`, `health` | `POST /v1/kgs/{kg}/queries:<이름>` | `kg_<이름>` | |
 | `scopes` | `GET /v1/kgs/{kg}/scopes` | `kg_scopes` | 범위를 만드는 경로는 REST만 |
 | `competency` | `POST /v1/kgs/{kg}/queries:competency` | `kg_competency` | |
-| 재수집 | `POST /v1/kgs/{kg}/refreshes` | 없음(첫 묶음) | 작업을 만들어서 읽기 전용 면에 두지 않아요 |
-| 기대와 대조 | `POST /v1/kgs/{kg}/value-checks` | 없음(첫 묶음) | |
+| 재수집 | `POST /v1/kgs/{kg}/refreshes` | 없음 | 작업을 만들고 소스를 다시 읽어서 `/mcp`에 두지 않아요. 요청 경로는 따로 정해요 |
+| 기대와 대조 | `POST /v1/kgs/{kg}/value-checks` | 없음 | 소스를 다시 읽는 확인은 `/mcp`에 두지 않아요 |
 | `bulk_read` | `POST /v1/kgs/{kg}/scopes/{scope_id}/bulk-reads` | 없음 | 에이전트에게 제공하지 않아요 |
-| 정의의 읽기 | `GET /v1/definitions-overview` 등 | `kg_definitions_overview`, `kg_proposal`, `kg_what_depends` 등(구현되는 대로) | 쓰기는 REST만 |
+| 정의의 읽기 | `GET /v1/definitions-overview` 등 | 이름과 접두어는 구현 때 정해요(ADR-0062) | 쓰기는 REST만 |
 
-- 입력의 `shape`는 REST에서 `summary`/`items`이고 MCP에서는 `detail`로 `brief`/`full`을 골라요(ADR-0010). 오류는 둘 다 같은 `code`를 주고 MCP는 `isError` 결과로 다음에 할 일을 추가로 알려 줘요.
+- 입력의 `shape`는 REST에서 `summary`/`items`이고 MCP에서는 `detail`로 `brief`/`full`을 고르고 둘 다 `items`예요(ADR-0010, kg-queries.md). 오류는 둘 다 같은 `code`를 주고 MCP는 `isError` 결과로 다음에 할 일을 추가로 알려 줘요.
 
 ## 6. 표준과의 비교
 설계를 표준 용어에 맞추고, 빠졌거나 어긋나는 곳을 적어요. 결정을 바꾸지는 않아요. 확인한 것과 가정을 구분해 적어요.

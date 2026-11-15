@@ -13,6 +13,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: f4a3780a5f754900
+amended_by:
+  - adr: "0061"
+    what: 게이트웨이가 복호화 주체로 더해진다
 ---
 # ADR-0018 시크릿과 암호화 — 평문으로 두지 않고, 사용하는 시점에만 복호화하고, 다시 노출되지 않고, 사용 이력이 남는다
 

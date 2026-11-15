@@ -15,6 +15,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 8d067e124059ef12
+amended_by:
+  - adr: "0061"
+    what: 게이트웨이 정의의 R3 하한과 승인자 지정
 ---
 # ADR-0014 정의의 버전과 브랜치: 바뀌지 않는 정의 세트, 제안과 검사, 직렬 큐로 반영하는 병합, 앞으로 나아가는 리버트, 정의의 계보
 

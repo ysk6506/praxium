@@ -1,7 +1,7 @@
 doc: "docs/guides/connect-agents.md"
 target: "docs/design-docs/adr/0062-kg-read-only-mcp-surface.md"
-hash: "ad5164cc6f5a725d"
+hash: "567d639de4b19d60"
 date: "2026-11-15"
-note: "조사 정정 뒤 본문 재확인"
-text_changed: false
-doc_hash: "d8448a0e4452affb"
+note: "병합 전 검토를 반영해 다시 썼다. 새 ADR-0062 본문, 게이트웨이 문서(ADR-0061), 코드의 역할·오류 코드와 대조"
+text_changed: true
+doc_hash: "cff94a5d6a9d4d31"

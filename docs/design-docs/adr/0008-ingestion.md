@@ -15,6 +15,9 @@ touches_protected:
   - docs/product-specs/requirements.md
 amends_tests: []
 decision_hash: 379c57d2814375f7
+amended_by:
+  - adr: "0061"
+    what: 읽기 전용은 수집에 한하고 쓰기는 게이트웨이
 ---
 # ADR-0008 현실 데이터 수집: 어댑터와 프리셋, 수집 방식 4가지, 변경을 입력받아 변경을 출력하는 실행기 하나, 속성 단위로 객체를 구축하는 피드, 읽기 전용 3중 장치, 안전장치
 

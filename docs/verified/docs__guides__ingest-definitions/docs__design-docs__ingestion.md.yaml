@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "docs/design-docs/ingestion.md"
-hash: "b8c5b8786b300494"
-date: "2026-11-14"
-note: "ADR-0055: 칸 문제의 자연 키는 이번에 넣지 않은 것으로 문서를 맞춤"
+hash: "fa88e0f6e1363314"
+date: "2026-11-15"
+note: "ingestion.md에 더한 예정(ADR-0059) 한 단락만 바뀌었다. 이 안내서가 설명하는 수집 정의의 동작과 어긋나지 않아 고칠 것이 없다."
 text_changed: true
-doc_hash: "140246e3d321420d"
+doc_hash: "a1e45f0d3f5c1c8a"
