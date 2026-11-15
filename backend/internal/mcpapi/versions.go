@@ -90,7 +90,7 @@ func decideByMeta(metaVer, header string, headerPresent bool) verdict {
 		if !headerPresent {
 			msg = "Header mismatch: the MCP-Protocol-Version header is missing."
 		}
-		return reject(400, codeHeaderMismatch, msg, nil)
+		return reject(400, codeHeaderMismatch, msg, map[string]any{"supported": supportedVersions})
 	}
 	if !isSupported(metaVer) {
 		return unsupported(metaVer)
