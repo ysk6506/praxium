@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/internal/worldgen/golden_test.go"
-hash: "8abfad7a3f39bf16"
-date: "2026-11-14"
-note: "스토리지 어레이의 전원 이중화 그룹(ADR-0057)에 맞춰 하드웨어·스토리지·전원 행을 고치고 나머지를 생성기 코드와 대조"
+hash: "9e2f2a26795fa0d6"
+date: "2026-11-15"
+note: "골든 테스트의 매니페스트 해시가 모델 해시(links.json 변경)로만 바뀌었다. 문서의 manifest 필드 설명(model_hash 포함)과 대조했고 고칠 것이 없다."
 text_changed: true
-doc_hash: "1b9f8fd619bab09b"
+doc_hash: "fe7bf582df2ec0f3"

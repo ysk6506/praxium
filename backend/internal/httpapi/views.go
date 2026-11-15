@@ -57,6 +57,7 @@ type bindingView struct {
 	To               endpointView        `json:"to"`
 	Cardinality      string              `json:"cardinality"`
 	ParamConstraints map[string][]string `json:"param_constraints"`
+	ParamDefaults    map[string]string   `json:"param_defaults,omitempty"`
 }
 
 type boundLinkView struct {
@@ -157,7 +158,7 @@ func bindingOf(b model.Binding) bindingView {
 	}
 	return bindingView{
 		ID: b.ID.String(), From: endpointOf(b.From), To: endpointOf(b.To),
-		Cardinality: string(b.Cardinality), ParamConstraints: constraints,
+		Cardinality: string(b.Cardinality), ParamConstraints: constraints, ParamDefaults: b.ParamDefaults,
 	}
 }
 

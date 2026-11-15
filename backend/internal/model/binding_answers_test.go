@@ -1,8 +1,9 @@
 package model_test
 
 import (
+	_ "embed"
 	"flag"
-	"os"
+	"fmt"
 	"sort"
 	"strings"
 	"testing"
@@ -12,18 +13,25 @@ import (
 
 // The answers of the standard model: for every (link type, start type, end type) the link may join, the cardinality
 // and the parameters the impact query reads. The table is kept in testdata/binding_answers.txt. To make it again
-// (only when a decision changes an answer, never to pass a check):
+// (only when a decision changes an answer, never to pass a check), print it and keep what lies between the markers:
 //
-//	cd backend && go test ./internal/model -run TestStandardBindingAnswersAreKept -update-binding-answers
+//	cd backend/internal/model && go test . -run TestStandardBindingAnswersAreKept -print-binding-answers -v |
+//	  sed -n '/^BEGIN-TABLE$/,/^END-TABLE$/p' | sed '1d;$d' > testdata/binding_answers.txt
 //
 // The table was first taken from the code before the priority (ADR-0059) existed. One row differs from that first
 // table on purpose: Circuit to Organization over OWNED_BY is N:1 and no longer N:M. The binding that wins there now
 // is the narrow one, and a circuit's identity key in the context of OWNED_BY needs a N:1 binding from Circuit, so
 // the binding cannot be widened as the other two winners were (ClusterNode to FailureDomain, VirtualMachine to
 // VirtualizationManager). Every other row is the same.
-var updateBindingAnswers = flag.Bool("update-binding-answers", false, "write testdata/binding_answers.txt")
+var printBindingAnswers = flag.Bool("print-binding-answers", false, "print the tables of the binding tests between markers")
+
+//go:embed testdata/binding_answers.txt
+var bindingAnswersWant string
 
 const bindingAnswersFile = "testdata/binding_answers.txt"
+
+// printTable writes a table between the markers that the command above cuts out.
+func printTable(table string) { fmt.Printf("BEGIN-TABLE\n%sEND-TABLE\n", table) }
 
 // answerTail is the part of a row that does not name the two types.
 func answerTail(r *model.Registry, lt model.LinkType, from, to model.ObjectTypeID) (string, bool) {
@@ -95,18 +103,12 @@ func TestStandardBindingAnswersAreKept(t *testing.T) {
 	// The impact answers do not change when the winning binding does: the cardinality and the parameters of every
 	// allowed pair of types are the ones in the table.
 	got := bindingAnswers(loadStd(t))
-	if *updateBindingAnswers {
-		if err := os.WriteFile(bindingAnswersFile, []byte(got), 0o644); err != nil {
-			t.Fatal(err)
-		}
+	if *printBindingAnswers {
+		printTable(got)
 		return
 	}
-	want, err := os.ReadFile(bindingAnswersFile)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got != string(want) {
-		gl, wl := strings.Split(got, "\n"), strings.Split(string(want), "\n")
+	if got != bindingAnswersWant {
+		gl, wl := strings.Split(got, "\n"), strings.Split(bindingAnswersWant, "\n")
 		inGot, inWant := map[string]bool{}, map[string]bool{}
 		for _, l := range gl {
 			inGot[l] = true
