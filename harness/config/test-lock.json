@@ -19310,6 +19310,19 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/kgread::TestAnObjectIsExpectedWhereABodyIsNotOne": {
+   "kind": "test",
+   "hash": "f75b0105ded4329c",
+   "asserts": 4,
+   "literals": [
+    "5c06bb2ae13f632a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/kgread::TestAskFind": {
    "kind": "test",
    "hash": "692bdfd19c9b3a83",

@@ -3,6 +3,7 @@ package kgread_test
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"log/slog"
 	"strings"
 	"testing"
@@ -346,5 +347,23 @@ func TestCatalogViews(t *testing.T) {
 	}
 	if got := kgread.ToAny([]kgread.TypeRef{{ID: "a", Name: "b"}}); got == nil {
 		t.Fatal("toany")
+	}
+}
+
+func TestAnObjectIsExpectedWhereABodyIsNotOne(t *testing.T) {
+	w := newWorld(t)
+	for _, text := range []string{`[1]`, `{"identifier":3}`, `{"attributes":[5]}`} {
+		_, p := w.svc.AskFind(context.Background(), w.req("main"), body(text))
+		if p == nil || len(p.Fields) != 1 || p.Fields[0].Params["expected"] != "object" {
+			t.Fatalf("%s: %+v", text, p)
+		}
+		raw := fmt.Sprintf("%+v", p)
+		if strings.Contains(raw, "kgread.") || strings.Contains(raw, "httpapi.") {
+			t.Fatalf("a Go type name reached the answer: %s", raw)
+		}
+	}
+	_, p := w.svc.AskFind(context.Background(), w.req("main"), body(`{"limit":"many"}`))
+	if p == nil || p.Fields[0].Params["expected"] != "int" {
+		t.Fatalf("the other fields keep their value: %+v", p)
 	}
 }

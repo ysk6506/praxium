@@ -25,7 +25,6 @@ updates_docs:
   - docs/product-specs/requirements-operations.md
 touches_protected:
   - docs/design-docs/adr/**
-  - harness/config/architecture.yaml
   - docs/product-specs/requirements.md
   - docs/product-specs/requirements-*.md
 amends:

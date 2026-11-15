@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"reflect"
 	"strings"
 	"time"
 
@@ -98,12 +99,24 @@ func DecodeBody(body io.Reader, dst any) *Problem {
 		return &Problem{Code: "invalid_input.body_too_large", Params: map[string]any{"max_bytes": tooBig.Limit}}
 	case errors.As(err, &typeErr):
 		return fieldProblem(field("/"+strings.ReplaceAll(typeErr.Field, ".", "/"), "invalid_input.field_format",
-			map[string]any{"expected": typeErr.Type.String()}))
+			map[string]any{"expected": expectedOf(typeErr.Type)}))
 	case strings.HasPrefix(err.Error(), "json: unknown field "):
 		name := strings.Trim(strings.TrimPrefix(err.Error(), "json: unknown field "), `"`)
 		return fieldProblem(field("/"+name, "invalid_input.field", map[string]any{"reason": "unknown_field"}))
 	}
 	return fieldProblem(field("", "invalid_input.field_format", map[string]any{"expected": "a JSON object"}))
+}
+
+// expectedOf names the type a field should have for the answer. A struct is a JSON object; the name of a Go type
+// never reaches the caller.
+func expectedOf(t reflect.Type) string {
+	for t.Kind() == reflect.Pointer {
+		t = t.Elem()
+	}
+	if t.Kind() == reflect.Struct {
+		return "object"
+	}
+	return t.String()
 }
 
 // common turns the shared body fields into the input of the queries.

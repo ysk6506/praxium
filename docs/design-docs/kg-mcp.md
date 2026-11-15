@@ -239,7 +239,7 @@ REST의 `shape`는 `summary`(개수만)와 `items`예요. 기본 `summary`로 `k
 | `views.go`, `lists.go`, `handlers_registry.go` | `kg_catalog`가 쓸 모델 목록의 내용: 뷰 타입 전부, 타입 요약(`ObjectTypeSummary`, `LinkTypeSummary`, `TraitView`, `SchemeView`, `ActionTypeView`), 타입 끝의 덮는 범위 `Covered` | 목록의 틀(`listDef`, `row`, 필터·정렬·페이지·커서)과 필터용 값. 쿼리 문자열과 커서 규칙이라 REST 전용이에요 |
 | 그 밖의 파일(`problem.go`, `middleware.go`, `server.go`, `ui.go`, `respond.go`, `handlers*.go`, `routes.go` 등) | 없음 | HTTP 전용이라 그대로 |
 
-한 가지는 REST의 응답에서 눈에 띄는 차이로 남았어요. 본문 전체가 JSON 객체가 아니어서(예: 배열) 거절할 때 `expected`에 담기는 Go 타입 이름이 `httpapi.findBody`에서 `kgread.findBody`로 바뀌어요. 내부 이름이 새어 나오던 것이라 계약이 아니에요. 영향 범위의 순서와 계정별 한도는 그다음 변경에서 바뀌어요.
+REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아니어서 생기는 타입 오류의 `params.expected`가 Go 타입 이름(`httpapi.findBody`)이었는데, 내부 이름이 새던 것이라 `object`로 바로잡았어요. 다른 필드의 `expected`는 그대로예요. 영향 범위의 순서와 계정별 한도는 그다음 변경에서 바뀌어요.
 
 ### 8.2 새 유닛과 계층
 
@@ -256,7 +256,7 @@ REST의 `shape`는 `summary`(개수만)와 `items`예요. 기본 `summary`로 `k
 
 ### 8.3 구조 계약에서 바뀌는 것
 
-보호 경로이므로 구현하는 변경이 ADR-0062를 `touches_protected`에 적어요. 공통 유닛으로 옮기는 변경은 `core.kgread`를 더하고 `adapter.http`의 `may_import`에 넣었어요(아래에서 `adapter.mcp`만 남아요).
+보호 경로이므로 구현하는 변경이 새 결정 기록으로 바꿔요(첫 변경은 ADR-0067). 공통 유닛으로 옮기는 변경은 `core.kgread`를 더하고 `adapter.http`의 `may_import`에 넣었어요(아래에서 `adapter.mcp`만 남아요).
 
 - `harness/config/architecture.yaml`: 유닛 `adapter.mcp`를 더해요(`core.kgread`는 더했어요). `restricted_stdlib`의 `net/http`와 `net`에 `adapter.mcp`를 더할지는 어댑터가 `net`을 쓰는지에 따라 정해요(`adapter.http`가 이미 있어요). 서드파티는 계속 `lib/pq` 하나예요.
 - `ARCHITECTURE.md`: 유닛 표에 `adapter.mcp` 행을 더하고(`core.kgread` 행은 더했어요), `core.contract` 행의 "MCP 툴은 이후에 추가한다"를 채우고, `adapter.http` 행의 설명에서 옮긴 것을 줄여요.
