@@ -631,7 +631,8 @@ OWNED_BY CertificateAuthority | N:M strength=hard whole=none resource= failover=
 OWNED_BY Chassis | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant
 OWNED_BY ChassisBay | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant
 OWNED_BY Chiller | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant
-OWNED_BY Circuit | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant
+OWNED_BY Circuit | N:1 strength=hard whole=none resource= failover= | Organization
+OWNED_BY Circuit | N:M strength=hard whole=none resource= failover= | Person Team Tenant
 OWNED_BY CircuitBreaker | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant
 OWNED_BY ClusterNode | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant
 OWNED_BY ClusterService | N:M strength=hard whole=none resource= failover= | Organization Person Team Tenant

@@ -15,6 +15,12 @@ import (
 // (only when a decision changes an answer, never to pass a check):
 //
 //	cd backend && go test ./internal/model -run TestStandardBindingAnswersAreKept -update-binding-answers
+//
+// The table was first taken from the code before the priority (ADR-0059) existed. One row differs from that first
+// table on purpose: Circuit to Organization over OWNED_BY is N:1 and no longer N:M. The binding that wins there now
+// is the narrow one, and a circuit's identity key in the context of OWNED_BY needs a N:1 binding from Circuit, so
+// the binding cannot be widened as the other two winners were (ClusterNode to FailureDomain, VirtualMachine to
+// VirtualizationManager). Every other row is the same.
 var updateBindingAnswers = flag.Bool("update-binding-answers", false, "write testdata/binding_answers.txt")
 
 const bindingAnswersFile = "testdata/binding_answers.txt"

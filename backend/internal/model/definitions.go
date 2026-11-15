@@ -196,12 +196,16 @@ type Endpoint struct {
 // Binding is one pair of ends a link type may join (kg-model.md 3.5). The
 // parameter constraints narrow what the link type allows: a parameter name and
 // the values (or, for failover_to, the object type ids) this binding accepts.
+// The parameter defaults say which of the allowed values a link takes when
+// nothing says otherwise (ResolveParams gives the order); a default is one of
+// the allowed values.
 type Binding struct {
 	ID               BindingID           `json:"id"`
 	From             Endpoint            `json:"from"`
 	To               Endpoint            `json:"to"`
 	Cardinality      Cardinality         `json:"cardinality"`
 	ParamConstraints map[string][]string `json:"param_constraints,omitempty"`
+	ParamDefaults    map[string]string   `json:"param_defaults,omitempty"`
 }
 
 // LinkType is a kind of link: one name, one meaning, many bindings.

@@ -1,0 +1,22 @@
+pairs with more than one binding: 226
+winner changed: 20
+IN_FAILURE_DOMAIN ClusterNode -> FailureDomain: bd.in_failure_domain.cluster_node.failure_domain, was bd.in_failure_domain.any.failure_domain
+MANAGED_BY VirtualMachine -> VirtualizationManager: bd.managed_by.virtual_machine.virtualization_manager, was bd.managed_by.trait_manageable.virtualization_manager
+OWNED_BY Circuit -> Organization: bd.owned_by.circuit.organization, was bd.owned_by.any.organization
+OWNED_BY Contract -> Organization: bd.owned_by.contract.organization, was bd.owned_by.any.organization
+OWNED_BY OnCallSchedule -> Team: bd.owned_by.on_call_schedule.team, was bd.owned_by.any.team
+OWNED_BY Tenant -> Team: bd.owned_by.tenant.team, was bd.owned_by.any.team
+POWERED_BY Cdu -> PowerRedundancyGroup: bd.powered_by.trait_powered.power_redundancy_group, was bd.powered_by.cdu.trait_power_source
+POWERED_BY Chiller -> PowerRedundancyGroup: bd.powered_by.trait_powered.power_redundancy_group, was bd.powered_by.chiller.trait_power_source
+POWERED_BY CoolingTower -> PowerRedundancyGroup: bd.powered_by.trait_powered.power_redundancy_group, was bd.powered_by.cooling_tower.trait_power_source
+POWERED_BY Crac -> PowerRedundancyGroup: bd.powered_by.trait_powered.power_redundancy_group, was bd.powered_by.crac.trait_power_source
+POWERED_BY Crah -> PowerRedundancyGroup: bd.powered_by.trait_powered.power_redundancy_group, was bd.powered_by.crah.trait_power_source
+POWERED_BY InRowCooler -> PowerRedundancyGroup: bd.powered_by.trait_powered.power_redundancy_group, was bd.powered_by.in_row_cooler.trait_power_source
+POWERED_BY TransferSwitch -> PowerRedundancyGroup: bd.powered_by.transfer_switch.power_redundancy_group, was bd.powered_by.trait_powered.power_redundancy_group
+POWERED_BY Transformer -> UtilityFeed: bd.powered_by.transformer.utility_feed, was bd.powered_by.trait_powered.trait_power_source
+POWERED_BY Ups -> PowerRedundancyGroup: bd.powered_by.ups.power_redundancy_group, was bd.powered_by.trait_powered.power_redundancy_group
+POWERED_BY Ups -> Switchgear: bd.powered_by.ups.switchgear, was bd.powered_by.trait_powered.trait_power_source
+POWERED_BY Ups -> TransferSwitch: bd.powered_by.ups.transfer_switch, was bd.powered_by.trait_powered.trait_power_source
+REALIZED_BY ApplicationService -> Workload: bd.realized_by.application_service.workload, was bd.realized_by.application_service.redundancy_group
+REALIZED_BY TechnicalService -> Workload: bd.realized_by.technical_service.workload, was bd.realized_by.technical_service.redundancy_group
+UPLINKED_VIA StorageArray -> SanSwitch: bd.uplinked_via.storage_array.san_switch, was bd.uplinked_via.storage_array.network_device

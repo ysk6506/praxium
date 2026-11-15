@@ -180,31 +180,77 @@ func (r *Registry) matches(e Endpoint, id ObjectTypeID) bool {
 	return false
 }
 
+// endScore says how narrow one end of a binding is: any object 0, a trait 1, a type 2 plus the number of its
+// ancestors (a root type has none).
+func (r *Registry) endScore(e Endpoint) int {
+	switch e.Kind {
+	case EndpointTrait:
+		return 1
+	case EndpointType:
+		ref, err := kernel.ParseID[ObjectTypeKind](e.Ref)
+		if info := r.info[ref]; err == nil && info != nil {
+			return 2 + len(info.ancestors)
+		}
+		return 2
+	}
+	return 0
+}
+
+// indexBindingScores works out the score of every binding once: the sum of its two ends.
+func (r *Registry) indexBindingScores() {
+	r.bindScore = map[BindingID]int{}
+	for _, l := range r.defs.LinkTypes {
+		for _, b := range l.Bindings {
+			r.bindScore[b.ID] = r.endScore(b.From) + r.endScore(b.To)
+		}
+	}
+}
+
+// better is the one rule that chooses among bindings that all fit a pair of types (ADR-0059): the binding with
+// the higher score, the narrower ends, wins, and the lower binding id wins a tie. Every reader that needs "the"
+// binding of a pair goes through it, so the choice is the same everywhere and for the same input.
+func (r *Registry) better(a, b BindingID) bool {
+	if sa, sb := r.bindScore[a], r.bindScore[b]; sa != sb {
+		return sa > sb
+	}
+	return a.String() < b.String()
+}
+
 // BindingFor returns the binding of the link type that lets a link run from an object of type from to an object
-// of type to: the first by binding id, which is the one BindingsFor lists first for that link type. It reads one
-// link type, so it costs far less than BindingsFor, which copies them all.
+// of type to: the one `better` prefers among those that fit, which is the one BindingsFor lists first for that
+// link type. It reads one link type, so it costs far less than BindingsFor, which copies them all.
 func (r *Registry) BindingFor(from, to ObjectTypeID, lt LinkTypeID) (Binding, bool) {
-	i, ok := r.links[lt]
+	b, _, ok := r.bindingOf(from, to, lt)
 	if !ok {
 		return Binding{}, false
+	}
+	return b.Clone(), true
+}
+
+// bindingOf is BindingFor without the copy; it also gives the link type.
+func (r *Registry) bindingOf(from, to ObjectTypeID, lt LinkTypeID) (*Binding, *LinkType, bool) {
+	i, ok := r.links[lt]
+	if !ok {
+		return nil, nil, false
 	}
 	var best *Binding
 	bindings := r.defs.LinkTypes[i].Bindings
 	for j := range bindings {
 		b := &bindings[j]
-		if r.matches(b.From, from) && r.matches(b.To, to) && (best == nil || b.ID.String() < best.ID.String()) {
+		if r.matches(b.From, from) && r.matches(b.To, to) && (best == nil || r.better(b.ID, best.ID)) {
 			best = b
 		}
 	}
 	if best == nil {
-		return Binding{}, false
+		return nil, nil, false
 	}
-	return best.Clone(), true
+	return best, &r.defs.LinkTypes[i], true
 }
 
 // BindingsFor returns the bindings that let a link run from an object of type
 // from to an object of type to, in the order of the link type numbers and
-// then of the binding ids. A binding on a parent type applies to its subtypes.
+// then of the preference among the bindings of one link type (the first is
+// the one BindingFor gives). A binding on a parent type applies to its subtypes.
 func (r *Registry) BindingsFor(from, to ObjectTypeID) []BoundLink {
 	var out []BoundLink
 	for _, l := range r.LinkTypes() {
@@ -219,7 +265,7 @@ func (r *Registry) BindingsFor(from, to ObjectTypeID) []BoundLink {
 		if a.LinkTypeNo != b.LinkTypeNo {
 			return a.LinkTypeNo < b.LinkTypeNo
 		}
-		return out[i].Binding.ID.String() < out[j].Binding.ID.String()
+		return r.better(out[i].Binding.ID, out[j].Binding.ID)
 	})
 	return out
 }
