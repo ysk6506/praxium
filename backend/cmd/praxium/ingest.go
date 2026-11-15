@@ -50,8 +50,9 @@ Reading the output:
                         filtered (by a rule of the mapping) + problem + unused (no feed uses the row).
                         used_with_problem: used rows that also had a problem. cells_left_out: wrong cells
                         (invalid_value) that were left out: a wrong cell that is no part of an identity key does not
-                        drop the row, its object is made without that value, so the row stays used. A row dropped for
-                        a problem is counted in problem.
+                        drop the row, its object is made without that value, so the row stays used. The same holds
+                        for a wrong cell that gives an attribute of a link (the "attributes" of a link definition):
+                        the link is made without that value. A row dropped for a problem is counted in problem.
                         raw_added, raw_modified, raw_unchanged, raw_deleted, raw_unseen: what changed against the
                         previous run (unseen: not in the file this time, not yet retired).
                         not_read="...": the file of this dataset was not read at all, and why (the workbook has no
@@ -71,7 +72,9 @@ Reading the output:
                         column of the file no dataset column reads; ignore_undeclared_columns turns it off),
                         cell_error, formula_without_value (the cell has an error, or a formula never calculated),
                         invalid_value, missing_identity, link_target_missing, link_target_ambiguous, cardinality,
-                        source_conflict, identity_conflict, incomplete_capture.
+                        source_conflict, identity_conflict, link_conflict (a link made again, by another row or
+                        another definition, with other attributes: the later one is used, they are not merged),
+                        incomplete_capture.
   last line             completed without problems, or completed with N problems (see "problem" lines above).
 
 Exit codes:

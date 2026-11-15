@@ -17511,6 +17511,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestADroppedLinkReportsNoWrongCell": {
+   "kind": "test",
+   "hash": "850ca1dcdbe5efd7",
+   "asserts": 3,
+   "literals": [
+    "7f05434f896e66e3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAFieldThatIsNotAllowedIsReportedWithTheFieldsThatAre": {
    "kind": "test",
    "hash": "9558f11143f605cc",
@@ -17601,6 +17616,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestALinkAttributeCanBeReadFromARelationTableThatMakesNoObject": {
+   "kind": "test",
+   "hash": "4f844f643e6f003d",
+   "asserts": 5,
+   "literals": [
+    "21c2ad31853f16c3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestALinkAttributeOfAnApproximateFeedIsAssumed": {
+   "kind": "test",
+   "hash": "cb77104c0defc092",
+   "asserts": 2,
+   "literals": [
+    "89f849181365199d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestALinkIsAsCertainAsTheLowestFeedItWasMadeFrom": {
    "kind": "test",
    "hash": "c445a41d38247edd",
@@ -17616,6 +17661,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestALinkLosesAnAttributeWhenTheNextRunDoesNotGiveIt": {
+   "kind": "test",
+   "hash": "aa7822075c3f5bce",
+   "asserts": 5,
+   "literals": [
+    "aabdd80652a8c0f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestALinkOfTwoApproximateFeedsIsAssumedAndKeepsItsBasis": {
    "kind": "test",
    "hash": "974cd8d6f5841511",
@@ -17629,6 +17689,21 @@
     "REQ-363"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestALinkTakesItsAttributesFromAColumnAndFromAFixedValue": {
+   "kind": "test",
+   "hash": "0040ab208a403483",
+   "asserts": 7,
+   "literals": [
+    "3eed26a959531bd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestAMappingOntoADeprecatedAttributeIsRefusedWithItsSuccessor": {
@@ -18265,6 +18340,51 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestLinkAttributeNamesFollowTheRulesOfObjectAttributes": {
+   "kind": "test",
+   "hash": "88a29ab0ce6327de",
+   "asserts": 7,
+   "literals": [
+    "2d54aa6c07634e08"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestLinkAttributesAreReadByTheKindOfTheirValueAndAWrongCellLeavesOutOnlyItsValue": {
+   "kind": "test",
+   "hash": "99e8d14c6f35c396",
+   "asserts": 13,
+   "literals": [
+    "fdc595865619ac5c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestLinkAttributesCompileAgainstTheDatasetOfTheFromFeedAndTakeFixedValuesOfEveryKind": {
+   "kind": "test",
+   "hash": "b8cdbe493b9084c4",
+   "asserts": 6,
+   "literals": [
+    "e14dc136f7f3a213"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestLinkKeyTypeAndFilterTestsAreChecked": {
    "kind": "test",
    "hash": "50b2eb6a21e73343",
@@ -18672,6 +18792,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheFormOfLinkAttributesIsStrict": {
+   "kind": "test",
+   "hash": "ad5f6b9d74facadf",
+   "asserts": 1,
+   "literals": [
+    "e5717a0bd4abd633"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestTheKeyNameTakesNoPartInWhichObjectARowIs": {
    "kind": "test",
    "hash": "fc02d9e36213be55",
@@ -18700,6 +18835,21 @@
     "REQ-389"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTheLinkOfAFilteredRowIsMadeFromItsCellsAndReportsNothing": {
+   "kind": "test",
+   "hash": "6b3c2329d693b2a1",
+   "asserts": 5,
+   "literals": [
+    "844deb5889fe0300"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas": {
@@ -18775,6 +18925,36 @@
     "REQ-286"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTwoDefinitionsThatMakeTheSameLinkLeaveTheLaterOneWhateverItGives": {
+   "kind": "test",
+   "hash": "3e998acba818e93e",
+   "asserts": 4,
+   "literals": [
+    "ca2c6a32fe1529a1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTwoRowsThatMakeTheSameLinkWithOtherAttributesLeaveTheLaterAndReportTheEarlier": {
+   "kind": "test",
+   "hash": "b1e23773cf18c9cc",
+   "asserts": 7,
+   "literals": [
+    "bcb44cfc70857156"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestUndeclaredColumnsCanBeLeftOutAndTheDeclaredOnesStayRequired": {
@@ -18895,6 +19075,21 @@
     "REQ-287"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestWrongLinkAttributesAreRefusedWhenTheMappingIsCompiled": {
+   "kind": "test",
+   "hash": "c4af326980860df6",
+   "asserts": 4,
+   "literals": [
+    "6baa46e7702017e1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-435"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/ingestcheck::TestBadRowsAreReportedAndTheRestIsApplied": {

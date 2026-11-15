@@ -70,9 +70,15 @@ type derivation struct {
 type desiredLink struct {
 	up   graph.LinkUpsert
 	from graph.ObjectID
-	// dataset and row are where the link was made from, for a problem about it.
+	// dataset and row are where the link was made from, for a problem about it; defID is the link definition.
 	dataset string
 	row     Row
+	defID   string
+	// held is true when the row is one a rule filtered out and whose object is waited for: it reports nothing.
+	held bool
+	// left are the reasons the cells of the row that gave no attribute of the link were left out. They are reported
+	// when the link is known to be made, so the link that is replaced by a later one, or dropped, reports none.
+	left []string
 }
 
 func newDerivation(p *Plan, st *State, rep *Report, now time.Time) *derivation {
@@ -258,20 +264,31 @@ func (d *derivation) schemeName(id string) string {
 func (d *derivation) values(fp *feedPlan, row Row, root string) (out []contrib, left []string) {
 	for i := range fp.attrs {
 		a := &fp.attrs[i]
-		cell := row.Fields[a.column]
-		if strings.TrimSpace(cell) == "" {
-			continue
-		}
-		v, err := convertCell(a.valueSpec, cell)
-		if err != nil {
-			reason := chainText(kernel.Wrap(kernel.CodeInvalidValue, err, "attribute "+a.prop.Name))
+		v, has, reason := cellValue(a.valueSpec, row.Fields[a.column])
+		if reason != "" {
 			left = append(left, reason+"; the object is made without this value (the attribute is empty)")
+		}
+		if !has {
 			continue
 		}
-		out = append(out, contrib{rank: a.rank, run: d.runOf(root, row.Key), feed: fp.index, attr: a, value: v, text: cell,
+		out = append(out, contrib{rank: a.rank, run: d.runOf(root, row.Key), feed: fp.index, attr: a, value: v, text: row.Fields[a.column],
 			grade: fp.grade, basis: fp.basis, feedID: fp.feed.ID})
 	}
 	return out, left
+}
+
+// cellValue converts the cell of a mapped column for an attribute of an object or of a link. An empty cell gives no
+// value and no reason; a wrong cell gives no value and the reason it is wrong. An object and a link read a cell the
+// same way (ADR-0066).
+func cellValue(s valueSpec, cell string) (v any, has bool, reason string) {
+	if strings.TrimSpace(cell) == "" {
+		return nil, false, ""
+	}
+	v, err := convertCell(s, cell)
+	if err != nil {
+		return nil, false, chainText(kernel.Wrap(kernel.CodeInvalidValue, err, "attribute "+s.prop.Name))
+	}
+	return v, true, ""
 }
 
 func (d *derivation) runOf(root, key string) int {

@@ -37,7 +37,6 @@ func (lp *linkPlan) linkKey(row Row, columns []string) (string, bool) {
 func (d *derivation) buildLinks() error {
 	for _, lp := range d.p.links {
 		index := map[string]map[string]bool{}
-		toDS := d.p.roots[lp.to.feed.Dataset]
 		for _, row := range d.withHeld(lp.to.feed.Dataset) {
 			obj, ok := d.rowObj[lp.to.feed.ID][row.Key]
 			if !ok {
@@ -50,8 +49,21 @@ func (d *derivation) buildLinks() error {
 				index[k][obj] = true
 			}
 		}
-		fromDS := d.p.roots[lp.from.feed.Dataset]
-		for _, row := range d.withHeld(lp.from.feed.Dataset) {
+		if err := d.linksFrom(lp, index); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// linksFrom makes the links of a definition from the rows of its From feed: the rows that are shown first, then the
+// rows a rule filtered out whose object is waited for (a row of the second kind makes its links but reports nothing).
+func (d *derivation) linksFrom(lp *linkPlan, index map[string]map[string]bool) error {
+	for _, set := range []struct {
+		rows []Row
+		held bool
+	}{{d.rows[lp.from.feed.Dataset], false}, {d.held[lp.from.feed.Dataset], true}} {
+		for _, row := range set.rows {
 			src, ok := d.rowObj[lp.from.feed.ID][row.Key]
 			if !ok {
 				continue
@@ -60,7 +72,7 @@ func (d *derivation) buildLinks() error {
 			if !ok {
 				continue
 			}
-			if err := d.link(lp, fromDS, toDS, row, src, index[k]); err != nil {
+			if err := d.link(lp, row, src, index[k], set.held); err != nil {
 				return err
 			}
 		}
@@ -84,7 +96,8 @@ func (lp *linkPlan) missingTarget(toDS string, row Row) string {
 		" in its column " + strings.Join(lp.def.To.Columns, ", ") + "; a misspelt value, or the row is missing in that file"
 }
 
-func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string, targets map[string]bool) error {
+func (d *derivation) link(lp *linkPlan, row Row, src string, targets map[string]bool, held bool) error {
+	fromDS, toDS := d.p.roots[lp.from.feed.Dataset], d.p.roots[lp.to.feed.Dataset]
 	switch len(targets) {
 	case 0:
 		d.problem(ProblemLinkTarget, fromDS, lp.def.ID, row, lp.missingTarget(toDS, row))
@@ -111,8 +124,16 @@ func (d *derivation) link(lp *linkPlan, fromDS, toDS string, row Row, src string
 		return err
 	}
 	ref := d.p.Source.ID + "/" + fromDS + "/" + strings.ReplaceAll(row.Key, keySep, "|")
-	d.links[id.String()] = desiredLink{from: srcID, dataset: fromDS, row: row, up: graph.LinkUpsert{Type: lp.lt.ID, Src: srcID, Dst: dstID, Grade: lp.grade(),
-		Basis: lp.basis, SourceRefs: []string{ref}}}
+	attrs, left := lp.attrValues(row, ref)
+	next := desiredLink{from: srcID, dataset: fromDS, row: row, defID: lp.def.ID, held: held, up: graph.LinkUpsert{Type: lp.lt.ID, Src: srcID, Dst: dstID,
+		Grade: lp.grade(), Basis: lp.basis, Attrs: attrs, SourceRefs: []string{ref}}}
+	if !held {
+		next.left = left
+	}
+	if prev, again := d.links[id.String()]; again {
+		d.linkMadeAgain(prev, next)
+	}
+	d.links[id.String()] = next
 	return nil
 }
 

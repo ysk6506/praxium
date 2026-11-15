@@ -22,7 +22,7 @@
   "go:core.definitions": 97,
   "go:core.graph": 91,
   "go:core.identity": 91,
-  "go:core.ingest": 92.5,
+  "go:core.ingest": 94,
   "go:core.kernel": 98,
   "go:core.kgread": 93.5,
   "go:core.model": 98,
