@@ -291,7 +291,7 @@ open ──확인──▶ acknowledged ──스누즈(시간)──▶ snoozed
 
 ## 11. 질의 방법
 
-`health`와 `quality`는 사전 정의 질의(ADR-0010)이고 HTTP API와 읽기 전용 MCP에 똑같이 제공돼요.
+`health`와 `quality`는 사전 정의 질의(ADR-0010)이고 HTTP API와 읽기 전용 MCP(`kg_health`, `kg_quality`. 구현되는 대로 더해요. ADR-0062)에 똑같이 제공돼요.
 
 | 질의 | 입력 | 출력 |
 |---|---|---|
@@ -303,10 +303,10 @@ open ──확인──▶ acknowledged ──스누즈(시간)──▶ snoozed
 **MCP 사용 예.** 에이전트가 "이 스위치에 장애가 나면 어디까지 전파되는가, 이 결과를 믿어도 되는가"를 질의해요.
 
 ```
-impact(objects=[sw-0417], view=as_observed)
+kg_impact(dead=[sw-0417], view=as_observed)
   → 응답 … , health_hint: {has_unhealthy_inputs: true, worst_state: "affected_upstream",
       total: 3, items: [{resource: "Interface", state: "affected_upstream", cause: "switch_inventory"}]}
-health(resource={kind: "object_type", id: "Interface"}, include=["cause", "readers"])
+kg_health(resource={kind: "object_type", id: "Interface"}, include=["cause", "readers"])
   → health_state: "affected_upstream", cause: [{resource: "switch_inventory", check: "auth_failed", since: "27h"}]
 ```
 
