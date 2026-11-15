@@ -20535,10 +20535,10 @@
   },
   "go:backend/internal/mcpapi::TestTableOlderVersionRows5To9": {
    "kind": "test",
-   "hash": "da87cffda3b46826",
+   "hash": "71794db5a6a915b3",
    "asserts": 18,
    "literals": [
-    "a54a3378707838d4"
+    "b774b798c3401039"
    ],
    "precision": [],
    "skips": 0,

@@ -50,7 +50,9 @@ func TestTableOlderVersionRows1To4(t *testing.T) {
 	})
 }
 
-// O5, O8 and O9 are values recommended in kg-mcp.md and not confirmed with a real client or a conformance suite.
+// O5 is a value recommended in kg-mcp.md and not confirmed with a real client or a conformance suite. O8 and O9 were
+// confirmed with the client of the official TypeScript SDK through the conformance tool (ADR-0068): it reads the
+// error of a 200 answer as the error of the call (-32601 and -32602).
 func TestTableOlderVersionRows5To9(t *testing.T) {
 	rg := newRig(t)
 	for _, v := range legacyVersions {
@@ -75,10 +77,10 @@ func TestTableOlderVersionRows5To9(t *testing.T) {
 				t.Errorf("got %d %s", r.status, r.body)
 			}
 		})
-		t.Run("O8 another method is 200 with -32601 (recommended value, not confirmed): "+v, func(t *testing.T) {
+		t.Run("O8 another method is 200 with -32601 (confirmed with the SDK client): "+v, func(t *testing.T) {
 			wantRPCError(t, rg.do(legacyCall(t, tokViewer, v, "resources/list", nil)), http.StatusOK, codeMethodNotFound)
 		})
-		t.Run("O9 an unknown tool is 200 with -32602 and the names of the tools (recommended value, not confirmed): "+v, func(t *testing.T) {
+		t.Run("O9 an unknown tool is 200 with -32602 and the names of the tools (confirmed with the SDK client): "+v, func(t *testing.T) {
 			r := rg.do(legacyCall(t, tokViewer, v, "tools/call", map[string]any{"name": "kg_nothing"}))
 			wantRPCError(t, r, http.StatusOK, codeInvalidParams)
 			data, _ := r.rpc(t)["error"].(map[string]any)["data"].(map[string]any)

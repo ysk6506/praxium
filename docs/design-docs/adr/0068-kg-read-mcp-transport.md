@@ -12,6 +12,7 @@ enforced_by:
   - backend/internal/mcpapi/tools_test.go
   - backend/internal/contract/mcp_test.go
 touches_protected:
+  - package.json
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
   - docs/design-docs/adr/**
@@ -22,8 +23,9 @@ updates_docs:
   - docs/design-docs/defaults.md
   - docs/guides/operate-the-server.md
   - docs/guides/connect-agents.md
+  - docs/guides/release.md
   - docs/product-specs/requirements-query-api.md
-decision_hash: 026450ee12cf687c
+decision_hash: 8daf9e1b06e046df
 ---
 # ADR-0068 KG 읽기 MCP의 전송을 구현한다
 
@@ -57,4 +59,13 @@ ADR-0062의 구현 순서 2단계 가운데 가장 불확실한 부분인 전송
 
 - 이 변경으로 완전히 구현되고 테스트가 있는 요구사항(REQ-504, 505, 506, 515, 518)은 "예정"을 뗀다. 일부만 된 것(REQ-500, 501, 502, 503, 507, 508, 510, 514)은 예정으로 두고 kg-mcp.md 11절에 끝난 것과 남은 것을 적는다.
 - 넣지 않은 것: `kg_catalog`와 KG를 읽는 툴, 계정별 한도와 동시 계산 상한, 영향 범위의 순서 변경, OAuth·OIDC, SSE, 자원·프롬프트·구독, 운영 MCP, 게이트웨이.
-- 위험: 권고 값으로 둔 여섯 칸은 확인하지 못했다.
+- 위험: 권고 값으로 둔 여섯 칸 가운데 넷(N11, N12, N13, O5)은 확인하지 못했다.
+
+## 부록: 공식 적합성 도구
+
+- **무엇을.** npm의 `@modelcontextprotocol/conformance`를 개발 의존성으로 정확한 버전 0.1.16에 고정한다(제품 실행 파일과 `pnpm check`에는 들어가지 않는다). 모델 컨텍스트 프로토콜 조직이 MIT로 내는 패키지이고 GitHub Actions 신뢰 발행과 출처 증명이 붙어 있다. 안정판 가운데 가장 새 것이다(알파 0.2.0-alpha.12는 쓰지 않는다).
+- **어떻게.** `pnpm mcp:conformance`(`scripts/mcp-conformance.ts`)가 데모 서버를 임시 폴더에 빌드해 127.0.0.1에서 띄우고, 토큰을 붙여 주는 작은 프락시를 앞에 두고, 도구를 돌리고, 자기가 띄운 프로세스만 끝낸다. 도구의 클라이언트는 토큰을 보내지 못하고 서버는 토큰 없는 호출을 거절하므로 프락시가 필요하다(서버의 규칙은 바꾸지 않았다). 프락시의 출처만 `-mcp-allowed-origins`로 허용한다(시험이 로컬 출처의 호출이 받아들여지는지를 본다).
+- **언제.** MCP 인터페이스가 바뀐 릴리스 전에 사람이 한 번 돌린다(`docs/guides/release.md`, REQ-516).
+- **결과(2026-11-15).** 30개 시나리오 가운데 `server-initialize`, `ping`, `tools-list`, `dns-rebinding-protection`(2건 모두)이 통과한다. 나머지 25개(자원, 프롬프트, 로깅, 완성, 진행, 샘플링, 유도, 시험용 예제 서버의 툴, 서버가 보내는 스트림)는 이 인터페이스가 제공하지 않는 것이라 `scripts/mcp-conformance-expected.yaml`에 사유와 함께 기대 실패로 적었다. 기대 실패가 통과하게 되면 실행이 실패한다.
+- **여섯 칸.** 안정판은 2025-06-18과 2025-11-25만 시험하고 2026-07-28은 시험하지 않는다. 그래서 N11, N12, N13은 확인하지 못했다. O8과 O9는 시험이 부르는 모르는 툴과 모르는 메서드에서 공식 TS SDK 클라이언트가 200 응답의 오류를 호출의 오류(`MCP error -32602: Unknown tool.`, `-32601: Method not found.`)로 읽는 것을 보아 확인했다. O5는 그 클라이언트가 `server/discover`를 보내지 않아 확인하지 못했다. 2026-07-28을 시험하는 알파판이 안정판이 되면 N11, N12, N13, O5를 다시 확인한다.
+
