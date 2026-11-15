@@ -40,6 +40,7 @@ func openStoreLogged(ctx context.Context, o serveOptions, d wiring, log *slog.Lo
 		}
 		return memstore.New(), func() error { return nil }, nil
 	case storePostgres:
+		warnDBTLS(o, d, log)
 		return openPostgres(ctx, o, d)
 	case storeFile:
 		return openFile(o, log)

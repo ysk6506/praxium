@@ -134,6 +134,12 @@ refuses the memory store, the development token flags and PRAXIUM_DEV_TOKEN. Acc
 plain text: on an address that is not loopback it needs -tls-cert and -tls-key, or -behind-proxy when a reverse proxy in
 front ends TLS (then it believes the last address in X-Forwarded-For as the caller's).
 
+With -store postgres, production also checks the link to the database (ADR-0064): when the host in the connection string
+is on another machine, sslmode must be verify-full or verify-ca, so the server certificate is checked (add sslrootcert=FILE
+if the certificate is not from a CA this machine trusts). A database on this machine (127.0.0.1, ::1, localhost, a Unix
+socket) needs nothing. If the link is protected in another way, -allow-unverified-db-tls lets the server start and
+writes a warning to the start log. A connection string that does not say sslmode counts as require, which does not check.
+
 To look around without any of this use "praxium demo" (a made-up data center) or "praxium local" (your own KG, built
 with praxium ingest run). For development use -mode development: it takes one access token from -dev-token-file (a file
 with the token; the environment variable PRAXIUM_DEV_TOKEN also works, the file wins) and treats a caller with it as the
@@ -197,8 +203,9 @@ type serveOptions struct {
 	web bool
 	// tlsCert and tlsKey are the files of the certificate and key the server speaks TLS with; behindProxy says that a
 	// reverse proxy in front ends TLS and appends the caller's address to X-Forwarded-For (ADR-0044).
-	tlsCert, tlsKey string
-	behindProxy     bool
+	tlsCert, tlsKey      string
+	behindProxy          bool
+	allowUnverifiedDBTLS bool // production may use a PostgreSQL link to another machine that does not check the server (ADR-0064)
 	// devFlag is the first development-only flag that was given (without its dash), "" when none was.
 	devFlag string
 	// modeSet is whether -mode was on the command line: a start with no -mode at all is told how to get going.
@@ -226,6 +233,7 @@ func newServeFlags(o *serveOptions) *flag.FlagSet {
 	fs.StringVar(&o.tlsCert, "tls-cert", "", "the PEM file of the TLS certificate; with -tls-key the server speaks HTTPS")
 	fs.StringVar(&o.tlsKey, "tls-key", "", "the PEM file of the TLS private key")
 	fs.BoolVar(&o.behindProxy, "behind-proxy", false, "a reverse proxy in front ends TLS and sets X-Forwarded-For; allows plain HTTP on a non-loopback address")
+	fs.BoolVar(&o.allowUnverifiedDBTLS, "allow-unverified-db-tls", false, "production mode: allow a PostgreSQL connection to another machine that does not check the server certificate (the start log warns)")
 	return fs
 }
 

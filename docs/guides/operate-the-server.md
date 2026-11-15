@@ -37,6 +37,7 @@ praxium api serve -addr 127.0.0.1:8080 -store file -store-data-dir /var/lib/prax
 | 활성 관리자가 없다 | 1절의 `admin bootstrap` |
 | 루프백이 아닌 주소에 TLS도 `-behind-proxy`도 없다 | `-tls-cert`와 `-tls-key`, 또는 TLS를 끝내는 프록시 뒤에서 `-behind-proxy` |
 | `-tls-cert`와 `-tls-key` 중 하나만 있다 | 둘 다 준다 |
+| `-store postgres`인데 접속 문자열의 호스트가 다른 기계이고 `sslmode`가 `verify-full`이나 `verify-ca`가 아니다 | 5절 |
 
 토큰은 평문 HTTP로 보내면 안 돼요. `-behind-proxy`는 프록시가 TLS를 끝내고 `X-Forwarded-For`를 덧붙인다는 운영자의 선언이에요. 서버는 그 헤더의 마지막 값을 호출자의 주소로 믿어요. 프록시와 서버 사이는 안전한 망이어야 해요.
 
@@ -75,3 +76,11 @@ praxium admin issue-token -owner root -store file -store-data-dir /var/lib/praxi
 - 인증 저장소가 응답하지 못하면 401이 아니라 503이에요. 클라이언트는 토큰을 버리지 말고 다시 시도해요.
 - `identity.json`(또는 `identity_record` 테이블)에 쓸 수 있는 사람은 전권을 가져요. 데이터 폴더의 소유권을 서버 계정으로 한정해요. 다른 사용자가 읽을 수 있는 `identity.json`은 서버가 열기를 거절해요.
 - `praxium demo`와 `praxium local`은 이 절차와 상관없이 그대로예요.
+
+## 5. PostgreSQL 접속의 TLS
+
+운영 모드에서 데이터베이스가 다른 기계에 있으면 서버 인증서를 확인하는 접속이어야 시작해요(ADR-0064). 접속 문자열(`-store-dsn-file`의 파일)에 `sslmode=verify-full`이나 `sslmode=verify-ca`를 적어요. 인증서를 낸 CA를 이 기계가 믿지 않으면 `sslrootcert=<파일>`도 줘요. `sslmode`를 적지 않으면 드라이버는 `require`로 접속하는데, 이것은 인증서를 확인하지 않아서 거부해요. 호스트가 여럿이면 하나라도 다른 기계일 때 이 규칙을 적용해요.
+
+- 같은 기계의 데이터베이스(`127.0.0.1`, `::1`, `localhost`, 유닛스 소켓)는 확인하지 않아요.
+- 사설망이나 터널 같은 다른 수단으로 접속을 보호한다면 `-allow-unverified-db-tls`로 시작할 수 있어요. 시작 로그에 경고가 남아요.
+- 개발 모드와 `-store file`에는 영향이 없어요.

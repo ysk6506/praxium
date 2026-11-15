@@ -1,7 +1,7 @@
 doc: "docs/design-docs/harness-guide.md"
 target: "harness/src/run-all.ts"
-hash: "79837612da54b63c"
-date: "2026-11-14"
-note: "run-all이 문서 검사의 알림을 모으게 바뀜. 명령 절에 docs.ts --release를 더했고 나머지 설명은 그대로 맞음"
+hash: "223130670e92eebb"
+date: "2026-11-15"
+note: "WFL001 절을 더했다. run-all.ts의 architecture 묶음에 workflow-pins를 연결한 것과 대조했고 검사 이름 목록은 늘리지 않았다"
 text_changed: true
-doc_hash: "d3db33da04d8320e"
+doc_hash: "01405eaf907bcfe5"

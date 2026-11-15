@@ -47,6 +47,10 @@ covers:
 
 `architecture` 안에서 도는 `WEB*` 검사가 `apps/web`을 지킨다. 검사 이름 목록은 늘리지 않았다. `WEB001`은 `apps/web/package.json`의 의존성이 허용 목록에 있는지, `WEB010`~`WEB013`은 생성한 API 코드의 계약 해시와 본문 해시와 생성기를 다시 돌린 결과, `WEB020`·`WEB021`은 토큰 파일 밖의 색, `WEB030`~`WEB032`는 백엔드가 `apps/web` 없이 빌드되는지 본다. `WEB040`~`WEB045`는 [웹 UI 규칙](web-ui-rules.md)의 기계 검사다: 토큰의 글자와 테두리 대비(쌍은 `web.yaml`의 `rules.contrast`), 위험한 삽입 함수, 절대 주소, 포커스 표시 제거, 움직임 줄이기, 번들 예산(`pnpm tsx harness/src/checks/web.ts --budget`, CI가 웹 빌드 뒤에 돌린다). 마지막 것은 빌드 결과가 없으면 `pnpm check`에서는 건너뛴다. Base UI를 `ui` 계층에서만 import하는 규칙은 `ARCH020`이다. `tests.yaml`의 `unlocked_globs`(화면 `apps/web/src/screens/**`)에 든 테스트 파일은 잠금과 요구사항 추적에서 빠지고 정적 테스트 규칙은 그대로 받는다.
 
+## 워크플로의 액션 고정 검사 (ADR-0064)
+
+`architecture` 안에서 도는 `WFL001`이 `.github/workflows`와 `.github/actions`의 `uses:`를 본다. 바깥 액션은 40자리 커밋 해시로만 참조할 수 있고(`owner/name@<해시> # v4.4.0`), 태그, 브랜치, 버전 없음은 실패한다. 같은 리포지토리의 액션(`./`)과 다이제스트로 고정한 `docker://` 이미지는 통과하고, 해시 뒤의 버전 주석은 검사하지 않는다. 설정 파일은 없다. 액션을 올리는 절차는 [릴리스 만들기](../guides/release.md)의 8절이다.
+
 ## REST 계약 검사 (ADR-0024)
 
 `architecture` 안에서 도는 `API*` 검사가 `backend/internal/contract`의 OpenAPI 계약을 지킨다. 설정은 `harness/config/api-contract.yaml`이다. 검사 이름 목록은 늘리지 않았다.

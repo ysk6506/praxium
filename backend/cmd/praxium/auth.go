@@ -74,7 +74,10 @@ func checkMode(o serveOptions, d wiring) error {
 	case devauth.ModeDevelopment:
 		return nil
 	case devauth.ModeProduction:
-		return checkProduction(o, d)
+		if err := checkProduction(o, d); err != nil {
+			return err
+		}
+		return checkDBTLS(o, d)
 	}
 	return kernel.Errorf(kernel.CodeInvalidValue, "unknown -mode %q: use development or production", o.mode)
 }

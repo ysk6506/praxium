@@ -11103,6 +11103,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAllowingAnUnverifiedLinkWritesAWarningToTheStartLog": {
+   "kind": "test",
+   "hash": "3297da1abf9a952e",
+   "asserts": 2,
+   "literals": [
+    "ba3a9f837ede4cbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-473"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestAnOrgPropertyNamedWithoutItsPrefixIsPointedTo": {
    "kind": "test",
    "hash": "62a2891f35facd0d",
@@ -12581,6 +12596,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestProductionRefusesAnUnverifiedLinkToARemoteDatabase": {
+   "kind": "test",
+   "hash": "0156933c90e8bffd",
+   "asserts": 2,
+   "literals": [
+    "45f55a82a5b39d28"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472",
+    "REQ-473"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestProductionRefusesWhatItMustBeforeItOpensAnything": {
    "kind": "test",
    "hash": "c3c1eb78cf478e44",
@@ -12888,6 +12919,21 @@
     "REQ-392"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheDatabaseLinkIsNotJudgedInDevelopmentOrForOtherStores": {
+   "kind": "test",
+   "hash": "c8eb6c6b9a2d1e1f",
+   "asserts": 2,
+   "literals": [
+    "67588e6e61fb7f56"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestTheDefaultStoreStaysInMemory": {
@@ -20993,6 +21039,36 @@
     "REQ-310"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestInspectTLSJudgesTheLinkOfAConnectionString": {
+   "kind": "test",
+   "hash": "4d93f34f7c117296",
+   "asserts": 2,
+   "literals": [
+    "5df5dc7cbc9b2b79"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestInspectTLSReportsTheModeAndHidesTheString": {
+   "kind": "test",
+   "hash": "e704f0d963ae6427",
+   "asserts": 2,
+   "literals": [
+    "0baf4f3b40ca37d4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestLeasesRefuseBadInputAndStaleHolders": {
@@ -41632,6 +41708,119 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "harness/src/checks/security-policy.test.ts::<import:02f64d8b>": {
+   "kind": "support",
+   "hash": "02f64d8b62bb1989",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::=read": {
+   "kind": "support",
+   "hash": "01b4ba81267e070d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::the repository tells how to report a vulnerability [REQ-470] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::the repository tells how to report a vulnerability [REQ-470] > =policy": {
+   "kind": "support",
+   "hash": "cd23d6c8dc9c2c8f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::the repository tells how to report a vulnerability [REQ-470] > it asks for the version, the steps to reproduce and the impact, and promises no date": {
+   "kind": "test",
+   "hash": "11f7131f75b35c08",
+   "asserts": 2,
+   "literals": [
+    "\"it asks for the version, the steps to reproduce and the impact, and promises no date\"",
+    "\"영향\"",
+    "\"영향받는 버전\"",
+    "\"재현 방법\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::the repository tells how to report a vulnerability [REQ-470] > it has no e-mail address and stays short": {
+   "kind": "test",
+   "hash": "cb24b8b09d1136f7",
+   "asserts": 2,
+   "literals": [
+    "\"40\"",
+    "\"40\"",
+    "\"\\n\"",
+    "\"\\n\"",
+    "\"it has no e-mail address and stays short\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::the repository tells how to report a vulnerability [REQ-470] > SECURITY.md names the private report of GitHub and says not to use a public issue": {
+   "kind": "test",
+   "hash": "c5fbca3b176026c0",
+   "asserts": 2,
+   "literals": [
+    "\"Report a vulnerability\"",
+    "\"Report a vulnerability\"",
+    "\"SECURITY.md names the private report of GitHub and says not to use a public issue\"",
+    "\"공개 이슈로 올리지 마세요\"",
+    "\"공개 이슈로 올리지 마세요\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/security-policy.test.ts::the repository tells how to report a vulnerability [REQ-470] > the README points to it": {
+   "kind": "test",
+   "hash": "9516dc7aa679fc0e",
+   "asserts": 1,
+   "literals": [
+    "\"(SECURITY.md)\"",
+    "\"(SECURITY.md)\"",
+    "\"README.md\"",
+    "\"README.md\"",
+    "\"the README points to it\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "harness/src/checks/test-config.test.ts::<import:0458d18f>": {
    "kind": "support",
    "hash": "0458d18f1a491d16",
@@ -44431,6 +44620,224 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::<import:0458d18f>": {
+   "kind": "support",
+   "hash": "0458d18f1a491d16",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::<import:c0640a6c>": {
+   "kind": "support",
+   "hash": "c0640a6c3d15075f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::<import:e71fddbd>": {
+   "kind": "support",
+   "hash": "e71fddbddd356cf0",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::=check": {
+   "kind": "support",
+   "hash": "107e789b6b15830c",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::=HASH": {
+   "kind": "support",
+   "hash": "7f6ed2f70d1de4f9",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::=workflow": {
+   "kind": "support",
+   "hash": "d65bc62589a34820",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > a commented-out line and a repository with no workflows pass": {
+   "kind": "test",
+   "hash": "7173778e770e9c17",
+   "asserts": 2,
+   "literals": [
+    "\"# uses: actions/checkout@v4\\n\"",
+    "\"# uses: actions/checkout@v4\\n\"",
+    "\".github/workflows/a.yml\"",
+    "\".github/workflows/a.yml\"",
+    "\"a commented-out line and a repository with no workflows pass\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > a composite action is read too, and a reusable workflow by tag fails": {
+   "kind": "test",
+   "hash": "172aad935124ff42",
+   "asserts": 1,
+   "literals": [
+    "\".github/actions/setup/action.yml\"",
+    "\".github/actions/setup/action.yml\"",
+    "\".github/actions/setup/action.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\"a composite action is read too, and a reusable workflow by tag fails\"",
+    "\"jobs:\\n  a:\\n    uses: o/r/.github/workflows/w.yml@v1\\n\"",
+    "\"runs:\\n  using: composite\\n  steps:\\n    - uses: pnpm/action-setup@v4\\n\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > a container image needs its digest": {
+   "kind": "test",
+   "hash": "80513861aea32309",
+   "asserts": 2,
+   "literals": [
+    "\".github/workflows/a.yml\"",
+    "\".github/workflows/a.yml\"",
+    "\".github/workflows/a.yml\"",
+    "\".github/workflows/a.yml\"",
+    "\"1\"",
+    "\"1\"",
+    "\"64\"",
+    "\"a container image needs its digest\"",
+    "\"a\"",
+    "\"uses: docker://alpine:3.20\"",
+    "\"uses: docker://alpine:3.20\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > a full commit hash passes, with or without a version comment": {
+   "kind": "test",
+   "hash": "32cf3425a451c33a",
+   "asserts": 1,
+   "literals": [
+    "\".github/workflows/b.yml\"",
+    "\".github/workflows/b.yml\"",
+    "\".github/workflows/c.yml\"",
+    "\".github/workflows/c.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\"a full commit hash passes, with or without a version comment\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > a short hash, an upper-case hash and a comment that names a hash do not count": {
+   "kind": "test",
+   "hash": "0fac5c884dfcaa7d",
+   "asserts": 1,
+   "literals": [
+    "\".github/workflows/a.yml\"",
+    "\".github/workflows/b.yml\"",
+    "\".github/workflows/c.yml\"",
+    "\"3\"",
+    "\"3\"",
+    "\"a short hash, an upper-case hash and a comment that names a hash do not count\"",
+    "\"uses: actions/checkout@11d5960\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > a tag, a branch and no version are WFL001, with the file and the line": {
+   "kind": "test",
+   "hash": "82cba74541f828bf",
+   "asserts": 4,
+   "literals": [
+    "\".github/workflows/b.yaml\"",
+    "\".github/workflows/b.yaml\"",
+    "\".github/workflows/b.yaml\"",
+    "\".github/workflows/c.yml\"",
+    "\".github/workflows/c.yml\"",
+    "\".github/workflows/c.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"5\"",
+    "\"5\"",
+    "\"WFL001\"",
+    "\"WFL001\"",
+    "\"WFL001\"",
+    "\"WFL001\"",
+    "\"WFL001\"",
+    "\"WFL001\"",
+    "\"a tag, a branch and no version are WFL001, with the file and the line\"",
+    "\"git ls-remote\"",
+    "\"git ls-remote\"",
+    "\"uses: actions/checkout\"",
+    "\"uses: actions/checkout@main\"",
+    "\"uses: actions/checkout@v4\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "harness/src/checks/workflow-pins.test.ts::outside actions are pinned to a commit [REQ-471] > an action of this repository passes": {
+   "kind": "test",
+   "hash": "11159e3bf4a8d2e6",
+   "asserts": 1,
+   "literals": [
+    "\".github/workflows/ci.yml\"",
+    "\".github/workflows/ci.yml\"",
+    "\"an action of this repository passes\"",
+    "\"uses: ./.github/actions/setup\"",
+    "\"uses: ./.github/actions/setup\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
    "amended_by": null
   },
   "harness/src/common.test.ts::<import:007beb93>": {
