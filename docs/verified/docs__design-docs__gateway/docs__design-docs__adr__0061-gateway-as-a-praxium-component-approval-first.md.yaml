@@ -1,7 +1,7 @@
 doc: "docs/design-docs/gateway.md"
 target: "docs/design-docs/adr/0061-gateway-as-a-praxium-component-approval-first.md"
-hash: "e16220586fc4608f"
+hash: "95037e8a1a4a7810"
 date: "2026-11-15"
-note: "병합 전 설계 검토(M1~M14)를 반영한 ADR-0061과 대조해 다시 읽고 문장을 맞춤"
-text_changed: true
+note: "ADR-0061의 고친 두 곳(조직 로그 수집이 멈췄을 때의 동작을 결정으로 옮김, 하위 에이전트 문장의 낱말을 이어가기 번호로 고침)과 대조했다. 이 문서에는 해당 내용이 없어 바꿀 곳이 없다."
+text_changed: false
 doc_hash: "885939e705da6f29"
