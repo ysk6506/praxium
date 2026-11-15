@@ -21,8 +21,6 @@ type call struct {
 	trace   string
 	authed  bool
 	subject access.Subject
-	// asked is the object the question named in its body, for the answer of a missing object.
-	asked string
 	// idem is the claim on the Idempotency-Key of a creating or acting call.
 	idem *idemSlot
 }

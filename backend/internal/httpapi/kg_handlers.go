@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
+	"github.com/ysk6506/praxium/backend/internal/kgread"
 	"github.com/ysk6506/praxium/backend/internal/query"
 )
 
@@ -186,12 +187,8 @@ func (c *call) objectsFind() {
 
 // runFind asks find and writes the answer; the GET and the POST form share it.
 func (c *call) runFind(in query.FindInput) {
-	ans, err := c.s.queries.Find(c.r.Context(), in, c.readFilter())
-	if err != nil {
-		c.failErr(err)
-		return
-	}
-	c.kgOK(ans.Data, metaOf(ans.Meta))
+	ans, p := c.s.read.Find(c.r.Context(), c.request(), in)
+	c.answer(ans.Data, ans.Meta, p)
 }
 
 // objectGet serves GET /v1/kgs/{kg}/objects/{object_id}: get.
@@ -213,18 +210,13 @@ func (c *call) objectGet() {
 
 // runGet asks get and writes the answer; the GET and the POST form share it.
 func (c *call) runGet(in query.GetInput) {
-	c.asked = in.ObjectID
-	if in.Identifier != nil {
-		c.asked = in.Identifier.Scheme + ":" + in.Identifier.Value
-	}
-	ans, err := c.s.queries.Get(c.r.Context(), in, c.readFilter())
-	if err != nil {
-		c.failErr(err)
+	ans, p := c.s.read.Get(c.r.Context(), c.request(), in)
+	if p != nil {
+		c.failProblem(p)
 		return
 	}
-	meta := metaOf(ans.Meta)
-	meta["allowed_actions"] = c.allowedActions("object", ans.Data.Object.ObjectID)
-	c.kgOK(ans.Data, meta)
+	ans.Meta["allowed_actions"] = c.allowedActions("object", ans.Data.Object.ObjectID)
+	c.kgOK(ans.Data, ans.Meta)
 }
 
 // objectLinks serves GET /v1/kgs/{kg}/objects/{object_id}/links: neighbors.
@@ -244,7 +236,7 @@ func (c *call) objectLinks() {
 		return
 	}
 	in := query.NeighborsInput{Common: common, ObjectID: c.r.PathValue("object_id")}
-	if steps, err := optInt(lq.others["max_steps"]); err != nil {
+	if steps, err := kgread.OptInt(lq.others["max_steps"]); err != nil {
 		c.fail("invalid_input.param_invalid", map[string]any{"param": "max_steps"})
 		return
 	} else if steps != nil {
@@ -267,10 +259,6 @@ func (c *call) objectLinks() {
 
 // runNeighbors asks neighbors and writes the answer; the GET and the POST form share it.
 func (c *call) runNeighbors(in query.NeighborsInput) {
-	ans, err := c.s.queries.Neighbors(c.r.Context(), in, c.readFilter())
-	if err != nil {
-		c.failErr(err)
-		return
-	}
-	c.kgOK(ans.Data, metaOf(ans.Meta))
+	ans, p := c.s.read.Neighbors(c.r.Context(), c.request(), in)
+	c.answer(ans.Data, ans.Meta, p)
 }

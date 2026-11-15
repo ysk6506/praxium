@@ -90,7 +90,9 @@ go:
     # The conformance suite of the definitions store port, production code of its own for the same reason as the storage suite; only its tests import the stores it is run on (ADR-0049).
     adapter.definitionscheck: {path: backend/internal/definitionscheck, may_import: [core.kernel, core.definitions], test_may_import: [adapter.definitionsfile]}
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
-    adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query]}
+    # The use case of reading a KG, apart from any transport (ADR-0062): the subject from a token, the read filter, the codes a refusal becomes, the reading of a question's JSON, the content of the model lists. The core imports no adapter and no net (the caller's address is the adapter's).
+    core.kgread:    {path: backend/internal/kgread, may_import: [core.kernel, core.model, core.graph, core.query, core.access]}
+    adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query, core.kgread]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
     # The built web UI (ADR-0035): the files of apps/web embedded in the program. It imports nothing; the backend builds and tests without the real build (a placeholder page is committed).
     adapter.webui:  {path: backend/internal/webui, may_import: []}

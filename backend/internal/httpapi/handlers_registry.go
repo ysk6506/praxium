@@ -2,6 +2,7 @@ package httpapi
 
 import (
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/kgread"
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
@@ -24,12 +25,12 @@ func (c *call) objectTypeDetail() {
 	if !valid {
 		return
 	}
-	data := objectTypeSummary(t)
-	data["properties"] = toAny(propertiesOf(t.Properties))
-	data["needs"] = toAny(needsOf(t.Needs))
-	data["identity_keys"] = toAny(keysOf(t.IdentityKeys))
-	data["title_property"] = opt(t.TitleProperty.String())
-	data["contacts"] = strs(t.Contacts)
+	data := kgread.ObjectTypeSummary(t)
+	data["properties"] = kgread.ToAny(kgread.PropertiesOf(t.Properties))
+	data["needs"] = kgread.ToAny(kgread.NeedsOf(t.Needs))
+	data["identity_keys"] = kgread.ToAny(kgread.KeysOf(t.IdentityKeys))
+	data["title_property"] = kgread.Opt(t.TitleProperty.String())
+	data["contacts"] = kgread.Strs(t.Contacts)
 	for _, name := range include {
 		data[name] = c.objectTypeInclude(t, name)
 	}
@@ -40,35 +41,35 @@ func (c *call) objectTypeInclude(t model.ObjectType, name string) any {
 	reg := c.s.reg
 	switch name {
 	case "effective_properties":
-		return toAny(propertiesOf(reg.EffectiveProperties(t.ID)))
+		return kgread.ToAny(kgread.PropertiesOf(reg.EffectiveProperties(t.ID)))
 	case "effective_needs":
-		return toAny(needsOf(reg.EffectiveNeeds(t.ID)))
+		return kgread.ToAny(kgread.NeedsOf(reg.EffectiveNeeds(t.ID)))
 	case "ancestors":
-		out := []typeRef{}
+		out := []kgread.TypeRef{}
 		for _, id := range reg.Ancestors(t.ID) {
 			if a, ok := reg.ObjectType(id); ok {
-				out = append(out, typeRef{ID: a.ID.String(), Name: a.Name})
+				out = append(out, kgread.TypeRef{ID: a.ID.String(), Name: a.Name})
 			}
 		}
-		return toAny(out)
+		return kgread.ToAny(out)
 	case "subtypes":
-		out := []typeRef{}
+		out := []kgread.TypeRef{}
 		for _, sub := range reg.Subtypes(t.ID) {
-			out = append(out, typeRef{ID: sub.ID.String(), Name: sub.Name})
+			out = append(out, kgread.TypeRef{ID: sub.ID.String(), Name: sub.Name})
 		}
-		return toAny(out)
+		return kgread.ToAny(out)
 	}
-	return toAny(c.bindingsOfType(t))
+	return kgread.ToAny(c.bindingsOfType(t))
 }
 
 // bindingsOfType lists the bindings that have the type, or a type it is a subtype of, at an end.
-func (c *call) bindingsOfType(t model.ObjectType) []boundLinkView {
-	out := []boundLinkView{}
+func (c *call) bindingsOfType(t model.ObjectType) []kgread.BoundLinkView {
+	out := []kgread.BoundLinkView{}
 	id := t.ID.String()
 	for _, lt := range c.s.reg.LinkTypes() {
 		for _, b := range lt.Bindings {
-			if contains(covered(c.s.reg, c.s.lists.typeIDs, b.From), id) || contains(covered(c.s.reg, c.s.lists.typeIDs, b.To), id) {
-				out = append(out, boundLinkView{LinkType: lt.ID.String(), Binding: bindingOf(b)})
+			if contains(kgread.Covered(c.s.reg, c.s.lists.typeIDs, b.From), id) || contains(kgread.Covered(c.s.reg, c.s.lists.typeIDs, b.To), id) {
+				out = append(out, kgread.BoundLinkView{LinkType: lt.ID.String(), Binding: kgread.BindingOf(b)})
 			}
 		}
 	}
@@ -85,9 +86,9 @@ func (c *call) linkTypeDetail() {
 	if _, valid := c.getQuery(nil); !valid {
 		return
 	}
-	data := linkTypeSummary(lt)
-	data["properties"] = toAny(propertiesOf(lt.Properties))
-	data["bindings"] = toAny(bindingsOf(lt.Bindings))
+	data := kgread.LinkTypeSummary(lt)
+	data["properties"] = kgread.ToAny(kgread.PropertiesOf(lt.Properties))
+	data["bindings"] = kgread.ToAny(kgread.BindingsOf(lt.Bindings))
 	c.one("link_type", lt.ID.String(), requested, data)
 }
 
@@ -110,7 +111,7 @@ func (c *call) linkTypeBindings() {
 	}
 	def := &listDef{}
 	for _, b := range lt.Bindings {
-		view := toMap(bindingOf(b))
+		view := kgread.ToMap(kgread.BindingOf(b))
 		def.rows = append(def.rows, row{id: b.ID.String(), vals: map[string]any{}, out: view})
 	}
 	finish(def)
@@ -132,7 +133,7 @@ func (c *call) actionTypeDetail() {
 	if _, valid := c.getQuery(nil); !valid {
 		return
 	}
-	c.one("action_type", a.ID.String(), requested, actionTypeView(a))
+	c.one("action_type", a.ID.String(), requested, kgread.ActionTypeView(a))
 }
 
 func (c *call) traitDetail() {
@@ -150,12 +151,12 @@ func (c *call) traitDetail() {
 	if _, valid := c.getQuery(nil); !valid {
 		return
 	}
-	data := traitView(t)
-	carriers := []typeRef{}
+	data := kgread.TraitView(t)
+	carriers := []kgread.TypeRef{}
 	for _, ot := range c.s.reg.TypesWithTrait(t.ID) {
-		carriers = append(carriers, typeRef{ID: ot.ID.String(), Name: ot.Name})
+		carriers = append(carriers, kgread.TypeRef{ID: ot.ID.String(), Name: ot.Name})
 	}
-	data["carriers"] = toAny(carriers)
+	data["carriers"] = kgread.ToAny(carriers)
 	c.one("trait", t.ID.String(), requested, data)
 }
 
@@ -174,5 +175,5 @@ func (c *call) schemeDetail() {
 	if _, valid := c.getQuery(nil); !valid {
 		return
 	}
-	c.one("identifier_scheme", sc.ID.String(), requested, schemeView(sc))
+	c.one("identifier_scheme", sc.ID.String(), requested, kgread.SchemeView(sc))
 }
