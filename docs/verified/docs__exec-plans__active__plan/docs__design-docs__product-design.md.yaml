@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "dbdb2419c1901ff2"
+hash: "8e695bd22acd457d"
 date: "2026-11-15"
-note: "ADR-0061 본문을 용어 검사에 맞게 고친 뒤 다시 대조해 읽음. 내용은 같다"
-text_changed: false
-doc_hash: "cbf3b58a9e921338"
+note: "product-design의 순서 표와 게이트웨이 순서를 같게 맞춤"
+text_changed: true
+doc_hash: "4ef8896c309e8022"

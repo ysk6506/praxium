@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "32cf7130dbe63bd7"
+hash: "8c057e5315c7a8b7"
 date: "2026-11-15"
-note: "ADR-0061 본문을 용어 검사에 맞게 고친 뒤 다시 대조해 읽음. 내용은 같다"
+note: "AGENTS.md의 게이트웨이 줄과 대조함. 바뀐 것이 없다"
 text_changed: false
 doc_hash: "fa6d560a34c76e15"

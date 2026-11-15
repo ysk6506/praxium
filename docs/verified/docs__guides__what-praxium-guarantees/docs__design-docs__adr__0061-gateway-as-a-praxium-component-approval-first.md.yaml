@@ -1,7 +1,7 @@
 doc: "docs/guides/what-praxium-guarantees.md"
 target: "docs/design-docs/adr/0061-gateway-as-a-praxium-component-approval-first.md"
-hash: "2f0729fd84f8c38e"
+hash: "e16220586fc4608f"
 date: "2026-11-15"
-note: "ADR-0061 본문을 용어 검사에 맞게 고친 뒤 다시 대조해 읽음. 내용은 같다"
+note: "병합 전 설계 검토(M1~M14)를 반영한 ADR-0061과 대조해 다시 읽고 문장을 맞춤"
 text_changed: true
-doc_hash: "4c9a30e2dcad062c"
+doc_hash: "817e106a7ffc34da"

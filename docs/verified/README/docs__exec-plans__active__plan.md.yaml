@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "cbf3b58a9e921338"
+hash: "4ef8896c309e8022"
 date: "2026-11-15"
-note: "plan과 AGENTS.md의 변경과 대조함. 소개 문장을 현재 코드는 읽기만 한다로 고쳤다"
+note: "plan의 순서와 대조함. 소개 문단을 릴리스의 사실(읽기만 한다)로 되돌리고 게이트웨이는 아직 안 되는 목록에 한 줄로 뒀다"
 text_changed: true
-doc_hash: "5eab0b903c155b70"
+doc_hash: "9a2c6db44232d731"

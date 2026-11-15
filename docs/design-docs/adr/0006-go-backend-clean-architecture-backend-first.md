@@ -16,7 +16,7 @@ amends_tests: []
 decision_hash: a7717a3e34dfe774
 amended_by:
   - adr: "0061"
-    what: 역할 4종에 게이트웨이를 더한다
+    what: 게이트웨이가 다섯째 역할로 예정된다
 ---
 # ADR-0006 백엔드는 Go, 용도에 맞는 언어와 스토리지 — 클린 아키텍처, 역할 4종, 알파는 백엔드부터
 

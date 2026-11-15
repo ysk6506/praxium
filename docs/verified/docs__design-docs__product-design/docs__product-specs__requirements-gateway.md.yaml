@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements-gateway.md"
-hash: "065801b3081fb28c"
+hash: "fc300dcbcf7fdcbd"
 date: "2026-11-15"
-note: "용어를 고친 뒤 개요와 requirements-gateway 를 다시 대조함. 어긋나는 곳이 없다"
+note: "개요의 순서 표와 지도를 requirements-gateway 와 다시 대조함. 게이트웨이 요구사항 범위와 문서 지도를 더했다"
 text_changed: true
-doc_hash: "dbdb2419c1901ff2"
+doc_hash: "8e695bd22acd457d"
