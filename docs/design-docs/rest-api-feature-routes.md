@@ -50,7 +50,7 @@ follows:
 | 노출 2종(`exposed_direct`, `exposed_inherited`) | `impact`의 응답 |
 | 지정 재수집과 그 결과 | `POST /v1/kgs/{kg}/refreshes`, `GET /v1/kgs/{kg}/refreshes/{refresh_id}` |
 | 기대와 대조 | `POST /v1/kgs/{kg}/value-checks` |
-| MCP 읽기 인터페이스(재수집과 기대 대조 포함) | MCP 툴(rest-api.md 5-6) |
+| MCP 읽기 인터페이스(재수집과 값 확인은 `/mcp` 밖) | MCP 툴(rest-api.md 5-6, kg-mcp.md) |
 | 이 병합을 리버트와 식별 이력 | `GET /v1/kgs/{kg}/identity-events`, `POST /v1/kgs/{kg}/identity-events/{event_id}:revert` |
 | 대량 읽기 | `POST /v1/kgs/{kg}/scopes/{scope_id}/bulk-reads`, `GET /v1/jobs/{job_id}/result` |
 | 저장해 둔 범위 | `GET, POST /v1/kgs/{kg}/scopes`, `DELETE /v1/kgs/{kg}/scopes/{scope_id}` |

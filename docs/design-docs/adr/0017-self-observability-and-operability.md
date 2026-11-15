@@ -14,6 +14,8 @@ touches_protected:
 amends_tests: []
 decision_hash: 9f617af4352fa59d
 amended_by:
+  - adr: "0062"
+    what: 운영 MCP는 다른 주소의 별도 인터페이스
   - adr: "0061"
     what: 운영 액션의 위임과 게이트웨이의 정렬
 ---

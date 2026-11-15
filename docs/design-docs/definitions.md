@@ -356,7 +356,7 @@ items/<kind>/<name>   항목 파일: item_id, schema_version, body
 
 ## 14. 상태 개요(API)
 
-정의 측의 읽기와 쓰기는 기능 이름으로 적어요. HTTP 경로는 [REST API의 자원 목록](rest-api-resources-data.md)이 정해요. 정의(타입, 소스, 데이터셋, 피드, 브랜치, 제안)는 배포에 하나라 `/v1/...` 바로 아래이고(예: `/v1/definitions-overview`), KG에 속한 것(식별의 리버트 등)은 `/v1/kgs/{kg}/...` 아래예요. 액션은 콜론 하나로 적어요: `POST /v1/proposals/{id}:approve`, `POST /v1/branches/{id}:align`. 읽기는 에이전트용 MCP로도 제공해요.
+정의 측의 읽기와 쓰기는 기능 이름으로 적어요. HTTP 경로는 [REST API의 자원 목록](rest-api-resources-data.md)이 정해요. 정의(타입, 소스, 데이터셋, 피드, 브랜치, 제안)는 배포에 하나라 `/v1/...` 바로 아래이고(예: `/v1/definitions-overview`), KG에 속한 것(식별의 리버트 등)은 `/v1/kgs/{kg}/...` 아래예요. 액션은 콜론 하나로 적어요: `POST /v1/proposals/{id}:approve`, `POST /v1/branches/{id}:align`. 읽기는 에이전트용 MCP로도 제공해요(툴의 이름과 접두어는 구현 때 정해요. ADR-0062).
 
 | 읽기 | 응답 |
 |---|---|

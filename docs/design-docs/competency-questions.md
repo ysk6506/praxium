@@ -342,7 +342,7 @@ derived 테이블 `competency_mark`예요(키는 `kg_id`, `question_id`, `object
 
 ### 10.4 에이전트와 시스템이 조회하는 경로
 
-MCP의 `competency` 툴이에요. 읽기만 해요. 에이전트가 `impact`를 쓰기 전에 "이 스위치에 대해 이 KG가 무엇에 답할 수 있나"를 먼저 조회해요.
+MCP의 `kg_competency` 툴이에요(첫 릴리스의 여섯 툴에는 없고 구현되는 대로 더해요. kg-mcp.md). 읽기만 해요. 에이전트가 `kg_impact`를 쓰기 전에 "이 스위치에 대해 이 KG가 무엇에 답할 수 있나"를 먼저 조회해요.
 
 ```yaml
 # 입력: {object_ids: [sw-12], include: [needs], detail: brief}
