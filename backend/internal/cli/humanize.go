@@ -163,23 +163,32 @@ func healthText(status int) string {
 
 // bindingText writes a binding of a link type as one line: the type that may be at the start, the type that may be at
 // the end and how many links of the type an object may have, so that a person who writes a mapping sees which object
-// types the link joins. A binding with a constraint on a parameter says so.
+// types the link joins. A binding with a constraint on a parameter says so, and so does one with a default.
 func bindingText(b map[string]any) string {
 	names, _ := b["_names"].(map[string]string)
 	out := endText(b["from"], names) + " -> " + endText(b["to"], names) + "  cardinality " + scalar(b["cardinality"])
-	if pc, ok := b["param_constraints"].(map[string]any); ok && len(pc) > 0 {
-		keys := make([]string, 0, len(pc))
-		for k := range pc {
-			keys = append(keys, k)
-		}
-		sort.Strings(keys)
-		parts := make([]string, len(keys))
-		for i, k := range keys {
-			parts[i] = k + "=" + scalar(pc[k])
-		}
-		out += "  only with " + strings.Join(parts, " ")
+	if text := paramsText(b["param_constraints"]); text != "" {
+		out += "  only with " + text
+	}
+	if text := paramsText(b["param_defaults"]); text != "" {
+		out += "  by default " + text
 	}
 	return out
+}
+
+// paramsText writes the parameters of a map as name=value, in the order of the names; it is empty when there are none.
+func paramsText(v any) string {
+	m, _ := v.(map[string]any)
+	keys := make([]string, 0, len(m))
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	parts := make([]string, len(keys))
+	for i, k := range keys {
+		parts[i] = k + "=" + scalar(m[k])
+	}
+	return strings.Join(parts, " ")
 }
 
 // endText is one end of a binding: the name of the object type, "any object with the trait T", or "any object".

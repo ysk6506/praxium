@@ -10941,6 +10941,26 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "backend/internal/model/testdata/binding_answers.txt::<data>": {
+   "kind": "data",
+   "hash": "99263de39f3c1279",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "backend/internal/model/testdata/binding_winners.txt::<data>": {
+   "kind": "data",
+   "hash": "05180eadb74fbca1",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "backend/internal/model/testdata/numbering_v1.json::<data>": {
    "kind": "data",
    "hash": "ebc10d73a75456db",
@@ -17980,6 +18000,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestCircuitWithTwoOwningOrganizationsLosesTheSecondLink": {
+   "kind": "test",
+   "hash": "69da47d1cc3a6df3",
+   "asserts": 4,
+   "literals": [
+    "3681bce3d0cc0980"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestCompileRejectsWrongMappings": {
    "kind": "test",
    "hash": "9558e187f2c078dc",
@@ -18915,6 +18950,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestWidenedBindingsStillTakeMoreThanOneEnd": {
+   "kind": "test",
+   "hash": "baeefb74044c3d44",
+   "asserts": 3,
+   "literals": [
+    "eea2826f7032d444"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestWithoutTheOptionAnEmptyKeyIsReportedAndTheProblemNamesTheOption": {
    "kind": "test",
    "hash": "6791f16638977c6b",
@@ -19505,6 +19555,227 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/kgread::TestAnObjectIsExpectedWhereABodyIsNotOne": {
+   "kind": "test",
+   "hash": "f75b0105ded4329c",
+   "asserts": 4,
+   "literals": [
+    "5c06bb2ae13f632a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestAskFind": {
+   "kind": "test",
+   "hash": "692bdfd19c9b3a83",
+   "asserts": 7,
+   "literals": [
+    "477c3e4ff71f9999"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestAskGetAndNotFound": {
+   "kind": "test",
+   "hash": "7a675ef4ad44e6b9",
+   "asserts": 6,
+   "literals": [
+    "bffc9f7df7db936f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestAskNeighborsAndImpact": {
+   "kind": "test",
+   "hash": "1eff53364d991018",
+   "asserts": 4,
+   "literals": [
+    "f5868e45e01b0213"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestBodyOverTheLimit": {
+   "kind": "test",
+   "hash": "6cd16a675ce33d33",
+   "asserts": 3,
+   "literals": [
+    "e540098efcbb1ecd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestCatalogViews": {
+   "kind": "test",
+   "hash": "0f7c2264eb38ccdb",
+   "asserts": 12,
+   "literals": [
+    "e659d6339244f88f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateAuthenticatesAGoodToken": {
+   "kind": "test",
+   "hash": "e053d168a6a1d56f",
+   "asserts": 2,
+   "literals": [
+    "d35dea83f5bb8e3f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateAuthorizesByRole": {
+   "kind": "test",
+   "hash": "f19559bc3fd3f363",
+   "asserts": 2,
+   "literals": [
+    "4bffc3f375542a10"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateCountsRefusalsAndBlocksTheAddress": {
+   "kind": "test",
+   "hash": "20f9a0b4ffacd871",
+   "asserts": 5,
+   "literals": [
+    "62a3d28a4b38a99f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGateRefusesWhatIsNotAGoodToken": {
+   "kind": "test",
+   "hash": "6118c39913881c25",
+   "asserts": 2,
+   "literals": [
+    "8651bbbf5e9e0657"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestGetNamesTheObjectOfThePath": {
+   "kind": "test",
+   "hash": "618a3efb42c8600c",
+   "asserts": 2,
+   "literals": [
+    "f2fbf984795166ca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestInputProblems": {
+   "kind": "test",
+   "hash": "d387f6fa195f09a8",
+   "asserts": 5,
+   "literals": [
+    "28d0b22a6b65b469"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestOptIntAndDurations": {
+   "kind": "test",
+   "hash": "8f514f4f1635799e",
+   "asserts": 5,
+   "literals": [
+    "77345f379fbbc7e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestPlainMessage": {
+   "kind": "test",
+   "hash": "e4663ea0cb1daba9",
+   "asserts": 3,
+   "literals": [
+    "938d6cedacf5f0bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestReadFilterIsTheDefaultGrant": {
+   "kind": "test",
+   "hash": "6908b100aa147b95",
+   "asserts": 2,
+   "literals": [
+    "6dab827a9b2262cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestRefuseMapsErrorsToCodes": {
+   "kind": "test",
+   "hash": "77d83e156395d3df",
+   "asserts": 4,
+   "literals": [
+    "1ab24a2d4fb206d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestWithoutAStoreEveryReadIsUnavailable": {
+   "kind": "test",
+   "hash": "c54b6d7ee68fb9f5",
+   "asserts": 1,
+   "literals": [
+    "c6604b5ef01413a1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/memstore::TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber": {
    "kind": "test",
    "hash": "f74b9f522f689033",
@@ -19814,22 +20085,22 @@
   },
   "go:backend/internal/model::TestBindingForGivesTheFirstBindingOfOneLinkType": {
    "kind": "test",
-   "hash": "dc555b3c2eb92886",
+   "hash": "28f70b7c01803c48",
    "asserts": 4,
    "literals": [
-    "3b1b03668287f415"
+    "5f8631d69f3dc8a6"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-261"
    ],
-   "added": "2026-11-13",
-   "amended_by": null
+   "added": "2026-11-15",
+   "amended_by": "0065-binding-priority-and-order-of-param-values.md"
   },
   "go:backend/internal/model::TestBindingsForAPair": {
    "kind": "test",
-   "hash": "459b300801058932",
+   "hash": "6c3d093a1e16f933",
    "asserts": 6,
    "literals": [
     "9119a52b8b4b1173"
@@ -19839,7 +20110,22 @@
    "reqs": [
     "REQ-100"
    ],
-   "added": "2026-11-13",
+   "added": "2026-11-15",
+   "amended_by": "0065-binding-priority-and-order-of-param-values.md"
+  },
+  "go:backend/internal/model::TestBindingsWithTheSameScoreGoByIdWhateverTheOrder": {
+   "kind": "test",
+   "hash": "ff9e42594be8465a",
+   "asserts": 2,
+   "literals": [
+    "4aaa45e3e0c7ec36"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/model::TestClassifyAddedAndGoneProperties": {
@@ -20439,10 +20725,10 @@
   },
   "go:backend/internal/model::TestOverlayOnTheStandardModel": {
    "kind": "test",
-   "hash": "cd375c40bc818e2a",
+   "hash": "d6a02b92cc4e4e41",
    "asserts": 10,
    "literals": [
-    "d79592ec271ac0c8"
+    "11e2093dcade69f9"
    ],
    "precision": [],
    "skips": 0,
@@ -20450,8 +20736,8 @@
     "REQ-345",
     "REQ-346"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-15",
+   "amended_by": "0065-binding-priority-and-order-of-param-values.md"
   },
   "go:backend/internal/model::TestOverlayRefusesWhatItDoesNotKnow": {
    "kind": "test",
@@ -20484,6 +20770,21 @@
     "REQ-348"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestParamDefaultsAreChecked": {
+   "kind": "test",
+   "hash": "cb70b8fa1b783b7a",
+   "asserts": 1,
+   "literals": [
+    "144b98ea0a557405"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/model::TestPropertyLookups": {
@@ -20587,6 +20888,21 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestResolveParamsFollowsTheOrderOfTheValues": {
+   "kind": "test",
+   "hash": "097053c453221bf2",
+   "asserts": 3,
+   "literals": [
+    "53c4529793bd81d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/model::TestRowHashDoesNotSeeNames": {
@@ -20725,6 +21041,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestStandardBindingAnswersAreKept": {
+   "kind": "test",
+   "hash": "bc764e109fb3030b",
+   "asserts": 4,
+   "literals": [
+    "b3b3de6ab287c897"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestStandardCounts": {
    "kind": "test",
    "hash": "8980d09b1121a66e",
@@ -20784,18 +21115,18 @@
   },
   "go:backend/internal/model::TestStandardHashIsTheSameWithNoOverlay": {
    "kind": "test",
-   "hash": "c7cf6117a088cd0c",
+   "hash": "7c74c47aff7e211c",
    "asserts": 3,
    "literals": [
-    "83be3a583a0c1bd0"
+    "cfce2e6aaf34f54c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-346"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-15",
+   "amended_by": "0065-binding-priority-and-order-of-param-values.md"
   },
   "go:backend/internal/model::TestStandardIdentityAndRules": {
    "kind": "test",
@@ -20825,10 +21156,10 @@
   },
   "go:backend/internal/model::TestStandardIsDeterministic": {
    "kind": "test",
-   "hash": "4599416ec314f908",
+   "hash": "f2305044ea84dc20",
    "asserts": 9,
    "literals": [
-    "571c438989241c08"
+    "151a39f7748efbf6"
    ],
    "precision": [],
    "skips": 0,
@@ -20836,8 +21167,8 @@
     "REQ-001",
     "REQ-233"
    ],
-   "added": "2026-11-13",
-   "amended_by": null
+   "added": "2026-11-15",
+   "amended_by": "0065-binding-priority-and-order-of-param-values.md"
   },
   "go:backend/internal/model::TestStandardMountingAndServiceDependencies": {
    "kind": "test",
@@ -20916,6 +21247,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/model::TestStandardWinnersThatChangedAreKept": {
+   "kind": "test",
+   "hash": "8d1d5dd2aada6edc",
+   "asserts": 2,
+   "literals": [
+    "f8601e369a41f431"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
   "go:backend/internal/model::TestSubtypeQueries": {
    "kind": "test",
    "hash": "1c11c65b57d82932",
@@ -20944,6 +21290,51 @@
     "REQ-321"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestTheNarrowerBindingWinsTheExamplesOfTheDesign": {
+   "kind": "test",
+   "hash": "72187c391bb8c90a",
+   "asserts": 2,
+   "literals": [
+    "d690c16790143ded"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestTheSameRuleHoldsForBindingsAnOrganisationAdds": {
+   "kind": "test",
+   "hash": "e0ab0faac5c7214d",
+   "asserts": 3,
+   "literals": [
+    "01d43bdbc16267bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/model::TestTheStandardModelReadsVirtualDiskPartOfVirtualMachineAsSoft": {
+   "kind": "test",
+   "hash": "d77c7fb43182dd03",
+   "asserts": 2,
+   "literals": [
+    "29650d2d7dd5f9a3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-421"
+   ],
+   "added": "2026-11-15",
    "amended_by": null
   },
   "go:backend/internal/model::TestValid": {
@@ -22738,18 +23129,18 @@
   },
   "go:backend/internal/worldgen::TestGoldenTinyWorld": {
    "kind": "test",
-   "hash": "35c162f2829f7b0c",
+   "hash": "1bb8399045ddc342",
    "asserts": 6,
    "literals": [
-    "bc033f0886b6a7ab"
+    "2951db17746a6213"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-001"
    ],
-   "added": "2026-11-14",
-   "amended_by": "0057-storage-array-power-redundancy-in-the-synthetic-world.md"
+   "added": "2026-11-15",
+   "amended_by": "0065-binding-priority-and-order-of-param-values.md"
   },
   "go:backend/internal/worldgen::TestGroupRulesHaveFailingExamples": {
    "kind": "test",

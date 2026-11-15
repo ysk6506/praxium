@@ -6,6 +6,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/access"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/kgread"
 )
 
 var admins = []string{"admin"}
@@ -48,11 +49,11 @@ func (c *call) directory() (access.Directory, bool) {
 func (c *call) idError(err error) {
 	switch kernel.CodeOf(err) {
 	case kernel.CodeInvalidValue:
-		c.fail("invalid_input.field", map[string]any{"message": plainMessage(err)})
+		c.fail("invalid_input.field", map[string]any{"message": kgread.PlainMessage(err)})
 	case kernel.CodeNotFound:
 		c.notFound("resource", c.r.URL.Path)
 	case kernel.CodeConflict:
-		c.fail("conflict.state_not_allowed", map[string]any{"message": plainMessage(err)})
+		c.fail("conflict.state_not_allowed", map[string]any{"message": kgread.PlainMessage(err)})
 	default:
 		c.s.log.Error("the identity store failed", "error", err.Error(), "trace_id", c.trace)
 		c.fail("server.unavailable", nil)

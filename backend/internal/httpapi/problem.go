@@ -67,3 +67,8 @@ func (c *call) notFound(resource, id string) {
 	}
 	c.fail("not_found.resource", params)
 }
+
+// field is the problem entry of one wrong field of a body.
+func field(pointer, code string, params map[string]any) fieldError {
+	return fieldError{Pointer: pointer, Code: code, Params: params}
+}

@@ -13,7 +13,7 @@ const (
 	goldenObjects      = 1394
 	goldenLinks        = 2509
 	goldenHash         = "2b482ee1c866524057d8c55aacb72b9843eb55fb08da84386e632a3f873db1b9"
-	goldenManifestHash = "5bbc705ee412b4ab6030be9e5dad714b2825cfe3744248157d89e8401fa33f6e"
+	goldenManifestHash = "e2af04bd4ff8c74743608ae9bab126c680353d809a8bb94b9bf5aaca7bf7eea0"
 )
 
 // [REQ-001]

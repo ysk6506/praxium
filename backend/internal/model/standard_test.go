@@ -165,7 +165,7 @@ func TestStandardIsDeterministic(t *testing.T) {
 	if na != nb {
 		t.Fatalf("two loads give different numbering hashes")
 	}
-	const wantModel = "712b5ae602cd347af9b4eecaa975b3637b5e96ccaa9d8682064d31749a07f98a"
+	const wantModel = "2d42f2f343d9316bd8711733bc54fa0da17512cdd92315f65841568f9d74a6bf"
 	const wantNumbering = "3b9b3505c4efd21ef3d90bce9ec8be956c87776868e622c9149f046342eb6f1e"
 	if got := a.Hash().String(); got != wantModel {
 		t.Errorf("model hash = %s, want %s: change it only with a decision record", got, wantModel)

@@ -28,6 +28,7 @@ type Registry struct {
 	propByNo   map[int]PropertyID
 	info       map[ObjectTypeID]*typeInfo
 	children   map[ObjectTypeID][]ObjectTypeID
+	bindScore  map[BindingID]int
 	hash       kernel.Hash
 }
 
@@ -63,6 +64,7 @@ func NewRegistry(defs Definitions) (*Registry, error) {
 	r.index()
 	c := newChecker(&r.defs)
 	r.buildInfo(c)
+	r.indexBindingScores()
 	hash, err := r.computeHash()
 	if err != nil {
 		return nil, err

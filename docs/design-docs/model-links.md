@@ -8,35 +8,37 @@ follows:
 ---
 # 표준 모델의 바인딩과 이중화 상실의 설계
 
-[ADR-0059](adr/0059-model-links-and-redundancy-loss.md)의 자세한 내용이에요. **수집 매핑이 링크의 속성을 채우는 것(2절)을 빼고 모두 아직 구현하지 않은 설계(예정)예요.** 지금 코드는 이 문서의 "지금 코드" 열이나 "코드를 읽은 판단"으로 적은 대로 움직여요. 숫자와 판정은 조사에서 나온 것이고 공개 문서로 하나하나 확인하지 않았어요(7절).
+[ADR-0059](adr/0059-model-links-and-redundancy-loss.md)의 자세한 내용이에요. **1절(바인딩 우선순위)과 2절(값이 정해지는 순서, 바인딩의 기본값)은 구현했고([ADR-0065](adr/0065-binding-priority-and-order-of-param-values.md)), 수집 매핑이 링크의 속성을 채우는 것(2절)도 구현했어요([ADR-0066](adr/0066-link-params-live-in-link-attributes-and-ingestion-fills-them.md)). 나머지는 아직 구현하지 않은 설계(예정)예요.** 구현하지 않은 부분은 이 문서의 "지금 코드" 열이나 "코드를 읽은 판단"으로 적은 대로 움직여요. 숫자와 판정은 조사에서 나온 것이고 공개 문서로 하나하나 확인하지 않았어요(7절).
 
 ## 1. 바인딩 우선순위의 정의
 
-링크 타입 하나에 맞는 바인딩이 여럿이면 지금은 바인딩 id 문자열이 가장 작은 하나가 이겨요. `cardinality`, `failover_to`, 인자가 모두 그 바인딩에서 나와요. 새 정의는 양쪽 끝이 더 좁은 바인딩이 이기게 해요.
+링크 타입 하나에 맞는 바인딩이 여럿이면 양쪽 끝이 더 좁은 바인딩이 이겨요(예전에는 바인딩 id 문자열이 가장 작은 하나가 이겼어요). `cardinality`, `failover_to`, 인자가 모두 그 바인딩에서 나와요. 이 판단은 `model` 패키지의 비교 함수 하나(`better`)에 있고, `BindingFor`, `BindingsFor`(같은 링크 타입에서는 첫 항목이 `BindingFor`의 답이에요), 수집의 카디널리티 검사, 영향 범위의 인자 읽기가 모두 그 결과를 써요. 조직이 더한 정의에도 같은 규칙이 걸려요.
 
 - 끝의 점수: any는 0, 트레이트는 1, 타입은 2 + 깊이예요. 깊이는 조상 타입의 수이고 뿌리 타입은 0이에요. 타입의 하위 타입도 맞는 것으로 봐요.
 - 바인딩의 점수: 시작 끝과 도착 끝의 점수의 합이에요. 큰 쪽이 이겨요.
-- 점수가 같으면 지금처럼 바인딩 id 순이에요. 지금 표준 모델에는 같은 점수가 없어요(`links.json`을 읽고 계산한 추정).
+- 점수가 같으면 바인딩 id 순이에요. 표준 모델에는 같은 점수가 없어요(모든 타입 쌍을 계산해 확인했어요).
 - 알려진 조합이 먼저예요. 알려진 조합이 하나도 맞지 않을 때만 일반 규칙(3절)을 써요.
 
 ### 예 셋
 
 | 링크 | 맞는 바인딩과 점수 | 이기는 것 |
 |---|---|---|
-| `Chiller` POWERED_BY `PowerRedundancyGroup` (`Chiller` 깊이 0, `PowerRedundancyGroup` 깊이 1) | 트레이트(전원을 받는 것)→전원 원천 트레이트 2, `Chiller`→전원 원천 트레이트 3, 트레이트(전원을 받는 것)→`PowerRedundancyGroup` 4 | 마지막(4). 지금은 id 순이라 `chiller`→전원 원천 트레이트가 이겨요. |
-| `StorageArray` UPLINKED_VIA `SanSwitch` (`StorageArray` 0, `SanSwitch` 1) | `storage_array`→`network_device` 4, `storage_array`→`san_switch` 5 | `san_switch`(5). 지금은 `network_device`가 이겨요. |
-| `VirtualMachine` MANAGED_BY `VirtualizationManager` (둘 다 깊이 0) | 트레이트(관리 대상)→`virtualization_manager` 3, `virtual_machine`→`virtualization_manager` 4 | `virtual_machine`(4). 카디널리티가 N:M에서 N:1이 되므로 수집의 검사가 엄격해지는 예예요. |
+| `Chiller` POWERED_BY `PowerRedundancyGroup` (`Chiller` 깊이 0, `PowerRedundancyGroup` 깊이 1) | 트레이트(전원을 받는 것)→전원 원천 트레이트 2, `Chiller`→전원 원천 트레이트 3, 트레이트(전원을 받는 것)→`PowerRedundancyGroup` 4 | 마지막(4). 예전에는 id 순이라 `chiller`→전원 원천 트레이트가 이겼어요. |
+| `StorageArray` UPLINKED_VIA `SanSwitch` (`StorageArray` 0, `SanSwitch` 1) | `storage_array`→`network_device` 4, `storage_array`→`san_switch` 5 | `san_switch`(5). 예전에는 `network_device`가 이겼어요. |
+| `VirtualMachine` MANAGED_BY `VirtualizationManager` (둘 다 깊이 0) | 트레이트(관리 대상)→`virtualization_manager` 3, `virtual_machine`→`virtualization_manager` 4 | `virtual_machine`(4). 카디널리티가 N:M에서 N:1이 되는 예라서 바인딩을 N:M으로 넓혔어요(아래). |
 
-### 효과의 크기 (추정)
+### 효과의 크기 (확인한 수)
 
-`links.json`을 읽기만 해서 계산한 추정이에요.
+표준 모델의 모든 타입 쌍을 계산해 확인했고, 테스트(`binding_priority_test.go`, 목록은 `testdata/binding_winners.txt`)가 고정해요.
 
-- 맞는 바인딩이 둘 이상인 (링크 타입, 시작 타입, 끝 타입) 조합이 226개예요. 이 가운데 20개에서 이기는 바인딩이 바뀌어요.
+- 맞는 바인딩이 둘 이상인 (링크 타입, 시작 타입, 끝 타입) 조합이 226개예요. 이 가운데 20개에서 이기는 바인딩이 바뀌어요. 설계 때의 추정과 같아요.
 - POWERED_BY 11개: `Transformer`→`UtilityFeed`, `TransferSwitch`→`PowerRedundancyGroup`, `Ups`→`Switchgear`, `Ups`→`TransferSwitch`, `Ups`→`PowerRedundancyGroup`, `Chiller`·`CoolingTower`·`Crah`·`Crac`·`InRowCooler`·`Cdu`→`PowerRedundancyGroup`. OWNED_BY 4개: `Tenant`→`Team`, `OnCallSchedule`→`Team`, `Contract`→`Organization`, `Circuit`→`Organization`. REALIZED_BY 2개: `TechnicalService`→`Workload`, `ApplicationService`→`Workload`. 그리고 MANAGED_BY 1개(`VirtualMachine`→`VirtualizationManager`), UPLINKED_VIA 1개(`StorageArray`→`SanSwitch`), IN_FAILURE_DOMAIN 1개(`ClusterNode`→`FailureDomain`)예요.
-- 20개 모두 `param_constraints`가 같아서 영향 범위의 답은 바뀌지 않아요.
-- 카디널리티가 N:M에서 N:1이 되는 것은 `VirtualMachine`→`VirtualizationManager`, `Circuit`→`Organization`, `ClusterNode`→`FailureDomain` 셋이에요. 새로 이기는 좁은 바인딩을 N:M으로 넓혀서 기존 데이터를 새로 거부하지 않아요. 좁히는 시점은 미결 사항이에요.
+- 20개 모두 인자가 같아서 영향 범위의 답은 바뀌지 않아요. 모든 타입 쌍의 카디널리티와 인자(`strength`, `whole_needs_part`, `resource`, `failover_to`)를 코드를 고치기 전에 떠 둔 표(`testdata/binding_answers.txt`)와 같은지 테스트가 확인해요.
+- 카디널리티가 N:M에서 N:1이 되는 것은 `VirtualMachine`→`VirtualizationManager`, `Circuit`→`Organization`, `ClusterNode`→`FailureDomain` 셋이에요. 좁아지는 셋 가운데 둘(`VirtualMachine`→`VirtualizationManager`, `ClusterNode`→`FailureDomain`)은 새로 이기는 좁은 바인딩을 N:M으로 넓혀서 기존 데이터를 새로 거부하지 않아요. `Circuit`→`Organization`은 식별 문맥 때문에 N:1로 둬요. `Circuit`의 식별 키가 OWNED_BY를 문맥으로 쓰고, 모델 검증이 `Circuit`에서 시작하는 N:1 바인딩을 요구하기 때문이에요. 그래서 소유 조직이 둘 이상인 회선 자료는 둘째 링크가 문제 목록으로 빠져요(수집의 카디널리티 검사, 테스트로 고정). 나머지 둘을 좁히는 시점은 미결 사항이에요.
 
-## 2. 링크별 인자와 값이 정해지는 순서 (0단계)
+## 2. 링크별 인자와 값이 정해지는 순서 (0단계, 링크에 쓴 값은 예정)
+
+**구현한 부분**: 값이 정해지는 순서를 `model.ResolveParams` 한 함수가 정하고(`Registry.ParamsFor`가 바인딩을 뽑아 그 함수를 불러요), 영향 범위가 그것을 불러요. 2번(링크에 쓴 값)은 함수의 인자(`written`)로 자리만 있고 지금은 아무도 값을 넘기지 않아요. 바인딩의 기본값은 `param_defaults`예요. 모델 검증은 두 가지를 봐요. 기본값은 그 인자의 허용 값 안에 있어야 하고, 허용 값이 여럿인데 의미의 기본값이 그 안에 없으면 `param_defaults`가 반드시 있어야 해요.
 
 링크 하나가 의존의 세기(`strength`)와 전체가 부분을 필요로 하는가(`whole_needs_part`)의 값을 직접 가질 수 있어요. 개수(`cardinality`)는 바인딩의 속성이라 링크가 정하지 않아요. `failover_to`를 링크마다 둘지는 이 설계에 없어요. 링크에 쓴 값은 **링크의 속성**에 두고 새 저장 자리는 없어요. 어느 속성이 어느 인자를 정하는지는 속성 정의의 `sets_param`이 선언해요(예정). 수집 매핑이 링크의 속성을 채우는 것은 구현했어요(ADR-0066, REQ-435): 컬럼에서 읽은 값은 링크와 같은 등급이고 고정값은 "가정"이에요. `sets_param`, 허용 밖의 값, 값의 등급에 따른 계산은 아직 구현하지 않았어요(REQ-436, REQ-437). 값은 이 순서로 정해져요.
 
@@ -46,7 +48,7 @@ follows:
 4. 바인딩이 허용하는 값이 하나뿐이면 그 값
 5. 링크 의미의 기본값. 지금 코드와 같아서 `strength`는 hard, `whole_needs_part`는 none이에요.
 
-제약이 없는 바인딩(`DEPENDS_ON`, `SECURED_BY`, `PART_OF`의 대부분)은 5번을 써요. 값이 여럿 허용된 바인딩은 지금 `whole_needs_part`를 soft로 읽어요(코드를 읽은 판단). 해당하는 것은 `PART_OF` `VirtualDisk`→`VirtualMachine`(`{hard, soft}` 허용)이고, 0단계는 이런 바인딩마다 지금 읽는 값(soft)을 기본값으로 적어서 영향 범위의 답이 바뀌지 않게 해요. 0단계의 완료 기준은 모든 타입 쌍의 유효한 카디널리티와 인자가 전과 같은 것이에요. 수집의 검사는 바뀔 수 있어요(우선순위가 이기는 바인딩을 바꾸기 때문이에요).
+제약이 없는 바인딩(`DEPENDS_ON`, `SECURED_BY`, `PART_OF`의 대부분)은 5번을 써요. 값이 여럿 허용된 바인딩을 soft로 읽던 규칙은 없앴어요. 해당하던 것은 `PART_OF` `VirtualDisk`→`VirtualMachine`(`{hard, soft}` 허용) 하나이고, 이 바인딩에 `param_defaults`로 soft를 적어서 영향 범위의 답이 바뀌지 않게 했어요. 0단계의 완료 기준은 모든 타입 쌍의 유효한 카디널리티와 인자가 전과 같은 것이에요. 수집의 검사는 바뀔 수 있어요(우선순위가 이기는 바인딩을 바꾸기 때문이에요).
 
 ## 3. 바인딩: 알려진 조합과 일반 규칙
 
@@ -248,7 +250,7 @@ C가 내려간다고 가정해도 페일오버 호스트는 내려가지 않아�
 
 ADR-0059의 미결 사항과 같아요. 어느 단계 전에 정해야 하는지를 붙였어요.
 
-**0단계 전**: (링크가 인자 값을 갖는 필드, 수집 매핑 문법, 저장, 값의 근거 등급은 ADR-0066이 정했어요.) 0단계의 완료 기준(모든 타입 쌍의 유효한 카디널리티와 인자가 전과 같다)을 테스트로 적는 것. `links.json`을 바꾸므로 모델 해시 테스트를 고치는 결정 기록.
+**0단계 전**: 남은 것이 없어요. 링크가 인자 값을 갖는 필드, 수집 매핑 문법, 저장, 값의 근거 등급은 ADR-0066이 정했고, 0단계의 완료 기준 테스트와 모델 해시 테스트를 고치는 결정 기록은 ADR-0065가 닫았어요. 링크에 쓴 값을 계산이 읽는 것은 ADR-0066의 다음 변경이에요.
 
 **1단계 전**: 일반 규칙 3의 정확한 모양(출발 타입의 범위, 적용할 링크 타입, 카디널리티, 인자의 기본값). 일반 규칙의 표시 방법. 그룹 순환 검사의 위치(정하지 않으면 한계로 적어요). 올릴 바인딩의 정확한 목록. 알림을 모으는 단위. 관리망의 규칙과 역할을 모르는 네트워크 연결의 기본 처리. 필요를 선언하지 않는 경로 트레이트와 끝이 any인 바인딩 중 선택. "장애가 날 수 있는" 타입의 트레이트. `SoftwareInstance`의 N:1. 세 바인딩의 카디널리티를 좁히는 시점.
 

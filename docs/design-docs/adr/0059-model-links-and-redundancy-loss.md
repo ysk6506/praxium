@@ -32,6 +32,8 @@ amends:
 amends_tests: []
 decision_hash: fecbf273d2dec345
 amended_by:
+  - adr: "0065"
+    what: 0단계에서 세 바인딩을 N:M으로 넓힌다는 부분. 둘만 넓히고 Circuit→Organization은 N:1로 둔다.
   - adr: "0066"
     what: 0단계 전에 정한다고 남긴 미결(링크가 인자 값을 갖는 필드, 수집 매핑 문법, 저장, 값의 근거 등급)
 ---
