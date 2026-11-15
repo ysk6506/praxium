@@ -7,7 +7,7 @@ follows:
 ---
 # 요구사항 — 웹 UI, 명령줄, 릴리스
 
-임시 웹 UI(275번대, 296~299, 315~319), 명령줄, 데모, 릴리스 빌드(282~283)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
+임시 웹 UI(275번대, 296~299, 315~319), 명령줄, 데모, 릴리스 빌드(282~283), 취약점 신고 안내와 액션 고정(470~471)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
 
 | ID | 요구사항 |
 |---|---|
@@ -37,3 +37,5 @@ follows:
 | REQ-317 | 웹 UI는 움직임 줄이기를 존중한다: 움직이는 CSS가 있으면 `prefers-reduced-motion` 처리가 있어야 하고 Tailwind의 `animate-`는 `motion-safe:` 뒤에서만 쓴다(`WEB044`). 강제 색상 모드에서 현재 메뉴, 선택한 탭, 배지, 회전 표시가 구별되고, 글자가 든 컨트롤의 높이는 고정하지 않아 200% 확대와 글자 간격 조정에서 잘리지 않는다 | ADR-0045, `harness/src/checks/web-rules.test.ts` |
 | REQ-318 | 웹 UI의 소스는 위험한 삽입 함수(`innerHTML` 대입, `dangerouslySetInnerHTML`, `eval` 등, `WEB041`)와 절대 `http(s)://` 주소(`WEB042`)를 쓰지 않고, 포커스 표시를 대체 없이 지우지 않으며(`WEB043`), 빌드 결과는 gzip 예산 이하이다(`WEB045`). 화면 응답은 `script-src`, `connect-src`, `worker-src`, `object-src`를 명시한 CSP와 `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`을 가지고 `no-store`를 쓰지 않는다 | ADR-0045, `harness/src/checks/web-rules.test.ts`, `backend/internal/httpapi/ui_headers_test.go` |
 | REQ-319 | 웹 UI 규칙 문서가 지원 브라우저 기준(Baseline Widely available을 기본, Newly available은 기능 감지와 점진 향상일 때만, Limited와 오리진 트라이얼 금지, 하한은 Tailwind CSS v4의 최소 버전)과 채택하지 않는 것, 출처와 라이선스(CC BY 4.0)를 밝히고 AGENTS.md가 그 문서로 이끈다. 빌드 대상은 그 하한의 브라우저 목록이다 | ADR-0045, `harness/src/checks/web-rules.test.ts` |
+| REQ-470 | 리포지토리 루트의 `SECURITY.md`가 취약점을 공개 이슈가 아니라 GitHub의 비공개 취약점 신고로 알려 달라고 안내한다. 신고에 넣을 것(영향받는 버전이나 커밋, 재현 방법, 영향), 지원하는 버전, 받은 뒤의 흐름을 적고 처리 기한은 약속하지 않으며 사람의 이메일 주소를 쓰지 않는다. README가 그 문서를 가리킨다(ADR-0064). | ADR-0064, `harness/src/checks/security-policy.test.ts` |
+| REQ-471 | 워크플로(`.github/workflows`)와 복합 액션(`.github/actions`)이 바깥 액션을 40자리 커밋 해시로만 참조한다. 태그, 브랜치, 버전 없음은 `WFL001`로 실패하고, 같은 리포지토리의 액션(`./`)과 다이제스트로 고정한 컨테이너 이미지는 통과하며, 해시 뒤의 버전 주석은 요구하지 않는다. 올리는 절차는 릴리스 안내에 있다(ADR-0064). | ADR-0064, `harness/src/checks/workflow-pins.test.ts` |

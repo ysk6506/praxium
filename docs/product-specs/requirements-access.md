@@ -7,7 +7,7 @@ follows:
 ---
 # 요구사항 — 인증, 권한, 시크릿
 
-권한(160번대), 시크릿(210~217), 접근 토큰과 관리 API(307~314)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
+권한(160번대), 시크릿(210~217), 접근 토큰과 관리 API(307~314), 운영 모드의 PostgreSQL 접속 TLS(472~473)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
 
 | ID | 요구사항 |
 |---|---|
@@ -35,3 +35,5 @@ follows:
 | REQ-312 | 관리 REST API(`/v1/users`, `/v1/system-accounts`, `/v1/tokens`, `/v1/tokens/{token_id}`)와 CLI(`praxium whoami`, `praxium admin …`)를 제공한다. 만들고 행동하는 POST는 `Idempotency-Key`가 필수이고 발급한 토큰의 응답은 다시 재생하지 않는다(ADR-0044). |
 | REQ-313 | 어떤 로그, 오류, 응답, 목록에도 토큰과 비밀과 해시가 나오지 않는다. 인증과 관리 사건은 `audit: true` 로그로 남는다(ADR-0044). |
 | REQ-314 | 같은 주소에서 거절된 토큰이 쌓이면 그 주소의 거절된 토큰에 일정 시간 429와 `Retry-After`로 답하고 더 세지 않는다. 유효한 토큰은 차단 중인 주소에서도 통과하고 성공은 실패 횟수를 지우지 않는다. 인증 저장소가 응답하지 못하면 401이 아니라 503이다(ADR-0044). |
+| REQ-472 | 운영 모드에서 스토리지가 PostgreSQL이고 접속 문자열의 호스트 가운데 하나라도 같은 기계가 아니면(루프백 주소, `localhost`, 유닛스 소켓이 아니면), `sslmode`가 `verify-full`이나 `verify-ca`가 아닌 한 스토어를 열기 전에 시작을 거부한다. `sslmode`가 없으면 드라이버의 기본값(`require`)으로 판단한다. URL과 `key=value` 형태를 드라이버의 파서로 읽고 접속 문자열은 메시지에 나오지 않는다. 거부 메시지는 지금 값과 두 가지 길(`sslmode=verify-full`, `-allow-unverified-db-tls`)을 말한다. 개발 모드와 다른 스토어에는 영향이 없다(ADR-0064). | ADR-0064, `backend/internal/pgstore/tlscheck_test.go`, `backend/cmd/praxium/dbtls_test.go` |
+| REQ-473 | `-allow-unverified-db-tls`로 시작하면 서버는 PostgreSQL 접속이 서버 인증서를 확인하지 않는다는 경고를 시작 로그에 남긴다. 확인하는 접속이나 같은 기계의 접속, 개발 모드에는 경고가 없다(ADR-0064). | ADR-0064, `backend/cmd/praxium/dbtls_test.go` |

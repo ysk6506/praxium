@@ -14,6 +14,7 @@ import { run as testguard } from "./checks/testguard";
 import { report as traceability } from "./checks/traceability";
 import { report as uiWords } from "./checks/ui-words";
 import { run as web } from "./checks/web";
+import { workflowPinViolations } from "./checks/workflow-pins";
 import { findRoot, finish, flag, isMain, parseArgs, today, type Violation } from "./common";
 
 export type Check = readonly [name: string, run: () => Violation[]];
@@ -36,6 +37,7 @@ export function checks(
           ...violations,
           ...go.architecture(root),
           ...web(root),
+          ...workflowPinViolations(root),
           ...apiContract(root, base),
         ];
       },
