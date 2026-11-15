@@ -94,17 +94,28 @@ type LinkEnd struct {
 // The conditions of a link definition that this slice has; the design lists six (pipeline.md 5.2).
 const ConditionSameKey = "same_key"
 
+// LinkAttrMap gives one attribute of the link type a value: the cell of a column of the From feed's row, or a fixed
+// value the same for every link of the definition. It is one of the two: Column and Value together, or neither, is
+// an error when the mapping is compiled (ADR-0066). Value is a pointer so that an empty fixed value is told from none.
+type LinkAttrMap struct {
+	Attribute string  `json:"attribute"`
+	Column    string  `json:"column,omitempty"`
+	Value     *string `json:"value,omitempty"`
+}
+
 // LinkDef makes the links of one link type from two feeds: a link goes from the object of a row of From to the
 // object of the row of To that has the same key. KeyType is the value type that tidies the key (the name of a
-// value type of the model); empty means the text with its ends trimmed.
+// value type of the model); empty means the text with its ends trimmed. Attributes fill the attributes of the link
+// type from the row of From (ADR-0066).
 type LinkDef struct {
-	ID        string  `json:"id"`
-	LinkType  string  `json:"link_type"`
-	From      LinkEnd `json:"from"`
-	To        LinkEnd `json:"to"`
-	Condition string  `json:"condition"`
-	KeyType   string  `json:"key_type,omitempty"`
-	Basis     string  `json:"basis,omitempty"`
+	ID         string        `json:"id"`
+	LinkType   string        `json:"link_type"`
+	From       LinkEnd       `json:"from"`
+	To         LinkEnd       `json:"to"`
+	Condition  string        `json:"condition"`
+	KeyType    string        `json:"key_type,omitempty"`
+	Basis      string        `json:"basis,omitempty"`
+	Attributes []LinkAttrMap `json:"attributes,omitempty"`
 }
 
 // Mapping is the whole mapping definition: what the refinements, the feeds and the link definitions are.

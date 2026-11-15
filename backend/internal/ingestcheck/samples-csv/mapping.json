@@ -84,7 +84,8 @@
       "from": { "feed": "f_server", "columns": ["rack_asset_id"] },
       "to": { "feed": "f_rack", "columns": ["asset_id"] },
       "condition": "same_key",
-      "basis": "declared"
+      "basis": "declared",
+      "attributes": [{ "attribute": "position_u", "column": "position_u" }]
     },
     {
       "id": "l_vm_host",

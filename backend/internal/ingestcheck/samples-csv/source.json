@@ -19,7 +19,8 @@
         { "name": "manufacturer" },
         { "name": "rack_asset_id" },
         { "name": "power_state", "optional": true },
-        { "name": "bmc_mac", "optional": true }
+        { "name": "bmc_mac", "optional": true },
+        { "name": "position_u", "optional": true }
       ]
     },
     {
