@@ -1,7 +1,7 @@
 doc: "docs/design-docs/source-editing.md"
 target: "docs/design-docs/adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md"
-hash: "8dfb2f10c9fe51a5"
+hash: "54c6d8529982aba0"
 date: "2026-11-16"
-note: "ADR-0058의 결정 1~13과 그 덧붙임, 그리고 따르는 ADR-0008, 0014의 결정 목록을 이 문서의 절과 대조해 읽었고 어긋나는 곳이 없었다(source-editing)"
+note: "ADR-0058 독립 검토의 지적을 반영한 뒤 다시 읽고 ADR, 요구사항, 용어집, 경로 표와 대조했다. 용어(수집, 적용, 동기화 실행), 실행의 종류와 상태 낱말, 능력과 역할의 규칙, 한도의 값을 맞췄다."
 text_changed: true
-doc_hash: "9c8ec236306eb97b"
+doc_hash: "6256bc9676b4f799"
