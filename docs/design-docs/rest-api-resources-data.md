@@ -49,15 +49,16 @@ POST /v1/type-similarity-checks
 표준 모델(`std`)의 타입은 읽기만 돼요. 오버레이(`type_overlay`)로만 수정해요(정의 3-1).
 
 ## 3. 수집
-소스, 데이터셋, 피드 같은 설정은 정의의 항목이에요. 그래서 읽기만 있고, 수정 경로는 4그룹의 브랜치 항목이에요. 운영 조작(일시 정지, 즉시 실행)은 정의를 바꾸지 않아서 `operator`가 바로 해요. **브랜치에만 있는 소스**(새 소스는 병합 전에 브랜치에만 있어요)를 다루는 소스 탐색, 점검, 미리 보기, 업로드, 트라이얼 수집은 본문에 `branch_id`를 받아요(읽기는 `?branch_id`).
+소스, 데이터셋, 피드 같은 설정은 정의의 항목이에요. 그래서 읽기만 있고, 수정 경로는 4그룹의 브랜치 항목이에요. 예정(ADR-0058): 소스와 매핑은 직접 적용이 허용된 배포에서 `POST /v1/definition-items:apply`로도 써요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 4절). 운영 조작(일시 정지, 즉시 실행)은 정의를 바꾸지 않아서 `operator`가 바로 해요. **브랜치에만 있는 소스**(새 소스는 병합 전에 브랜치에만 있어요)를 다루는 소스 탐색, 점검, 미리 보기, 업로드, 트라이얼 수집은 본문에 `branch_id`를 받아요(읽기는 `?branch_id`).
 
 | 경로 | 메서드 | 설명 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
 | `/v1/adapters` | GET | 어댑터 목록(범용 4종과 스트림 어댑터), 활성화된 것 | 읽기 | - | ingestion |
 | `/v1/presets`, `/v1/presets/{preset_id}` | GET | 프리셋: `version`, `adapter`, `allowed_requests`, `pagination`, `default_feeds`, `default_sensitivity`, `tests` | 읽기 | - | ingestion |
-| `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 시크릿은 `credential_ref`(참조)만 | 읽기 | - | ingestion |
+| `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 시크릿은 `credential_ref`(참조)만. 예정(ADR-0058): 데이터셋별 `capabilities`와 마지막 실행의 참조 `last_sync_run`을 더해요 | 읽기 | - | ingestion |
 | `/v1/sources/{source_id}:introspect` | POST | 소스를 탐색해요(어떤 테이블과 컬럼이 있나). 읽기 전용 요청만 전송해요. `branch_id`를 받아요 | 아래 시크릿 규칙 | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}:check` | POST | 점검(연결, 인증, 읽기 전용의 3단계를 확인해요). `branch_id`를 받아요 | 아래 시크릿 규칙 | 작업 | ingestion 8.1 |
+| `/v1/sources:check`, `/v1/sources:introspect` | POST | **예정(ADR-0058).** 저장하지 않은 정의로 점검과 소스 탐색을 해요. 시간 한도가 있는 동기 요청이고 응답(값의 표본)은 멱등 키 저장소에 보관하지 않아요 | `run_sources` | - | source-editing 4 |
 | `/v1/sources/{source_id}/uploads`, `/v1/sources/{source_id}/upload-template` | POST, GET | 엑셀·CSV 소스의 파일 업로드와 컬럼 샘플 다운로드. 원본 레코드로 쌓여요. `branch_id`를 받아요 | 그 소스를 범위에 가진 `operator`나 `editor` | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}:pause`, `:resume` | POST | 일시 정지(`reason`을 받아요)와 재개. 헬스 상태에 표시돼요 | `operator` | - | ingestion 5 |
 | `/v1/sources/{source_id}:push` | POST | 푸시 수집(이벤트 경로). [추가 기능의 경로](rest-api-resources-additions.md) 3절 | `ingester` | - | ingestion-extensions |
@@ -91,7 +92,9 @@ POST /v1/ingest/envelopes   Authorization: Bearer <`ingester` 서비스 계정 �
 | 경로 | 메서드 | 설명 | 역할 | 작업 | 원천 |
 |---|---|---|---|---|---|
 | `/v1/sync-runs` | GET | 실행 목록. 필터링: `source_id`, `dataset_id`, `status`, `started_at`(`range`), `guard_verdict` | 읽기 | - | data-observability 9.1 |
-| `/v1/sync-runs/{run_id}` | GET | 실행 하나: `status`, `capture_range`, `definition_set`, `executor_version`, `diff_summary`, `guard_verdict`, `trace_id` | 읽기 | - | data-observability 9.1 |
+| `/v1/sync-runs/{run_id}` | GET | 실행 하나: `status`, `capture_range`, `definition_set`, `executor_version`, `diff_summary`, `guard_verdict`, `trace_id`. 예정(ADR-0058): 상태는 작업의 낱말이고 필드와 두 가지 문제(실행의 문제, KG의 문제)는 [수집 서비스와 실행](ingestion-service.md) 8절이에요 | 읽기 | - | data-observability 9.1 |
+| `/v1/sync-runs` | POST | **예정(ADR-0058).** 전체 읽기나 다시 계산을 시작해요(202, 본문에 `source_id`, `apply`: `auto`나 `after_review`). 같은 소스의 받기가 돌고 있으면 409예요 | `run_sources` | - | ingestion-service 5 |
+| `/v1/sync-runs/{run_id}:cancel`, `:confirm`, `:discard` | POST | **예정(ADR-0058).** 취소 / 확인을 기다리는 실행의 확인(그때 다시 계산해 보였던 차이와 다르면 적용하지 않고 다시 보여요) / 버리기 | `run_sources`(확인과 버리기는 `confirm_guards`) | - | ingestion-service 7 |
 | `/v1/sync-runs/{run_id}/stages` | GET | **단계별 수**(`run_stage`): `stage`, `in_count`, `out_count`, `dropped_count`, `dropped_by_reason`. 입력 = 출력 + 탈락 | 읽기 | - | data-observability 9.1 |
 | `/v1/sync-runs/{run_id}/samples` | GET | **탈락·격리된 레코드의 샘플.** 필터링: `stage`, `reason`. 내용은 조회할 때 원본 레코드에서 가져와요. 삭제됐으면 "삭제됨". 컬럼별 민감 등급 한도로 "숨김" | `operator`, `editor`, `admin`(그 소스의 범위) | - | data-observability 9.2 |
 | `/v1/sync-runs/{run_id}/replays` | POST | **리플레이.** 수집해 둔 원본 레코드의 그 구간을 같은 정의 세트와 실행기로 뒤 단계만 다시 실행해 단계별 수와 탈락 레코드를 확인해요. 소스에 접속하지 않고 KG를 변경하지 않아요. `body.branch_id`를 주면 브랜치의 정의로 실행해요 | `operator` | 작업 | data-observability 9.3 |
