@@ -112,15 +112,23 @@ func (r Record) validateVersions(bad func(string) error) error {
 			return bad("has versions that are not in rising order")
 		}
 		last = v.Version
-		live := v.Value != nil && v.WrappedKey != nil
-		if v.RetiredAt == nil && !live || v.RetiredAt != nil && (v.Value != nil || v.WrappedKey != nil) {
-			return bad("has a version whose retirement and ciphertext disagree")
-		}
-		if live && (!validSealed(*v.Value, false) || !validSealed(*v.WrappedKey, true)) {
-			return bad("has a version that is not in the stored form")
+		if why := v.shapeProblem(); why != "" {
+			return bad(why)
 		}
 	}
 	return nil
+}
+
+// shapeProblem says what is wrong with the form of a version, or "" when nothing is.
+func (v VersionRecord) shapeProblem() string {
+	live := v.Value != nil && v.WrappedKey != nil
+	if v.RetiredAt == nil && !live || v.RetiredAt != nil && (v.Value != nil || v.WrappedKey != nil) {
+		return "has a version whose retirement and ciphertext disagree"
+	}
+	if live && (!validSealed(*v.Value, false) || !validSealed(*v.WrappedKey, true)) {
+		return "has a version that is not in the stored form"
+	}
+	return ""
 }
 
 func validSealed(s Sealed, withKey bool) bool {

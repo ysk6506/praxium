@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "9b1d3cd39673c585"
-date: "2026-11-15"
-note: "architecture.yaml의 core.kgread 유닛 등록과 adapter.http의 may_import 추가를 유닛 표의 새 행과 adapter.http 행에 맞췄다"
+hash: "2b2d53e88a3686af"
+date: "2026-11-16"
+note: "유닛 표에 core.secrets와 adapter.secretsfile 행을 더하고 core.kernel 행에 ByteSource를 적었다. architecture.yaml의 새 두 유닛과 대조했다"
 text_changed: true
-doc_hash: "6b1fd751d255cef0"
+doc_hash: "6bf41d70dea6268d"

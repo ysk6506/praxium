@@ -89,6 +89,10 @@ go:
     adapter.definitionsfile: {path: backend/internal/definitionsfile, may_import: [core.kernel, core.definitions]}
     # The conformance suite of the definitions store port, production code of its own for the same reason as the storage suite; only its tests import the stores it is run on (ADR-0049).
     adapter.definitionscheck: {path: backend/internal/definitionscheck, may_import: [core.kernel, core.definitions], test_may_import: [adapter.definitionsfile]}
+    # The secret store (ADR-0071): passwords and tokens with envelope encryption (AES-256-GCM from the standard library), three ports apart (write, open, describe), a wrapped type for opened values, the master key file format. Randomness comes in through the kernel's ByteSource; the core imports no adapter and no operating system.
+    core.secrets:   {path: backend/internal/secrets, may_import: [core.kernel]}
+    # The file store of the secrets: one versioned file, secrets.json, in the data folder, written atomically through a Disk interface that the composition root implements (ADR-0071).
+    adapter.secretsfile: {path: backend/internal/secretsfile, may_import: [core.kernel, core.secrets]}
     adapter.devauth: {path: backend/internal/devauth, may_import: [core.kernel, core.access]}
     # The use case of reading a KG, apart from any transport (ADR-0062): the subject from a token, the read filter, the codes a refusal becomes, the reading of a question's JSON, the content of the model lists. The core imports no adapter and no net (the caller's address is the adapter's).
     core.kgread:    {path: backend/internal/kgread, may_import: [core.kernel, core.model, core.graph, core.query, core.access]}
