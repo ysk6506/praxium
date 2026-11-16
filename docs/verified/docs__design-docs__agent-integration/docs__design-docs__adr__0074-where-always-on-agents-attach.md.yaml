@@ -1,7 +1,7 @@
 doc: "docs/design-docs/agent-integration.md"
 target: "docs/design-docs/adr/0074-where-always-on-agents-attach.md"
-hash: "046903651808417a"
+hash: "0cad1c35e4d166a0"
 date: "2026-11-16"
-note: "ADR-0074 본문과 항목별로 대조했고, 인용한 gateway.md 5절부터 7절, rest-api.md 3-10과 3-11, kg-mcp.md 2.3과 4.3, ingestion-service.md 7.2와 8절, data-observability.md 8.5와 12절과 13절, access-control.md 11절, kg-storage.md 7.1을 읽어 사실을 맞췄다. 저장소에 근거가 없던 두 문장(하트비트를 이미 조절에서 뺐다는 것, 푸시 수집이 바로 응답한다는 것)을 고쳤다."
+note: "ADR-0074 본문의 맥락과 결정 4를 고친 데 맞춰 6.4절(끊긴 프로세스를 이어 가기)과 검증 표의 REQ-550을 더했고, 나머지는 ADR과 그대로 맞아요."
 text_changed: true
-doc_hash: "1ea7ad482275ec4d"
+doc_hash: "f7084ad7d72a779d"
