@@ -182,7 +182,7 @@ func runIngest(args []string, stdout, stderr io.Writer, w wiring) int {
 	case errors.As(err, &bad):
 		return usageFail(stderr, err, "ingest run")
 	case err != nil:
-		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
+		printFailure(stderr, err)
 		return exitFailure
 	case problems > 0 && f.failOnProblem:
 		return exitProblems
@@ -209,20 +209,41 @@ func loadPlan(reg *model.Registry, f ingestFlags, w wiring) (*ingest.Plan, error
 	if err != nil {
 		return nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read "+f.source)
 	}
-	src, err := ingest.ParseSource(bytes.NewReader(text))
-	if err != nil {
-		return nil, withKeyCandidates(err, text, f, w)
+	src, srcErr := ingest.ParseSource(bytes.NewReader(text))
+	if srcErr != nil {
+		srcErr = withKeyCandidates(srcErr, text, f, w)
 	}
 	min, err := readDefinition(w, f.mapping)
 	if err != nil {
+		if srcErr != nil {
+			return nil, srcErr
+		}
 		return nil, err
 	}
 	defer min.Close()
-	mp, err := ingest.ParseMapping(min)
-	if err != nil {
-		return nil, err
+	mp, mapErr := ingest.ParseMapping(min)
+	if srcErr != nil || mapErr != nil {
+		return nil, ingest.JoinDefinitionErrors(srcErr, mapErr)
 	}
 	return ingest.Compile(reg, src, mp)
+}
+
+// printFailure writes the error that ended a command. The errors of a definition come one to a line, each as its
+// sentence says it, and the line after the last tells how many there are; any other error is one line.
+func printFailure(stderr io.Writer, err error) {
+	de, ok := ingest.DefinitionErrorsOf(err)
+	if !ok || len(de.List)+de.Omitted < 2 {
+		fmt.Fprintf(stderr, "praxium: %s\n", errText(err))
+		return
+	}
+	for _, e := range de.List {
+		fmt.Fprintf(stderr, "praxium: %s\n", e.Message)
+	}
+	if de.Omitted > 0 {
+		fmt.Fprintf(stderr, "praxium: %d problems found in the definitions; the first %d are listed\n", len(de.List)+de.Omitted, len(de.List))
+		return
+	}
+	fmt.Fprintf(stderr, "praxium: %d problems found in the definitions\n", len(de.List))
 }
 
 // checkInputs compares the -input datasets with the datasets the source defines: a name the source does not define

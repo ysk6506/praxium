@@ -15,15 +15,34 @@ const maxKeyHintBytes = 64 << 20
 
 // withKeyCandidates adds to the error of a draft whose natural key was never filled in the columns of the file given
 // for the dataset that are filled in every row and different in each, the same ones `ingest inspect -emit-source`
-// told when it made the draft. They come before the list of every column. Any other error is returned as it is.
+// told when it made the draft. They come before the list of every column. Any other error is returned as it is. When
+// the error is a list, each of its errors is looked at on its own and the others stay as they are.
 func withKeyCandidates(err error, source []byte, f ingestFlags, w wiring) error {
-	text := errText(err)
+	de, isList := ingest.DefinitionErrorsOf(err)
+	if !isList {
+		text, changed := keyCandidatesText(errText(err), source, f, w)
+		if !changed {
+			return err
+		}
+		return kernel.Errorf(kernel.CodeOf(err), "%s", text)
+	}
+	out := &ingest.DefinitionErrors{List: append([]ingest.DefinitionError{}, de.List...), Omitted: de.Omitted}
+	for i, e := range out.List {
+		if text, changed := keyCandidatesText(e.Message, source, f, w); changed {
+			out.List[i].Message = text
+		}
+	}
+	return out
+}
+
+// keyCandidatesText is the sentence with the candidates put in, and whether it was changed.
+func keyCandidatesText(text string, source []byte, f ingestFlags, w wiring) (string, bool) {
 	if !strings.Contains(text, ingest.NaturalKeyPlaceholder) {
-		return err
+		return text, false
 	}
 	src, perr := ingest.ParseSourceLoose(bytes.NewReader(source))
 	if perr != nil {
-		return err
+		return text, false
 	}
 	for _, ds := range src.Datasets {
 		if !ds.HasKeyPlaceholder() || !strings.Contains(text, "dataset "+ds.ID+":") {
@@ -31,26 +50,24 @@ func withKeyCandidates(err error, source []byte, f ingestFlags, w wiring) error 
 		}
 		file, ok := f.inputs[ds.ID]
 		if !ok {
-			return err
+			return text, false
 		}
 		data, rerr := readInputFile(w, file)
 		if rerr != nil {
-			return err
+			return text, false
 		}
 		cands, cerr := ingest.NaturalKeyCandidates(ds, data, xlsx.Reader{})
 		if cerr != nil {
-			return err
+			return text, false
 		}
 		note := ingest.KeyCandidatesNote(ds.ID, cands)
 		const marker = "The columns are:"
 		if i := strings.Index(text, marker); i >= 0 {
-			text = text[:i] + note + " All the columns of the dataset: " + text[i+len(marker):]
-		} else {
-			text += ". " + note
+			return text[:i] + note + " All the columns of the dataset: " + text[i+len(marker):], true
 		}
-		return kernel.Errorf(kernel.CodeOf(err), "%s", text)
+		return text + ". " + note, true
 	}
-	return err
+	return text, false
 }
 
 // readInputFile reads an input file whole, up to a bound.

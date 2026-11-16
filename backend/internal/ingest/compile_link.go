@@ -32,12 +32,7 @@ func (p *Plan) compileLink(d LinkDef, index int, feeds map[string]*feedPlan) *li
 	lp.from, lp.to = feeds[d.From.Feed], feeds[d.To.Feed]
 	p.checkLinkFeed(lp.from, d, "from", at+ptr("from", "feed"), d.From.Feed)
 	p.checkLinkFeed(lp.to, d, "to", at+ptr("to", "feed"), d.To.Feed)
-	if ltOK && lp.from != nil && lp.to != nil && lp.from.typeOK && lp.to.typeOK {
-		if _, ok := p.reg.BindingFor(lp.from.typ.ID, lp.to.typ.ID, lp.lt.ID); !ok {
-			p.errs.add(ecMapLinkBinding, at+ptr("link_type"), Params{"link": d.ID, "link_type": lp.lt.Name, "from_type": lp.from.typ.Name, "to_type": lp.to.typ.Name},
-				"link definition %s: %s does not allow a link from %s to %s", d.ID, lp.lt.Name, lp.from.typ.Name, lp.to.typ.Name)
-		}
-	}
+	p.checkBinding(lp, ltOK, at)
 	if len(d.From.Columns) == 0 || len(d.From.Columns) != len(d.To.Columns) {
 		p.errs.add(ecMapLinkCount, at+ptr("from", "columns"), Params{"link": d.ID, "from_count": len(d.From.Columns), "to_count": len(d.To.Columns)},
 			"link definition %s: both ends need the same number of key columns, at least one", d.ID)
@@ -50,6 +45,17 @@ func (p *Plan) compileLink(d LinkDef, index int, feeds map[string]*feedPlan) *li
 		p.compileLinkAttrs(lp, at)
 	}
 	return lp
+}
+
+// checkBinding asks whether the link type allows a link between the types of the two feeds, when all three are known.
+func (p *Plan) checkBinding(lp *linkPlan, ltOK bool, at string) {
+	if !ltOK || lp.from == nil || lp.to == nil || !lp.from.typeOK || !lp.to.typeOK {
+		return
+	}
+	if _, ok := p.reg.BindingFor(lp.from.typ.ID, lp.to.typ.ID, lp.lt.ID); !ok {
+		p.errs.add(ecMapLinkBinding, at+ptr("link_type"), Params{"link": lp.def.ID, "link_type": lp.lt.Name, "from_type": lp.from.typ.Name, "to_type": lp.to.typ.Name},
+			"link definition %s: %s does not allow a link from %s to %s", lp.def.ID, lp.lt.Name, lp.from.typ.Name, lp.to.typ.Name)
+	}
 }
 
 // checkLinkFeed tells an end that names a feed that does not exist.

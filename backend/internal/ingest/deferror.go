@@ -132,3 +132,30 @@ func pathPointer(dotted string) string {
 	}
 	return ptr(out...)
 }
+
+// JoinDefinitionErrors puts the errors of several documents in one, in the order given, within the limit. An error
+// that is no DefinitionErrors is kept as the one error of its kind (first in the list). It is nil when every one is nil.
+func JoinDefinitionErrors(errs ...error) error {
+	out := &DefinitionErrors{}
+	for _, err := range errs {
+		if err == nil {
+			continue
+		}
+		de, ok := DefinitionErrorsOf(err)
+		if !ok {
+			return err
+		}
+		for _, e := range de.List {
+			if len(out.List) >= MaxDefinitionErrors {
+				out.Omitted++
+				continue
+			}
+			out.List = append(out.List, e)
+		}
+		out.Omitted += de.Omitted
+	}
+	if len(out.List) == 0 {
+		return nil
+	}
+	return out
+}

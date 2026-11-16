@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/cli"
+	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
@@ -237,6 +238,13 @@ func runNotYet(args []string, stderr io.Writer) (int, bool) {
 // errText is an error in the words a person reads: the messages of the chain without the codes in front of them
 // ("invalid_value: ..."), which are for logs and for the API.
 func errText(err error) string {
+	if de, ok := ingest.DefinitionErrorsOf(err); ok && len(de.List) > 1 {
+		lines := make([]string, len(de.List))
+		for i, e := range de.List {
+			lines[i] = e.Message
+		}
+		return strings.Join(lines, "\n")
+	}
 	var ke *kernel.Error
 	if !errors.As(err, &ke) {
 		return err.Error()
