@@ -43,8 +43,8 @@ amends_tests:
   - apps/web/src/data/mutation.test.tsx::<import:f3ac2f58>
   - apps/web/src/data/poll.test.tsx::<import:b8304d65>
   - apps/web/src/data/poll.test.tsx::<import:f3ac2f58>
-test_change_reason: 생성기는 계약의 머리글 인자를 버렸고 잠긴 테스트가 그 버림을 단언했다. 쓰기 화면은 Idempotency-Key와 If-Match를 보내야 하므로 머리글 인자를 호출 함수의 인자로 만들도록 바꾼다. 테스트는 같은 문서로 같은 연산을 만들되 머리글 인자가 headers 인자에 있다는 단언으로 뒤집고, 나머지 단언은 그대로 둔다. 가짜 API(test-support/fake-api.ts)는 요청의 머리글을 기록하고 응답에 머리글을 줄 수 있게 더한다. 기존 필드와 동작은 그대로이고 필드만 늘어난다. 이 변경이 만든 새 테스트(머리글 시험, 변경 훅과 읽기 반복의 시험)는 파일을 나누고 시험 도우미의 이름과 가져오기를 고쳐, 잠금에 이미 든 그 시험들의 열쇠가 바뀌었다. 단언은 같다.
-decision_hash: 6b70bca05c94de37
+test_change_reason: 생성기는 계약의 머리글 인자를 버렸고 잠긴 테스트가 그 버림을 단언했다. 쓰기 화면은 Idempotency-Key와 If-Match를 보내야 하므로 머리글 인자를 호출 함수의 인자로 만들도록 바꾼다. 테스트는 같은 문서로 같은 연산을 만들되 머리글 인자가 headers 인자에 있다는 단언으로 뒤집고, 나머지 단언은 그대로 둔다. 가짜 API(test-support/fake-api.ts)는 요청의 머리글을 기록하고 응답에 머리글을 줄 수 있게 더한다. 기존 필드와 동작은 그대로이고 필드만 늘어난다. 이 변경이 만든 새 테스트(머리글 테스트, 변경 훅과 읽기 반복의 테스트)는 파일을 나누고 테스트 도우미의 이름과 가져오기를 고쳐, 잠금에 이미 든 그 테스트들의 키가 바뀌었다. 단언은 같다.
+decision_hash: e2c88dc765c8fc2c
 ---
 # ADR-0072 화면의 쓰기 기반
 
@@ -60,7 +60,7 @@ decision_hash: 6b70bca05c94de37
 4. **쓴 뒤 다시 읽기는 주제 신호 하나다(`invalidation.ts`).** 읽기가 `refreshOn`에 주제를 적고, 쓰기가 `invalidates`에 바꾼 주제를 적으면 그 읽기만 로딩 표시 없이 다시 읽는다. 답을 담아 두는 곳이 없다. 캐시 라이브러리는 들이지 않았다: 답을 나눠 쓸 화면이 아직 없고, 의존성 하나(`WEB001`)와 그 규칙을 배우는 값이 이 화면의 크기에 맞지 않는다. 같은 읽기를 여러 화면이 나눠 쓰는 일이 생기면 그때 다시 정한다.
 5. **읽기 훅.** `refresh()`(로딩 표시 없이)와 `poll`(간격, 멈춤 조건 `until`, 숨겨진 탭은 쉰다, 실패하면 멈춘다)을 더했다. 기존 호출자의 동작은 같다.
 6. **JSON 문서 도구(`json-doc.ts`).** JSON 포인터(RFC 6901)로 읽고 쓰고 지우고 목록 항목을 옮기는 순수 함수와, 서버의 오류 위치를 폼의 칸에 잇는 `attachIssues`다. 속성 테스트로 쓰고 읽으면 같다, 건드리지 않은 곳은 그대로다, 쓰고 지우면 원래 문서다를 본다.
-7. **폼 부품(`ui`).** 한 줄, 여러 줄, 숫자, 비밀 값 입력(`TextField`, `TextAreaField`, `NumberInput`, `SecretField`), `ListEditor`, `ConfirmDialog`(Base UI의 `AlertDialog`), `ResultNotice`(`aria-live`), `Form`과 `SubmitButton`이다. 떠날 때의 경고는 `data`의 `useLeaveGuard`다. 접속 설정의 토큰 폼이 이를 쓰고 제출 단추를 미리 비활성화하지 않는다.
+7. **폼 부품(`ui`).** 한 줄, 여러 줄, 숫자, 시크릿 입력(`TextField`, `TextAreaField`, `NumberInput`, `SecretField`), `ListEditor`, `ConfirmDialog`(Base UI의 `AlertDialog`), `ResultNotice`(`aria-live`), `Form`과 `SubmitButton`이다. 떠날 때의 경고는 `data`의 `useLeaveGuard`다. 접속 설정의 토큰 폼이 이를 쓰고 제출 단추를 미리 비활성화하지 않는다.
 
 ## 이유
 

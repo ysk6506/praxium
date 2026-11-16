@@ -72,11 +72,11 @@ follows:
 
 ### 4.1 폼 부품과 쓰는 법
 
-폼은 `ui`의 부품과 `data`의 훅으로 짠다. 화면이 입력 칸, 오류 글, 포커스 이동, 제출을 직접 짜지 않는다(ADR-0072).
+폼은 `ui`의 부품과 `data`의 훅으로 짠다. 화면이 필드, 오류 글, 포커스 이동, 제출을 직접 짜지 않는다(ADR-0072).
 
 | 하려는 일 | 쓰는 것 | 지키는 것 |
 |---|---|---|
-| 한 줄, 여러 줄, 숫자, 비밀 값을 받는다 | `TextField`, `TextAreaField`, `NumberInput`, `SecretField` | 이름표, 도움말, 오류 글이 입력과 이어진다(`aria-describedby`, `aria-invalid`). `error`에 문장을 주면 `role="alert"`로 읽힌다. `required`는 글(필수)과 속성으로 알린다. 비운 숫자 칸은 `null`이고 `0`이 아니다 |
+| 한 줄, 여러 줄, 숫자, 시크릿을 받는다 | `TextField`, `TextAreaField`, `NumberInput`, `SecretField` | 이름표, 도움말, 오류 글이 입력과 이어진다(`aria-describedby`, `aria-invalid`). `error`에 문장을 주면 `role="alert"`로 읽힌다. `required`는 글(필수)과 속성으로 알린다. 비운 숫자 칸은 `null`이고 `0`이 아니다 |
 | 토큰, 비밀번호, 키를 받는다 | `SecretField` | 값을 주소, 브라우저 저장소, 쿠키에 두지 않는다. 꼭 보관해야 하면 화면의 코드 한 곳에서 이유를 적고 한다(접속 설정이 접근 토큰을 그렇게 보관한다) |
 | 항목을 더하고, 지우고, 순서를 바꾼다 | `ListEditor` | 단추 이름에 항목이 들어 있다("헤더 2 위로 옮기기"). 입력에서 Alt+위, Alt+아래로도 옮긴다. 항목마다 오류(`itemErrors`)를 준다 |
 | 보내기 | `Form`, `SubmitButton` | `onSubmit`이 성공이면 `true`를 준다. `false`면 첫 `aria-invalid` 칸으로, 칸이 없으면 실패 알림으로 포커스가 간다. 제출 단추는 보내는 중에만 기다린다. 입력기로 글자를 확정하는 Enter는 보내지 않는다 |
