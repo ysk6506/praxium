@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "package.json"
-hash: "3b9075e60b504834"
-date: "2026-11-14"
-note: "병합 뒤 확인: 내장 인증(ADR-0044)과 REQ-307~314, 수집 사용성 요구가 이 문서와 어긋나지 않는다"
-text_changed: true
-doc_hash: "2b531a7f310f2750"
+hash: "558ed68d0415c15b"
+date: "2026-11-15"
+note: "package.json 변경(개발 의존성과 mcp:conformance 스크립트)은 README의 내용에 영향 없음"
+text_changed: false
+doc_hash: "9a2c6db44232d731"

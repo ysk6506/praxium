@@ -3894,6 +3894,7 @@
           "invalid_input.unsupported_media_type",
           "not_found.resource",
           "permission.hidden_attribute",
+          "permission.mcp_not_allowed",
           "permission.not_in_scope",
           "permission.role_missing",
           "permission.self_approval",
@@ -4030,6 +4031,10 @@
             "status": 404
           },
           "permission.hidden_attribute": {
+            "group": "permission",
+            "status": 403
+          },
+          "permission.mcp_not_allowed": {
             "group": "permission",
             "status": 403
           },

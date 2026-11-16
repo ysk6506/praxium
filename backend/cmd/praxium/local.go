@@ -14,7 +14,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
 
-const localUsage = "usage: praxium local -data-dir <folder> [-addr host:port]"
+const localUsage = "usage: praxium local -data-dir <folder> [-addr host:port] [-mcp=false]"
 
 const localBody = `Serves the KG you built from your own files, with the API and the web UI, on this computer (127.0.0.1 by default).
 It opens the data folder of "praxium ingest run -data-dir <folder>", puts nothing made up into it, and prints an
@@ -23,6 +23,8 @@ sends to the server). Press Ctrl+C to stop.
 
 Local mode is for one person on their own computer. The sign-in is weak and it is not for production. The server holds
 the data folder open, so run "praxium ingest run" for the same folder after you stop it.
+
+The same server also speaks MCP, read-only, at POST /mcp with the token of the run (-mcp=false turns it off).
 
 If the folder holds no KG yet, it tells you to run "praxium ingest run -data-dir <folder> ..." first
 ("praxium ingest init" writes examples to start from).
@@ -33,13 +35,17 @@ example:
   praxium local -data-dir data
 `
 
-type localOptions struct{ addr, dataDir string }
+type localOptions struct {
+	addr, dataDir string
+	mcp           mcpOptions
+}
 
 func newLocalFlags(o *localOptions) *flag.FlagSet {
 	fs := flag.NewFlagSet("local", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
 	fs.StringVar(&o.addr, "addr", demoDefaultAddr, "where to listen, host:port; an address other than this computer's own is warned about")
 	fs.StringVar(&o.dataDir, "data-dir", "", "the data folder that \"praxium ingest run -data-dir\" built (required)")
+	addMCPFlags(fs, &o.mcp, true)
 	return fs
 }
 
@@ -54,6 +60,7 @@ func parseLocal(args []string) (localOptions, error) {
 	if err := fs.Parse(args); err != nil {
 		return o, flagProblem(err)
 	}
+	noteMCPFlags(fs, &o.mcp)
 	if fs.NArg() != 0 {
 		return o, kernel.Errorf(kernel.CodeInvalidValue, "local takes no arguments")
 	}
@@ -90,7 +97,7 @@ func serveLocal(o localOptions, stdout, stderr io.Writer, w wiring) error {
 		return kernel.Errorf(kernel.CodeNotFound, "the data folder %s does not exist; %s", o.dataDir, ingestHint(o.dataDir))
 	}
 	return serveSession(session{
-		addr: o.addr, dataDir: o.dataDir, warnAbout: "local-mode",
+		addr: o.addr, dataDir: o.dataDir, warnAbout: "local-mode", mcp: o.mcp,
 		load: func(ctx context.Context, store graph.Store, _ *model.Registry) (*devload.Report, error) {
 			return nil, requireKG(ctx, store, o.dataDir)
 		},
