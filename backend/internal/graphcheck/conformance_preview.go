@@ -134,7 +134,7 @@ type prevWorld struct {
 	fresh   int
 }
 
-func (w *prevWorld) pick(n int) int { return int(w.rng.Uint64() % uint64(n)) }
+func (w *prevWorld) prevPick(n int) int { return int(w.rng.Uint64() % uint64(n)) }
 
 // prevStart applies the first world and returns it.
 func prevStart(e *env, seed uint64) *prevWorld {
@@ -154,47 +154,47 @@ func prevStart(e *env, seed uint64) *prevWorld {
 	return w
 }
 
-// batch makes a batch of a random mix against the world: servers left alone, written
+// prevBatch makes a batch of a random mix against the world: servers left alone, written
 // again as they are, with another model, mounted at another position, or retired with their
 // link, new servers, a site that may change its address, a retirement of what was never
 // there, and power states.
-func (w *prevWorld) batch() (graph.Batch, []prevServer) {
+func (w *prevWorld) prevBatch() (graph.Batch, []prevServer) {
 	fx := w.e.fx
 	b := graph.Batch{Kind: graph.BatchSync, SourceID: "preview"}
 	var next []prevServer
 	for _, s := range w.servers {
 		id := fx.ServerID(s.serial)
-		switch w.pick(6) {
+		switch w.prevPick(6) {
 		case 0:
 		case 1:
 			b.Objects = append(b.Objects, fx.Server(s.serial, s.model))
 			b.Links = append(b.Links, fx.MountedIn(id, s.rack, s.pos))
 		case 2:
-			s.model = fmt.Sprintf("M%d", 2+w.pick(3))
+			s.model = fmt.Sprintf("M%d", 2+w.prevPick(3))
 			b.Objects = append(b.Objects, fx.Server(s.serial, s.model))
 		case 3:
-			s.pos = int64(1 + w.pick(40))
+			s.pos = int64(1 + w.prevPick(40))
 			b.Links = append(b.Links, fx.MountedIn(id, s.rack, s.pos))
 		case 4:
 			b.RetireObjects = append(b.RetireObjects, id)
 			b.RetireLinks = append(b.RetireLinks, fx.MountedInID(id, s.rack))
 			continue
 		default:
-			b.Volatile = append(b.Volatile, fx.Power(id, "off", fmt.Sprintf("2030-01-01T00:%02d:00Z", w.pick(60))))
+			b.Volatile = append(b.Volatile, fx.Power(id, "off", fmt.Sprintf("2030-01-01T00:%02d:00Z", w.prevPick(60))))
 		}
 		next = append(next, s)
 	}
-	for i := w.pick(3); i > 0; i-- {
-		s := prevServer{fmt.Sprintf("SN-N%03d", w.fresh), w.racks[w.pick(len(w.racks))], "M1", int64(1 + w.pick(40))}
+	for i := w.prevPick(3); i > 0; i-- {
+		s := prevServer{fmt.Sprintf("SN-N%03d", w.fresh), w.racks[w.prevPick(len(w.racks))], "M1", int64(1 + w.prevPick(40))}
 		w.fresh++
 		b.Objects = append(b.Objects, fx.Server(s.serial, s.model))
 		b.Links = append(b.Links, fx.MountedIn(fx.ServerID(s.serial), s.rack, s.pos))
 		next = append(next, s)
 	}
-	if w.pick(2) == 0 {
-		b.Objects = append(b.Objects, fx.Site(w.sites[w.pick(2)], fmt.Sprintf("Fixture Road %d", w.pick(2))))
+	if w.prevPick(2) == 0 {
+		b.Objects = append(b.Objects, fx.Site(w.sites[w.prevPick(2)], fmt.Sprintf("Fixture Road %d", w.prevPick(2))))
 	}
-	if w.pick(2) == 0 {
+	if w.prevPick(2) == 0 {
 		ghost := fx.ServerID("SN-GHOST")
 		b.RetireObjects = append(b.RetireObjects, ghost)
 		b.RetireLinks = append(b.RetireLinks, fx.MountedInID(ghost, w.racks[0]))
@@ -208,7 +208,7 @@ func prevCaseMatchesApply(tb TB, f Factory) {
 	e := newEnv(tb, f, graph.Options{ChunkRows: 3})
 	w := prevStart(e, 410)
 	for round := 0; round < 12; round++ {
-		b, next := w.batch()
+		b, next := w.prevBatch()
 		what := fmt.Sprintf("round %d", round)
 		before := prevRows(e)
 		p, err := e.a.Preview(e.ctx, e.kg.ID, b)
@@ -230,7 +230,7 @@ func prevCaseMatchesApply(tb TB, f Factory) {
 func prevCaseWritesNothing(tb TB, f Factory) {
 	e := newEnv(tb, f, graph.Options{ChunkRows: 4})
 	w := prevStart(e, 411)
-	b, _ := w.batch()
+	b, _ := w.prevBatch()
 	b.Objects = append(b.Objects, e.fx.Server("SN-NEW", "M1"))
 	before := prevMarkOf(e)
 	p, err := e.a.Preview(e.ctx, e.kg.ID, b)

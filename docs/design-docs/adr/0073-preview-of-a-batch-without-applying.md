@@ -13,6 +13,7 @@ updates_docs:
   - docs/product-specs/requirements-model-storage.md
 touches_protected:
   - docs/product-specs/requirements-model-storage.md
+  - harness/config/test-lock.json
 amends: []
 amends_tests: []
 decision_hash: eb6711f6e720babe

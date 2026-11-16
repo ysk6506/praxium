@@ -15216,6 +15216,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/filejournal::TestFileStorePassesThePreviewSuite": {
+   "kind": "test",
+   "hash": "29ea6c2656e1a715",
+   "asserts": 1,
+   "literals": [
+    "0f88e4af6b5fb8e4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-410"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/filejournal::TestFileStorePassesTheSuite": {
    "kind": "test",
    "hash": "2e7c9b6a9a9fa1dd",
@@ -15818,6 +15833,21 @@
    ],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/graphcheck::TestPreviewSuiteOnTheReferenceStore": {
+   "kind": "test",
+   "hash": "eeca88e7d51c022a",
+   "asserts": 1,
+   "literals": [
+    "4a9865717dc06cf5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-410"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
   },
   "go:backend/internal/graphcheck::TestReferenceStorePassesTheSuite": {
    "kind": "test",
@@ -21882,6 +21912,21 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestPostgresStorePassesThePreviewSuite": {
+   "kind": "test",
+   "hash": "c35894880774f5a9",
+   "asserts": 1,
+   "literals": [
+    "44481bf4a77cf729"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-410"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestPostgresStorePassesTheSuite": {
