@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "8e695bd22acd457d"
-date: "2026-11-15"
-note: "product-design의 순서 표와 게이트웨이 순서를 같게 맞춤"
-text_changed: true
-doc_hash: "4ef8896c309e8022"
+hash: "5472d0e001ae4963"
+date: "2026-11-16"
+note: "product-design.md의 낱말 교체(교체하기 쉽게)만 바뀐 것을 확인했다. 계획의 문장은 그대로 맞다"
+text_changed: false
+doc_hash: "439b60ac326581c1"

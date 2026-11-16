@@ -359,7 +359,7 @@ error: {code: ambiguous_name, message: "이름이 같은 객체가 3개예요",
 
 ## 13. 큰 KG의 표시
 
-화면은 다른 리포지토리의 범위예요(ADR-0016). 여기서는 API가 **그룹과 수를 먼저 제공하는 것**만 정해요. `neighbors`의 `groups`, `containment`의 `children_summary`와 `subtree_size`, `impact`의 `counts_by_result`, `counts_by_type`, `counts_by_parent`가 그것이에요.
+화면은 `apps/web`의 범위예요(ADR-0016, ADR-0069). 여기서는 API가 **그룹과 수를 먼저 제공하는 것**만 정해요. `neighbors`의 `groups`, `containment`의 `children_summary`와 `subtree_size`, `impact`의 `counts_by_result`, `counts_by_type`, `counts_by_parent`가 그것이에요.
 
 ## 14. 알려진 한계와 가정
 

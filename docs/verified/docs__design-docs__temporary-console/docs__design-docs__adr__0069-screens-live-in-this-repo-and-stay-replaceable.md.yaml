@@ -1,0 +1,7 @@
+doc: "docs/design-docs/temporary-console.md"
+target: "docs/design-docs/adr/0069-screens-live-in-this-repo-and-stay-replaceable.md"
+hash: "e880daffb7ef2837"
+date: "2026-11-16"
+note: "ADR-0069 확정본(용어집에 맞춰 갈아 끼우기를 교체하기로 고침)과 다시 대조했다. 문서 본문도 같은 낱말로 맞췄다"
+text_changed: true
+doc_hash: "e54cc8dc1c15b0a7"
