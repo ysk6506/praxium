@@ -96,6 +96,7 @@ pnpm tsx harness/src/checks/docs.ts reverify docs/design-docs/product-design.md 
    `--note`는 확인한 내용을 적는 자리예요. "그대로 둠" 같은 한 줄이 아니라, 지난 릴리스 이후 요구사항 문서(`requirements.md`와 `requirements-<영역>.md`)에서 어떤 `REQ`가 바뀌었는지 보고 개요의 어느 절과 대조했는지, 무엇을 고쳤는지(고칠 것이 없으면 그 이유)를 적어요.
 2. 내려받으려는 커밋이 메인 브랜치에 있고 그 커밋의 CI(`gate`)가 통과했는지 확인해요.
 3. 처음 한 번은 스냅숏 실행(4절)이 성공했는지 확인해요.
+   MCP 인터페이스(`/mcp`)가 바뀐 릴리스에서는 `pnpm mcp:conformance`도 한 번 돌려요. 공식 적합성 도구(`@modelcontextprotocol/conformance`)가 이 컴퓨터에서 데모 서버를 띄워 테스트하고, 자기가 띄운 프로세스만 끝내요. 이 도구는 `pnpm check`에 들어 있지 않아요. `scripts/mcp-conformance-expected.yaml`에 없는 실패나 낡은 항목이 있으면 실패로 끝나요(ADR-0068, REQ-516).
 4. `docs/releases/<태그>.md`에 릴리스 노트를 써서 메인에 병합해요(없어도 되지만 쓰기를 권해요). 노트에 서명을 아직 하지 않았다는 말을 적어요. 맥과 윈도우는 처음 실행할 때 확인되지 않은 개발자라는 경고가 뜰 수 있고, 내려받은 사람이 확인할 수 있는 것은 `SHA256SUMS`뿐이에요(ADR-0039).
 5. 둘 중 하나로 릴리스해요.
    - 수동 실행: Actions 화면에서 `version`과 `commit`을 넣어 실행해요. 명령줄로는 `gh workflow run release.yml --ref main -f version=0.1.0-alpha.1 -f commit=<40자리 SHA>`예요.
