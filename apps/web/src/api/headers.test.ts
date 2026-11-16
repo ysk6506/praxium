@@ -86,7 +86,7 @@ describe("[REQ-407] the generated functions send the headers they are given", ()
     const { client, seen } = recording();
     await createUser(client, {
       headers: { "Idempotency-Key": "px-key-0001" },
-      body: { name: "a" },
+      body: { name: "a", roles: [] },
     });
     await disableUser(client, {
       path: { user_id: "u1" },
@@ -111,14 +111,14 @@ describe("[REQ-407] the generated functions send the headers they are given", ()
     const client = createClient({ token: "tok" });
     await createUser(client, {
       headers: { "Idempotency-Key": "px-key-0003" },
-      body: { name: "n" },
+      body: { name: "n", roles: [] },
     });
     api.restore();
     expect(api.asked).toHaveLength(1);
     expect(api.asked[0]?.headers["idempotency-key"]).toBe("px-key-0003");
     expect(api.asked[0]?.headers.authorization).toBe("Bearer tok");
     expect(api.asked[0]?.headers["content-type"]).toBe("application/json");
-    expect(api.asked[0]?.body).toEqual({ name: "n" });
+    expect(api.asked[0]?.body).toEqual({ name: "n", roles: [] });
   });
 });
 

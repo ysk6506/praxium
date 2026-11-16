@@ -19,6 +19,7 @@ export type {
   QueryMeta,
   ResultComplete,
 } from "../api";
+export { type Requester, withEtag } from "../api";
 export { type TypeEntry, useKgs, useObjectTypeDetail, useTypeCatalog } from "./catalog";
 export { columnCandidates, DEFAULT_COLUMN_COUNT, defaultColumns, orderedColumns } from "./columns";
 export { connection, useToken } from "./connection";
@@ -47,11 +48,13 @@ export {
 } from "./entry";
 export {
   type AccessMode,
+  currentEtag,
   describeError,
   type ErrorKind,
   type ErrorView,
   errorDetails,
   errorFacts,
+  fieldErrorMessage,
   type Names,
   needsToken,
   withAccessMode,
@@ -182,6 +185,25 @@ export {
   readImpactView,
   summaryRequest,
 } from "./impact-view";
+export { invalidate, onInvalidate } from "./invalidation";
+export {
+  type AttachedIssues,
+  attachIssues,
+  childPointer,
+  formatPointer,
+  getAt,
+  hasIssueUnder,
+  type Issue,
+  insertItem,
+  type Json,
+  moveItem,
+  PointerError,
+  parsePointer,
+  removeAt,
+  removeItem,
+  setAt,
+  writeValue,
+} from "./json-doc";
 export {
   groupKey,
   groupNeighbors,
@@ -234,7 +256,14 @@ export {
   tabStorage,
   typesViewParams,
 } from "./urlstate";
-export type { AsyncResult, AsyncState } from "./useAsync";
+export {
+  type AsyncOptions,
+  type AsyncResult,
+  type AsyncState,
+  type PollOptions,
+  type RefreshableResult,
+  useAsync,
+} from "./useAsync";
 export {
   expectedItems,
   type ImpactItems,
@@ -243,4 +272,13 @@ export {
   useImpact,
   withItems,
 } from "./useImpact";
+export {
+  IDEMPOTENCY_KEY_LENGTH,
+  isIdempotencyKey,
+  type Mutation,
+  type MutationContext,
+  type MutationOptions,
+  type MutationState,
+  useMutation,
+} from "./useMutation";
 export { type Spread, useReducedMotion, useSpread } from "./useSpread";

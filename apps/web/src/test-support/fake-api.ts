@@ -34,7 +34,9 @@ export function fakeApi(routes: Record<string, Answer>): { asked: Asked[]; resto
         search: decodeURIComponent(url.search),
         body: typeof init?.body === "string" ? JSON.parse(init.body) : undefined,
         authorization: headers.get("Authorization"),
-        headers: Object.fromEntries(headers.entries()),
+        headers: Object.fromEntries(
+          [...headers.entries()].map(([name, value]) => [name.toLowerCase(), value]),
+        ),
       });
       let answer = routes[`${method} ${url.pathname}`];
       if (typeof answer === "function") answer = answer();
