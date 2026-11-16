@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"sync/atomic"
 
 	"github.com/ysk6506/praxium/backend/internal/access"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -34,8 +33,9 @@ type Config struct {
 	ServiceAccountsOnly bool
 	// AllowedOrigins are the origins a browser may call from; empty (the default) means no browser origin.
 	AllowedOrigins []string
-	// LoopbackBound says the server listens on a loopback address, so only a loopback Host is taken (DNS rebinding).
-	LoopbackBound bool
+	// CheckHost says the server listens on a loopback address and is not behind a declared proxy, so only a loopback Host
+	// is taken (DNS rebinding). Behind a proxy the Host is the outer name, and the Origin check and the token stay.
+	CheckHost bool
 	// TrustProxy says a proxy in front appends the caller's address to X-Forwarded-For, as for the REST server.
 	TrustProxy bool
 	// MaxBodyBytes limits a request body; zero means DefaultMaxBodyBytes.
@@ -56,7 +56,6 @@ type Handler struct {
 	counts  *counters
 	origins map[string]bool
 	max     int64
-	nextRPC atomic.Int64
 }
 
 // New builds the handler.

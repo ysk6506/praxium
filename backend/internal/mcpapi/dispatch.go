@@ -154,7 +154,12 @@ func (ex *exchange) toolsCall() {
 		ex.protocolError(http.StatusInternalServerError, rpcError{Code: codeInternal, Message: "Internal error."})
 		return
 	}
-	ex.a.result(ex.req.id, ex.toolResult(res))
+	out, ok := ex.toolResult(res)
+	if !ok {
+		ex.protocolError(http.StatusInternalServerError, rpcError{Code: codeInternal, Message: "Internal error."})
+		return
+	}
+	ex.a.result(ex.req.id, out)
 }
 
 // toolArguments gives the arguments of a call written out again (nil when none), and false when they are not an object.
@@ -174,7 +179,7 @@ func toolArguments(params map[string]any) (json.RawMessage, bool) {
 // toolResult shapes what a tool answered. Success: the fixed first line and the JSON of the structured value as text,
 // and the structured value itself. Failure: the code, the cleaned params and the entries of the wrong fields as text,
 // and no structured value (some clients drop a result whose structure is not the one the schema says).
-func (ex *exchange) toolResult(res Result) toolResult {
+func (ex *exchange) toolResult(res Result) (toolResult, bool) {
 	out := toolResult{}
 	if ex.version == version2026 {
 		out.ResultType = "complete"
@@ -182,16 +187,15 @@ func (ex *exchange) toolResult(res Result) toolResult {
 	if res.Problem != nil {
 		out.IsError = true
 		out.Content = []contentBlock{{Type: "text", Text: problemText(res.Problem)}}
-		return out
+		return out, true
 	}
 	text, err := json.Marshal(res.Structured)
 	if err != nil {
-		out.IsError, out.Content = true, []contentBlock{{Type: "text", Text: `{"error":{"code":"server.internal"}}`}}
-		return out
+		return out, false // a value that cannot be written out is a bug of the server (kg-mcp.md 4.4)
 	}
 	out.Content = []contentBlock{{Type: "text", Text: firstLine}, {Type: "text", Text: string(text)}}
 	out.Structured = res.Structured
-	return out
+	return out, true
 }
 
 // problemText is the JSON text of a refusal of a tool: the code of the catalogue, its params and fields (the words of

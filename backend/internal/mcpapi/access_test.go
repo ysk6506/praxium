@@ -110,7 +110,7 @@ func TestTransportRowsX5ToX9(t *testing.T) {
 		}
 	})
 	t.Run("X8 a Host that is not the loopback, on a server bound to it, is 403", func(t *testing.T) {
-		bound := newRig(t, func(c *Config) { c.LoopbackBound = true })
+		bound := newRig(t, func(c *Config) { c.CheckHost = true })
 		if r := bound.do(goodCall(t).withHeaderHost("example.org")); r.status != 403 {
 			t.Errorf("got %d", r.status)
 		}

@@ -90,7 +90,7 @@ func TestSecurity07Origin(t *testing.T) {
 
 // [REQ-505] [REQ-515] Security test 8: a server bound to a loopback address takes only a loopback Host.
 func TestSecurity08Host(t *testing.T) {
-	bound := newRig(t, func(c *Config) { c.LoopbackBound = true })
+	bound := newRig(t, func(c *Config) { c.CheckHost = true })
 	for _, host := range []string{"evil.example", "evil.example:8080", "127.0.0.1.evil.example", "localhost.evil.example", "10.0.0.5:8080", "[::1", "[::1]x"} {
 		if r := bound.do(goodCall(t).withHeaderHost(host)); r.status != http.StatusForbidden {
 			t.Errorf("Host %q: %d; want 403", host, r.status)

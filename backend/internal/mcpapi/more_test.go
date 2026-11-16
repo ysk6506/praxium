@@ -38,29 +38,29 @@ func TestMalformedMessagesAreRefused(t *testing.T) {
 	rg := newRig(t)
 	base := goodCall(t)
 	for body, code := range map[string]int{
-		`{"jsonrpc":"1.0","id":1,"method":"tools/list"}`:                   codeInvalidRequest,
-		`{"id":1,"method":"tools/list"}`:                                   codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":1}`:                                         codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":1,"method":""}`:                             codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":1,"method":5}`:                              codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":null,"method":"tools/list"}`:                codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":true,"method":"tools/list"}`:                codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":[1],"method":"tools/list"}`:                 codeInvalidRequest,
-		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":[1]}`:      codeInvalidParams,
-		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":"x"}`:      codeInvalidParams,
-		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":null}`:     codeInvalidParams,
-		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"a":}}`:   codeParse,
-		"{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"} \x00":    codeParse,
-		`{"jsonrpc":"2.0","id":1,"method":"tools/list","extra":{"a":[1]}}`: codeInvalidParams,
+		`{"jsonrpc":"1.0","id":1,"method":"tools/list"}`:                 codeInvalidRequest,
+		`{"id":1,"method":"tools/list"}`:                                 codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":1}`:                                       codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":1,"method":""}`:                           codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":1,"method":5}`:                            codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":null,"method":"tools/list"}`:              codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":true,"method":"tools/list"}`:              codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":[1],"method":"tools/list"}`:               codeInvalidRequest,
+		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":[1]}`:    codeInvalidParams,
+		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":"x"}`:    codeInvalidParams,
+		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":null}`:   codeInvalidParams,
+		`{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"a":}}`: codeParse,
+		"{\"jsonrpc\":\"2.0\",\"id\":1,\"method\":\"tools/list\"} \x00":  codeParse,
 	} {
 		r := rg.do(base.withBody(body))
 		got := r.errCode(t)
-		if body == `{"jsonrpc":"2.0","id":1,"method":"tools/list","extra":{"a":[1]}}` {
-			continue
-		}
 		if r.status != 400 || got != code {
 			t.Errorf("%q: %d code %d; want 400 and %d", body, r.status, got, code)
 		}
+	}
+	// A member the server does not know is ignored, as JSON-RPC allows.
+	if r := rg.do(legacyCall(t, tokViewer, version2511, "tools/list", nil).withBody(`{"jsonrpc":"2.0","id":1,"method":"tools/list","extra":{"a":[1]}}`)); r.status != http.StatusOK {
+		t.Errorf("an unknown member: %d %s", r.status, r.body)
 	}
 }
 
@@ -176,16 +176,16 @@ func TestRefusalParamsAreCleanedDeeply(t *testing.T) {
 	}
 }
 
-// A value of a tool that cannot be written out is an error result and not a broken answer.
-func TestAResultThatCannotBeWrittenIsAnErrorResult(t *testing.T) {
+// A value of a tool that cannot be written out is a bug of the server: -32603, as kg-mcp.md 4.4 says (500 on the new
+// version, 200 on the older ones), and not a result of the tool.
+func TestAResultThatCannotBeWrittenIsInternalError(t *testing.T) {
 	bad := refusingTool()
 	bad.Name = "kg_unwritable"
 	bad.Run = func(context.Context, Call) Result { return Result{Structured: map[string]any{"c": make(chan int)}} }
 	rg := newRig(t, func(c *Config) { c.Tools = []Tool{bad} })
-	res := rg.do(legacyCall(t, tokViewer, version2511, "tools/call", map[string]any{"name": "kg_unwritable"}))
-	if res.status != 200 && res.status != 500 {
-		t.Fatalf("%d %s", res.status, res.body)
-	}
+	args := map[string]any{"name": "kg_unwritable"}
+	wantRPCError(t, rg.do(legacyCall(t, tokViewer, version2511, "tools/call", args)), http.StatusOK, codeInternal)
+	wantRPCError(t, rg.do(modernCall(t, tokViewer, "tools/call", args)), http.StatusInternalServerError, codeInternal)
 }
 
 // The value of q in an Accept header that is not a number means zero.

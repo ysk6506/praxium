@@ -19,7 +19,7 @@ func (h *Handler) originOK(a answer, r *http.Request) bool {
 			return false
 		}
 	}
-	if h.cfg.LoopbackBound && !isLoopbackHost(r.Host) {
+	if h.cfg.CheckHost && !isLoopbackHost(r.Host) {
 		a.rpcError(http.StatusForbidden, nil, rpcError{Code: codeInvalidRequest, Message: "The Host of the request is not allowed."})
 		return false
 	}
