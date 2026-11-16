@@ -32,6 +32,16 @@ func SystemSeed() uint64 {
 // ask for a seed. Log the seed (Seed) to be able to replay the run.
 func NewSystemRng() *SeededRng { return NewSeededRng(SystemSeed()) }
 
+// SystemBytes is the ByteSource of the real world: bytes from the operating system's source of randomness, for
+// keys and nonces. It is the one ByteSource that makes real keys.
+type SystemBytes struct{}
+
+var _ ByteSource = SystemBytes{}
+
+// Fill overwrites p with unpredictable bytes. Since Go 1.24 the read never returns an error: it ends the program if
+// the system source of randomness fails.
+func (SystemBytes) Fill(p []byte) { _, _ = rand.Read(p) }
+
 // NewToken returns an unguessable token of n random bytes as 2n hex
 // characters, for share links and per-run secrets. It does not use an Rng:
 // a token must never be reproducible.
