@@ -4,8 +4,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-
-	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // The kinds of a cell of a workbook. A cell that has no value is not stored at all.
@@ -211,12 +209,18 @@ func (s Sheet) UsedRange() (row1, col1, row2, col2 int) {
 }
 
 // check refuses a limit below 0; a nil set of limits is all defaults.
-func (l *Limits) check(source string) error {
+func (l *Limits) check(c *collector, source string) {
 	if l == nil {
-		return nil
+		return
 	}
-	if l.MaxUncompressedBytes < 0 || l.MaxRowsPerSheet < 0 || l.MaxColumnsPerSheet < 0 || l.MaxCellChars < 0 || l.MaxSharedStrings < 0 || l.MaxRowsPerDataset < 0 {
-		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: a limit cannot be below 0", source)
+	for _, f := range []struct {
+		name string
+		v    int64
+	}{{"max_uncompressed_bytes", l.MaxUncompressedBytes}, {"max_rows_per_sheet", int64(l.MaxRowsPerSheet)}, {"max_columns_per_sheet", int64(l.MaxColumnsPerSheet)},
+		{"max_cell_chars", int64(l.MaxCellChars)}, {"max_shared_strings", int64(l.MaxSharedStrings)}, {"max_rows_per_dataset", int64(l.MaxRowsPerDataset)}} {
+		if f.v < 0 {
+			c.add(ecSrcLimit, ptr("limits", f.name), Params{"source": source, "field": f.name, "value": f.v}, "source %s: a limit cannot be below 0", source)
+			return
+		}
 	}
-	return nil
 }

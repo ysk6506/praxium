@@ -6,6 +6,8 @@ follows:
   - docs/design-docs/ingestion.md
 covers:
   - backend/internal/ingest/definition.go
+  - backend/internal/ingest/deferror.go
+  - backend/internal/ingest/errcodes.go
   - backend/internal/ingest/mapping.go
   - backend/internal/ingest/sheetopts.go
   - backend/internal/ingest/refine.go
@@ -29,6 +31,8 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 ```
 
 정의 파일에 모르는 필드를 쓰면 `unknown field "…"`로 거절한다(철자 오류를 조용히 넘기지 않는다). 거절할 때 그 자리에서 허용되는 필드를 함께 알려 준다. 값의 종류가 틀려도(`"ignore_undeclared_columns": "yes"`) 거절하며, 필드 경로와 받아야 하는 값의 종류, 줄 번호를 말한다(`the field "datasets[0].ignore_undeclared_columns" must be true or false (no quotes), but the value given is text (line 5)`). 대괄호 안의 수는 목록의 몇 번째인지이고 첫째가 0이다.
+
+**정의의 오류는 여럿이면 모두 나온다.** `ingest run`은 소스 정의와 매핑 정의를 검사해 서로 무관한 오류를 한 번에 모두 줄마다 하나씩 출력하고(소스 정의가 먼저), 마지막 줄에 개수를 적는다. 하나이면 개수 줄 없이 그 한 줄만 나온다. 앞의 오류에서 따라 나오는 오류는 내지 않는다(피드가 읽는 데이터셋이 없으면 그 피드의 컬럼 검사는 건너뛴다). 목록은 100개까지이고 넘으면 몇 개를 뺐는지 알린다. 오류마다 문서 안의 위치(JSON 포인터, 예 `/feeds/0/object_type`), 안정된 코드(예 `mapping.feed.unknown_object_type`), 문장을 만든 값, 문장이 있고, 코드의 목록은 코드(`ingest.ErrorCodes`)에 표로 있다. 줄에는 문장만 나온다. JSON이 깨졌거나 모르는 필드가 있는 문서는 그 하나만 알리고 그 문서의 나머지 검사는 하지 않는다.
 
 ## 2. 소스 정의 (source.json)
 

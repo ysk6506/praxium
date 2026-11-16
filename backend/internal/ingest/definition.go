@@ -4,12 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"slices"
 	"strings"
-
-	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // The parsers of the fixed list this slice has (ingestion.md 3.4). The others of the list come later.
@@ -74,36 +71,67 @@ type Source struct {
 }
 
 // decodeStrict reads one JSON document and refuses a field it does not know: a misspelt field of a definition
-// must not be ignored.
-func decodeStrict(r io.Reader, what string, into any) error {
+// must not be ignored. The error it returns is a DefinitionErrors of one error: the first thing the decoder met.
+func decodeStrict(r io.Reader, doc, what string, into any) error {
+	c := newCollector(doc)
 	data, err := io.ReadAll(r)
 	if err != nil {
-		return kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the "+what)
+		c.add(ecDefUnreadable, "", Params{"what": what}, "cannot read the %s: %s", what, err)
+		return c.err()
 	}
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(into); err != nil {
-		if name, ok := strings.CutPrefix(err.Error(), "json: unknown field "); ok {
-			if hint := unknownFieldHint(data, strings.Trim(name, `"`), into); hint != "" {
-				err = fmt.Errorf("%w; %s", err, hint)
-			}
-		}
-		var typeErr *json.UnmarshalTypeError
-		if errors.As(err, &typeErr) {
-			return kernel.Errorf(kernel.CodeInvalidValue, "the %s is not a valid definition: %s", what, wrongKindMessage(data, typeErr))
-		}
-		return kernel.Wrap(kernel.CodeInvalidValue, err, "the "+what+" is not a valid definition")
+		decodeProblem(c, data, what, into, err)
+		return c.err()
 	}
 	if dec.More() {
-		return kernel.Errorf(kernel.CodeInvalidValue, "the %s has more than one JSON document", what)
+		c.add(ecDefManyDocuments, "", nil, "the %s has more than one JSON document", what)
+		return c.err()
 	}
 	return nil
 }
 
-// ParseSource reads and checks a source definition.
+// decodeProblem records what the decoder refused, with the place of it in the document.
+func decodeProblem(c *collector, data []byte, what string, into any, err error) {
+	var typeErr *json.UnmarshalTypeError
+	if errors.As(err, &typeErr) {
+		field := indexedPath(typeErr.Field)
+		if typeErr.Field == "" {
+			field = "the document"
+		}
+		line := lineOf(data, typeErr.Offset)
+		c.add(ecDefWrongKind, pathPointer(typeErr.Field), Params{"field": field, "wanted": kindWanted(typeErr.Type), "given": kindGiven(typeErr.Value), "line": line},
+			"the %s is not a valid definition: %s", what, wrongKindMessage(data, typeErr))
+		return
+	}
+	name, unknown := strings.CutPrefix(err.Error(), "json: unknown field ")
+	if !unknown {
+		c.add(ecDefMalformed, "", Params{"detail": err.Error()}, "the %s is not a valid definition: %s", what, err)
+		return
+	}
+	field := strings.Trim(name, `"`)
+	path, allowed, found := locateUnknown(data, field, into)
+	msg := err.Error()
+	if found {
+		msg += "; " + unknownFieldSentence(field, path, allowed)
+	}
+	where := ""
+	if found {
+		where = ptr(pathSteps(path)...)
+	}
+	params := Params{"field": field}
+	if found {
+		params["allowed"] = allowed
+		where += ptr(field)
+	}
+	c.add(ecDefUnknownField, where, params, "the %s is not a valid definition: %s", what, msg)
+}
+
+// ParseSource reads and checks a source definition. A definition that is refused gives a *DefinitionErrors.
 func ParseSource(r io.Reader) (Source, error) {
 	var s Source
-	if err := decodeStrict(r, "source definition", &s); err != nil {
+	if err := decodeStrict(r, DocumentSource, "source definition", &s); err != nil {
 		return Source{}, err
 	}
 	return s.normalized()
@@ -111,42 +139,57 @@ func ParseSource(r io.Reader) (Source, error) {
 
 // normalized fills the defaults and checks the whole source.
 func (s Source) normalized() (Source, error) {
+	c := newCollector(DocumentSource)
+	s = s.normalize(c)
+	if err := c.err(); err != nil {
+		return Source{}, err
+	}
+	return s, nil
+}
+
+func (s Source) normalize(c *collector) Source {
 	if s.ID == "" {
-		return Source{}, kernel.Errorf(kernel.CodeInvalidValue, "a source needs an id")
+		c.add(ecSrcIDMissing, ptr("id"), nil, "a source needs an id")
 	}
 	if s.Adapter != "file" {
-		return Source{}, kernel.Errorf(kernel.CodeUnsupported, "source %s: adapter %q is not one this build has (only file)", s.ID, s.Adapter)
+		c.add(ecSrcAdapter, ptr("adapter"), Params{"source": s.ID, "adapter": s.Adapter, "supported": []string{"file"}},
+			"source %s: adapter %q is not one this build has (only file)", s.ID, s.Adapter)
 	}
 	if s.Collector == "" {
 		s.Collector = "in_product"
 	}
-	if err := s.Limits.check(s.ID); err != nil {
-		return Source{}, err
-	}
+	s.Limits.check(c, s.ID)
 	if len(s.Datasets) == 0 {
-		return Source{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s has no dataset", s.ID)
+		c.add(ecSrcNoDatasets, ptr("datasets"), Params{"source": s.ID}, "source %s has no dataset", s.ID)
 	}
-	seen := map[string]bool{}
+	first := map[string]int{}
 	ds := make([]Dataset, len(s.Datasets))
 	for i, d := range s.Datasets {
-		nd, err := d.normalized(s.ID)
-		if err != nil {
-			return Source{}, err
+		nd := d.normalize(c, s.ID, i)
+		if at, dup := first[nd.ID]; dup && nd.ID != "" {
+			c.add(ecSrcDatasetDup, ptr("datasets", i, "id"), Params{"source": s.ID, "dataset": nd.ID, "first": at},
+				"source %s: dataset %s appears twice", s.ID, nd.ID)
+		} else if nd.ID != "" {
+			first[nd.ID] = i
 		}
-		if seen[nd.ID] {
-			return Source{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: dataset %s appears twice", s.ID, nd.ID)
-		}
-		seen[nd.ID] = true
 		ds[i] = nd
 	}
 	s.Datasets = ds
-	return s, nil
+	return s
 }
 
+// normalized checks one dataset of the source and fills its defaults; the errors come as one error.
 func (d Dataset) normalized(source string) (Dataset, error) {
+	c := newCollector(DocumentSource)
+	d = d.normalize(c, source, 0)
+	return d, c.err()
+}
+
+func (d Dataset) normalize(c *collector, source string, i int) Dataset {
+	at := ptr("datasets", i)
 	where := "source " + source + ", dataset " + d.ID
 	if d.ID == "" {
-		return d, kernel.Errorf(kernel.CodeInvalidValue, "source %s: a dataset needs an id", source)
+		c.add(ecSrcDatasetID, at+ptr("id"), Params{"source": source}, "source %s: a dataset needs an id", source)
 	}
 	if d.Kind == "" {
 		d.Kind = "raw"
@@ -157,66 +200,71 @@ func (d Dataset) normalized(source string) (Dataset, error) {
 	if d.Deletion == "" {
 		d.Deletion = DeletionAbsentInFull
 	}
-	if err := d.checkSupported(where); err != nil {
-		return d, err
+	parserOK := d.checkSupported(c, at, where)
+	cols := d.checkColumns(c, at, where)
+	if parserOK {
+		d.Sheet = d.Sheet.normalize(c, at+ptr("sheet"), d, where)
+		d.Delimiter = normalizedDelimiterTo(c, at+ptr("delimiter"), d.Delimiter, d.Parser, d.ID, where)
 	}
-	cols, err := d.checkColumns(where)
-	if err != nil {
-		return d, err
+	if len(d.Columns) > 0 {
+		d.checkNaturalKey(c, at, cols, where)
 	}
-	if d.Sheet, err = d.Sheet.normalized(d.Parser, where); err != nil {
-		return d, err
-	}
-	if d.Delimiter, err = normalizedDelimiter(d.Delimiter, d.Parser, where); err != nil {
-		return d, err
-	}
-	return d, d.checkNaturalKey(cols, where)
+	return d
 }
 
-// checkSupported refuses what this build does not have.
-func (d Dataset) checkSupported(where string) error {
+// checkSupported refuses what this build does not have. It tells whether the parser is one of the build's.
+func (d Dataset) checkSupported(c *collector, at, where string) bool {
 	if d.Kind != "raw" || d.ReceiveMode != "snapshot" {
-		return kernel.Errorf(kernel.CodeUnsupported, "%s: only raw datasets received as snapshot exist in this build", where)
+		c.add(ecSrcMode, at+ptr("kind"), Params{"dataset": d.ID, "kind": d.Kind, "receive_mode": d.ReceiveMode},
+			"%s: only raw datasets received as snapshot exist in this build", where)
 	}
-	if d.Parser != ParserCSV && d.Parser != ParserJSONLines && d.Parser != ParserXLSX {
-		return kernel.Errorf(kernel.CodeUnsupported, "%s: parser %q is not in this build (csv, json_lines, xlsx)", where, d.Parser)
+	parserOK := d.Parser == ParserCSV || d.Parser == ParserJSONLines || d.Parser == ParserXLSX
+	if !parserOK {
+		c.add(ecSrcParser, at+ptr("parser"), Params{"dataset": d.ID, "parser": d.Parser, "supported": []string{ParserCSV, ParserJSONLines, ParserXLSX}},
+			"%s: parser %q is not in this build (csv, json_lines, xlsx)", where, d.Parser)
 	}
 	if d.Deletion != DeletionAbsentInFull && d.Deletion != DeletionNone {
-		return kernel.Errorf(kernel.CodeUnsupported, "%s: deletion %q is not in this build", where, d.Deletion)
+		c.add(ecSrcDeletion, at+ptr("deletion"), Params{"dataset": d.ID, "deletion": d.Deletion, "supported": []string{DeletionAbsentInFull, DeletionNone}},
+			"%s: deletion %q is not in this build", where, d.Deletion)
 	}
-	return nil
+	return parserOK
 }
 
-// checkColumns checks the names and returns them. A column with no path is read by its own name.
-func (d *Dataset) checkColumns(where string) ([]string, error) {
+// checkColumns checks the names and returns the good ones. A column with no path is read by its own name.
+func (d *Dataset) checkColumns(c *collector, at, where string) []string {
 	if len(d.Columns) == 0 {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s has no column", where)
+		c.add(ecSrcNoColumns, at+ptr("columns"), Params{"dataset": d.ID}, "%s has no column", where)
+		return nil
 	}
 	var names []string
 	for i := range d.Columns {
-		c := &d.Columns[i]
-		if c.Name == "" || slices.Contains(names, c.Name) {
-			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s: column name %q is empty or repeated", where, c.Name)
+		col := &d.Columns[i]
+		if col.Name == "" || slices.Contains(names, col.Name) {
+			c.add(ecSrcColumnName, at+ptr("columns", i, "name"), Params{"dataset": d.ID, "name": col.Name},
+				"%s: column name %q is empty or repeated", where, col.Name)
+			continue
 		}
-		if len(c.Paths) == 0 {
-			c.Paths = []string{c.Name}
+		if len(col.Paths) == 0 {
+			col.Paths = []string{col.Name}
 		}
-		names = append(names, c.Name)
+		names = append(names, col.Name)
 	}
-	return names, nil
+	return names
 }
 
 // checkNaturalKey checks that the natural key names columns of the dataset. The message lists the columns, so a key
 // that was left to be filled in (as `ingest inspect -emit-source` leaves it) tells what to put there.
-func (d Dataset) checkNaturalKey(cols []string, where string) error {
+func (d Dataset) checkNaturalKey(c *collector, at string, cols []string, where string) {
 	const what = "natural_key is the column, or the columns together, whose value tells one row from another"
 	if len(d.NaturalKey) == 0 {
-		return kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key is empty, so the order of the rows would decide the result; %s. The columns are: %s", where, what, columnList(cols))
+		c.add(ecSrcKeyEmpty, at+ptr("natural_key"), Params{"dataset": d.ID, "columns": cols},
+			"%s: natural_key is empty, so the order of the rows would decide the result; %s. The columns are: %s", where, what, columnList(cols))
+		return
 	}
-	for _, k := range d.NaturalKey {
+	for i, k := range d.NaturalKey {
 		if !slices.Contains(cols, k) {
-			return kernel.Errorf(kernel.CodeInvalidValue, "%s: natural_key names column %q that the dataset does not have; %s. The columns are: %s", where, k, what, columnList(cols))
+			c.add(ecSrcKeyColumn, at+ptr("natural_key", i), Params{"dataset": d.ID, "column": k, "columns": cols},
+				"%s: natural_key names column %q that the dataset does not have; %s. The columns are: %s", where, k, what, columnList(cols))
 		}
 	}
-	return nil
 }

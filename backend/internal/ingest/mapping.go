@@ -128,7 +128,7 @@ type Mapping struct {
 // ParseMapping reads a mapping definition. It is checked against the registry when it is compiled.
 func ParseMapping(r io.Reader) (Mapping, error) {
 	var m Mapping
-	if err := decodeStrict(r, "mapping definition", &m); err != nil {
+	if err := decodeStrict(r, DocumentMapping, "mapping definition", &m); err != nil {
 		return Mapping{}, err
 	}
 	return m, nil
