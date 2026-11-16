@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "9b1d3cd39673c585"
-date: "2026-11-15"
-note: "architecture.yaml의 core.kgread 유닛 등록과 adapter.http의 may_import 추가를 유닛 표의 새 행과 adapter.http 행에 맞췄다"
+hash: "faf74d39158b0323"
+date: "2026-11-16"
+note: "main 병합 뒤 유닛 표에 adapter.mcp, core.secrets, adapter.secretsfile 행이 모두 있고 architecture.yaml의 경로와 may_import와 같은 것을 확인했다"
 text_changed: true
-doc_hash: "6b1fd751d255cef0"
+doc_hash: "af01ca9c2835045a"

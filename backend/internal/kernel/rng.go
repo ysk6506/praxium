@@ -1,6 +1,7 @@
 package kernel
 
 import (
+	"encoding/binary"
 	"sync"
 )
 
@@ -50,4 +51,31 @@ func (r *SeededRng) Float64() float64 {
 // always give the same stream.
 func (r *SeededRng) Fork(label string) *SeededRng {
 	return NewSeededRng(deriveSeed(r.seed, label))
+}
+
+// ByteSource is the port for random bytes: the keys and nonces of encryption. Code outside the kernel receives a
+// ByteSource and never reads system randomness itself (REQ-001). It is a port apart from Rng because bytes for keys
+// must come from the system in a real run, while a test needs bytes it can predict.
+type ByteSource interface {
+	// Fill overwrites all of p with random bytes.
+	Fill(p []byte)
+}
+
+// SeededBytes is a deterministic ByteSource for tests: the same seed gives the same bytes on every platform. It is
+// not unpredictable. Never use it where a real key is made; a real run uses SystemBytes. It is safe for
+// concurrent use.
+type SeededBytes struct{ rng *SeededRng }
+
+var _ ByteSource = (*SeededBytes)(nil)
+
+// NewSeededBytes starts the byte sequence of seed.
+func NewSeededBytes(seed uint64) *SeededBytes { return &SeededBytes{rng: NewSeededRng(seed)} }
+
+// Fill overwrites p with the next bytes of the sequence.
+func (s *SeededBytes) Fill(p []byte) {
+	for i := 0; i < len(p); i += 8 {
+		var word [8]byte
+		binary.BigEndian.PutUint64(word[:], s.rng.Uint64())
+		copy(p[i:], word[:])
+	}
 }

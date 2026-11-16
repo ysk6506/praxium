@@ -299,9 +299,25 @@
     },
     {
       "method": "GET",
+      "path": "/v1/definition-items",
+      "feature": "정의 항목의 목록(종류로 거르기)",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
       "path": "/v1/definition-items/{item_id}",
       "feature": "개요, 묶음, 차이, 항목의 이력",
       "adr": "ADR-0014",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/definition-items:apply",
+      "feature": "정의의 직접 적용(소스와 매핑)",
+      "adr": "ADR-0058",
       "phase": "alpha-2",
       "status": "planned"
     },
@@ -315,7 +331,7 @@
     },
     {
       "method": "POST",
-      "path": "/v1/definition-items:preview:suggest",
+      "path": "/v1/definition-items:suggest",
       "feature": "매핑의 미리 보기와 제안",
       "adr": "ADR-0014",
       "phase": "alpha-2",
@@ -324,22 +340,6 @@
     {
       "method": "POST",
       "path": "/v1/definition-items:validate",
-      "feature": "저장하지 않고 검사, 미리 보기, 제안",
-      "adr": "ADR-0014",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
-      "path": "/v1/definition-items:validate:preview",
-      "feature": "저장하지 않고 검사, 미리 보기, 제안",
-      "adr": "ADR-0014",
-      "phase": "alpha-2",
-      "status": "planned"
-    },
-    {
-      "method": "POST",
-      "path": "/v1/definition-items:validate:preview:suggest",
       "feature": "저장하지 않고 검사, 미리 보기, 제안",
       "adr": "ADR-0014",
       "phase": "alpha-2",
@@ -1140,65 +1140,65 @@
     {
       "method": "GET",
       "path": "/v1/secrets",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "DELETE",
       "path": "/v1/secrets/{secret_id}",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "PATCH",
       "path": "/v1/secrets/{secret_id}",
       "feature": "`allowed_hosts` 바꾸기",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "GET",
       "path": "/v1/secrets/{secret_id}/versions",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets/{secret_id}/versions",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets/{secret_id}/versions/{version}:check",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets/{secret_id}/versions/{version}:retire",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
@@ -1243,6 +1243,14 @@
     },
     {
       "method": "GET",
+      "path": "/v1/sources/{source_id}",
+      "feature": "소스 하나의 상세와 능력",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
       "path": "/v1/sources/{source_id}/upload-template",
       "feature": "엑셀·CSV 올리기와 칸 샘플",
       "adr": "ADR-0008",
@@ -1259,15 +1267,15 @@
     },
     {
       "method": "POST",
-      "path": "/v1/sources/{source_id}:introspect",
-      "feature": "소스 소스 탐색, 점검(`branch_id`를 받음)",
+      "path": "/v1/sources/{source_id}:check",
+      "feature": "소스 점검(`branch_id`를 받음)",
       "adr": "ADR-0008",
       "phase": "alpha-1",
       "status": "planned"
     },
     {
       "method": "POST",
-      "path": "/v1/sources/{source_id}:introspect:check",
+      "path": "/v1/sources/{source_id}:introspect",
       "feature": "소스 소스 탐색, 점검(`branch_id`를 받음)",
       "adr": "ADR-0008",
       "phase": "alpha-1",
@@ -1283,7 +1291,15 @@
     },
     {
       "method": "POST",
-      "path": "/v1/sources/{source_id}:pause:resume",
+      "path": "/v1/sources/{source_id}:push",
+      "feature": "푸시 수집(`ingester`)",
+      "adr": "ADR-0008",
+      "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources/{source_id}:resume",
       "feature": "소스 일시 정지와 다시 켜기, 지금 한 번",
       "adr": "ADR-0008",
       "phase": "alpha-1",
@@ -1291,10 +1307,18 @@
     },
     {
       "method": "POST",
-      "path": "/v1/sources/{source_id}:push",
-      "feature": "푸시 수집(`ingester`)",
-      "adr": "ADR-0008",
-      "phase": "alpha-1",
+      "path": "/v1/sources:check",
+      "feature": "저장하지 않은 정의로 점검",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sources:introspect",
+      "feature": "저장하지 않은 정의로 소스 탐색",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
@@ -1303,6 +1327,22 @@
       "feature": "실행, 단계별 수, 샘플, 다시 돌리기",
       "adr": "ADR-0008",
       "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sync-runs",
+      "feature": "수집 실행의 시작",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
+      "path": "/v1/sync-runs/{run_id}",
+      "feature": "수집 실행 하나의 상태",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
@@ -1327,6 +1367,30 @@
       "feature": "실행, 단계별 수, 샘플, 다시 돌리기",
       "adr": "ADR-0008",
       "phase": "alpha-1",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sync-runs/{run_id}:cancel",
+      "feature": "수집 실행의 취소",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sync-runs/{run_id}:confirm",
+      "feature": "확인 뒤 적용의 확인",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
+      "path": "/v1/sync-runs/{run_id}:discard",
+      "feature": "확인을 기다리는 실행의 버리기",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {

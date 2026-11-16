@@ -1,0 +1,34 @@
+# Scenarios of the official MCP conformance tests that Praxium's MCP interface is not built to pass (ADR-0068).
+# The interface is read-only, JSON-only and stateless: it serves tools only, with one tool (kg_whoami), and
+# no resources, prompts, completion, logging, progress, sampling, elicitation or server-sent streams. These
+# scenarios call tools, resources or prompts that exist only in the test suite's own example server.
+# server-sse-multiple-streams does not start: the server gives no session id, so the test only warns and checks
+# nothing (the tool counts a warning as a failure). Nothing was confirmed by it.
+# A scenario on this list that starts to pass fails the run: remove it from the list then.
+server:
+  - logging-set-level
+  - completion-complete
+  - tools-call-simple-text
+  - tools-call-image
+  - tools-call-audio
+  - tools-call-embedded-resource
+  - tools-call-mixed-content
+  - tools-call-with-logging
+  - tools-call-error
+  - tools-call-with-progress
+  - tools-call-sampling
+  - tools-call-elicitation
+  - elicitation-sep1034-defaults
+  - elicitation-sep1330-enums
+  - server-sse-multiple-streams
+  - resources-list
+  - resources-read-text
+  - resources-read-binary
+  - resources-templates-read
+  - resources-subscribe
+  - resources-unsubscribe
+  - prompts-list
+  - prompts-get-simple
+  - prompts-get-with-args
+  - prompts-get-embedded-resource
+  - prompts-get-with-image

@@ -30,7 +30,7 @@ const (
 	demoTokenBytes = 16
 )
 
-const demoUsage = "usage: praxium demo [-addr host:port] [-data-dir dir] [-scale N] [-seed N]"
+const demoUsage = "usage: praxium demo [-addr host:port] [-data-dir dir] [-scale N] [-seed N] [-mcp=false]"
 
 const demoBody = `Starts a server with a synthetic data center already loaded, and the web UI, for a first look. It is the quickest way
 to see what Praxium does: run it, open the address it prints in a browser, and click through the types, the tables and
@@ -42,6 +42,9 @@ there is nothing to set up and no token to type. Press Ctrl+C to stop. The same 
 
 With -data-dir the KG is kept in that folder and used again at the next start; without it the data is in memory and
 gone when the demo stops. For your own data see "praxium ingest init" and "praxium local".
+
+The same server also speaks MCP, read-only, at POST /mcp with the token of the run (-mcp=false turns it off). To connect
+an agent harness to it see docs/guides/connect-agents.md.
 `
 
 // demoHelpEntries are the help entries of this file's commands.
@@ -53,6 +56,7 @@ type demoOptions struct {
 	addr, dataDir string
 	scale         int64
 	seed          uint64
+	mcp           mcpOptions
 }
 
 func newDemoFlags(o *demoOptions) *flag.FlagSet {
@@ -62,6 +66,7 @@ func newDemoFlags(o *demoOptions) *flag.FlagSet {
 	fs.StringVar(&o.dataDir, "data-dir", "", "keep the KG in this folder, so it is still there at the next start (default: in memory, gone at exit)")
 	fs.Int64Var(&o.scale, "scale", demoDefaultScale, "about this many objects and links (500 or more)")
 	fs.Uint64Var(&o.seed, "seed", demoDefaultSeed, "seed of the synthetic world")
+	addMCPFlags(fs, &o.mcp, true)
 	return fs
 }
 
@@ -71,6 +76,7 @@ func parseDemo(args []string) (demoOptions, error) {
 	if err := fs.Parse(args); err != nil {
 		return o, kernel.Wrap(kernel.CodeInvalidValue, flagProblem(err), "bad flags for demo")
 	}
+	noteMCPFlags(fs, &o.mcp)
 	if fs.NArg() != 0 {
 		return o, kernel.Errorf(kernel.CodeInvalidValue, "demo takes no arguments")
 	}
@@ -110,6 +116,7 @@ func runDemo(args []string, stdout, stderr io.Writer, w wiring) int {
 // in the mark the address carries for the web UI.
 type session struct {
 	addr, dataDir string
+	mcp           mcpOptions
 	// load fills the store before the server answers; announce says where to go once it listens.
 	load     func(ctx context.Context, store graph.Store, reg *model.Registry) (*devload.Report, error)
 	announce func(out io.Writer, addr net.Addr, token string, loaded *devload.Report, webBuilt bool)
@@ -128,7 +135,7 @@ func serveSession(s session, stdout, stderr io.Writer, w wiring) error {
 	if err != nil {
 		return err
 	}
-	so := serveOptions{addr: s.addr, mode: devauth.ModeDevelopment, store: storeMemory, web: true}
+	so := serveOptions{addr: s.addr, mode: devauth.ModeDevelopment, store: storeMemory, web: true, mcp: s.mcp}
 	if s.dataDir != "" {
 		so.store, so.storeDataDir = storeFile, s.dataDir
 	}
@@ -149,7 +156,7 @@ func serveSession(s session, stdout, stderr io.Writer, w wiring) error {
 // serveDemo is the session of `praxium demo`: a world synthesized in the process.
 func serveDemo(o demoOptions, stdout, stderr io.Writer, w wiring) error {
 	return serveSession(session{
-		addr: o.addr, dataDir: o.dataDir, warnAbout: "demo",
+		addr: o.addr, dataDir: o.dataDir, warnAbout: "demo", mcp: o.mcp,
 		load: func(ctx context.Context, store graph.Store, reg *model.Registry) (*devload.Report, error) {
 			return demoLoad(ctx, store, reg, o, w, stdout)
 		},

@@ -14,8 +14,9 @@ import (
 //	openapi/parts/*.json     the hand-written parts, assembled by Assemble
 //	openapi/openapi.json     the assembled document (a build product, never edited by hand)
 //	planned/routes.json      the routes designed but not yet in the contract
+//	mcp/tools.json           the tools of the MCP interface (POST /mcp, which is outside OpenAPI)
 //
-//go:embed openapi planned
+//go:embed openapi planned mcp
 var files embed.FS
 
 // PartsDir is the folder of the parts inside Files.
