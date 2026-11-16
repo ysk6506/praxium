@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/mapping.go"
-hash: "001e84872052e65f"
-date: "2026-11-15"
-note: "mapping.go의 LinkAttrMap과 compile_linkattr.go, linkattr.go를 읽고 3.3의 attributes 문법, 등급, 거절 목록, 한계 넷과 link_conflict 줄을 대조해 더했고 ingestion.md의 링크의 속성 문단과 맞췄다"
+hash: "6a478e1375e7b0a4"
+date: "2026-11-16"
+note: "ADR-0070: 정의의 오류가 여럿이면 모두 나오고 위치와 코드를 가진다는 절을 더했고, 문장과 필드 설명은 코드(definition.go, mapping.go, sheetopts.go, refine.go, workbook.go)와 대조해 그대로 맞다"
 text_changed: true
-doc_hash: "9fd6311d03068e26"
+doc_hash: "f47f691169bdc959"
