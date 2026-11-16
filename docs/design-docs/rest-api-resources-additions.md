@@ -9,7 +9,7 @@ follows:
 
 > **경로와 필드는 OpenAPI 문서에서 확정돼요.** 경로는 `/v1/...`이고 액션은 `:액션` 표기 하나예요(rest-api.md 3-8). 자기 관측성의 경로는 [프락시움 자신의 관측성](self-observability.md)이, 시크릿의 경로는 [시크릿과 암호화](secrets-and-encryption.md)가 정한 이름을 따르되 액션 표기는 이 문서와 통일해요.
 
-[자원 (1)](rest-api-resources-data.md), [자원 (2)](rest-api-resources-graph.md)에 이어, 화면이 할 수 있는 일은 모두 공개된 `/v1`로 가능하다는 원칙(ADR-0016 10번)에 따라 추가한 기능을 자원으로 적어요. 임시 콘솔도 이 경로만 호출해요([임시 콘솔](temporary-console.md)). 기능마다 경로가 있는지는 [기능별 경로](rest-api-feature-routes.md)의 표로 확인해요.
+[자원 (1)](rest-api-resources-data.md), [자원 (2)](rest-api-resources-graph.md)에 이어, 화면이 할 수 있는 일은 모두 공개된 `/v1`로 가능하다는 원칙(ADR-0016 10번)에 따라 추가한 기능을 자원으로 적어요. 웹 화면도 이 경로만 호출해요([웹 화면](temporary-console.md)). 기능마다 경로가 있는지는 [기능별 경로](rest-api-feature-routes.md)의 표로 확인해요.
 
 ## 1. 카탈로그와 사전 검증: 화면이 규칙을 복제하지 않게
 ### 1-1. 카탈로그(`/v1/catalog/...`)
@@ -111,4 +111,4 @@ live·ready·started 경로(`/v1/health/live`, `/v1/health/ready`, `/v1/health/s
 - `allowed_actions`의 `reason_code`와 오류 `code`(`permission.*`, `blocked.*`)를 하나로 통일할지.
 
 ## 6. 관련
-ADR-0016(9, 10번), ADR-0014, ADR-0008, ADR-0017, ADR-0018. 요구사항: REQ-229(화면을 위한 API의 원칙), REQ-209(임시 콘솔), REQ-220, REQ-225~228.
+ADR-0016(9, 10번), ADR-0014, ADR-0008, ADR-0017, ADR-0018. 요구사항: REQ-229(화면을 위한 API의 원칙), REQ-209(웹 화면), REQ-220, REQ-225~228.

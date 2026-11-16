@@ -290,7 +290,7 @@ derived 테이블 `competency_mark`예요(키는 `kg_id`, `question_id`, `object
 |---|---|---|
 | `standard` | 표준 모델에 포함된다 | 층별 기본 질문. 표준 모델과 함께 버전이 올라요 |
 | `structural` | 타입 등록부에서 자동으로 생성된다 | 타입마다 하나. `required`인 속성은 `attribute_present`, 최소 개수가 있는 바인딩은 `link_present`로 이은 `all_of`예요. 하위 타입은 부모의 것을 상속해요. 저장하지 않고 등록부에서 도출해요 |
-| `user` | `editor`가 적는다 | 정의의 제안 절차를 거쳐요. API가 정의를 수신하고, 편집 화면은 프런트엔드 리포지토리의 범위예요 |
+| `user` | `editor`가 적는다 | 정의의 제안 절차를 거쳐요. API가 정의를 수신하고, 편집 화면은 화면(`apps/web`)의 범위예요 |
 | `suggested` | 사용 이력에서 제안된다 | `unknown`이나 빈 응답으로 끝난 질문이 반복되면(ADR-0013의 사용 이력) 후보로 올라와요. 누군가 채택해서 기록하면 `user`와 같은 경로예요. 반복 기준은 알파에서 정해요. 구현은 클로즈드 베타이고 알파에는 계약에 플레이스홀더만 있어요 |
 
 ### 9.1 표준 모델의 기본 질문(층마다 2~3개의 예)
@@ -355,7 +355,7 @@ objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_gr
 
 ## 11. 알파의 범위
 
-화면은 다른 리포지토리의 범위예요(ADR-0016). 이 리포지토리가 제공하는 것은 API(역량 질문, 충족률의 필터링과 그룹화, 단계별 충족률, 미충족 객체, 공백 보고)이고, 알파의 기준은 **API와 CLI로 모두 할 수 있다**예요. 정의는 API로 수정하고 브랜치와 제안을 거쳐요.
+화면은 `apps/web`의 범위예요(ADR-0016, ADR-0069). 백엔드가 제공하는 것은 API(역량 질문, 충족률의 필터링과 그룹화, 단계별 충족률, 미충족 객체, 공백 보고)이고, 알파의 기준은 **API와 CLI로 모두 할 수 있다**예요. 정의는 API로 수정하고 브랜치와 제안을 거쳐요.
 
 ## 12. 함정과 알려진 한계
 
@@ -389,5 +389,5 @@ objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_gr
 ## 15. 관련 결정과 요구사항
 
 - [ADR-0015](adr/0015-competency-questions.md): 이 문서의 결정.
-- ADR-0007([KG의 모델](kg-model.md)): `required`, 근거 등급, 완전성 선언. ADR-0008: 피드, 속성별 신선도. ADR-0010([KG 질의](kg-queries.md)): 사전 정의 질의와 엔벨로프, 영향 범위의 두 답. ADR-0013([데이터 관측성](data-observability.md)): 지표, 목표, 헬스 상태, 알림. ADR-0014: 정의, 드라이 런, 계보. ADR-0016: 화면은 다른 리포지토리.
+- ADR-0007([KG의 모델](kg-model.md)): `required`, 근거 등급, 완전성 선언. ADR-0008: 피드, 속성별 신선도. ADR-0010([KG 질의](kg-queries.md)): 사전 정의 질의와 엔벨로프, 영향 범위의 두 답. ADR-0013([데이터 관측성](data-observability.md)): 지표, 목표, 헬스 상태, 알림. ADR-0014: 정의, 드라이 런, 계보. ADR-0016: 화면과 REST API의 계약(ADR-0069가 화면의 위치를 고쳤어요).
 - 요구사항: REQ-190, REQ-191, REQ-192, REQ-193, REQ-194, REQ-195.
