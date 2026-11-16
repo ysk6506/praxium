@@ -1,7 +1,7 @@
 doc: "docs/design-docs/agent-integration.md"
 target: "docs/design-docs/adr/0074-where-always-on-agents-attach.md"
-hash: "0cad1c35e4d166a0"
+hash: "94b238a041ef4d5f"
 date: "2026-11-16"
-note: "ADR-0074 본문의 맥락과 결정 4를 고친 데 맞춰 6.4절(끊긴 프로세스를 이어 가기)과 검증 표의 REQ-550을 더했고, 나머지는 ADR과 그대로 맞아요."
+note: "용어 검사에 맞춰 낱말만 고쳤고 내용은 그대로예요."
 text_changed: true
-doc_hash: "f7084ad7d72a779d"
+doc_hash: "4246742f6795cf54"
