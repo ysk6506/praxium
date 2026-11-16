@@ -11001,6 +11001,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestACutListSaysHowManyThereAreAndAnUnreadableMappingDoesNotHideTheSourceErrors": {
+   "kind": "test",
+   "hash": "f68b0ad49271da8f",
+   "asserts": 5,
+   "literals": [
+    "2c65a5996ad773d6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerOnPostgresServesTheKgAndKeepsItAcrossRestarts": {
    "kind": "test",
    "hash": "a36d5800ca2c06ff",
@@ -12162,6 +12177,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIngestRunTellsEveryMistakeOfTheDefinitionsAndCountsThem": {
+   "kind": "test",
+   "hash": "1b63b82f5d343ea0",
+   "asserts": 8,
+   "literals": [
+    "696d19dc02bd4589"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestVerdictLineIsGrammatical": {
    "kind": "test",
    "hash": "afe2546521b13752",
@@ -13055,6 +13085,21 @@
     "REQ-392"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheCandidatesOfTheKeyAreFoundInAListOfErrors": {
+   "kind": "test",
+   "hash": "caedea9a513618b1",
+   "asserts": 4,
+   "literals": [
+    "bd9ec2a6f65dcacc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestTheDatabaseLinkIsNotJudgedInDevelopmentOrForOtherStores": {
@@ -17586,6 +17631,21 @@
    "added": "2026-11-15",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAFeedThatReadsARefusedRefinementIsNotRefusedAgain": {
+   "kind": "test",
+   "hash": "1d93c7aa76457273",
+   "asserts": 2,
+   "literals": [
+    "4833a42274c100db"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestAFieldThatIsNotAllowedIsReportedWithTheFieldsThatAre": {
    "kind": "test",
    "hash": "9558f11143f605cc",
@@ -17884,6 +17944,21 @@
     "REQ-370"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAnUnreadableDefinitionGivesItsCode": {
+   "kind": "test",
+   "hash": "d133c159feeaf614",
+   "asserts": 1,
+   "literals": [
+    "9306fc2946ed3b11"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestARowIsPlacedByItsSheetRangeOrItsLine": {
@@ -18216,6 +18291,21 @@
     "REQ-286"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestEveryCodeOfTheTableIsGivenByACaseAtItsPlace": {
+   "kind": "test",
+   "hash": "de1a8e74b7c2474b",
+   "asserts": 9,
+   "literals": [
+    "aaf5b777b5d7ddf6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestFileStateStoreKeepsAStateAcrossOpens": {
@@ -18852,6 +18942,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestTheErrorKeepsTheKernelCodeAndTheSentenceOfTheFirst": {
+   "kind": "test",
+   "hash": "de8528a66c9ea6d2",
+   "asserts": 4,
+   "literals": [
+    "3773f13ddd7c8e17"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTheErrorsOfTwoDocumentsAreJoined": {
+   "kind": "test",
+   "hash": "d0d6332597a28895",
+   "asserts": 2,
+   "literals": [
+    "470aa845dc6c67aa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestTheFormOfLinkAttributesIsStrict": {
    "kind": "test",
    "hash": "ad5f6b9d74facadf",
@@ -18910,6 +19030,21 @@
     "REQ-435"
    ],
    "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestTheListOfErrorsHasALimitAndSaysHowManyAreLeftOut": {
+   "kind": "test",
+   "hash": "7dcdfe1552deba05",
+   "asserts": 1,
+   "literals": [
+    "024b3ccdeb66d669"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestTheNewOptionsLeaveWhatAnOldDefinitionGivesAsItWas": {
@@ -19045,6 +19180,21 @@
     "REQ-361"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestUnrelatedMistakesAreAllToldAndConsequencesAreNot": {
+   "kind": "test",
+   "hash": "498a7218145e8b78",
+   "asserts": 4,
+   "literals": [
+    "fff9177c3b820ae3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestUTF16WithoutAByteOrderMarkIsRecognisedByItsNulBytes": {

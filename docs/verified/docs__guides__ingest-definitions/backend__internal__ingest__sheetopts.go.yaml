@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/sheetopts.go"
-hash: "683c015bab5ac47f"
-date: "2026-11-14"
-note: "ADR-0055: 칸 문제의 자연 키는 이번에 넣지 않은 것으로 문서를 맞춤"
+hash: "63a01721ae0cd9de"
+date: "2026-11-16"
+note: "ADR-0070: 정의의 오류가 여럿이면 모두 나오고 위치와 코드를 가진다는 절을 더했고, 문장과 필드 설명은 코드(definition.go, mapping.go, sheetopts.go, refine.go, workbook.go)와 대조해 그대로 맞다"
 text_changed: true
-doc_hash: "140246e3d321420d"
+doc_hash: "f47f691169bdc959"
