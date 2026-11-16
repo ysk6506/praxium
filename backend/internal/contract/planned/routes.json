@@ -299,6 +299,14 @@
     },
     {
       "method": "GET",
+      "path": "/v1/definition-items",
+      "feature": "정의 항목의 목록(종류로 거르기)",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "GET",
       "path": "/v1/definition-items/{item_id}",
       "feature": "개요, 묶음, 차이, 항목의 이력",
       "adr": "ADR-0014",
@@ -1132,65 +1140,65 @@
     {
       "method": "GET",
       "path": "/v1/secrets",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "DELETE",
       "path": "/v1/secrets/{secret_id}",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "PATCH",
       "path": "/v1/secrets/{secret_id}",
       "feature": "`allowed_hosts` 바꾸기",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "GET",
       "path": "/v1/secrets/{secret_id}/versions",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets/{secret_id}/versions",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets/{secret_id}/versions/{version}:check",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
       "method": "POST",
       "path": "/v1/secrets/{secret_id}/versions/{version}:retire",
-      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 판을 바꾸고 테스트하고 물리기, 삭제",
-      "adr": "ADR-0018",
-      "phase": "open-beta",
+      "feature": "비밀 값을 넣고, 메타 정보를 읽고, 버전을 바꾸고 테스트하고 물리기, 삭제",
+      "adr": "ADR-0058",
+      "phase": "alpha-2",
       "status": "planned"
     },
     {
