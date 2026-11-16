@@ -7,7 +7,7 @@ follows:
 ---
 # 요구사항 — 운영과 관측
 
-운영(150번대), 관측(180번대), 역량 질문(190번대), 프락시움 자신의 운영 요구(200~208), 단계의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
+운영(150번대), 관측(180번대), 역량 질문(190번대), 프락시움 자신의 운영 요구(200~208), 단계, 소스 수집의 실행 기록과 기능의 문(418, 444. 예정)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
 
 | ID | 요구사항 |
 |---|---|
@@ -46,3 +46,5 @@ follows:
 | ID | 요구사항 | 근거·테스트 |
 |---|---|---|
 | REQ-328 | `praxium health`의 표 출력은 live, ready, started의 상태를 한 줄씩 보이고, `types get`의 표 출력은 식별 키와 속성을 사람이 읽는 줄로 보인다. 객체로 된 다른 값도 `{...}`로만 보이지 않는다. `--json` 출력은 바뀌지 않는다 | ADR-0046, `backend/cmd/praxium/ingestusability_test.go` |
+| REQ-418 | **예정(ADR-0058)** 자원 `sync-run`은 전체 읽기 한 번(또는 다시 계산 한 번)의 기록이고 스트림의 상태를 섞지 않는다. 상태는 `queued`, `running`, `awaiting_confirmation`, `succeeded`, `failed`, `cancel_requested`, `canceled`이고 "문제가 있었다"는 상태가 아니라 건수 필드다. `id`, `kg`, `source_id`, `dataset_ids`, `receive_mode`, `apply`, `definition_set`, 시작한 사람과 시각, `stage`, 데이터셋별 건수, 문제 종류별 개수, `diff_summary`, `guard_verdict`, KG의 새 버전, 닫히기를 기다리는 객체 수, 경고를 가진다. 실행의 문제(이번에 받은 데이터셋의 행에서 난 것)와 KG의 문제(지금 열려 있는 모든 것)를 가르고, 다른 소스의 행에서 이번 적용으로 새로 생긴 문제는 건수로 따로 낸다. 문제 표본은 하위 자원 `/samples`로 떼어 소스마다 최근 50개를 보관한다. 계약의 모양을 먼저 정하고 구조체의 JSON 태그를 계약으로 삼지 않는다 |
+| REQ-444 | **예정(ADR-0058)** 정의의 직접 적용, 시크릿, 접속, 실행의 기능 묶음 전체를 `-source-ingestion`으로 열고 기본은 `local`과 개발 모드에서 켜짐, 운영 모드에서 꺼짐이며 꺼져 있으면 읽기 경로만 답한다. `-secrets-key-file`, `-source-inbox`, `-allow-insecure-sources`, `-allow-unverified-source-tls`, `-source-deny-hosts`의 기본과 모드별 값은 설계의 표를 따른다. 운영 모드에서 화면(`-web`)의 기본값은 코드대로 켜짐이다 |
