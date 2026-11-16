@@ -29,7 +29,7 @@ updates_docs:
   - docs/guides/connect-agents.md
   - docs/guides/release.md
   - docs/product-specs/requirements-query-api.md
-decision_hash: 0e8341a8526fd5d3
+decision_hash: 04007f0d7f4b3f36
 ---
 # ADR-0068 KG 읽기 MCP의 전송을 구현한다
 
@@ -39,7 +39,7 @@ ADR-0062의 구현 순서 2단계 가운데 가장 불확실한 부분인 전송
 
 ## 결정
 
-- **새 유닛 `adapter.mcp`**(`backend/internal/mcpapi`)는 전송과 판 처리, 출처와 토큰 검사, 툴 등록부만 맡는다. `may_import`는 `core.kernel`, `core.contract`, `core.access`, `core.kgread`이다. `restricted_stdlib`의 `net/http`에 더하고 `net`은 더하지 않는다(주소 문자열은 직접 자른다). `adapter.http`는 `adapter.mcp`를 import하지 않는다. 조립 지점(`cmd.praxium`)이 `httpapi.Config.Mounts`로 핸들러를 서버에 끼운다. 마운트는 추적 ID, 접근 로그, 패닉 복구 안쪽에 있고 REST의 본문 검사 앞에 있다. `/mcp`와 `/.well-known/` 아래 전체가 웹 화면보다 먼저 이 핸들러에 간다. `Host` 검사는 루프백 주소에 묶였고 프록시 뒤라는 선언(`-behind-proxy`)이 없을 때만 한다(`Config.CheckHost`). 프록시 뒤에서는 프록시가 넘기는 `Host`가 바깥 이름이라 문서대로 띄운 운영자가 모두 403을 받기 때문이다. `Origin` 검사와 토큰은 그대로이고, 브라우저의 POST는 `Origin`을 항상 보내므로 루프백을 직접 두드려도 `Origin` 검사에서 막힌다. 허용할 `Host` 이름을 받는 플래그는 설정이 하나 더 늘어 두지 않는다. 새 유닛의 커버리지 하한 한 줄을 더한다.
+- **새 유닛 `adapter.mcp`**(`backend/internal/mcpapi`)는 전송과 판 처리, 출처와 토큰 검사, 툴 등록부만 맡는다. `may_import`는 `core.kernel`, `core.contract`, `core.access`, `core.kgread`이다. `restricted_stdlib`의 `net/http`에 더하고 `net`은 더하지 않는다(주소 문자열은 직접 자른다). `adapter.http`는 `adapter.mcp`를 import하지 않는다. 조립 지점(`cmd.praxium`)이 `httpapi.Config.Mounts`로 핸들러를 서버에 끼운다. 마운트는 추적 ID, 접근 로그, 패닉 복구 안쪽에 있고 REST의 본문 검사 앞에 있다. `/mcp`와 `/.well-known/` 아래 전체가 웹 화면보다 먼저 이 핸들러에 간다. `Host` 검사는 루프백 주소에 묶였고 프록시 뒤라는 선언(`-behind-proxy`)이 없을 때만 한다(`Config.CheckHost`). 프록시 뒤에서는 프록시가 넘기는 `Host`가 바깥 이름이라 문서대로 띄운 운영자가 모든 요청이 403으로 거절되기 때문이다. `Origin` 검사와 토큰은 그대로이고, 브라우저의 POST는 `Origin`을 항상 보내므로 루프백을 직접 두드려도 `Origin` 검사에서 막힌다. 허용할 `Host` 이름을 받는 플래그는 설정이 하나 더 늘어 두지 않는다. 새 유닛의 커버리지 하한 한 줄을 더한다.
 - **본문 파서를 직접 둔다.** 표준 디코더는 키의 대소문자를 구분하지 않고 같은 키가 겹치면 뒤의 것을 쓰므로, 키를 글자 그대로 대조하고 같은 키의 중복, 널 문자가 든 키, 깊이 32를 넘는 중첩, 잘못된 UTF-8을 거절하는 파서를 둔다. 대소문자만 다른 알려진 멤버 이름(`Method` 등)은 그 멤버로 읽지 않고 거절한다. 퍼징 테스트는 표준 라이브러리로 하고 평소 검사에서는 시드 입력(말뭉치)만 돈다.
 - **판 처리 표(kg-mcp.md 2.1)의 행마다 테스트 사례를 둔다.** 이름에 행 번호를 적는다. "구현 때 확인"으로 표시한 칸(N11, N12, N13, O5, O8, O9)은 문서의 권고 값으로 구현했고, 실제 클라이언트나 적합성 테스트로 확인하지 못했다. 테스트와 문서에 그 표시를 남긴다. 표에 없어 정한 것: 헤더가 지원하지 않는 판이고 `_meta`는 2026-07-28이면 헤더와 `_meta`가 다른 것이므로 -32020이다(`data.supported`를 싣는다). 알림은 판 확인을 요청과 같게 하고 `_meta`에 능력(`clientCapabilities`)이 있는지만 본다(`Mcp-Method`는 요구하지 않는다). 판 헤더의 확인은 본문을 읽은 뒤에 한다(`initialize`를 가려야 하고 `_meta`와 대조해야 한다). 그 밖의 순서(경로, 메서드, `Origin`과 `Host`, 인증, `Content-Type`, `Accept`, 본문)는 설계 문서의 순서를 따른다. `tools/list`에 커서를 주면 -32602이다. `ttlMs`는 측정 전이라 0이다.
 - **받는 토큰과 새 오류 코드.** 토큰의 유효 역할(계정의 역할과 토큰에 좁혀 준 역할의 교집합, REST가 판단하는 그 값)이 `viewer` 하나뿐인 주체만 받고, 운영 모드에서는 서비스 계정이어야 한다. 그 밖은 HTTP 403 `permission.mcp_not_allowed`이고 `params.reason`이 이유(`roles_must_be_viewer_only`, `must_be_service_account`)이다. 기존 코드 체계(`<그룹>.<세부>`)의 `permission` 그룹에 맞춘 이름이다. 계약의 오류 코드 목록, 병합한 OpenAPI, 웹 화면의 생성 타입을 함께 고쳤다. ADR-0062는 "계정의 역할"이라고 적었으나 지키려는 것은 관리 권한이 있는 토큰이 하네스의 설정 파일에 놓이지 않는 것이고, REST가 이미 토큰의 유효 역할로 판단하므로 같은 기준으로 확정한다. 계정에 다른 역할이 있어도 `viewer`로 좁혀 발급한 토큰은 받고 `kg_whoami`의 `roles`도 토큰의 역할이다. 이 점에서 ADR-0062를 고친다(`amends`).
