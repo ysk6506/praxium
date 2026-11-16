@@ -106,6 +106,7 @@ follows:
 | [아키텍처](../../ARCHITECTURE.md) | 유닛과 의존 방향, 역할 4종 | ADR-0006 |
 | [E2E 프로세스의 방향](process-direction.md) | 조사해서 잡은 방향. 결정이 아니다 | 없음 |
 | [게이트웨이 설계](gateway.md), [게이트웨이의 안전](gateway-safety.md), [게이트웨이의 액션 타입 표](gateway-actions.md), [보장 범위 안내서](../guides/what-praxium-guarantees.md) | MCP 게이트웨이: 구성과 책임, 실행의 계약, 안전, 여는 조건, 액션 타입 표, 보장하는 것과 하지 않는 것 | ADR-0061 |
+| [상시 가동 에이전트와 프락시움](agent-integration.md) | 글의 다섯 요소와 프락시움의 조각, 이벤트의 계약, 승인을 기다리는 동안의 세션, 참조의 계약, 툴 정의의 고정, 자격 증명의 두 배치. 아직 구현하지 않은 설계 | ADR-0074 |
 | [시크릿과 암호화](secrets-and-encryption.md) | 엔벨로프 암호화, 제공자 포트, 복호화 지점, 버전, 분리망 | ADR-0018 |
 | [웹 화면(콘솔)](temporary-console.md) | `apps/web`의 화면. 교체하기 쉽게 지키는 규칙, 화면 목록 | ADR-0016, ADR-0069 |
 | [용어집](glossary.md) | 쓰는 용어와 쓰지 않는 용어 | |
