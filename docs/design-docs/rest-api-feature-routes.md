@@ -60,11 +60,11 @@ follows:
 |---|---|
 | 어댑터, 프리셋, 소스, 데이터셋, 정제, 피드, 기대 조건, 일정 읽기 | `GET /v1/adapters`, `GET /v1/presets`, `GET /v1/sources`, `GET /v1/datasets`, `GET /v1/refinements`, `GET /v1/feeds`, `GET /v1/expectations`, `GET /v1/schedules` |
 | 정의 수정 | 브랜치의 항목과 제안 |
-| 소스 탐색, 점검(`branch_id`를 받음) | `POST /v1/sources/{source_id}:introspect`, `POST /v1/sources/{source_id}:introspect:check` |
+| 소스 탐색, 점검(`branch_id`를 받음). 예정(ADR-0058): 저장하지 않은 정의로도 하고, 소스 하나의 상세도 읽어요 | `POST /v1/sources/{source_id}:introspect`, `POST /v1/sources/{source_id}:check`, `POST /v1/sources:introspect`, `POST /v1/sources:check`, `GET /v1/sources/{source_id}` |
 | 엑셀·CSV 업로드와 필드 샘플 | `POST /v1/sources/{source_id}/uploads`, `GET /v1/sources/{source_id}/upload-template` |
-| 소스 일시 정지와 재개, 즉시 1회 실행 | `POST /v1/sources/{source_id}:pause`, `POST /v1/sources/{source_id}:pause:resume`, `POST /v1/schedules/{id}:run-now` |
+| 소스 일시 정지와 재개, 즉시 1회 실행 | `POST /v1/sources/{source_id}:pause`, `POST /v1/sources/{source_id}:resume`, `POST /v1/schedules/{id}:run-now` |
 | 데이터셋의 샘플 행과 컬럼 통계 | `POST /v1/datasets/{dataset_id}:preview` |
-| 매핑의 미리 보기와 제안 | `POST /v1/definition-items:preview`, `POST /v1/definition-items:preview:suggest`(`kind: feed`) |
+| 매핑의 미리 보기와 제안 | `POST /v1/definition-items:preview`, `POST /v1/definition-items:suggest`(`kind: feed`) |
 | 타입 기준 조회와 빈 속성의 후보 | `GET /v1/object-types/{type_id}/feed-table`, `GET /v1/object-types/{type_id}/feed-candidates` |
 | 샘플 문서로 파서 후보와 트리 확인 | `POST /v1/parsers:probe` |
 | 푸시 수집(`ingester`) | `POST /v1/sources/{source_id}:push` |
@@ -95,7 +95,9 @@ follows:
 | 트라이얼 수집(새 소스) | `POST /v1/trial-ingests` |
 | 계보와 참조 관계 | `GET /v1/definitions-lineage`, `POST /v1/definitions-lineage/what-depends` |
 | 정의 내보내기와 가져오기 | `POST /v1/definition-sets/{set_no}/exports`, `POST /v1/definition-imports` |
-| 저장하지 않는 검증, 미리 보기, 제안 | `POST /v1/definition-items:validate`, `POST /v1/definition-items:validate:preview`, `POST /v1/definition-items:validate:preview:suggest` |
+| 저장하지 않는 검증, 미리 보기, 제안 | `POST /v1/definition-items:validate`, `POST /v1/definition-items:preview`, `POST /v1/definition-items:suggest` |
+| 정의의 직접 적용(예정, ADR-0058. 소스와 매핑) | `POST /v1/definition-items:apply` |
+| 수집 실행의 시작, 상태, 취소, 확인, 버리기(예정, ADR-0058) | `POST /v1/sync-runs`, `GET /v1/sync-runs/{run_id}`, `POST /v1/sync-runs/{run_id}:cancel`, `POST /v1/sync-runs/{run_id}:confirm`, `POST /v1/sync-runs/{run_id}:discard` |
 | 단독 사용 테스트 배포의 `solo_approval` | `PATCH /v1/settings` |
 | 서킷 브레이커(자동 병합 중지) | 해당 없음(서버의 동작). 알림과 `merge-policies`에 표시돼요 |
 
