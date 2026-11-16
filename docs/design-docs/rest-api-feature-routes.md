@@ -60,11 +60,11 @@ follows:
 |---|---|
 | 어댑터, 프리셋, 소스, 데이터셋, 정제, 피드, 기대 조건, 일정 읽기 | `GET /v1/adapters`, `GET /v1/presets`, `GET /v1/sources`, `GET /v1/datasets`, `GET /v1/refinements`, `GET /v1/feeds`, `GET /v1/expectations`, `GET /v1/schedules` |
 | 정의 수정 | 브랜치의 항목과 제안 |
-| 소스 탐색, 점검(`branch_id`를 받음) | `POST /v1/sources/{source_id}:introspect`, `POST /v1/sources/{source_id}:introspect:check` |
+| 소스 탐색, 점검(`branch_id`를 받음). 예정(ADR-0058): 저장하지 않은 정의로도 하고, 소스 하나의 상세도 읽어요 | `POST /v1/sources/{source_id}:introspect`, `POST /v1/sources/{source_id}:check`, `POST /v1/sources:introspect`, `POST /v1/sources:check`, `GET /v1/sources/{source_id}` |
 | 엑셀·CSV 업로드와 필드 샘플 | `POST /v1/sources/{source_id}/uploads`, `GET /v1/sources/{source_id}/upload-template` |
-| 소스 일시 정지와 재개, 즉시 1회 실행 | `POST /v1/sources/{source_id}:pause`, `POST /v1/sources/{source_id}:pause:resume`, `POST /v1/schedules/{id}:run-now` |
+| 소스 일시 정지와 재개, 즉시 1회 실행 | `POST /v1/sources/{source_id}:pause`, `POST /v1/sources/{source_id}:resume`, `POST /v1/schedules/{id}:run-now` |
 | 데이터셋의 샘플 행과 컬럼 통계 | `POST /v1/datasets/{dataset_id}:preview` |
-| 매핑의 미리 보기와 제안 | `POST /v1/definition-items:preview`, `POST /v1/definition-items:preview:suggest`(`kind: feed`) |
+| 매핑의 미리 보기와 제안 | `POST /v1/definition-items:preview`, `POST /v1/definition-items:suggest`(`kind: feed`) |
 | 타입 기준 조회와 빈 속성의 후보 | `GET /v1/object-types/{type_id}/feed-table`, `GET /v1/object-types/{type_id}/feed-candidates` |
 | 샘플 문서로 파서 후보와 트리 확인 | `POST /v1/parsers:probe` |
 | 푸시 수집(`ingester`) | `POST /v1/sources/{source_id}:push` |
@@ -82,6 +82,7 @@ follows:
 ## 4. 정의의 버전, 브랜치, 에이전트 (ADR-0014, 8-25)
 | 기능 | 경로 |
 |---|---|
+| 정의 항목의 목록(예정, ADR-0058. `filter[kind][equals]`로 거른다) | `GET /v1/definition-items` |
 | 개요, 정의 세트, 차이, 항목의 이력 | `GET /v1/definitions-overview`, `GET /v1/definition-sets`, `GET /v1/definition-sets/{from}/diff/{to}`, `GET /v1/definition-items/{item_id}` |
 | 브랜치 생성, 항목 기록, 일괄 기록 | `GET, POST /v1/branches`, `GET /v1/branches/{branch_id}`, `GET, POST /v1/branches/{branch_id}/items`, `PATCH, DELETE /v1/branches/{branch_id}/items/{item_id}`, `POST /v1/branches/{branch_id}/items:batch` |
 | 작은 변경을 제안 하나로 | `POST /v1/proposals:from-items` |
@@ -95,7 +96,9 @@ follows:
 | 트라이얼 수집(새 소스) | `POST /v1/trial-ingests` |
 | 계보와 참조 관계 | `GET /v1/definitions-lineage`, `POST /v1/definitions-lineage/what-depends` |
 | 정의 내보내기와 가져오기 | `POST /v1/definition-sets/{set_no}/exports`, `POST /v1/definition-imports` |
-| 저장하지 않는 검증, 미리 보기, 제안 | `POST /v1/definition-items:validate`, `POST /v1/definition-items:validate:preview`, `POST /v1/definition-items:validate:preview:suggest` |
+| 저장하지 않는 검증, 미리 보기, 제안 | `POST /v1/definition-items:validate`, `POST /v1/definition-items:preview`, `POST /v1/definition-items:suggest` |
+| 정의의 직접 적용(예정, ADR-0058. 소스와 매핑) | `POST /v1/definition-items:apply` |
+| 수집 실행의 시작, 상태, 취소, 확인, 버리기(예정, ADR-0058) | `POST /v1/sync-runs`, `GET /v1/sync-runs/{run_id}`, `POST /v1/sync-runs/{run_id}:cancel`, `POST /v1/sync-runs/{run_id}:confirm`, `POST /v1/sync-runs/{run_id}:discard` |
 | 단독 사용 테스트 배포의 `solo_approval` | `PATCH /v1/settings` |
 | 서킷 브레이커(자동 병합 중지) | 해당 없음(서버의 동작). 알림과 `merge-policies`에 표시돼요 |
 
@@ -135,7 +138,7 @@ follows:
 | 설정 변경과 리버트 | `GET, PATCH /v1/settings`, `GET /v1/settings/{name}/revisions` |
 | 구성 요소의 헬스 상태와 신호 | `GET /v1/kgs/{kg}/health`(시스템 KG), `POST /v1/metrics/query` |
 | 프락시움 구성 요소를 운영 KG에 내보내기(기본 비활성) | 없음. 설정으로 제공할지 정하지 않았어요 |
-| 시크릿 등록, 메타 정보 조회, 버전 교체와 테스트와 폐기, 삭제 | `GET, POST /v1/secrets`, `DELETE /v1/secrets/{secret_id}`, `GET, POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:check`, `POST /v1/secrets/{secret_id}/versions/{version}:retire` |
+| 시크릿 등록, 메타 정보 조회, 버전 교체와 테스트와 폐기, 삭제(ADR-0058 단계 11에서 연다) | `GET, POST /v1/secrets`, `DELETE /v1/secrets/{secret_id}`, `GET, POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:check`, `POST /v1/secrets/{secret_id}/versions/{version}:retire` |
 | `allowed_hosts` 변경 | `PATCH /v1/secrets/{secret_id}` |
 | 마스터 키의 목록, 재암호화(rewrap), 폐기 | `GET /v1/master-keys`, `POST /v1/master-keys/{key_id}:rewrap`, `POST /v1/master-keys/{key_id}:rewrap:retire` |
 | 복호화 이력 조회 | `GET /v1/audit-records`(`action`과 `target_id`) |

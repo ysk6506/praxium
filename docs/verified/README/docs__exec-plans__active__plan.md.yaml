@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "439b60ac326581c1"
+hash: "c2be9fea9ab6fd10"
 date: "2026-11-16"
-note: "plan.md 변경과 대조했다. README는 가장 최근 릴리스를 설명하므로 지시에 따라 고치지 않았다(39행의 임시 화면 표현은 다음 릴리스 때 고친다)"
+note: "계획 문서의 바뀐 곳(예정 경로의 수 179, 수집 확장 행에 ADR-0058 설계의 가리킴)과 견줬다. README의 '아직 안 됩니다' 목록(데이터베이스와 REST API 소스, 스케줄 수집, 매핑을 편집하는 화면)은 그대로 사실이고 README는 경로의 수를 적지 않아 고칠 곳이 없었다"
 text_changed: false
 doc_hash: "9a2c6db44232d731"

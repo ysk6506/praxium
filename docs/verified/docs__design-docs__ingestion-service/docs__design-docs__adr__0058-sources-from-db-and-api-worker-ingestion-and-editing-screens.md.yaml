@@ -1,0 +1,7 @@
+doc: "docs/design-docs/ingestion-service.md"
+target: "docs/design-docs/adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md"
+hash: "d8fb429ccfe32930"
+date: "2026-11-16"
+note: "ADR-0058의 단계 표 2b 행(시크릿 저장소의 조립, 키 파일의 위치와 만들기, 명령줄. 묶기와 id는 2a가 함)을 고친 뒤 이 문서의 시크릿과 단계에 관한 문장과 견줬고 어긋나는 곳이 없었다"
+text_changed: true
+doc_hash: "2e2bdfac30b92e10"
