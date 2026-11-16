@@ -51,7 +51,7 @@ func newMCPAssembly(t *testing.T, o assemblyOptions) *mcpAssembly {
 }
 
 // token makes an account and a token for it with the roles, and gives the secret.
-func (a *mcpAssembly) token(kind access.SubjectKind, name string, accountRoles, tokenRoles []access.Role) string {
+func (a *mcpAssembly) mcpTokenFor(kind access.SubjectKind, name string, accountRoles, tokenRoles []access.Role) string {
 	a.t.Helper()
 	ctx := context.Background()
 	if _, err := a.svc.CreatePrincipal(ctx, identity.OfflineActor, access.PrincipalRequest{Kind: kind, Name: name, DisplayName: name, Roles: accountRoles}); err != nil {
@@ -64,7 +64,7 @@ func (a *mcpAssembly) token(kind access.SubjectKind, name string, accountRoles, 
 	return issued.Secret
 }
 
-func (a *mcpAssembly) post(token, host, body string, headers map[string]string) (int, string) {
+func (a *mcpAssembly) mcpSend(token, host, body string, headers map[string]string) (int, string) {
 	a.t.Helper()
 	req := httptest.NewRequest(http.MethodPost, "/mcp", strings.NewReader(body))
 	req.Host = host
@@ -94,8 +94,8 @@ var whoamiHeaders = map[string]string{"MCP-Protocol-Version": "2026-07-28", "Mcp
 func TestMCPTakesTheTokenByItsOwnRoles(t *testing.T) {
 	a := newMCPAssembly(t, assemblyOptions{mode: "development", addr: "0.0.0.0:8080"})
 	both := []access.Role{access.RoleViewer, access.RoleEditor}
-	wide := a.token(access.SubjectSystemAccount, "harness", both, both)
-	status, body := a.post(wide, "kg.example", whoamiBody, whoamiHeaders)
+	wide := a.mcpTokenFor(access.SubjectSystemAccount, "harness", both, both)
+	status, body := a.mcpSend(wide, "kg.example", whoamiBody, whoamiHeaders)
 	if status != 403 || !strings.Contains(body, "permission.mcp_not_allowed") || !strings.Contains(body, "roles_must_be_viewer_only") {
 		t.Fatalf("a token of viewer and editor: %d %s", status, body)
 	}
@@ -109,7 +109,7 @@ func TestMCPTakesTheTokenByItsOwnRoles(t *testing.T) {
 		}
 		return issued.Secret
 	}()
-	status, body = a.post(narrow, "kg.example", whoamiBody, whoamiHeaders)
+	status, body = a.mcpSend(narrow, "kg.example", whoamiBody, whoamiHeaders)
 	if status != 200 || !strings.Contains(body, `"roles":["viewer"]`) {
 		t.Fatalf("a token narrowed to viewer: %d %s", status, body)
 	}
@@ -118,18 +118,18 @@ func TestMCPTakesTheTokenByItsOwnRoles(t *testing.T) {
 // [REQ-506] In production /mcp takes only the token of a service account, and a person's viewer token is refused.
 func TestMCPInProductionTakesServiceAccountsOnly(t *testing.T) {
 	a := newMCPAssembly(t, assemblyOptions{mode: "production", addr: "0.0.0.0:8080"})
-	person := a.token(access.SubjectPerson, "yeonsu", viewerOnly, viewerOnly)
-	status, body := a.post(person, "kg.example", whoamiBody, whoamiHeaders)
+	person := a.mcpTokenFor(access.SubjectPerson, "yeonsu", viewerOnly, viewerOnly)
+	status, body := a.mcpSend(person, "kg.example", whoamiBody, whoamiHeaders)
 	if status != 403 || !strings.Contains(body, "must_be_service_account") {
 		t.Fatalf("the viewer token of a person: %d %s", status, body)
 	}
-	service := a.token(access.SubjectSystemAccount, "harness", viewerOnly, viewerOnly)
-	if status, body := a.post(service, "kg.example", whoamiBody, whoamiHeaders); status != 200 {
+	service := a.mcpTokenFor(access.SubjectSystemAccount, "harness", viewerOnly, viewerOnly)
+	if status, body := a.mcpSend(service, "kg.example", whoamiBody, whoamiHeaders); status != 200 {
 		t.Fatalf("the viewer token of a service account: %d %s", status, body)
 	}
 	dev := newMCPAssembly(t, assemblyOptions{mode: "development", addr: "0.0.0.0:8080"})
-	person = dev.token(access.SubjectPerson, "yeonsu", viewerOnly, viewerOnly)
-	if status, body := dev.post(person, "kg.example", whoamiBody, whoamiHeaders); status != 200 {
+	person = dev.mcpTokenFor(access.SubjectPerson, "yeonsu", viewerOnly, viewerOnly)
+	if status, body := dev.mcpSend(person, "kg.example", whoamiBody, whoamiHeaders); status != 200 {
 		t.Fatalf("in development a person's viewer token is taken: %d %s", status, body)
 	}
 }
@@ -153,8 +153,8 @@ func TestMCPHostCheckFollowsTheAddressAndTheProxy(t *testing.T) {
 	}
 	for _, c := range cases {
 		a := newMCPAssembly(t, assemblyOptions{mode: "production", addr: c.addr, behind: c.behind})
-		token := a.token(access.SubjectSystemAccount, "harness", viewerOnly, viewerOnly)
-		if status, body := a.post(token, c.host, whoamiBody, whoamiHeaders); status != c.want {
+		token := a.mcpTokenFor(access.SubjectSystemAccount, "harness", viewerOnly, viewerOnly)
+		if status, body := a.mcpSend(token, c.host, whoamiBody, whoamiHeaders); status != c.want {
 			t.Errorf("%s: %d %s; want %d", c.name, status, body, c.want)
 		}
 		if c.origin != "" {
@@ -162,7 +162,7 @@ func TestMCPHostCheckFollowsTheAddressAndTheProxy(t *testing.T) {
 			for k, v := range whoamiHeaders {
 				headers[k] = v
 			}
-			if status, _ := a.post(token, c.host, whoamiBody, headers); status != c.wantOrg {
+			if status, _ := a.mcpSend(token, c.host, whoamiBody, headers); status != c.wantOrg {
 				t.Errorf("%s: an Origin that is not on the list: %d; want %d", c.name, status, c.wantOrg)
 			}
 		}
@@ -182,7 +182,7 @@ func (b *blockingLimiter) Failed(string) { b.failed++ }
 func TestMCPUsesTheLimiterOfTheServer(t *testing.T) {
 	lim := &blockingLimiter{}
 	a := newMCPAssembly(t, assemblyOptions{mode: "production", addr: "0.0.0.0:8080", limiter: lim})
-	status, _ := a.post("pxm_nope", "kg.example", whoamiBody, whoamiHeaders)
+	status, _ := a.mcpSend("pxm_nope", "kg.example", whoamiBody, whoamiHeaders)
 	if status != http.StatusTooManyRequests || lim.blocked == 0 || lim.failed != 0 {
 		t.Fatalf("%d, asked %d times, counted %d failures", status, lim.blocked, lim.failed)
 	}
