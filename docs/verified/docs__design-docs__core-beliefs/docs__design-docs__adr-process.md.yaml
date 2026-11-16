@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "docs/design-docs/adr-process.md"
-hash: "a02f62c9a77f6e21"
-date: "2026-11-14"
-note: "adr-process.md에 요구사항 문서가 나뉘었다는 문장이 더해짐. 신념과 어긋나지 않음"
+hash: "fbf40a327bccbe75"
+date: "2026-11-16"
+note: "adr-process.md의 감사 수정 두 곳(reverify가 고르는 대상, _audit.yaml의 위치)을 핵심 신념 11개와 대조함. 신념 5의 covers·follows 설명과 어긋나지 않아 고칠 것이 없음"
 text_changed: false
-doc_hash: "04b2f4f490642c38"
+doc_hash: "fa6d560a34c76e15"

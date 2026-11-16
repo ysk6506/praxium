@@ -99,23 +99,31 @@ function readQuestion(params: URLSearchParams): ImpactQuestion {
   };
 }
 
-export function readImpactView(params: URLSearchParams): ImpactView {
-  const sortKey = SORT_KEYS.find((k) => k === params.get("sort"));
-  const grade = params.get("grade");
+/** The focus of the address, when it is there and short enough to be one. */
+function readFocus(params: URLSearchParams): string | undefined {
   const focus = params.get("focus");
+  return focus === null || focus === "" || focus.length > 500 ? undefined : focus;
+}
+
+function readSort(params: URLSearchParams): ImpactView["sort"] {
+  const key = SORT_KEYS.find((k) => k === params.get("sort"));
+  if (key === undefined) return undefined;
+  return { key, direction: params.get("dir") === "desc" ? "descending" : "ascending" };
+}
+
+export function readImpactView(params: URLSearchParams): ImpactView {
+  const grade = params.get("grade");
   return {
     question: readQuestion(params),
     reading: params.get("reading") === "assumed" ? "with_assumptions" : "facts_only",
     hops: wholeNumber(params.get("hops"), 1),
     max: ITEM_LIMITS.find((n) => String(n) === params.get("max")) ?? DEFAULT_ITEM_LIMIT,
     view: params.get("view") === "list" ? "list" : "graph",
-    focus: focus === null || focus === "" || focus.length > 500 ? undefined : focus,
+    focus: readFocus(params),
     selected: idList(params.get("sel"), OBJECT_ID)[0],
     step: wholeNumber(params.get("step"), 0),
     all: params.get("all") === "1",
-    sort: sortKey
-      ? { key: sortKey, direction: params.get("dir") === "desc" ? "descending" : "ascending" }
-      : undefined,
+    sort: readSort(params),
     grade: grade !== null && isImpactGrade(grade) ? grade : undefined,
   };
 }
@@ -123,15 +131,17 @@ export function readImpactView(params: URLSearchParams): ImpactView {
 const list = (ids: readonly string[]): string | undefined =>
   ids.length === 0 ? undefined : ids.slice(0, MAX_ADDRESS_IDS).join(",");
 
+/** The pairs of the question: the target alone when there is one, else the three lists. */
+function questionParams(q: ImpactQuestion): Record<string, string | undefined> {
+  if (q.target !== undefined)
+    return { target: q.target, dead: undefined, site: undefined, cut: undefined };
+  return { target: undefined, dead: list(q.dead), site: list(q.site), cut: list(q.cut) };
+}
+
 /** The pairs of the query for a view; a pair at its default is `undefined`. The keys come in a fixed order. */
 export function impactViewParams(view: ImpactView): Record<string, string | undefined> {
-  const q = view.question;
-  const byTarget = q.target !== undefined;
   return {
-    target: q.target,
-    dead: byTarget ? undefined : list(q.dead),
-    site: byTarget ? undefined : list(q.site),
-    cut: byTarget ? undefined : list(q.cut),
+    ...questionParams(view.question),
     reading: view.reading === "with_assumptions" ? "assumed" : undefined,
     hops: view.hops === undefined ? undefined : String(view.hops),
     max: view.max === DEFAULT_ITEM_LIMIT ? undefined : String(view.max),

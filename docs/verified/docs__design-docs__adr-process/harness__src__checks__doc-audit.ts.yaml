@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-audit.ts"
 hash: "5382939a19876f98"
-date: "2026-11-13"
-note: "doc-audit.ts의 같은 메모와 열 개 초과 거절, doc-decisions.ts의 머리말 문구 변경을 읽고 절차 설명과 잠긴 시험 절차 5항을 고쳤다"
+date: "2026-11-16"
+note: "정리 작업의 독립 감사에서 chosenTargets와 대조함. 오래된 대상이 없으면 reverify가 모든 대상에 다시 기록한다는 것이 빠져 있어 한 구절을 더함"
 text_changed: true
-doc_hash: "8d4aa902e562a7cd"
+doc_hash: "fbf40a327bccbe75"

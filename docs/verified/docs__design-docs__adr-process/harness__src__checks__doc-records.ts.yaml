@@ -1,7 +1,7 @@
 doc: "docs/design-docs/adr-process.md"
 target: "harness/src/checks/doc-records.ts"
 hash: "bf4dc443033c3432"
-date: "2026-11-12"
-note: "구조를 세우며 처음 씀: 가리키는 코드와 문서에 대어 봄"
-text_changed: true
-doc_hash: "57f525cdc5d61411"
+date: "2026-11-16"
+note: "정리 작업의 독립 감사에서 auditPath와 대조함. _audit.yaml은 문서가 있는 폴더가 아니라 docs/verified 아래 그 문서의 기록 폴더에 있어 문장을 고침"
+text_changed: false
+doc_hash: "fbf40a327bccbe75"
