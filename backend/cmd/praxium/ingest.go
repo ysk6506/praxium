@@ -37,6 +37,10 @@ stop the server and run again.
 A dataset with no -input is not collected in this run and keeps what it had. A -input that names a dataset the source
 does not define is an error.
 
+When the definitions have mistakes, every mistake that does not come of another is told, one to a line (the source
+definition first), and the last line says how many there are. A definition that is not valid JSON, or has a field it does
+not know, is told on its own, since nothing after it can be checked.
+
 Reading the output:
   ingest ...            one line per run. objects, links: what the run made or kept alive. volatile: values of
                         attributes that change all the time and keep no history. retired_objects, retired_links:
