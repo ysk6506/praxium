@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "a7780be6a32f6a6d"
-date: "2026-11-15"
-note: "adapter.mcp 단위가 architecture.yaml에 추가됨; AGENTS.md 내용은 그대로 유효"
-text_changed: false
-doc_hash: "8c057e5315c7a8b7"
+hash: "faf74d39158b0323"
+date: "2026-11-16"
+note: "main 병합 뒤 architecture.yaml에는 adapter.mcp, core.secrets, adapter.secretsfile이 함께 있다. AGENTS.md는 유닛을 나열하지 않고 규칙과 명령만 말하므로 고칠 곳이 없다"
+text_changed: true
+doc_hash: "b20aea430b7f82a9"
