@@ -152,13 +152,21 @@ func (r *Run) enter(ctx context.Context, head Head, applyID string) error {
 		}
 		r.chunk, r.ingest = head.NextChunkNo, head.IngestSeq+1
 	default:
-		snap, err := r.a.store.Snapshot(ctx, ReadPoint{KG: r.kg.ID, Kind: ReadApplied})
-		if err != nil {
-			return err
-		}
-		return checkState(ctx, snap, r.a.reg, r.a.v, r.plan)
+		_, err := r.a.checkFresh(ctx, r.kg.ID, r.plan)
+		return err
 	}
 	return nil
+}
+
+// checkFresh checks a batch that starts a new apply against the applied state and
+// returns the snapshot it was checked on. Apply and Preview both start here, so they
+// refuse the same batches.
+func (a *Applier) checkFresh(ctx context.Context, kg KGID, p *plan) (Snapshot, error) {
+	snap, err := a.store.Snapshot(ctx, ReadPoint{KG: kg, Kind: ReadApplied})
+	if err != nil {
+		return nil, err
+	}
+	return snap, checkState(ctx, snap, a.reg, a.v, p)
 }
 
 // Done reports whether the apply is complete.
