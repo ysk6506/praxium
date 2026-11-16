@@ -25,8 +25,9 @@ type Draft struct {
 // choose (NaturalKeyPlaceholder). file is the name of the file, which names the source.
 func DraftSource(p FileProfile, file, delimiter string) Draft {
 	stem := strings.TrimSuffix(filepath.Base(file), filepath.Ext(file))
-	id := "src_" + slug(stem, "file")
-	d := Draft{Source: Source{ID: id, Name: stem, Adapter: "file"}}
+	id := fitID("src_" + slug(stem, "file"))
+	version := SchemaVersion
+	d := Draft{Source: Source{Version: &version, ID: id, Name: stem, Adapter: "file"}}
 	used := map[string]bool{}
 	for _, t := range p.Tables {
 		info, isSheet := profileSheetOf(p, t.Name)
@@ -58,7 +59,7 @@ type draftTable struct {
 // draftDataset makes the dataset of one table, and the note about its natural key.
 func draftDataset(dt draftTable, used map[string]bool) (Dataset, string) {
 	format, t, info, isSheet, stem, delimiter := dt.format, dt.table, dt.info, dt.isSheet, dt.stem, dt.delimiter
-	ds := Dataset{ID: uniqueID("ds_"+slug(datasetStem(t, stem, isSheet), fmt.Sprintf("sheet_%d", info.Index)), used), Name: t.Name, Parser: parserOf(format)}
+	ds := Dataset{ID: uniqueDefID("ds_"+slug(datasetStem(t, stem, isSheet), fmt.Sprintf("sheet_%d", info.Index)), used), Name: t.Name, Parser: parserOf(format)}
 	switch {
 	case isSheet:
 		ds.Sheet = &SheetOptions{Name: t.Name, HeaderRow: t.HeaderRow}
@@ -195,4 +196,25 @@ func uniqueID(name string, used map[string]bool) string {
 	}
 	used[out] = true
 	return out
+}
+
+// uniqueDefID is uniqueID for an id of a definition: the name is cut to the length of an id (ADR-0075) and so is the
+// name with a number added.
+func uniqueDefID(name string, used map[string]bool) string {
+	name = fitID(name)
+	out := name
+	for i := 2; used[out]; i++ {
+		suffix := fmt.Sprintf("_%d", i)
+		out = fitID(name[:min(len(name), IDMaxLength-len(suffix))]) + suffix
+	}
+	used[out] = true
+	return out
+}
+
+// fitID cuts a name made of the characters of an id to the length of an id, with no separator left at the end.
+func fitID(name string) string {
+	if len(name) <= IDMaxLength {
+		return name
+	}
+	return strings.TrimRight(name[:IDMaxLength], "_-")
 }

@@ -11842,6 +11842,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestIdgIngestToolsWriteTheVersionAndIdsOfTheGrammar": {
+   "kind": "test",
+   "hash": "8c16a71e977297f5",
+   "asserts": 8,
+   "literals": [
+    "551bd94f33365941"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestImpactAnswersAreTheSameOnTheMemoryTheFileAndThePostgresStore": {
    "kind": "test",
    "hash": "0ed196c61419d98a",
@@ -18533,6 +18548,141 @@
     "REQ-268"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgADraftHasTheVersionAndIdsOfTheGrammar": {
+   "kind": "test",
+   "hash": "9f384258fd0055ef",
+   "asserts": 5,
+   "literals": [
+    "8695fb1c575b44c0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgALongIdIsCutInTheError": {
+   "kind": "test",
+   "hash": "46818bfb1ad1780d",
+   "asserts": 2,
+   "literals": [
+    "1359c1b9fe813157"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgAnEmptyIdIsMissingAndNotInvalid": {
+   "kind": "test",
+   "hash": "e764558bee406a2a",
+   "asserts": 6,
+   "literals": [
+    "d4a054aeea724380"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgAWrongIdIsToldOnceAndNotAgainWhereItIsUsed": {
+   "kind": "test",
+   "hash": "1f4c4dd106cff86e",
+   "asserts": 2,
+   "literals": [
+    "f715b3a6a7a763be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgEveryPlaceChecksTheGrammarAtItsPointer": {
+   "kind": "test",
+   "hash": "fc8362e9e53c941a",
+   "asserts": 6,
+   "literals": [
+    "469aa1424234c3da"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgGrammarBoundaries": {
+   "kind": "test",
+   "hash": "ba4fcca1a25b63ea",
+   "asserts": 2,
+   "literals": [
+    "1c1f3f7d353435dd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgTheVersionIsToldWithTheOtherMistakesAndTheMappingKeepsItsId": {
+   "kind": "test",
+   "hash": "a25d9e4ceed97972",
+   "asserts": 3,
+   "literals": [
+    "fc9702c9beec4b3d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgTheVersionOfADocument": {
+   "kind": "test",
+   "hash": "ff066b6a83bc820b",
+   "asserts": 3,
+   "literals": [
+    "0f6edbff9cc10814"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdgWrongIdsInManyPlacesAreAllTold": {
+   "kind": "test",
+   "hash": "cbb784d9b971c000",
+   "asserts": 3,
+   "literals": [
+    "cf2d09bc28e11f64"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-402"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestInAndNotInSetAsideTheSpacesAtTheEnds": {
