@@ -10,7 +10,7 @@ import (
 // why a definition was refused.
 func ParseSourceLoose(r io.Reader) (Source, error) {
 	var s Source
-	err := decodeStrict(r, "source definition", &s)
+	err := decodeStrict(r, DocumentSource, "source definition", &s)
 	return s, err
 }
 

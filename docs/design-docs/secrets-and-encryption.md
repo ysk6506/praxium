@@ -375,7 +375,7 @@ PostgreSQL 공식 문서가 드는 암호화 선택지는 비밀번호 해시, �
 | 경로와 분리망 | 소스로 가는 TLS 확인 | 수집기와 본체 사이의 mTLS | 역할 사이의 mTLS, 분리망의 시크릿 |
 | 긴급 대응 | - | `:retire`, 복호화 사용 기록 조회 | 운영 액션 `pause_sources_by_secret`, `rewrap_master_key`, `redact_raw_record`, 마스터 키 절차 |
 
-오픈 베타에 나가려면 위가 모두 구현돼 있어야 해요. 알파의 임시 콘솔은 시크릿의 메타 정보만 표시하고 값을 입력받지 않아요([임시 콘솔](temporary-console.md)).
+오픈 베타에 나가려면 위가 모두 구현돼 있어야 해요. 알파의 웹 화면은 시크릿의 메타 정보만 표시하고 값을 입력받지 않아요([웹 화면](temporary-console.md)).
 - **이번에 구현한 것(ADR-0071).** 코어 유닛 `core.secrets`와 파일 어댑터 `adapter.secretsfile`(데이터 폴더의 `secrets.json`)이에요. 쓰기, 복호화(열기), 메타의 포트 셋, 값을 감싼 타입, 버전마다 새 데이터 키를 쓰는 AES-256-GCM 엔벨로프 암호화(마스터 키는 대칭 키 하나라서 4.4의 키 쌍 분리는 아직이에요), 마스터 키 파일의 형식, 소스의 범위와 허용 주소를 확인하는 열기(6절의 (2)와 (6))가 있고, 종류는 `password`와 `token`뿐이에요. REST 경로, CLI 명령, 키 파일을 두는 곳, 수집과의 연결, 마스터 키의 교체, 복호화 사용 기록은 아직 없어요.
 
 ## 16. 알려진 한계와 미결 사항
@@ -397,4 +397,4 @@ PostgreSQL 공식 문서가 드는 암호화 선택지는 비밀번호 해시, �
 - ADR-0018(이 문서의 결정). ADR-0008(소스, 읽기 전용, 시크릿 삭제), ADR-0012(역할과 범위, 감사, 서비스 계정), ADR-0013(지표, 알림), ADR-0014(정의, 브랜치), ADR-0016(REST API), ADR-0017(헬스 상태, 운영 액션, 이벤트 코드), ADR-0009(저장).
 - REQ-210 시크릿은 쓰기 전용이고 평문이 아니에요 / REQ-211 제공자는 포트, 마스터 키는 스토리지 밖 / REQ-212 복호화 지점과 복호화 사용 기록 / REQ-213 버전, 로테이션, 만료 알림 / REQ-214 분리망 / REQ-215 전송 구간의 암호화 / REQ-216 컬럼 암호화와 저장 데이터 점검 / REQ-217 긴급 대응.
 - 참고한 공개 자료(이름만): OWASP Secrets Management Cheat Sheet, RFC 5116, NIST SP 800-38D, NIST SP 800-57 Part 1, 시크릿 스토리지와 키 관리 서비스의 공개 문서, PostgreSQL의 암호화 선택지, CWE-209, CWE-532.
-- 함께 읽을 문서: [소스 수집](ingestion.md), [권한 설계](access-control.md), [프락시움 자신의 관측성](self-observability.md), [정의](definitions.md), [REST API](rest-api.md), [임시 콘솔](temporary-console.md).
+- 함께 읽을 문서: [소스 수집](ingestion.md), [권한 설계](access-control.md), [프락시움 자신의 관측성](self-observability.md), [정의](definitions.md), [REST API](rest-api.md), [웹 화면](temporary-console.md).

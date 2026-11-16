@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "4ef8896c309e8022"
-date: "2026-11-15"
-note: "plan의 순서와 대조함. 소개 문단을 릴리스의 사실(읽기만 한다)로 되돌리고 게이트웨이는 아직 안 되는 목록에 한 줄로 뒀다"
-text_changed: true
+hash: "439b60ac326581c1"
+date: "2026-11-16"
+note: "plan.md 변경과 대조했다. README는 가장 최근 릴리스를 설명하므로 지시에 따라 고치지 않았다(39행의 임시 화면 표현은 다음 릴리스 때 고친다)"
+text_changed: false
 doc_hash: "9a2c6db44232d731"

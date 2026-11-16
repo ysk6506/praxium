@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-mcp.md"
 target: "docs/design-docs/kg-queries.md"
-hash: "a294ecb349ee9cf1"
-date: "2026-11-15"
-note: "병합 전 검토를 반영해 다시 썼다. 새 ADR-0062 본문, 게이트웨이 문서(ADR-0061), 코드의 역할·오류 코드와 대조"
+hash: "54779c23a5334381"
+date: "2026-11-16"
+note: "kg-queries.md의 변경은 화면 범위 문장의 리포지토리 표현뿐이다. 이 문서의 MCP 내용과 무관해 고칠 곳이 없다"
 text_changed: true
-doc_hash: "ad6fa89875bcb3a5"
+doc_hash: "4e76f1d030dcbe35"

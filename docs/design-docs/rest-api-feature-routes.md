@@ -141,7 +141,7 @@ follows:
 | 복호화 이력 조회 | `GET /v1/audit-records`(`action`과 `target_id`) |
 | 시크릿 기준으로 소스를 한 번에 중단하기 | 운영 액션(`POST /v1/ops/actions/pause_sources_by_secret/runs`) |
 | 검증을 끈 연결의 승인과 기한 | 없음. 소스 항목의 필드와 `admin` 승인 경로를 정하지 않았어요 |
-| 임시 콘솔 제공 | 해당 없음. 콘솔은 정적 파일이고 공개된 API만 호출해요. 활성화 여부는 `GET /v1/capabilities`에 표시돼요 |
+| 웹 화면 제공 | 해당 없음. 화면은 정적 파일이고 공개된 API만 호출해요. 활성화 여부는 `GET /v1/capabilities`에 표시돼요 |
 
 ## 7. 계약 전체 (ADR-0016, 8-17, 8-22, 8-32)
 | 기능 | 경로 |
