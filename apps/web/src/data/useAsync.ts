@@ -105,6 +105,19 @@ export function useAsync<T>(
     setRound((n) => n + 1);
   }, []);
 
+  usePolling(poll, enabled, state, refresh);
+  useRefreshOn(refreshOn, enabled, refresh);
+
+  return { state, reload, refresh };
+}
+
+/** Read again on a timer while the answer is ready and not done; a hidden tab waits until it shows again. */
+function usePolling<T>(
+  poll: PollOptions<T> | undefined,
+  enabled: boolean,
+  state: AsyncState<T>,
+  refresh: () => void,
+): void {
   const until = useRef(poll?.until);
   until.current = poll?.until;
   const intervalMs = poll?.intervalMs;
@@ -129,7 +142,14 @@ export function useAsync<T>(
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, [state, intervalMs, enabled, refresh]);
+}
 
+/** Read again when a write invalidates one of the topics. */
+function useRefreshOn(
+  refreshOn: readonly string[] | undefined,
+  enabled: boolean,
+  refresh: () => void,
+): void {
   const topics = refreshOn?.join("\n") ?? "";
   useEffect(() => {
     if (!enabled || topics === "") return;
@@ -138,6 +158,4 @@ export function useAsync<T>(
       if (wanted.has(topic)) refresh();
     });
   }, [topics, enabled, refresh]);
-
-  return { state, reload, refresh };
 }

@@ -1015,86 +1015,6 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > <suite>": {
-   "kind": "support",
-   "hash": "edb4bbfe0a867169",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > keeps the failure of the call, and tells an outer listener too": {
-   "kind": "test",
-   "hash": "00e0b4123ee97616",
-   "asserts": 2,
-   "literals": [
-    "\"/v1/kgs/a\"",
-    "\"404\"",
-    "\"404\"",
-    "\"GET /v1/kgs/a\"",
-    "\"GET\"",
-    "\"\\\"e\\\"\"",
-    "\"\\\"e\\\"\"",
-    "\"\\\"e\\\"\"",
-    "\"keeps the failure of the call, and tells an outer listener too\"",
-    "\"nope\"",
-    "\"nope\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns no ETag when the answer has none, and when the answer is a 304": {
-   "kind": "test",
-   "hash": "e9c8f9a8bf9f1e30",
-   "asserts": 4,
-   "literals": [
-    "\"1\"",
-    "\"1\"",
-    "\"304\"",
-    "\"GET /v1/kgs/main\"",
-    "\"GET /v1/kgs/other\"",
-    "\"If-None-Match\"",
-    "\"\\\"same\\\"\"",
-    "\"\\\"same\\\"\"",
-    "\"\\\"same\\\"\"",
-    "\"\\\"same\\\"\"",
-    "\"\\\"same\\\"\"",
-    "\"\\\"same\\\"\"",
-    "\"if-none-match\"",
-    "\"if-none-match\"",
-    "\"main\"",
-    "\"other\"",
-    "\"returns no ETag when the answer has none, and when the answer is a 304\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns the ETag the answer carried and leaves the body as it was": {
-   "kind": "test",
-   "hash": "9585961b3850d9be",
-   "asserts": 2,
-   "literals": [
-    "\"GET /v1/kgs/main\"",
-    "\"\\\"rev-17\\\"\"",
-    "\"\\\"rev-17\\\"\"",
-    "\"\\\"rev-17\\\"\"",
-    "\"main\"",
-    "\"main\"",
-    "\"main\"",
-    "\"main\"",
-    "\"returns the ETag the answer carried and leaves the body as it was\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
@@ -1141,46 +1061,6 @@
     "\"px-key-0002\"",
     "\"px-key-0002\"",
     "\"u1\""
-   ],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > sends them as headers of the HTTP request, next to the token and the JSON body": {
-   "kind": "test",
-   "hash": "8036c0fcc2bd0576",
-   "asserts": 5,
-   "literals": [
-    "\"0\"",
-    "\"0\"",
-    "\"0\"",
-    "\"0\"",
-    "\"0\"",
-    "\"0\"",
-    "\"0\"",
-    "\"0\"",
-    "\"1\"",
-    "\"1\"",
-    "\"201\"",
-    "\"Bearer tok\"",
-    "\"Bearer tok\"",
-    "\"Idempotency-Key\"",
-    "\"POST /v1/users\"",
-    "\"application/json\"",
-    "\"application/json\"",
-    "\"content-type\"",
-    "\"content-type\"",
-    "\"idempotency-key\"",
-    "\"idempotency-key\"",
-    "\"n\"",
-    "\"n\"",
-    "\"n\"",
-    "\"px-key-0003\"",
-    "\"px-key-0003\"",
-    "\"px-key-0003\"",
-    "\"sends them as headers of the HTTP request, next to the token and the JSON body\"",
-    "\"tok\""
    ],
    "precision": [],
    "skips": 0,
@@ -1272,9 +1152,9 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/api/headers.test.ts::<import:0a47d256>": {
+  "apps/web/src/api/headers.test.ts::<import:273592cd>": {
    "kind": "support",
-   "hash": "0a47d2567f56605a",
+   "hash": "273592cdc30948c2",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -1302,19 +1182,9 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/api/headers.test.ts::<import:aa626edf>": {
+  "apps/web/src/api/headers.test.ts::<import:b24b626b>": {
    "kind": "support",
-   "hash": "aa626edf5554c9dd",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "apps/web/src/api/headers.test.ts::<import:c8a2b570>": {
-   "kind": "support",
-   "hash": "c8a2b5704513f10c",
+   "hash": "b24b626b0f271961",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -2240,6 +2110,166 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::[REQ-407] headers on the wire > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::[REQ-407] headers on the wire > sends them as headers of the HTTP request, next to the token and the JSON body": {
+   "kind": "test",
+   "hash": "8036c0fcc2bd0576",
+   "asserts": 5,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"0\"",
+    "\"1\"",
+    "\"1\"",
+    "\"201\"",
+    "\"Bearer tok\"",
+    "\"Bearer tok\"",
+    "\"Idempotency-Key\"",
+    "\"POST /v1/users\"",
+    "\"application/json\"",
+    "\"application/json\"",
+    "\"content-type\"",
+    "\"content-type\"",
+    "\"idempotency-key\"",
+    "\"idempotency-key\"",
+    "\"n\"",
+    "\"n\"",
+    "\"n\"",
+    "\"px-key-0003\"",
+    "\"px-key-0003\"",
+    "\"px-key-0003\"",
+    "\"sends them as headers of the HTTP request, next to the token and the JSON body\"",
+    "\"tok\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > keeps the failure of the call, and tells an outer listener too": {
+   "kind": "test",
+   "hash": "00e0b4123ee97616",
+   "asserts": 2,
+   "literals": [
+    "\"/v1/kgs/a\"",
+    "\"404\"",
+    "\"404\"",
+    "\"GET /v1/kgs/a\"",
+    "\"GET\"",
+    "\"\\\"e\\\"\"",
+    "\"\\\"e\\\"\"",
+    "\"\\\"e\\\"\"",
+    "\"keeps the failure of the call, and tells an outer listener too\"",
+    "\"nope\"",
+    "\"nope\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > returns no ETag when the answer has none, and when the answer is a 304": {
+   "kind": "test",
+   "hash": "e9c8f9a8bf9f1e30",
+   "asserts": 4,
+   "literals": [
+    "\"1\"",
+    "\"1\"",
+    "\"304\"",
+    "\"GET /v1/kgs/main\"",
+    "\"GET /v1/kgs/other\"",
+    "\"If-None-Match\"",
+    "\"\\\"same\\\"\"",
+    "\"\\\"same\\\"\"",
+    "\"\\\"same\\\"\"",
+    "\"\\\"same\\\"\"",
+    "\"\\\"same\\\"\"",
+    "\"\\\"same\\\"\"",
+    "\"if-none-match\"",
+    "\"if-none-match\"",
+    "\"main\"",
+    "\"other\"",
+    "\"returns no ETag when the answer has none, and when the answer is a 304\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > returns the ETag the answer carried and leaves the body as it was": {
+   "kind": "test",
+   "hash": "9585961b3850d9be",
+   "asserts": 2,
+   "literals": [
+    "\"GET /v1/kgs/main\"",
+    "\"\\\"rev-17\\\"\"",
+    "\"\\\"rev-17\\\"\"",
+    "\"\\\"rev-17\\\"\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"main\"",
+    "\"returns the ETag the answer carried and leaves the body as it was\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::<import:0a47d256>": {
+   "kind": "support",
+   "hash": "0a47d2567f56605a",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::<import:21be9f7d>": {
+   "kind": "support",
+   "hash": "21be9f7d0edcedbf",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/data/headers.test.tsx::<import:983e3f78>": {
+   "kind": "support",
+   "hash": "983e3f784d37b419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
    "amended_by": null
   },
   "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > <suite>": {
@@ -6683,13 +6713,13 @@
   },
   "apps/web/src/data/leaveGuard.test.tsx::=flush": {
    "kind": "support",
-   "hash": "d5d626d2ae45235e",
+   "hash": "603c1e062e0fee5a",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
    "added": "2026-11-16",
-   "amended_by": null
+   "amended_by": "0072-web-write-foundation.md"
   },
   "apps/web/src/data/leaveGuard.test.tsx::=goTo": {
    "kind": "support",
@@ -7278,16 +7308,6 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/data/mutation.test.tsx::<import:3d9ce1b0>": {
-   "kind": "support",
-   "hash": "3d9ce1b067a06ad6",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
   "apps/web/src/data/mutation.test.tsx::<import:416b76a5>": {
    "kind": "support",
    "hash": "416b76a56aca4896",
@@ -7388,9 +7408,9 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/data/mutation.test.tsx::<import:f3ac2f58>": {
+  "apps/web/src/data/mutation.test.tsx::<import:ffff5c5f>": {
    "kind": "support",
-   "hash": "f3ac2f587b8a506a",
+   "hash": "ffff5c5fb7dd0b07",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -7810,16 +7830,6 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/data/poll.test.tsx::<import:b8304d65>": {
-   "kind": "support",
-   "hash": "b8304d6583039b54",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": null
-  },
   "apps/web/src/data/poll.test.tsx::<import:b919bd80>": {
    "kind": "support",
    "hash": "b919bd80f32fd4ea",
@@ -7840,9 +7850,9 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "apps/web/src/data/poll.test.tsx::<import:f3ac2f58>": {
+  "apps/web/src/data/poll.test.tsx::<import:d8eb81f9>": {
    "kind": "support",
-   "hash": "f3ac2f587b8a506a",
+   "hash": "d8eb81f98e645495",
    "asserts": 0,
    "literals": [],
    "precision": [],
@@ -11115,6 +11125,200 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "2fd62ea99fdb8567",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<import:09650c51>": {
+   "kind": "support",
+   "hash": "09650c514f112c15",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<import:611e549f>": {
+   "kind": "support",
+   "hash": "611e549fc655b358",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<import:84768cfb>": {
+   "kind": "support",
+   "hash": "84768cfba8215f25",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<import:8f920d63>": {
+   "kind": "support",
+   "hash": "8f920d63d3593ae6",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<import:f5e1dfab>": {
+   "kind": "support",
+   "hash": "f5e1dfabe1e9c81b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::<stmt:efebe6fc>": {
+   "kind": "support",
+   "hash": "efebe6fc53e35573",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::=box": {
+   "kind": "support",
+   "hash": "e727d5c65a31986b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::=render": {
+   "kind": "support",
+   "hash": "ceb5f26842c27f24",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::=settle": {
+   "kind": "support",
+   "hash": "4360c9fd69b11a08",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::=submit": {
+   "kind": "support",
+   "hash": "948ffb56eaf23397",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::=typeInto": {
+   "kind": "support",
+   "hash": "cc97973fb9df7138",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::the connection settings form > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::the connection settings form > has a submit button that is not turned off before the person submits": {
+   "kind": "test",
+   "hash": "8ba4ac795062d17e",
+   "asserts": 1,
+   "literals": [
+    "\"button\"",
+    "\"disabled\"",
+    "\"disabled\"",
+    "\"has a submit button that is not turned off before the person submits\"",
+    "\"저장하고 접속\"",
+    "false",
+    "false"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::the connection settings form > keeps the typed token in the browser as before and goes to the list": {
+   "kind": "test",
+   "hash": "ef4028c1ccac12bb",
+   "asserts": 3,
+   "literals": [
+    "\"  typed-token  \"",
+    "\"\"",
+    "\"\"",
+    "\"#/kgs\"",
+    "\"#/kgs\"",
+    "\"keeps the typed token in the browser as before and goes to the list\"",
+    "\"typed-token\"",
+    "\"typed-token\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "apps/web/src/settings-screen.test.tsx::the connection settings form > says in words that the token is missing, and puts focus in the box": {
+   "kind": "test",
+   "hash": "33657a6eec0a146a",
+   "asserts": 5,
+   "literals": [
+    "\"\"",
+    "\"\"",
+    "\"[role=\\\"alert\\\"]\"",
+    "\"[role=\\\"alert\\\"]\"",
+    "\"a\"",
+    "\"aria-invalid\"",
+    "\"aria-invalid\"",
+    "\"aria-invalid\"",
+    "\"aria-invalid\"",
+    "\"says in words that the token is missing, and puts focus in the box\"",
+    "\"true\"",
+    "\"true\"",
+    "\"true\"",
+    "\"true\"",
+    "\"입력하십시오\"",
+    "\"입력하십시오\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-16",
    "amended_by": null
   },
   "apps/web/src/test-support/fake-api.ts::<import:21dfcaf0>": {
@@ -52061,6 +52265,18 @@
  },
  "removed": {
   "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > writes path, query and body into the arguments and keeps header parameters out": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > <suite>": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > keeps the failure of the call, and tells an outer listener too": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns no ETag when the answer has none, and when the answer is a 304": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns the ETag the answer carried and leaves the body as it was": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > sends them as headers of the HTTP request, next to the token and the JSON body": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::<import:0a47d256>": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::<import:aa626edf>": "0072-web-write-foundation.md",
+  "apps/web/src/api/headers.test.ts::<import:c8a2b570>": "0072-web-write-foundation.md",
+  "apps/web/src/data/mutation.test.tsx::<import:3d9ce1b0>": "0072-web-write-foundation.md",
+  "apps/web/src/data/mutation.test.tsx::<import:f3ac2f58>": "0072-web-write-foundation.md",
+  "apps/web/src/data/poll.test.tsx::<import:b8304d65>": "0072-web-write-foundation.md",
+  "apps/web/src/data/poll.test.tsx::<import:f3ac2f58>": "0072-web-write-foundation.md",
   "go:backend/internal/query::TestFindPagesAtASealedVersionKeepTheVersion": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": "0027-reading-the-kg-through-the-api-and-the-command-line.md",

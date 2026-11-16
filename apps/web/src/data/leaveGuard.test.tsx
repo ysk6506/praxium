@@ -13,7 +13,7 @@ async function goTo(hash: string): Promise<void> {
   });
 }
 
-const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 0));
+const flush = (): Promise<void> => new Promise((resolve) => setTimeout(resolve, 25));
 
 // The test document tells the page about every change of the hash, a browser only about a person's; so each test
 // starts after the events of its own setup have gone by.

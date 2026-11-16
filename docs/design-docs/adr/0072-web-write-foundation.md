@@ -30,8 +30,21 @@ amends_tests:
   - apps/web/src/test-support/fake-api.ts::=Asked
   - apps/web/src/test-support/fake-api.ts::=Reply
   - apps/web/src/test-support/fake-api.ts::=fakeApi
-test_change_reason: 생성기는 계약의 머리글 인자를 버렸고 잠긴 테스트가 그 버림을 단언했다. 쓰기 화면은 Idempotency-Key와 If-Match를 보내야 하므로 머리글 인자를 호출 함수의 인자로 만들도록 바꾼다. 테스트는 같은 문서로 같은 연산을 만들되 머리글 인자가 headers 인자에 있다는 단언으로 뒤집고, 나머지 단언은 그대로 둔다. 가짜 API(test-support/fake-api.ts)는 요청의 머리글을 기록하고 응답에 머리글을 줄 수 있게 더한다. 기존 필드와 동작은 그대로이고 필드만 늘어난다.
-decision_hash: f134de8651d707d1
+  - apps/web/src/api/headers.test.ts::<import:0a47d256>
+  - apps/web/src/api/headers.test.ts::<import:aa626edf>
+  - apps/web/src/api/headers.test.ts::<import:c8a2b570>
+  - apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > <suite>
+  - apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > keeps the failure of the call, and tells an outer listener too
+  - apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns no ETag when the answer has none, and when the answer is a 304
+  - apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns the ETag the answer carried and leaves the body as it was
+  - apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > sends them as headers of the HTTP request, next to the token and the JSON body
+  - apps/web/src/data/leaveGuard.test.tsx::=flush
+  - apps/web/src/data/mutation.test.tsx::<import:3d9ce1b0>
+  - apps/web/src/data/mutation.test.tsx::<import:f3ac2f58>
+  - apps/web/src/data/poll.test.tsx::<import:b8304d65>
+  - apps/web/src/data/poll.test.tsx::<import:f3ac2f58>
+test_change_reason: 생성기는 계약의 머리글 인자를 버렸고 잠긴 테스트가 그 버림을 단언했다. 쓰기 화면은 Idempotency-Key와 If-Match를 보내야 하므로 머리글 인자를 호출 함수의 인자로 만들도록 바꾼다. 테스트는 같은 문서로 같은 연산을 만들되 머리글 인자가 headers 인자에 있다는 단언으로 뒤집고, 나머지 단언은 그대로 둔다. 가짜 API(test-support/fake-api.ts)는 요청의 머리글을 기록하고 응답에 머리글을 줄 수 있게 더한다. 기존 필드와 동작은 그대로이고 필드만 늘어난다. 이 변경이 만든 새 테스트(머리글 시험, 변경 훅과 읽기 반복의 시험)는 파일을 나누고 시험 도우미의 이름과 가져오기를 고쳐, 잠금에 이미 든 그 시험들의 열쇠가 바뀌었다. 단언은 같다.
+decision_hash: 6b70bca05c94de37
 ---
 # ADR-0072 화면의 쓰기 기반
 
@@ -55,7 +68,7 @@ decision_hash: f134de8651d707d1
 
 ## 번들 예산은 고치지 않고 쟀다
 
-`WEB045`의 예산(JS 170000, CSS 10000)과 `web.yaml`은 이 변경에서 그대로다. 변경 전은 JS 161151, CSS 6425, 변경 뒤는 JS 163060, CSS 6588이다(접속 설정이 쓰는 부분만 번들에 든다). 부품을 쓰면 늘어나는 양(JS, 바이트): `ListEditor` 약 1100, `useMutation` 약 970, `json-doc` 약 1500, `useLeaveGuard` 약 650, `ConfirmDialog` 약 300, `ResultNotice` 약 280, 나머지 100 안쪽. 전부 쓰면 167770이고 여유는 2200이다. 뒤의 화면 셋과 새 호출 20개가 더해지면 예산을 넘을 것으로 본다. 결정은 설계 책임자가 한다.
+`WEB045`의 예산(JS 170000, CSS 10000)과 `web.yaml`은 이 변경에서 그대로다. 변경 전은 JS 161151, CSS 6425, 변경 뒤는 JS 163098, CSS 6588이다(접속 설정이 쓰는 부분만 번들에 든다). 부품을 쓰면 늘어나는 양(JS, 바이트): `ListEditor` 약 1100, `useMutation` 약 970, `json-doc` 약 1500, `useLeaveGuard` 약 650, `ConfirmDialog` 약 300, `ResultNotice` 약 280, 나머지 100 안쪽. 전부 쓰면 167770이고 여유는 2200이다. 뒤의 화면 셋과 새 호출 20개가 더해지면 예산을 넘을 것으로 본다. 결정은 설계 책임자가 한다.
 
 ## 넣지 않은 것
 

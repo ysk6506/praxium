@@ -23,10 +23,6 @@ export interface LeaveGuard {
   readonly pending: PendingLeave | undefined;
 }
 
-const hashOf = (url: string): string => {
-  const at = url.indexOf("#");
-  return at < 0 ? "" : url.slice(at);
-};
 const pathOf = (hash: string): string => hash.replace(/^#/, "").split("?")[0] ?? "";
 
 /** Guard the screen while `dirty` is true (there are changes that are not saved). */
@@ -46,11 +42,16 @@ export function useLeaveGuard(dirty: boolean): LeaveGuard {
       // Older browsers ask only when the event has a return value.
       event.returnValue = "";
     };
-    const hashChange = (event: HashChangeEvent): void => {
-      if (leaving.current || restoring.current || !event.oldURL || !event.newURL) return;
-      const from = hashOf(event.oldURL);
-      const to = hashOf(event.newURL);
+    // The address this screen has, kept here: not every environment gives the old address with the event.
+    let known = globalThis.location.hash;
+    const hashChange = (): void => {
+      if (leaving.current || restoring.current) return;
+      const from = known;
+      const to = globalThis.location.hash;
+      if (to === from) return;
+      known = to;
       if (pathOf(from) === pathOf(to)) return;
+      known = from;
       // Put the address back before the screens read it, so nothing on this screen is lost while the person chooses.
       restoring.current = true;
       try {
@@ -63,6 +64,7 @@ export function useLeaveGuard(dirty: boolean): LeaveGuard {
         stay: () => setPending(undefined),
         leave: () => {
           leaving.current = true;
+          known = to;
           setPending(undefined);
           globalThis.location.hash = to;
         },

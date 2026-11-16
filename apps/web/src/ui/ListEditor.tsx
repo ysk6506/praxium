@@ -28,24 +28,21 @@ export const isComposingKey = (event: { isComposing?: boolean; keyCode?: number 
 
 const FOCUSABLE = "input, textarea, select, [contenteditable='true']";
 
-/**
- * A list of items a person adds to, removes from and puts in order. Each item has its own buttons (up, down, remove),
- * named by the item ("헤더 2 위로 옮기기"), so the whole list works from the keyboard; Alt+Up and Alt+Down in an
- * item's input move it as well. Focus stays on the moved item, goes to the new item after "더하기", and to the next
- * item (or to "더하기") after a removal. The item's own inputs come from `renderItem`.
- */
-export function ListEditor<T>({
-  label,
-  items,
-  onChange,
-  renderItem,
-  newItem,
-  itemName = "항목",
-  itemErrors,
-  error,
-  addOnEnter = false,
-  emptyText = "항목이 없습니다.",
-}: ListEditorProps<T>) {
+interface ListModel {
+  readonly keys: { readonly current: number[] };
+  readonly rows: { readonly current: Map<number, HTMLLIElement> };
+  readonly addButton: { readonly current: HTMLButtonElement | null };
+  add(at: number): void;
+  remove(index: number): void;
+  move(from: number, to: number): void;
+}
+
+/** The keys that follow each item through reordering, the edits of the list, and where focus goes after them. */
+function useListModel<T>(
+  items: readonly T[],
+  onChange: (items: readonly T[]) => void,
+  newItem: () => T,
+): ListModel {
   // Each item keeps its own key while the list is reordered, so the item that is moved keeps its inputs and its focus.
   const keys = useRef<number[]>([]);
   const counter = useRef(0);
@@ -62,9 +59,6 @@ export function ListEditor<T>({
     if (target === "add") addButton.current?.focus();
     else rows.current.get(target.key)?.querySelector<HTMLElement>(FOCUSABLE)?.focus();
   });
-
-  const id = useId();
-  const nameOf = (index: number): string => `${itemName} ${index + 1}`;
 
   function add(at: number): void {
     const key = counter.current++;
@@ -92,37 +86,131 @@ export function ListEditor<T>({
     onChange(next);
   }
 
-  // The keys of an item's input reach the list through one listener on the group, so an item's own inputs stay
-  // plain inputs. It reads the latest list from `latest`, which every render refreshes.
+  return { keys, rows, addButton, add, remove, move };
+}
+
+/**
+ * The keys of an item's input reach the list through one listener on the group, so an item's own inputs stay plain
+ * inputs. It reads the latest list from `latest`, which every render refreshes.
+ */
+function useListKeys(model: ListModel, addOnEnter: boolean) {
   const group = useRef<HTMLFieldSetElement>(null);
-  const latest = useRef({ add, move, addOnEnter });
-  latest.current = { add, move, addOnEnter };
+  const latest = useRef({ model, addOnEnter });
+  latest.current = { model, addOnEnter };
   useEffect(() => {
     const element = group.current;
     if (!element) return;
     const onKeyDown = (event: KeyboardEvent): void => {
+      const { model: list, addOnEnter: enter } = latest.current;
       const target = event.target as HTMLElement;
       if (!target.matches(FOCUSABLE)) return;
       const row = target.closest("li");
-      const key = [...rows.current].find(([, li]) => li === row)?.[0];
-      const index = key === undefined ? -1 : keys.current.indexOf(key);
+      const key = [...list.rows.current].find(([, li]) => li === row)?.[0];
+      const index = key === undefined ? -1 : list.keys.current.indexOf(key);
       if (index < 0) return;
       if (event.altKey && (event.key === "ArrowUp" || event.key === "ArrowDown")) {
         event.preventDefault();
-        latest.current.move(index, index + (event.key === "ArrowUp" ? -1 : 1));
+        list.move(index, index + (event.key === "ArrowUp" ? -1 : 1));
         return;
       }
-      if (event.key === "Enter" && target.tagName === "INPUT" && latest.current.addOnEnter) {
+      if (event.key === "Enter" && target.tagName === "INPUT" && enter) {
         // Enter that confirms a letter of an input method is not a command.
         if (isComposingKey(event)) return;
         event.preventDefault();
-        latest.current.add(index + 1);
+        list.add(index + 1);
       }
     };
     element.addEventListener("keydown", onKeyDown);
     return () => element.removeEventListener("keydown", onKeyDown);
   }, []);
+  return group;
+}
 
+interface RowProps {
+  readonly name: string;
+  readonly index: number;
+  readonly count: number;
+  readonly problem: string | undefined;
+  readonly errorId: string;
+  readonly model: ListModel;
+  readonly itemKey: number;
+  readonly children: ReactNode;
+}
+
+/** One item: its inputs, and its buttons named by the item. */
+function Row({ name, index, count, problem, errorId, model, itemKey, children }: RowProps) {
+  return (
+    <li
+      ref={(element) => {
+        if (element) model.rows.current.set(itemKey, element);
+        else model.rows.current.delete(itemKey);
+      }}
+      className={cx(
+        "flex flex-col gap-1 rounded-md border bg-surface p-2",
+        problem ? "border-danger" : "border-line",
+      )}
+    >
+      <fieldset
+        aria-describedby={problem ? errorId : undefined}
+        className="m-0 flex min-w-0 flex-wrap items-start gap-2 border-0 p-0"
+      >
+        <legend className="sr-only">{name}</legend>
+        <div className="min-w-0 flex-1">{children}</div>
+        <div className="flex shrink-0 gap-1">
+          <Button
+            variant="ghost"
+            aria-label={`${name} 위로 옮기기`}
+            focusableWhenDisabled
+            disabled={index === 0}
+            onClick={() => model.move(index, index - 1)}
+          >
+            위로
+          </Button>
+          <Button
+            variant="ghost"
+            aria-label={`${name} 아래로 옮기기`}
+            focusableWhenDisabled
+            disabled={index === count - 1}
+            onClick={() => model.move(index, index + 1)}
+          >
+            아래로
+          </Button>
+          <Button variant="ghost" aria-label={`${name} 지우기`} onClick={() => model.remove(index)}>
+            지우기
+          </Button>
+        </div>
+      </fieldset>
+      {problem ? (
+        <p id={errorId} role="alert" className="text-xs text-danger">
+          <span className="mr-1 font-semibold">오류</span>
+          {problem}
+        </p>
+      ) : null}
+    </li>
+  );
+}
+
+/**
+ * A list of items a person adds to, removes from and puts in order. Each item has its own buttons (up, down, remove),
+ * named by the item ("헤더 2 위로 옮기기"), so the whole list works from the keyboard; Alt+Up and Alt+Down in an
+ * item's input move it as well. Focus stays on the moved item, goes to the new item after "더하기", and to the next
+ * item (or to "더하기") after a removal. The item's own inputs come from `renderItem`.
+ */
+export function ListEditor<T>({
+  label,
+  items,
+  onChange,
+  renderItem,
+  newItem,
+  itemName = "항목",
+  itemErrors,
+  error,
+  addOnEnter = false,
+  emptyText = "항목이 없습니다.",
+}: ListEditorProps<T>) {
+  const model = useListModel(items, onChange, newItem);
+  const group = useListKeys(model, addOnEnter);
+  const id = useId();
   return (
     <fieldset
       ref={group}
@@ -133,62 +221,20 @@ export function ListEditor<T>({
       {items.length === 0 ? <p className="text-sm text-muted">{emptyText}</p> : null}
       <ol className="flex flex-col gap-2">
         {items.map((item, index) => {
-          const key = keys.current[index] as number;
-          const problem = itemErrors?.[index];
-          const errorId = `${id}-item-${key}-error`;
+          const key = model.keys.current[index] as number;
           return (
-            <li
+            <Row
               key={key}
-              ref={(element) => {
-                if (element) rows.current.set(key, element);
-                else rows.current.delete(key);
-              }}
-              className={cx(
-                "flex flex-col gap-1 rounded-md border bg-surface p-2",
-                problem ? "border-danger" : "border-line",
-              )}
+              itemKey={key}
+              name={`${itemName} ${index + 1}`}
+              index={index}
+              count={items.length}
+              problem={itemErrors?.[index]}
+              errorId={`${id}-item-${key}-error`}
+              model={model}
             >
-              <fieldset
-                aria-describedby={problem ? errorId : undefined}
-                className="m-0 flex min-w-0 flex-wrap items-start gap-2 border-0 p-0"
-              >
-                <legend className="sr-only">{nameOf(index)}</legend>
-                <div className="min-w-0 flex-1">{renderItem(item, index)}</div>
-                <div className="flex shrink-0 gap-1">
-                  <Button
-                    variant="ghost"
-                    aria-label={`${nameOf(index)} 위로 옮기기`}
-                    focusableWhenDisabled
-                    disabled={index === 0}
-                    onClick={() => move(index, index - 1)}
-                  >
-                    위로
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    aria-label={`${nameOf(index)} 아래로 옮기기`}
-                    focusableWhenDisabled
-                    disabled={index === items.length - 1}
-                    onClick={() => move(index, index + 1)}
-                  >
-                    아래로
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    aria-label={`${nameOf(index)} 지우기`}
-                    onClick={() => remove(index)}
-                  >
-                    지우기
-                  </Button>
-                </div>
-              </fieldset>
-              {problem ? (
-                <p id={errorId} role="alert" className="text-xs text-danger">
-                  <span className="mr-1 font-semibold">오류</span>
-                  {problem}
-                </p>
-              ) : null}
-            </li>
+              {renderItem(item, index)}
+            </Row>
           );
         })}
       </ol>
@@ -199,7 +245,7 @@ export function ListEditor<T>({
         </p>
       ) : null}
       <div>
-        <Button ref={addButton} onClick={() => add(items.length)}>
+        <Button ref={model.addButton} onClick={() => model.add(items.length)}>
           {itemName} 더하기
         </Button>
       </div>

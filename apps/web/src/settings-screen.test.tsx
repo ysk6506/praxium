@@ -1,9 +1,30 @@
 // @vitest-environment happy-dom
-import { act } from "react";
+import { act, type ReactElement } from "react";
+import { createRoot } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
-import { connection } from "../data";
-import { render, settle } from "../test-support/render";
-import { SettingsScreen } from "./SettingsScreen";
+import { connection } from "./data";
+import { SettingsScreen } from "./screens";
+
+(globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
+
+async function settle(times = 5): Promise<void> {
+  for (let i = 0; i < times; i++)
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 0)));
+}
+
+async function render(node: ReactElement) {
+  const container = document.createElement("div");
+  document.body.appendChild(container);
+  const root = createRoot(container);
+  await act(async () => root.render(node));
+  return {
+    container,
+    unmount: async () => {
+      await act(async () => root.unmount());
+      container.remove();
+    },
+  };
+}
 
 afterEach(() => {
   connection.clear();

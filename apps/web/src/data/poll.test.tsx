@@ -3,8 +3,7 @@
 import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { Requester } from "../api";
-import { ApiError } from "../api";
-import { getKG } from "../api/generated/operations";
+import { ApiError, getKG } from "../api";
 import { fakeApi, problem } from "../test-support/fake-api";
 import { renderHook } from "../test-support/render";
 import { currentEtag, describeError } from "./errors";

@@ -3,8 +3,7 @@
 import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Requester } from "../api";
-import { ApiError } from "../api";
-import { createUser, disableUser, listKGs, listLayers } from "../api/generated/operations";
+import { ApiError, createUser, disableUser, listKGs, listLayers } from "../api";
 import { fakeApi, problem, type Reply } from "../test-support/fake-api";
 import { renderHook, settle } from "../test-support/render";
 import { connection } from "./connection";
