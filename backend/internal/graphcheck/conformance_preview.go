@@ -272,14 +272,16 @@ func prevMarkOf(e *env) prevMark {
 
 func prevSameMark(tb TB, what string, a, b prevMark) {
 	tb.Helper()
-	ah, bh := a.head, b.head
-	check(tb, ah.AppliedSeq == bh.AppliedSeq && ah.ReadableThrough == bh.ReadableThrough && ah.IngestSeq == bh.IngestSeq &&
-		ah.InputDigest == bh.InputDigest && ah.Hash.Equal(bh.Hash) && ah.ApplyID == bh.ApplyID && ah.LastApplyID == bh.LastApplyID,
-		"%s: the head moved: %+v to %+v", what, ah, bh)
+	check(tb, prevSameHead(a.head, b.head), "%s: the head moved: %+v to %+v", what, a.head, b.head)
 	check(tb, a.lease.Owner == b.lease.Owner && a.lease.Attempt == b.lease.Attempt && a.lease.Until.Equal(b.lease.Until),
 		"%s: the lease moved: %+v to %+v", what, a.lease, b.lease)
 	check(tb, a.versions == b.versions && a.orders == b.orders && a.changes == b.changes && a.objects == b.objects && a.links == b.links,
 		"%s: rows were written: %+v to %+v", what, a, b)
+}
+
+func prevSameHead(a, b graph.Head) bool {
+	return a.AppliedSeq == b.AppliedSeq && a.ReadableThrough == b.ReadableThrough && a.IngestSeq == b.IngestSeq &&
+		a.InputDigest == b.InputDigest && a.Hash.Equal(b.Hash) && a.ApplyID == b.ApplyID && a.LastApplyID == b.LastApplyID
 }
 
 // prevCaseRefuses: a batch that the apply refuses is refused by the preview with the same error.

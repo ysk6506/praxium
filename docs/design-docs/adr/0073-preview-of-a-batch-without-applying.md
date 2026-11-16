@@ -16,7 +16,7 @@ touches_protected:
   - harness/config/test-lock.json
 amends: []
 amends_tests: []
-decision_hash: eb6711f6e720babe
+decision_hash: f81e6b4a70358c73
 ---
 # ADR-0073 적용하지 않고 차이를 내는 길
 
@@ -41,7 +41,7 @@ decision_hash: eb6711f6e720babe
 ## 대안과 기각 사유
 
 - 미리 보기를 따로 구현하기: 판단이 두 벌이 되어 어긋난다.
-- 적용을 드라이 런으로 하고 되돌리기: 헤드와 임대를 건드리고 저장소마다 되돌리는 방법이 다르다.
+- 적용을 드라이 런으로 하고 리버트하기: 헤드와 임대를 건드리고 저장소마다 되돌리는 방법이 다르다.
 - 요약만 내기: 사람이 무엇이 바뀌는지 볼 수 없고 지문을 만들 재료가 없다.
 
 ## 결과
