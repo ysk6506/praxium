@@ -15,21 +15,30 @@ var delimiterNames = map[string]rune{"comma": ',', "tab": '\t', "semicolon": ';'
 
 // normalizedDelimiter checks the delimiter of a dataset and gives it as the character ("" is the comma).
 func normalizedDelimiter(v, parser, where string) (string, error) {
+	c := newCollector(DocumentSource)
+	out := normalizedDelimiterTo(c, "", v, parser, "", where)
+	return out, c.err()
+}
+
+// normalizedDelimiterTo is normalizedDelimiter that records the error in a collector.
+func normalizedDelimiterTo(c *collector, at, v, parser, dataset, where string) string {
 	if v == "" {
-		return "", nil
+		return ""
 	}
 	if parser != ParserCSV {
-		return "", kernel.Errorf(kernel.CodeInvalidValue, "%s: delimiter belongs to the csv parser", where)
+		c.add(ecSrcDelimParser, at, Params{"dataset": dataset, "parser": parser}, "%s: delimiter belongs to the csv parser", where)
+		return ""
 	}
 	if r, ok := delimiterNames[strings.ToLower(v)]; ok {
-		return string(r), nil
+		return string(r)
 	}
 	for _, r := range delimiterNames {
 		if v == string(r) {
-			return v, nil
+			return v
 		}
 	}
-	return "", kernel.Errorf(kernel.CodeInvalidValue, "%s: delimiter %q is none of comma, tab, semicolon, pipe (or the character , \\t ; |)", where, v)
+	c.add(ecSrcDelim, at, Params{"dataset": dataset, "delimiter": v}, "%s: delimiter %q is none of comma, tab, semicolon, pipe (or the character , \\t ; |)", where, v)
+	return ""
 }
 
 // CheckDelimiter says whether a delimiter is one a CSV dataset can have: a comma, tab, semicolon or pipe, by name or as
