@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "8c057e5315c7a8b7"
-date: "2026-11-15"
-note: "AGENTS.md의 게이트웨이 줄과 대조함. 바뀐 것이 없다"
+hash: "b20aea430b7f82a9"
+date: "2026-11-16"
+note: "AGENTS.md의 변경(화면 코드의 위치, 웹 화면 문구)과 대조했다. 이 문서에는 화면의 위치를 말하는 문장이 없어 고칠 곳이 없다"
 text_changed: false
 doc_hash: "fa6d560a34c76e15"

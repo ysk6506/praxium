@@ -50,9 +50,9 @@ items:
     units: [harness]
     resolution: "ADR-0019가 Go 코드를 읽는 검사를 만들었다: 단위와 의존 방향과 공개 면, 시계·난수·환경, 모듈 표, 크기와 복잡도, 끄기, 테스트의 있음과 커버리지, gofmt와 vet(GOARCH*, GODEP*, GODEBT*, GOIGN*, GOTEST*, GOCOV*, GOTOOL*). 테스트 잠금과 품질 등급표와 요구사항 추적은 아직 Go를 읽지 않아 TD-0008로 남겼다."
   - id: TD-0006
-    title: "core.kernel의 한국어 부품(조사, 시간 표기)과 REQ-002, REQ-003은 화면 저장소의 것이다. 화면 저장소가 서면 옮겨야 한다(ADR-0016)"
+    title: "core.kernel의 한국어 부품(조사, 시간 표기)과 REQ-002, REQ-003은 화면의 것이다. 화면의 코드는 apps/web에 있으므로 그리로 옮겨야 한다(ADR-0016, ADR-0069)"
     severity: low
-    cost: "화면 저장소로 옮기고 이 저장소에서 지운다. 그때까지 새 코드가 그것에 기대지 않는다"
+    cost: "화면(apps/web)으로 옮기고 core.kernel에서 지운다. 그때까지 새 코드가 그것에 기대지 않는다"
     created: "2026-11-13"
     due: "2027-02-01"
     status: open
@@ -63,7 +63,8 @@ items:
     cost: "폴더와 켜는 설정 하나를 지운다. 백엔드의 어떤 코드도 그것을 import하지 않으므로 다른 곳은 고치지 않는다"
     created: "2026-11-13"
     due: "2027-06-01"
-    status: open
+    status: wontfix
+    resolution: "ADR-0069가 화면을 이 저장소(apps/web)에서 만들기로 하고 임시라는 성격과 지우는 조건을 없앴다. 지울 것이 없어서 부채가 아니다. 화면만 다시 만들기 쉽게 지키는 규칙은 계층, 토큰, 백엔드의 독립 검사(ARCH020, WEB*)가 지킨다."
   - id: TD-0008
     title: "Go 코드에는 테스트 잠금(테스트를 지우거나 약화하거나 기대값을 바꾸는 것 막기), 품질 등급표, 테스트 제목의 [REQ-NNN]을 읽는 요구사항 추적이 아직 없다(ADR-0019). TypeScript 테스트에만 있는 보호다"
     severity: medium
