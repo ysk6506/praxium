@@ -24,7 +24,6 @@ updates_docs:
   - docs/design-docs/gateway.md
   - docs/design-docs/temporary-console.md
   - docs/design-docs/glossary.md
-  - docs/design-docs/glossary-general.md
   - docs/exec-plans/active/plan.md
   - docs/product-specs/requirements.md
   - docs/product-specs/requirements-ingestion.md
