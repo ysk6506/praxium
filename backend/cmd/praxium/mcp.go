@@ -79,11 +79,11 @@ func mcpMounts(p serverPlan, kit authKit, d wiring, log *slog.Logger, reg *model
 		AllowedOrigins:      origins,
 		// The Host is checked only on a loopback address with no proxy declared: behind a proxy the Host is the outer name
 		// (ADR-0068), and the Origin check and the token stay.
-		CheckHost:           isLoopbackAddr(p.opts.addr) && !p.opts.behindProxy,
-		TrustProxy:          p.opts.behindProxy,
-		Info:                mcpapi.Info{Name: "praxium", Version: version, ModelVersion: strconv.Itoa(reg.ModelVersion()), ModelHash: reg.Hash().String()},
-		Directory:           kit.dir,
-		Clock:               d.clock, IDs: d.ids, Log: log,
+		CheckHost:  isLoopbackAddr(p.opts.addr) && !p.opts.behindProxy,
+		TrustProxy: p.opts.behindProxy,
+		Info:       mcpapi.Info{Name: "praxium", Version: version, ModelVersion: strconv.Itoa(reg.ModelVersion()), ModelHash: reg.Hash().String()},
+		Directory:  kit.dir,
+		Clock:      d.clock, IDs: d.ids, Log: log,
 	})
 	if err != nil {
 		return nil, err

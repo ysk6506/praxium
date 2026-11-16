@@ -18,7 +18,7 @@ KG 조회를 MCP(Model Context Protocol) 툴로 내주는 인터페이스의 설
 - 게이트웨이(ADR-0061)는 다른 주소의 다른 구성요소예요. 같은 툴 등록부로 KG 읽기 툴을 함께 내줄지는 게이트웨이 쪽에서 아직 정하지 않았어요(gateway-safety.md). `kg_` 접두어는 KG 읽기 툴에만 써요.
 - 운영 MCP(`ops_*`, self-observability.md 10.1)는 `/mcp`에 없고, 그 주소와 인증은 이 문서가 정하지 않아요.
 - **켜고 끄기**: 운영 모드(`api serve -mode production`)는 기본으로 꺼져 있고 명시적으로 켜요. `demo`, `local`, 개발 모드(`api serve -mode development`)는 기본으로 켜져요. 플래그는 `-mcp`(`-mcp=false`로 끄고 운영 모드에서는 `-mcp`로 켜요)와 `-mcp-allowed-origins`(쉼표로 나눈 `Origin` 목록)이고 `api serve`, `demo`, `local`이 같은 이름을 써요. 꺼져 있을 때 `/mcp`와 `/.well-known/` 아래는 `not_found.resource`를 담은 문제 상세의 JSON 404예요.
-- **받는 토큰**: `/mcp`는 가진 역할이 `viewer` 하나뿐인 주체의 토큰만 받아요. 운영 모드에서는 그 주체가 서비스 계정(`system_account`)이어야 해요. `demo`, `local`, 개발 모드의 실행용 토큰(사람, `viewer`)은 받아요. 그 밖의 토큰은 HTTP 403과 문제 상세 본문(오류 코드 `permission.mcp_not_allowed`, `params.reason`이 이유)으로 거절하고 본문에 이유를 적어요. 관리자 토큰이 하네스의 설정 파일에 놓이는 것을 막으려는 거예요. 403으로 두는 것은 "에이전트가 고칠 수 없는 연결의 문제는 HTTP 상태"라는 규칙을 따른 거예요.
+- **받는 토큰**: `/mcp`는 **토큰이 가진 역할**(계정의 역할과 토큰에 좁혀 준 역할의 교집합)이 `viewer` 하나뿐인 토큰만 받아요. 계정에 다른 역할이 있어도 `viewer`로 좁혀 발급한 토큰은 받아요(ADR-0068이 ADR-0062의 "계정의 역할"을 이렇게 고쳤어요). 운영 모드에서는 그 주체가 서비스 계정(`system_account`)이어야 해요. `demo`, `local`, 개발 모드의 실행용 토큰(사람, `viewer`)은 받아요. 그 밖의 토큰은 HTTP 403과 문제 상세 본문(오류 코드 `permission.mcp_not_allowed`, `params.reason`이 이유)으로 거절하고 본문에 이유를 적어요. 관리자 토큰이 하네스의 설정 파일에 놓이는 것을 막으려는 거예요. 403으로 두는 것은 "에이전트가 고칠 수 없는 연결의 문제는 HTTP 상태"라는 규칙을 따른 거예요.
 - 지금은 민감 등급을 정하지 않은 속성이 모두 `open`이라 **토큰 하나로 KG 전체가 읽혀요.** MCP로 나가는 민감 등급의 상한을 설정으로 두고 기본은 `open`이에요.
 
 ## 2. 판 처리
@@ -90,7 +90,7 @@ KG 조회를 MCP(Model Context Protocol) 툴로 내주는 인터페이스의 설
 | X5 | 요청 본문이 배열(일괄) | 400 | -32600 | 새 판은 단일 메시지만 허용(S-http). 옛 판의 일괄은 2025-06-18에서 빠짐(C-06). 상태는 규격에 없음 | 선택 |
 | X6 | 본문이 JSON이 아님 | 400 | -32700(`id` 없는 오류 본문) | 표준 코드는 S-basic에 있고 HTTP 상태는 규격에 없음 | 선택 |
 | X7 | `Content-Type`이 `application/json`이 아님 | 415 | 문제 상세 본문(`invalid_input.unsupported_media_type`) | 규격이 말하지 않아 REST와 같은 코드를 씀 | 선택 |
-| X8 | 서버가 루프백 주소에 묶였을 때 `Host`가 루프백 이름이 아님 | 403 | JSON 본문 | 규격이 말하지 않아 DNS 리바인딩을 막으려고 정함(10절 테스트 8) | 선택 |
+| X8 | 서버가 루프백 주소에 묶였고 프록시 선언이 없을 때 `Host`가 루프백 이름이 아님 | 403 | JSON 본문 | 규격이 말하지 않아 DNS 리바인딩을 막으려고 정함(10절 테스트 8) | 선택 |
 | X9 | `Accept` | `Accept`가 없거나 `*/*`이거나 `application/json`을 포함하면 받고, JSON을 받지 않겠다는 요청만 406 | 406이면 `invalid_input.not_acceptable`. 지금의 `acceptsJSON`과 같은 규칙(`middleware.go`) | 규격이 말하지 않아 REST와 같게 정함 | 선택 |
 | X10 | `Mcp-Session-Id`나 `Last-Event-ID`를 실은 요청 | 판에 따라 N·O·H 행과 같음 | 응답에 세션 ID를 만들지 않음 | S-http: 옛 트래픽의 세션 ID는 무시하고 만들지도 되돌리지도 않음 | 확인 |
 
@@ -132,7 +132,7 @@ KG 조회를 MCP(Model Context Protocol) 툴로 내주는 인터페이스의 설
 
 1. 지금 서버는 모르는 GET 경로에 웹 화면(HTML 200)을 돌려줘요(`httpapi`의 `dispatch`가 확장자 없는 경로를 화면으로 넘겨요). 그래서 `/mcp`와 **`/.well-known/` 아래 전체**는 웹 화면보다 먼저 처리해요. 인가 메타데이터를 내지 않는 동안 `/.well-known/` 아래는 JSON 404예요. 클라이언트가 인가 메타데이터를 못 찾으면 이 경로들(`oauth-protected-resource`, 옛 규격의 `oauth-authorization-server`, 일부는 `openid-configuration`)로 되돌아가기 때문에, 탐색이 HTML을 만나지 않고 바르게 끝나게 해요.
 2. `Origin`이 있으면 허용 목록에 있을 때만 받아요. 기본 목록은 비어 있어요(브라우저가 아닌 MCP 클라이언트는 `Origin`을 보내지 않아요). 아니면 403이에요. `Content-Type`은 `application/json`만 받아요.
-3. 서버가 루프백 주소에 묶였을 때는 `Host`가 루프백 이름일 때만 받아요(DNS 리바인딩). `demo`와 `local`은 `-addr`로 루프백이 아닌 주소에 묶을 수 있으므로 명령 이름이 아니라 묶인 주소로 정해요.
+3. 서버가 루프백 주소에 묶였고 프록시 뒤라는 선언(`-behind-proxy`)이 없을 때는 `Host`가 루프백 이름일 때만 받아요(DNS 리바인딩). 프록시 뒤에서는 프록시가 넘기는 `Host`가 바깥 이름이라 `Host` 검사를 하지 않고, `Origin` 검사와 토큰은 그대로예요(브라우저의 POST는 `Origin`을 항상 보내므로 루프백을 직접 두드려도 `Origin` 검사에서 막혀요). 허용할 `Host` 이름을 받는 플래그는 두지 않아요. `demo`와 `local`은 `-addr`로 루프백이 아닌 주소에 묶을 수 있으므로 명령 이름이 아니라 묶인 주소로 정해요.
 4. **확인 순서**: 경로 → 메서드 → `Origin`과 `Host` → 인증 → 판 헤더와 `Content-Type` → 본문 해석. 인증은 본문을 읽기 전에 하고, 토큰 없는 요청은 판이 틀려도 401이에요. 구현에서는 판 헤더의 확인이 본문을 읽은 뒤에 와요. 메서드가 `initialize`인지 알아야 판 헤더 없는 요청을 가릴 수 있고, 본문의 `_meta`와 헤더를 대조해야 해서예요. 그래서 실제 순서는 경로, 메서드, `Origin`과 `Host`, 인증과 받는 토큰, `Content-Type`, `Accept`, 본문 읽기와 해석, 판 헤더예요(ADR-0068).
 5. **401의 형식.** 규격의 인가 절을 읽고 정했어요. (가) 인가는 선택이고, 지원하는 서버만 RFC 9728 보호 자원 메타데이터를 내야 해요(S-auth). (나) "유효하지 않거나 만료된 토큰은 401"이고 토큰은 `Authorization` 헤더로만 받아요(쿼리 문자열 금지). (다) 인가를 쓰지 않는 정적 토큰 서버가 401에 무엇을 실어야 하는지는 규격에 문장이 없어요. 그래서 지금의 REST와 같게 **401과 `WWW-Authenticate: Bearer`, 문제 상세 본문**으로 답하고 `resource_metadata`는 싣지 않아요(1단계에는 적을 인가 서버가 없어 싣으면 거짓 안내가 돼요). 일부 클라이언트는 401을 만나면 OAuth 탐색을 시작하고, 이때 1항의 JSON 404를 만나요. 연결 안내(`docs/guides/connect-agents.md`)에 이 점을 적어요.
 
@@ -183,7 +183,7 @@ KG의 값(사람이 엑셀에 적은 글자 포함)은 에이전트에게 지시
 
 | 툴 | 한 줄 설명(영어) | 인자(REST의 필드) |
 |---|---|---|
-| `kg_whoami` | "Show the caller's account, role, token expiry, limits, and the server and model versions." | 없음(받으면 `invalid_input.field`의 오류 결과예요). 토큰에 대해서는 토큰 ID와 만료일만 답하고 토큰 값은 답하지 않아요. 개발용 인증기의 토큰은 만료일이 없어 비워요. 한도가 아직 없어서 `limits`는 `{enforced: false, note}`로 한도가 없다는 사실을 답해요. `server.requests_by_version`에 시작부터의 판별 요청 수와 판 헤더 없이 거절한 수가 있어요 |
+| `kg_whoami` | "Show the caller's account, the roles of the token, token expiry, limits, and the server and model versions." | 없음(받으면 `invalid_input.field`의 오류 결과예요). 토큰에 대해서는 토큰 ID와 만료일만 답하고 토큰 값은 답하지 않아요. 개발용 인증기의 토큰은 만료일이 없어 비워요. 한도가 아직 없어서 `limits`는 `{enforced: false, note}`로 한도가 없다는 사실을 답해요. `server.requests_by_version`에 시작부터의 판별 요청 수와 판 헤더 없이 거절한 수가 있어요 |
 | `kg_catalog` | "List object types, link types, and identifier schemes, or describe one by name." | `name`. 목록은 이름만(`brief`), 설명은 `name`을 주고 `full` |
 | `kg_find` | "Find objects by type, trait, attribute, identifier, or name text." | `object_type`, `include_subtypes`, `trait`, `attributes`(`name`, `op`, `values`), `identifier`(`scheme`, `value`), `text`, `scope_id`, `limit`, `cursor` |
 | `kg_get` | "Read one object's attributes, identifiers, links count, and evidence." | `object_id` 또는 `identifier`, `include` |

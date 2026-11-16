@@ -2,7 +2,8 @@
 # The interface is read-only, JSON-only and stateless: it serves tools only, with one tool (kg_whoami), and
 # no resources, prompts, completion, logging, progress, sampling, elicitation or server-sent streams. These
 # scenarios call tools, resources or prompts that exist only in the test suite's own example server.
-# server-sse-multiple-streams needs a server-sent stream (GET), which a JSON-only server does not open.
+# server-sse-multiple-streams does not start: the server gives no session id, so the test only warns and checks
+# nothing (the tool counts a warning as a failure). Nothing was confirmed by it.
 # A scenario on this list that starts to pass fails the run: remove it from the list then.
 server:
   - logging-set-level

@@ -6,7 +6,7 @@
   "tools": [
     {
       "name": "kg_whoami",
-      "description": "Show the caller's account, role, token expiry, limits, and the server and model versions.",
+      "description": "Show the caller's account, the roles of the token, token expiry, limits, and the server and model versions.",
       "inputSchema": {
         "type": "object",
         "properties": {},

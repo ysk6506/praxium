@@ -93,7 +93,7 @@ praxium admin issue-token -owner root -store file -store-data-dir /var/lib/praxi
 praxium api serve -addr 127.0.0.1:8080 -store file -store-data-dir /var/lib/praxium -mcp
 ```
 
-- **받는 토큰**: 역할이 `viewer` 하나뿐인 서비스 계정의 토큰만 받아요(`praxium admin account create`로 만들고 `viewer`만 줘요). 사람의 토큰이나 다른 역할이 섞인 계정의 토큰은 HTTP 403 `permission.mcp_not_allowed`이고 본문에 이유가 있어요. 개발 모드와 `demo`, `local`의 실행용 토큰은 받아요.
-- **브라우저**: 브라우저가 아닌 클라이언트는 `Origin`을 보내지 않아서 그대로 받아요. 브라우저에서 부르려면 `-mcp-allowed-origins https://console.example`처럼 출처를 적어요(쉼표로 여럿). 목록에 없는 `Origin`은 403이에요. 서버를 루프백 주소에 묶었으면 `Host`도 루프백 이름(`localhost`, `127.0.0.1`, `::1`)만 받아요.
+- **받는 토큰**: 토큰이 가진 역할이 `viewer` 하나뿐인 서비스 계정의 토큰만 받아요(`praxium admin account create`로 만들고 `viewer`만 주거나, 다른 역할이 있는 계정이면 `viewer`로 좁혀 토큰을 발급해요). 사람의 토큰이나 `viewer` 말고 다른 역할이 있는 토큰은 HTTP 403 `permission.mcp_not_allowed`이고 본문에 이유가 있어요. 개발 모드와 `demo`, `local`의 실행용 토큰은 받아요.
+- **브라우저**: 브라우저가 아닌 클라이언트는 `Origin`을 보내지 않아서 그대로 받아요. 브라우저에서 부르려면 `-mcp-allowed-origins https://console.example`처럼 출처를 적어요(쉼표로 여럿). 목록에 없는 `Origin`은 403이에요. 서버를 루프백 주소에 묶었고 `-behind-proxy`를 주지 않았으면 `Host`도 루프백 이름(`localhost`, `127.0.0.1`, `::1`)만 받아요. 프록시 뒤(`-behind-proxy`)에서는 프록시가 바깥 이름을 `Host`로 넘기므로 `Host`는 보지 않고 `Origin`과 토큰만 봐요.
 - **꺼져 있을 때**: `/mcp`와 `/.well-known/` 아래는 JSON 404이고 웹 화면이 대신 나오지 않아요.
 - **지켜볼 것**: 툴을 부를 때마다 로그에 `read_record: true`인 `mcp_read` 줄이 한 줄 남아요(토큰 ID, 추적 ID, 툴, 판, 클라이언트 이름, 걸린 시간). 판별 요청 수와 판 헤더 없이 거절한 수는 `kg_whoami`의 `server.requests_by_version`에서 봐요(프로세스가 뜬 뒤의 숫자예요).

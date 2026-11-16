@@ -27,7 +27,7 @@ type ToolDeps struct {
 }
 
 // whoamiDescription is a fixed text: no value of the KG is in it (ADR-0062 7).
-const whoamiDescription = "Show the caller's account, role, token expiry, limits, and the server and model versions."
+const whoamiDescription = "Show the caller's account, the roles of the token, token expiry, limits, and the server and model versions."
 
 const whoamiInput = `{"type":"object","properties":{},"additionalProperties":false}`
 

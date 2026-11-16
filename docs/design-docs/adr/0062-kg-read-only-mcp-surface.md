@@ -35,6 +35,9 @@ amends:
   - adr: "0017"
     what: 운영 MCP는 다른 주소의 별도 인터페이스
 decision_hash: 567d639de4b19d60
+amended_by:
+  - adr: "0068"
+    what: 받는 토큰의 조건을 "계정의 역할"이 아니라 "토큰의 유효 역할"(계정의 역할과 토큰에 좁혀 준 역할의 교집합)이 viewer 하나뿐인 것으로 한다
 ---
 # ADR-0062 KG의 읽기 전용 MCP 인터페이스
 

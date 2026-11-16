@@ -33,7 +33,12 @@ const freePort = (): Promise<number> =>
     });
   });
 
-/** Starts the demo server and resolves with the token it prints for this run. */
+const tokenWaitMs = 60_000;
+
+/**
+ * Starts the demo server and resolves with the token it prints for this run: "token of this run is …" in a build
+ * without the web UI, or "#token=…" in the address of a build that has it. It gives up after a minute.
+ */
 const startServer = (
   binary: string,
   port: number,
@@ -48,12 +53,22 @@ const startServer = (
       },
     );
     let seen = "";
+    const timer = setTimeout(() => {
+      child.kill("SIGTERM");
+      reject(new Error(`the demo server printed no token within ${tokenWaitMs / 1000} seconds`));
+    }, tokenWaitMs);
     child.stdout.on("data", (chunk: Buffer) => {
       seen += chunk.toString();
-      const token = /token of this run is ([0-9a-f]+)/.exec(seen)?.[1];
-      if (token) resolve({ child, token });
+      const token = /(?:token of this run is |#token=)([0-9a-f]+)/.exec(seen)?.[1];
+      if (token) {
+        clearTimeout(timer);
+        resolve({ child, token });
+      }
     });
-    child.once("exit", (code) => reject(new Error(`the demo server ended early (exit ${code})`)));
+    child.once("exit", (code) => {
+      clearTimeout(timer);
+      reject(new Error(`the demo server ended early (exit ${code})`));
+    });
   });
 
 /** A proxy that adds the token and passes everything else through. */
@@ -79,6 +94,17 @@ const main = async (): Promise<number> => {
   const binary = path.join(work, "praxium");
   let server: ChildProcess | undefined;
   let proxy: http.Server | undefined;
+  let tests: ChildProcess | undefined;
+  // On a signal the processes this script started are ended by their own process ids, and nothing else.
+  const onSignal = (signal: NodeJS.Signals) => {
+    tests?.kill(signal);
+    server?.kill("SIGTERM");
+    proxy?.close();
+    rmSync(work, { recursive: true, force: true });
+    process.exit(1);
+  };
+  process.once("SIGINT", onSignal);
+  process.once("SIGTERM", onSignal);
   try {
     const built = spawnSync("go", ["build", "-o", binary, "./cmd/praxium"], {
       cwd: path.join(root, "backend"),
@@ -105,6 +131,7 @@ const main = async (): Promise<number> => {
       ],
       { cwd: root, stdio: "inherit" },
     );
+    tests = run;
     return await new Promise<number>((resolve) => run.once("exit", (code) => resolve(code ?? 1)));
   } finally {
     proxy?.close();
