@@ -23204,6 +23204,21 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestAES256GCMGivesTheAnswersOfTheStandard": {
+   "kind": "test",
+   "hash": "7d8028b6e6f046b1",
+   "asserts": 2,
+   "literals": [
+    "83b96567361d034a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestAHostOrAPortOutsideTheAllowedAddressesIsRefused": {
    "kind": "test",
    "hash": "fb1426a2439a67db",
@@ -23219,12 +23234,12 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "go:backend/internal/secrets::TestAKeyWithTheSameIdAndOtherBytesDoesNotAuthenticate": {
+  "go:backend/internal/secrets::TestAKeyFileWithTheIDOfAnotherKeyIsRefused": {
    "kind": "test",
-   "hash": "4d418e4b015005e4",
-   "asserts": 6,
+   "hash": "a6494d26c2a7f2f9",
+   "asserts": 3,
    "literals": [
-    "cb8da5f80b7e90dd"
+    "04026ec622a5025a"
    ],
    "precision": [],
    "skips": 0,
@@ -23264,6 +23279,51 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestAMasterKeyIsNeverShownByAnyOutputOfAnythingThatHoldsIt": {
+   "kind": "test",
+   "hash": "174ea34b688bec6f",
+   "asserts": 9,
+   "literals": [
+    "5c3f49db55badf0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-404"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestAnEmptyScopeAndAnEmptyListOfAddressesMeanNobody": {
+   "kind": "test",
+   "hash": "7cf2359922c9d12b",
+   "asserts": 10,
+   "literals": [
+    "392291bfe076fcd0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-405"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestAnErrorRepeatsWhatACallerGaveOnlyWhenItIsSafe": {
+   "kind": "test",
+   "hash": "9ccbe3b48576e5f3",
+   "asserts": 6,
+   "literals": [
+    "27f8732aad3bfe9e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-404"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestANewVersionIsWhatOpenGivesAndARetiredVersionDoesNotOpen": {
    "kind": "test",
    "hash": "d009038c2c020a89",
@@ -23279,12 +23339,42 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestAnOldScopeAndAddressesWithANewValueDoNotOpen": {
+   "kind": "test",
+   "hash": "458dc7c262c49fa1",
+   "asserts": 9,
+   "literals": [
+    "4e39f20536646c66"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestAnOpenedSecretIsClosedSafely": {
+   "kind": "test",
+   "hash": "03819dadb2948a85",
+   "asserts": 7,
+   "literals": [
+    "04be31cae3d8ec19"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-405"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestAnOpenedValueIsNeverEncodedByJSONOrTextEncoders": {
    "kind": "test",
-   "hash": "2bfc3d37eb9eb5d7",
-   "asserts": 8,
+   "hash": "a4e8bd4dfe9ebba4",
+   "asserts": 9,
    "literals": [
-    "66e50483a0c71cf8"
+    "a20af231328364d0"
    ],
    "precision": [],
    "skips": 0,
@@ -23296,10 +23386,10 @@
   },
   "go:backend/internal/secrets::TestAnOpenedValueIsNeverPrintedByFmt": {
    "kind": "test",
-   "hash": "9ec9bedc78ddc298",
-   "asserts": 7,
+   "hash": "0287525e5ea005ee",
+   "asserts": 8,
    "literals": [
-    "a5200fbcfc7ee3f2"
+    "ab62890849d4e64c"
    ],
    "precision": [],
    "skips": 0,
@@ -23311,10 +23401,10 @@
   },
   "go:backend/internal/secrets::TestAnOpenedValueIsNeverWrittenByTheLogger": {
    "kind": "test",
-   "hash": "53f37a18739dbf0f",
-   "asserts": 6,
+   "hash": "5fd0edebbf4984ef",
+   "asserts": 7,
    "literals": [
-    "7ce581f3f08a1dbf"
+    "4e44c0eb26b5aded"
    ],
    "precision": [],
    "skips": 0,
@@ -23326,10 +23416,25 @@
   },
   "go:backend/internal/secrets::TestAnotherMasterKeyIdIsToldApartFromATamperedFile": {
    "kind": "test",
-   "hash": "ac3cc15b646f91f5",
+   "hash": "2788134d0c31ba65",
    "asserts": 6,
    "literals": [
     "8731a6c357ce6cfb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestARetiredVersionPutBackDoesNotOpen": {
+   "kind": "test",
+   "hash": "c19ebe7e58bef88d",
+   "asserts": 9,
+   "literals": [
+    "be9b11964234ddda"
    ],
    "precision": [],
    "skips": 0,
@@ -23355,12 +23460,27 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestASecretMadeAgainUnderTheSameIDDoesNotMixWithTheOldOne": {
+   "kind": "test",
+   "hash": "15965e2a35c5761f",
+   "asserts": 8,
+   "literals": [
+    "0734fd5cd9fa3ad7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestASecretSealedByAnotherMasterKeyIsRefusedWithAWayOut": {
    "kind": "test",
-   "hash": "3f5a76ad38f78ea3",
-   "asserts": 10,
+   "hash": "803cdb8bfb5b9c66",
+   "asserts": 11,
    "literals": [
-    "188d52f6e1255033"
+    "bd5377b85c9f837c"
    ],
    "precision": [],
    "skips": 0,
@@ -23402,10 +23522,10 @@
   },
   "go:backend/internal/secrets::TestAStoredVersionWhoseFieldsAreNotTheFieldsOfItsKindDoesNotOpen": {
    "kind": "test",
-   "hash": "01232a85f11f443a",
+   "hash": "46d53638945468a2",
    "asserts": 6,
    "literals": [
-    "46d76d1927ddce54"
+    "3c9ab824b7fe14e3"
    ],
    "precision": [],
    "skips": 0,
@@ -23445,6 +23565,21 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestAWriteBindsTheNewStateSoTheNextOpenWorks": {
+   "kind": "test",
+   "hash": "c7f4d14bd04c8e3a",
+   "asserts": 6,
+   "literals": [
+    "30cb19da34c74bc1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestDeleteRemovesTheSecretAndListIsInTheOrderOfTheIDs": {
    "kind": "test",
    "hash": "a4ad84f04b34e137",
@@ -23471,6 +23606,51 @@
    "skips": 0,
    "reqs": [
     "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestEveryVersionHasItsOwnDataKey": {
+   "kind": "test",
+   "hash": "ed39b72a918eb65b",
+   "asserts": 6,
+   "literals": [
+    "f5681663ff895902"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestEveryWriteChecksTheTagFirst": {
+   "kind": "test",
+   "hash": "1757d822c7c8254e",
+   "asserts": 7,
+   "literals": [
+    "0056f139d124cb09"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestFieldsFromJSONRefuseNamesThatCollideAndNeverRepeatTheBody": {
+   "kind": "test",
+   "hash": "bfaf35a1cc8a91fb",
+   "asserts": 3,
+   "literals": [
+    "701868f6e6c41064"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-404"
    ],
    "added": "2026-11-16",
    "amended_by": null
@@ -23507,10 +23687,10 @@
   },
   "go:backend/internal/secrets::TestNothingThatDescribesASecretHoldsAValue": {
    "kind": "test",
-   "hash": "92432631cd27ffa9",
-   "asserts": 8,
+   "hash": "f9db29301dfa6061",
+   "asserts": 9,
    "literals": [
-    "79aeefea20903351"
+    "d38b456a6b50820c"
    ],
    "precision": [],
    "skips": 0,
@@ -23526,6 +23706,21 @@
    "asserts": 4,
    "literals": [
     "3661e0afc828c8df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestTheBindingCoversEveryPartOfTheRecord": {
+   "kind": "test",
+   "hash": "058c702e3d24a827",
+   "asserts": 1,
+   "literals": [
+    "e6ac96f0aff7a205"
    ],
    "precision": [],
    "skips": 0,
@@ -23576,6 +23771,36 @@
    "skips": 0,
    "reqs": [
     "REQ-405"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestTheIDOfAMasterKeyComesFromTheKey": {
+   "kind": "test",
+   "hash": "280ada08bdcb14d3",
+   "asserts": 3,
+   "literals": [
+    "e5e780d55011daf9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestThePortsThatAreHandedOutAreNarrow": {
+   "kind": "test",
+   "hash": "060b0c84beb78296",
+   "asserts": 11,
+   "literals": [
+    "9239468932c1e323"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-406"
    ],
    "added": "2026-11-16",
    "amended_by": null
@@ -23640,6 +23865,21 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestTheUseIsCheckedBeforeAnythingIsDecrypted": {
+   "kind": "test",
+   "hash": "72c0ae02c12f32b5",
+   "asserts": 8,
+   "literals": [
+    "9bf3ffa55ee25294"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-405"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestTheValueComesOutOnlyThroughRevealAndCloseOverwritesIt": {
    "kind": "test",
    "hash": "7996d1f4a565532a",
@@ -23670,12 +23910,57 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "go:backend/internal/secrets::TestWhatIsAuthenticatedCannotBeConfusedWithAnotherThing": {
+  "go:backend/internal/secrets::TestVersionNumbersThatCannotBeRightAreRefusedOnRead": {
    "kind": "test",
-   "hash": "0bc1b1d9b114b5c0",
+   "hash": "3d7d2ec2ccf9672b",
    "asserts": 5,
    "literals": [
-    "9a1593dbe9fb24e0"
+    "0288d2b05c98a61b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestWhatACallerGaveIsRepeatedInAnErrorOnlyWhenItIsSafe": {
+   "kind": "test",
+   "hash": "9f550d58b1b4b566",
+   "asserts": 4,
+   "literals": [
+    "6329091e5472ee8a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-404"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestWhatIsAuthenticatedCannotBeConfusedWithAnotherThing": {
+   "kind": "test",
+   "hash": "d0ff215664916919",
+   "asserts": 5,
+   "literals": [
+    "22e355dfcfa26995"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestWhatIsPastedFromAnotherSecretDoesNotOpen": {
+   "kind": "test",
+   "hash": "135889be1497276f",
+   "asserts": 4,
+   "literals": [
+    "edce0be20b84b837"
    ],
    "precision": [],
    "skips": 0,
@@ -23748,10 +24033,10 @@
   },
   "go:backend/internal/secrets::TestWithoutAMasterKeyDescribingWorksAndTheRestSaysWhy": {
    "kind": "test",
-   "hash": "c99f0058cac70f6b",
-   "asserts": 14,
+   "hash": "5681f109c1455da7",
+   "asserts": 16,
    "literals": [
-    "40ab8910bb52f5be"
+    "c8bfab40a72ae477"
    ],
    "precision": [],
    "skips": 0,
@@ -23853,16 +24138,46 @@
   },
   "go:backend/internal/secretsfile::TestTheFileHoldsNoValueInTheClearAndHasTheFormatAndTheVersion": {
    "kind": "test",
-   "hash": "322a903cd7425c51",
-   "asserts": 9,
+   "hash": "230922d69c376120",
+   "asserts": 10,
    "literals": [
-    "7ac3d0a9bf865afd"
+    "95743da127353af9"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-403",
     "REQ-404"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestTheFileOfAKnownKeyAndKnownRandomBytesIsTheKnownFile": {
+   "kind": "test",
+   "hash": "1bef9ae522bf766a",
+   "asserts": 4,
+   "literals": [
+    "923c835dc9d68802"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestTheKnownFileOpensWithTheKnownKey": {
+   "kind": "test",
+   "hash": "5cd1b9c0f9a59cab",
+   "asserts": 6,
+   "literals": [
+    "850ad86be2240e4e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
    ],
    "added": "2026-11-16",
    "amended_by": null
