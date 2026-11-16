@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "docs/design-docs/ingestion.md"
-hash: "864839f316fd86d8"
-date: "2026-11-15"
-note: "mapping.go의 LinkAttrMap과 compile_linkattr.go, linkattr.go를 읽고 3.3의 attributes 문법, 등급, 거절 목록, 한계 넷과 link_conflict 줄을 대조해 더했고 ingestion.md의 링크의 속성 문단과 맞췄다"
-text_changed: true
-doc_hash: "9fd6311d03068e26"
+hash: "c176cf7acbb65d28"
+date: "2026-11-16"
+note: "ingestion.md의 바뀐 곳은 ADR-0058의 예정인 설계(프리셋 없는 첫 구현, 어댑터의 포트, HTTP와 PostgreSQL 어댑터, 스케줄 없음, 바깥 요청의 묶기)를 가리키는 문장이다. 안내서가 설명하는 지금 구현(adapter는 file뿐, 파일 소스의 정의 형식)은 그대로여서 고칠 곳이 없었다"
+text_changed: false
+doc_hash: "f47f691169bdc959"

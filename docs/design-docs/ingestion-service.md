@@ -166,6 +166,8 @@ follows:
 
 **필드.** `id`, `kg`, `kind`(`full_read`, `recompute`), `source_id`(`recompute`에는 없어요), `dataset_ids`(지금은 언제나 전부), `apply`(`auto`, `after_review`), `apply_id`, `definition_set`(적용한 세트 번호)과 수집이 고정한 소스 정의 리비전, 시작한 사람과 시각, `stage`(`receiving`, `computing`, `awaiting_confirmation`, `applying`), 데이터셋별 건수(수집, 읽음, 쓰임, 걸러짐, 문제), 문제 종류별 개수, `diff_summary`, `guard_verdict`, KG의 새 버전, 닫히기를 기다리는 객체 수, 경고(POST로 읽음, TLS 확인 끔).
 
+**실행의 식별과 순서.** 실행의 `id`는 다시 쓰지 않아요. 실행 기록은 시작한 원인(`trigger`: 지금은 `manual`뿐이고 뒤에 `schedule`, `push`가 더해져요)과 상태가 바뀔 때마다 오르는 순번과 그 시각을 가져요. 읽는 쪽은 순번으로 같은 실행의 옛 상태와 새 상태를 가려요(뒤에 이벤트로 내보낼 때도 이 순번을 써요). 이미 돌고 있거나 확인을 기다리는 소스에 온 새 요청의 409에는 지금 있는 실행의 `id`를 실어요. 보존은 소스마다 최근 50개예요(기본값 표).
+
 **문제를 둘로 갈라요.** 전체를 재계산하면 식별 충돌, 붙을 대상이 없는 값, 소스 간 충돌, 링크의 대상 없음, 차수 위반이 모든 소스의 모든 행에 대해 매번 나와요. 한 실행 기록에 섞으면 안 돼요.
 
 | | 뜻 | 쓰임 |
