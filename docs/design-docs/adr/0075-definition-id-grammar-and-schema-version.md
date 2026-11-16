@@ -12,8 +12,11 @@ updates_docs:
   - docs/product-specs/requirements-definitions.md
 touches_protected:
   - docs/product-specs/requirements-definitions.md
+  - harness/config/test-lock.json
 amends: []
-amends_tests: []
+amends_tests:
+  - go:backend/internal/ingest::TestEveryCodeOfTheTableIsGivenByACaseAtItsPlace
+test_change_reason: 새 오류 코드 9개의 사례 10건을 사례 목록에 더했다. 이 테스트는 표의 모든 코드에 사례가 있는지 확인하므로 새 코드를 더하면 사례도 더해야 한다. 기존 사례와 단언은 그대로이고 지운 줄이 없으며 사례가 줄지 않았다.
 decision_hash: aeb04c5b09a1a667
 ---
 # ADR-0075 정의의 id 문법과 스키마 버전

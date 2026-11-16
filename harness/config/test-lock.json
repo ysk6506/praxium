@@ -18400,10 +18400,10 @@
   },
   "go:backend/internal/ingest::TestEveryCodeOfTheTableIsGivenByACaseAtItsPlace": {
    "kind": "test",
-   "hash": "de1a8e74b7c2474b",
+   "hash": "59b2cd1e3d687dbb",
    "asserts": 9,
    "literals": [
-    "aaf5b777b5d7ddf6"
+    "673b757f83a999e7"
    ],
    "precision": [],
    "skips": 0,
@@ -18411,7 +18411,7 @@
     "REQ-400"
    ],
    "added": "2026-11-16",
-   "amended_by": null
+   "amended_by": "0075-definition-id-grammar-and-schema-version.md"
   },
   "go:backend/internal/ingest::TestFileStateStoreKeepsAStateAcrossOpens": {
    "kind": "test",
