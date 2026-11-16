@@ -65,23 +65,26 @@ func (s *Service) put(ctx context.Context, rec Record) error {
 	return nil
 }
 
-// bind seals the binding of the record: the tag over its id, kind, scope and allowed addresses under the master key.
+// bind seals the binding of the record anew: the tag under the master key over the whole state of the record. Every
+// write ends with it, so a state that was not written by this store never authenticates.
 func (s *Service) bind(rec *Record, master *MasterKey) error {
-	tag, err := aeadSeal(s.cfg.Bytes, master.key, nil, bindingAAD(*rec, master.id))
+	rec.Binding = Sealed{Method: MethodAES256GCM, KeyID: master.id}
+	tag, err := aeadSeal(s.cfg.Bytes, master.bytes(), nil, bindingAAD(*rec))
 	if err != nil {
 		return err
 	}
-	rec.Binding = Sealed{Method: MethodAES256GCM, KeyID: master.id, Nonce: tag.nonce, Data: tag.data}
+	rec.Binding.Nonce, rec.Binding.Data = tag.nonce, tag.data
 	return nil
 }
 
 // verify checks that the record was sealed by this master key and that its binding authenticates: what the file says
-// about the secret, its scope and addresses included, is what was written.
+// about the secret (scope, addresses, which versions there are and which of them are retired) is what was written, as
+// one state. Every read of the state and every write begins with it.
 func verify(rec Record, master *MasterKey) error {
 	if rec.Binding.KeyID != master.id {
 		return mismatch(rec.ID, rec.Binding.KeyID, master.id)
 	}
-	_, err := aeadOpen(master.key, sealed{nonce: rec.Binding.Nonce, data: rec.Binding.Data}, bindingAAD(rec, master.id))
+	_, err := aeadOpen(master.bytes(), sealed{nonce: rec.Binding.Nonce, data: rec.Binding.Data}, bindingAAD(rec))
 	return err
 }
 
@@ -102,16 +105,16 @@ func (s *Service) master() (*MasterKey, error) {
 
 // newVersion makes version number n of the secret: a new data key encrypts the fields once and the master key wraps
 // the data key. The data key is overwritten before this returns.
-func (s *Service) newVersion(id string, n int, fields Fields, master *MasterKey) (VersionRecord, error) {
+func (s *Service) newVersion(id string, instance []byte, n int, fields Fields, master *MasterKey) (VersionRecord, error) {
 	plain := encodeFields(fields)
 	defer wipe(plain)
 	dk := newDataKey(s.cfg.Bytes)
 	defer dk.wipe()
-	value, err := dk.seal(s.cfg.Bytes, plain, valueAAD(id, n))
+	value, err := dk.seal(s.cfg.Bytes, plain, valueAAD(id, instance, n))
 	if err != nil {
 		return VersionRecord{}, err
 	}
-	wrapped, err := dk.wrap(s.cfg.Bytes, master, dataKeyAAD(id, n, master.id))
+	wrapped, err := dk.wrap(s.cfg.Bytes, master, dataKeyAAD(id, instance, n, master.id))
 	if err != nil {
 		return VersionRecord{}, err
 	}
@@ -150,8 +153,10 @@ func (s *Service) Create(ctx context.Context, in CreateInput) (Meta, error) {
 	} else if ok {
 		return Meta{}, kernel.Errorf(kernel.CodeConflict, "there is already a secret %q", in.ID)
 	}
-	rec := Record{ID: in.ID, Kind: in.Kind, CreatedAt: s.cfg.Clock.Now().UTC(), Scope: scope, AllowedHosts: hosts}
-	v, err := s.newVersion(in.ID, 1, in.Fields, master)
+	instance := make([]byte, instanceLen)
+	s.cfg.Bytes.Fill(instance)
+	rec := Record{ID: in.ID, Instance: instance, Kind: in.Kind, CreatedAt: s.cfg.Clock.Now().UTC(), Scope: scope, AllowedHosts: hosts}
+	v, err := s.newVersion(in.ID, instance, 1, in.Fields, master)
 	if err != nil {
 		return Meta{}, err
 	}
@@ -186,23 +191,35 @@ func (s *Service) AddVersion(ctx context.Context, id string, fields Fields) (Met
 	if len(rec.Versions) >= maxVersions {
 		return Meta{}, kernel.Errorf(kernel.CodeInvalidValue, "a secret has at most %d versions; delete it and put it in again", maxVersions)
 	}
-	v, err := s.newVersion(id, rec.Versions[len(rec.Versions)-1].Version+1, fields, master)
+	v, err := s.newVersion(id, rec.Instance, rec.Versions[len(rec.Versions)-1].Version+1, fields, master)
 	if err != nil {
 		return Meta{}, err
 	}
 	rec.Versions = append(rec.Versions, v)
+	if err := s.bind(&rec, master); err != nil {
+		return Meta{}, err
+	}
 	if err := s.put(ctx, rec); err != nil {
 		return Meta{}, err
 	}
 	return rec.meta(), nil
 }
 
-// RetireVersion retires a version and deletes its ciphertext. It needs no master key.
+// RetireVersion retires a version and deletes its ciphertext. It needs the master key: the retirement is part of the
+// state that the binding covers, and a store that could retire without the key could not tell a retirement that was
+// undone by hand. Delete needs no key and is the way to stop a secret when the key is lost.
 func (s *Service) RetireVersion(ctx context.Context, id string, version int) (Meta, error) {
+	master, err := s.master()
+	if err != nil {
+		return Meta{}, err
+	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	rec, err := s.load(ctx, id)
 	if err != nil {
+		return Meta{}, err
+	}
+	if err := verify(rec, master); err != nil {
 		return Meta{}, err
 	}
 	i := slices.IndexFunc(rec.Versions, func(v VersionRecord) bool { return v.Version == version })
@@ -214,13 +231,17 @@ func (s *Service) RetireVersion(ctx context.Context, id string, version int) (Me
 	}
 	now := s.cfg.Clock.Now().UTC()
 	rec.Versions[i].RetiredAt, rec.Versions[i].Value, rec.Versions[i].WrappedKey = &now, nil, nil
+	if err := s.bind(&rec, master); err != nil {
+		return Meta{}, err
+	}
 	if err := s.put(ctx, rec); err != nil {
 		return Meta{}, err
 	}
 	return rec.meta(), nil
 }
 
-// Delete removes the secret. It needs no master key.
+// Delete removes the secret. It needs no master key. A secret made again under the same id is another secret (it has
+// another instance id), so nothing of the deleted one fits it.
 func (s *Service) Delete(ctx context.Context, id string) error {
 	if err := ValidateID(id); err != nil {
 		return err
@@ -237,7 +258,7 @@ func (s *Service) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-// SetScope replaces the scope. The stored form must authenticate first: sealing a new binding over a record that was
+// SetScope replaces the scope. The stored state must authenticate first: sealing a new binding over a record that was
 // changed by hand would make the change genuine.
 func (s *Service) SetScope(ctx context.Context, id string, sourceIDs []string) (Meta, error) {
 	scope, err := normalizeScope(slices.Clone(sourceIDs))

@@ -135,7 +135,7 @@ func TestTheFileHoldsNoValueInTheClearAndHasTheFormatAndTheVersion(t *testing.T)
 	if !ok {
 		t.Fatal("no file")
 	}
-	for _, v := range []string{testPassword, testUser, string(k.Encode())} {
+	for _, v := range []string{testPassword, testUser, rawKey(t, k)} {
 		for _, form := range []string{v, hex.EncodeToString([]byte(v)), base64.StdEncoding.EncodeToString([]byte(v)), base64.RawStdEncoding.EncodeToString([]byte(v))} {
 			if bytes.Contains(raw, []byte(form)) {
 				t.Fatal("the file shows a value")
@@ -337,5 +337,111 @@ func TestTheMemoryDiskBehavesLikeADisk(t *testing.T) {
 	}
 	if d.SyncDir() != nil {
 		t.Fatal("sync")
+	}
+}
+
+// rawKey is the 32 bytes of the master key, read from its key file form.
+func rawKey(t *testing.T, k *secrets.MasterKey) string {
+	t.Helper()
+	var f struct {
+		Key string `json:"key"`
+	}
+	if err := json.Unmarshal(k.Encode(), &f); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := base64.StdEncoding.DecodeString(f.Key)
+	if err != nil || len(raw) != 32 {
+		t.Fatal("the key file holds no 32 bytes")
+	}
+	return string(raw)
+}
+
+// The known answer: the key, the random bytes and the clock are fixed, so the file is fixed. A change of the format,
+// the order of fields or the authenticated data changes these bytes, and it must be a change that was meant: the
+// format is stored data, and a file in it has to keep opening.
+const knownKeyFile = `{
+ "format": "praxium-master-key",
+ "version": 1,
+ "key_id": "mk-e0585d51ca95eed9",
+ "method": "aes-256-gcm",
+ "key": "QvOpNkxHa+MIGrkYh51ppNWy0DTwQdL7GjGanLlnLNc="
+}
+`
+
+const knownFile = `{
+ "format": "praxium-secrets",
+ "version": 1,
+ "secrets": [
+  {
+   "id": "crm-db",
+   "kind": "password",
+   "instance": "kQot7IkCXMG+642hZY7sZw==",
+   "created_at": "2030-01-01T00:00:00Z",
+   "scope": [
+    "crm"
+   ],
+   "allowed_hosts": [
+    {
+     "host": "db.example.test",
+     "port": 5432
+    }
+   ],
+   "binding": {
+    "method": "aes-256-gcm",
+    "key_id": "mk-e0585d51ca95eed9",
+    "nonce": "Z3XcdwFWT2Ga/NRN",
+    "data": "PbgAgkbKMTU0tJni51zfzA=="
+   },
+   "versions": [
+    {
+     "version": 1,
+     "created_at": "2030-01-01T00:00:00Z",
+     "value": {
+      "method": "aes-256-gcm",
+      "nonce": "4JnsbNc2PKWF57sP",
+      "data": "UoceAZEYekt7gxW4FVvQeL5PsF4NFGUYNbgHBtvheOqqiNNAqTnrhZP3ikDtX7VI1ZLNqAXIKsLKrInOq7h2FRtkfbREiIAGpdSUnXnKgjjmmY+PEEygHsue"
+     },
+     "wrapped_key": {
+      "method": "aes-256-gcm",
+      "key_id": "mk-e0585d51ca95eed9",
+      "nonce": "SRcY3jV+PajLQ1yO",
+      "data": "kTflVDaDbYeMSV/Hx0FhtyiSqv3j8Z/6TDecBsIJ56brCkKcBdFS+ZUhTG9UMFBf"
+     }
+    }
+   ]
+  }
+ ]
+}
+`
+
+// [REQ-403]
+func TestTheFileOfAKnownKeyAndKnownRandomBytesIsTheKnownFile(t *testing.T) {
+	disk := NewMemDisk()
+	create(t, newService(t, open(t, disk), key()), "crm-db")
+	got, _ := disk.Bytes(FileName)
+	if string(got) != knownFile {
+		t.Fatal("the file made from fixed inputs is not the file written down in this test")
+	}
+}
+
+// [REQ-403]
+func TestTheKnownFileOpensWithTheKnownKey(t *testing.T) {
+	k, err := secrets.ParseMasterKey([]byte(knownKeyFile))
+	if err != nil {
+		t.Fatal(err)
+	}
+	disk := NewMemDisk()
+	disk.Put(FileName, []byte(knownFile))
+	svc := newService(t, open(t, disk), k)
+	o, err := svc.Open(ctx, "crm-db", okUse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer o.Close()
+	if v, _ := o.Value("password"); v.Reveal() != testPassword {
+		t.Fatal("the known file opens to another value")
+	}
+	if v, _ := o.Value("username"); v.Reveal() != testUser {
+		t.Fatal("the known file opens to another user")
 	}
 }

@@ -3,6 +3,9 @@ package secrets
 import (
 	"bytes"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
+	"strings"
 	"testing"
 	"time"
 
@@ -110,9 +113,14 @@ func TestWhatIsAuthenticatedCannotBeConfusedWithAnotherThing(t *testing.T) {
 	if bytes.Equal(a, b) {
 		t.Fatal("two splits of the same letters are the same authenticated data")
 	}
+	// A number is 64 bits: 1 and 2^32+1 are not the same bytes.
+	if bytes.Equal(newAAD("x").number(1).b, newAAD("x").number(1<<32+1).b) {
+		t.Fatal("a number of 32 bits and one of 33 bits give the same bytes")
+	}
+	inst := bytes.Repeat([]byte{7}, instanceLen)
+	rec := Record{ID: "one", Instance: inst, Kind: KindToken, Binding: Sealed{Method: MethodAES256GCM, KeyID: "mk-a"}}
 	// The three purposes never share authenticated data, even for the same secret and version.
-	rec := Record{ID: "one", Kind: KindToken}
-	all := [][]byte{valueAAD("one", 1), dataKeyAAD("one", 1, "mk-a"), bindingAAD(rec, "mk-a")}
+	all := [][]byte{valueAAD("one", inst, 1), dataKeyAAD("one", inst, 1, "mk-a"), bindingAAD(rec)}
 	for i := range all {
 		for j := i + 1; j < len(all); j++ {
 			if bytes.Equal(all[i], all[j]) {
@@ -120,18 +128,55 @@ func TestWhatIsAuthenticatedCannotBeConfusedWithAnotherThing(t *testing.T) {
 			}
 		}
 	}
-	if bytes.Equal(valueAAD("one", 1), valueAAD("one", 2)) || bytes.Equal(valueAAD("one", 1), valueAAD("two", 1)) {
-		t.Fatal("the authenticated data do not tell versions or secrets apart")
+	other := bytes.Repeat([]byte{8}, instanceLen)
+	if bytes.Equal(valueAAD("one", inst, 1), valueAAD("one", inst, 2)) || bytes.Equal(valueAAD("one", inst, 1), valueAAD("two", inst, 1)) ||
+		bytes.Equal(valueAAD("one", inst, 1), valueAAD("one", other, 1)) {
+		t.Fatal("the authenticated data of a value do not tell versions, secrets or instances apart")
 	}
-	if bytes.Equal(dataKeyAAD("one", 1, "mk-a"), dataKeyAAD("one", 1, "mk-b")) {
-		t.Fatal("the authenticated data do not tell master keys apart")
+	if bytes.Equal(dataKeyAAD("one", inst, 1, "mk-a"), dataKeyAAD("one", inst, 1, "mk-b")) ||
+		bytes.Equal(dataKeyAAD("one", inst, 1, "mk-a"), dataKeyAAD("one", other, 1, "mk-a")) {
+		t.Fatal("the authenticated data of a wrapped key do not tell master keys or instances apart")
 	}
-	r2 := rec
-	r2.Scope = []string{"s"}
-	r3 := rec
-	r3.AllowedHosts = []Address{{Host: "h.test", Port: 1}}
-	if bytes.Equal(bindingAAD(rec, "k"), bindingAAD(r2, "k")) || bytes.Equal(bindingAAD(rec, "k"), bindingAAD(r3, "k")) {
-		t.Fatal("the binding does not cover the scope and the addresses")
+}
+
+// [REQ-403]
+func TestTheBindingCoversEveryPartOfTheRecord(t *testing.T) {
+	inst := bytes.Repeat([]byte{7}, instanceLen)
+	retired := time.Unix(50, 0)
+	base := Record{
+		ID: "one", Instance: inst, Kind: KindToken, CreatedAt: time.Unix(10, 0), Scope: []string{"s"},
+		AllowedHosts: []Address{{Host: "h.test", Port: 1}}, Binding: Sealed{Method: MethodAES256GCM, KeyID: "mk-a"},
+		Versions: []VersionRecord{{Version: 1, CreatedAt: time.Unix(20, 0), Value: &Sealed{Method: MethodAES256GCM, Nonce: []byte{1}, Data: []byte{2}},
+			WrappedKey: &Sealed{Method: MethodAES256GCM, KeyID: "mk-a", Nonce: []byte{3}, Data: []byte{4}}}},
+	}
+	changes := map[string]func(*Record){
+		"the id":             func(r *Record) { r.ID = "two" },
+		"the instance":       func(r *Record) { r.Instance = bytes.Repeat([]byte{8}, instanceLen) },
+		"the kind":           func(r *Record) { r.Kind = KindPassword },
+		"the creation time":  func(r *Record) { r.CreatedAt = time.Unix(11, 0) },
+		"the scope":          func(r *Record) { r.Scope = []string{"t"} },
+		"an address":         func(r *Record) { r.AllowedHosts = []Address{{Host: "h.test", Port: 2}} },
+		"the binding key":    func(r *Record) { r.Binding.KeyID = "mk-b" },
+		"the binding method": func(r *Record) { r.Binding.Method = "other" },
+		"a version number":   func(r *Record) { r.Versions[0].Version = 2 },
+		"a version time":     func(r *Record) { r.Versions[0].CreatedAt = time.Unix(21, 0) },
+		"a retirement":       func(r *Record) { r.Versions[0].RetiredAt = &retired },
+		"the value": func(r *Record) {
+			r.Versions[0].Value = &Sealed{Method: MethodAES256GCM, Nonce: []byte{1}, Data: []byte{9}}
+		},
+		"the value method":   func(r *Record) { r.Versions[0].Value.Method = "other" },
+		"the wrapped key":    func(r *Record) { r.Versions[0].WrappedKey.Data = []byte{9} },
+		"the wrapped key id": func(r *Record) { r.Versions[0].WrappedKey.KeyID = "mk-b" },
+		"another version":    func(r *Record) { r.Versions = append(r.Versions, r.Versions[0]) },
+		"no version":         func(r *Record) { r.Versions = nil },
+	}
+	want := bindingAAD(base)
+	for what, change := range changes {
+		r := base.Clone()
+		change(&r)
+		if bytes.Equal(want, bindingAAD(r)) {
+			t.Errorf("the binding does not cover %s", what)
+		}
 	}
 }
 
@@ -150,11 +195,12 @@ func TestAStoredVersionWhoseFieldsAreNotTheFieldsOfItsKindDoesNotOpen(t *testing
 			t.Fatal(err)
 		}
 		// The version is sealed correctly under the right key, but not by Create, which would have refused it.
-		v, err := svc.newVersion("one", 1, NewFields(fields), key)
+		instance := bytes.Repeat([]byte{9}, instanceLen)
+		v, err := svc.newVersion("one", instance, 1, NewFields(fields), key)
 		if err != nil {
 			t.Fatal(err)
 		}
-		rec := Record{ID: "one", Kind: KindPassword, Scope: []string{"crm"}, AllowedHosts: []Address{{Host: "db.test", Port: 1}}, Versions: []VersionRecord{v}}
+		rec := Record{ID: "one", Instance: instance, Kind: KindPassword, Scope: []string{"crm"}, AllowedHosts: []Address{{Host: "db.test", Port: 1}}, Versions: []VersionRecord{v}}
 		if err := svc.bind(&rec, key); err != nil {
 			t.Fatal(err)
 		}
@@ -165,5 +211,131 @@ func TestAStoredVersionWhoseFieldsAreNotTheFieldsOfItsKindDoesNotOpen(t *testing
 		if kernel.CodeOf(err) != CodeIntegrity {
 			t.Errorf("%s: %v", name, err)
 		}
+	}
+}
+
+func sealedRecord(t *testing.T) (*Service, *MemoryStore, *MasterKey) {
+	t.Helper()
+	store := NewMemoryStore()
+	key := GenerateMasterKey(kernel.NewSeededBytes(11))
+	svc, err := New(Config{Store: store, Keys: StaticKey(key), Clock: kernel.NewManualClock(time.Unix(1000, 0)), Bytes: kernel.NewSeededBytes(12)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return svc, store, key
+}
+
+// [REQ-403]
+func TestEveryVersionHasItsOwnDataKey(t *testing.T) {
+	svc, store, key := sealedRecord(t)
+	in := CreateInput{ID: "one", Kind: KindToken, Fields: NewFields(map[string]string{"token": "not-a-real-token-for-tests"})}
+	if _, err := svc.Create(context.Background(), in); err != nil {
+		t.Fatal(err)
+	}
+	for i := 0; i < 3; i++ {
+		if _, err := svc.AddVersion(context.Background(), "one", in.Fields); err != nil {
+			t.Fatal(err)
+		}
+	}
+	rec, _, _ := store.Get(context.Background(), "one")
+	seen := map[string]bool{}
+	for _, v := range rec.Versions {
+		dk, err := unwrapDataKey(key, sealed{nonce: v.WrappedKey.Nonce, data: v.WrappedKey.Data}, dataKeyAAD(rec.ID, rec.Instance, v.Version, key.id))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if seen[string(dk.key)] {
+			t.Fatal("two versions have the same data key")
+		}
+		seen[string(dk.key)] = true
+	}
+	if len(seen) != 4 {
+		t.Fatalf("%d data keys for 4 versions", len(seen))
+	}
+}
+
+// [REQ-405]
+func TestTheUseIsCheckedBeforeAnythingIsDecrypted(t *testing.T) {
+	svc, store, key := sealedRecord(t)
+	ctx := context.Background()
+	in := CreateInput{ID: "one", Kind: KindToken, Fields: NewFields(map[string]string{"token": "not-a-real-token-for-tests"}),
+		Scope: []string{"crm"}, AllowedHosts: []Address{{Host: "db.test", Port: 1}}}
+	if _, err := svc.Create(ctx, in); err != nil {
+		t.Fatal(err)
+	}
+	// The ciphertext of the value is damaged and the binding is sealed again over the damaged record, so the binding
+	// is good and only decrypting would fail.
+	rec, _, _ := store.Get(ctx, "one")
+	rec.Versions[0].Value.Data[0] ^= 1
+	if err := svc.bind(&rec, key); err != nil {
+		t.Fatal(err)
+	}
+	if err := store.Put(ctx, rec); err != nil {
+		t.Fatal(err)
+	}
+	use := Use{SourceID: "crm", Host: "db.test", Port: 1, Purpose: PurposeRun}
+	if _, err := svc.Open(ctx, "one", use); kernel.CodeOf(err) != CodeIntegrity {
+		t.Fatalf("an allowed use of the damaged version: %v", err)
+	}
+	other := use
+	other.SourceID = "billing"
+	if _, err := svc.Open(ctx, "one", other); kernel.CodeOf(err) != CodeScopeDenied {
+		t.Fatalf("a source outside the scope reached the decryption: %v", err)
+	}
+	other = use
+	other.Port = 2
+	if _, err := svc.Open(ctx, "one", other); kernel.CodeOf(err) != CodeAddressDenied {
+		t.Fatalf("an address outside the list reached the decryption: %v", err)
+	}
+}
+
+// [REQ-403]
+func TestAES256GCMGivesTheAnswersOfTheStandard(t *testing.T) {
+	// Test case 14 of the GCM specification: a key of 256 zero bits, a nonce of 96 zero bits, one block of zeros.
+	gcm, err := newAEAD(make([]byte, keyLen))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want, _ := hex.DecodeString("cea7403d4d606b6e074ec5d3baf39d18" + "d0d1c8a799996bf0265b98b5d48ab919")
+	if got := gcm.Seal(nil, make([]byte, nonceLen), make([]byte, 16), nil); !bytes.Equal(got, want) {
+		t.Fatal("AES-256-GCM does not give the answer of the specification")
+	}
+}
+
+// [REQ-403]
+func TestTheIDOfAMasterKeyComesFromTheKey(t *testing.T) {
+	raw := bytes.Repeat([]byte{1}, keyLen)
+	a, b := newMasterKey(raw), newMasterKey(raw)
+	if a.id != b.id || a.id != keyID(raw) || len(a.id) != 19 {
+		t.Fatalf("key id %q", a.id)
+	}
+	raw[0] = 2
+	if newMasterKey(raw).id == a.id {
+		t.Fatal("two keys have the same id")
+	}
+	// The id is of the purpose and the key: the plain hash of the key is another id.
+	sum := sha256.Sum256(bytes.Repeat([]byte{1}, keyLen))
+	if a.id == "mk-"+hex.EncodeToString(sum[:8]) {
+		t.Fatal("the id is the plain hash of the key")
+	}
+}
+
+// [REQ-404]
+func TestWhatACallerGaveIsRepeatedInAnErrorOnlyWhenItIsSafe(t *testing.T) {
+	for _, s := range []string{"db.example.test", "[2001:db8::1]", "host_1:5432", ""} {
+		if !safeText(s) {
+			t.Errorf("%q should be safe", s)
+		}
+	}
+	for _, s := range []string{"postgres://app:pw@db.test:5432/crm", "a@b", "a b", "a/b", "a\n", "é", strings.Repeat("a", 129), "a=b", "a,b"} {
+		if safeText(s) {
+			t.Errorf("%q should not be safe", s)
+		}
+	}
+	if msg := badText("host", "db.test"); msg != `invalid host "db.test"` {
+		t.Fatalf("%q", msg)
+	}
+	if msg := badText("host", "postgres://app:pw@db.test/x"); strings.Contains(msg, "pw") || strings.Contains(msg, "app") {
+		t.Fatalf("the message repeats the input: %q", msg)
 	}
 }

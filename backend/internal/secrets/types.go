@@ -85,14 +85,15 @@ type CreateInput struct {
 	AllowedHosts []Address
 }
 
-// Writer is the port that changes secrets. The caller checks that no source refers to a secret before it deletes it
+// Writer is the port that changes secrets. Every change but Delete needs the master key. The caller checks that no source refers to a secret before it deletes it
 // or retires its last version (the question is for the unit that joins the sources to this one).
 type Writer interface {
 	// Create makes a secret with version 1. A secret with that id is a conflict.
 	Create(ctx context.Context, in CreateInput) (Meta, error)
 	// AddVersion adds the next version; the open gives it from then on.
 	AddVersion(ctx context.Context, id string, fields Fields) (Meta, error)
-	// RetireVersion retires a version: its ciphertext is deleted and it never opens again.
+	// RetireVersion retires a version: its ciphertext is deleted and the retirement is bound by the tag under the
+	// master key, so it needs the key. Only a copy of the whole record from before the retirement brings it back.
 	RetireVersion(ctx context.Context, id string, version int) (Meta, error)
 	// Delete removes the secret with all its versions.
 	Delete(ctx context.Context, id string) error

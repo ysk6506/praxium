@@ -26,10 +26,11 @@ type VersionRecord struct {
 }
 
 // Record is a secret as stored: nothing in it is a value in the clear. Binding is the tag under the master key over
-// the id, kind, scope and allowed addresses.
+// the whole state of the record (bindingAAD).
 type Record struct {
 	ID           string          `json:"id"`
 	Kind         Kind            `json:"kind"`
+	Instance     []byte          `json:"instance"` // 16 random bytes made with the secret, in every authenticated data
 	CreatedAt    time.Time       `json:"created_at"`
 	Scope        []string        `json:"scope"`
 	AllowedHosts []Address       `json:"allowed_hosts"`
@@ -52,6 +53,7 @@ func cloneSealed(s *Sealed) *Sealed {
 
 // Clone returns a copy that shares nothing with r.
 func (r Record) Clone() Record {
+	r.Instance = slices.Clone(r.Instance)
 	r.Scope = slices.Clone(r.Scope)
 	r.AllowedHosts = slices.Clone(r.AllowedHosts)
 	r.Binding = r.Binding.clone()
@@ -87,6 +89,9 @@ func (r Record) Validate() error {
 	if err := ValidateID(r.ID); err != nil {
 		return kernel.Errorf(kernel.CodeInvalidValue, "a stored secret has an invalid id")
 	}
+	if len(r.Instance) != instanceLen {
+		return bad("has no instance id of the right length")
+	}
 	if _, ok := kindFields[r.Kind]; !ok {
 		return bad("has an unknown kind")
 	}
@@ -108,8 +113,8 @@ func (r Record) validateVersions(bad func(string) error) error {
 	}
 	last := 0
 	for _, v := range r.Versions {
-		if v.Version <= last {
-			return bad("has versions that are not in rising order")
+		if v.Version <= last || v.Version > maxVersionNumber {
+			return bad("has versions that are not in rising order or have a number out of range")
 		}
 		last = v.Version
 		if why := v.shapeProblem(); why != "" {

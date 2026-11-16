@@ -32,11 +32,11 @@ func (s *Service) Open(ctx context.Context, id string, use Use) (*Opened, error)
 	if !ok {
 		return nil, kernel.Errorf(CodeVersionRetired, "every version of the secret %q is retired; put in a new version", id)
 	}
-	values, raw, err := decryptVersion(rec, ver, master)
+	values, holders, err := decryptVersion(rec, ver, master)
 	if err != nil {
 		return nil, err
 	}
-	return &Opened{d: &openedData{id: rec.ID, kind: rec.Kind, version: ver.Version, values: values, raw: raw}}, nil
+	return &Opened{d: &openedData{id: rec.ID, kind: rec.Kind, version: ver.Version, addr: addr, values: values, holders: holders}}, nil
 }
 
 // authorize is the one place that decides whether a use is allowed: the source must be in the scope and the address
@@ -55,16 +55,16 @@ func authorize(rec Record, sourceID string, addr Address) error {
 
 // decryptVersion unwraps the data key of the version, decrypts the fields and checks that they are the fields of the
 // kind. Whatever is wrong gives the integrity error: the stored form is not what this store wrote.
-func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[string]Value, [][]byte, error) {
+func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[string]Value, []*secretBytes, error) {
 	if ver.WrappedKey.KeyID != master.id {
 		return nil, nil, mismatch(rec.ID, ver.WrappedKey.KeyID, master.id)
 	}
-	dk, err := unwrapDataKey(master, sealed{nonce: ver.WrappedKey.Nonce, data: ver.WrappedKey.Data}, dataKeyAAD(rec.ID, ver.Version, master.id))
+	dk, err := unwrapDataKey(master, sealed{nonce: ver.WrappedKey.Nonce, data: ver.WrappedKey.Data}, dataKeyAAD(rec.ID, rec.Instance, ver.Version, master.id))
 	if err != nil {
 		return nil, nil, err
 	}
 	defer dk.wipe()
-	plain, err := aeadOpen(dk.key, sealed{nonce: ver.Value.Nonce, data: ver.Value.Data}, valueAAD(rec.ID, ver.Version))
+	plain, err := aeadOpen(dk.key, sealed{nonce: ver.Value.Nonce, data: ver.Value.Data}, valueAAD(rec.ID, rec.Instance, ver.Version))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -76,15 +76,16 @@ func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[strin
 		return nil, nil, errIntegrity()
 	}
 	values := make(map[string]Value, len(names))
-	held := make([][]byte, 0, len(names))
+	held := make([]*secretBytes, 0, len(names))
 	for _, n := range names {
 		b, present := raw[n]
 		if !present || len(b) == 0 {
 			wipeAll(raw)
 			return nil, nil, errIntegrity()
 		}
-		values[n] = newValue(b)
-		held = append(held, b)
+		h := &secretBytes{b: b}
+		values[n] = h.value()
+		held = append(held, h)
 	}
 	return values, held, nil
 }

@@ -2,11 +2,17 @@ package secrets_test
 
 import (
 	"bytes"
+	"context"
+	"errors"
+	"reflect"
+	"time"
+
 	"encoding"
 	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"log/slog"
 	"strings"
 	"testing"
@@ -70,7 +76,7 @@ func TestAnOpenedValueIsNeverPrintedByFmt(t *testing.T) {
 	for name, thing := range things {
 		for _, verb := range verbs {
 			out := fmt.Sprintf(verb, thing)
-			if leaks(out, testPassword) || leaks(out, testUser) || leaks(out, string(r.key.Encode())) {
+			if leaks(out, testPassword) || leaks(out, testUser) || leaks(out, rawKey(t, r.key)) {
 				t.Errorf("%s printed with %s shows a value", name, verb)
 			}
 		}
@@ -103,7 +109,7 @@ func TestAnOpenedValueIsNeverEncodedByJSONOrTextEncoders(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if leaks(string(out), testPassword) || leaks(string(out), testUser) || leaks(string(out), string(r.key.Encode())) {
+			if leaks(string(out), testPassword) || leaks(string(out), testUser) || leaks(string(out), rawKey(t, r.key)) {
 				t.Errorf("JSON of %T shows a value", thing)
 			}
 		}
@@ -141,7 +147,7 @@ func TestAnOpenedValueIsNeverWrittenByTheLogger(t *testing.T) {
 		l.WithGroup("grp").Error("group", "value", pw)
 	}
 	for _, out := range []string{text.String(), js.String()} {
-		if leaks(out, testPassword) || leaks(out, testUser) || leaks(out, string(r.key.Encode())) {
+		if leaks(out, testPassword) || leaks(out, testUser) || leaks(out, rawKey(t, r.key)) {
 			t.Fatalf("the log shows a value:\n%s", redactOnly(out))
 		}
 		if !strings.Contains(out, secrets.Redacted) {
@@ -207,7 +213,7 @@ func TestNothingThatDescribesASecretHoldsAValue(t *testing.T) {
 		t.Fatal(err)
 	}
 	stored, _ := json.Marshal(recs)
-	for _, v := range []string{testPassword, testUser, "not-a-real-password-v2", string(r.key.Encode())} {
+	for _, v := range []string{testPassword, testUser, "not-a-real-password-v2", rawKey(t, r.key)} {
 		if leaks(string(stored), v) {
 			t.Fatal("a stored record shows a value")
 		}
@@ -245,4 +251,129 @@ func TestFieldsReadFromJSONAreAsHiddenAsFieldsMadeInCode(t *testing.T) {
 			t.Errorf("%s was accepted", text)
 		}
 	}
+}
+
+// rawKey is the bytes of the master key themselves. The searches below look for these bytes in their plain, hex and
+// base64 forms, not for the text of the key file.
+func rawKey(t *testing.T, k *secrets.MasterKey) string {
+	t.Helper()
+	var f struct {
+		Key string `json:"key"`
+	}
+	if err := json.Unmarshal(k.Encode(), &f); err != nil {
+		t.Fatal(err)
+	}
+	for _, enc := range []*base64.Encoding{base64.StdEncoding, base64.RawStdEncoding, base64.URLEncoding, base64.RawURLEncoding} {
+		if raw, err := enc.DecodeString(f.Key); err == nil && len(raw) == 32 {
+			return string(raw)
+		}
+	}
+	t.Fatal("the key file holds no 32 bytes")
+	return ""
+}
+
+type keyHolder struct {
+	K  secrets.MasterKey
+	P  *secrets.MasterKey
+	L  []secrets.MasterKey
+	M  map[string]*secrets.MasterKey
+	hk secrets.MasterKey
+	pk *secrets.MasterKey
+}
+
+// [REQ-404]
+func TestAMasterKeyIsNeverShownByAnyOutputOfAnythingThatHoldsIt(t *testing.T) {
+	r := newRig(t)
+	r.createPassword(t, "one")
+	key := r.key
+	secret := rawKey(t, key)
+	cfg := secrets.Config{Store: r.store, Keys: secrets.StaticKey(key), Clock: kernel.NewManualClock(time.Unix(1, 0)), Bytes: kernel.NewSeededBytes(3)}
+	svc, err := secrets.New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	kh := keyHolder{K: *key, P: key, L: []secrets.MasterKey{*key}, M: map[string]*secrets.MasterKey{"a": key}, hk: *key, pk: key}
+	things := map[string]any{
+		"key": key, "key value": *key, "struct": struct{ k secrets.MasterKey }{*key}, "struct pointer": struct{ k *secrets.MasterKey }{key},
+		"holder": kh, "holder pointer": &kh, "list": []*secrets.MasterKey{key}, "map": map[string]secrets.MasterKey{"a": *key},
+		"static key": secrets.StaticKey(key), "config": cfg, "config pointer": &cfg, "service": svc,
+		"writer": svc.Writer(), "opener": svc.Opener(), "describer": svc.Describer(), "ports": []any{svc.Writer(), svc.Opener(), svc.Describer()},
+		"wrapped error": fmt.Errorf("wrap: %w", errors.Join(errors.New("x"), kernel.Errorf(secrets.CodeMasterKeyInvalid, "bad"))),
+	}
+	verbs := append(append([]string{}, verbs...), "%T", "%10v", "%+#v")
+	for name, thing := range things {
+		for _, verb := range verbs {
+			if out := fmt.Sprintf(verb, thing); leaks(out, secret) {
+				t.Errorf("%s printed with %s shows the key", name, verb)
+			}
+		}
+		if out, err := json.Marshal(thing); err == nil && leaks(string(out), secret) {
+			t.Errorf("JSON of %s shows the key", name)
+		}
+		var buf bytes.Buffer
+		slog.New(slog.NewJSONHandler(&buf, nil)).Info("x", "thing", thing)
+		slog.New(slog.NewTextHandler(&buf, nil)).Info("x", "thing", thing)
+		if leaks(buf.String(), secret) {
+			t.Errorf("the log of %s shows the key", name)
+		}
+	}
+	// A walk over everything reachable by reflection finds no byte of the key in any field, exported or not.
+	for name, thing := range things {
+		if found := walkFor(reflect.ValueOf(thing), []byte(secret), map[uintptr]bool{}, 0); found {
+			t.Errorf("%s holds the bytes of the key in a field", name)
+		}
+	}
+	if _, err := svc.Open(context.Background(), "one", okUse); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// walkFor looks through v, unexported fields included, for text or bytes that hold needle. Function values hide their
+// captured variables from reflection, which is what the types under test rely on.
+func walkFor(v reflect.Value, needle []byte, seen map[uintptr]bool, depth int) bool {
+	if depth > 12 || !v.IsValid() {
+		return false
+	}
+	switch v.Kind() {
+	case reflect.String:
+		return strings.Contains(v.String(), string(needle))
+	case reflect.Slice, reflect.Array:
+		if v.Type().Elem().Kind() == reflect.Uint8 {
+			b := make([]byte, v.Len())
+			for i := range b {
+				b[i] = byte(v.Index(i).Uint())
+			}
+			return bytes.Contains(b, needle)
+		}
+		for i := 0; i < v.Len(); i++ {
+			if walkFor(v.Index(i), needle, seen, depth+1) {
+				return true
+			}
+		}
+	case reflect.Map:
+		it := v.MapRange()
+		for it.Next() {
+			if walkFor(it.Key(), needle, seen, depth+1) || walkFor(it.Value(), needle, seen, depth+1) {
+				return true
+			}
+		}
+	case reflect.Struct:
+		for i := 0; i < v.NumField(); i++ {
+			if walkFor(v.Field(i), needle, seen, depth+1) {
+				return true
+			}
+		}
+	case reflect.Pointer, reflect.Interface:
+		if v.IsNil() {
+			return false
+		}
+		if v.Kind() == reflect.Pointer {
+			if seen[v.Pointer()] {
+				return false
+			}
+			seen[v.Pointer()] = true
+		}
+		return walkFor(v.Elem(), needle, seen, depth+1)
+	}
+	return false
 }

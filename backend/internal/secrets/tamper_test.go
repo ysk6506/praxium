@@ -144,5 +144,5 @@ func TestAnotherMasterKeyIdIsToldApartFromATamperedFile(t *testing.T) {
 	rec = record(t, r, "one")
 	rec.Binding.KeyID = r.key.ID()
 	rec.Versions[0].WrappedKey.KeyID = "mk-other"
-	openFails(t, r, "one", rec, secrets.CodeMasterKeyMismatch, "wrapped key id")
+	openFails(t, r, "one", rec, secrets.CodeIntegrity, "wrapped key id")
 }

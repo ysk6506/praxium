@@ -24,7 +24,13 @@ const (
 var maxFileLen = 64 << 20
 
 // Disk is the one folder the file lives in: plain file names, never paths. The composition root implements it over the
-// operating system; Create must make a file only its owner can read.
+// operating system. The contract of an implementation:
+//   - Create makes a file with the mode 0600, so only its owner can read it.
+//   - ReadWhole refuses a file whose permissions are looser than 0600, and it limits the size while reading, so that a
+//     file larger than the limit is never held whole.
+//   - The data folder is locked by the process that has the Disk open, so that no other process writes the file.
+//
+// This package does not check these; the implementation that is added with the assembly does.
 type Disk interface {
 	// ReadWhole returns the whole file. A file that is not there is an error that is fs.ErrNotExist.
 	ReadWhole(name string) ([]byte, error)

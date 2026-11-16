@@ -3,6 +3,7 @@ package secrets
 import (
 	"net/netip"
 	"sort"
+	"strconv"
 	"strings"
 	"unicode/utf8"
 
@@ -16,7 +17,36 @@ const (
 	maxHostLen  = 253
 	maxLabelLen = 63
 	maxVersions = 1000
+	// maxVersionNumber bounds the number of a version: a secret has at most maxVersions versions, so a number beyond
+	// this one is not one this store wrote.
+	maxVersionNumber = 1 << 20
+	instanceLen      = 16
 )
+
+// safeText says whether a text that a caller gave may be put in an error message: short, and only letters, digits and
+// . - _ : [ ]. A host with a user and a password in it ("postgres://user:pw@host/db") is a common mistake, so
+// anything else is never repeated.
+func safeText(s string) bool {
+	if len(s) > 128 {
+		return false
+	}
+	for i := 0; i < len(s); i++ {
+		c := s[i]
+		if !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || strings.IndexByte(".-_:[]", c) >= 0) {
+			return false
+		}
+	}
+	return true
+}
+
+// badText is the start of the message about a text a caller gave: the text itself when it is safe, else only the
+// words that it is not valid.
+func badText(what, s string) string {
+	if safeText(s) {
+		return "invalid " + what + " " + strconv.Quote(s)
+	}
+	return "the " + what + " given is not valid"
+}
 
 // ValidateID checks the syntax of a secret id (and of a master key id): a lower-case letter first, then lower-case
 // letters, digits, _ and -, up to 64 characters.
@@ -44,11 +74,11 @@ func validName(id string) bool {
 func checkFields(kind Kind, fields Fields) error {
 	names, ok := kindFields[kind]
 	if !ok {
-		return kernel.Errorf(kernel.CodeInvalidValue, "unknown secret kind %q: use password or token", string(kind))
+		return kernel.Errorf(kernel.CodeInvalidValue, "%s: use password or token", badText("secret kind", string(kind)))
 	}
 	for _, name := range fields.Names() {
 		if !contains(names, name) {
-			return kernel.Errorf(kernel.CodeInvalidValue, "a %s secret has no field %q; its fields are %s", kind, name, strings.Join(names, ", "))
+			return kernel.Errorf(kernel.CodeInvalidValue, "%s; the fields of a %s secret are %s", badText("field name", name), kind, strings.Join(names, ", "))
 		}
 	}
 	for _, name := range names {
@@ -86,7 +116,7 @@ func normalizeScope(ids []string) ([]string, error) {
 	out := make([]string, 0, len(ids))
 	for _, id := range ids {
 		if _, err := kernel.ParseID[sourceMarker](id); err != nil {
-			return nil, kernel.Errorf(kernel.CodeInvalidValue, "invalid source id %q in the scope", id)
+			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s in the scope", badText("source id", id))
 		}
 		out = append(out, id)
 	}
@@ -113,7 +143,7 @@ func compact[T comparable](sorted []T) []T {
 //     A name whose last label is a number (127.1, 0x7f.1) is refused: a resolver may read it as an address.
 //   - an empty host, a host with a port, a path, a space or a wildcard is refused.
 func NormalizeHost(raw string) (string, error) {
-	bad := kernel.Errorf(kernel.CodeInvalidValue, "invalid host %q", raw)
+	bad := kernel.Errorf(kernel.CodeInvalidValue, "%s: write a host name or an IP address only", badText("host", raw))
 	if raw == "" || len(raw) > maxHostLen+2 {
 		return "", bad
 	}
@@ -244,12 +274,12 @@ func normalizeAddresses(list []Address) ([]Address, error) {
 // checkUse validates the parts of a use and returns the address in its normal form.
 func checkUse(use Use) (Address, error) {
 	if _, err := kernel.ParseID[sourceMarker](use.SourceID); err != nil {
-		return Address{}, kernel.Errorf(kernel.CodeInvalidValue, "invalid source id %q in the use", use.SourceID)
+		return Address{}, kernel.Errorf(kernel.CodeInvalidValue, "%s in the use", badText("source id", use.SourceID))
 	}
 	switch use.Purpose {
 	case PurposeRun, PurposeCheck, PurposeDiscover:
 	default:
-		return Address{}, kernel.Errorf(kernel.CodeInvalidValue, "unknown purpose %q: use run, check or discover", string(use.Purpose))
+		return Address{}, kernel.Errorf(kernel.CodeInvalidValue, "%s: use run, check or discover", badText("purpose", string(use.Purpose)))
 	}
 	return normalizeAddress(Address{Host: use.Host, Port: use.Port})
 }

@@ -2,6 +2,7 @@ package secrets
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
 	"encoding/hex"
@@ -21,12 +22,15 @@ const (
 	maxKeyFileLen   = 4096
 )
 
-// MasterKey is the key that wraps the data keys. One key makes one id; the id is stored beside everything it
-// wrapped, so a store knows which key to ask for. Printing it in any way gives Redacted.
+// MasterKey is the key that wraps the data keys. Its id is derived from the key (keyID), and is stored beside
+// everything the key sealed, so a store knows which key to ask for. The key bytes are held by a function value, like
+// the bytes of a Value: fmt prints the methods of a field it can see only, and for a wrong verb it prints what a
+// pointer points to, so a key in a slice field would show in a Config or a Service that holds it. Printing the key
+// itself gives Redacted.
 type MasterKey struct {
 	redacted
 	id  string
-	key []byte
+	get func() []byte
 }
 
 // KeyProvider is the port that gives the master key. Where the key comes from (a file, a key service) is the
@@ -47,11 +51,27 @@ type masterFile struct {
 	Key     string `json:"key"` // base64 of the 32 key bytes
 }
 
-// GenerateMasterKey makes a new key of 32 bytes from src, with the id "mk-" and 16 hex digits.
+const labelKeyID = "praxium-secrets/1/master-key-id"
+
+// keyID is the id of a key: "mk-" and the first 16 hex digits of the SHA-256 of the purpose and the key. The id comes
+// from the key, so a file whose id is not that of its key is not what it says it is.
+func keyID(raw []byte) string {
+	sum := sha256.Sum256(append([]byte(labelKeyID), raw...))
+	return "mk-" + hex.EncodeToString(sum[:8])
+}
+
+func newMasterKey(raw []byte) *MasterKey {
+	key := append([]byte(nil), raw...)
+	return &MasterKey{id: keyID(key), get: func() []byte { return key }}
+}
+
+func (k *MasterKey) bytes() []byte { return k.get() }
+
+// GenerateMasterKey makes a new key of 32 bytes from src.
 func GenerateMasterKey(src kernel.ByteSource) *MasterKey {
-	raw := make([]byte, keyLen+8)
+	raw := make([]byte, keyLen)
 	src.Fill(raw)
-	k := &MasterKey{id: "mk-" + hex.EncodeToString(raw[keyLen:]), key: append([]byte(nil), raw[:keyLen]...)}
+	k := newMasterKey(raw)
 	wipe(raw)
 	return k
 }
@@ -61,7 +81,7 @@ func GenerateMasterKey(src kernel.ByteSource) *MasterKey {
 func (k *MasterKey) Encode() []byte {
 	out, _ := json.MarshalIndent(masterFile{
 		Format: masterFormat, Version: masterVersion, KeyID: k.id, Method: MethodAES256GCM,
-		Key: base64.StdEncoding.EncodeToString(k.key),
+		Key: base64.StdEncoding.EncodeToString(k.bytes()),
 	}, "", " ")
 	return append(out, '\n')
 }
@@ -101,7 +121,11 @@ func ParseMasterKey(data []byte) (*MasterKey, error) {
 	if err != nil || len(raw) != keyLen || subtle.ConstantTimeCompare(raw, make([]byte, keyLen)) == 1 {
 		return invalid("has a key that is not 32 bytes of base64")
 	}
-	return &MasterKey{id: f.KeyID, key: append([]byte(nil), raw...)}, nil
+	key := newMasterKey(raw)
+	if key.id != f.KeyID {
+		return invalid("has a key id that is not the id of its key")
+	}
+	return key, nil
 }
 
 type staticKey struct{ key *MasterKey }

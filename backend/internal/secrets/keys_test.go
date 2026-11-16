@@ -26,26 +26,23 @@ func TestASecretSealedByAnotherMasterKeyIsRefusedWithAWayOut(t *testing.T) {
 	wantCode(t, err, secrets.CodeMasterKeyMismatch)
 	_, err = other.SetScope(ctx, "one", nil)
 	wantCode(t, err, secrets.CodeMasterKeyMismatch)
-	// Retiring and deleting need no key, and the right key still opens.
+	_, err = other.RetireVersion(ctx, "one", 1)
+	wantCode(t, err, secrets.CodeMasterKeyMismatch)
+	// Retiring needs the right key too, deleting needs none, and the right key still opens.
 	sameText(t, field(t, r.open(t, "one"), "password"), testPassword, "the right key")
 }
 
 // [REQ-403]
-func TestAKeyWithTheSameIdAndOtherBytesDoesNotAuthenticate(t *testing.T) {
+func TestAKeyFileWithTheIDOfAnotherKeyIsRefused(t *testing.T) {
 	r := newRig(t)
-	r.createPassword(t, "one")
 	var f map[string]any
 	if err := json.Unmarshal(newKey(1234).Encode(), &f); err != nil {
 		t.Fatal(err)
 	}
 	f["key_id"] = r.key.ID()
 	raw, _ := json.Marshal(f)
-	same, err := secrets.ParseMasterKey(raw)
-	if err != nil {
-		t.Fatal(err)
-	}
-	_, err = r.serviceWith(t, secrets.StaticKey(same)).Open(ctx, "one", okUse)
-	wantCode(t, err, secrets.CodeIntegrity)
+	_, err := secrets.ParseMasterKey(raw)
+	wantCode(t, err, secrets.CodeMasterKeyInvalid)
 }
 
 type failingKeys struct{ err error }
@@ -84,9 +81,10 @@ func TestWithoutAMasterKeyDescribingWorksAndTheRestSaysWhy(t *testing.T) {
 	broken := r.serviceWith(t, failingKeys{err: kernel.Errorf(secrets.CodeMasterKeyInvalid, "the key file is damaged")})
 	_, err := broken.Open(ctx, "one", okUse)
 	wantCode(t, err, secrets.CodeMasterKeyInvalid)
-	if _, err := broken.RetireVersion(ctx, "one", 1); err != nil {
-		t.Fatalf("retire needs no key: %v", err)
-	}
+	_, err = broken.RetireVersion(ctx, "one", 1)
+	wantCode(t, err, secrets.CodeMasterKeyInvalid)
+	_, err = r.serviceWith(t, secrets.NoKey()).RetireVersion(ctx, "one", 1)
+	wantCode(t, err, secrets.CodeMasterKeyMissing)
 	if err := broken.Delete(ctx, "one"); err != nil {
 		t.Fatalf("delete needs no key: %v", err)
 	}
