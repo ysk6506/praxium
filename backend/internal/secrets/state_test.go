@@ -363,3 +363,36 @@ func TestAnErrorRepeatsWhatACallerGaveOnlyWhenItIsSafe(t *testing.T) {
 		t.Fatal("a port of zero was accepted")
 	}
 }
+
+// [REQ-406]
+func TestTheNarrowPortsDoTheirWholeWork(t *testing.T) {
+	r := newRig(t)
+	w, d := r.svc.Writer(), r.svc.Describer()
+	in := secrets.CreateInput{ID: "one", Kind: secrets.KindToken, Fields: secrets.NewFields(map[string]string{"token": testToken}),
+		Scope: []string{"crm"}, AllowedHosts: []secrets.Address{dbAddress}}
+	if _, err := w.Create(ctx, in); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.AddVersion(ctx, "one", in.Fields); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.SetScope(ctx, "one", []string{"crm", "x"}); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.SetAllowedHosts(ctx, "one", nil); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := w.RetireVersion(ctx, "one", 1); err != nil {
+		t.Fatal(err)
+	}
+	meta, err := d.Get(ctx, "one")
+	if err != nil || len(meta.Scope) != 2 {
+		t.Fatalf("get: %v", err)
+	}
+	if err := w.Delete(ctx, "one"); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := d.Get(ctx, "one"); err == nil {
+		t.Fatal("a deleted secret is still described")
+	}
+}

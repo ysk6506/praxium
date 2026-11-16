@@ -23790,6 +23790,21 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestTheNarrowPortsDoTheirWholeWork": {
+   "kind": "test",
+   "hash": "7a33b271b9ff477f",
+   "asserts": 9,
+   "literals": [
+    "34defdf2d0dfe530"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-406"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestThePortsThatAreHandedOutAreNarrow": {
    "kind": "test",
    "hash": "060b0c84beb78296",
