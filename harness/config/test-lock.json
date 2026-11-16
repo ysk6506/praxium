@@ -11619,6 +11619,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestDemoServesMCPWithTheTokenOfTheRun": {
+   "kind": "test",
+   "hash": "fa3042ec1b2fe406",
+   "asserts": 11,
+   "literals": [
+    "cf236fc77fff7189"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestDemoStopsBeforeServingWhenTheWorldCannotBeMade": {
    "kind": "test",
    "hash": "cedd142a3868e170",
@@ -11677,6 +11690,21 @@
     "REQ-280"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestDemoWithMCPOffAnswersJSON404": {
+   "kind": "test",
+   "hash": "cd21cb2c4de2ef77",
+   "asserts": 5,
+   "literals": [
+    "e7c4df8c03b2a2c0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestDemoWithoutTheWebUIExplainsAndKeepsTheAPI": {
@@ -12313,6 +12341,94 @@
     "REQ-294"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestMCPAllowedOriginsMustBeOrigins": {
+   "kind": "test",
+   "hash": "6bc6da3b9ce96add",
+   "asserts": 2,
+   "literals": [
+    "2f597105dc4a5348"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestMCPHostCheckFollowsTheAddressAndTheProxy": {
+   "kind": "test",
+   "hash": "38b9c986d2200ac4",
+   "asserts": 3,
+   "literals": [
+    "8c31f3b2c511c6f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestMCPInProductionTakesServiceAccountsOnly": {
+   "kind": "test",
+   "hash": "3d7346e965bce65f",
+   "asserts": 5,
+   "literals": [
+    "f65c55a4fba355a4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-506"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestMCPIsOffInProductionUntilAskedFor": {
+   "kind": "test",
+   "hash": "ae7917e99fde3cff",
+   "asserts": 2,
+   "literals": [
+    "74274c533e537a0b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestMCPTakesTheTokenByItsOwnRoles": {
+   "kind": "test",
+   "hash": "44f91457e166a273",
+   "asserts": 5,
+   "literals": [
+    "3b75d5c6ec3a1b09"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-506"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestMCPUsesTheLimiterOfTheServer": {
+   "kind": "test",
+   "hash": "e7cb4df12dcd5e57",
+   "asserts": 2,
+   "literals": [
+    "dcc11b40d87864f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-506"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestModelAddsToATraitAndWarnsOfASimilarStandardProperty": {
@@ -14100,6 +14216,32 @@
     "REQ-148"
    ],
    "added": "2026-11-13",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestMCPTokenRefusalCodeIsInTheCatalogue": {
+   "kind": "test",
+   "hash": "1324de85fdde4cf5",
+   "asserts": 1,
+   "literals": [
+    "c2eeb37929335ed8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/contract::TestMCPToolContractIsWellFormed": {
+   "kind": "test",
+   "hash": "9fad65cbbba3e975",
+   "asserts": 9,
+   "literals": [
+    "beb54c728870c6e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/contract::TestPlannedRoutesAreRegisteredAndNotInTheContract": {
@@ -19912,6 +20054,32 @@
    "added": "2026-11-15",
    "amended_by": null
   },
+  "go:backend/internal/kgread::TestCleanTextCutsAndSaysSo": {
+   "kind": "test",
+   "hash": "289408eeaad4987e",
+   "asserts": 2,
+   "literals": [
+    "4b7753dc623eec6c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/kgread::TestCleanTextTakesOutWhatHidesAnInstruction": {
+   "kind": "test",
+   "hash": "5fa6a41ac80ec53f",
+   "asserts": 1,
+   "literals": [
+    "1c90b795440eaf09"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/kgread::TestGateAuthenticatesAGoodToken": {
    "kind": "test",
    "hash": "e053d168a6a1d56f",
@@ -20053,6 +20221,934 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::FuzzParseStrict": {
+   "kind": "test",
+   "hash": "921a7bc892bfc483",
+   "asserts": 1,
+   "literals": [
+    "4363e25d18b3b42e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestAcceptQualityThatIsNotANumberIsZero": {
+   "kind": "test",
+   "hash": "bfac709da1876067",
+   "asserts": 1,
+   "literals": [
+    "563340cb1bc5880b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestAnAuthenticatorThatCannotAnswerIs503": {
+   "kind": "test",
+   "hash": "84737808a653f67d",
+   "asserts": 4,
+   "literals": [
+    "0f3e410d66474d0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestARefusedTokenFromABlockedAddressIs429": {
+   "kind": "test",
+   "hash": "9bedc05c8b67fe3b",
+   "asserts": 6,
+   "literals": [
+    "7c894988f16e9661"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestAResultThatCannotBeWrittenIsInternalError": {
+   "kind": "test",
+   "hash": "e2842e681bce89e3",
+   "asserts": 5,
+   "literals": [
+    "ef2f8ea83371a847"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestASubjectWithoutTheReadAbilityIsRefused": {
+   "kind": "test",
+   "hash": "0e39f51e86907aea",
+   "asserts": 4,
+   "literals": [
+    "c9f7ec2514be2ca8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestCallerAddressForTheLimiter": {
+   "kind": "test",
+   "hash": "82b59f713d7132a7",
+   "asserts": 1,
+   "literals": [
+    "8e4868e1b96fd390"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestDisabledInterfaceAnswersJSON404": {
+   "kind": "test",
+   "hash": "2160fed6c87b828b",
+   "asserts": 3,
+   "literals": [
+    "9219c56ad070c2b7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestInitializeNeedsAVersionAndAcceptsNotifications": {
+   "kind": "test",
+   "hash": "29210fb245a7ea0a",
+   "asserts": 6,
+   "literals": [
+    "418cb2a6376fc483"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestMalformedCallIsAProtocolError": {
+   "kind": "test",
+   "hash": "e68c2fcda827c09d",
+   "asserts": 10,
+   "literals": [
+    "bd6ad7c4bac8bf82"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestMalformedMessagesAreRefused": {
+   "kind": "test",
+   "hash": "4931cde8d77e31d1",
+   "asserts": 6,
+   "literals": [
+    "cf390c0ba798b3d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestNewNeedsItsParts": {
+   "kind": "test",
+   "hash": "7b392e2df35a4b85",
+   "asserts": 1,
+   "literals": [
+    "56e54a0865ec719c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestNoArgumentsToleratesAnEmptyObject": {
+   "kind": "test",
+   "hash": "ff4fb947e2dc5203",
+   "asserts": 3,
+   "literals": [
+    "771cdec93a51e1b0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestOriginAndHostAreCheckedBeforeTheToken": {
+   "kind": "test",
+   "hash": "a24305e951e8100d",
+   "asserts": 5,
+   "literals": [
+    "86a82494fa710d62"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505",
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestOriginGivenTwiceIsRefused": {
+   "kind": "test",
+   "hash": "680df14ea6d578c7",
+   "asserts": 4,
+   "literals": [
+    "419a66dae78cb704"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestParserCornerForms": {
+   "kind": "test",
+   "hash": "f211ad35083a2d2b",
+   "asserts": 1,
+   "literals": [
+    "1a0082cc0eb080fe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestParseStrictKeepsKeysLetterForLetter": {
+   "kind": "test",
+   "hash": "d174cd83e69a6284",
+   "asserts": 2,
+   "literals": [
+    "b01a5323306ea83b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestParseStrictNamesTheOtherRefusals": {
+   "kind": "test",
+   "hash": "f4767d789fdab30c",
+   "asserts": 2,
+   "literals": [
+    "5cce96462b8226c7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestParseStrictReadsWhatTheStandardDecoderReads": {
+   "kind": "test",
+   "hash": "6b169fceb6de05d4",
+   "asserts": 7,
+   "literals": [
+    "6895aa83868470a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestParseStrictRefusesWhatIsNotJSON": {
+   "kind": "test",
+   "hash": "d8f3214a31881600",
+   "asserts": 1,
+   "literals": [
+    "6c6d87d0efb3feb2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestReadRecordCleansTheClientsWords": {
+   "kind": "test",
+   "hash": "a1e52630c1be954c",
+   "asserts": 5,
+   "literals": [
+    "ea9f741c277fc647"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestReadRecordIsOneLinePerCall": {
+   "kind": "test",
+   "hash": "287e92fd4c7b7e3f",
+   "asserts": 7,
+   "literals": [
+    "988e01857f38b8de"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestRefusalParamsAreCleanedDeeply": {
+   "kind": "test",
+   "hash": "ee13d8d359b27355",
+   "asserts": 4,
+   "literals": [
+    "ad00e9827de45cec"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestRegistryMatchesTheContractFile": {
+   "kind": "test",
+   "hash": "85a95c18d12d909d",
+   "asserts": 6,
+   "literals": [
+    "ddca16267f9694d4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestRequestsAreCountedByVersion": {
+   "kind": "test",
+   "hash": "b80547a61717ea04",
+   "asserts": 9,
+   "literals": [
+    "0b24052e961309c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-504"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestResultShapeIsMetaNextData": {
+   "kind": "test",
+   "hash": "9f130adb30df4d74",
+   "asserts": 7,
+   "literals": [
+    "e472f431403d9b6f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-518"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestRowX3OriginIsRefusedInEveryVersion": {
+   "kind": "test",
+   "hash": "a8cd7dcb9197a141",
+   "asserts": 5,
+   "literals": [
+    "d32c46582528f026"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestRowX4TokenRefusalsAre401WithAProblem": {
+   "kind": "test",
+   "hash": "d3e62b1e49682e05",
+   "asserts": 5,
+   "literals": [
+    "e725fdf87c27d091"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-506"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity01KeyLetterCase": {
+   "kind": "test",
+   "hash": "e593ce84b2dd5b7e",
+   "asserts": 7,
+   "literals": [
+    "022e18c5becc2f53"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity02NulInKey": {
+   "kind": "test",
+   "hash": "597802ceaceae8c2",
+   "asserts": 4,
+   "literals": [
+    "b95778fe777e48c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity03DuplicateKey": {
+   "kind": "test",
+   "hash": "eac8fde4a90a0c16",
+   "asserts": 4,
+   "literals": [
+    "1a228f8b932530d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity04HeadersThatDifferFromTheBody": {
+   "kind": "test",
+   "hash": "30a4fbf75f176e80",
+   "asserts": 8,
+   "literals": [
+    "d75ab324b8f85964"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity05McpNameForms": {
+   "kind": "test",
+   "hash": "b3de50b5420a9471",
+   "asserts": 8,
+   "literals": [
+    "ab4409165e7c21e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity06ContentType": {
+   "kind": "test",
+   "hash": "6a5baef921d0a6ba",
+   "asserts": 6,
+   "literals": [
+    "c738a076bb89390e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity07Origin": {
+   "kind": "test",
+   "hash": "eac93ad17619bdb5",
+   "asserts": 11,
+   "literals": [
+    "24cdd4065e6bb8f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505",
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity08Host": {
+   "kind": "test",
+   "hash": "653938cadf56acb8",
+   "asserts": 8,
+   "literals": [
+    "abd40b172c71f927"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505",
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity09NoTokenNoAnswer": {
+   "kind": "test",
+   "hash": "909656e9449b6889",
+   "asserts": 16,
+   "literals": [
+    "8a48aaaf85d5ff56"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-506",
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity10OtherMethods": {
+   "kind": "test",
+   "hash": "b3337630f8fd261e",
+   "asserts": 5,
+   "literals": [
+    "2c3b7fb44ba3277d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity11UnsupportedVersionAndMismatch": {
+   "kind": "test",
+   "hash": "424fa2baa009c6a7",
+   "asserts": 14,
+   "literals": [
+    "09f24f3921864910"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity12UnknownMethodAndNotification": {
+   "kind": "test",
+   "hash": "4a51cc5b83d81c1a",
+   "asserts": 6,
+   "literals": [
+    "adf2c8e2459eee0b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity13BigDeepAndLong": {
+   "kind": "test",
+   "hash": "7890bfc3a5e058d5",
+   "asserts": 7,
+   "literals": [
+    "4d96a3ec0ff53605"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity14Batch": {
+   "kind": "test",
+   "hash": "6702c6fe4e14a544",
+   "asserts": 4,
+   "literals": [
+    "43b38305423329f6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestSecurity15SessionID": {
+   "kind": "test",
+   "hash": "e22835744b6aad56",
+   "asserts": 7,
+   "literals": [
+    "59b4d3d96b5b173b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-515"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableNewVersionRows11To13": {
+   "kind": "test",
+   "hash": "b095d8a517f73735",
+   "asserts": 13,
+   "literals": [
+    "56df14c317314826"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableNewVersionRows1To7": {
+   "kind": "test",
+   "hash": "53f5975c85f03c42",
+   "asserts": 25,
+   "literals": [
+    "43a7949a23b5f14f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableNewVersionRows8To10": {
+   "kind": "test",
+   "hash": "5b8bc642bb96a057",
+   "asserts": 20,
+   "literals": [
+    "8663bb174611d656"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableNoVersionHeaderRows": {
+   "kind": "test",
+   "hash": "0b1ef9bbd7980017",
+   "asserts": 15,
+   "literals": [
+    "c5b53e420e0e1b15"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-504"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableOlderVersionRows1To4": {
+   "kind": "test",
+   "hash": "3b47b5651db75bb6",
+   "asserts": 16,
+   "literals": [
+    "9bba1ff144c5a1d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableOlderVersionRows5To9": {
+   "kind": "test",
+   "hash": "71794db5a6a915b3",
+   "asserts": 18,
+   "literals": [
+    "b774b798c3401039"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTableUnsupportedVersionRows": {
+   "kind": "test",
+   "hash": "116f5131997c9457",
+   "asserts": 15,
+   "literals": [
+    "4bafb4ea48382ca4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-504"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTheIDIsGivenBackAsItCame": {
+   "kind": "test",
+   "hash": "07403b48d80c2c61",
+   "asserts": 4,
+   "literals": [
+    "5d6c67be83f0cc15"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTokenRuleInProductionTakesServiceAccountsOnly": {
+   "kind": "test",
+   "hash": "82611dd38749205b",
+   "asserts": 9,
+   "literals": [
+    "3d45c9bae96f3eed"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTokenRuleOutsideProduction": {
+   "kind": "test",
+   "hash": "10efa4d18528fdcf",
+   "asserts": 6,
+   "literals": [
+    "5de94dd1d396b833"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestToolRefusalIsAnErrorResult": {
+   "kind": "test",
+   "hash": "0bd14f21cce8394e",
+   "asserts": 7,
+   "literals": [
+    "4d3f734ea9855958"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestToolsAreAnnotatedReadOnly": {
+   "kind": "test",
+   "hash": "399e6e2567ab923e",
+   "asserts": 4,
+   "literals": [
+    "693d94c8d4f2988a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestToolsListEqualsTheContractAndHidesOtherKinds": {
+   "kind": "test",
+   "hash": "6828fa795ebb76c5",
+   "asserts": 9,
+   "literals": [
+    "097f252b3be38c95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestToolsListOrderIsFixed": {
+   "kind": "test",
+   "hash": "27d65405d6c356f1",
+   "asserts": 7,
+   "literals": [
+    "445c4ae568aed531"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestToolsListTakesNoCursor": {
+   "kind": "test",
+   "hash": "87b46edaba2795cc",
+   "asserts": 5,
+   "literals": [
+    "5736499dfbe49419"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestTransportRowsX5ToX9": {
+   "kind": "test",
+   "hash": "822caf0149273410",
+   "asserts": 18,
+   "literals": [
+    "e0311ba8e36a5e7e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestUnknownToolNameIsCleanedWhereRepeated": {
+   "kind": "test",
+   "hash": "32e31d9b3f3be001",
+   "asserts": 7,
+   "literals": [
+    "9e350dd78efbd1ad"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestWellKnownIsJSON404WhenEnabled": {
+   "kind": "test",
+   "hash": "f29f6330ac6c379d",
+   "asserts": 5,
+   "literals": [
+    "7cfd25adba6a6361"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestWhoamiAnswersAboutTheCaller": {
+   "kind": "test",
+   "hash": "0442a0246a8644c8",
+   "asserts": 8,
+   "literals": [
+    "3e8893ef688ec500"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-518"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestWhoamiGivesTheExpiryOfATokenOfTheDirectory": {
+   "kind": "test",
+   "hash": "efbd32fa715a97a5",
+   "asserts": 3,
+   "literals": [
+    "f85e9d0f3d88f3e1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-518"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestWhoamiNeverAnswersTheTokenValue": {
+   "kind": "test",
+   "hash": "5b95c34b8b57fa7e",
+   "asserts": 4,
+   "literals": [
+    "58aaddf5f2186c42"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-518"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestWhoamiShowsTheCountsByVersion": {
+   "kind": "test",
+   "hash": "62b5f48293a3dc5d",
+   "asserts": 5,
+   "literals": [
+    "ffdbd6a78b43dca1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-504"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestWithoutTheHostCheckTheOriginAndTheTokenStay": {
+   "kind": "test",
+   "hash": "9f532e1c3da4790e",
+   "asserts": 7,
+   "literals": [
+    "d4b9338e8324c88b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-16",
    "amended_by": null
   },
   "go:backend/internal/memstore::TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber": {

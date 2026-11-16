@@ -121,46 +121,6 @@ func runAPICommand(args []string, stdout, stderr io.Writer, w wiring) (int, bool
 // token file flag is the safer way and wins over it.
 const envDevToken = "PRAXIUM_DEV_TOKEN"
 
-const apiServeUsage = "usage: praxium api serve [-addr host:port] [-mode production|development] [-store file|postgres|memory] [-tls-cert F -tls-key F | -behind-proxy] [flags]"
-
-const apiServeBody = `Runs the REST API server (docs/design-docs/rest-api.md) and, unless -web=false, the web UI at / (ADR-0035).
-
-Production mode (the default) signs callers in with access tokens that "praxium admin" makes (ADR-0044); there are no
-passwords. It needs a store that survives a restart and an administrator, so the first time:
-  1. praxium admin bootstrap -name root -store file -store-data-dir /var/lib/praxium    (prints the first token, once)
-  2. praxium api serve -store file -store-data-dir /var/lib/praxium
-The users and tokens are kept beside the KG: in the data folder (-store file) or the database (-store postgres). Production
-refuses the memory store, the development token flags and PRAXIUM_DEV_TOKEN. Access tokens must not cross a network in
-plain text: on an address that is not loopback it needs -tls-cert and -tls-key, or -behind-proxy when a reverse proxy in
-front ends TLS (then it believes the last address in X-Forwarded-For as the caller's).
-
-With -store postgres, production also checks the link to the database (ADR-0064): when the host in the connection string
-is on another machine, sslmode must be verify-full or verify-ca, so the server certificate is checked (add sslrootcert=FILE
-if the certificate is not from a CA this machine trusts). A database on this machine (127.0.0.1, ::1, localhost, a Unix
-socket) needs nothing. If the link is protected in another way, -allow-unverified-db-tls lets the server start and
-writes a warning to the start log. A connection string that does not say sslmode counts as require, which does not check.
-
-To look around without any of this use "praxium demo" (a made-up data center) or "praxium local" (your own KG, built
-with praxium ingest run). For development use -mode development: it takes one access token from -dev-token-file (a file
-with the token; the environment variable PRAXIUM_DEV_TOKEN also works, the file wins) and treats a caller with it as the
-subject -dev-subject with the roles -dev-roles.
-
--store file keeps the KG in a data folder (-store-data-dir, ADR-0034); -store postgres reads the connection string
-from a file (-store-dsn-file) so no secret is in the process list.
-
-example:
-  praxium admin bootstrap -name root -store file -store-data-dir /var/lib/praxium
-  praxium api serve -addr 127.0.0.1:8080 -store file -store-data-dir /var/lib/praxium
-  praxium worldgen -scale 500 -seed 7 -out /tmp/world
-  printf 'dev-token-not-a-secret' > /tmp/dev.tok
-  praxium api serve -mode development -dev-token-file /tmp/dev.tok -dev-truth /tmp/world/truth.jsonl
-`
-
-// apiHelpEntries are the help entries of this file's commands.
-func apiHelpEntries(out map[string]helpEntry) {
-	out["api serve"] = helpEntry{usage: apiServeUsage, body: apiServeBody, flags: func() *flag.FlagSet { return newServeFlags(&serveOptions{}) }}
-}
-
 // runAPI handles `praxium api serve` and `praxium api routes`; runCommand sends nothing else here.
 func runAPI(args []string, stdout, stderr io.Writer, d wiring) int {
 	if args[0] == "routes" {
@@ -206,6 +166,8 @@ type serveOptions struct {
 	tlsCert, tlsKey      string
 	behindProxy          bool
 	allowUnverifiedDBTLS bool // production may use a PostgreSQL link to another machine that does not check the server (ADR-0064)
+	// mcp are the flags of the MCP interface (mcp.go).
+	mcp mcpOptions
 	// devFlag is the first development-only flag that was given (without its dash), "" when none was.
 	devFlag string
 	// modeSet is whether -mode was on the command line: a start with no -mode at all is told how to get going.
@@ -233,6 +195,7 @@ func newServeFlags(o *serveOptions) *flag.FlagSet {
 	fs.StringVar(&o.tlsCert, "tls-cert", "", "the PEM file of the TLS certificate; with -tls-key the server speaks HTTPS")
 	fs.StringVar(&o.tlsKey, "tls-key", "", "the PEM file of the TLS private key")
 	fs.BoolVar(&o.behindProxy, "behind-proxy", false, "a reverse proxy in front ends TLS and sets X-Forwarded-For; allows plain HTTP on a non-loopback address")
+	addMCPFlags(fs, &o.mcp, false)
 	fs.BoolVar(&o.allowUnverifiedDBTLS, "allow-unverified-db-tls", false, "production mode: allow a PostgreSQL connection to another machine that does not check the server certificate (the start log warns)")
 	return fs
 }
@@ -243,6 +206,7 @@ func parseServe(args []string) (serveOptions, error) {
 	if err := fs.Parse(args); err != nil {
 		return o, usageProblem{kernel.Wrap(kernel.CodeInvalidValue, flagProblem(err), "bad flags for api serve")}
 	}
+	noteMCPFlags(fs, &o.mcp)
 	fs.Visit(func(f *flag.Flag) {
 		o.modeSet = o.modeSet || f.Name == "mode"
 		if o.devFlag == "" && strings.HasPrefix(f.Name, "dev-") {
@@ -388,7 +352,7 @@ func runServer(p serverPlan, stderr io.Writer, d wiring) error {
 	ln := lease.ln
 	log.Info("praxium api listening", slog.String("addr", ln.Addr().String()), slog.String("mode", p.opts.mode),
 		slog.Bool("dev_auth", p.authn != nil), slog.String("auth", kit.name), slog.Bool("tls", tlsCfg != nil),
-		slog.String("store", p.opts.store), slog.String("web_ui", uiState(p.opts)), slog.String("version", version))
+		slog.String("store", p.opts.store), slog.Bool("mcp", p.opts.mcp.enabledFor(p.opts.mode)), slog.String("web_ui", uiState(p.opts)), slog.String("version", version))
 	if p.ready != nil {
 		p.ready(ln.Addr(), rep)
 	}
@@ -469,7 +433,12 @@ func newServer(p serverPlan, kit authKit, d wiring, log *slog.Logger, store grap
 	if err != nil {
 		return nil, err
 	}
+	mounts, err := mcpMounts(p, kit, d, log, reg, store)
+	if err != nil {
+		return nil, err
+	}
 	return httpapi.New(httpapi.Config{
+		Mounts:   mounts,
 		Registry: reg, Authenticator: kit.authn, Directory: kit.dir, Limiter: kit.limiter, TrustProxy: p.opts.behindProxy,
 		Clock: d.clock, IDs: d.ids, Logger: log, Version: version, Queries: queries, KGs: store, UI: uiFor(p.opts),
 	})

@@ -252,6 +252,8 @@ open ──확인──▶ acknowledged ──스누즈(시간)──▶ snoozed
 
 동기화 1회(`sync_run`, ADR-0011)와 스트림의 구간 1개가 이력 하나예요. 단계마다 행(`run_stage`)을 하나 추가해요.
 
+예정(ADR-0058): 수집 서비스가 실행 기록(`sync-run`)의 계약 모양을 정해요. 상태는 [KG 운영](kg-operations.md)의 작업과 같은 낱말(`queued`, `running`, `awaiting_confirmation`, `succeeded`, `failed`, `cancel_requested`, `canceled`)이고, 실행의 문제와 KG의 문제를 갈라 적고, 문제 샘플은 하위 자원 `/samples`로 떼어 권한을 따로 걸어요([수집 서비스와 실행](ingestion-service.md) 8절).
+
 | 필드 | 의미 |
 |---|---|
 | `run_id`, `stage`, `attempt` | 실행, 단계, 리스 번호 |

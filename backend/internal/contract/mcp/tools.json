@@ -1,0 +1,148 @@
+{
+  "version": 1,
+  "endpoint": "POST /mcp",
+  "surface": "kg_read",
+  "rule": "tools/list of the endpoint returns exactly the tools of this file, ordered by name; a tool of another kind in the registry is never listed (ADR-0062, ADR-0068).",
+  "tools": [
+    {
+      "name": "kg_whoami",
+      "description": "Show the caller's account, the roles of the token, token expiry, limits, and the server and model versions.",
+      "inputSchema": {
+        "type": "object",
+        "properties": {},
+        "additionalProperties": false
+      },
+      "outputSchema": {
+        "type": "object",
+        "properties": {
+          "meta": {
+            "type": "object",
+            "properties": {
+              "result_complete": {
+                "type": "boolean"
+              },
+              "truncated": {
+                "type": "boolean"
+              }
+            },
+            "required": ["result_complete", "truncated"],
+            "additionalProperties": false
+          },
+          "next": {
+            "type": "string"
+          },
+          "data": {
+            "type": "object",
+            "properties": {
+              "account": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "kind": {
+                    "type": "string"
+                  },
+                  "display_name": {
+                    "type": "string"
+                  }
+                },
+                "required": ["id", "kind", "display_name"],
+                "additionalProperties": false
+              },
+              "roles": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "token": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": ["string", "null"]
+                  },
+                  "expires_at": {
+                    "type": ["string", "null"]
+                  }
+                },
+                "required": ["id", "expires_at"],
+                "additionalProperties": false
+              },
+              "limits": {
+                "type": "object",
+                "properties": {
+                  "enforced": {
+                    "type": "boolean"
+                  },
+                  "note": {
+                    "type": "string"
+                  }
+                },
+                "required": ["enforced", "note"],
+                "additionalProperties": false
+              },
+              "server": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "version": {
+                    "type": "string"
+                  },
+                  "protocol_versions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "read_only": {
+                    "type": "boolean"
+                  },
+                  "requests_by_version": {
+                    "type": "object",
+                    "additionalProperties": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "required": [
+                  "name",
+                  "version",
+                  "protocol_versions",
+                  "read_only",
+                  "requests_by_version"
+                ],
+                "additionalProperties": false
+              },
+              "model": {
+                "type": "object",
+                "properties": {
+                  "version": {
+                    "type": "string"
+                  },
+                  "hash": {
+                    "type": "string"
+                  }
+                },
+                "required": ["version", "hash"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["account", "roles", "token", "limits", "server", "model"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["meta", "next", "data"],
+        "additionalProperties": false
+      },
+      "annotations": {
+        "readOnlyHint": true,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    }
+  ]
+}

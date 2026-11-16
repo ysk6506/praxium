@@ -11,6 +11,7 @@
   "go:adapter.http": 93,
   "go:adapter.identitycheck": 96.5,
   "go:adapter.identityfile": 96,
+  "go:adapter.mcp": 97,
   "go:adapter.memstore": 95.5,
   "go:adapter.pgstore": 91.5,
   "go:adapter.secretsfile": 97,

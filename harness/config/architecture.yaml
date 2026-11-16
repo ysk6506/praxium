@@ -97,6 +97,8 @@ go:
     # The use case of reading a KG, apart from any transport (ADR-0062): the subject from a token, the read filter, the codes a refusal becomes, the reading of a question's JSON, the content of the model lists. The core imports no adapter and no net (the caller's address is the adapter's).
     core.kgread:    {path: backend/internal/kgread, may_import: [core.kernel, core.model, core.graph, core.query, core.access]}
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query, core.kgread]}
+    # The MCP adapter of the read-only KG interface (ADR-0068): POST /mcp, the JSON-RPC layer, the handling of the protocol versions, the checks of origin and token, the registry of tools. It carries and judges nothing of the KG: the token, the filter and the codes are core.kgread's. It never imports adapter.http; the composition root mounts its handler on the server.
+    adapter.mcp:    {path: backend/internal/mcpapi, may_import: [core.kernel, core.contract, core.access, core.kgread]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
     # The built web UI (ADR-0035): the files of apps/web embedded in the program. It imports nothing; the backend builds and tests without the real build (a placeholder page is committed).
     adapter.webui:  {path: backend/internal/webui, may_import: []}
@@ -122,7 +124,7 @@ go:
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
     net: [cmd.praxium, adapter.http]
-    net/http: [cmd.praxium, adapter.http, adapter.cli]
+    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp]
     net/rpc: [cmd.praxium]
     syscall: [cmd.praxium]
   # The only files that may read the clock, system randomness and the environment (REQ-001).

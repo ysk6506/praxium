@@ -18,9 +18,23 @@ func traceOf(ctx context.Context) string {
 }
 
 // chain wraps a handler in the middleware, outermost first: trace id, access
-// log, panic recovery, body limit and media type of the body.
+// log, panic recovery, the mounted handlers of other adapters, body limit and media type of the body.
 func (s *Server) chain(next http.Handler) http.Handler {
-	return s.traceMiddleware(s.logMiddleware(s.recoverMiddleware(s.bodyMiddleware(next))))
+	return s.traceMiddleware(s.logMiddleware(s.recoverMiddleware(s.mountMiddleware(s.bodyMiddleware(next)))))
+}
+
+// mountMiddleware gives the paths of a mount to its handler before anything else of this server looks at them: the
+// order of the checks of that interface is its own (kg-mcp.md 3), and a page of the web UI must never answer there.
+func (s *Server) mountMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		for _, m := range s.mounts {
+			if m.Match(r.URL.Path) {
+				m.Handler.ServeHTTP(w, r)
+				return
+			}
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 // statusWriter remembers the status and the size of a response for the log.

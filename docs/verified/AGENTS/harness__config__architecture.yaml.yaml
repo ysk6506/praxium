@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "2b2d53e88a3686af"
-date: "2026-11-16"
-note: "architecture.yaml에 유닛 둘이 더해졌을 뿐이고 AGENTS.md가 말하는 규칙과 명령은 그대로라 고칠 곳이 없다"
+hash: "a7780be6a32f6a6d"
+date: "2026-11-15"
+note: "adapter.mcp 단위가 architecture.yaml에 추가됨; AGENTS.md 내용은 그대로 유효"
 text_changed: false
 doc_hash: "8c057e5315c7a8b7"

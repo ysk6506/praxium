@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "2b2d53e88a3686af"
-date: "2026-11-16"
-note: "유닛 표에 core.secrets와 adapter.secretsfile 행을 더하고 core.kernel 행에 ByteSource를 적었다. architecture.yaml의 새 두 유닛과 대조했다"
+hash: "a7780be6a32f6a6d"
+date: "2026-11-15"
+note: "adapter.mcp 행 추가를 반영해 확인함"
 text_changed: true
-doc_hash: "6bf41d70dea6268d"
+doc_hash: "0850f623059aba36"
