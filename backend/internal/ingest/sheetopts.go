@@ -2,8 +2,6 @@ package ingest
 
 import (
 	"strings"
-
-	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // The ways a merged range of cells gives its value to the cells it covers.
@@ -38,13 +36,13 @@ type SheetOptions struct {
 	SkipHiddenRows bool `json:"skip_hidden_rows,omitempty"`
 }
 
-// normalized checks the options against the parser and fills the defaults. It returns a copy.
-func (o *SheetOptions) normalized(parser, where string) (*SheetOptions, error) {
-	if parser != ParserXLSX {
+// normalize checks the options against the dataset's parser and fills the defaults. It returns a copy.
+func (o *SheetOptions) normalize(c *collector, at string, d Dataset, where string) *SheetOptions {
+	if d.Parser != ParserXLSX {
 		if o != nil {
-			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s: sheet options belong to the xlsx parser", where)
+			c.add(ecSrcSheetParser, at, Params{"dataset": d.ID, "parser": d.Parser}, "%s: sheet options belong to the xlsx parser", where)
 		}
-		return nil, nil
+		return nil
 	}
 	n := SheetOptions{}
 	if o != nil {
@@ -59,35 +57,41 @@ func (o *SheetOptions) normalized(parser, where string) (*SheetOptions, error) {
 	if n.MergedCells == "" {
 		n.MergedCells = MergeFirstOnly
 	}
-	if err := n.check(where); err != nil {
-		return nil, err
-	}
-	return &n, nil
+	n.check(c, at, d.ID, where)
+	return &n
 }
 
-func (o SheetOptions) check(where string) error {
-	bad := func(format string, args ...any) error {
-		return kernel.Errorf(kernel.CodeInvalidValue, where+": sheet "+format, args...)
+func (o SheetOptions) check(c *collector, at, dataset, where string) {
+	p := Params{"dataset": dataset}
+	if o.Name != "" && o.Index != 0 {
+		c.add(ecSrcSheetBoth, at, p, "%s: sheet has both name and index: give one", where)
 	}
-	switch {
-	case o.Name != "" && o.Index != 0:
-		return bad("has both name and index: give one")
-	case o.Index < 0 || o.HeaderRow < 1 || o.HeaderRows < 1 || o.StopAfterBlankRows < 0:
-		return bad("options cannot be below their minimum (index 1, header_row 1, header_rows 1, stop_after_blank_rows 0)")
-	case o.MergedCells != MergeFirstOnly && o.MergedCells != MergeFill:
-		return bad("merged_cells %q is not %s or %s", o.MergedCells, MergeFirstOnly, MergeFill)
+	belowMin := o.Index < 0 || o.HeaderRow < 1 || o.HeaderRows < 1 || o.StopAfterBlankRows < 0
+	if belowMin {
+		c.add(ecSrcSheetMin, at, p, "%s: sheet options cannot be below their minimum (index 1, header_row 1, header_rows 1, stop_after_blank_rows 0)", where)
 	}
-	if o.Range == "" {
-		return nil
+	if o.MergedCells != MergeFirstOnly && o.MergedCells != MergeFill {
+		c.add(ecSrcSheetMerged, at+ptr("merged_cells"), Params{"dataset": dataset, "merged_cells": o.MergedCells, "allowed": []string{MergeFirstOnly, MergeFill}},
+			"%s: sheet merged_cells %q is not %s or %s", where, o.MergedCells, MergeFirstOnly, MergeFill)
 	}
+	if o.Range != "" {
+		o.checkRange(c, at, dataset, where, belowMin)
+	}
+}
+
+// checkRange checks the range of the data. Where the header rows are not meaningful, whether the range starts in
+// them is not asked.
+func (o SheetOptions) checkRange(c *collector, at, dataset, where string, belowMin bool) {
 	b, ok := o.bounds()
 	if !ok {
-		return bad("range %q is not a start cell and an end cell such as A5:F200", o.Range)
+		c.add(ecSrcSheetRange, at+ptr("range"), Params{"dataset": dataset, "range": o.Range},
+			"%s: sheet range %q is not a start cell and an end cell such as A5:F200", where, o.Range)
+		return
 	}
-	if b.row1 <= o.HeaderRow+o.HeaderRows-1 {
-		return bad("range %q starts in the header (rows %d to %d): the range is the data, below it", o.Range, o.HeaderRow, o.HeaderRow+o.HeaderRows-1)
+	if !belowMin && b.row1 <= o.HeaderRow+o.HeaderRows-1 {
+		c.add(ecSrcSheetRangeHeader, at+ptr("range"), Params{"dataset": dataset, "range": o.Range, "header_first": o.HeaderRow, "header_last": o.HeaderRow + o.HeaderRows - 1},
+			"%s: sheet range %q starts in the header (rows %d to %d): the range is the data, below it", where, o.Range, o.HeaderRow, o.HeaderRow+o.HeaderRows-1)
 	}
-	return nil
 }
 
 // bounds are the data range as numbers; col2 and row2 are 0 where the options leave them open.

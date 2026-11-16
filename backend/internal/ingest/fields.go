@@ -7,26 +7,52 @@ import (
 	"reflect"
 	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 )
 
-// unknownFieldHint says where in a definition a field is that the decoder refused and which fields are allowed
-// there, so a misspelt or misplaced field is fixed without a manual. It walks the document against the Go type the
-// definition decodes into and reports the first object that has the field and does not accept it. It returns "" when
-// the place cannot be found.
-func unknownFieldHint(data []byte, field string, into any) string {
+// locateUnknown says where in a definition a field is that the decoder refused and which fields are allowed there,
+// so a misspelt or misplaced field is fixed without a manual. It walks the document against the Go type the
+// definition decodes into and finds the first object that has the field and does not accept it. The path is written
+// as a person reads it (datasets[0].sheet; "" for the top level).
+func locateUnknown(data []byte, field string, into any) (path string, allowed []string, ok bool) {
 	var doc any
 	if json.Unmarshal(data, &doc) != nil {
-		return ""
+		return "", nil, false
 	}
-	path, allowed, ok := findUnknown(doc, reflect.TypeOf(into), field, "")
-	if !ok {
-		return ""
-	}
+	return findUnknown(doc, reflect.TypeOf(into), field, "")
+}
+
+// unknownFieldSentence is the sentence that says where the field is and which fields are allowed there.
+func unknownFieldSentence(field, path string, allowed []string) string {
 	if path == "" {
 		path = "the top level"
 	}
 	return fmt.Sprintf("%q is not a field of %s; the fields there are: %s", field, path, strings.Join(allowed, ", "))
+}
+
+// pathSteps splits the path of locateUnknown into the steps of a JSON pointer.
+func pathSteps(path string) []any {
+	var steps []any
+	for _, part := range strings.Split(path, ".") {
+		name, rest, _ := strings.Cut(part, "[")
+		if name != "" {
+			steps = append(steps, name)
+		}
+		for rest != "" {
+			idx, more, _ := strings.Cut(rest, "]")
+			if n, err := strconv.Atoi(idx); err == nil {
+				steps = append(steps, n)
+			}
+			rest = strings.TrimPrefix(more, "[")
+		}
+	}
+	return steps
+}
+
+// lineOf is the line of the document an offset is on, from 1.
+func lineOf(data []byte, offset int64) int {
+	return 1 + bytes.Count(data[:min(max(int(offset), 0), len(data))], []byte("\n"))
 }
 
 // jsonFields are the names a struct type reads, in the order of its declaration.
@@ -121,7 +147,7 @@ func wrongKindMessage(data []byte, e *json.UnmarshalTypeError) string {
 		field = "the document"
 	}
 	field = indexedPath(field)
-	line := 1 + bytes.Count(data[:min(max(int(e.Offset), 0), len(data))], []byte("\n"))
+	line := lineOf(data, e.Offset)
 	return fmt.Sprintf("the field %q must be %s, but the value given is %s (line %d)", field, kindWanted(e.Type), kindGiven(e.Value), line)
 }
 
