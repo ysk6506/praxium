@@ -11,7 +11,7 @@ const (
 	// CodeVersionRetired is an attempt to open a secret that has no version left: every version is retired.
 	CodeVersionRetired kernel.Code = "secret_version_retired"
 	// CodeIntegrity is a stored secret that does not authenticate: the file was changed, a ciphertext was moved to
-	// another secret or version, or the key file has the same id as the key that sealed the secret but other bytes.
+	// another secret or version, or any part of the record was mixed with a part of another state.
 	CodeIntegrity kernel.Code = "secret_integrity_failed"
 	// CodeMasterKeyMissing is a use of the store without a master key.
 	CodeMasterKeyMissing kernel.Code = "secret_master_key_missing"

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"reflect"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -394,5 +395,56 @@ func TestTheNarrowPortsDoTheirWholeWork(t *testing.T) {
 	}
 	if _, err := d.Get(ctx, "one"); err == nil {
 		t.Fatal("a deleted secret is still described")
+	}
+}
+
+// [REQ-404]
+func TestNothingThatReflectionCanReachInAnOpenedSecretHoldsAValue(t *testing.T) {
+	r := newRig(t)
+	r.createPassword(t, "one")
+	o := r.open(t, "one")
+	pw, _ := o.Value("password")
+	holder := struct{ O *secrets.Opened }{o}
+	for name, thing := range map[string]any{"opened": o, "opened value": *o, "value": pw, "in a struct": holder, "in a slice": []*secrets.Opened{o}} {
+		for _, secret := range []string{testPassword, testUser} {
+			if walkFor(reflect.ValueOf(thing), []byte(secret), map[uintptr]bool{}, 0) {
+				t.Errorf("%s: reflection finds a value in a field", name)
+			}
+		}
+	}
+	o.Close()
+	if pw.Reveal() != "" {
+		t.Fatal("the value is still there after close")
+	}
+}
+
+// [REQ-405]
+func TestAZeroOpenedGivesEmptyValuesAndNeverPanics(t *testing.T) {
+	for _, o := range []*secrets.Opened{{}, nil} {
+		if o.SecretID() != "" || o.Kind() != "" || o.Version() != 0 || o.Address() != (secrets.Address{}) {
+			t.Error("a zero Opened gives a value")
+		}
+		if v, ok := o.Value("password"); ok || v.Reveal() != "" {
+			t.Error("a zero Opened gives a field")
+		}
+		o.Close()
+	}
+}
+
+// [REQ-405]
+func TestClosingWhileAnotherGoroutineReadsIsNotARace(t *testing.T) {
+	r := newRig(t)
+	r.createPassword(t, "one")
+	o := r.open(t, "one")
+	pw, _ := o.Value("password")
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(2)
+		go func() { defer wg.Done(); _ = pw.Reveal() }()
+		go func() { defer wg.Done(); o.Close() }()
+	}
+	wg.Wait()
+	if pw.Reveal() != "" {
+		t.Fatal("the value survived the close")
 	}
 }

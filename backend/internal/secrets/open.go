@@ -32,11 +32,11 @@ func (s *Service) Open(ctx context.Context, id string, use Use) (*Opened, error)
 	if !ok {
 		return nil, kernel.Errorf(CodeVersionRetired, "every version of the secret %q is retired; put in a new version", id)
 	}
-	values, holders, err := decryptVersion(rec, ver, master)
+	values, wipeFn, err := decryptVersion(rec, ver, master)
 	if err != nil {
 		return nil, err
 	}
-	return &Opened{d: &openedData{id: rec.ID, kind: rec.Kind, version: ver.Version, addr: addr, values: values, holders: holders}}, nil
+	return &Opened{d: &openedData{id: rec.ID, kind: rec.Kind, version: ver.Version, addr: addr, values: values, wipe: wipeFn}}, nil
 }
 
 // authorize is the one place that decides whether a use is allowed: the source must be in the scope and the address
@@ -55,7 +55,7 @@ func authorize(rec Record, sourceID string, addr Address) error {
 
 // decryptVersion unwraps the data key of the version, decrypts the fields and checks that they are the fields of the
 // kind. Whatever is wrong gives the integrity error: the stored form is not what this store wrote.
-func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[string]Value, []*secretBytes, error) {
+func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[string]Value, func(), error) {
 	if ver.WrappedKey.KeyID != master.id {
 		return nil, nil, mismatch(rec.ID, ver.WrappedKey.KeyID, master.id)
 	}
@@ -87,7 +87,11 @@ func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[strin
 		values[n] = h.value()
 		held = append(held, h)
 	}
-	return values, held, nil
+	return values, func() {
+		for _, h := range held {
+			h.wipe()
+		}
+	}, nil
 }
 
 func wipeAll(m map[string][]byte) {

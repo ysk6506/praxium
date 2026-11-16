@@ -445,3 +445,96 @@ func TestTheKnownFileOpensWithTheKnownKey(t *testing.T) {
 		t.Fatal("the known file opens to another user")
 	}
 }
+
+// The known file with two versions, the first retired: it fixes the form of the version list and of a retirement.
+const knownFileWithARetirement = `{
+ "format": "praxium-secrets",
+ "version": 1,
+ "secrets": [
+  {
+   "id": "crm-db",
+   "kind": "password",
+   "instance": "kQot7IkCXMG+642hZY7sZw==",
+   "created_at": "2030-01-01T00:00:00Z",
+   "scope": [
+    "crm"
+   ],
+   "allowed_hosts": [
+    {
+     "host": "db.example.test",
+     "port": 5432
+    }
+   ],
+   "binding": {
+    "method": "aes-256-gcm",
+    "key_id": "mk-e0585d51ca95eed9",
+    "nonce": "fvH9DtFUj80fhBBj",
+    "data": "tb1fWy4u3BJ18ax8SDDkFQ=="
+   },
+   "versions": [
+    {
+     "version": 1,
+     "created_at": "2030-01-01T00:00:00Z",
+     "retired_at": "2030-01-01T00:00:00Z"
+    },
+    {
+     "version": 2,
+     "created_at": "2030-01-01T00:00:00Z",
+     "value": {
+      "method": "aes-256-gcm",
+      "nonce": "pTSmprf9C2PQutDa",
+      "data": "e/46HW/1i9oHac1Vr0DWfJ0ZAxehdcH0TjFLCXzg7kMJbTUo3X8v+FErt+2WDnXrxV7gvHEQjLp/eqgAQ5DYIH4qJF1JNDYk1lYBpL1VXKNbX4QeyZuI3u9u4o4="
+     },
+     "wrapped_key": {
+      "method": "aes-256-gcm",
+      "key_id": "mk-e0585d51ca95eed9",
+      "nonce": "roQ3ljCvie7iYxg3",
+      "data": "9uyMRr0K2JLsgDD+nq2fDRQgzVRd6V+C8v9wJax1B7kmEilqVxnwfQ17KGLhn0Y2"
+     }
+    }
+   ]
+  }
+ ]
+}
+`
+
+func twoVersionsOneRetired(t *testing.T, disk Disk) *secrets.Service {
+	t.Helper()
+	svc := newService(t, open(t, disk), key())
+	create(t, svc, "crm-db")
+	if _, err := svc.AddVersion(ctx, "crm-db", fields(testPassword+"-2")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := svc.RetireVersion(ctx, "crm-db", 1); err != nil {
+		t.Fatal(err)
+	}
+	return svc
+}
+
+// [REQ-403]
+func TestTheFileWithARetiredVersionIsTheKnownFile(t *testing.T) {
+	disk := NewMemDisk()
+	twoVersionsOneRetired(t, disk)
+	got, _ := disk.Bytes(FileName)
+	if string(got) != knownFileWithARetirement {
+		t.Fatal("the file made from fixed inputs is not the file written down in this test")
+	}
+}
+
+// [REQ-403]
+func TestTheKnownFileWithARetiredVersionOpensTheLiveVersion(t *testing.T) {
+	k, err := secrets.ParseMasterKey([]byte(knownKeyFile))
+	if err != nil {
+		t.Fatal(err)
+	}
+	disk := NewMemDisk()
+	disk.Put(FileName, []byte(knownFileWithARetirement))
+	o, err := newService(t, open(t, disk), k).Open(ctx, "crm-db", okUse)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer o.Close()
+	if v, _ := o.Value("password"); o.Version() != 2 || v.Reveal() != testPassword+"-2" {
+		t.Fatal("the known file opens to another version or value")
+	}
+}

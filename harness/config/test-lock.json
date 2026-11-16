@@ -23627,10 +23627,10 @@
   },
   "go:backend/internal/secrets::TestAStoredVersionWhoseFieldsAreNotTheFieldsOfItsKindDoesNotOpen": {
    "kind": "test",
-   "hash": "46d53638945468a2",
+   "hash": "85162d41a9dabc4a",
    "asserts": 6,
    "literals": [
-    "3c9ab824b7fe14e3"
+    "1c65f7e2a6eb03b1"
    ],
    "precision": [],
    "skips": 0,
@@ -23670,6 +23670,21 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestATimeThatTheBindingCannotHoldIsRefusedOnRead": {
+   "kind": "test",
+   "hash": "e4da00816d1719ee",
+   "asserts": 4,
+   "literals": [
+    "3f646563a66b99bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestAWriteBindsTheNewStateSoTheNextOpenWorks": {
    "kind": "test",
    "hash": "c7f4d14bd04c8e3a",
@@ -23681,6 +23696,36 @@
    "skips": 0,
    "reqs": [
     "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestAZeroOpenedGivesEmptyValuesAndNeverPanics": {
+   "kind": "test",
+   "hash": "1ccdb01141eb9c69",
+   "asserts": 2,
+   "literals": [
+    "f51e22d9e8296fbe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-405"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestClosingWhileAnotherGoroutineReadsIsNotARace": {
+   "kind": "test",
+   "hash": "3400d3de5395b2f8",
+   "asserts": 4,
+   "literals": [
+    "f9fb0a2faaf18dd9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-405"
    ],
    "added": "2026-11-16",
    "amended_by": null
@@ -23796,6 +23841,21 @@
    "asserts": 9,
    "literals": [
     "d38b456a6b50820c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-404"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestNothingThatReflectionCanReachInAnOpenedSecretHoldsAValue": {
+   "kind": "test",
+   "hash": "1e6c4379addaec6d",
+   "asserts": 5,
+   "literals": [
+    "ca171073480544c8"
    ],
    "precision": [],
    "skips": 0,
@@ -23976,6 +24036,21 @@
    "asserts": 5,
    "literals": [
     "63fcf5032309f507"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestTheTimeOfARetirementIsBoundToTheNanosecond": {
+   "kind": "test",
+   "hash": "c1f6781d7d098501",
+   "asserts": 2,
+   "literals": [
+    "75cb8eafba2e6dd7"
    ],
    "precision": [],
    "skips": 0,
@@ -24287,12 +24362,42 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secretsfile::TestTheFileWithARetiredVersionIsTheKnownFile": {
+   "kind": "test",
+   "hash": "c633e403c18ed21e",
+   "asserts": 2,
+   "literals": [
+    "1037e62fc097da76"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/internal/secretsfile::TestTheKnownFileOpensWithTheKnownKey": {
    "kind": "test",
    "hash": "5cd1b9c0f9a59cab",
    "asserts": 6,
    "literals": [
     "850ad86be2240e4e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-403"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestTheKnownFileWithARetiredVersionOpensTheLiveVersion": {
+   "kind": "test",
+   "hash": "fd3ffc9b6ab7f74a",
+   "asserts": 5,
+   "literals": [
+    "e1077e3d38afbeae"
    ],
    "precision": [],
    "skips": 0,

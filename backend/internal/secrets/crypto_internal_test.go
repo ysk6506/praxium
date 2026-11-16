@@ -200,7 +200,7 @@ func TestAStoredVersionWhoseFieldsAreNotTheFieldsOfItsKindDoesNotOpen(t *testing
 		if err != nil {
 			t.Fatal(err)
 		}
-		rec := Record{ID: "one", Instance: instance, Kind: KindPassword, Scope: []string{"crm"}, AllowedHosts: []Address{{Host: "db.test", Port: 1}}, Versions: []VersionRecord{v}}
+		rec := Record{ID: "one", Instance: instance, Kind: KindPassword, CreatedAt: time.Unix(10, 0), Scope: []string{"crm"}, AllowedHosts: []Address{{Host: "db.test", Port: 1}}, Versions: []VersionRecord{v}}
 		if err := svc.bind(&rec, key); err != nil {
 			t.Fatal(err)
 		}
@@ -337,5 +337,60 @@ func TestWhatACallerGaveIsRepeatedInAnErrorOnlyWhenItIsSafe(t *testing.T) {
 	}
 	if msg := badText("host", "postgres://app:pw@db.test/x"); strings.Contains(msg, "pw") || strings.Contains(msg, "app") {
 		t.Fatalf("the message repeats the input: %q", msg)
+	}
+}
+
+// [REQ-403]
+func TestTheTimeOfARetirementIsBoundToTheNanosecond(t *testing.T) {
+	at := time.Unix(50, 5)
+	base := Record{
+		ID: "one", Instance: bytes.Repeat([]byte{7}, instanceLen), Kind: KindToken, CreatedAt: time.Unix(10, 0),
+		Binding: Sealed{Method: MethodAES256GCM, KeyID: "mk-a"},
+		Versions: []VersionRecord{
+			{Version: 1, CreatedAt: time.Unix(20, 0), RetiredAt: &at},
+			{Version: 2, CreatedAt: time.Unix(30, 0), Value: &Sealed{Method: MethodAES256GCM, Nonce: []byte{1}, Data: []byte{2}},
+				WrappedKey: &Sealed{Method: MethodAES256GCM, KeyID: "mk-a", Nonce: []byte{3}, Data: []byte{4}}},
+		},
+	}
+	want := bindingAAD(base)
+	for what, to := range map[string]time.Time{"another second": time.Unix(51, 5), "another nanosecond": time.Unix(50, 6), "whole seconds": time.Unix(50, 0)} {
+		r := base.Clone()
+		moved := to
+		r.Versions[0].RetiredAt = &moved
+		if bytes.Equal(want, bindingAAD(r)) {
+			t.Errorf("the binding does not tell %s apart", what)
+		}
+	}
+	r := base.Clone()
+	r.Versions[0].RetiredAt = nil
+	if bytes.Equal(want, bindingAAD(r)) {
+		t.Error("the binding does not tell a retired version from a live one")
+	}
+}
+
+// [REQ-403]
+func TestATimeThatTheBindingCannotHoldIsRefusedOnRead(t *testing.T) {
+	svc, store, _ := sealedRecord(t)
+	in := CreateInput{ID: "one", Kind: KindToken, Fields: NewFields(map[string]string{"token": "not-a-real-token-for-tests"})}
+	if _, err := svc.Create(context.Background(), in); err != nil {
+		t.Fatal(err)
+	}
+	good, _, _ := store.Get(context.Background(), "one")
+	far := good.CreatedAt.AddDate(584, 0, 0)
+	for what, change := range map[string]func(r *Record){
+		"creation time":         func(r *Record) { r.CreatedAt = far },
+		"version creation time": func(r *Record) { r.Versions[0].CreatedAt = far },
+		"retirement time": func(r *Record) {
+			r.Versions[0].Value, r.Versions[0].WrappedKey, r.Versions[0].RetiredAt = nil, nil, &far
+		},
+	} {
+		r := good.Clone()
+		change(&r)
+		if err := r.Validate(); err == nil {
+			t.Errorf("a %s 584 years away was accepted", what)
+		}
+	}
+	if err := good.Validate(); err != nil {
+		t.Fatal(err)
 	}
 }

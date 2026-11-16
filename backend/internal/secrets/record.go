@@ -101,6 +101,9 @@ func (r Record) Validate() error {
 	if hosts, err := normalizeAddresses(slices.Clone(r.AllowedHosts)); err != nil || !slices.Equal(hosts, r.AllowedHosts) {
 		return bad("has allowed addresses that are not in the stored form")
 	}
+	if !nanoSafe(r.CreatedAt) {
+		return bad("has a creation time out of the range that the binding can hold")
+	}
 	if !validSealed(r.Binding, true) {
 		return bad("has a binding that is not in the stored form")
 	}
@@ -117,6 +120,9 @@ func (r Record) validateVersions(bad func(string) error) error {
 			return bad("has versions that are not in rising order or have a number out of range")
 		}
 		last = v.Version
+		if !nanoSafe(v.CreatedAt) || v.RetiredAt != nil && !nanoSafe(*v.RetiredAt) {
+			return bad("has a version time out of the range that the binding can hold")
+		}
 		if why := v.shapeProblem(); why != "" {
 			return bad(why)
 		}
@@ -171,3 +177,7 @@ func (r Record) meta() Meta {
 	}
 	return m
 }
+
+// nanoSafe says whether a time is the same instant when counted in nanoseconds since 1970 (years 1678 to 2262). The
+// binding writes times that way, so a time outside would be the same bytes as one 2^64 nanoseconds away.
+func nanoSafe(t time.Time) bool { return time.Unix(0, t.UnixNano()).Equal(t) }

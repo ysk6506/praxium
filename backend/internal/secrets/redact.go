@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"sort"
 	"strings"
+	"sync"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
@@ -47,14 +48,25 @@ type Value struct {
 	reveal func() string
 }
 
-// secretBytes is the bytes of one value, held by the closures of the Value and of the wipe function only.
-type secretBytes struct{ b []byte }
+// secretBytes is the bytes of one value. Only the closures of the Value and of the wipe function hold it, so nothing
+// that reflection can reach from a Value or an Opened holds the bytes. The lock lets Close run while another
+// goroutine reads.
+type secretBytes struct {
+	mu sync.Mutex
+	b  []byte
+}
 
 func (h *secretBytes) value() Value {
-	return Value{reveal: func() string { return string(h.b) }}
+	return Value{reveal: func() string {
+		h.mu.Lock()
+		defer h.mu.Unlock()
+		return string(h.b)
+	}}
 }
 
 func (h *secretBytes) wipe() {
+	h.mu.Lock()
+	defer h.mu.Unlock()
 	clear(h.b)
 	h.b = nil
 }
@@ -150,36 +162,42 @@ type openedData struct {
 	version int
 	addr    Address
 	values  map[string]Value
-	holders []*secretBytes // the bytes the values read, to overwrite them
+	wipe    func() // overwrites the bytes the values read; a function value, so the bytes are not in a field
 }
 
 // SecretID is the id of the secret.
-func (o *Opened) SecretID() string { return o.d.id }
+func (o *Opened) SecretID() string { return o.data().id }
 
 // Kind is the kind of the secret.
-func (o *Opened) Kind() Kind { return o.d.kind }
+func (o *Opened) Kind() Kind { return o.data().kind }
 
 // Version is the version that was opened.
-func (o *Opened) Version() int { return o.d.version }
+func (o *Opened) Version() int { return o.data().version }
 
 // Address is the address the open was allowed for, in its normal form. The code that connects uses this address and
 // not the one it asked about, so that what was checked is what is connected to.
-func (o *Opened) Address() Address { return o.d.addr }
+func (o *Opened) Address() Address { return o.data().addr }
 
 // Value returns a field by name.
 func (o *Opened) Value(field string) (Value, bool) {
-	v, ok := o.d.values[field]
+	v, ok := o.data().values[field]
 	return v, ok
+}
+
+// data is what the Opened holds, or nothing for a zero or nil Opened, whose methods give empty values.
+func (o *Opened) data() *openedData {
+	if o == nil || o.d == nil {
+		return &openedData{}
+	}
+	return o.d
 }
 
 // Close overwrites the bytes of every value. It may be called more than once, and on a zero Opened.
 func (o *Opened) Close() {
-	if o == nil || o.d == nil {
+	if o == nil || o.d == nil || o.d.wipe == nil {
 		return
 	}
-	for _, h := range o.d.holders {
-		h.wipe()
-	}
+	o.d.wipe()
 }
 
 func wipe(b []byte) { clear(b) }
