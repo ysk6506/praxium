@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { useState } from "react";
 import {
   forgetToken,
   routeHash,
@@ -8,7 +8,17 @@ import {
   useScreenTitle,
   useToken,
 } from "../data";
-import { Button, ButtonLink, KeyValues, Mono, PageHeader, Section, TextField } from "../ui";
+import {
+  Button,
+  ButtonLink,
+  Form,
+  KeyValues,
+  Mono,
+  PageHeader,
+  SecretField,
+  Section,
+  SubmitButton,
+} from "../ui";
 
 const MODE_NAMES = {
   demo: "데모(접속 링크)",
@@ -63,13 +73,19 @@ export function SettingsScreen() {
   useScreenTitle(titleOf("접속 설정"));
   const mode = useEntryMode();
   const [draft, setDraft] = useState("");
+  const [problem, setProblem] = useState<string | undefined>(undefined);
 
-  function save(event: FormEvent): void {
-    event.preventDefault();
-    if (draft.trim() === "") return;
+  /** The form's submit: an empty box is told in words and gets focus (the button is never turned off for it). */
+  function save(): boolean {
+    if (draft.trim() === "") {
+      setProblem("접근 토큰을 입력하십시오.");
+      return false;
+    }
     saveTypedToken(draft);
     setDraft("");
+    setProblem(undefined);
     globalThis.location.hash = routeHash({ page: "kgs" });
+    return true;
   }
 
   return (
@@ -82,30 +98,30 @@ export function SettingsScreen() {
         <Ways />
       </Section>
       <Section title="접근 토큰 입력">
-        <form onSubmit={save} className="flex max-w-lg flex-col gap-3">
-          <TextField
+        <Form label="접근 토큰 입력" onSubmit={save} className="flex max-w-lg flex-col gap-3">
+          <SecretField
             label="토큰"
-            type="password"
-            mono
-            autoComplete="off"
+            required
             value={draft}
-            onChange={(event) => setDraft(event.target.value)}
+            error={problem}
+            onChange={(event) => {
+              setDraft(event.target.value);
+              setProblem(undefined);
+            }}
             placeholder={
               saved ? "새 토큰으로 바꾸려면 입력하십시오" : "접근 토큰을 붙여 넣으십시오"
             }
             description="개발 서버는 -dev-token-file로 지정한 값, 운영 서버는 관리자가 만든 pxm_… 토큰입니다. 이 브라우저에 저장되며, 모든 API 요청의 Authorization 헤더에 실립니다."
           />
           <div className="flex gap-2">
-            <Button type="submit" variant="primary" disabled={draft.trim() === ""}>
-              저장하고 접속
-            </Button>
+            <SubmitButton>저장하고 접속</SubmitButton>
             {saved ? (
               <Button variant="ghost" onClick={() => forgetToken()}>
                 저장된 토큰 삭제
               </Button>
             ) : null}
           </div>
-        </form>
+        </Form>
       </Section>
       <Section title="현재 상태">
         <KeyValues

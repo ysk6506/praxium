@@ -204,6 +204,7 @@ export {
   setAt,
   writeValue,
 } from "./json-doc";
+export { type LeaveGuard, type PendingLeave, useLeaveGuard } from "./leaveGuard";
 export {
   groupKey,
   groupNeighbors,
