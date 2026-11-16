@@ -65,7 +65,7 @@ REQ-002와 REQ-003은 화면의 요구이고 화면은 이 리포지토리의 `a
 | [requirements-access.md](requirements-access.md) | 인증, 권한, 시크릿: 권한(160번대), 시크릿(210~217), 접근 토큰과 관리 API(307~314) |
 | [requirements-operations.md](requirements-operations.md) | 운영과 관측: 운영(150번대), 관측(180번대), 역량 질문(190번대), 프락시움 자신의 운영 요구(200~208), 단계 |
 | [requirements-gateway.md](requirements-gateway.md) | MCP 게이트웨이(450~469, 520~534): 실행의 계약, 호출의 순서, 분류와 연결, 확인, 가용성, 단계(아직 구현하지 않았다) |
-| [requirements-web-cli-release.md](requirements-web-cli-release.md) | 웹 UI, 명령줄, 릴리스: 임시 웹 UI(275번대, 296~299, 315~319), 명령줄, 데모, 릴리스 빌드(282~283) |
+| [requirements-web-cli-release.md](requirements-web-cli-release.md) | 웹 UI, 명령줄, 릴리스: 임시 웹 UI(275번대, 296~299, 315~319)와 쓰기 기반(407~409), 명령줄, 데모, 릴리스 빌드(282~283) |
 
 ## 범위 밖
 
