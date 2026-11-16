@@ -246,7 +246,7 @@ KG를 구축하는 일(수집)과 사용하는 일(질의) 사이에서 날마�
 |---|---|
 | `sync_id`, `source_id` | 실행과 소스 |
 | `schedule_key` | 스케줄 키. 수동으로 실행한 것은 비어 있어요 |
-| `state` | `queued` / `running` / `waiting_confirmation` / `succeeded` / `failed` / `abandoned` |
+| `state` | `queued` / `running` / `waiting_confirmation` / `succeeded` / `failed` / `abandoned` 예정(ADR-0058): 이 낱말로 바뀐다(`queued`, `running`, `awaiting_confirmation`, `succeeded`, `failed`, `cancel_requested`, `canceled`) |
 | `attempt` | 워커가 작업을 가져갈 때마다 올라가는 번호 |
 | `lease_owner`, `lease_until` | 리스를 가진 워커와 기한 |
 | `stage`, `stage_counts` | 현재 단계와 단계별로 들어온 수·나간 수·탈락한 수·소요 시간 |

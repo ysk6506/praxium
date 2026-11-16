@@ -111,7 +111,7 @@ GET /v1/kgs/main/objects?filter[object_type][equals]=Server&filter[display_name]
 ### 3-6. 쓰기: 브랜치 안에서만, 멱등성 보장, 낙관적 동시성 제어
 **규칙.**
 - 정의를 수정하는 모든 작업은 브랜치 안에서 해요. 메인 브랜치를 직접 수정하는 경로는 없어요(예외 하나. 예정(ADR-0058): 소스와 매핑은 `POST /v1/definition-items:apply`로 직접 적용해요. 직접 적용이 허용된 배포에서만 되고, 같은 본문이 브랜치의 `items:batch`가 돼요. [정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 1절). 생성은 POST, 부분 수정은 PATCH(`application/merge-patch+json`, 보낸 필드만 바꿔요), 삭제는 DELETE예요. 여러 항목을 한 번에 쓰는 경로는 `POST /v1/branches/{branch_id}/items:batch`예요(한 `Idempotency-Key`, 항목마다 `If-Match`. 전부 성공하거나 전부 실패해요. 가정).
-- **멱등성 보장.** 생성과 액션의 POST는 `Idempotency-Key`를 받아요. 클라이언트가 만든 고유한 문자열이에요. 같은 키와 같은 본문이면 처음 응답을 그대로 다시 줘요(`Idempotent-Replayed: true`). 같은 키에 다른 본문이면 거절해요(`conflict.idempotency_key_reused`). 같은 키의 요청이 아직 처리 중이면 `conflict.request_in_progress`예요. 키는 정해진 기간(가정) 보관해요. 키 없는 생성은 거절해요(`invalid_input.idempotency_key_required`).
+- **멱등성 보장.** 생성과 액션의 POST는 `Idempotency-Key`를 받아요. 클라이언트가 만든 고유한 문자열이에요. 같은 키와 같은 본문이면 처음 응답을 그대로 다시 줘요(`Idempotent-Replayed: true`). 같은 키에 다른 본문이면 거절해요(`conflict.idempotency_key_reused`). 같은 키의 요청이 아직 처리 중이면 `conflict.request_in_progress`예요. 키는 정해진 기간(가정) 보관해요. 예정(ADR-0058): 점검, 소스 탐색, 미리 보기의 응답은 소스의 값이 들어 있어 이 저장소에 보관하지 않아요. 키 없는 생성은 거절해요(`invalid_input.idempotency_key_required`).
 - **낙관적 동시성 제어.** 항목을 읽으면 `ETag`(그 버전의 식별자, 항목의 버전 해시에서 만들어요)가 와요. PATCH, DELETE, 항목을 바꾸는 액션은 `If-Match`를 보내야 해요. 없으면 428(`invalid_input.precondition_required`), 일치하지 않으면 412(`conflict.version_mismatch`)예요. 412의 본문에 `current_etag`와 바뀐 필드가 있어 화면이 다시 읽고 병합한 결과를 보여 줄 수 있어요.
 **이유.** 네트워크 때문에 같은 요청이 두 번 갈 수 있고, 두 사람이 같은 항목을 동시에 수정할 수 있어요. 조용히 덮어쓰면 "한 일은 모두 기록되고 되돌릴 수 있다"(ADR-0014)가 깨져요.
 

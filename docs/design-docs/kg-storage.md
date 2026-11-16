@@ -72,7 +72,7 @@ ADR-0009를 풀어 쓴 설계 문서예요. 구현하는 사람이 이 문서만
 | `kg_head` | `kg_id`, `applied_seq`, `readable_through`, `applied_through`(수집 변경 로그에서 어디까지 적용했나), `running_graph_hash`, `apply_id`, `next_chunk_no`, `applied_semantic_version` | `kg_id` | **적용기만.** 적용이 이 행을 잠근다 |
 | `kg_apply_lease` | `kg_id`, `lease_owner`, `lease_until`, `attempt`, `semantic_version` | `kg_id` | 리스를 획득한 워커([적용](kg-storage-apply.md) 6절) |
 | `kg_maintenance` | `kg_id`, `sealed_version_no`, `last_sealed_at`, `min_readable_seq`, `last_cleanup_at` | `kg_id` | 확정과 정리. 적용기의 행과 다른 행이라 서로 대기하지 않는다 |
-| `kg_hash_key` | `kg_id`, `key_version`, `wrapped_key` | `(kg_id, key_version)` | KG를 만들 때. 마스터 키로 래핑한 KG별 해시 키(7.3). 값은 아무도 읽지 못한다(ADR-0018) |
+| `kg_hash_key` | `kg_id`, `key_version`, `wrapped_key` | `(kg_id, key_version)` | KG를 만들 때. 마스터 키로 래핑한 KG별 해시 키(7.3). 값은 아무도 읽지 못한다(ADR-0018). 예정(ADR-0058): 파일 저장소 KG의 해시 키는 이 표가 아니라 데이터 폴더에 두고 마스터 키로 래핑하지 않는다 |
 | `generation_event` | `kg_id`, `generation`, `restored_to_seq`, `at` | `(kg_id, generation)` | 시점 복구 때([적용](kg-storage-apply.md) 7절) |
 
 `readable_through`는 읽기 측이 볼 수 있는 최신 지점이고 배치 하나가 모두 적용됐을 때만 올라요. 작은 배치에서는 `applied_seq`와 같아요. 순서 번호는 헤드 행의 카운터이고 시퀀스 객체를 쓰지 않아요.

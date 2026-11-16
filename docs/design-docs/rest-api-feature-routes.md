@@ -82,6 +82,7 @@ follows:
 ## 4. 정의의 버전, 브랜치, 에이전트 (ADR-0014, 8-25)
 | 기능 | 경로 |
 |---|---|
+| 정의 항목의 목록(예정, ADR-0058. `filter[kind][equals]`로 거른다) | `GET /v1/definition-items` |
 | 개요, 정의 세트, 차이, 항목의 이력 | `GET /v1/definitions-overview`, `GET /v1/definition-sets`, `GET /v1/definition-sets/{from}/diff/{to}`, `GET /v1/definition-items/{item_id}` |
 | 브랜치 생성, 항목 기록, 일괄 기록 | `GET, POST /v1/branches`, `GET /v1/branches/{branch_id}`, `GET, POST /v1/branches/{branch_id}/items`, `PATCH, DELETE /v1/branches/{branch_id}/items/{item_id}`, `POST /v1/branches/{branch_id}/items:batch` |
 | 작은 변경을 제안 하나로 | `POST /v1/proposals:from-items` |
@@ -137,7 +138,7 @@ follows:
 | 설정 변경과 리버트 | `GET, PATCH /v1/settings`, `GET /v1/settings/{name}/revisions` |
 | 구성 요소의 헬스 상태와 신호 | `GET /v1/kgs/{kg}/health`(시스템 KG), `POST /v1/metrics/query` |
 | 프락시움 구성 요소를 운영 KG에 내보내기(기본 비활성) | 없음. 설정으로 제공할지 정하지 않았어요 |
-| 시크릿 등록, 메타 정보 조회, 버전 교체와 테스트와 폐기, 삭제 | `GET, POST /v1/secrets`, `DELETE /v1/secrets/{secret_id}`, `GET, POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:check`, `POST /v1/secrets/{secret_id}/versions/{version}:retire` |
+| 시크릿 등록, 메타 정보 조회, 버전 교체와 테스트와 폐기, 삭제(ADR-0058 단계 11에서 연다) | `GET, POST /v1/secrets`, `DELETE /v1/secrets/{secret_id}`, `GET, POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:check`, `POST /v1/secrets/{secret_id}/versions/{version}:retire` |
 | `allowed_hosts` 변경 | `PATCH /v1/secrets/{secret_id}` |
 | 마스터 키의 목록, 재암호화(rewrap), 폐기 | `GET /v1/master-keys`, `POST /v1/master-keys/{key_id}:rewrap`, `POST /v1/master-keys/{key_id}:rewrap:retire` |
 | 복호화 이력 조회 | `GET /v1/audit-records`(`action`과 `target_id`) |
