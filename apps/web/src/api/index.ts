@@ -2,8 +2,22 @@
  * The API layer: the typed client of the REST contract. Everything under `generated/` is made from the contract by
  * `pnpm web:gen-api`; `client.ts` is the one hand-written part. Names are listed one by one (no `export *`).
  */
-export type { ClientOptions, QueryObject, Requester, RequestSpec } from "./client";
-export { ApiError, buildUrl, CLIENT_CODES, createClient, serializeQuery } from "./client";
+export type {
+  ClientOptions,
+  QueryObject,
+  Requester,
+  RequestSpec,
+  ResponseMeta,
+} from "./client";
+export {
+  ApiError,
+  buildUrl,
+  CLIENT_CODES,
+  createClient,
+  requestHeaders,
+  serializeQuery,
+  withEtag,
+} from "./client";
 export {
   askFind,
   askGet,
