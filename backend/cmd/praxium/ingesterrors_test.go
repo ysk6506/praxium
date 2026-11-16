@@ -47,3 +47,22 @@ func TestTheCandidatesOfTheKeyAreFoundInAListOfErrors(t *testing.T) {
 		t.Fatalf("%s", se)
 	}
 }
+
+// [REQ-400]
+// A list that was cut says how many are in all, and a mapping that cannot be read does not hide the mistakes of the
+// source.
+func TestACutListSaysHowManyThereAreAndAnUnreadableMappingDoesNotHideTheSourceErrors(t *testing.T) {
+	ex := initExamples(t)
+	servers := ex + "/csv/servers.csv"
+	cols := strings.TrimSuffix(strings.Repeat(`{"name":""},`, 105), ",")
+	source := putFile(t, t.TempDir(), "source.json", []byte(`{"id":"s","adapter":"file","datasets":[{"id":"ds_servers","parser":"csv","natural_key":["a"],"columns":[`+cols+`]}]}`))
+	mapping := putFile(t, t.TempDir(), "mapping.json", []byte(`{"feeds":[]}`))
+	_, _, se := cmdRun(t, "ingest", "run", "-source", source, "-mapping", mapping, "-input", "ds_servers="+servers)
+	if !strings.Contains(se, "problems found in the definitions; the first 100 are listed") {
+		t.Fatalf("%s", se)
+	}
+	_, _, se = cmdRun(t, "ingest", "run", "-source", source, "-mapping", mapping+".gone", "-input", "ds_servers="+servers)
+	if !strings.Contains(se, "column name") || strings.Contains(se, "cannot read") {
+		t.Fatalf("%s", se)
+	}
+}

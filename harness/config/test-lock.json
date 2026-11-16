@@ -11001,6 +11001,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestACutListSaysHowManyThereAreAndAnUnreadableMappingDoesNotHideTheSourceErrors": {
+   "kind": "test",
+   "hash": "f68b0ad49271da8f",
+   "asserts": 5,
+   "literals": [
+    "2c65a5996ad773d6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-400"
+   ],
+   "added": "2026-11-16",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerOnPostgresServesTheKgAndKeepsItAcrossRestarts": {
    "kind": "test",
    "hash": "a36d5800ca2c06ff",

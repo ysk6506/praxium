@@ -6,7 +6,6 @@ import (
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
-	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/xlsx"
 )
 
@@ -15,16 +14,12 @@ const maxKeyHintBytes = 64 << 20
 
 // withKeyCandidates adds to the error of a draft whose natural key was never filled in the columns of the file given
 // for the dataset that are filled in every row and different in each, the same ones `ingest inspect -emit-source`
-// told when it made the draft. They come before the list of every column. Any other error is returned as it is. When
-// the error is a list, each of its errors is looked at on its own and the others stay as they are.
+// told when it made the draft. They come before the list of every column. Each error of the list is looked at on its
+// own and the others stay as they are; an error that is no list of definition errors is returned as it is.
 func withKeyCandidates(err error, source []byte, f ingestFlags, w wiring) error {
 	de, isList := ingest.DefinitionErrorsOf(err)
 	if !isList {
-		text, changed := keyCandidatesText(errText(err), source, f, w)
-		if !changed {
-			return err
-		}
-		return kernel.Errorf(kernel.CodeOf(err), "%s", text)
+		return err
 	}
 	out := &ingest.DefinitionErrors{List: append([]ingest.DefinitionError{}, de.List...), Omitted: de.Omitted}
 	for i, e := range out.List {
