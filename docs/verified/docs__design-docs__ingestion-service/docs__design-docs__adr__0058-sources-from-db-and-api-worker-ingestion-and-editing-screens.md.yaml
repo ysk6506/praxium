@@ -1,0 +1,7 @@
+doc: "docs/design-docs/ingestion-service.md"
+target: "docs/design-docs/adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md"
+hash: "8dfb2f10c9fe51a5"
+date: "2026-11-16"
+note: "ADR-0058의 결정 1~13과 그 덧붙임, 그리고 따르는 ADR-0008, 0014의 결정 목록을 이 문서의 절과 대조해 읽었고 어긋나는 곳이 없었다(ingestion-service)"
+text_changed: true
+doc_hash: "cc7ba81ac640bc44"
