@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "refinements": [
     {
       "id": "rf_servers",

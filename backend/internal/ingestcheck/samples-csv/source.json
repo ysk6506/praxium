@@ -1,4 +1,5 @@
 {
+  "version": 1,
   "id": "src_example_files",
   "name": "example file exports",
   "adapter": "file",

@@ -98,6 +98,8 @@ func Compile(reg *model.Registry, src Source, m Mapping) (*Plan, error) {
 			p.columns[d.ID] = append(p.columns[d.ID], c.Name)
 		}
 	}
+	p.errs.checkVersion(m.Version, "mapping definition")
+	p.errs.checkID(ecMapIDInvalid, ptr("id"), "mapping", m.ID, nil)
 	p.compileRefinements()
 	if len(m.Feeds) == 0 {
 		p.errs.add(ecMapNoFeeds, ptr("feeds"), nil, "the mapping has no feed")
@@ -106,9 +108,9 @@ func Compile(reg *model.Registry, src Source, m Mapping) (*Plan, error) {
 	firstAt := map[string]int{}
 	for i, f := range m.Feeds {
 		fp := p.compileFeed(f, i)
-		if at, dup := firstAt[f.ID]; dup {
+		if at, dup := firstAt[f.ID]; dup && f.ID != "" {
 			p.errs.add(ecMapFeedDup, ptr("feeds", i, "id"), Params{"id": f.ID, "first": at}, "feed %s appears twice", f.ID)
-		} else {
+		} else if f.ID != "" {
 			byID[f.ID], firstAt[f.ID] = fp, i
 		}
 		p.feeds = append(p.feeds, fp)
@@ -133,6 +135,7 @@ func (p *Plan) compileRefinements() {
 				"refinement %s reads %q, which is no dataset or earlier refinement", r.ID, r.Input)
 		}
 		idOK := true
+		p.errs.checkID(ecMapRefIDInvalid, at+ptr("id"), "refinement", r.ID, nil)
 		switch {
 		case r.ID == "":
 			idOK = false
@@ -159,6 +162,10 @@ func (p *Plan) compileRefinements() {
 func (p *Plan) compileFeed(f Feed, index int) *feedPlan {
 	at := ptr("feeds", index)
 	fp := &feedPlan{feed: f, index: index, grade: model.GradeFact}
+	if f.ID == "" {
+		p.errs.add(ecMapFeedIDMissing, at+ptr("id"), nil, "feed %d needs an id", index)
+	}
+	p.errs.checkID(ecMapFeedIDInvalid, at+ptr("id"), "feed", f.ID, nil)
 	fp.cols, fp.colsOK = p.columns[f.Dataset]
 	if !fp.colsOK && !p.broken[f.Dataset] {
 		p.errs.add(ecMapFeedDataset, at+ptr("dataset"), Params{"feed": f.ID, "dataset": f.Dataset, "available": p.datasetIDs()},

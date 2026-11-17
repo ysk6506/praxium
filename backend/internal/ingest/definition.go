@@ -37,6 +37,7 @@ type Column struct {
 // Dataset is a table a source gives (ingestion.md 3.1). The slice has raw datasets that are received as a whole
 // (snapshot) from a file.
 type Dataset struct {
+	// ID follows the grammar of an id (ADR-0075).
 	ID          string   `json:"id"`
 	Name        string   `json:"name,omitempty"`
 	Kind        string   `json:"kind,omitempty"`
@@ -61,6 +62,8 @@ type Dataset struct {
 
 // Source is a place data comes from (ingestion.md 3.1) with the datasets it gives.
 type Source struct {
+	// Version is the version of the document; none is version 1 (ADR-0075).
+	Version   *int      `json:"version,omitempty"`
 	ID        string    `json:"id"`
 	Name      string    `json:"name,omitempty"`
 	Adapter   string    `json:"adapter"`
@@ -148,9 +151,11 @@ func (s Source) normalized() (Source, error) {
 }
 
 func (s Source) normalize(c *collector) Source {
+	c.checkVersion(s.Version, "source definition")
 	if s.ID == "" {
 		c.add(ecSrcIDMissing, ptr("id"), nil, "a source needs an id")
 	}
+	c.checkID(ecSrcIDInvalid, ptr("id"), "source", s.ID, nil)
 	if s.Adapter != "file" {
 		c.add(ecSrcAdapter, ptr("adapter"), Params{"source": s.ID, "adapter": s.Adapter, "supported": []string{"file"}},
 			"source %s: adapter %q is not one this build has (only file)", s.ID, s.Adapter)
@@ -191,6 +196,7 @@ func (d Dataset) normalize(c *collector, source string, i int) Dataset {
 	if d.ID == "" {
 		c.add(ecSrcDatasetID, at+ptr("id"), Params{"source": source}, "source %s: a dataset needs an id", source)
 	}
+	c.checkID(ecSrcDatasetBad, at+ptr("id"), "dataset", d.ID, Params{"source": source})
 	if d.Kind == "" {
 		d.Kind = "raw"
 	}

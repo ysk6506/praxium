@@ -17,6 +17,10 @@ func (p *Plan) compileLinks(feeds map[string]*feedPlan) {
 func (p *Plan) compileLink(d LinkDef, index int, feeds map[string]*feedPlan) *linkPlan {
 	at := ptr("links", index)
 	lp := &linkPlan{def: d, basis: model.BasisDerived}
+	if d.ID == "" {
+		p.errs.add(ecMapLinkIDMissing, at+ptr("id"), nil, "link definition %d needs an id", index)
+	}
+	p.errs.checkID(ecMapLinkIDInvalid, at+ptr("id"), "link definition", d.ID, nil)
 	ltOK := false
 	if lt, ok := p.reg.LinkTypeByName(d.LinkType); ok {
 		lp.lt, ltOK = lt, true
