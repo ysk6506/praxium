@@ -69,6 +69,10 @@ export interface Mutation<V, R> {
   readonly reset: () => void;
 }
 
+/** A new key from the caller's `newKey`, or a random one. */
+const makeKey = (options: { readonly newKey?: () => string }): string =>
+  (options.newKey ?? newIdempotencyKey)();
+
 function fingerprint(variables: unknown): string | undefined {
   try {
     return JSON.stringify(variables) ?? "";
@@ -99,7 +103,7 @@ export function useMutation<V, R>(options: MutationOptions<V, R>): Mutation<V, R
       const sameness = fingerprint(variables);
       let key = attempt.current?.key;
       if (key === undefined || sameness === undefined || attempt.current?.variables !== sameness) {
-        key = (current.newKey ?? newIdempotencyKey)();
+        key = makeKey(current);
         if (!isIdempotencyKey(key)) {
           throw new Error(
             `An Idempotency-Key is ${IDEMPOTENCY_KEY_LENGTH.min} to ${IDEMPOTENCY_KEY_LENGTH.max} printable ASCII characters.`,
