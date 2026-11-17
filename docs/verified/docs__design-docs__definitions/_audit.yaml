@@ -1,0 +1,4 @@
+doc: "docs/design-docs/definitions.md"
+date: "2026-11-17"
+note: "지금 구현된 범위 표와 type_overlay 본문 설명을 backend/internal/definitions, definitionsfile, definitionscheck, model/overlay.go, cmd/praxium/modelcmd.go와 대조하고, ADR-0014와 가리키는 문서의 절 번호, REST 경로, REQ 번호, 기본값을 확인했다. 틀린 것은 없었다. 10절의 샘플 목록이 3-3과 16절의 키가 있는 목록 네 가지에 없는 점은 설계 쪽에 알린다"
+doc_hash: "fcf72c884e7d480c"

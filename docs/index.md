@@ -25,6 +25,16 @@ covers:
 
 ### 제품 명세
 
+- [프락시움 요구사항 — 인증, 권한, 시크릿](product-specs/requirements-access.md)
+- [프락시움 요구사항 — 정의](product-specs/requirements-definitions.md)
+- [프락시움 요구사항 — MCP 게이트웨이](product-specs/requirements-gateway.md)
+- [프락시움 요구사항 — 영향 범위](product-specs/requirements-impact.md)
+- [프락시움 요구사항 — 수집의 사용성과 메시지](product-specs/requirements-ingestion-usability.md)
+- [프락시움 요구사항 — 수집](product-specs/requirements-ingestion.md)
+- [프락시움 요구사항 — 모델과 저장](product-specs/requirements-model-storage.md)
+- [프락시움 요구사항 — 운영과 관측](product-specs/requirements-operations.md)
+- [프락시움 요구사항 — 질의와 API](product-specs/requirements-query-api.md)
+- [프락시움 요구사항 — 웹 UI, 명령줄, 릴리스](product-specs/requirements-web-cli-release.md)
 - [프락시움 요구사항](product-specs/requirements.md)
 
 ### 설계
@@ -39,11 +49,16 @@ covers:
 - [에이전트가 정의를 작성할 때의 버전 관리 — 누가, 왜, 얼마나 빠르게, 어디까지 자동으로](design-docs/definitions-at-agent-scale.md)
 - [정의의 계보 — 항목, 컬럼, 속성 단위의 추적과 영향 분석](design-docs/definitions-lineage.md)
 - [정의의 버전과 브랜치 — 항목과 리비전, 정의 세트, 제안과 검사, 병합 큐, 리버트, 계보](design-docs/definitions.md)
+- [게이트웨이의 액션 타입 표 — 바꾸는 액션 95개의 종류, 효과, 관측 시점, 1차의 확정 대상과 후보](design-docs/gateway-actions.md)
+- [게이트웨이의 안전 — 신뢰의 경계, 보안 원칙, 정의의 통제, 가용성과 긴급, 단계와 여는 조건](design-docs/gateway-safety.md)
+- [게이트웨이 설계 — 구성과 책임, 실행의 계약, 호출의 순서, 분류와 연결, 확인](design-docs/gateway.md)
 - [일반 용어집 — 개발과 운영에서 쓰는 표준 용어](design-docs/glossary-general.md)
 - [용어집 — 문서와 화면에 쓰는 표준 용어](design-docs/glossary.md)
 - [품질 하네스 사용법](design-docs/harness-guide.md)
 - [수집 확장 — 푸시 수집, 지정 재수집, 기대와 대조, 매핑 지원 API, 문서에서 행까지](design-docs/ingestion-extensions.md)
+- [수집 서비스와 실행 — KG 단위의 계획, 수집과 적용, 재계산, 확인 후 적용, 실행 기록](design-docs/ingestion-service.md)
 - [현실 데이터 수집 설계 — 소스, 수집 방식, 수집, 원본 레코드, 읽기 전용, 안전장치](design-docs/ingestion.md)
+- [KG의 읽기 전용 MCP 인터페이스 — 판 처리, 툴 여섯, 코드의 자리](design-docs/kg-mcp.md)
 - [KG의 모델 설계 — 타입 등록부, 링크 의미와 채널, 이중화 그룹, 근거, 식별](design-docs/kg-model.md)
 - [KG 운영 — 문제 목록, 가용성, 동기화와 스트림의 실패 처리, 백업과 복구](design-docs/kg-operations.md)
 - [영향 범위를 손으로 따라가기 — 가상의 예시 5개](design-docs/kg-queries-examples.md)
@@ -51,6 +66,7 @@ covers:
 - [KG 읽기 성능 측정 — 개발용 적재와 첫 3개 질의를 메모리 스토리지에서 측정한 결과](design-docs/kg-read-measurements.md)
 - [KG의 적용 — 3단계, 큰 적용, 순서, 리스, 세대, 보존](design-docs/kg-storage-apply.md)
 - [KG의 저장과 버전 — 무엇이 어디에 저장되고, 어떻게 확정되는가](design-docs/kg-storage.md)
+- [표준 모델의 바인딩과 이중화 상실의 설계](design-docs/model-links.md)
 - [파이프라인 설계 — 변경을 입력받아 변경을 산출하는 실행기, 정제, 피드, 식별, 링크 정의](design-docs/pipeline.md)
 - [스토리지의 운영 수준 — PostgreSQL을 쓰기 중심으로 오픈 베타까지, 메시지 로그 스토리지는 붙기만 한다](design-docs/postgres-operations.md)
 - [엔드투엔드(E2E) 프로세스의 방향 — 조사로 정리한 방향이고 결정이 아니다](design-docs/process-direction.md)
@@ -64,16 +80,21 @@ covers:
 - [REST API 설계 — 계약이 먼저, 일관된 형식, 로그인, 계약을 지키는 장치, CLI](design-docs/rest-api.md)
 - [시크릿과 암호화 — 입력 후 재조회 불가, 사용 시점에만 복호화, 사용 이력 기록](design-docs/secrets-and-encryption.md)
 - [프락시움 자신의 관측성과 운영 가능성 — 신호, 진단, 운영 액션, 권한과 기록](design-docs/self-observability.md)
+- [정의의 쓰기, 시크릿, 경로, 화면 — 소스와 매핑을 편집하는 길](design-docs/source-editing.md)
+- [소스와 어댑터 — DB와 API 소스의 정의, 어댑터의 포트, 읽기 전용, 바깥 요청의 묶기](design-docs/sources-and-adapters.md)
 - [표준 모델의 요약 — 9개 층의 타입, 링크, 액션](design-docs/standard-model.md)
-- [임시 콘솔 — 클로즈드 베타까지 기능을 눌러 보는, 삭제 쉬운 테스트용 화면](design-docs/temporary-console.md)
-- [웹 UI 규칙 — 임시 콘솔의 화면 코드를 짤 때 지키는 것](design-docs/web-ui-rules.md)
+- [웹 화면(콘솔) — 교체하기 쉽게 지키는 브라우저 화면](design-docs/temporary-console.md)
+- [웹 UI 규칙 — 웹 화면의 코드를 짤 때 지키는 것](design-docs/web-ui-rules.md)
 - [합성 세계 생성기 — 같은 시드이면 같은 데이터센터, 정답과 소스 보기와 변경 스트림과 분포 프로파일](design-docs/worldgen.md)
 
 ### 안내
 
+- [에이전트 연결하기 — 읽기 전용 MCP 인터페이스 (예정)](guides/connect-agents.md)
 - [수집 정의 형식 — 내 엑셀과 CSV를 소스 정의와 매핑 정의로 설명하는 법](guides/ingest-definitions.md)
 - [서버 운영하기 — 첫 관리자, 사용자와 토큰, 운영 모드의 시작 조건](guides/operate-the-server.md)
+- [조직 속성 — 표준 타입에 내 컬럼을 속성으로 더하는 법](guides/org-model.md)
 - [릴리스 만들기 — 태그를 푸시하거나 Actions 화면에서 수동 실행하면 다섯 대상의 실행 파일이 GitHub 릴리스로 나가요](guides/release.md)
+- [프락시움이 보장하는 것과 보장하지 않는 것 — 게이트웨이와 우회](guides/what-praxium-guarantees.md)
 
 ### 계획
 

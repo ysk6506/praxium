@@ -18,6 +18,7 @@ import {
   type ImpactQuestion,
   impactAddress,
   NEIGHBOR_STEPS,
+  type NeighborGroupView,
   type ObjectDetail,
   type ObjectRef,
   type ObjectTab,
@@ -206,6 +207,60 @@ function EvidenceTab({ detail }: { readonly detail: ObjectDetail }) {
   );
 }
 
+/** One group of neighbors: the links of one type in one direction, as a table. */
+function NeighborGroup(props: {
+  readonly kg: string;
+  readonly group: NeighborGroupView;
+  readonly total: number;
+}) {
+  const { kg, group, total } = props;
+  return (
+    <Section
+      title={`${group.linkType} · ${directionLabel(group.direction)}`}
+      aside={
+        total > group.items.length
+          ? `${formatCount(total)}개 중 ${formatCount(group.items.length)}개 표시`
+          : `${formatCount(group.items.length)}개`
+      }
+    >
+      <Table aria-label={`${group.linkType} ${directionLabel(group.direction)}`}>
+        <THead>
+          <Tr>
+            <Th>이웃</Th>
+            <Th>타입</Th>
+            <Th>근거 등급</Th>
+            <Th>근거 종류</Th>
+          </Tr>
+        </THead>
+        <TBody>
+          {group.items.map((item) => (
+            <Tr key={item.link_id}>
+              <Td>
+                <a
+                  href={routeHash({
+                    page: "object",
+                    kg,
+                    id: item.peer_object_id,
+                    tab: "attributes",
+                  })}
+                  className="font-medium"
+                >
+                  {item.peer_display_name}
+                </a>
+              </Td>
+              <Td>{item.peer_type}</Td>
+              <Td>
+                <GradeBadge grade={item.grade} />
+              </Td>
+              <Td>{basisLabel(item.basis)}</Td>
+            </Tr>
+          ))}
+        </TBody>
+      </Table>
+    </Section>
+  );
+}
+
 function NeighborsTab({ kg, id }: { readonly kg: string; readonly id: string }) {
   const [step, setStep] = useState(0);
   const limit = NEIGHBOR_STEPS[step] ?? NEIGHBOR_STEPS[0];
@@ -230,56 +285,14 @@ function NeighborsTab({ kg, id }: { readonly kg: string; readonly id: string }) 
               </span>
               {more ? <Button onClick={() => setStep(step + 1)}>더 보기</Button> : null}
             </div>
-            {groups.map((group) => {
-              const total =
-                totals.get(groupKey(group.linkType, group.direction)) ?? group.items.length;
-              return (
-                <Section
-                  key={`${group.linkType}-${group.direction}`}
-                  title={`${group.linkType} · ${directionLabel(group.direction)}`}
-                  aside={
-                    total > group.items.length
-                      ? `${formatCount(total)}개 중 ${formatCount(group.items.length)}개 표시`
-                      : `${formatCount(group.items.length)}개`
-                  }
-                >
-                  <Table aria-label={`${group.linkType} ${directionLabel(group.direction)}`}>
-                    <THead>
-                      <Tr>
-                        <Th>이웃</Th>
-                        <Th>타입</Th>
-                        <Th>근거 등급</Th>
-                        <Th>근거 종류</Th>
-                      </Tr>
-                    </THead>
-                    <TBody>
-                      {group.items.map((item) => (
-                        <Tr key={item.link_id}>
-                          <Td>
-                            <a
-                              href={routeHash({
-                                page: "object",
-                                kg,
-                                id: item.peer_object_id,
-                                tab: "attributes",
-                              })}
-                              className="font-medium"
-                            >
-                              {item.peer_display_name}
-                            </a>
-                          </Td>
-                          <Td>{item.peer_type}</Td>
-                          <Td>
-                            <GradeBadge grade={item.grade} />
-                          </Td>
-                          <Td>{basisLabel(item.basis)}</Td>
-                        </Tr>
-                      ))}
-                    </TBody>
-                  </Table>
-                </Section>
-              );
-            })}
+            {groups.map((group) => (
+              <NeighborGroup
+                key={`${group.linkType}-${group.direction}`}
+                kg={kg}
+                group={group}
+                total={totals.get(groupKey(group.linkType, group.direction)) ?? group.items.length}
+              />
+            ))}
           </>
         );
       }}
