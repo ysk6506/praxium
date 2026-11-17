@@ -85,11 +85,7 @@ func secretSetWho(ctx context.Context, name string, st *secretStore, f secretFla
 	if name == "set-scope" {
 		meta, err = st.svc.Writer().SetScope(ctx, f.id, f.scope)
 	} else {
-		var hosts []secrets.Address
-		if hosts, err = parseAddresses(f.hosts); err != nil {
-			return err
-		}
-		meta, err = st.svc.Writer().SetAllowedHosts(ctx, f.id, hosts)
+		meta, err = st.svc.Writer().SetAllowedHosts(ctx, f.id, f.addrs)
 	}
 	if err != nil {
 		return err
@@ -130,11 +126,7 @@ func secretPutOrRotate(ctx context.Context, name string, st *secretStore, f secr
 		}
 		return printSecretChange(ctx, out, st, f, meta, rotateSentence(meta))
 	}
-	hosts, err := parseAddresses(f.hosts)
-	if err != nil {
-		return err
-	}
-	meta, err = st.svc.Writer().Create(ctx, secrets.CreateInput{ID: f.id, Kind: kind, Fields: fields, Scope: f.scope, AllowedHosts: hosts})
+	meta, err = st.svc.Writer().Create(ctx, secrets.CreateInput{ID: f.id, Kind: kind, Fields: fields, Scope: f.scope, AllowedHosts: f.addrs})
 	if err != nil {
 		return putFailure(err, f.id)
 	}

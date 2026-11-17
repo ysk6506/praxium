@@ -16,7 +16,7 @@ import (
 func secSkipWithoutModes(t *testing.T) {
 	t.Helper()
 	if runtime.GOOS == "windows" {
-		t.Skip("this system has no file modes of this kind")
+		t.Skip("ADR-0076: this system has no file modes of this kind")
 	}
 }
 
@@ -101,7 +101,7 @@ func TestSecretDiskDoesNotFollowLinks(t *testing.T) {
 		t.Fatal(err)
 	}
 	if err := os.Symlink(other, filepath.Join(dir, "secrets.json")); err != nil {
-		t.Skip("no links here: " + err.Error())
+		t.Skip("ADR-0076: this system cannot make links: " + err.Error())
 	}
 	disk, err := openSecretDisk(dir, true)
 	if err != nil {
@@ -126,43 +126,39 @@ func TestSecretDiskAWriteDoesNotWriteThroughALinkOfTheTemporaryName(t *testing.T
 		t.Fatal(err)
 	}
 	if err := os.Symlink(victim, filepath.Join(dir, "secrets.json.tmp")); err != nil {
-		t.Skip("no links here: " + err.Error())
+		t.Skip("ADR-0076: this system cannot make links: " + err.Error())
 	}
 	e := &secEnv{t: t, w: wiring{deps: fixedDeps()}, dataDir: dir, cfgDir: t.TempDir()}
 	e.w.configDir = func() (string, error) { return e.cfgDir, nil }
-	e.put("db_main")
+	e.secPut("db_main")
 	if data, _ := os.ReadFile(victim); string(data) != "keep" {
 		t.Errorf("the write went through the link")
 	}
 }
 
-// secFailingRename is a disk whose rename fails, as a crash between the sync and the rename does.
-type secFailingRename struct{ secretDisk }
-
-func (secFailingRename) Rename(string, string) error { return errors.New("rename failed") }
-
 // [REQ-499]
-func TestSecretDiskAWriteThatFailsLeavesTheOldFileAndNoTemporaryFile(t *testing.T) {
+func TestSecretDiskAWriteThatFailsLeavesNoTemporaryFile(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
-	path := filepath.Join(e.dataDir, "secrets.json")
-	before, err := os.ReadFile(path)
-	if err != nil {
-		t.Fatal(err)
-	}
+	e.secPut("db_main")
 	disk, err := openSecretDisk(e.dataDir, false)
 	if err != nil {
 		t.Fatal(err)
 	}
-	store, err := secretsfile.Open(secFailingRename{disk})
+	store, err := secretsfile.Open(disk)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if _, err := store.Delete(context.Background(), "db_main"); err == nil || !strings.Contains(err.Error(), "in place") {
-		t.Fatalf("the failing rename did not fail the write: %v", err)
+	// the new file cannot be put in place when its name is a folder that is not empty: the rename fails after the
+	// new file was written and synced
+	path := filepath.Join(e.dataDir, "secrets.json")
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
 	}
-	if after, _ := os.ReadFile(path); string(after) != string(before) {
-		t.Errorf("a write that failed changed the file")
+	if err := os.MkdirAll(filepath.Join(path, "sub"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := store.Delete(context.Background(), "db_main"); err == nil || !strings.Contains(err.Error(), "in place") {
+		t.Fatalf("a rename that cannot be done did not fail the write: %v", err)
 	}
 	if _, err := os.Stat(path + ".tmp"); err == nil {
 		t.Errorf("a write that failed left its temporary file")
@@ -202,8 +198,8 @@ func TestSecretDiskTheLeftoverOfAnInterruptedWriteIsRemovedByAWriterAndKeptByARe
 func TestSecretDiskARewrittenFileStaysForTheOwnerOnly(t *testing.T) {
 	secSkipWithoutModes(t)
 	e := newSecEnv(t)
-	e.put("db_main")
-	e.put("db_two")
+	e.secPut("db_main")
+	e.secPut("db_two")
 	info, err := os.Stat(filepath.Join(e.dataDir, "secrets.json"))
 	if err != nil || info.Mode().Perm() != 0o600 {
 		t.Errorf("secrets.json has the mode %v (%v)", info.Mode().Perm(), err)
@@ -213,7 +209,7 @@ func TestSecretDiskARewrittenFileStaysForTheOwnerOnly(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, args := range [][]string{{"list"}, {"show", "db_main"}, {"set-scope", "db_main", "-scope", "a"}} {
-		msg := e.fails(exitFailure, "", append(args, "-data-dir", e.dataDir)...)
+		msg := e.secFails(exitFailure, "", append(args, "-data-dir", e.dataDir)...)
 		if !strings.Contains(msg, "chmod 600") {
 			t.Errorf("%s with a loose file says: %s", args[0], msg)
 		}

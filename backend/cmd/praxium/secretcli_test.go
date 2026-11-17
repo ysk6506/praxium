@@ -15,37 +15,37 @@ import (
 // [REQ-498] [REQ-474]
 func TestSecretCmdFlowPutListShowRotateRetireDelete(t *testing.T) {
 	e := newSecEnv(t)
-	out := e.ok(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
+	out := e.secOk(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
 	if !strings.Contains(out, "put the secret db_main in (password): version 1") || !strings.Contains(out, "made the master key file") {
 		t.Errorf("put says:\n%s", out)
 	}
-	if list := e.ok("", "list", "-data-dir", e.dataDir); !strings.Contains(list, "db_main") || !strings.Contains(list, "db.example.test:5432") || !strings.Contains(list, "src_db") {
+	if list := e.secOk("", "list", "-data-dir", e.dataDir); !strings.Contains(list, "db_main") || !strings.Contains(list, "db.example.test:5432") || !strings.Contains(list, "src_db") {
 		t.Errorf("list says:\n%s", list)
 	}
-	show := e.ok("", "show", "db_main", "-data-dir", e.dataDir)
+	show := e.secOk("", "show", "db_main", "-data-dir", e.dataDir)
 	for _, want := range []string{"kind:      password", "username, password", "in use:    version 1", "scope:     src_db", "key id:    mk-"} {
 		if !strings.Contains(show, want) {
 			t.Errorf("show lacks %q:\n%s", want, show)
 		}
 	}
-	rotated := e.ok(secUser+"\n"+secPass2+"\n", "rotate", "db_main", "-data-dir", e.dataDir)
+	rotated := e.secOk(secUser+"\n"+secPass2+"\n", "rotate", "db_main", "-data-dir", e.dataDir)
 	if !strings.Contains(rotated, "added version 2") {
 		t.Errorf("rotate says:\n%s", rotated)
 	}
 	if got := e.secOpen("db_main", "password"); got["password"] != secPass2 {
 		t.Errorf("the open does not give the newest version")
 	}
-	retired := e.ok("", "retire", "db_main", "-version", "2", "-data-dir", e.dataDir)
+	retired := e.secOk("", "retire", "db_main", "-version", "2", "-data-dir", e.dataDir)
 	if !strings.Contains(retired, "version 1 is in use") {
 		t.Errorf("retire says:\n%s", retired)
 	}
 	if got := e.secOpen("db_main", "password"); got["password"] != secPass {
 		t.Errorf("after the newest is retired the open does not give the version before")
 	}
-	if del := e.ok("", "delete", "db_main", "-data-dir", e.dataDir); !strings.Contains(del, "deleted the secret db_main") {
+	if del := e.secOk("", "delete", "db_main", "-data-dir", e.dataDir); !strings.Contains(del, "deleted the secret db_main") {
 		t.Errorf("delete says:\n%s", del)
 	}
-	if list := e.ok("", "list", "-data-dir", e.dataDir); !strings.Contains(list, "no secrets") {
+	if list := e.secOk("", "list", "-data-dir", e.dataDir); !strings.Contains(list, "no secrets") {
 		t.Errorf("list after delete says:\n%s", list)
 	}
 }
@@ -53,29 +53,29 @@ func TestSecretCmdFlowPutListShowRotateRetireDelete(t *testing.T) {
 // [REQ-498]
 func TestSecretCmdNoValueAndNoKeyInAnyOutputOrJSON(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
-	e.ok("x\n"+secPass2+"\n", "rotate", "db_main", "-data-dir", e.dataDir)
-	e.ok("", "retire", "db_main", "-version", "1", "-data-dir", e.dataDir)
+	e.secPut("db_main")
+	e.secOk("x\n"+secPass2+"\n", "rotate", "db_main", "-data-dir", e.dataDir)
+	e.secOk("", "retire", "db_main", "-version", "1", "-data-dir", e.dataDir)
 	for _, args := range [][]string{
 		{"list", "-data-dir", e.dataDir}, {"list", "-data-dir", e.dataDir, "--json"},
 		{"show", "db_main", "-data-dir", e.dataDir}, {"show", "db_main", "-data-dir", e.dataDir, "--json"},
 		{"set-scope", "db_main", "-scope", "src_a", "-data-dir", e.dataDir, "--json"},
 	} {
-		e.ok("", args...)
+		e.secOk("", args...)
 	}
 	// errors of the commands that carry a value
-	e.fails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
-	e.fails(exitFailure, secUser+"\n"+secPass+"\n", "put", "bad id", "-kind", "password", "-data-dir", e.dataDir)
-	e.fails(exitFailure, secPass+"\n", "put", "t1", "-kind", "password", "-data-dir", e.dataDir)
-	e.fails(exitFailure, secPass+"\n"+secPass+"\n"+secPass+"\n", "put", "t1", "-kind", "password", "-data-dir", e.dataDir)
-	e.fails(exitFailure, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field", "token="+secPass)
-	e.fails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field", secPass)
-	e.fails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-host", "postgres://u:"+secPass+"@db.example.test:5432/x")
-	e.fails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, secPass)
-	e.fails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-token", secPass)
+	e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
+	e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "put", "bad id", "-kind", "password", "-data-dir", e.dataDir)
+	e.secFails(exitFailure, secPass+"\n", "put", "t1", "-kind", "password", "-data-dir", e.dataDir)
+	e.secFails(exitFailure, secPass+"\n"+secPass+"\n"+secPass+"\n", "put", "t1", "-kind", "password", "-data-dir", e.dataDir)
+	e.secFails(exitFailure, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field", "token="+secPass)
+	e.secFails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field", secPass)
+	e.secFails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-host", "postgres://u:"+secPass+"@db.example.test:5432/x")
+	e.secFails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, secPass)
+	e.secFails(exitUsage, "", "put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-token", secPass)
 	needles := append(secNeedles([]byte(secPass)), secNeedles([]byte(secPass2))...)
 	needles = append(needles, secNeedles([]byte(secUser))...)
-	needles = append(needles, secKeyNeedles(t, e.keyFiles()[0])...)
+	needles = append(needles, secKeyNeedles(t, e.secKeyFiles()[0])...)
 	secAssertAbsent(t, e.outputs, needles)
 	raw, err := os.ReadFile(filepath.Join(e.dataDir, "secrets.json"))
 	if err != nil {
@@ -95,14 +95,14 @@ func TestSecretCmdTakesValuesFromFilesAndStripsOneLineBreak(t *testing.T) {
 	if err := os.WriteFile(passFile, []byte(secPass+" \n\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	e.ok("", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432",
+	e.secOk("", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432",
 		"-field", "username="+userFile, "-field", "password="+passFile)
 	got := e.secOpen("db_main", "username", "password")
 	if got["username"] != secUser || got["password"] != secPass+" \n" {
 		t.Errorf("the values read from the files are not what the files hold minus one line break")
 	}
 	// a token on the standard input with no line break at its end
-	e.ok(secToken, "put", "api_token", "-kind", "token", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
+	e.secOk(secToken, "put", "api_token", "-kind", "token", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
 	if got := e.secOpen("api_token", "token"); got["token"] != secToken {
 		t.Errorf("the token of the standard input is not what was piped in")
 	}
@@ -111,8 +111,8 @@ func TestSecretCmdTakesValuesFromFilesAndStripsOneLineBreak(t *testing.T) {
 // [REQ-498]
 func TestSecretCmdPutNeverChangesASecretAndRotateNeedsOne(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
-	msg := e.fails(exitFailure, secUser+"\n"+secPass2+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
+	e.secPut("db_main")
+	msg := e.secFails(exitFailure, secUser+"\n"+secPass2+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
 	for _, want := range []string{"praxium secret rotate db_main", "(conflict)"} {
 		if !strings.Contains(msg, want) {
 			t.Errorf("the refusal lacks %q: %s", want, msg)
@@ -121,7 +121,7 @@ func TestSecretCmdPutNeverChangesASecretAndRotateNeedsOne(t *testing.T) {
 	if got := e.secOpen("db_main", "password"); got["password"] != secPass {
 		t.Errorf("a refused put changed the secret")
 	}
-	if msg := e.fails(exitFailure, secUser+"\n"+secPass+"\n", "rotate", "nothing", "-data-dir", e.dataDir); !strings.Contains(msg, "(not_found)") {
+	if msg := e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "rotate", "nothing", "-data-dir", e.dataDir); !strings.Contains(msg, "(not_found)") {
 		t.Errorf("rotate of a secret that is not there says: %s", msg)
 	}
 }
@@ -129,36 +129,36 @@ func TestSecretCmdPutNeverChangesASecretAndRotateNeedsOne(t *testing.T) {
 // [REQ-498]
 func TestSecretCmdScopeAndHostsAreReplacedAndCanBeCleared(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
-	e.ok("", "set-scope", "db_main", "-scope", "src_a,src_b", "-data-dir", e.dataDir)
-	e.ok("", "set-hosts", "db_main", "-host", "DB2.example.test.:5433", "-host", "[::1]:5432,10.0.0.7:1", "-data-dir", e.dataDir)
+	e.secPut("db_main")
+	e.secOk("", "set-scope", "db_main", "-scope", "src_a,src_b", "-data-dir", e.dataDir)
+	e.secOk("", "set-hosts", "db_main", "-host", "DB2.example.test.:5433", "-host", "[::1]:5432,10.0.0.7:1", "-data-dir", e.dataDir)
 	var shown struct {
 		Scope []string          `json:"scope"`
 		Hosts []secrets.Address `json:"allowed_hosts"`
 	}
-	if err := json.Unmarshal([]byte(e.ok("", "show", "db_main", "-data-dir", e.dataDir, "--json")), &shown); err != nil {
+	if err := json.Unmarshal([]byte(e.secOk("", "show", "db_main", "-data-dir", e.dataDir, "--json")), &shown); err != nil {
 		t.Fatal(err)
 	}
 	if strings.Join(shown.Scope, ",") != "src_a,src_b" || len(shown.Hosts) != 3 || shown.Hosts[2].Host != "db2.example.test" {
 		t.Errorf("scope %v hosts %v", shown.Scope, shown.Hosts)
 	}
-	if show := e.ok("", "show", "db_main", "-data-dir", e.dataDir); !strings.Contains(show, "[::1]:5432") {
+	if show := e.secOk("", "show", "db_main", "-data-dir", e.dataDir); !strings.Contains(show, "[::1]:5432") {
 		t.Errorf("an IPv6 address is shown without its brackets:\n%s", show)
 	}
-	e.ok("", "set-scope", "db_main", "-scope", "", "-data-dir", e.dataDir)
-	e.ok("", "set-hosts", "db_main", "-host", "", "-data-dir", e.dataDir)
-	if show := e.ok("", "show", "db_main", "-data-dir", e.dataDir); !strings.Contains(show, "no source may use it") || !strings.Contains(show, "no address allowed") {
+	e.secOk("", "set-scope", "db_main", "-scope", "", "-data-dir", e.dataDir)
+	e.secOk("", "set-hosts", "db_main", "-host", "", "-data-dir", e.dataDir)
+	if show := e.secOk("", "show", "db_main", "-data-dir", e.dataDir); !strings.Contains(show, "no source may use it") || !strings.Contains(show, "no address allowed") {
 		t.Errorf("cleared lists are not said:\n%s", show)
 	}
-	e.fails(exitUsage, "", "set-scope", "db_main", "-data-dir", e.dataDir)
-	e.fails(exitUsage, "", "set-hosts", "db_main", "-data-dir", e.dataDir)
-	if msg := e.fails(exitFailure, "", "set-scope", "db_main", "-scope", "bad id", "-data-dir", e.dataDir); !strings.Contains(msg, "(invalid_value)") {
+	e.secFails(exitUsage, "", "set-scope", "db_main", "-data-dir", e.dataDir)
+	e.secFails(exitUsage, "", "set-hosts", "db_main", "-data-dir", e.dataDir)
+	if msg := e.secFails(exitUsage, "", "set-scope", "db_main", "-scope", "bad id", "-data-dir", e.dataDir); !strings.Contains(msg, "not the id of a source") {
 		t.Errorf("a bad source id says: %s", msg)
 	}
-	if msg := e.fails(exitFailure, "", "set-hosts", "db_main", "-host", "a.example.test:0", "-data-dir", e.dataDir); !strings.Contains(msg, "invalid port") {
+	if msg := e.secFails(exitFailure, "", "set-hosts", "db_main", "-host", "a.example.test:0", "-data-dir", e.dataDir); !strings.Contains(msg, "invalid port") {
 		t.Errorf("port 0 says: %s", msg)
 	}
-	if msg := e.fails(exitUsage, "", "set-hosts", "db_main", "-host", "no-port.example.test", "-data-dir", e.dataDir); !strings.Contains(msg, "host:port") {
+	if msg := e.secFails(exitUsage, "", "set-hosts", "db_main", "-host", "no-port.example.test", "-data-dir", e.dataDir); !strings.Contains(msg, "host:port") {
 		t.Errorf("a host without a port says: %s", msg)
 	}
 }
@@ -179,7 +179,8 @@ func TestSecretCmdBadIdKindAndHostAreRefused(t *testing.T) {
 		{args: []string{"put", "-kind", "token"}, code: exitUsage, want: "id of the secret first"},
 		{args: []string{"put", "ok_id", "-kind", "password", "-host", "db.example.test:5432,[::1"}, code: exitUsage, want: "host:port"},
 		{args: []string{"put", "ok_id", "-kind", "password", "-host", "*.example.test:5432"}, code: exitFailure, want: "(invalid_value)"},
-		{args: []string{"put", "ok_id", "-kind", "password", "-scope", "bad id"}, code: exitFailure, want: "(invalid_value)"},
+		{args: []string{"put", "ok_id", "-kind", "password", "-scope", "bad id"}, code: exitUsage, want: "not the id of a source"},
+		{args: []string{"put", "ok_id", "-kind", "password", "-scope", "Src.A"}, code: exitUsage, want: "not the id of a source"},
 		{args: []string{"retire", "ok_id", "-version", "0"}, code: exitUsage, want: "-version"},
 		{args: []string{"frobnicate"}, code: exitUsage, want: "no command", noDir: true},
 		{args: []string{}, code: exitUsage, want: "secret needs", noDir: true},
@@ -190,7 +191,7 @@ func TestSecretCmdBadIdKindAndHostAreRefused(t *testing.T) {
 		if !c.noDir {
 			args = append(append([]string{}, args...), "-data-dir", e.dataDir)
 		}
-		msg := e.fails(c.code, in, args...)
+		msg := e.secFails(c.code, in, args...)
 		if !strings.Contains(msg, c.want) {
 			t.Errorf("%v: %q is not in %s", c.args, c.want, msg)
 		}
@@ -198,7 +199,7 @@ func TestSecretCmdBadIdKindAndHostAreRefused(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(e.dataDir, "secrets.json")); err == nil {
 		t.Errorf("a refused command made secrets.json")
 	}
-	if len(e.keyFiles()) != 0 {
+	if len(e.secKeyFiles()) != 0 {
 		t.Errorf("a refused put made a master key")
 	}
 }
@@ -206,7 +207,7 @@ func TestSecretCmdBadIdKindAndHostAreRefused(t *testing.T) {
 // [REQ-498] [REQ-474]
 func TestSecretCmdAServerThatHoldsTheFolderStopsTheChangesNotTheReads(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
+	e.secPut("db_main")
 	disk, err := openDataDir(e.dataDir)
 	if err != nil {
 		t.Fatal(err)
@@ -222,19 +223,19 @@ func TestSecretCmdAServerThatHoldsTheFolderStopsTheChangesNotTheReads(t *testing
 		{"delete", "db_main", "-data-dir", e.dataDir}, {"set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir},
 		{"set-hosts", "db_main", "-host", "a.example.test:1", "-data-dir", e.dataDir},
 	} {
-		msg := e.fails(exitFailure, secPass+"\n", args...)
+		msg := e.secFails(exitFailure, secPass+"\n", args...)
 		if !strings.Contains(msg, "in use by another praxium") || !strings.Contains(msg, "Stop it") {
 			t.Errorf("%s while the folder is held says: %s", args[0], msg)
 		}
 	}
-	e.ok("", "list", "-data-dir", e.dataDir)
-	e.ok("", "show", "db_main", "-data-dir", e.dataDir)
+	e.secOk("", "list", "-data-dir", e.dataDir)
+	e.secOk("", "show", "db_main", "-data-dir", e.dataDir)
 }
 
 // [REQ-498]
 func TestSecretCmdReadsOfAFolderThatIsNotThereFail(t *testing.T) {
 	e := newSecEnv(t)
-	if msg := e.fails(exitFailure, "", "list", "-data-dir", filepath.Join(e.dataDir, "nope")); !strings.Contains(msg, "does not exist") {
+	if msg := e.secFails(exitFailure, "", "list", "-data-dir", filepath.Join(e.dataDir, "nope")); !strings.Contains(msg, "does not exist") {
 		t.Errorf("%s", msg)
 	}
 	if _, err := os.Stat(filepath.Join(e.dataDir, "nope")); err == nil {

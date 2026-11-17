@@ -14,8 +14,8 @@ import (
 // [REQ-474]
 func TestSecretKeyTheDefaultPlaceIsOutsideTheDataFolderUnderTheConfigurationFolder(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
-	files := e.keyFiles()
+	e.secPut("db_main")
+	files := e.secKeyFiles()
 	if len(files) != 1 {
 		t.Fatalf("key files: %v", files)
 	}
@@ -43,19 +43,19 @@ func TestSecretKeyTheDefaultPlaceIsOutsideTheDataFolderUnderTheConfigurationFold
 func TestSecretKeyAFileThatIsNamedComesBeforeTheDefaultPlace(t *testing.T) {
 	e := newSecEnv(t)
 	keyFile := filepath.Join(t.TempDir(), "keys", "mine.key")
-	e.ok(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
+	e.secOk(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
 	if _, err := os.Stat(keyFile); err != nil {
 		t.Errorf("the key was not made where it was named: %v", err)
 	}
-	if len(e.keyFiles()) != 0 {
+	if len(e.secKeyFiles()) != 0 {
 		t.Errorf("a key was made in the configuration folder as well")
 	}
 	if _, err := os.Stat(filepath.Join(e.dataDir, folderIDFile)); err == nil {
 		t.Errorf("a folder identifier was made though the key was named")
 	}
 	// without the name the key is not found (the default place has none), with it the secret changes
-	e.fails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
-	e.ok("", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
+	e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
+	e.secOk("", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
 }
 
 // [REQ-474]
@@ -77,7 +77,7 @@ func TestSecretKeyInsideTheDataFolderIsRefused(t *testing.T) {
 		places = append(places, filepath.Join(link, "a.key"))
 	}
 	for _, place := range places {
-		msg := e.fails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", place)
+		msg := e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", place)
 		if !strings.Contains(msg, "inside the data folder") {
 			t.Errorf("%s: %s", place, msg)
 		}
@@ -87,14 +87,14 @@ func TestSecretKeyInsideTheDataFolderIsRefused(t *testing.T) {
 	}
 	// a place beside the data folder is fine
 	beside := e.dataDir + "-keys"
-	e.ok(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", filepath.Join(beside, "a.key"))
+	e.secOk(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", filepath.Join(beside, "a.key"))
 }
 
 // [REQ-474]
 func TestSecretKeyTheDefaultPlaceInsideTheDataFolderIsRefused(t *testing.T) {
 	e := newSecEnv(t)
 	e.cfgDir = filepath.Join(e.dataDir, "config")
-	msg := e.fails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
+	msg := e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
 	if !strings.Contains(msg, "inside the data folder") {
 		t.Errorf("%s", msg)
 	}
@@ -107,21 +107,21 @@ func TestSecretKeyIsMadeOnlyWhenTheFirstSecretIsPutIn(t *testing.T) {
 	if err := os.MkdirAll(e.dataDir, 0o750); err != nil {
 		t.Fatal(err)
 	}
-	e.ok("", "list", "-data-dir", e.dataDir)
-	e.fails(exitFailure, secUser+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
-	if len(e.keyFiles()) != 0 {
+	e.secOk("", "list", "-data-dir", e.dataDir)
+	e.secFails(exitFailure, secUser+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
+	if len(e.secKeyFiles()) != 0 {
 		t.Fatalf("a refused put made a key")
 	}
-	e.put("db_main")
-	keys := e.keyFiles()
+	e.secPut("db_main")
+	keys := e.secKeyFiles()
 	if len(keys) != 1 {
 		t.Fatalf("key files: %v", keys)
 	}
 	before, _ := os.ReadFile(keys[0])
 	// more puts and changes reuse it
-	e.ok(secToken, "put", "t1", "-kind", "token", "-data-dir", e.dataDir)
-	e.ok("a\nb\n", "rotate", "db_main", "-data-dir", e.dataDir)
-	if after, _ := os.ReadFile(keys[0]); string(after) != string(before) || len(e.keyFiles()) != 1 {
+	e.secOk(secToken, "put", "t1", "-kind", "token", "-data-dir", e.dataDir)
+	e.secOk("a\nb\n", "rotate", "db_main", "-data-dir", e.dataDir)
+	if after, _ := os.ReadFile(keys[0]); string(after) != string(before) || len(e.secKeyFiles()) != 1 {
 		t.Errorf("a key that is there was replaced or another was made")
 	}
 	// a secret that is there and no key: nothing makes one
@@ -133,21 +133,21 @@ func TestSecretKeyIsMadeOnlyWhenTheFirstSecretIsPutIn(t *testing.T) {
 		if args[0] == "put" {
 			stdin = "x\n"
 		}
-		msg := e.fails(exitFailure, stdin, append(args, "-data-dir", e.dataDir)...)
+		msg := e.secFails(exitFailure, stdin, append(args, "-data-dir", e.dataDir)...)
 		if !strings.Contains(msg, "(secret_master_key_missing)") || !strings.Contains(msg, "put the key file back") || !strings.Contains(msg, "-secrets-key-file") {
 			t.Errorf("%s without its key says: %s", args[0], msg)
 		}
 	}
-	if len(e.keyFiles()) != 0 {
+	if len(e.secKeyFiles()) != 0 {
 		t.Errorf("a command made a key while secrets were stored")
 	}
 	// reading and deleting need no key; after the last delete a new key is made at the next first put
-	e.ok("", "list", "-data-dir", e.dataDir)
-	e.ok("", "show", "db_main", "-data-dir", e.dataDir)
-	e.ok("", "delete", "db_main", "-data-dir", e.dataDir)
-	e.ok("", "delete", "t1", "-data-dir", e.dataDir)
-	e.put("db_new")
-	if len(e.keyFiles()) != 1 {
+	e.secOk("", "list", "-data-dir", e.dataDir)
+	e.secOk("", "show", "db_main", "-data-dir", e.dataDir)
+	e.secOk("", "delete", "db_main", "-data-dir", e.dataDir)
+	e.secOk("", "delete", "t1", "-data-dir", e.dataDir)
+	e.secPut("db_new")
+	if len(e.secKeyFiles()) != 1 {
 		t.Errorf("the first put into an empty store made no key")
 	}
 }
@@ -196,28 +196,28 @@ func TestSecretKeyThatIsThereIsNeverOverwrittenNotEvenByTwoCommandsAtOnce(t *tes
 func TestSecretKeyWithLooseModeOrOfAnotherKindIsRefused(t *testing.T) {
 	secSkipWithoutModes(t)
 	e := newSecEnv(t)
-	e.put("db_main")
-	key := e.keyFiles()[0]
+	e.secPut("db_main")
+	key := e.secKeyFiles()[0]
 	if err := os.Chmod(key, 0o644); err != nil {
 		t.Fatal(err)
 	}
-	msg := e.fails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
+	msg := e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
 	if !strings.Contains(msg, "chmod 600") || !strings.Contains(msg, "(secret_master_key_invalid)") {
 		t.Errorf("a loose key says: %s", msg)
 	}
 	if err := os.Chmod(key, 0o600); err != nil {
 		t.Fatal(err)
 	}
-	e.ok("", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
+	e.secOk("", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
 	// a link to the key is not followed
 	real := key + ".real"
 	if err := os.Rename(key, real); err != nil {
 		t.Fatal(err)
 	}
 	if err := os.Symlink(real, key); err != nil {
-		t.Skip("no links here")
+		t.Skip("ADR-0076: this system cannot make links")
 	}
-	if msg := e.fails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir); !strings.Contains(msg, "not a plain file") {
+	if msg := e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir); !strings.Contains(msg, "not a plain file") {
 		t.Errorf("a linked key says: %s", msg)
 	}
 	// a file that is no key says so without repeating what is in it
@@ -225,7 +225,7 @@ func TestSecretKeyWithLooseModeOrOfAnotherKindIsRefused(t *testing.T) {
 	if err := os.WriteFile(key, []byte("not a key "+secPass), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	msg = e.fails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
+	msg = e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
 	if !strings.Contains(msg, "(secret_master_key_invalid)") || strings.Contains(msg, secPass) {
 		t.Errorf("a damaged key says: %s", msg)
 	}
@@ -234,10 +234,10 @@ func TestSecretKeyWithLooseModeOrOfAnotherKindIsRefused(t *testing.T) {
 // [REQ-474]
 func TestSecretKeyAnotherKeyIsTheMismatchOfTheUnit(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
+	e.secPut("db_main")
 	other := filepath.Join(t.TempDir(), "other.key")
-	e.ok(secToken, "put", "t1", "-kind", "token", "-data-dir", filepath.Join(t.TempDir(), "elsewhere"), "-secrets-key-file", other)
-	msg := e.fails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir, "-secrets-key-file", other)
+	e.secOk(secToken, "put", "t1", "-kind", "token", "-data-dir", filepath.Join(t.TempDir(), "elsewhere"), "-secrets-key-file", other)
+	msg := e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir, "-secrets-key-file", other)
 	if !strings.Contains(msg, "(secret_master_key_mismatch)") {
 		t.Errorf("another key says: %s", msg)
 	}
@@ -246,7 +246,7 @@ func TestSecretKeyAnotherKeyIsTheMismatchOfTheUnit(t *testing.T) {
 // [REQ-474]
 func TestSecretKeyIsFoundAgainWhenTheFolderMoves(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
+	e.secPut("db_main")
 	moved := filepath.Join(filepath.Dir(e.dataDir), "moved", "deeper")
 	if err := os.MkdirAll(filepath.Dir(moved), 0o750); err != nil {
 		t.Fatal(err)
@@ -255,40 +255,40 @@ func TestSecretKeyIsFoundAgainWhenTheFolderMoves(t *testing.T) {
 		t.Fatal(err)
 	}
 	e.dataDir = moved
-	e.ok("x\ny\n", "rotate", "db_main", "-data-dir", e.dataDir)
+	e.secOk("x\ny\n", "rotate", "db_main", "-data-dir", e.dataDir)
 	if got := e.secOpen("db_main", "password"); got["password"] != "y" {
 		t.Errorf("the moved folder does not open with its key")
 	}
-	if len(e.keyFiles()) != 1 {
-		t.Errorf("a moved folder got a second key: %v", e.keyFiles())
+	if len(e.secKeyFiles()) != 1 {
+		t.Errorf("a moved folder got a second key: %v", e.secKeyFiles())
 	}
 }
 
 // [REQ-474]
 func TestSecretKeyIdentifierIsRandomAndNotMadeFromThePath(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("a")
+	e.secPut("a")
 	first, _ := os.ReadFile(filepath.Join(e.dataDir, folderIDFile))
 	if err := os.RemoveAll(e.dataDir); err != nil {
 		t.Fatal(err)
 	}
-	e.put("a")
+	e.secPut("a")
 	second, _ := os.ReadFile(filepath.Join(e.dataDir, folderIDFile))
 	if string(first) == string(second) || !validFolderID(strings.TrimSpace(string(second))) {
 		t.Errorf("the identifier of a folder at the same path is the same again: it comes from the path")
 	}
-	if len(e.keyFiles()) != 2 {
-		t.Errorf("the folders did not get their own keys: %v", e.keyFiles())
+	if len(e.secKeyFiles()) != 2 {
+		t.Errorf("the folders did not get their own keys: %v", e.secKeyFiles())
 	}
 	// a damaged identifier and a lost one with secrets there: the key has to be named
 	if err := os.WriteFile(filepath.Join(e.dataDir, folderIDFile), []byte("junk\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if msg := e.fails(exitFailure, "", "set-scope", "a", "-scope", "x", "-data-dir", e.dataDir); !strings.Contains(msg, "-secrets-key-file") {
+	if msg := e.secFails(exitFailure, "", "set-scope", "a", "-scope", "x", "-data-dir", e.dataDir); !strings.Contains(msg, "-secrets-key-file") {
 		t.Errorf("a damaged identifier says: %s", msg)
 	}
 	_ = os.Remove(filepath.Join(e.dataDir, folderIDFile))
-	if msg := e.fails(exitFailure, "", "set-scope", "a", "-scope", "x", "-data-dir", e.dataDir); !strings.Contains(msg, "(secret_master_key_missing)") {
+	if msg := e.secFails(exitFailure, "", "set-scope", "a", "-scope", "x", "-data-dir", e.dataDir); !strings.Contains(msg, "(secret_master_key_missing)") {
 		t.Errorf("a lost identifier says: %s", msg)
 	}
 	if _, err := os.Stat(filepath.Join(e.dataDir, folderIDFile)); err == nil {
@@ -300,10 +300,10 @@ func TestSecretKeyIdentifierIsRandomAndNotMadeFromThePath(t *testing.T) {
 func TestSecretKeyNoConfigurationFolderAsksForTheFile(t *testing.T) {
 	e := newSecEnv(t)
 	e.w.configDir = func() (string, error) { return "", errors.New("no home") }
-	msg := e.fails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
+	msg := e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir)
 	if !strings.Contains(msg, "-secrets-key-file <file>") || !strings.Contains(msg, "(secret_master_key_missing)") {
 		t.Errorf("%s", msg)
 	}
 	keyFile := filepath.Join(t.TempDir(), "k.key")
-	e.ok(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
+	e.secOk(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
 }

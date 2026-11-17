@@ -70,7 +70,7 @@ func TestSecretAssemblyNoProductCodeOfTheRootUsesTheDeterministicRandomness(t *t
 // [REQ-474]
 func TestSecretAssemblyAReadOnlyStoreHasNoKeyAndHoldsNoLock(t *testing.T) {
 	e := newSecEnv(t)
-	e.put("db_main")
+	e.secPut("db_main")
 	st, err := openSecretStore(e.w, secretLocation{dataDir: e.dataDir}, secretRead)
 	if err != nil {
 		t.Fatal(err)

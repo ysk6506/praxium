@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/secrets"
 )
@@ -107,8 +108,10 @@ type secretFlags struct {
 	id, dataDir, keyFile, kind string
 	scope, hosts, fields       []string
 	scopeGiven, hostsGiven     bool
-	version                    int
-	asJSON                     bool
+	// addrs are the hosts as addresses, read once when the command line is read.
+	addrs   []secrets.Address
+	version int
+	asJSON  bool
 }
 
 func newSecretFlags(spec secretSpec, name string, f *secretFlags) *flag.FlagSet {
@@ -185,7 +188,11 @@ func parseSecret(name string, args []string) (secretFlags, error) {
 	if err := checkSecretFlags(spec, f); err != nil {
 		return f, err
 	}
-	if _, err := parseAddresses(f.hosts); err != nil {
+	var err error
+	if f.addrs, err = parseAddresses(f.hosts); err != nil {
+		return f, err
+	}
+	if err := checkSourceIDs(f.scope); err != nil {
 		return f, err
 	}
 	return f, checkFieldArgs(f.fields)
@@ -203,6 +210,17 @@ func checkSecretFlags(spec secretSpec, f secretFlags) error {
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret set-scope needs -scope <source-id>,... (-scope \"\" for no source)")
 	case spec.host && !spec.kind && !f.hostsGiven:
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret set-hosts needs -host <host:port>,... (-host \"\" for no address)")
+	}
+	return nil
+}
+
+// checkSourceIDs makes sure each id of a scope has the grammar of a source id (ADR-0075). Whether the source is there is
+// not looked at: that comes with the stores of definitions.
+func checkSourceIDs(ids []string) error {
+	for _, id := range ids {
+		if !ingest.ValidID(id) {
+			return kernel.Errorf(kernel.CodeInvalidValue, "-scope %s is not the id of a source: use lower-case letters, digits, _ and -, a letter first, up to 64 characters", safeName(id))
+		}
 	}
 	return nil
 }

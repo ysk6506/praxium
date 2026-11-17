@@ -43,7 +43,7 @@ func newSecEnv(t *testing.T) *secEnv {
 }
 
 // run runs `praxium secret <args>` with stdin as the standard input.
-func (e *secEnv) run(stdin string, args ...string) (code int, out, errOut string) {
+func (e *secEnv) secRun(stdin string, args ...string) (code int, out, errOut string) {
 	e.t.Helper()
 	w := e.w
 	w.stdin = strings.NewReader(stdin)
@@ -54,9 +54,9 @@ func (e *secEnv) run(stdin string, args ...string) (code int, out, errOut string
 }
 
 // ok runs a command that must succeed and returns what it printed.
-func (e *secEnv) ok(stdin string, args ...string) string {
+func (e *secEnv) secOk(stdin string, args ...string) string {
 	e.t.Helper()
-	code, out, errOut := e.run(stdin, args...)
+	code, out, errOut := e.secRun(stdin, args...)
 	if code != exitOK {
 		e.t.Fatalf("praxium secret %v: code %d: %s", args[0], code, errOut)
 	}
@@ -64,22 +64,22 @@ func (e *secEnv) ok(stdin string, args ...string) string {
 }
 
 // fails runs a command that must fail with the code and returns its error text.
-func (e *secEnv) fails(want int, stdin string, args ...string) string {
+func (e *secEnv) secFails(want int, stdin string, args ...string) string {
 	e.t.Helper()
-	code, out, errOut := e.run(stdin, args...)
+	code, out, errOut := e.secRun(stdin, args...)
 	if code != want {
 		e.t.Fatalf("praxium secret %v: code %d, want %d: %s %s", args, code, want, out, errOut)
 	}
 	return errOut
 }
 
-func (e *secEnv) put(id string) {
+func (e *secEnv) secPut(id string) {
 	e.t.Helper()
-	e.ok(secUser+"\n"+secPass+"\n", "put", id, "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
+	e.secOk(secUser+"\n"+secPass+"\n", "put", id, "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
 }
 
 // keyFiles lists the key files under the configuration folder.
-func (e *secEnv) keyFiles() []string {
+func (e *secEnv) secKeyFiles() []string {
 	files, _ := filepath.Glob(filepath.Join(e.cfgDir, "praxium", "keys", "*"+keyFileSuffix))
 	return files
 }
