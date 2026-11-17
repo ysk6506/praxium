@@ -49,7 +49,7 @@ rules:
     - apps/web/src/api/client.test.ts
     - apps/web/src/data/screenstate.test.tsx
     - apps/web/src/test-support/fake-api.ts
-  # WEB045: gzipped size of the build (`pnpm --filter @praxium/web build`, then `web.ts --budget`). Today: JS 143 KB, CSS 6 KB.
+  # WEB045: gzipped size of the build (`pnpm --filter @praxium/web build`, then `web.ts --budget`). Today: JS 163 KB, CSS 6.6 KB (gzip bytes: JS 163098, CSS 6588).
   budget:
     dist: apps/web/dist/assets
     js_gzip_bytes: 170000
