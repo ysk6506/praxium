@@ -38,7 +38,7 @@ amends_tests:
   - apps/web/src/test-support/fake-api.ts::=Reply
   - apps/web/src/test-support/fake-api.ts::=fakeApi
 test_change_reason: 생성기는 계약의 머리글 인자를 버렸고 잠긴 테스트가 그 버림을 단언했다. 쓰기 화면은 Idempotency-Key와 If-Match를 보내야 하므로 머리글 인자를 호출 함수의 인자로 만들도록 바꾼다. 그 테스트는 같은 문서로 같은 연산을 만들되 머리글 인자가 headers 인자에 있다는 단언으로 뒤집고 이름을 고쳤으며, 나머지 단언은 그대로 둔다. 가짜 API(test-support/fake-api.ts)의 지원 코드 셋(Asked, Reply, fakeApi)은 요청의 머리글을 기록하고 응답에 머리글을 줄 수 있게 필드만 더했고 기존 필드와 동작은 그대로다.
-decision_hash: bec9991c9b13c94c
+decision_hash: bbd0ad7f529bcb8e
 ---
 # ADR-0072 화면의 쓰기 기반
 
@@ -55,8 +55,8 @@ decision_hash: bec9991c9b13c94c
 5. **읽기 훅.** `refresh()`(로딩 표시 없이)와 `poll`(간격, 멈춤 조건 `until`, 숨겨진 탭은 쉰다, 실패하면 멈춘다)을 더했다. 기존 호출자의 동작은 같다.
 6. **JSON 문서 도구(`json-doc.ts`).** JSON 포인터(RFC 6901)로 읽고 쓰고 지우고 목록 항목을 옮기는 순수 함수와, 서버의 오류 위치를 폼의 칸에 잇는 `attachIssues`다. 속성 테스트로 쓰고 읽으면 같다, 건드리지 않은 곳은 그대로다, 쓰고 지우면 원래 문서다를 본다.
 7. **폼 부품(`ui`).** 한 줄, 여러 줄, 숫자, 시크릿 입력(`TextField`, `TextAreaField`, `NumberInput`, `SecretField`), `ListEditor`, `ConfirmDialog`(Base UI의 `AlertDialog`), `ResultNotice`(`aria-live`), `Form`과 `SubmitButton`이다. 떠날 때의 경고는 `data`의 `useLeaveGuard`다. 접속 설정의 토큰 폼이 이를 쓰고 제출 단추를 미리 비활성화하지 않는다.
-8. **난수가 들어오는 문은 한 파일이다(`data/idempotency.ts`).** 멱등 키는 쪽마다, 탭마다, 사람마다 겹치지 않아야 하므로 브라우저의 암호용 난수가 필요하다. `apps/web`은 `ARCH052`가 난수 호출을 막으므로, 화면마다 키 만드는 함수를 넘기게 하는 대신 난수를 읽는 파일 하나를 구조 계약의 `nondeterminism_allowed`에 더했다. Go 백엔드의 `kernel/entropy.go`, 코어의 `entropy.ts`와 같은 설계로, 난수가 들어오는 문을 한 곳으로 정한 것이다. 이는 검사를 느슨하게 하는 것이 아니라 허용 범위를 한 파일로 좁히는 것이다. 이 파일은 키를 만드는 일만 한다: `crypto.randomUUID()`로 UUID를 만들고, 그것이 없으면 `crypto.getRandomValues()`로 UUID(v4)를 만들며, 둘 다 없으면 오류를 던진다(약한 난수로 내려가면 키가 겹쳐 서버가 남의 답을 다시 줄 수 있다). 다른 파일은 난수를 읽지 못하고 이 함수나 `newKey`를 받는다.
-9. **`web.yaml`의 낡은 주석.** `WEB045` 줄의 "Today: JS 143 KB"를 지금 잰 값으로 고쳤다. 주석의 측정값만 고쳤고 예산의 숫자는 그대로다.
+8. **난수가 들어오는 문은 한 파일이다(`data/idempotency.ts`).** 멱등 키는 탭마다, 사람마다 겹치지 않아야 하므로 브라우저의 암호용 난수가 필요하다. `apps/web`은 `ARCH052`가 난수 호출을 막으므로, 화면마다 키 만드는 함수를 넘기게 하는 대신 난수를 읽는 파일 하나를 구조 계약의 `nondeterminism_allowed`에 더했다. Go 백엔드의 `kernel/entropy.go`, 코어의 `entropy.ts`와 같은 설계로, 난수가 들어오는 문을 한 곳으로 정한 것이다. 이는 검사를 느슨하게 하는 것이 아니라 허용 범위를 한 파일로 좁히는 것이다. 이 파일은 키를 만드는 일만 한다: `crypto.randomUUID()`로 UUID를 만들고, 그것이 없으면 `crypto.getRandomValues()`로 UUID(v4)를 만들며, 둘 다 없으면 오류를 던진다(약한 난수로 내려가면 키가 겹쳐 서버가 남의 답을 다시 줄 수 있다). 다른 파일은 난수를 읽지 못하고 이 함수나 `newKey`를 받는다.
+9. **`web.yaml`의 낡은 주석.** `WEB045` 줄의 "Today: JS 143 KB"를 지금 측정한 값으로 고쳤다. 주석의 측정값만 고쳤고 예산의 숫자는 그대로다.
 
 ## 이유
 
