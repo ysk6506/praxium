@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/mapping.go"
-hash: "6a478e1375e7b0a4"
+hash: "5371104f6779d4ed"
 date: "2026-11-16"
-note: "ADR-0070: 정의의 오류가 여럿이면 모두 나오고 위치와 코드를 가진다는 절을 더했고, 문장과 필드 설명은 코드(definition.go, mapping.go, sheetopts.go, refine.go, workbook.go)와 대조해 그대로 맞다"
+note: "id의 규칙(IDPattern, ValidID, 새 코드 ....id_invalid와 ....id_missing)과 version(definition.unsupported_version, 없으면 1)을 definition.go, mapping.go, errcodes.go, idgrammar.go와 대조해 적었고, 소스와 매핑의 최상위 필드 표와 id 열에 반영했다. 상태의 키가 소스 id와 데이터셋 id라는 말은 run.go와 대조했다"
 text_changed: true
-doc_hash: "f47f691169bdc959"
+doc_hash: "51f2680ca4bccd8b"
