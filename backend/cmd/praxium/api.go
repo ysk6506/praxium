@@ -48,6 +48,11 @@ type wiring struct {
 	random func(n int) string
 	// webBuilt says whether the program has the web UI inside; nil means ask the embedded files.
 	webBuilt func() bool
+	// stdin is where `praxium secret` reads a value that is piped in; nil means nothing is piped in.
+	stdin io.Reader
+	// configDir gives the user's configuration folder, where the master key file of a data folder is kept by default;
+	// nil means the operating system's (os.UserConfigDir). The tests give a temporary folder.
+	configDir func() (string, error)
 }
 
 // systemWiring is the wiring of the real process.
@@ -56,6 +61,7 @@ func systemWiring() wiring {
 		deps:   deps{clock: kernel.SystemClock{}, ids: kernel.NewRandomIDs(kernel.NewSystemRng())},
 		env:    cli.Env{Lookup: kernel.LookupEnv, ReadFile: os.ReadFile},
 		open:   systemOpen,
+		stdin:  os.Stdin,
 		listen: func(addr string) (net.Listener, error) { return net.Listen("tcp", addr) },
 		signals: func() (context.Context, context.CancelFunc) {
 			return signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
@@ -97,6 +103,8 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 		return runIngest(args[1:], stdout, stderr, w), true
 	case args[0] == "model":
 		return runModel(args[1:], stdout, stderr, w), true
+	case args[0] == "secret":
+		return runSecret(args[1:], stdout, stderr, w), true
 	case args[0] == "contract":
 		return runContract(args[1:], stdout, stderr), true
 	case cli.IsClientCommand(args[0]) || cli.IsClientFlag(args[0]):
