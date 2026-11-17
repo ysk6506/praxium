@@ -120,6 +120,9 @@ type LinkDef struct {
 
 // Mapping is the whole mapping definition: what the refinements, the feeds and the link definitions are.
 type Mapping struct {
+	// Version is the version of the document; none is version 1. ID names the mapping and may be left out (ADR-0075).
+	Version     *int         `json:"version,omitempty"`
+	ID          string       `json:"id,omitempty"`
 	Refinements []Refinement `json:"refinements,omitempty"`
 	Feeds       []Feed       `json:"feeds"`
 	Links       []LinkDef    `json:"links,omitempty"`
