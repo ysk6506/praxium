@@ -1,7 +1,7 @@
 doc: "docs/design-docs/agent-integration.md"
 target: "docs/design-docs/adr/0074-where-always-on-agents-attach.md"
-hash: "94b238a041ef4d5f"
-date: "2026-11-16"
-note: "용어 검사에 맞춰 낱말만 고쳤고 내용은 그대로예요."
+hash: "b5235bf16255de3c"
+date: "2026-11-17"
+note: "질의에 관한 것을 뺐어요. 참조의 계약은 원칙만 남기고 읽기 응답과 읽기 툴의 인자는 정하지 않아요. 툴 정의의 고정은 게이트웨이의 툴 목록으로 줄였어요."
 text_changed: true
-doc_hash: "4246742f6795cf54"
+doc_hash: "ae2b6035c915661a"
