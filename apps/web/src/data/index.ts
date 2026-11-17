@@ -72,6 +72,7 @@ export {
   gradeTone,
   shortId,
 } from "./format";
+export { newIdempotencyKey } from "./idempotency";
 export { serverCounts, singlePoints, totalCount, unfilledCount } from "./impact-counts";
 export {
   GRADE_STYLES,

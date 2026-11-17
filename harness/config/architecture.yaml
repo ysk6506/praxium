@@ -38,7 +38,7 @@ third_party:
 test_only: [vitest, fast-check]
 
 # Code that may read the wall clock or global randomness (REQ-001, ADR-0002).
-nondeterminism_allowed: [packages/core/src/kernel/entropy.ts, harness/]
+nondeterminism_allowed: [packages/core/src/kernel/entropy.ts, apps/web/src/data/idempotency.ts, harness/]
 
 source_roots: [packages, apps, harness/src, tests/spec]
 alias_prefix: "@praxium/core/"

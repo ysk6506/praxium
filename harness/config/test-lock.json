@@ -707,7 +707,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns schemas into TypeScript types > <suite>": {
@@ -956,7 +956,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the client puts the headers on the request without letting them take its own > does not let a header argument replace the token, the media types or their case": {
@@ -989,7 +989,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the client puts the headers on the request without letting them take its own > leaves out a header with no value": {
@@ -1012,7 +1012,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > <suite>": {
@@ -1022,7 +1022,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > =recording": {
@@ -1032,7 +1032,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > hands the headers of the arguments to the request": {
@@ -1064,7 +1064,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > still takes no arguments for a read that has none": {
@@ -1078,7 +1078,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generator makes the header parameters of the contract arguments > <suite>": {
@@ -1088,7 +1088,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generator makes the header parameters of the contract arguments > =text": {
@@ -1098,7 +1098,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generator makes the header parameters of the contract arguments > makes the arguments required when a header is required, and optional when nothing is": {
@@ -1119,7 +1119,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generator makes the header parameters of the contract arguments > passes the headers on to the request": {
@@ -1133,7 +1133,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::[REQ-407] the generator makes the header parameters of the contract arguments > writes the headers by their names, optional unless the contract requires one": {
@@ -1149,7 +1149,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::<import:273592cd>": {
@@ -1159,7 +1159,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::<import:7aad2070>": {
@@ -1169,7 +1169,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::<import:983e3f78>": {
@@ -1179,7 +1179,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::<import:b24b626b>": {
@@ -1189,7 +1189,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::<import:df74690f>": {
@@ -1199,7 +1199,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/api/headers.test.ts::=contract": {
@@ -1209,7 +1209,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/access.test.tsx::[REQ-296] an authentication error speaks in the words of the way in > <suite>": {
@@ -2119,7 +2119,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::[REQ-407] headers on the wire > sends them as headers of the HTTP request, next to the token and the JSON body": {
@@ -2159,7 +2159,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > <suite>": {
@@ -2169,7 +2169,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > keeps the failure of the call, and tells an outer listener too": {
@@ -2191,7 +2191,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > returns no ETag when the answer has none, and when the answer is a 304": {
@@ -2219,7 +2219,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::[REQ-407] the ETag of an answer comes back beside its body > returns the ETag the answer carried and leaves the body as it was": {
@@ -2239,7 +2239,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::<import:0a47d256>": {
@@ -2249,7 +2249,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::<import:21be9f7d>": {
@@ -2259,7 +2259,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/headers.test.tsx::<import:983e3f78>": {
@@ -2269,7 +2269,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/hooks.test.tsx::[REQ-278] a read is loading, then ready or failed > <suite>": {
@@ -2734,6 +2734,106 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::[REQ-408] the key of a submission > <suite>": {
+   "kind": "support",
+   "hash": "edb4bbfe0a867169",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::[REQ-408] the key of a submission > is a UUID the server takes, and differs every time": {
+   "kind": "test",
+   "hash": "fe1b0c50c28f680d",
+   "asserts": 3,
+   "literals": [
+    "\"50\"",
+    "\"50\"",
+    "\"50\"",
+    "\"is a UUID the server takes, and differs every time\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::[REQ-408] the key of a submission > is made from getRandomValues where there is no randomUUID": {
+   "kind": "test",
+   "hash": "fc5523b03ebc1ac5",
+   "asserts": 3,
+   "literals": [
+    "\"0\"",
+    "\"0\"",
+    "\"255\"",
+    "\"37\"",
+    "\"crypto\"",
+    "\"is made from getRandomValues where there is no randomUUID\"",
+    "true",
+    "true"
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::[REQ-408] the key of a submission > throws where the browser has no cryptographic randomness, and does not fall back to a weak one": {
+   "kind": "test",
+   "hash": "abcedef07ead8dcd",
+   "asserts": 2,
+   "literals": [
+    "\"crypto\"",
+    "\"crypto\"",
+    "\"throws where the browser has no cryptographic randomness, and does not fall back to a weak one\""
+   ],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::<hook:afterEach>": {
+   "kind": "support",
+   "hash": "eadd8364d5db2013",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::<import:07c82863>": {
+   "kind": "support",
+   "hash": "07c82863b7bc655b",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::<import:88d995df>": {
+   "kind": "support",
+   "hash": "88d995dfbde9d419",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
+   "amended_by": null
+  },
+  "apps/web/src/data/idempotency.test.ts::<import:e716e7a2>": {
+   "kind": "support",
+   "hash": "e716e7a256a71196",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > <suite>": {
@@ -5798,7 +5898,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a pointer is read and written by the rules of RFC 6901 > does not let a key named like a prototype member reach the prototype": {
@@ -5820,7 +5920,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a pointer is read and written by the rules of RFC 6901 > reads the steps of a pointer, with the two escapes": {
@@ -5850,7 +5950,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a pointer is read and written by the rules of RFC 6901 > reads what is there and says undefined for what is not (null is a value)": {
@@ -5887,7 +5987,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a pointer is read and written by the rules of RFC 6901 > writes the steps back to the same pointer": {
@@ -5901,7 +6001,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a write leaves the rest of the document as it was > <suite>": {
@@ -5911,7 +6011,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a write leaves the rest of the document as it was > does not change the document it was given": {
@@ -5927,7 +6027,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a write leaves the rest of the document as it was > keeps every place that is neither above nor below the one written": {
@@ -5941,7 +6041,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a write leaves the rest of the document as it was > keeps the keys it does not know, in their order": {
@@ -5951,7 +6051,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] a write leaves the rest of the document as it was > shares what did not change": {
@@ -5971,7 +6071,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] an error of the server is tied to the field that shows it > <suite>": {
@@ -5981,7 +6081,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] an error of the server is tied to the field that shows it > =fields": {
@@ -5991,7 +6091,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] an error of the server is tied to the field that shows it > does not take a field whose name only begins like the pointer": {
@@ -6008,7 +6108,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] an error of the server is tied to the field that shows it > goes to the field with the same pointer, else to the closest field above": {
@@ -6042,7 +6142,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] an error of the server is tied to the field that shows it > keeps the issue apart when no field is at or above it": {
@@ -6069,7 +6169,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] an error of the server is tied to the field that shows it > tells a list that one of its items has a problem": {
@@ -6099,7 +6199,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] the items of a list are added, removed and moved > <suite>": {
@@ -6109,7 +6209,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] the items of a list are added, removed and moved > =listOf": {
@@ -6119,7 +6219,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] the items of a list are added, removed and moved > moves one item one place, with the keyboard's step": {
@@ -6129,7 +6229,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] the items of a list are added, removed and moved > puts an item back by moving it back": {
@@ -6159,7 +6259,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] the items of a list are added, removed and moved > refuses a place the list does not have, and a value that is not a list": {
@@ -6204,7 +6304,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] the items of a list are added, removed and moved > takes an item out again after putting it in": {
@@ -6214,7 +6314,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing a value and reading it back gives the value > <suite>": {
@@ -6224,7 +6324,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing a value and reading it back gives the value > makes the steps that are missing: objects, and a list for an index": {
@@ -6276,7 +6376,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing a value and reading it back gives the value > refuses a place the document cannot have": {
@@ -6310,7 +6410,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing a value and reading it back gives the value > returns what was written at any place the document has": {
@@ -6324,7 +6424,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing a value and reading it back gives the value > returns what was written under a key the object did not have": {
@@ -6340,7 +6440,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing and then removing gives the document back > <suite>": {
@@ -6350,7 +6450,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing and then removing gives the document back > removes a key the object did not have before": {
@@ -6360,7 +6460,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing and then removing gives the document back > removes an item added at the end of a list": {
@@ -6370,7 +6470,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing and then removing gives the document back > removes an item of a list and lets the later items move up": {
@@ -6380,7 +6480,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::[REQ-408] writing and then removing gives the document back > takes the key out for an empty text or no value, and writes 0, false and null": {
@@ -6416,7 +6516,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::<import:07622c8e>": {
@@ -6426,7 +6526,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::<import:0dacf5eb>": {
@@ -6436,7 +6536,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::<import:983e3f78>": {
@@ -6446,7 +6546,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=below": {
@@ -6456,7 +6556,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=doc": {
@@ -6466,7 +6566,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=inner": {
@@ -6476,7 +6576,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=key": {
@@ -6486,7 +6586,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=pointersOf": {
@@ -6496,7 +6596,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=RUNS": {
@@ -6506,7 +6606,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=same": {
@@ -6516,7 +6616,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/json-doc.test.ts::=scalar": {
@@ -6526,7 +6626,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > <suite>": {
@@ -6536,7 +6636,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > asks the browser before the tab closes only while there are changes": {
@@ -6560,7 +6660,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > does not ask for a change of the query of the same screen, nor when nothing is changed": {
@@ -6580,7 +6680,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > forgets a question when the changes are saved meanwhile": {
@@ -6595,7 +6695,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > goes where the person was going when they choose to leave": {
@@ -6611,7 +6711,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > puts the address back when the person goes to another screen, and waits for the choice": {
@@ -6629,7 +6729,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::[REQ-409] leaving with changes that are not saved is asked about > stays on the screen when the person chooses to stay": {
@@ -6648,7 +6748,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::<hook:afterEach>": {
@@ -6658,7 +6758,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::<hook:beforeEach>": {
@@ -6668,7 +6768,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::<import:1eda311a>": {
@@ -6678,7 +6778,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::<import:3c404cab>": {
@@ -6688,7 +6788,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::<import:81f78b88>": {
@@ -6698,7 +6798,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::<import:b919bd80>": {
@@ -6708,7 +6808,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::=flush": {
@@ -6718,8 +6818,8 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
-   "amended_by": "0072-web-write-foundation.md"
+   "added": "2026-11-17",
+   "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::=goTo": {
    "kind": "support",
@@ -6728,7 +6828,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/leaveGuard.test.tsx::=unloading": {
@@ -6738,7 +6838,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a failure comes in words and with the fields the server named > <suite>": {
@@ -6748,7 +6848,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a failure comes in words and with the fields the server named > gives the sentences and the fields of a 422": {
@@ -6788,7 +6888,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a failure comes in words and with the fields the server named > says that the version is old on a 412 and that a version is needed on a 428": {
@@ -6824,7 +6924,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a failure comes in words and with the fields the server named > says what happened when the server cannot be reached": {
@@ -6843,7 +6943,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a submission in flight is not sent again > <suite>": {
@@ -6853,7 +6953,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a submission in flight is not sent again > does not send another one with other variables while one is in flight": {
@@ -6870,7 +6970,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a submission in flight is not sent again > sends one request for a double click and answers both calls alike": {
@@ -6891,7 +6991,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a write is idle, pending, then done or failed > <suite>": {
@@ -6901,7 +7001,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a write is idle, pending, then done or failed > goes through pending to success and sends the key, the token and the body": {
@@ -6936,7 +7036,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] a write is idle, pending, then done or failed > shows pending while the call is out, and says so with isPending": {
@@ -6962,7 +7062,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] errors of a write in the words of the screen > <suite>": {
@@ -6972,7 +7072,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] errors of a write in the words of the screen > =view": {
@@ -6982,7 +7082,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] errors of a write in the words of the screen > falls back to the group for a conflict the table does not name": {
@@ -7000,7 +7100,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] errors of a write in the words of the screen > words 428, 412 and 409 in Korean, each its own": {
@@ -7040,7 +7140,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > <suite>": {
@@ -7050,7 +7150,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > =down": {
@@ -7060,7 +7160,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > accepts the lengths the server accepts and nothing else": {
@@ -7104,7 +7204,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > drops a key the server cannot take again": {
@@ -7125,7 +7225,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > fails without sending when the key is not one the server takes": {
@@ -7144,7 +7244,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > makes a new key for changed variables, and for the next submission after a success": {
@@ -7166,7 +7266,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] one submission has one idempotency key > sends the same key when the same variables are submitted again after a failure": {
@@ -7194,7 +7294,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] the reads that depend on what was written read again > <suite>": {
@@ -7204,7 +7304,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] the reads that depend on what was written read again > does not refresh when the write failed, and tells onSuccess only after a success": {
@@ -7230,7 +7330,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] the reads that depend on what was written read again > refreshes a read of the invalidated topic without showing loading, and leaves other reads": {
@@ -7277,7 +7377,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::[REQ-408] the reads that depend on what was written read again > stops listening when the read is gone": {
@@ -7295,7 +7395,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<hook:afterEach>": {
@@ -7305,7 +7405,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:416b76a5>": {
@@ -7315,7 +7415,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:4408de07>": {
@@ -7325,7 +7425,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:4ea2e978>": {
@@ -7335,7 +7435,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:61ac284e>": {
@@ -7345,7 +7445,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:88d995df>": {
@@ -7355,7 +7455,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:b7c316f7>": {
@@ -7365,7 +7465,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:b919bd80>": {
@@ -7375,7 +7475,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:ce98c3e7>": {
@@ -7385,7 +7485,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:d896ba0b>": {
@@ -7395,7 +7495,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:dc80bbe0>": {
@@ -7405,7 +7505,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::<import:ffff5c5f>": {
@@ -7415,7 +7515,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::=created": {
@@ -7425,7 +7525,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::=creating": {
@@ -7435,7 +7535,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::=keysOf": {
@@ -7445,7 +7545,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::=loadKgs": {
@@ -7455,7 +7555,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::=loadLayers": {
@@ -7465,7 +7565,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/mutation.test.tsx::=Variables": {
@@ -7475,7 +7575,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read can be read again without showing loading > <suite>": {
@@ -7485,7 +7585,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read can be read again without showing loading > refresh keeps ready while it reads, reload shows loading": {
@@ -7520,7 +7620,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read can be read again without showing loading > shows loading when a refresh is for another question than the one on the screen": {
@@ -7544,7 +7644,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > <suite>": {
@@ -7554,7 +7654,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > does not read when the tab shows again but no wait was cut short": {
@@ -7575,7 +7675,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > does not read while the tab is hidden, and reads once when it shows again": {
@@ -7604,7 +7704,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > keeps reading while there is no `until`": {
@@ -7622,7 +7722,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > never shows loading between the reads": {
@@ -7644,7 +7744,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > reads again after each interval and stops when the answer is done": {
@@ -7678,7 +7778,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] a read repeats at an interval until its answer says it is done > stops after a failed read, and when the screen leaves or the read is turned off": {
@@ -7715,7 +7815,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] the version the server holds now comes out of a refused change > <suite>": {
@@ -7725,7 +7825,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::[REQ-408] the version the server holds now comes out of a refused change > finds the current ETag of a 412, and nothing in other errors": {
@@ -7757,7 +7857,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<hook:afterEach>": {
@@ -7767,7 +7867,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<hook:beforeEach>": {
@@ -7777,7 +7877,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:0e3f22a0>": {
@@ -7787,7 +7887,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:1eda311a>": {
@@ -7797,7 +7897,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:4306b98d>": {
@@ -7807,7 +7907,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:61ac284e>": {
@@ -7817,7 +7917,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:74f2c377>": {
@@ -7827,7 +7927,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:b919bd80>": {
@@ -7837,7 +7937,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:d896ba0b>": {
@@ -7847,7 +7947,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::<import:d8eb81f9>": {
@@ -7857,7 +7957,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=finished": {
@@ -7867,7 +7967,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=hidden": {
@@ -7877,7 +7977,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=loadRun": {
@@ -7887,7 +7987,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=loads": {
@@ -7897,7 +7997,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=RunAnswer": {
@@ -7907,7 +8007,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=runThatEnds": {
@@ -7917,7 +8017,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=tabIs": {
@@ -7927,7 +8027,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=useCallbackFor": {
@@ -7937,7 +8037,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/poll.test.tsx::=wait": {
@@ -7947,7 +8047,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/data/pure.test.ts::[REQ-278] a list is read with a few calls at a time > <suite>": {
@@ -11134,7 +11234,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::<import:09650c51>": {
@@ -11144,7 +11244,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::<import:611e549f>": {
@@ -11154,7 +11254,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::<import:84768cfb>": {
@@ -11164,7 +11264,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::<import:8f920d63>": {
@@ -11174,7 +11274,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::<import:f5e1dfab>": {
@@ -11184,7 +11284,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::<stmt:efebe6fc>": {
@@ -11194,7 +11294,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::=box": {
@@ -11204,7 +11304,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::=render": {
@@ -11214,7 +11314,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::=settle": {
@@ -11224,7 +11324,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::=submit": {
@@ -11234,7 +11334,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::=typeInto": {
@@ -11244,7 +11344,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::the connection settings form > <suite>": {
@@ -11254,7 +11354,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::the connection settings form > has a submit button that is not turned off before the person submits": {
@@ -11272,7 +11372,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::the connection settings form > keeps the typed token in the browser as before and goes to the list": {
@@ -11291,7 +11391,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/settings-screen.test.tsx::the connection settings form > says in words that the token is missing, and puts focus in the box": {
@@ -11318,7 +11418,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/test-support/fake-api.ts::<import:21dfcaf0>": {
@@ -11348,7 +11448,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": "0072-web-write-foundation.md"
   },
   "apps/web/src/test-support/fake-api.ts::=fakeApi": {
@@ -11358,7 +11458,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": "0072-web-write-foundation.md"
   },
   "apps/web/src/test-support/fake-api.ts::=problem": {
@@ -11378,7 +11478,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": "0072-web-write-foundation.md"
   },
   "apps/web/src/test-support/impact-world.ts::=ancestors": {
@@ -11850,7 +11950,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > =Asking": {
@@ -11860,7 +11960,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > =dialog": {
@@ -11870,7 +11970,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > =inDialog": {
@@ -11880,7 +11980,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > calls onConfirm on the confirm button and stays open until the caller closes it": {
@@ -11896,7 +11996,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > closes on cancel and on Esc, and gives focus back to the button that opened it": {
@@ -11911,7 +12011,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > does not say so for an action that can be taken back": {
@@ -11926,7 +12026,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > opens as an alert dialog with the title and starts focus on cancel": {
@@ -11945,7 +12045,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a dialog that asks keeps focus in and gives it back > says in words that a dangerous action cannot be taken back, and waits while it is going on": {
@@ -11963,7 +12063,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a field ties its label, its help and its error to the input > <suite>": {
@@ -11973,7 +12073,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a field ties its label, its help and its error to the input > does the same for a text area and a number": {
@@ -12012,7 +12112,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a field ties its label, its help and its error to the input > marks the input invalid and describes it by the error, which is read out as an alert": {
@@ -12048,7 +12148,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a field ties its label, its help and its error to the input > names the input by the label and describes it by the help": {
@@ -12069,7 +12169,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a field ties its label, its help and its error to the input > shows several errors at once and says in words that the field is required": {
@@ -12097,7 +12197,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > <suite>": {
@@ -12107,7 +12207,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > =Sample": {
@@ -12117,7 +12217,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > =send": {
@@ -12127,7 +12227,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > =submit": {
@@ -12137,7 +12237,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > does not let Enter that confirms a letter send the form": {
@@ -12175,7 +12275,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > does not take Enter away from a text area": {
@@ -12197,7 +12297,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > does not turn the submit button off before the submit, and turns it off only while it is going on": {
@@ -12230,7 +12330,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > leaves focus alone when the submit succeeds, and waits for an answer that comes later": {
@@ -12246,7 +12346,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > moves focus to the failure notice when no field is to blame": {
@@ -12263,7 +12363,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a form sends on submit and sends focus to what to fix > moves focus to the first invalid field when the submit fails": {
@@ -12278,7 +12378,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > <suite>": {
@@ -12288,7 +12388,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > =button": {
@@ -12298,7 +12398,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > =names": {
@@ -12308,7 +12408,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > =Names": {
@@ -12318,7 +12418,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > =Row": {
@@ -12328,7 +12428,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > adds an item on Enter when asked to, but not while a letter is being composed": {
@@ -12357,7 +12457,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > adds, removes and moves items with buttons that say which item they are for": {
@@ -12406,7 +12506,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > does not add an item on Enter unless asked to": {
@@ -12423,7 +12523,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > keeps focus on the item that was moved, and keeps the ends focusable": {
@@ -12458,7 +12558,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > moves an item with Alt and the arrow keys in its input": {
@@ -12495,7 +12595,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > puts focus into the new item after adding, and on a neighbour after removing": {
@@ -12521,7 +12621,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a list is edited from the keyboard > says what is wrong with an item, next to it, and ties it to the item": {
@@ -12546,7 +12646,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a number is a number or nothing > <suite>": {
@@ -12556,7 +12656,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a number is a number or nothing > gives null for an empty box, the number for digits, and writes no thousands separator": {
@@ -12583,7 +12683,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a secret is typed and kept nowhere by the field > <suite>": {
@@ -12593,7 +12693,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a secret is typed and kept nowhere by the field > hides the characters, turns filling and checking off, and has no name": {
@@ -12626,7 +12726,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] a secret is typed and kept nowhere by the field > leaves the address, the storage and the cookies as they were while the value is typed": {
@@ -12644,7 +12744,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] the result of a save is read out > <suite>": {
@@ -12654,7 +12754,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::[REQ-409] the result of a save is read out > has both places in the page before anything is written into them": {
@@ -12694,7 +12794,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<hook:afterEach>": {
@@ -12704,7 +12804,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<import:39b89727>": {
@@ -12714,7 +12814,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<import:88d995df>": {
@@ -12724,7 +12824,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<import:a3f62ee8>": {
@@ -12734,7 +12834,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<import:c719b277>": {
@@ -12744,7 +12844,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<import:e3629eee>": {
@@ -12754,7 +12854,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::<import:ebb83584>": {
@@ -12764,7 +12864,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::=describedBy": {
@@ -12774,7 +12874,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::=focus": {
@@ -12784,7 +12884,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::=input": {
@@ -12794,7 +12894,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::=key": {
@@ -12804,7 +12904,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/form.test.tsx::=type": {
@@ -12814,7 +12914,7 @@
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-16",
+   "added": "2026-11-17",
    "amended_by": null
   },
   "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > <suite>": {
@@ -54589,18 +54689,6 @@
  },
  "removed": {
   "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > writes path, query and body into the arguments and keeps header parameters out": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > <suite>": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > keeps the failure of the call, and tells an outer listener too": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns no ETag when the answer has none, and when the answer is a 304": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::[REQ-407] the ETag of an answer comes back beside its body > returns the ETag the answer carried and leaves the body as it was": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::[REQ-407] the generated functions send the headers they are given > sends them as headers of the HTTP request, next to the token and the JSON body": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::<import:0a47d256>": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::<import:aa626edf>": "0072-web-write-foundation.md",
-  "apps/web/src/api/headers.test.ts::<import:c8a2b570>": "0072-web-write-foundation.md",
-  "apps/web/src/data/mutation.test.tsx::<import:3d9ce1b0>": "0072-web-write-foundation.md",
-  "apps/web/src/data/mutation.test.tsx::<import:f3ac2f58>": "0072-web-write-foundation.md",
-  "apps/web/src/data/poll.test.tsx::<import:b8304d65>": "0072-web-write-foundation.md",
-  "apps/web/src/data/poll.test.tsx::<import:f3ac2f58>": "0072-web-write-foundation.md",
   "go:backend/internal/query::TestFindPagesAtASealedVersionKeepTheVersion": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": "0027-reading-the-kg-through-the-api-and-the-command-line.md",

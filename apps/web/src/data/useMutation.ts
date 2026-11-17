@@ -13,14 +13,14 @@
  * - **Reading again.** After a success the topics in `invalidates` are invalidated, so the reads that depend on them
  *   read again (`invalidation.ts`).
  *
- * The key is made by `newKey`, which the caller gives: a key must not repeat across page loads and tabs, so it needs
- * the browser's randomness, which the rules of this repository keep out of `apps/web` unless a file is listed for it
- * (ARCH052). The tests give a counter.
+ * The key is made by `newKey`. By default it is `newIdempotencyKey` (`idempotency.ts`), the one file of `apps/web` that
+ * may use the browser's randomness (ARCH052). The tests give a counter, so they stay deterministic.
  */
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createClient, type Requester } from "../api";
 import { useToken } from "./connection";
 import { describeError, type ErrorView } from "./errors";
+import { newIdempotencyKey } from "./idempotency";
 import { invalidate } from "./invalidation";
 import type { Issue } from "./json-doc";
 
@@ -41,8 +41,8 @@ export interface MutationContext {
 export interface MutationOptions<V, R> {
   /** The call. `client` carries the token; `variables` are what the form gave to `submit`. */
   readonly run: (client: Requester, variables: V, context: MutationContext) => Promise<R>;
-  /** Make a new key. Called once per submission. */
-  readonly newKey: () => string;
+  /** Make a new key. Called once per submission. Defaults to a random UUID (`newIdempotencyKey`). */
+  readonly newKey?: () => string;
   /** The topics a success changes: the reads that depend on them read again. */
   readonly invalidates?: readonly string[];
   /** Called after a success, once the reads have been told. */
@@ -99,7 +99,7 @@ export function useMutation<V, R>(options: MutationOptions<V, R>): Mutation<V, R
       const sameness = fingerprint(variables);
       let key = attempt.current?.key;
       if (key === undefined || sameness === undefined || attempt.current?.variables !== sameness) {
-        key = current.newKey();
+        key = (current.newKey ?? newIdempotencyKey)();
         if (!isIdempotencyKey(key)) {
           throw new Error(
             `An Idempotency-Key is ${IDEMPOTENCY_KEY_LENGTH.min} to ${IDEMPOTENCY_KEY_LENGTH.max} printable ASCII characters.`,

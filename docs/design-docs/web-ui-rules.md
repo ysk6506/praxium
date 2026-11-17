@@ -82,7 +82,7 @@ follows:
 | 보내기 | `Form`, `SubmitButton` | `onSubmit`이 성공이면 `true`를 준다. `false`면 첫 `aria-invalid` 칸으로, 칸이 없으면 실패 알림으로 포커스가 간다. 제출 단추는 보내는 중에만 기다린다. 입력기로 글자를 확정하는 Enter는 보내지 않는다 |
 | 결과를 알린다 | `ResultNotice` | 성공은 `<output>`, 실패는 `role="alert"`이고 둘 다 먼저 페이지에 있다. 단추 가까이에 둔다 |
 | 되돌릴 수 없는 일을 묻는다 | `ConfirmDialog` (`danger`) | 포커스는 취소에서 시작하고, 바깥을 눌러도 닫히지 않으며, 닫으면 연 단추로 돌아간다. `danger`는 글("되돌릴 수 없습니다")로도 알린다 |
-| 서버에 쓴다 | `useMutation` | 진행 중에는 다시 내지 않는다. 제출 하나에 멱등 키 하나(같은 제출의 다시 시도는 같은 키)이고 `newKey`는 부르는 쪽이 준다. 실패는 `ErrorView`와 필드별 오류(`issues`)로 나온다. `invalidates`에 바꾼 주제를 적는다 |
+| 서버에 쓴다 | `useMutation` | 진행 중에는 다시 내지 않는다. 제출 하나에 멱등 키 하나(같은 제출의 다시 시도는 같은 키)이고 키는 `data/idempotency.ts`가 만든다(난수를 읽는 `apps/web`의 유일한 파일이다). 테스트는 `newKey`를 넘겨 결정적으로 돈다. 실패는 `ErrorView`와 필드별 오류(`issues`)로 나온다. `invalidates`에 바꾼 주제를 적는다 |
 | 쓴 뒤 읽기를 새로 한다 | `useAsync(load, enabled, { refreshOn, poll })` | `refreshOn`의 주제가 `invalidate`되면 로딩 표시 없이 다시 읽는다. `poll`은 `until`이 참이 될 때까지 간격을 두고 읽고, 숨겨진 탭은 쉬며, 실패하면 멈춘다 |
 | 문서(JSON)를 편집한다 | `getAt`, `setAt`, `writeValue`, `moveItem` 따위(`data/json-doc.ts`) | 위치는 JSON 포인터다. 모르는 키와 그 순서를 지키고, 비운 칸은 `""` 대신 키를 없앤다. `attachIssues`가 서버의 오류 위치를 칸에 잇는다 |
 | 저장하지 않은 편집을 지킨다 | `useLeaveGuard(dirty)` | 창을 닫을 때는 브라우저가 묻고, 다른 화면으로 갈 때는 `pending`이 생기니 `ConfirmDialog`로 `leave`나 `stay`를 고르게 한다 |
