@@ -291,7 +291,7 @@ open ──확인──▶ acknowledged ──스누즈(시간)──▶ snoozed
 
 피드나 소스가 이상 상태일 때 무엇이 영향받는지를 두 가지로 응답해요. (1) **정의의 계보**에서 하위 자원(후손)을 모아요: 데이터셋, 피드, 컬럼 단위로 연결된 타입과 속성, 링크 정의, 파생 그룹, 저장해 둔 범위. (2) **사용 이력**(`usage_record`)에서 그 타입·속성을 최근 N일(기본 30일, 가정) 안에 읽은 서비스 계정을 사용량이 많은 순으로 모아요. 같은 계산이 수정 전의 "무엇이 영향받는가"(ADR-0014의 정의의 계보)와 같은 경로예요. 응답은 "이 소스가 이상 상태라서 타입 2개, 속성 11개, 파생 그룹 1개, 계정 2개가 영향받아요"처럼 종류별 건수를 먼저 주고, 열면 목록이에요.
 
-**영향 범위 질의 응답에 붙는 표시.** `impact`, `exposure`, `paths`의 응답에 사용된 객체 타입, 링크 타입, 속성(채널의 입력)의 피드 중에 `failing`·`degraded`·`stale`이 있으면 응답에 `data_health_notes`가 붙어요. 예: "이 응답에 사용된 링크 타입 `MEMBER_OF`의 피드 `feed_lag_links`가 소스 `switch_inventory`의 인증 실패로 27시간 동안 갱신되지 않았어요". 표시는 타입·링크 타입 단위예요. 어느 객체가 오래됐는지까지는 알 수 없어요(값마다 출처를 저장하지 않아서예요, 17절). 관측을 사용한 응답(`as_observed`)에는 관측 시점의 경과 시간도 함께 붙어요.
+**질의 응답에 붙는 표시.** `exposure`, `paths`의 응답에 사용된 객체 타입, 링크 타입, 속성(채널의 입력)의 피드 중에 `failing`·`degraded`·`stale`이 있으면 응답에 `data_health_notes`가 붙어요. 예: "이 응답에 사용된 링크 타입 `MEMBER_OF`의 피드 `feed_lag_links`가 소스 `switch_inventory`의 인증 실패로 27시간 동안 갱신되지 않았어요". 표시는 타입·링크 타입 단위예요. 어느 객체가 오래됐는지까지는 알 수 없어요(값마다 출처를 저장하지 않아서예요, 17절). 관측을 사용한 응답(`as_observed`)에는 관측 시점의 경과 시간도 함께 붙어요.
 
 ## 11. 질의 방법
 
@@ -304,10 +304,10 @@ open ──확인──▶ acknowledged ──스누즈(시간)──▶ snoozed
 
 **응답 엔벨로프에 붙는 헬스 힌트.** 모든 응답 엔벨로프(KG 버전, 신선도, 근거 등급, 잘렸는지, ADR-0010)에 `health_hint`가 붙어요: `has_unhealthy_inputs`, `worst_state`, `total`, 그리고 상세(`full`)를 고르면 `items`(자원, 상태, 근본 원인)를 상한 개수까지 포함해요. 간략(`brief`)을 고르면 앞의 3개만 가요. 힌트는 읽을 수 있는 범위만 보여 줘요. 수를 반환하는 모든 필드는 숨겨진 것을 뺀 수예요. 읽을 수 없는 것의 수는 범위가 전체가 아닌 주체에게 정확한 수 대신 있음/없음만 줘요(설정으로 수를 공개할 수 있어요. ADR-0012). 경로는 KG에 속해서 `/v1/kgs/{kg}/health`예요(`main`이 기본).
 
-**MCP 사용 예.** 에이전트가 "이 스위치에 장애가 나면 어디까지 전파되는가, 이 결과를 믿어도 되는가"를 질의해요.
+**MCP 사용 예.** 에이전트가 "이 스위치는 무엇에 이어져 있는가, 이 결과를 믿어도 되는가"를 질의해요.
 
 ```
-kg_impact(dead=[sw-0417], view=as_observed)
+kg_neighbors(object_id=sw-0417)
   → 응답 … , health_hint: {has_unhealthy_inputs: true, worst_state: "affected_upstream",
       total: 3, items: [{resource: "Interface", state: "affected_upstream", cause: "switch_inventory"}]}
 kg_health(resource={kind: "object_type", id: "Interface"}, include=["cause", "readers"])

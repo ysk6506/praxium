@@ -22,7 +22,7 @@ covers:
 | `core.access` | Go | `backend/internal/access` | 역할, 능력(ability), 주체(`Subject`), 인증기(`Authenticator`)와 권한 판정기(`Authorizer`)의 포트, 역할 표. 역할별로 무엇을 할 수 있는지를 정의하는 단일 위치 | `core.kernel` |
 | `core.graph` | Go | `backend/internal/graph` | KG의 중심. 객체와 링크의 행(번호로 참조하고 해시에는 영향을 주지 않는 ID), 변경 배치, 등록부 기준 검증, 변경 번호를 부여하며 청크로 나눠 적용하는 적용기, 증분 갱신하는 그래프 해시, 확정 버전, 식별 이력, 리스와 세대. 스토리지 포트(`Catalog`, `Writer`, `Reader`, `Feed`)와 합성 세계의 도구(`Fixture`), 최신 상태만 보유한 구현 `ScratchStore`(테스트 더블)를 함께 가진다. 차수(`1:1`, `N:1`)는 링크가 놓인 바인딩마다 계산한다(ADR-0027) | `core.kernel`, `core.model` |
 | `core.query` | Go | `backend/internal/query` | 사전 정의 질의 3종(`find`, `get`, `neighbors`)의 기준 구현. 스토리지 포트의 스냅샷 하나를 읽어 모든 응답에 엔벨로프(`as_of`, `volatile_as_of`, 신선도, 근거, `result_complete`, `hidden`)를 붙이고, 읽기 권한 포트(`ReadFilter`)로 필터링한다. 어댑터를 import하지 않는다. 테스트는 `graph.ScratchStore`에 세계를 구축한다(ADR-0027) | `core.kernel`, `core.model`, `core.graph` |
-| `core.kgread` | Go | `backend/internal/kgread` | KG 읽기의 유스케이스(ADR-0062). 어댑터가 넘긴 자격 증명에서 주체를 구하고(`Gate`: 토큰 확인, 실패 제한, 감사 줄, 역할 판정), 읽기 필터를 만들고, 질의 오류를 오류 코드의 대응(`Problem`)으로 바꾸고, 질의 응답의 엔벨로프를 응답의 `meta` 모양으로 바꾸고, 질문의 원본 JSON(`find`, `get`, `neighbors`, `impact`)을 해석해 질의를 부르고(`Service`), 모델 목록의 내용(타입 요약, 속성·링크 타입의 뷰)을 만든다. HTTP도 `net`도 모른다. 호출자의 주소 구하기, 헤더, 쿼리 문자열, 상태 코드는 어댑터의 일이다. 어댑터를 import하지 않는다 | `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access` |
+| `core.kgread` | Go | `backend/internal/kgread` | KG 읽기의 유스케이스(ADR-0062). 어댑터가 넘긴 자격 증명에서 주체를 구하고(`Gate`: 토큰 확인, 실패 제한, 감사 줄, 역할 판정), 읽기 필터를 만들고, 질의 오류를 오류 코드의 대응(`Problem`)으로 바꾸고, 질의 응답의 엔벨로프를 응답의 `meta` 모양으로 바꾸고, 질문의 원본 JSON(`find`, `get`, `neighbors`)을 해석해 질의를 부르고(`Service`), 모델 목록의 내용(타입 요약, 속성·링크 타입의 뷰)을 만든다. HTTP도 `net`도 모른다. 호출자의 주소 구하기, 헤더, 쿼리 문자열, 상태 코드는 어댑터의 일이다. 어댑터를 import하지 않는다 | `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access` |
 | `adapter.memstore` | Go | `backend/internal/memstore` | 스토리지 포트의 인메모리 구현. 적합성 테스트(`adapter.graphcheck`)를 모두 통과하는 기준 구현이고 테스트와 개발 모드의 스토리지다. 저널 포트(`Journal`)를 붙여 `Open`하면 `adapter.filejournal`이 받치는 내장 파일 스토어가 된다(처음 써 보기와 소규모용, ADR-0034). 저널이 없으면 프로세스가 끝날 때 사라지는 운영용이 아닌 스토리지다. PostgreSQL 어댑터(`adapter.pgstore`)가 이것을 참고 구현으로 삼았다(ADR-0025) | `core.kernel`, `core.graph` |
 | `adapter.filejournal` | Go | `backend/internal/filejournal` | 내장 파일 스토어의 저널(ADR-0034). 데이터 폴더 하나에 추가 전용 로그 세그먼트와 스냅샷(두 세대)을 쓰고, 레코드마다 CRC-32C와 번호를 달아 응답 전에 동기화한다. 시작할 때 최신의 온전한 스냅샷을 읽고 그 뒤의 로그를 재생하며, 끝의 깨진 레코드는 잘라 내고 중간의 손상은 오류로 멈춘다. 디스크는 `Disk` 인터페이스로만 만나고(실제 구현은 `cmd.praxium`이 넘긴다) `adapter.memstore`를 import하지 않는다. 레코드는 바이트이고 그래프를 모른다 | `core.kernel`. 테스트 파일만 `core.graph`, `adapter.graphcheck`, `adapter.memstore` (`test_may_import`) |
 | `adapter.pgstore` | Go | `backend/internal/pgstore` | 스토리지 포트의 PostgreSQL 구현(드라이버 `lib/pq`, ADR-0032). 적합성 테스트 31개 사례를 모두 통과한다. 쓰기는 `kg_head` 행을 잠그고 세대, 리스(lease), 엔진 의미 버전, 기대한 `applied_seq`를 차례로 검증한 뒤 행과 `kg_head`를 한 트랜잭션에서 쓴다. 변경 번호는 `kg_head` 행의 카운터다. 모든 기본키와 인덱스는 `kg_id`로 시작하고, 스토리지 접근은 `kg_id`를 키로 하는 라우팅 계층을 거친다(현재는 답이 하나다). 마이그레이션은 직접 만든 실행기와 내장 SQL 파일로 하고, 역할별 문 실행 시간 제한과 잠금 대기 제한을 둔다 | `core.kernel`, `core.model`, `core.graph` |
@@ -51,7 +51,7 @@ covers:
 | `web.api` | TypeScript | `apps/web/src/api` | 웹 화면의 API 호출 계층(ADR-0035). 계약(OpenAPI)에서 생성한 타입과 호출 함수(`generated/`, 손으로 고치지 않는다), 요청을 만들고 오류(`problem+json`)를 `ApiError`로 바꾸는 클라이언트, 의존성 없는 생성기(`generator/`) | 없음 |
 | `web.data` | TypeScript | `apps/web/src/data` | 조회와 로딩·오류 상태, 커서 페이지네이션, 주소(해시 라우터), 접속 토큰, 오류를 한국어로 바꾸는 말, 표의 열 고르기 | `web.api` |
 | `web.ui` | TypeScript | `apps/web/src/ui` | 프락시움 이름의 컴포넌트와 토큰 파일(`tokens.css`, 색은 여기에만 쓴다). Base UI는 여기에서만 import한다. | 없음 |
-| `web.screens` | TypeScript | `apps/web/src/screens` | 웹 화면(접속 설정, KG 선택, 객체 타입, 객체 표, 객체 상세와 이웃, 영향 범위). `ui`와 `data`만 쓴다. 테스트 잠금과 요구사항 추적에서 빠진다 | `web.data`, `web.ui` |
+| `web.screens` | TypeScript | `apps/web/src/screens` | 웹 화면(접속 설정, KG 선택, 객체 타입, 객체 표, 객체 상세와 이웃). `ui`와 `data`만 쓴다. 테스트 잠금과 요구사항 추적에서 빠진다 | `web.data`, `web.ui` |
 | `web.app` | TypeScript | `apps/web/src` | 진입점(`main.tsx`)과 틀(`App.tsx`) | `web.data`, `web.ui`, `web.screens` |
 | `web.build` | TypeScript | `apps/web/config` | Vite 설정. 번들을 만든다 | 없음 |
 | `web.testsupport` | TypeScript | `apps/web/src/test-support` | 웹 UI 테스트의 렌더와 가짜 API | 없음 |
@@ -101,14 +101,14 @@ core.kernel
        ├─ core.definitions  정의의 저장, 브랜치, 제안, 병합
        ├─ core.ingest       소스 설정, 프리셋, 원본 레코드, 정제, 매핑, 식별, 링크 정의 (어댑터 포트)
        ├─ core.graph        KG 버전, 후보와 차이, 적용과 안전장치 (스토리지 포트)
-       │    └─ core.query       사전 정의 질의, 영향 범위의 의미와 기준 구현 (엔진 포트, 프로젝션 형식)
+       │    └─ core.query       사전 정의 질의와 기준 구현 (엔진 포트, 프로젝션 형식)
        ├─ core.observe      품질, 헬스 상태, 목표, 알림
        ├─ core.competency   역량 질문과 충족률
        └─ core.schedule     동기화 실행과 일정
 core.access     SSO와 권한 부여, 감사 (kernel과 model만 import한다. 다른 단위가 이것을 import한다)
 core.contract   외부에 공개하는 계약: HTTP 경로와 스키마, MCP 툴의 스키마, 파일 형식(프로젝션, 수집 엔벨로프, 정의 내보내기)
 바깥 층
-  ├─ 어댑터들   프로토콜 어댑터, PostgreSQL 스토리지, 시크릿 제공자, 로그인, 영향 범위 엔진, 알림
+  ├─ 어댑터들   프로토콜 어댑터, PostgreSQL 스토리지, 시크릿 제공자, 로그인, 질의 엔진, 알림
   ├─ HTTP, MCP  계약을 서버로 제공하는 층
   └─ 시작점     조립. 역할 4종(API, 워커, 질의 엔진, 수집기) 가운데 하나를 골라 기동한다
 ```
@@ -142,7 +142,7 @@ core.contract   외부에 공개하는 계약: HTTP 경로와 스키마, MCP 툴
 |---|---|---|
 | API | 계약의 경로와 MCP. 상태를 보유하지 않는다 | 가능 |
 | 워커 | 수집부터 적용까지와 일정. 소스별 동시 실행 상한을 지킨다 | 가능 |
-| 질의 엔진 | 프로젝션을 메모리에 올려 영향 범위와 경로를 응답한다. 프로젝션 파일과 변경 시퀀스만 읽는다 | 가능 |
+| 질의 엔진 | 프로젝션을 메모리에 올려 경로를 응답한다. 프로젝션 파일과 변경 시퀀스만 읽는다 | 가능 |
 | 수집기 | 워커의 수집 역할을 소스가 있는 망에 별도로 기동한 것 | 망마다 |
 
 질의 엔진은 Go로 직접 만들고, 프로젝션 파일과 변경 시퀀스가 엔진의 경계다.
@@ -156,7 +156,7 @@ core.contract   외부에 공개하는 계약: HTTP 경로와 스키마, MCP 툴
 - 어느 제품을 쓸지는 구현하는 변경의 결정 기록에서 정한다.
 
 ### KG는 여럿이고 정의의 메인 브랜치는 하나다 (ADR-0009)
-KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 테스트 KG, 시스템 KG가 있고, 정의의 메인 브랜치는 배포에 하나다. KG는 그 메인 브랜치의 어느 정의 세트를 사용하는지 가리킨다(`applied_set_no`). 영향 범위는 KG 하나 안에서만 계산된다. KG 분할은 쓰기 한계를 해소하는 수단이 아니며, 서로 의존하지 않는 자산 그룹만 다른 KG가 된다. 한 KG에 수천만 개를 담고 설계 여유는 수억 개까지다.
+KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 테스트 KG, 시스템 KG가 있고, 정의의 메인 브랜치는 배포에 하나다. KG는 그 메인 브랜치의 어느 정의 세트를 사용하는지 가리킨다(`applied_set_no`). 질의는 KG 하나 안에서만 실행된다. KG 분할은 쓰기 한계를 해소하는 수단이 아니며, 서로 의존하지 않는 자산 그룹만 다른 KG가 된다. 한 KG에 수천만 개를 담고 설계 여유는 수억 개까지다.
 
 ## 의존성 표 (ADR-0006, REQ-239)
 라이브러리를 추가하는 변경은 이 표를 함께 수정한다. 허용 라이선스만 도입한다.

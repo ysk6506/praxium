@@ -11,8 +11,8 @@ follows:
 
 > **경로와 필드는 다음 변경의 OpenAPI 문서에서 확정돼요.** KG에 속한 경로는 `/v1/kgs/{kg}/...`이고(운영 KG는 `main`) 액션은 `:액션` 표기예요.
 
-## 1. 영향 범위를 질의하고 믿어도 되는지 확인하기 (읽기)
-화면의 운영자 `user_a`(역할 `viewer`)가 "스위치 `sw-0417`에 장애가 나면 어디까지 번지는가"를 알고 싶어요.
+## 1. 이웃을 질의하고 믿어도 되는지 확인하기 (읽기)
+화면의 운영자 `user_a`(역할 `viewer`)가 "스위치 `sw-0417`에 이어진 것은 무엇인가"를 알고 싶어요.
 
 **1) 로그인과 "나".** 화면은 SSO에서 인가 코드 방식과 PKCE로 토큰을 받았어요. 요청마다 토큰을 실어 보내고, 먼저 "나"를 조회해요.
 
@@ -26,16 +26,15 @@ GET /v1/me          Authorization: Bearer <토큰>
 
 화면은 이 응답으로 "제안" 버튼을 비활성화하고 이유(`forbidden.role`)를 보여요(`viewer`에게 없는 권한). 비활성화는 편의이고, 서버는 요청이 오면 어차피 거절해요.
 
-**2) 영향 범위를 질의해요.** 사전 정의 질의는 POST로 요청하는 질의 자원이에요. 상태를 바꾸지 않으니 `Idempotency-Key`가 없어요.
+**2) 이웃을 질의해요.** 사전 정의 질의는 POST로 요청하는 질의 자원이에요. 상태를 바꾸지 않으니 `Idempotency-Key`가 없어요.
 
 ```
-POST /v1/kgs/main/queries:impact
-{"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "summary", "limit": 2}
+POST /v1/kgs/main/queries:neighbors
+{"object_id": "obj_sw0417", "max_steps": 1, "view": "as_observed", "shape": "items", "limit": 2}
 → 200
-{"data": {"facts_only": {"counts_by_result": {"down": 1, "degraded": 4}},
-          "with_assumptions": {"counts_by_result": {"down": 3, "degraded": 9}, "items": [
-             {"object_id": "obj_srv_a", "object_type": "Server", "result": "down", "via": "obj_sw0417"},
-             {"object_id": "obj_svc_b", "object_type": "Service", "result": "degraded", "via": "obj_srv_a"}]}},
+{"data": {"items": [
+             {"object_id": "obj_srv_a", "object_type": "Server", "link_type": "CONNECTS_TO", "hop": 1},
+             {"object_id": "obj_srv_b", "object_type": "Server", "link_type": "CONNECTS_TO", "hop": 1}]},
  "meta": {"as_of": {"kg": "kg_main_01", "generation": 1, "change_seq": 88231, "sealed_version": "kv_0192", "pinned": null, "volatile_as_of": "current"},
           "served_by": {"role": "engine"},
           "freshness": {"worst_source_id": "src_switch_inventory", "oldest_age_seconds": 97200, "state": "stale"},
@@ -48,15 +47,15 @@ POST /v1/kgs/main/queries:impact
 
 화면이 엔벨로프에서 읽는 것:
 - `freshness.state: stale`: 스위치 소스의 마지막 수신이 27시간 전이에요. 화면은 "오래된 구성 기준"이라고 쓰고, 이 문구는 화면의 것이에요.
-- `evidence.counts`: 사실 5, 가정 7이에요. 사실만으로는 하나만 장애가 나고, 가정을 포함하면 셋에 장애가 나요.
-- `hidden.has_hidden: true`: 영향이 번지는 경로에 `user_a`가 읽을 수 없는 객체가 있어요. 범위가 전체가 아닌 주체에게는 개수 대신 존재 여부만 알려서(설정으로 개수를 공개할 수 있어요) 다른 범위의 객체 수를 알아내지 못해요. 내용은 주지 않아요. `result_complete.total`도 가려진 것을 뺀 개수예요.
+- `evidence.counts`: 사실 5, 가정 7이에요. 가정에 기댄 링크가 섞여 있다는 뜻이에요.
+- `hidden.has_hidden: true`: 순회한 경로에 `user_a`가 읽을 수 없는 객체가 있어요. 범위가 전체가 아닌 주체에게는 개수 대신 존재 여부만 알려서(설정으로 개수를 공개할 수 있어요) 다른 범위의 객체 수를 알아내지 못해요. 내용은 주지 않아요. `result_complete.total`도 가려진 것을 뺀 개수예요.
 - `result_complete.truncated: true`: 12개 중 2개만 왔어요. `next_cursor`로 이어서 가져와요.
 
 **3) 다음 페이지.** 같은 입력에 `cursor`를 추가해요.
 
 ```
-POST /v1/kgs/main/queries:impact
-{"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "items", "limit": 50, "cursor": "c_71Kd"}
+POST /v1/kgs/main/queries:neighbors
+{"object_id": "obj_sw0417", "max_steps": 1, "view": "as_observed", "shape": "items", "limit": 50, "cursor": "c_71Kd"}
 → 200 {"data": {...나머지 10개...}, "meta": {..., "result_complete": {"total": 12, "returned": 10, "truncated": false, "next_cursor": null}}}
 ```
 
@@ -80,7 +79,7 @@ data: {"resource": {"kind": "source", "id": "src_switch_inventory"}, "from": "fa
 
 연결이 끊겼다 다시 연결될 때 화면은 마지막으로 받은 `ev_000812`를 `Last-Event-ID`로 보내요. 너무 오래 끊겼다면 `GET /v1/events?since=ev_000812`가 `stale.since_too_old`(410)로 응답하고(세대가 바뀐 뒤이면 `conflict.generation_changed`), 그때는 헬스 상태를 다시 읽어요.
 
-**6) 한도.** 화면이 짧은 시간에 영향 범위를 연달아 질의하면 다음과 같아요.
+**6) 한도.** 화면이 짧은 시간에 질의를 연달아 보내면 다음과 같아요.
 
 ```
 → 429  Retry-After: 30   RateLimit: limit=60, remaining=0, reset=30

@@ -27,7 +27,7 @@ KG는 변경 시퀀스이고 버전은 확정 버전이에요(ADR-0009). 읽는 
 
 공통 입력: `kg_version_id`(없으면 현재), `view`(`as_designed`, `as_observed`), `max_staleness`(소스에서 관측한 값이 얼마나 오래돼도 되는지), `min_seq`와 `wait_timeout`(복제가 따라오기를 기다리는 것. 둘은 다른 의미예요), `limit`, `cursor`, `shape`. **링크는 `volatile`이 될 수 없어요.** `volatile` 속성은 "그 버전 시점"의 응답에서 빠져요(`volatile_as_of: omitted`).
 
-### 1-2. 사전 정의 질의 13종
+### 1-2. 사전 정의 질의 12종
 모두 `POST /v1/kgs/{kg}/queries:<이름>`이에요. 상태를 변경하지 않아요(계약에 안전함 표시). 큰 입력(객체 목록, 필터링)을 본문으로 받아요. 응답은 바로 와요: 시간 예산을 넘기면 202가 아니라 `meta.result_complete.truncated: true`와 `reason: time_budget`이에요(ADR-0010). 오래 걸릴 큰 읽기는 `bulk-reads`(1-4)를 써요. 역할은 `읽기`예요. 입력과 출력의 필드는 [KG 질의](kg-queries.md)가 정해요. 아래 표의 경로는 `/kgs/{kg}/questions/<이름>`을 `<이름>`으로 줄였어요.
 
 | 질의 | 주 입력 | 응답의 `data` | 대응하는 GET |
@@ -37,7 +37,6 @@ KG는 변경 시퀀스이고 버전은 확정 버전이에요(ADR-0009). 읽는 
 | `neighbors` | `object_id`, `link_types`, `meanings`, `direction`, `max_steps`, `peer_types` | `groups`, `items` | |
 | `containment` | `object_id`, `direction`(`up`, `down`), `depth`, `child_types` | `ancestors`, `children_summary`, `subtree_size`, `items` | |
 | `paths` | `from_object_id`, `to_object_id`, `via_meanings`, `link_types`, `max_steps`, `top_k`, `dead`, `dead_links` | `reachable`(`yes`, `no`, `unknown`), `paths`, `found_count` | |
-| `impact` | `dead`, `dead_links`, `site_failure`, `dead_scope_id`, `mode`(`both`, `facts_only`, `with_assumptions`), `shape` | 결과별 목록(`down`, `interrupted`, `degraded`, `exposed_direct`, `exposed_inherited`, `unmanageable`, `unknown`), `counts_by_result`, `groups_touched`, `items` | |
 | `exposure` | `dead`, `scope_id`, `target_object_id`, `cut_order_max` | `tight_groups`, `cut_sets` | |
 | `changes` | `from_version`/`to_version` 또는 `from_change_seq`/`to_change_seq`, `object_types`, `source_id`, `scope_id`, `change_kinds` | 타입별·종류별 수, `items` | `GET /kgs/{kg}/changes` |
 | `versions` | `since_version`, `limit` | 확정 버전들 | `GET /kgs/{kg}/graph-versions` |
@@ -55,7 +54,7 @@ POST /v1/kgs/main/queries:paths
    "meta": {"as_of": {"kg": "kg_main_01", "generation": 1, "change_seq": 88231}, "served_by": {"role": "engine"}, "result_complete": {"truncated": false}}}
 ```
 
-- `impact`, `paths`, `exposure`는 질의 엔진이 응답해요. 프로젝션이 아직 빌드되지 않았으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 응답했는지 보여 줘요.
+- `paths`와 `exposure`는 질의 엔진이 응답해요. 프로젝션이 아직 빌드되지 않았으면 `stale.projection_not_ready`(503)예요. `served_by`가 어느 역할이 응답했는지 보여 줘요.
 - 계산은 전체 그래프에서 하고, 숨김 객체는 결과에 나오지 않아요. `paths`의 숨김 홉은 "숨김 객체 하나"로 보여요.
 
 **첫 3종의 구현 상태**(ADR-0027, 계약의 `kg` 태그). 경로 8개가 계약에 있어요: `GET /v1/kgs`, `/v1/kgs/{kg}`, `/objects`, `/objects/{object_id}`, `/objects/{object_id}/links`와 `POST /v1/kgs/{kg}/queries:find`, `queries:get`, `queries:neighbors`. 대응하는 GET은 같은 질의를 호출하고 목록 경로는 `shape` 기본이 `items`예요. POST 본문은 질의 필드를 평탄하게 받고(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`(ISO 8601 기간), `max_staleness`, `limit`, `cursor`, `shape`), 알 수 없는 필드는 필드별 `422`, JSON이 아닌 본문은 `415`예요. 응답 엔벨로프는 `meta`에 담겨요(`as_of`는 `kg`와 `volatile_as_of`를 포함하고, `hidden`은 `has_hidden`이 붙고, `freshness`, `evidence`, `result_complete`가 함께 가요). 스토리지가 없는 서버는 `503 server.unavailable`(`reason: no_store`)로 응답해요. 아직 없는 것: `objects:batch-get`, `issue-reports`, 나머지 7종 질의, `/questions/{question_name}`의 일반 경로.
@@ -89,7 +88,7 @@ POST /v1/kgs/main/queries:paths
 | `/kgs/{kg}/pending-values` | GET | 연결할 대상이 없어 기한 안에 대기 중인 값(`feed_id`, `natural_key`, `attribute`, `received_at`, `expires_at`). 필터링: `feed_id`, `object_type` | 읽기(피드의 소속) | - | pipeline 3 |
 | `/kgs/{kg}/completeness-declarations` | GET | 피드의 완전성 선언과 현재 상태(`declared_scope`, `expected_count`, `received_count`, `state`: `active`, `suspended`, `suspended_reason`). 불일치가 임계값을 넘으면 자동으로 중단돼요. 선언을 수정하는 경로는 피드의 정의 항목이에요 | 읽기 | - | pipeline 3 |
 
-재수집은 삭제를 생성하지 않아요. 기대와 대조는 기대 조건(`/v1/expectations`, 정의의 항목)과 다른 자원이에요. 영향 범위처럼 이웃으로 전파되는 것의 확인은 같은 변경 번호를 `min_seq`로 지정해 조회해요.
+재수집은 삭제를 생성하지 않아요. 기대와 대조는 기대 조건(`/v1/expectations`, 정의의 항목)과 다른 자원이에요. 이웃으로 전파되는 것의 확인은 같은 변경 번호를 `min_seq`로 지정해 조회해요.
 
 ## 2. 관측
 헬스 상태, 지표, 목표, 알림, 문제 목록, 타임라인이에요(ADR-0011, ADR-0013). 목표, 알림 규칙, 안전장치의 값은 정의의 항목이라 수정 경로는 앞 문서 5그룹(정의)의 브랜치 항목이고, 여기서는 읽어요. 헬스 상태 값은 `healthy`, `degraded`, `failing`, `paused`, `unknown`, `affected_upstream` 6가지예요. 문제 목록과 헬스 상태는 KG에 든 것이라 `/kgs/{kg}/...`이고, 지표와 목표와 알림은 배포의 자원(소스, 데이터셋, 정의)을 측정하므로 `/v1/...`이며 KG를 선택하는 필드(`kg`)를 받아요.

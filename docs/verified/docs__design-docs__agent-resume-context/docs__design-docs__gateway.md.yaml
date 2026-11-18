@@ -1,7 +1,7 @@
 doc: "docs/design-docs/agent-resume-context.md"
 target: "docs/design-docs/gateway.md"
-hash: "ccfe448e6e7aeec2"
+hash: "14e56ab9d2429f9f"
 date: "2026-11-18"
-note: "새 문서: 맥락 읽기의 순서, 성질, 멈춘 이유, 상한, 실패 경우를 ADR-0074 1항과 gateway.md 5~7절(실행의 상태 돌려줌, 이어가기 번호, 조회)에 맞춰 적음"
-text_changed: true
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+text_changed: false
 doc_hash: "4478b315143e89ef"

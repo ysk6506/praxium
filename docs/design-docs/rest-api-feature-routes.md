@@ -46,8 +46,7 @@ follows:
 | 표시 이름과 설명을 언어별로 | 각 자원의 `display_names` |
 | 객체 검색과 객체 하나, 링크, 이웃 조회 | `GET /v1/kgs/{kg}/objects`, `GET /v1/kgs/{kg}/objects/{object_id}`, `GET /v1/kgs/{kg}/objects/{object_id}/links`, `GET /v1/kgs/{kg}/links`, `GET /v1/kgs/{kg}/links/{link_id}` |
 | 여러 객체를 한 번에 읽기 | `POST /v1/kgs/{kg}/objects:batch-get` |
-| 사전 정의 질의 13종 | `POST /v1/kgs/{kg}/queries:find`, `POST /v1/kgs/{kg}/queries:get`, `POST /v1/kgs/{kg}/queries:neighbors`, `POST /v1/kgs/{kg}/queries:containment`, `POST /v1/kgs/{kg}/queries:paths`, `POST /v1/kgs/{kg}/queries:impact`, `POST /v1/kgs/{kg}/queries:exposure`, `POST /v1/kgs/{kg}/queries:versions`, `POST /v1/kgs/{kg}/queries:quality`, `POST /v1/kgs/{kg}/queries:health`(나머지 10종 가운데 7종. `changes`와 `competency`는 아래 해당 행에 있고, `scopes`는 `GET /v1/kgs/{kg}/scopes`) |
-| 노출 2종(`exposed_direct`, `exposed_inherited`) | `impact`의 응답 |
+| 사전 정의 질의 12종 | `POST /v1/kgs/{kg}/queries:find`, `POST /v1/kgs/{kg}/queries:get`, `POST /v1/kgs/{kg}/queries:neighbors`, `POST /v1/kgs/{kg}/queries:containment`, `POST /v1/kgs/{kg}/queries:paths`, `POST /v1/kgs/{kg}/queries:exposure`, `POST /v1/kgs/{kg}/queries:versions`, `POST /v1/kgs/{kg}/queries:quality`, `POST /v1/kgs/{kg}/queries:health`(나머지 9종 가운데 6종. `changes`와 `competency`는 아래 해당 행에 있고, `scopes`는 `GET /v1/kgs/{kg}/scopes`) |
 | 지정 재수집과 그 결과 | `POST /v1/kgs/{kg}/refreshes`, `GET /v1/kgs/{kg}/refreshes/{refresh_id}` |
 | 기대와 대조 | `POST /v1/kgs/{kg}/value-checks` |
 | MCP 읽기 인터페이스(재수집과 값 확인은 `/mcp` 밖) | MCP 툴(rest-api.md 5-6, kg-mcp.md) |

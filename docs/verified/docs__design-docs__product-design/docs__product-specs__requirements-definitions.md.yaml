@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements-definitions.md"
-hash: "955f65eb2fbc9581"
-date: "2026-11-14"
-note: "정의(119, 128, 129, 171, 172, 218~221, 332~349, 366~373)는 개요의 정의 버전과 조직 속성 항목과 일치. 이번에 문서를 나누며 줄을 그대로 옮겼고 어긋나는 곳이 없어 개요는 고치지 않았다"
+hash: "718f961785385375"
+date: "2026-11-18"
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
 text_changed: true
-doc_hash: "019854b80cb4930e"
+doc_hash: "28c57a06aff13bf4"

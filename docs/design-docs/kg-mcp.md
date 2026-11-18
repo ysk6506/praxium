@@ -1,5 +1,5 @@
 ---
-title: KG의 읽기 전용 MCP 인터페이스 — 판 처리, 툴 여섯, 코드의 자리
+title: KG의 읽기 전용 MCP 인터페이스 — 판 처리, 툴 다섯, 코드의 자리
 kind: guide
 status: active
 follows:
@@ -12,7 +12,7 @@ KG 조회를 MCP(Model Context Protocol) 툴로 내주는 인터페이스의 설
 
 ## 1. 범위와 다른 MCP와의 구분
 
-- 엔드포인트 하나(`POST /mcp`), 첫 릴리스의 툴 여섯 개(`kg_whoami`, `kg_catalog`, `kg_find`, `kg_get`, `kg_neighbors`, `kg_impact`), 내장 토큰 인증, 계정(주체)별 한도와 읽기 기록의 최소형, 툴 정의의 계약 파일과 검사를 넣어요.
+- 엔드포인트 하나(`POST /mcp`), 첫 릴리스의 툴 다섯 개(`kg_whoami`, `kg_catalog`, `kg_find`, `kg_get`, `kg_neighbors`), 내장 토큰 인증, 계정(주체)별 한도와 읽기 기록의 최소형, 툴 정의의 계약 파일과 검사를 넣어요.
 - 넣지 않는 것: 게이트웨이의 툴, 현실을 바꾸는 툴, 운영 MCP(`ops_*`), OAuth·OIDC, 자원(resources)·프롬프트·구독·작업 확장, SSE, 재수집(`refresh`)과 소스를 다시 읽는 값 확인(`check_values`), 대량 읽기(`bulk_read`).
 - **`/mcp`는 영구히 읽기 전용이에요.** 읽기 전용은 호출의 결과로 프락시움 안팎의 어떤 상태도 바뀌지 않는다는 뜻이에요(읽기 기록과 한도의 계수는 제외). 작업을 만들거나, 소스를 다시 읽게 하거나, KG·정의·범위·문제 목록을 바꾸는 툴은 얹지 않고, 조직의 MCP 서버를 거치는 툴도 얹지 않아요. 하네스의 자동 승인은 주소나 툴 이름 단위로 걸려서, 읽기 전용이라 믿고 건 승인이 넓어지면 안 돼요. 에이전트가 재수집이나 값 확인을 요청하는 경로는 따로 정해요(게이트웨이의 분류로는 "부작용이 있을 수 있는 진단"에 해당해요. gateway.md). 계약 파일에는 "`/mcp`의 `tools/list`는 계약 파일의 KG 읽기 툴 목록과 정확히 같다"를 적고, 등록부에 다른 종류의 툴이 있어도 `/mcp`에 나오지 않는다는 것을 테스트가 확인해요.
 - 게이트웨이(ADR-0061)는 다른 주소의 다른 구성요소예요. 같은 툴 등록부로 KG 읽기 툴을 함께 내줄지는 게이트웨이 쪽에서 아직 정하지 않았어요(gateway-safety.md). `kg_` 접두어는 KG 읽기 툴에만 써요.
@@ -151,7 +151,7 @@ KG 조회를 MCP(Model Context Protocol) 툴로 내주는 인터페이스의 설
 
 ### 4.2 값이 없다는 것의 다섯 가지
 
-없는 것과 모르는 것을 섞지 않도록 고정된 표현으로 구분해요: **알 수 없음**(값을 비우고 등급 `unknown`), **오래됨**(`stale`), **가려짐**(`masked`), **그 타입에 없는 속성**, **숨겨진 객체**(`hidden`의 수). 속성의 등급 `unknown`과 영향 범위 결과의 `unknown`은 다른 것이에요.
+없는 것과 모르는 것을 섞지 않도록 고정된 표현으로 구분해요: **알 수 없음**(값을 비우고 등급 `unknown`), **오래됨**(`stale`), **가려짐**(`masked`), **그 타입에 없는 속성**, **숨겨진 객체**(`hidden`의 수).
 
 ### 4.3 KG의 값은 믿을 수 없는 입력
 
@@ -167,17 +167,16 @@ KG의 값(사람이 엑셀에 적은 글자 포함)은 에이전트에게 지시
 | `Origin` 불허 | HTTP 403 |
 | 모르는 메서드, JSON-RPC 형식 오류 | 2.1절의 표 |
 | 모르는 툴 이름 | 프로토콜 오류 -32602. `message`는 고정된 글, `data`에 쓸 수 있는 툴 이름의 목록. HTTP 상태는 2.1절의 N11, O9 |
-| 툴 호출에서: 인자가 틀림, 객체가 없음, 역할 부족, 계정별 한도 초과(`rate_limited.requests`, `rate_limited.compute_budget`), 프로세스 전체의 동시 계산 상한("지금 바쁨", `rate_limited.concurrency`), 필터 조건으로 쓴 속성이 민감 등급 상한 밖(`permission.hidden_attribute`) | 툴 결과 `isError: true`. REST와 같은 오류 코드와 다음 할 일을 `content`의 글(JSON 문자열)로 줘요. **오류 결과에는 `structuredContent`를 싣지 않아요**(출력 스키마와 다른 구조를 실으면 일부 클라이언트가 결과를 버려요) |
+| 툴 호출에서: 인자가 틀림, 객체가 없음, 역할 부족, 계정별 한도 초과(`rate_limited.requests`, `rate_limited.compute_budget`, `rate_limited.concurrency`), 필터 조건으로 쓴 속성이 민감 등급 상한 밖(`permission.hidden_attribute`) | 툴 결과 `isError: true`. REST와 같은 오류 코드와 다음 할 일을 `content`의 글(JSON 문자열)로 줘요. **오류 결과에는 `structuredContent`를 싣지 않아요**(출력 스키마와 다른 구조를 실으면 일부 클라이언트가 결과를 버려요) |
 | 기다렸다 다시 하면 되는 것(`stale.min_seq_not_reached`, `stale.projection_not_ready`, `server.unavailable`, `conflict.generation_changed`) | 툴 결과 `isError: true`와 대기 안내 |
 | 서버의 버그(`server.internal`) | 프로토콜 오류 -32603 |
 | 속성이 민감 등급 상한 밖 | **성공 결과**. 값은 가리고(`masked`) 보여 줘요 |
-| 영향 범위 계산이 시간 예산을 넘음 | **성공 결과**. `meta`의 `result_complete`가 거짓이고 멈춘 이유(`time_budget`)가 있으며 글의 첫 줄이 "계산이 끝나지 않았다. 이 목록은 일부다" |
 
 한도 초과를 HTTP 429로 내보내면 클라이언트가 전송 오류로 읽어 에이전트가 "기다렸다 다시"를 못 받아요. 그래서 계정별 한도는 툴 결과로 답하고(대기 시간 포함), HTTP 429는 인증 실패의 제한기에만 남겨요.
 
-## 5. 툴 여섯 개
+## 5. 툴 다섯 개
 
-모든 툴이 `kg`(기본 `main`)와 `detail`(기본 `brief`, 또는 `full`)을 받아요. 설명문과 인자 이름은 영어이고 설명문은 고정된 글이에요(KG의 값이 들어가지 않아요). 모든 툴에 읽기 전용 주석을 달아요(클라이언트의 편의이고 우리 쪽 통제의 근거가 아니에요). `kg_find`, `kg_get`, `kg_neighbors`, `kg_impact`는 사전 정의 질의와 1:1이에요. `kg_catalog`는 REST의 모델 목록(`/v1/object-types` 등)과 같은 내용이고, `kg_whoami`는 대응하는 REST 경로가 없는 새 유스케이스예요. 범용 질의 툴은 만들지 않아요. 인자의 이름은 REST의 본문 필드와 **같은 이름**이에요.
+모든 툴이 `kg`(기본 `main`)와 `detail`(기본 `brief`, 또는 `full`)을 받아요. 설명문과 인자 이름은 영어이고 설명문은 고정된 글이에요(KG의 값이 들어가지 않아요). 모든 툴에 읽기 전용 주석을 달아요(클라이언트의 편의이고 우리 쪽 통제의 근거가 아니에요). `kg_find`, `kg_get`, `kg_neighbors`는 사전 정의 질의와 1:1이에요. `kg_catalog`는 REST의 모델 목록(`/v1/object-types` 등)과 같은 내용이고, `kg_whoami`는 대응하는 REST 경로가 없는 새 유스케이스예요. 범용 질의 툴은 만들지 않아요. 인자의 이름은 REST의 본문 필드와 **같은 이름**이에요.
 
 ### 5.1 정의
 
@@ -188,11 +187,10 @@ KG의 값(사람이 엑셀에 적은 글자 포함)은 에이전트에게 지시
 | `kg_find` | "Find objects by type, trait, attribute, identifier, or name text." | `object_type`, `include_subtypes`, `trait`, `attributes`(`name`, `op`, `values`), `identifier`(`scheme`, `value`), `text`, `scope_id`, `limit`, `cursor` |
 | `kg_get` | "Read one object's attributes, identifiers, links count, and evidence." | `object_id` 또는 `identifier`, `include` |
 | `kg_neighbors` | "List the objects linked to an object, grouped by link type." | `object_id`, `link_types`, `meanings`, `direction`, `max_steps`, `peer_types`, `limit`, `cursor` |
-| `kg_impact` | "Show what is affected if the given objects fail, or what an object depends on." | `dead`, `dead_links`, `site_failure`, `dead_scope_id`, `direction`(`downstream`, `upstream`), `target_object_id`, `mode`, `max_hops`, `max_items`, `time_budget`, 그리고 6절의 필터 |
 
-REST의 읽기 조건(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`, `max_staleness`)은 첫 릴리스의 툴 인자로 노출하지 않고 기본값을 써요. 노출할지는 구현 전에 정해요(7절). 이름으로 찾기(`text`)는 REST의 `find`에 이미 있어요. 위쪽 방향("이 객체가 무엇에 기대나")은 `kg_impact`의 `direction=upstream`과 `target_object_id`예요(둘 다 REST에 이미 있어요).
+REST의 읽기 조건(`kg_version_id`, `change_seq`, `view`, `min_seq`, `wait_timeout`, `max_staleness`)은 첫 릴리스의 툴 인자로 노출하지 않고 기본값을 써요. 노출할지는 구현 전에 정해요(7절). 이름으로 찾기(`text`)는 REST의 `find`에 이미 있어요.
 
-정의(타입, 소스, 브랜치, 제안)를 읽는 툴은 이 여섯 개에 없어요. 이름과 접두어는 구현 전에 정해요(정의는 KG가 아니라 배포에 하나라서 `kg_`가 맞는지 아직 정하지 않았어요).
+정의(타입, 소스, 브랜치, 제안)를 읽는 툴은 이 다섯 개에 없어요. 이름과 접두어는 구현 전에 정해요(정의는 KG가 아니라 배포에 하나라서 `kg_`가 맞는지 아직 정하지 않았어요).
 
 ### 5.2 `detail`과 REST의 `shape`
 
@@ -200,31 +198,27 @@ REST의 `shape`는 `summary`(개수만)와 `items`예요. 기본 `summary`로 `k
 
 | `detail` | REST의 `shape` | 뜻 |
 |---|---|---|
-| `brief` | `items` | 항목마다 요약 필드만(ID, 타입, 이름 등). 정확한 필드는 구현 전에 정해요(7절). `kg_catalog`는 이름만. `kg_impact`는 요약 뒤 상위 20개(`path` 없음) |
-| `full` | `items` | 요약 필드에 더해 속성과 근거(`kg_get`의 `include`), `kg_impact`는 `path`까지 |
+| `brief` | `items` | 항목마다 요약 필드만(ID, 타입, 이름 등). 정확한 필드는 구현 전에 정해요(7절). `kg_catalog`는 이름만 |
+| `full` | `items` | 요약 필드에 더해 속성과 근거(`kg_get`의 `include`) |
 
 ### 5.3 모르는 툴 이름
 
 모르는 툴 이름은 규격(2026-07-28, 2025-06-18의 툴 절)대로 프로토콜 오류(-32602)로 줘요. `message`는 고정된 글이고 `data`에 지금 쓸 수 있는 툴 이름의 목록을 실어요. 호출자가 보낸 이름을 글에 되비출 때는 4.3절의 정리를 거쳐요. 규격의 캐시 절은 이런 오류를 클라이언트가 툴 목록을 다시 읽는 계기로 들어요. 인자 검증 오류는 2025-11-25와 2026-07-28에서 툴 실행 오류이고 2025-06-18은 프로토콜 오류로 적지만, `isError`는 세 판 모두에서 통하므로 `isError`로 줘요.
 
-## 6. 영향 범위의 큰 결과
+## 6. 삭제한 절 (영향 범위의 큰 결과)
 
-- **요약 먼저**: 결과 등급별 개수, 타입별 개수, 건드린 이중화 그룹, 상위 객체별 개수(REST의 `counts_by_result`, `counts_by_type`, `counts_by_parent`, `groups_touched`와 같은 원본)를 먼저 주고, 항목은 **상위 20개**만 줘요. `path`는 `detail=full`일 때만 줘요. `mode: both`는 같은 항목을 두 벌 싣는데 `brief`에서 한 벌로 줄일지는 구현 전에 정해요.
-- **순서의 정의**: 결과 등급이 심각한 순 → 장애 지점에서 가까운 순(단계의 수) → 타입 → 이름. 지금 코드는 결과 등급, 그다음 객체 ID의 글자순이라 `down`이 3,000개면 ID가 앞선 20개만 나와요. **유스케이스의 순서를 바꾸므로 REST와 CLI의 응답 순서도 바뀌어요.** 계약은 "가장 심각한 것 먼저"만 약속하므로 계약과 ADR-0043은 그대로예요. 구현할 때 잠긴 테스트가 걸리면 건별로 보고하고, 테스트를 조용히 바꾸지 않아요.
-- **필터**: 결과 등급, 객체 타입, 상위 객체로 좁혀요. 계산 쪽에 이 필터가 없어 유스케이스에 더하고 REST와 CLI도 함께 써요. 필터를 써도 개수는 전체 기준과 필터를 건 뒤를 함께 줘요.
-- **시간 예산**: MCP 호출의 기본은 10초예요(REST의 기본은 30초). 넘으면 오류가 아니라 부분 결과예요(4.4절). 멈춘 답은 하한이라는 것이 지금의 규칙이에요.
-- **동시 계산 상한**: 영향 범위는 요청마다 그래프를 새로 만들어요(kg-queries.md 12절: 2만 객체 0.4초, 20만 객체 6초). 계정별 한도와 별개로 **프로세스 전체의 상한**을 두고, 넘으면 기다리게 하지 않고 `rate_limited.concurrency`("지금 바쁨")로 바로 답해요. 큰 KG에서 쓸 만한 규모의 한계는 구현 뒤 측정해서 문서에 적어요.
+영향 범위는 제품이 계산하지 않고 `kg_impact`도 두지 않아요(ADR-0078). 이 절에 있던 요약 먼저, 순서, 필터, 시간 예산, 동시 계산 상한은 삭제했어요. 다른 절이 가리키는 번호를 지키려고 번호만 남겨요.
 
 ## 7. 미결 사항
 
 **구현 전에 정함**
 - 판 처리 표의 미확인 칸(N11, N12, N13, O5). 권고 값으로 구현했어요. 2026-07-28을 테스트하는 적합성 도구(현재 알파)나 실제 클라이언트로 확인하고 값을 확정해요.
-- `brief`와 `full`이 싣는 필드, REST의 읽기 조건 인자를 툴에 노출할지, `mode: both`의 한 벌 줄이기.
+- `brief`와 `full`이 싣는 필드, REST의 읽기 조건 인자를 툴에 노출할지.
 - 값의 정리와 자르기가 `structuredContent`에도 걸리는지. 걸리면 "`data`는 REST와 같은 내용"이 아니게 되고 에이전트가 정리된 값을 다음 호출의 조건으로 쓰면 맞지 않을 수 있어요. 안 걸리면 `content`만 정리해서 모델에 가는 글은 안전하지만, `structuredContent`를 그대로 모델에 넘기는 클라이언트에서는 정리가 빠져요.
 - 정의 읽기 툴의 이름과 접두어, 토큰 만료를 미리 알리는 방법(응답의 `warnings`와 서버 로그를 후보로 둠), 이 인터페이스를 `plan.md`의 어느 차수에 넣을지, 옛 판을 끝내는 정책의 날짜, 연결 안내의 하네스별 설정 예.
 
 **측정 뒤에 정함** (에이전트 평가용 과제 모음이 먼저 있어야 재요. 3단계 전에 만들어요)
-- 결과 크기 상한(약 8천 토큰), `content`에 JSON을 한 번 더 실을지(클라이언트가 두 자리를 모두 모델에 넘기면 토큰이 두 배), 계정별 한도와 동시 계산 상한과 주체별 읽은 객체 수 상한의 값, `ttlMs`, 시간 예산 10초, 상위 20개, 큰 KG에서 `kg_impact`가 쓸 만한 규모.
+- 결과 크기 상한(약 8천 토큰), `content`에 JSON을 한 번 더 실을지(클라이언트가 두 자리를 모두 모델에 넘기면 토큰이 두 배), 계정별 한도와 주체별 읽은 객체 수 상한의 값, `ttlMs`.
 
 ## 8. 코드의 자리
 
@@ -236,18 +230,18 @@ REST의 `shape`는 `summary`(개수만)와 `items`예요. 기본 `summary`로 `k
 |---|---|---|
 | `auth.go` | 토큰 → 주체와 실패 제한, 감사 줄, 역할 판정(`Gate.Authenticate`, `Gate.Authorize`, `Gate.Satisfies`), 역할 상수 | `clientKey`(`net`을 씀), `Authorization` 헤더 읽기, `Retry-After` 헤더 쓰기. 호출자의 주소는 문자열 하나(`Caller.Key`)로 넘겨요 |
 | `kg_source.go` | 읽기 필터(`Service.ReadFilter`), 질의 오류 → 오류 코드의 대응(`Service.Refuse`, `queryProblems`, `fieldParams`, `PlainMessage`), 엔벨로프 변환 `MetaOf`, 기간 해석 `ParseDuration`, `OptInt`, `KGSource`, 저장소가 없는 상태(`Service.Ready`) | `commonOf`와 `kgParams`(GET의 쿼리 문자열), `kgOK`(ETag와 304) |
-| `kg_questions.go` | 본문 구조체, 모르는 필드 거절을 포함한 해석(`DecodeBody`), 공통 입력, 식별자 해석, 질문 넷의 입력 해석과 호출(`Service.AskFind`, `AskGet`, `AskNeighbors`, `AskImpact`) | 본문 읽기에서 크기 한도 오류를 `BodyTooLargeError`로 바꾸는 얇은 겹(`net/http`의 오류를 알아야 해요) |
-| `kg_handlers.go` | 질의 호출(`Service.Find`, `Get`, `Neighbors`, `Impact`)과 결과의 `meta` 변환 | 필터와 쿼리 문자열 해석(`filter[..][..]`, `include`, `max_steps`)과 KG 목록. URL에 묶여 있고 MCP는 JSON 인자를 써요 |
+| `kg_questions.go` | 본문 구조체, 모르는 필드 거절을 포함한 해석(`DecodeBody`), 공통 입력, 식별자 해석, 질문 넷의 입력 해석과 호출(`Service.AskFind`, `AskGet`, `AskNeighbors`) | 본문 읽기에서 크기 한도 오류를 `BodyTooLargeError`로 바꾸는 얇은 겹(`net/http`의 오류를 알아야 해요) |
+| `kg_handlers.go` | 질의 호출(`Service.Find`, `Get`, `Neighbors`)과 결과의 `meta` 변환 | 필터와 쿼리 문자열 해석(`filter[..][..]`, `include`, `max_steps`)과 KG 목록. URL에 묶여 있고 MCP는 JSON 인자를 써요 |
 | `views.go`, `lists.go`, `handlers_registry.go` | `kg_catalog`가 쓸 모델 목록의 내용: 뷰 타입 전부, 타입 요약(`ObjectTypeSummary`, `LinkTypeSummary`, `TraitView`, `SchemeView`, `ActionTypeView`), 타입 끝의 덮는 범위 `Covered` | 목록의 틀(`listDef`, `row`, 필터·정렬·페이지·커서)과 필터용 값. 쿼리 문자열과 커서 규칙이라 REST 전용이에요 |
 | 그 밖의 파일(`problem.go`, `middleware.go`, `server.go`, `ui.go`, `respond.go`, `handlers*.go`, `routes.go` 등) | 없음 | HTTP 전용이라 그대로 |
 
-REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아니어서 생기는 타입 오류의 `params.expected`가 Go 타입 이름(`httpapi.findBody`)이었는데, 내부 이름이 새던 것이라 `object`로 바로잡았어요. 다른 필드의 `expected`는 그대로예요. 영향 범위의 순서와 계정별 한도는 그다음 변경에서 바뀌어요.
+REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아니어서 생기는 타입 오류의 `params.expected`가 Go 타입 이름(`httpapi.findBody`)이었는데, 내부 이름이 새던 것이라 `object`로 바로잡았어요. 다른 필드의 `expected`는 그대로예요. 계정별 한도는 그다음 변경에서 바뀌어요.
 
 ### 8.2 새 유닛과 계층
 
 | 유닛 | 위치 | 계층·import | 하는 일 |
 |---|---|---|---|
-| `core.kgread` | `backend/internal/kgread` | 코어. `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access`. 어댑터와 `net`, `net/http`를 import하지 않음 | 위 표의 것. 입력은 "주체와 원본 JSON 인자", 결과는 "결과나 목록의 오류 코드". 계정별 한도와 프로세스 전체의 동시 계산 상한 |
+| `core.kgread` | `backend/internal/kgread` | 코어. `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access`. 어댑터와 `net`, `net/http`를 import하지 않음 | 위 표의 것. 입력은 "주체와 원본 JSON 인자", 결과는 "결과나 목록의 오류 코드". 계정별 한도 |
 | `adapter.mcp` | `backend/internal/mcpapi` | 어댑터. `core.kernel`, `core.contract`, `core.access`, `core.kgread`(필요한 만큼). `adapter.http`를 import하지 않음 | **전송과 판 처리만**: JSON-RPC 한 겹, `POST /mcp`, 판 처리 표, 헤더와 출처 검증, JSON 응답 |
 | 툴 등록부 | `mcpapi` 안의 전송과 분리된 패키지나 파일 | 같은 유닛 | 이름, 설명, 입력·출력 스키마, 실행 함수. 전송을 모르고 "주체, 이름, 원본 인자 → 중립 결과(글 블록, 구조화 값, 오류 표시)"의 모양이에요 |
 
@@ -304,8 +298,7 @@ REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아
 1. 공통 유닛으로 옮기기(8.1절)와 계정별·전체 한도. REST에도 효과가 있어요. 옮기기는 끝났고(ADR-0067) 한도는 아직이에요.
 2. `mcpapi`의 전송과 판 처리(판 처리 표를 테스트로), 출처 검증, 보안 테스트의 목록, 툴 등록부와 **계약 파일과 검사**, `kg_whoami`와 `kg_catalog`. 여기서 실제 클라이언트 둘(새 판, 옛 판)을 붙여 봐요. 가장 큰 불확실성이 판 처리라서 맨 끝으로 미루지 않아요.
 3. `kg_find`, `kg_get`, `kg_neighbors`.
-4. `kg_impact`와 필터, 순서, 큰 결과.
-5. 연결 안내의 하네스별 설정 예, 독립 검증(SDK 계열의 클라이언트 몇 가지로).
+4. 연결 안내의 하네스별 설정 예, 독립 검증(SDK 계열의 클라이언트 몇 가지로).
 
 ### 진행 상황 (ADR-0068)
 
@@ -315,5 +308,5 @@ REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아
 | 툴 등록부, 계약 파일(`core.contract`)과 대조 검사, `kg_whoami`, 오류의 층(모르는 툴 이름 -32602, 오류 결과), 호출자의 글의 정리, 툴 호출마다의 읽기 기록, 켜고 끄는 플래그 | 끝(REQ-518). REQ-500, 501, 507, 508, 510, 514는 일부라 예정 |
 | 판 처리 표의 미확인 칸을 실제 클라이언트나 적합성 테스트로 확인 | 6칸 가운데 O8, O9를 확인했어요. 4칸(N11, N12, N13, O5)은 권고 값이고 확인하지 못했어요(REQ-503은 예정) |
 | 민감 등급 상한의 설정과 가림 | 아직(REQ-502는 예정). 쓰는 툴이 없어서 플래그도 아직 없어요 |
-| `kg_catalog`, `kg_find`, `kg_get`, `kg_neighbors`, `kg_impact`, 계정별 한도와 동시 계산 상한, 영향 범위의 순서와 필터, 주체별 읽은 객체 수 상한 | 아직(REQ-507, 509, 511, 513, 519) |
+| `kg_catalog`, `kg_find`, `kg_get`, `kg_neighbors`, 계정별 한도, 주체별 읽은 객체 수 상한 | 아직(REQ-507, 509, 513, 519) |
 | 연결 안내의 하네스별 설정 예, 독립 검증 | 아직(REQ-516은 적합성 테스트와 함께, REQ-517은 연결 안내) |

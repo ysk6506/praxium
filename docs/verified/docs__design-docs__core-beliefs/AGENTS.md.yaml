@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "b20aea430b7f82a9"
-date: "2026-11-16"
-note: "AGENTS.md의 변경(화면 코드의 위치, 웹 화면 문구)과 대조했다. 이 문서에는 화면의 위치를 말하는 문장이 없어 고칠 곳이 없다"
+hash: "93fd917edf823971"
+date: "2026-11-18"
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
 text_changed: false
 doc_hash: "fa6d560a34c76e15"
