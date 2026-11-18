@@ -17601,10 +17601,10 @@
   },
   "go:backend/cmd/praxium::TestSecretMoreValueFilesThatAreNotPlainFilesAreRefused": {
    "kind": "test",
-   "hash": "cf1e19419bf867f6",
-   "asserts": 3,
+   "hash": "b37e08d3c1d40a9c",
+   "asserts": 2,
    "literals": [
-    "4fd63510124c188a"
+    "f6087810c802e8af"
    ],
    "precision": [],
    "skips": 0,

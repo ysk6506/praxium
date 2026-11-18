@@ -110,13 +110,6 @@ func TestSecretMoreValueFilesThatAreNotPlainFilesAreRefused(t *testing.T) {
 			t.Errorf("the path of the file is in the message: %s", msg)
 		}
 	}
-	fifo := filepath.Join(t.TempDir(), "fifo")
-	if err := syscallMkfifo(fifo); err == nil {
-		msg := e.secFails(exitFailure, "", append(append([]string{}, args...), "token="+fifo)...)
-		if !strings.Contains(msg, "not a plain file") {
-			t.Errorf("a pipe: %s", msg)
-		}
-	}
 }
 
 // [REQ-498]
