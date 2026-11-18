@@ -1,0 +1,7 @@
+doc: "docs/design-docs/agent-integration.md"
+target: "docs/design-docs/rest-api.md"
+hash: "c8ec58a4df4027df"
+date: "2026-11-18"
+note: "검토 반영 2차: 이어 가기 맥락을 agent-resume-context.md로 옮기고 6.4절을 가리킴만 남김, 이벤트 위치(event_id)와 커밋 순서 보장, 승인 대기 시간과 승인된 뒤의 유효 시간, 툴 정의 고정의 단위, 자격 증명 문장, 보안 문장과 용어를 ADR-0074와 gateway.md 6~7절, rest-api.md 3-10과 대조해 고침"
+text_changed: true
+doc_hash: "3cdd37f8b0111a25"

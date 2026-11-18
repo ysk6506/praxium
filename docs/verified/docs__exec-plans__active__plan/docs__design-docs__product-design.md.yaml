@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "362fbabcc8935e55"
-date: "2026-11-16"
-note: "product-design.md에는 지도 한 줄만 더했어요. 계획의 내용은 그대로 맞아서 고치지 않았어요."
-text_changed: true
+hash: "05429803b2923c49"
+date: "2026-11-18"
+note: "product-design.md에 이어 가기 문서의 지도 행을 더하고 한 낱말을 고친 것을 확인했다. 계획의 내용은 바뀌지 않는다"
+text_changed: false
 doc_hash: "c2be9fea9ab6fd10"
