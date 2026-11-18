@@ -60,29 +60,132 @@ func TestSecretMoreFieldFilesThatAreWrong(t *testing.T) {
 	if err := os.WriteFile(file, []byte(secToken), 0o600); err != nil {
 		t.Fatal(err)
 	}
+	link := filepath.Join(dir, "link.txt")
+	linked := os.Symlink(file, link) == nil
 	base := []string{"put", "t1", "-kind", "token", "-data-dir", e.dataDir}
 	cases := []struct {
 		fields []string
+		code   int
 		want   string
 	}{
-		{[]string{"token=" + file, "token=" + file}, "given twice"},
-		{[]string{"to ken=" + dir}, "(a field)"},
-		{[]string{"token=" + dir}, "cannot be read"},
-		{[]string{"token=" + filepath.Join(dir, "none")}, "cannot be opened"},
-		{[]string{"user=" + file}, "invalid field name"},
+		{[]string{"token=" + file, "token=" + file}, exitFailure, "given twice"},
+		{[]string{"to ken=" + dir}, exitUsage, "a -field is not"},
+		{[]string{"token=" + dir}, exitFailure, "not a plain file"},
+		{[]string{"token=" + filepath.Join(dir, "none")}, exitFailure, "cannot be opened"},
+		{[]string{"username=" + file}, exitFailure, "not a field of this kind of secret"},
+		{[]string{"user=" + file}, exitUsage, "a -field is not"},
+	}
+	if linked {
+		cases = append(cases, struct {
+			fields []string
+			code   int
+			want   string
+		}{[]string{"token=" + link}, exitFailure, "not a plain file"})
 	}
 	for _, c := range cases {
 		args := append([]string{}, base...)
 		for _, f := range c.fields {
 			args = append(args, "-field", f)
 		}
-		msg := e.secFails(exitFailure, "", args...)
+		msg := e.secFails(c.code, "", args...)
 		if !strings.Contains(msg, c.want) || strings.Contains(msg, dir) || strings.Contains(msg, secToken) {
 			t.Errorf("%v: %s", c.fields, msg)
 		}
 	}
-	if safeName(strings.Repeat("a", 41)) != "(a field)" || safeName("ok_name-1") != "ok_name-1" {
-		t.Errorf("safeName")
+}
+
+// [REQ-498]
+func TestSecretMoreValueFilesThatAreNotPlainFilesAreRefused(t *testing.T) {
+	e := newSecEnv(t)
+	args := []string{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field"}
+	for _, device := range []string{os.DevNull, "/dev/tty", "/dev/stdin"} {
+		if _, err := os.Lstat(device); err != nil {
+			continue
+		}
+		msg := e.secFails(exitFailure, "", append(append([]string{}, args...), "token="+device)...)
+		if !strings.Contains(msg, "not a plain file") && !strings.Contains(msg, "cannot be opened") {
+			t.Errorf("%s: %s", device, msg)
+		}
+		if strings.Contains(msg, device) {
+			t.Errorf("the path of the file is in the message: %s", msg)
+		}
+	}
+	fifo := filepath.Join(t.TempDir(), "fifo")
+	if err := syscallMkfifo(fifo); err == nil {
+		msg := e.secFails(exitFailure, "", append(append([]string{}, args...), "token="+fifo)...)
+		if !strings.Contains(msg, "not a plain file") {
+			t.Errorf("a pipe: %s", msg)
+		}
+	}
+}
+
+// [REQ-498]
+func TestSecretMoreValuesWithControlCharactersOrAMarkAreRefused(t *testing.T) {
+	e := newSecEnv(t)
+	dir := t.TempDir()
+	write := func(name, text string) string {
+		p := filepath.Join(dir, name)
+		if err := os.WriteFile(p, []byte(text), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		return p
+	}
+	args := []string{"put", "t1", "-kind", "token", "-data-dir", e.dataDir}
+	bad := map[string]string{
+		"nul": "ab\x00cd" + "\n", "tab": "ab\tcd\n", "inner": "ab\ncd\n", "two": secToken + "\n\n", "del": "ab\x7fcd\n",
+		"cr": "ab\rcd\n", "bom": "\xef\xbb\xbf" + secToken + "\n",
+	}
+	for name, text := range bad {
+		msg := e.secFails(exitFailure, "", append(append([]string{}, args...), "-field", "token="+write(name, text))...)
+		if !strings.Contains(msg, "the field token") || strings.Contains(msg, "cd") || strings.Contains(msg, secToken) {
+			t.Errorf("%s: %s", name, msg)
+		}
+		if msg := e.secFails(exitFailure, text, args...); !strings.Contains(msg, "the field token") && !strings.Contains(msg, "line(s)") {
+			t.Errorf("standard input %s: %s", name, msg)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(e.dataDir, "secrets.json")); err == nil {
+		t.Errorf("a refused value made secrets.json")
+	}
+	// one line break at the end, LF or CRLF, is not part of the value; a space is
+	for name, text := range map[string]string{"lf": secToken + "\n", "crlf": secToken + "\r\n", "none": secToken} {
+		id := "t_" + name
+		e.secOk("", "put", id, "-kind", "token", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432", "-field", "token="+write("ok_"+name, text))
+		if got := e.secOpen(id, "token"); got["token"] != secToken {
+			t.Errorf("%s: the value is not what the file holds minus one line break", name)
+		}
+	}
+	e.secOk(secToken+"\r\n", "put", "t_stdin", "-kind", "token", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432")
+	if got := e.secOpen("t_stdin", "token"); got["token"] != secToken {
+		t.Errorf("a CRLF line on the standard input is not the value without it")
+	}
+}
+
+// [REQ-498]
+func TestSecretMoreWhatWasTypedIsNeverRepeatedByAFlagError(t *testing.T) {
+	e := newSecEnv(t)
+	e.secPut("db_main")
+	typed := "FakeTok3nValueXyz=="
+	for _, args := range [][]string{
+		{"put", "t2", "-kind", "token", "-data-dir", e.dataDir, "-field", typed},
+		{"put", "t2", "-kind", "token", "-data-dir", e.dataDir, "-field", "fakeuser=fakepw99"},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-" + typed},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-FakeTok3nValueXyz"},
+		{"retire", "db_main", "-data-dir", e.dataDir, "-version", "FakeTok3nValueXyz"},
+		{"list", "-data-dir", e.dataDir, "-json=FakeTok3nValueXyz"},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field"},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field", "token=" + typed + "/none"},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-scope", "FakeTok3nValueXyz=="},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-host", "FakeTok3nValueXyz=="},
+		{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, typed},
+	} {
+		code, _, msg := e.secRun("", args...)
+		if code == exitOK {
+			t.Errorf("%v: no failure", args)
+		}
+		if strings.Contains(msg, "FakeTok3n") || strings.Contains(msg, "fakeuser") || strings.Contains(msg, "fakepw99") {
+			t.Errorf("%v: what was typed is in the message: %s", args, msg)
+		}
 	}
 }
 
@@ -139,8 +242,14 @@ func TestSecretMoreTheDiskAndTheAssemblyAnswerSmallThings(t *testing.T) {
 	if kernel.CodeOf(secretLocked("d", kernel.Errorf(filejournal.CodeLocked, "held"))) != filejournal.CodeLocked {
 		t.Errorf("a lock that is held keeps its code")
 	}
-	if dir, err := (wiring{}).userConfigDir()(); err != nil && dir != "" {
-		t.Errorf("the system's configuration folder: %q %v", dir, err)
+	e := newSecEnv(t) // hides HOME and the like in its own temporary folder
+	got, err := (wiring{}).userConfigDir()()
+	want, wantErr := os.UserConfigDir()
+	if got != want || (err == nil) != (wantErr == nil) {
+		t.Errorf("without a wiring the configuration folder is the system's: %q %v, want %q %v", got, err, want, wantErr)
+	}
+	if want != "" && !strings.HasPrefix(want, filepath.Dir(e.dataDir)) {
+		t.Errorf("the tests do not hide the real configuration folder: %s", want)
 	}
 }
 
@@ -198,8 +307,11 @@ func TestSecretMoreTheFolderIdentifierIsMadeOnceAndSaysWhatFailed(t *testing.T) 
 func TestSecretMorePathsThatCannotBeResolvedAreRefused(t *testing.T) {
 	e := newSecEnv(t)
 	k := secKeysFor(t, e)
-	if err := k.checkOutside("bad\x00path"); err == nil {
-		t.Errorf("a key path that cannot be resolved")
+	if _, err := normalizePath(""); err == nil {
+		t.Errorf("an empty key path")
+	}
+	if _, _, err := createMasterKey("bad\x00path", productBytes()); err == nil {
+		t.Errorf("a key path that cannot be used")
 	}
 	k.loc.dataDir = "bad\x00dir"
 	if err := k.checkOutside(filepath.Join(t.TempDir(), "k.key")); err == nil {
@@ -220,6 +332,85 @@ func TestSecretMoreTheIdOfASecretHasTheGrammarOfTheIdOfASource(t *testing.T) {
 	for _, id := range samples {
 		if (secrets.ValidateID(id) == nil) != ingest.ValidID(id) {
 			t.Errorf("the grammar of a secret id and of a source id differ for a sample of %d bytes", len(id))
+		}
+	}
+}
+
+// [REQ-474]
+func TestSecretMorePathsAreMadeWholeWithLinksFollowedInOrder(t *testing.T) {
+	base, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.MkdirAll(filepath.Join(base, "a", "b"), 0o750); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Symlink(filepath.Join(base, "a", "b"), filepath.Join(base, "ln")); err != nil {
+		t.Fatal(err)
+	}
+	sep := string(filepath.Separator)
+	got, err := normalizePath(base + sep + "ln" + sep + ".." + sep + "." + sep + "k.key")
+	if want := filepath.Join(base, "a", "k.key"); err != nil || got != want {
+		t.Errorf("link/.. is %q (%v), want %q", got, err, want)
+	}
+	t.Chdir(base)
+	if got, err := normalizePath(filepath.Join("a", "b", "k.key")); err != nil || got != filepath.Join(base, "a", "b", "k.key") {
+		t.Errorf("a relative path is %q (%v)", got, err)
+	}
+	if err := os.Symlink(filepath.Join(base, "nowhere"), filepath.Join(base, "dead")); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := normalizePath(filepath.Join("dead", "k.key")); err == nil {
+		t.Errorf("a link that points nowhere, in the middle of a path")
+	}
+	if got, err := normalizePath(filepath.Join("new", "folder", "k.key")); err != nil || got != filepath.Join(base, "new", "folder", "k.key") {
+		t.Errorf("parts that are not there yet: %q (%v)", got, err)
+	}
+}
+
+// [REQ-474]
+func TestSecretMoreAFileIsReadOnlyWhenItIsPlainSmallAndPrivate(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "f")
+	if err := os.WriteFile(path, []byte("0123456789"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readFileChecked(path, 5, false, "the file"); err == nil || !strings.Contains(err.Error(), "larger than 5") {
+		t.Errorf("a file over the limit: %v", err)
+	}
+	if err := os.Chmod(path, 0o640); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := readFileChecked(path, 100, true, "the key"); err == nil || !strings.Contains(err.Error(), "chmod 600") {
+		t.Errorf("a file that others can read: %v", err)
+	}
+	if _, err := readFileChecked(path, 100, false, "the file"); err != nil {
+		t.Errorf("a plain file: %v", err)
+	}
+}
+
+// [REQ-499]
+func TestSecretMoreAnEmptyListIsAnEmptyListInJSON(t *testing.T) {
+	e := newSecEnv(t)
+	e.secPut("db_main")
+	e.secOk("", "delete", "db_main", "-data-dir", e.dataDir)
+	if out := e.secOk("", "list", "--json", "-data-dir", e.dataDir); !strings.Contains(out, "[]") {
+		t.Errorf("an empty list in JSON: %s", out)
+	}
+	if out := e.secOk("", "list", "-data-dir", e.dataDir); strings.TrimSpace(out) == "" {
+		t.Errorf("an empty list says nothing")
+	}
+}
+
+// [REQ-474]
+func TestSecretMoreOnlyLowerCaseHexMakesAFolderIdentifier(t *testing.T) {
+	ok := folderIDPrefix + strings.Repeat("a1", 16)
+	if !validFolderID(ok) {
+		t.Fatalf("%q", ok)
+	}
+	for _, bad := range []string{"", folderIDPrefix, folderIDPrefix + strings.Repeat("A1", 16), folderIDPrefix + strings.Repeat("g1", 16), ok + "0", "x-" + strings.Repeat("a1", 16)} {
+		if validFolderID(bad) {
+			t.Errorf("%q passes", bad)
 		}
 	}
 }

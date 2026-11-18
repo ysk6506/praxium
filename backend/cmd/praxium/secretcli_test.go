@@ -92,13 +92,13 @@ func TestSecretCmdTakesValuesFromFilesAndStripsOneLineBreak(t *testing.T) {
 	if err := os.WriteFile(userFile, []byte(secUser+"\r\n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(passFile, []byte(secPass+" \n\n"), 0o600); err != nil {
+	if err := os.WriteFile(passFile, []byte(secPass+" \n"), 0o600); err != nil {
 		t.Fatal(err)
 	}
 	e.secOk("", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-scope", "src_db", "-host", "db.example.test:5432",
 		"-field", "username="+userFile, "-field", "password="+passFile)
 	got := e.secOpen("db_main", "username", "password")
-	if got["username"] != secUser || got["password"] != secPass+" \n" {
+	if got["username"] != secUser || got["password"] != secPass+" " {
 		t.Errorf("the values read from the files are not what the files hold minus one line break")
 	}
 	// a token on the standard input with no line break at its end
@@ -152,6 +152,15 @@ func TestSecretCmdScopeAndHostsAreReplacedAndCanBeCleared(t *testing.T) {
 	}
 	e.secFails(exitUsage, "", "set-scope", "db_main", "-data-dir", e.dataDir)
 	e.secFails(exitUsage, "", "set-hosts", "db_main", "-data-dir", e.dataDir)
+	// what is said is the list as it is after the change, not only that it was changed
+	if out := e.secOk("", "set-scope", "db_main", "-scope", "src_x,src_y", "-data-dir", e.dataDir); !strings.Contains(out, "the scope is now: src_x, src_y") {
+		t.Errorf("set-scope says: %s", out)
+	}
+	if out := e.secOk("", "set-hosts", "db_main", "-host", "h.example.test:7", "-data-dir", e.dataDir); !strings.Contains(out, "the addresses are now: h.example.test:7") {
+		t.Errorf("set-hosts says: %s", out)
+	}
+	e.secOk("", "set-scope", "db_main", "-scope", "", "-data-dir", e.dataDir)
+	e.secOk("", "set-hosts", "db_main", "-host", "", "-data-dir", e.dataDir)
 	if msg := e.secFails(exitUsage, "", "set-scope", "db_main", "-scope", "bad id", "-data-dir", e.dataDir); !strings.Contains(msg, "not the id of a source") {
 		t.Errorf("a bad source id says: %s", msg)
 	}
@@ -283,5 +292,25 @@ func TestSecretCmdTheFlagsOfEveryCommandTakeNoValue(t *testing.T) {
 				t.Errorf("secret %s has the flag -%s, which no one has agreed to", name, f.Name)
 			}
 		})
+	}
+}
+
+// [REQ-498]
+func TestSecretCmdOnlyPutMakesAFolderThatIsNotThere(t *testing.T) {
+	e := newSecEnv(t)
+	for _, args := range [][]string{
+		{"rotate", "x"}, {"retire", "x", "-version", "1"}, {"delete", "x"}, {"set-scope", "x", "-scope", "a"}, {"set-hosts", "x", "-host", "a.example.test:1"},
+	} {
+		msg := e.secFails(exitFailure, "a\nb\n", append(args, "-data-dir", e.dataDir)...)
+		if !strings.Contains(msg, "does not exist") {
+			t.Errorf("%s of a folder that is not there says: %s", args[0], msg)
+		}
+		if _, err := os.Stat(e.dataDir); err == nil {
+			t.Fatalf("%s made the data folder", args[0])
+		}
+	}
+	e.secPut("db_main")
+	if _, err := os.Stat(filepath.Join(e.dataDir, "secrets.json")); err != nil {
+		t.Errorf("put did not make the folder and the file: %v", err)
 	}
 }

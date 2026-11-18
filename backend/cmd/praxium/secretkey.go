@@ -2,9 +2,6 @@ package main
 
 import (
 	"context"
-	"errors"
-	"io/fs"
-	"os"
 	"path/filepath"
 	"strings"
 
@@ -19,6 +16,8 @@ const (
 	// found for the folder, never from the path (a folder that is moved or copied keeps its identifier, so it finds its
 	// key again). The identifier is not a secret.
 	folderIDFile = "FOLDER_ID"
+	// maxFolderIDFile is the most that is read of the identifier file (it holds 38 bytes).
+	maxFolderIDFile = 128
 	// maxMasterKeyFile is the most that is read of a key file (the unit refuses a larger one anyway).
 	maxMasterKeyFile = 4096
 	keyFileSuffix    = ".key"
@@ -30,7 +29,8 @@ type secretLocation struct{ dataDir, keyFile string }
 
 // fileKeys is the secrets.KeyProvider of the master key file: it finds the file (the one named, else the one of the
 // data folder under the user's configuration folder), refuses a place inside the data folder and a file others can
-// read, and, when it is told that the key may be made, makes it the first time.
+// read, refuses a key that is not the one the stored secrets were sealed by, and, when it is told that the key may be
+// made, makes it the first time.
 type fileKeys struct {
 	loc       secretLocation
 	disk      secretDisk
@@ -39,20 +39,27 @@ type fileKeys struct {
 	// mayCreate says whether a key that is not there may be made now: the secrets are being put in for the first time,
 	// so the store holds none. nil means never.
 	mayCreate func(ctx context.Context) (bool, error)
+	// storedKeyIDs gives the ids of the master keys that sealed the secrets that are stored; nil means none are asked.
+	storedKeyIDs func(ctx context.Context) ([]string, error)
 	// made is the path of the key file this provider made, for the answer of the command ("" when it made none).
 	made string
 }
 
 var _ secrets.KeyProvider = (*fileKeys)(nil)
 
-// MasterKey gives the master key.
+// MasterKey gives the master key. The path of the key file is made one clean absolute path (the links resolved) once,
+// and that path is the one that is checked, read, made and printed.
 func (k *fileKeys) MasterKey() (*secrets.MasterKey, error) {
 	ctx := context.Background()
 	create, err := k.creationAllowed(ctx)
 	if err != nil {
 		return nil, err
 	}
-	path, err := k.locate(create)
+	raw, err := k.locate(create)
+	if err != nil {
+		return nil, err
+	}
+	path, err := normalizePath(raw)
 	if err != nil {
 		return nil, err
 	}
@@ -60,10 +67,12 @@ func (k *fileKeys) MasterKey() (*secrets.MasterKey, error) {
 		return nil, err
 	}
 	key, err := readMasterKey(path)
-	if err == nil || !isNotExist(err) {
-		return key, err
-	}
-	if !create {
+	switch {
+	case err == nil:
+		return key, k.checkSameKey(ctx, key)
+	case !isNotExist(err):
+		return nil, err
+	case !create:
 		return nil, missingKey(path)
 	}
 	key, made, err := createMasterKey(path, k.bytes)
@@ -78,6 +87,25 @@ func (k *fileKeys) creationAllowed(ctx context.Context) (bool, error) {
 		return false, nil
 	}
 	return k.mayCreate(ctx)
+}
+
+// checkSameKey refuses a key that is not the one that sealed the secrets that are stored: a store with two master keys
+// would be opened by neither. The message holds the two key ids and nothing else.
+func (k *fileKeys) checkSameKey(ctx context.Context, key *secrets.MasterKey) error {
+	if k.storedKeyIDs == nil {
+		return nil
+	}
+	ids, err := k.storedKeyIDs(ctx)
+	if err != nil {
+		return err
+	}
+	for _, id := range ids {
+		if id != key.ID() {
+			return kernel.Errorf(secrets.CodeMasterKeyMismatch,
+				"the secrets of this data folder were sealed by the master key %s, but the key given is %s; give the key file they were made with (-secrets-key-file), or delete the secrets and put them in again", id, key.ID())
+		}
+	}
+	return nil
 }
 
 func missingKey(path string) error {
@@ -103,45 +131,49 @@ func (k *fileKeys) locate(create bool) (string, error) {
 	return filepath.Join(cfg, "praxium", "keys", id+keyFileSuffix), nil
 }
 
+// folderIDAdvice is what to do when the identifier of the data folder cannot be had. It names no value.
+func (k *fileKeys) folderIDAdvice() string {
+	where := "the folder praxium/keys of your configuration folder"
+	if cfg, err := k.configDir(); err == nil && cfg != "" {
+		where = filepath.Join(cfg, "praxium", "keys")
+	}
+	return "name the key file with -secrets-key-file <file>; the keys are kept in " + where + " (a key file is named by the identifier of its data folder, and the file " + folderIDFile +
+		" of the data folder holds that name without .key; the key id that praxium secret show gives is the key_id inside the right key file). If the data folder holds no secrets, remove " +
+		folderIDFile + " and put the secret in again"
+}
+
 // folderID reads the identifier of the data folder, and makes it when it is not there and the key may be made (a
 // folder that holds secrets and has no identifier has lost its key's name: the key has to be named).
 func (k *fileKeys) folderID(create bool) (string, error) {
 	path := k.disk.path(folderIDFile)
-	raw, err := os.ReadFile(path)
+	raw, err := readFileChecked(path, maxFolderIDFile, false, path)
 	switch {
 	case err == nil:
 		id := strings.TrimSpace(string(raw))
 		if !validFolderID(id) {
-			return "", kernel.Errorf(secrets.CodeMasterKeyInvalid, "%s is damaged; name the key file with -secrets-key-file <file>", path)
+			return "", kernel.Errorf(secrets.CodeMasterKeyInvalid, "%s is damaged; %s", path, k.folderIDAdvice())
 		}
 		return id, nil
 	case !isNotExist(err):
-		return "", kernel.Wrap(secrets.CodeMasterKeyInvalid, err, "cannot read "+path)
+		return "", kernel.Wrap(secrets.CodeMasterKeyInvalid, err, "cannot read "+path+"; "+k.folderIDAdvice())
 	case !create:
-		return "", kernel.Errorf(secrets.CodeMasterKeyMissing,
-			"the data folder has secrets but no %s to find their key by; name the key file with -secrets-key-file <file>, or delete the secrets and put them in again", folderIDFile)
+		return "", kernel.Errorf(secrets.CodeMasterKeyMissing, "the data folder has secrets but no %s to find their key by; %s", folderIDFile, k.folderIDAdvice())
 	}
 	return k.makeFolderID(path)
 }
 
+// makeFolderID makes the identifier file as the key file is made (a temporary file, synced, then linked to its name),
+// so a half written identifier is never there; one that is there already is the one that is used.
 func (k *fileKeys) makeFolderID(path string) (string, error) {
 	raw := make([]byte, 16)
 	k.bytes.Fill(raw)
 	id := folderIDPrefix + hexOf(raw)
-	f, err := os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0o600)
-	if errors.Is(err, fs.ErrExist) {
+	made, err := putFileOnce(path, ".new-id-*", []byte(id+"\n"))
+	if err != nil {
+		return "", err
+	}
+	if !made {
 		return k.folderID(false)
-	}
-	if err != nil {
-		return "", kernel.Wrap(kernel.CodeInternal, err, "cannot make "+path)
-	}
-	_, err = f.WriteString(id + "\n")
-	if cerr := f.Close(); err == nil {
-		err = cerr
-	}
-	if err != nil {
-		_ = os.Remove(path)
-		return "", kernel.Wrap(kernel.CodeInternal, err, "cannot write "+path)
 	}
 	return id, nil
 }
@@ -167,119 +199,4 @@ func hexOf(raw []byte) string {
 		out = append(out, digits[b>>4], digits[b&15])
 	}
 	return string(out)
-}
-
-// checkOutside refuses a key file in the data folder or below it (the paths are cleaned and the links resolved
-// before they are compared): a copy or a backup of the folder would carry the key with the secrets it opens.
-func (k *fileKeys) checkOutside(keyPath string) error {
-	dir, err := realPath(k.loc.dataDir)
-	if err != nil {
-		return kernel.Wrap(kernel.CodeInternal, err, "cannot resolve the data folder")
-	}
-	key, err := realPath(keyPath)
-	if err != nil {
-		return kernel.Wrap(kernel.CodeInternal, err, "cannot resolve the key file")
-	}
-	rel, err := filepath.Rel(dir, key)
-	if err == nil && rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator)) {
-		return kernel.Errorf(kernel.CodeInvalidValue,
-			"the master key file %s is inside the data folder %s; keep the key outside of it, so that a copy of the folder does not carry its key (name another place with -secrets-key-file <file>)", keyPath, k.loc.dataDir)
-	}
-	return nil
-}
-
-// realPath is an absolute path with the links resolved as far as the path exists; a part that does not exist yet is
-// kept as it is.
-func realPath(p string) (string, error) {
-	abs, err := filepath.Abs(p)
-	if err != nil {
-		return "", err
-	}
-	rest, cur := "", abs
-	for {
-		real, err := filepath.EvalSymlinks(cur)
-		if err == nil {
-			return filepath.Join(real, rest), nil
-		}
-		parent := filepath.Dir(cur)
-		if !isNotExist(err) || parent == cur {
-			return "", err
-		}
-		rest = filepath.Join(filepath.Base(cur), rest)
-		cur = parent
-	}
-}
-
-// readMasterKey reads a key file that only its owner may read. A file that is not there is an error that is
-// fs.ErrNotExist; every other trouble is the code of a key that cannot be used.
-func readMasterKey(path string) (*secrets.MasterKey, error) {
-	raw, err := readPrivateFile(path, maxMasterKeyFile)
-	if err != nil {
-		if isNotExist(err) {
-			return nil, err
-		}
-		return nil, kernel.Wrap(secrets.CodeMasterKeyInvalid, err, "the master key file cannot be used")
-	}
-	defer zero(raw)
-	return secrets.ParseMasterKey(raw)
-}
-
-func zero(b []byte) {
-	for i := range b {
-		b[i] = 0
-	}
-}
-
-// createMasterKey makes a new key and puts it at path with the mode 0600, and never over a file that is there. The
-// key is written whole to a temporary file of the same folder first and then linked to its name, which fails when the
-// name exists, so a key file is never seen half written and a key that is there is never replaced: when another
-// process made it first, its key is the one used.
-func createMasterKey(path string, src kernel.ByteSource) (key *secrets.MasterKey, made bool, err error) {
-	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0o700); err != nil {
-		return nil, false, kernel.Wrap(kernel.CodeInternal, err, "cannot make the folder of the master key file")
-	}
-	key = secrets.GenerateMasterKey(src)
-	tmp, err := writeTempKey(dir, key.Encode())
-	if err != nil {
-		return nil, false, err
-	}
-	defer func() { _ = os.Remove(tmp) }()
-	if err := os.Link(tmp, path); err != nil {
-		if errors.Is(err, fs.ErrExist) {
-			key, err = readMasterKey(path)
-			return key, false, err
-		}
-		return nil, false, kernel.Wrap(kernel.CodeInternal, err, "cannot put the new master key file in place")
-	}
-	syncFolder(dir)
-	return key, true, nil
-}
-
-func writeTempKey(dir string, encoded []byte) (string, error) {
-	defer zero(encoded)
-	f, err := os.CreateTemp(dir, ".new-key-*")
-	if err != nil {
-		return "", kernel.Wrap(kernel.CodeInternal, err, "cannot make the master key file")
-	}
-	_, err = f.Write(encoded)
-	if err == nil {
-		err = f.Sync()
-	}
-	if cerr := f.Close(); err == nil {
-		err = cerr
-	}
-	if err != nil {
-		_ = os.Remove(f.Name())
-		return "", kernel.Wrap(kernel.CodeInternal, err, "cannot write the master key file")
-	}
-	return f.Name(), nil
-}
-
-// syncFolder makes the new name durable. A system that cannot sync a folder is not an error: the file is synced.
-func syncFolder(dir string) {
-	if f, err := os.Open(dir); err == nil {
-		_ = f.Sync()
-		_ = f.Close()
-	}
 }

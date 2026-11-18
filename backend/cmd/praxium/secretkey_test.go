@@ -85,6 +85,25 @@ func TestSecretKeyInsideTheDataFolderIsRefused(t *testing.T) {
 	if _, err := os.Stat(filepath.Join(e.dataDir, "a.key")); err == nil {
 		t.Errorf("a key was made inside the data folder")
 	}
+	// ".." after a link is read after the link is followed: the text of the path is not cleaned first
+	if linked {
+		if err := os.MkdirAll(filepath.Join(e.dataDir, "sub2"), 0o750); err != nil {
+			t.Fatal(err)
+		}
+		out := t.TempDir()
+		viaLink := filepath.Join(out, "link")
+		if err := os.Symlink(filepath.Join(e.dataDir, "sub2"), viaLink); err != nil {
+			t.Fatal(err)
+		}
+		raw := viaLink + string(filepath.Separator) + ".." + string(filepath.Separator) + "k.key"
+		msg := e.secFails(exitFailure, secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", raw)
+		if !strings.Contains(msg, "inside the data folder") {
+			t.Errorf("%s: %s", raw, msg)
+		}
+		if _, err := os.Stat(filepath.Join(e.dataDir, "k.key")); err == nil {
+			t.Errorf("a key was made inside the data folder through link/..")
+		}
+	}
 	// a place beside the data folder is fine
 	beside := e.dataDir + "-keys"
 	e.secOk(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", filepath.Join(beside, "a.key"))
@@ -157,20 +176,33 @@ func TestSecretKeyThatIsThereIsNeverOverwrittenNotEvenByTwoCommandsAtOnce(t *tes
 	path := filepath.Join(t.TempDir(), "keys", "one.key")
 	const workers = 8
 	ids := make([]string, workers)
+	made := make([]bool, workers)
+	start := make(chan struct{})
 	var wg sync.WaitGroup
 	for i := 0; i < workers; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			key, _, err := createMasterKey(path, kernel.SystemBytes{})
+			<-start
+			key, wasMade, err := createMasterKey(path, kernel.SystemBytes{})
 			if err != nil {
 				t.Error(err)
 				return
 			}
-			ids[i] = key.ID()
+			ids[i], made[i] = key.ID(), wasMade
 		}()
 	}
+	close(start)
 	wg.Wait()
+	madeBy := 0
+	for _, m := range made {
+		if m {
+			madeBy++
+		}
+	}
+	if madeBy != 1 {
+		t.Errorf("%d commands say they made the key, want exactly one", madeBy)
+	}
 	for _, id := range ids {
 		if id != ids[0] || id == "" {
 			t.Fatalf("the commands did not end with one key: %v", ids)
@@ -306,4 +338,65 @@ func TestSecretKeyNoConfigurationFolderAsksForTheFile(t *testing.T) {
 	}
 	keyFile := filepath.Join(t.TempDir(), "k.key")
 	e.secOk(secUser+"\n"+secPass+"\n", "put", "db_main", "-kind", "password", "-data-dir", e.dataDir, "-secrets-key-file", keyFile)
+}
+
+// [REQ-474]
+func TestSecretKeyAnotherKeyIsRefusedByPutAndRotateAndTheStoreKeepsOneKey(t *testing.T) {
+	e := newSecEnv(t)
+	e.secPut("db_main")
+	other := filepath.Join(t.TempDir(), "other.key")
+	e.secOk(secToken, "put", "t1", "-kind", "token", "-data-dir", filepath.Join(t.TempDir(), "elsewhere"), "-secrets-key-file", other)
+	for _, args := range [][]string{{"put", "t2", "-kind", "token"}, {"rotate", "db_main"}} {
+		in := "a\n"
+		if args[0] == "rotate" {
+			in = "a\nb\n"
+		}
+		msg := e.secFails(exitFailure, in, append(args, "-data-dir", e.dataDir, "-secrets-key-file", other)...)
+		if !strings.Contains(msg, "(secret_master_key_mismatch)") || strings.Count(msg, "mk-") != 2 {
+			t.Errorf("%s with another key says: %s", args[0], msg)
+		}
+	}
+	raw, _ := os.ReadFile(filepath.Join(e.dataDir, "secrets.json"))
+	if strings.Count(string(raw), `"key_id"`) == 0 || strings.Contains(string(raw), `"id": "t2"`) {
+		t.Errorf("a secret was put in with another key")
+	}
+}
+
+// [REQ-474]
+func TestSecretKeyTheFolderIdentifierIsMadeWholeAndReadAsAPlainFileOfNoSize(t *testing.T) {
+	e := newSecEnv(t)
+	e.secPut("db_main")
+	path := filepath.Join(e.dataDir, folderIDFile)
+	if entries, _ := os.ReadDir(e.dataDir); len(entries) != 3 { // FOLDER_ID, LOCK, secrets.json: no temporary file stays
+		t.Errorf("the data folder holds %d files", len(entries))
+	}
+	good, _ := os.ReadFile(path)
+	advice := []string{"-secrets-key-file", "praxium", "keys", "key_id", "remove " + folderIDFile}
+	cases := map[string]func(){
+		"large": func() { _ = os.WriteFile(path, make([]byte, 4096), 0o600) },
+		"dir": func() {
+			_ = os.Remove(path)
+			_ = os.Mkdir(path, 0o700)
+		},
+		"junk": func() { _ = os.WriteFile(path, []byte("junk\n"), 0o600) },
+	}
+	for name, damage := range cases {
+		damage()
+		_ = os.RemoveAll(filepath.Join(e.dataDir, "x"))
+		msg := e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir)
+		for _, want := range advice {
+			if !strings.Contains(msg, want) {
+				t.Errorf("%s: the message lacks %q: %s", name, want, msg)
+			}
+		}
+		if strings.Contains(msg, strings.TrimSpace(string(good))) {
+			t.Errorf("%s: the identifier is in the message", name)
+		}
+	}
+	_ = os.RemoveAll(path)
+	if link := filepath.Join(t.TempDir(), "id"); os.WriteFile(link, good, 0o600) == nil && os.Symlink(link, path) == nil {
+		if msg := e.secFails(exitFailure, "", "set-scope", "db_main", "-scope", "a", "-data-dir", e.dataDir); !strings.Contains(msg, "not a plain file") {
+			t.Errorf("an identifier that is a link says: %s", msg)
+		}
+	}
 }

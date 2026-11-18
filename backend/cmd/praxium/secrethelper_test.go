@@ -36,6 +36,11 @@ type secEnv struct {
 func newSecEnv(t *testing.T) *secEnv {
 	t.Helper()
 	root := t.TempDir()
+	// the real configuration folder of the person who runs the tests stays out of reach, even for a command that is
+	// run without the wiring's own folder (a package-wide TestMain would be part of every locked test's fingerprint)
+	for _, name := range []string{"HOME", "XDG_CONFIG_HOME", "AppData", "USERPROFILE"} {
+		t.Setenv(name, filepath.Join(root, "home"))
+	}
 	e := &secEnv{t: t, dataDir: filepath.Join(root, "data"), cfgDir: filepath.Join(root, "config")}
 	e.w = wiring{deps: fixedDeps()}
 	e.w.configDir = func() (string, error) { return e.cfgDir, nil }

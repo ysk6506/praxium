@@ -21,7 +21,8 @@ type secretAccess int
 const (
 	// secretRead lists and shows. It takes no lock and needs no key: a folder that a server has open can be looked at.
 	secretRead secretAccess = iota
-	// secretDelete changes the store without the key (a deletion needs none): the lock, no key.
+	// secretDelete changes the store without the key (a deletion needs none): the lock, no key. The data folder has to be
+	// there: only secretCreate makes one.
 	secretDelete
 	// secretChange changes a secret that is there: the lock and the key, which is never made here.
 	secretChange
@@ -54,6 +55,11 @@ func productBytes() kernel.ByteSource { return kernel.SystemBytes{} }
 
 // openSecretStore opens the store of the data folder for what the caller does with it.
 func openSecretStore(w wiring, loc secretLocation, access secretAccess) (*secretStore, error) {
+	if access == secretDelete || access == secretChange {
+		if err := requireFolder(loc.dataDir); err != nil {
+			return nil, err
+		}
+	}
 	disk, err := openSecretDisk(loc.dataDir, access == secretRead)
 	if err != nil {
 		return nil, err
@@ -85,6 +91,14 @@ func openSecretStore(w wiring, loc secretLocation, access secretAccess) (*secret
 
 func newFileKeys(w wiring, loc secretLocation, disk secretDisk, s *secretStore, mayCreate bool) *fileKeys {
 	k := &fileKeys{loc: loc, disk: disk, configDir: w.userConfigDir(), bytes: s.bytes}
+	k.storedKeyIDs = func(ctx context.Context) ([]string, error) {
+		all, err := s.store.List(ctx)
+		ids := make([]string, 0, len(all))
+		for _, rec := range all {
+			ids = append(ids, rec.Binding.KeyID)
+		}
+		return ids, err
+	}
 	if mayCreate {
 		k.mayCreate = func(ctx context.Context) (bool, error) {
 			all, err := s.store.List(ctx)

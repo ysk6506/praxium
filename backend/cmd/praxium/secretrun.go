@@ -90,14 +90,15 @@ func secretSetWho(ctx context.Context, name string, st *secretStore, f secretFla
 	if err != nil {
 		return err
 	}
-	return printSecretChange(ctx, out, st, f, meta, "changed the "+whoName(name)+" of the secret "+f.id)
+	return printSecretChange(ctx, out, st, f, meta, whoSentence(name, meta))
 }
 
-func whoName(name string) string {
+// whoSentence says what was changed and what the list is now (the lists are replaced, not added to).
+func whoSentence(name string, m secrets.Meta) string {
 	if name == "set-scope" {
-		return "scope"
+		return "replaced the scope of the secret " + m.ID + "; the scope is now: " + joinOr(m.Scope, "(no source may use it)")
 	}
-	return "allowed addresses"
+	return "replaced the allowed addresses of the secret " + m.ID + "; the addresses are now: " + joinOr(addressTexts(m.AllowedHosts), "(no address allowed)")
 }
 
 // secretPutOrRotate takes the values, then puts a new secret in or adds a version to the one that is there.

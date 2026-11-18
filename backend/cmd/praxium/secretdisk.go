@@ -79,9 +79,8 @@ func openSecretDisk(dir string, readOnly bool) (secretDisk, error) {
 		return secretDisk{}, kernel.Errorf(kernel.CodeInvalidValue, "the secrets need a data folder: give -data-dir <folder>")
 	}
 	if readOnly {
-		st, err := os.Stat(dir)
-		if err != nil || !st.IsDir() {
-			return secretDisk{}, kernel.Errorf(kernel.CodeNotFound, "the data folder %s does not exist", dir)
+		if err := requireFolder(dir); err != nil {
+			return secretDisk{}, err
 		}
 		return secretDisk{fileDisk: fileDisk{dir: dir}, readOnly: true}, nil
 	}
@@ -89,18 +88,25 @@ func openSecretDisk(dir string, readOnly bool) (secretDisk, error) {
 	return secretDisk{fileDisk: disk}, err
 }
 
-// readPrivateFile reads a file that only its owner may read. The file is looked at before it is opened (a link or a
-// folder is refused) and again after (the file opened is the file looked at, and its mode and size are those of the
-// open file), so the file cannot be swapped in between. A file that is not there is an error that is fs.ErrNotExist.
+// readPrivateFile reads a file that only its owner may read (the master key file, secrets.json).
 func readPrivateFile(path string, limit int64) ([]byte, error) {
+	return readFileChecked(path, limit, true, path)
+}
+
+// readFileChecked reads a plain file. The file is looked at before it is opened (a link, a folder, a device or a pipe
+// is refused) and opened without following a link or waiting on a pipe (on the systems that can), and after that the
+// file opened is the file looked at, and its mode and size are those of the open file, so the file cannot be swapped
+// in between. With private the file must be readable by its owner only. A file that is not there is an error that is
+// fs.ErrNotExist. shown is how the file is named in a message: the path, or words when the path must stay out of it.
+func readFileChecked(path string, limit int64, private bool, shown string) ([]byte, error) {
 	before, err := os.Lstat(path)
 	if err != nil {
 		return nil, err
 	}
 	if !before.Mode().IsRegular() {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is not a plain file (a link or a folder is not followed); put the file itself there", path)
+		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is not a plain file (a link, a folder or a device is not followed); put the file itself there", shown)
 	}
-	f, err := os.Open(path)
+	f, err := os.OpenFile(path, os.O_RDONLY|openReadFlags, 0)
 	if err != nil {
 		return nil, err
 	}
@@ -109,23 +115,33 @@ func readPrivateFile(path string, limit int64) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	if !os.SameFile(before, info) || !info.Mode().IsRegular() {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s changed while it was being opened; try again", path)
+	if !os.SameFile(before, info) {
+		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s changed while it was being opened; try again", shown)
 	}
-	if runtime.GOOS != "windows" && info.Mode().Perm()&0o077 != 0 {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is readable by other users (mode %04o): run chmod 600 %s, then try again", path, info.Mode().Perm(), path)
+	if private && runtime.GOOS != "windows" && info.Mode().Perm()&0o077 != 0 {
+		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is readable by other users (mode %04o): run chmod 600 %s, then try again", shown, info.Mode().Perm(), path)
 	}
 	if info.Size() > limit {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is larger than %d bytes", path, limit)
+		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is larger than %d bytes", shown, limit)
 	}
 	data, err := io.ReadAll(io.LimitReader(f, limit+1))
 	if err != nil {
 		return nil, err
 	}
 	if int64(len(data)) > limit {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is larger than %d bytes", path, limit)
+		zero(data)
+		return nil, kernel.Errorf(kernel.CodeInvalidValue, "%s is larger than %d bytes", shown, limit)
 	}
 	return data, nil
+}
+
+// requireFolder says that the data folder has to be there: only `secret put` makes a folder.
+func requireFolder(dir string) error {
+	st, err := os.Stat(dir)
+	if err != nil || !st.IsDir() {
+		return kernel.Errorf(kernel.CodeNotFound, "the data folder %s does not exist", dir)
+	}
+	return nil
 }
 
 // isNotExist says whether an error is a file that is not there.

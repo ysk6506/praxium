@@ -66,13 +66,17 @@ type secretSpec struct {
 const secretPutBody = `Puts a new secret in. The id starts with a lower-case letter and has lower-case letters, digits, _ and -, up to 64 characters.
 A secret that is there is not changed by put: use "praxium secret rotate" for a new version.
 The values: either one -field <name>=<file> for every field of the kind (a file with the value; one line break at its end is
-not part of it), or no -field and the values on the standard input, one line per field in the order of the kind.
+not part of it), or no -field and the values on the standard input (from a file: < file), one line per field in the order of the kind.
 -scope and -host say who may use it: the ids of the sources (comma separated) and the addresses as host:port, where host is
 a name or an IP address ([::1]:5432 for IPv6). Without them nobody may use the secret yet; set-scope and set-hosts say it later.
 The first time a secret is put in, a master key file is made (see "praxium secret --help"): keep a copy of it.
 
-example:
-  printf '%s\n%s\n' dbuser 'a-made-up-password' | praxium secret put db_main -kind password -data-dir data -scope src_db -host db.example.test:5432
+A value written in the command itself (printf ... | praxium secret put) stays in the history of your shell: keep it in a file.
+A value is one line: a control character in it (a NUL, a second line break, a tab) or a byte order mark at its start is refused, and
+so is a -field file that is not a plain file (a link, a device, a pipe).
+
+example (db-credentials.txt has the two lines, the user name and the password):
+  praxium secret put db_main -kind password -data-dir data -scope src_db -host db.example.test:5432 < ./db-credentials.txt
   praxium secret put api_token -kind token -data-dir data -field token=./token.txt
 `
 
@@ -179,7 +183,7 @@ func parseSecret(name string, args []string) (secretFlags, error) {
 	}
 	fs := newSecretFlags(spec, name, &f)
 	if err := fs.Parse(args); err != nil {
-		return f, flagProblem(err)
+		return f, secretFlagProblem(err, name)
 	}
 	if fs.NArg() > 0 {
 		// Not repeated: a value that was typed as an argument must not be echoed. Values are never arguments.
@@ -214,12 +218,26 @@ func checkSecretFlags(spec secretSpec, f secretFlags) error {
 	return nil
 }
 
+// secretFlagProblem is a flag error of a secret command in fixed words. The flag package repeats what was typed ("flag
+// provided but not defined: -<text>", "invalid value <text> for flag -version"), and what was typed may be a value that
+// was given by mistake, so none of it is passed on.
+func secretFlagProblem(err error, name string) error {
+	text := err.Error()
+	switch {
+	case strings.HasPrefix(text, "flag provided but not defined"):
+		return kernel.Errorf(kernel.CodeInvalidValue, "unknown flag: a value is never given as an argument or a flag; give it as a file (-field <name>=<file>) or on the standard input (praxium secret %s --help)", name)
+	case strings.HasPrefix(text, "flag needs an argument"):
+		return kernel.Errorf(kernel.CodeInvalidValue, "a flag is missing its value (praxium secret %s --help)", name)
+	}
+	return kernel.Errorf(kernel.CodeInvalidValue, "a flag has a value that cannot be read: -version wants a whole number from 1, and --json takes no value (praxium secret %s --help)", name)
+}
+
 // checkSourceIDs makes sure each id of a scope has the grammar of a source id (ADR-0075). Whether the source is there is
 // not looked at: that comes with the stores of definitions.
 func checkSourceIDs(ids []string) error {
 	for _, id := range ids {
 		if !ingest.ValidID(id) {
-			return kernel.Errorf(kernel.CodeInvalidValue, "-scope %s is not the id of a source: use lower-case letters, digits, _ and -, a letter first, up to 64 characters", safeName(id))
+			return kernel.Errorf(kernel.CodeInvalidValue, "a -scope is not the id of a source: use lower-case letters, digits, _ and -, a letter first, up to 64 characters")
 		}
 	}
 	return nil
