@@ -21,8 +21,7 @@ if the certificate is not from a CA this machine trusts). A database on this mac
 socket) needs nothing. If the link is protected in another way, -allow-unverified-db-tls lets the server start and
 writes a warning to the start log. A connection string that does not say sslmode counts as require, which does not check.
 
-To look around without any of this use "praxium demo" (a made-up data center) or "praxium local" (your own KG, built
-with praxium ingest run). For development use -mode development: it takes one access token from -dev-token-file (a file
+To look around without any of this use "praxium local" (your own KG, built with praxium ingest run). For development use -mode development: it takes one access token from -dev-token-file (a file
 with the token; the environment variable PRAXIUM_DEV_TOKEN also works, the file wins) and treats a caller with it as the
 subject -dev-subject with the roles -dev-roles.
 

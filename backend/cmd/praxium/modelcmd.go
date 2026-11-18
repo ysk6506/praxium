@@ -19,7 +19,7 @@ You write them in a file; the standard model stays as it is and the file adds pr
   show      the stored organization properties (of the newest definition set, or -set N)
   export    the stored properties as a file you can edit and apply again
   history   the definition sets, newest first: when, what was said, and how many properties changed
-praxium ingest run, local, demo and api serve -store file read the stored properties when they start, so a change
+praxium ingest run, local and api serve -store file read the stored properties when they start, so a change
 takes effect when they are started again. Without a data folder, or with a folder that has none, the standard model
 alone is used. Run "praxium model <command> --help" for the flags.
 `
@@ -49,7 +49,7 @@ Nothing is written when nothing changed, and apply says so. Breaking changes are
 no flag that forces them. The file says the whole state: a stored property the file leaves out is a breaking change (to
 retire a property, set its status to deprecated).
 
-The folder must not be open in another praxium (a server, local, demo or an ingest run): a server reads the definitions only
+The folder must not be open in another praxium (a server, local or an ingest run): a server reads the definitions only
 when it starts, so apply does not change them under it. Stop it, apply, and start it again.
 Exit codes: 0 stored, or nothing to store; 1 refused or failed; 2 the command line is wrong.
 

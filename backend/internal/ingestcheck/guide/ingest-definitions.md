@@ -237,7 +237,7 @@ CSV와 JSON Lines에는 `max_rows_per_dataset`(기본 200000, 엑셀의 시트�
 
 ### 4.3 타입에 허용되는 것 찾기
 
-모델을 묻는 명령은 서버가 필요하다. `praxium demo`를 띄우고 출력된 주소와 토큰을 `--endpoint`, `--token`으로 준다.
+모델을 묻는 명령은 서버가 필요하다. `praxium local -data-dir <폴더>`를 띄우고 출력된 주소와 토큰을 `--endpoint`, `--token`으로 준다.
 
 ```
 praxium types list --kind object            # 객체 타입(--kind link, scheme, trait)

@@ -121,6 +121,6 @@ func secretLocked(dir string, err error) error {
 	if kernel.CodeOf(err) != filejournal.CodeLocked {
 		return err
 	}
-	return kernel.Errorf(filejournal.CodeLocked, "the data folder %s is in use by another praxium (a server such as praxium local, demo or api serve, or an ingest run). "+
+	return kernel.Errorf(filejournal.CodeLocked, "the data folder %s is in use by another praxium (a server such as praxium local or api serve, or an ingest run). "+
 		"Stop it, run the praxium secret command again, and start it again", dir)
 }

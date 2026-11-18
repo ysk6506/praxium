@@ -194,20 +194,19 @@ func putOverlay(t *testing.T, d wiring, dir, target, body string) {
 	}
 }
 
-// startAttempts are the four ways to start that read a data folder, as command lines for a folder.
+// startAttempts are the three ways to start that read a data folder, as command lines for a folder.
 func startAttempts(t *testing.T, dir string) map[string][]string {
 	t.Helper()
 	l := writeLedger(t, "org.management_department")
 	return map[string][]string{
 		"ingest run": {"ingest", "run", "-data-dir", dir, "-source", l.source, "-mapping", l.mapping, "-input", "ds_ledger=" + l.csv},
 		"local":      {"local", "-data-dir", dir, "-addr", "127.0.0.1:0"},
-		"demo":       {"demo", "-data-dir", dir, "-addr", "127.0.0.1:0", "-scale", "500"},
 		"api serve":  {"api", "serve", "-mode", "development", "-dev-token-file", "/dev-token", "-addr", "127.0.0.1:0", "-store", "file", "-store-data-dir", dir},
 	}
 }
 
 // [REQ-369]
-func TestAllFourStartsRefuseDefinitionsThatCannotBeUsedAndSayHowToGoOn(t *testing.T) {
+func TestAllThreeStartsRefuseDefinitionsThatCannotBeUsedAndSayHowToGoOn(t *testing.T) {
 	d, _, stop := apiDeps(map[string]string{"/dev-token": "dev-token-not-a-secret\n"}, nil)
 	defer stop()
 	d.open = systemOpen

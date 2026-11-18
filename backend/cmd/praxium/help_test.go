@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"strings"
 	"testing"
-	"time"
 )
 
 func helpRun(t *testing.T, args ...string) (code int, out, errText string) {
@@ -31,11 +30,11 @@ func TestTopLevelHelpListsEveryCommandInGroups(t *testing.T) {
 			t.Fatalf("%v must print the same help", args)
 		}
 	}
-	if !strings.Contains(first[:200], "praxium demo") {
+	if !strings.Contains(first[:200], "praxium ingest init") || !strings.Contains(first[:200], "local") {
 		t.Errorf("the fastest start must be at the top:\n%s", first[:200])
 	}
 	for _, want := range []string{"Get started", "Look at the data", "Bring in your data", "Run a server", "Tools",
-		"  demo ", "  local ", "  kg ", "  types ", "  query ", "  object ", "  catalog ", "  health ",
+		"  local ", "  kg ", "  types ", "  query ", "  object ", "  catalog ", "  health ",
 		"  ingest run ", "  ingest inspect ", "  ingest init ", "  api serve ", "  worldgen ", "  contract ", "  version ",
 		"--endpoint", "--token", "--json", "before or after the command", "Not implemented yet: the roles worker and collector"} {
 		if !strings.Contains(first, want) {
@@ -50,7 +49,7 @@ func TestTopLevelHelpListsEveryCommandInGroups(t *testing.T) {
 
 // [REQ-289]
 func TestEveryCommandAnswersHelpWithUsageFlagsAndAnExample(t *testing.T) {
-	for _, path := range []string{"demo", "local", "ingest", "ingest run", "ingest inspect", "ingest init", "api", "api routes", "worldgen", "contract", "version", "dev",
+	for _, path := range []string{"local", "ingest", "ingest run", "ingest inspect", "ingest init", "api", "api routes", "worldgen", "contract", "version", "dev",
 		"kg", "kg list", "kg get", "types", "types list", "types get", "query", "query find", "query get", "query neighbors", "object", "object get", "object links", "catalog", "health"} {
 		for _, flag := range []string{"-h", "--help"} {
 			code, out, errText := helpRun(t, append(strings.Fields(path), flag)...)
@@ -65,10 +64,10 @@ func TestEveryCommandAnswersHelpWithUsageFlagsAndAnExample(t *testing.T) {
 			t.Errorf("help %s: %d", path, code)
 		}
 	}
-	_, out, _ := helpRun(t, "demo", "--help")
-	for _, want := range []string{"-addr", "127.0.0.1:8080", "-scale", "20000", "-data-dir", "Ctrl+C"} {
+	_, out, _ := helpRun(t, "local", "--help")
+	for _, want := range []string{"-addr", "127.0.0.1:8080", "-data-dir", "Ctrl+C"} {
 		if !strings.Contains(out, want) {
-			t.Errorf("the help of demo lists its flags with the defaults, missing %q:\n%s", want, out)
+			t.Errorf("the help of local lists its flags with the defaults, missing %q:\n%s", want, out)
 		}
 	}
 	if _, out, _ = helpRun(t, "query", "find", "-h"); !strings.Contains(out, "--type") || !strings.Contains(out, "example") || !strings.Contains(out, "before or after the command") {
@@ -86,7 +85,7 @@ func TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs(t *testing.T) {
 		args []string
 		want string
 	}{
-		{[]string{"demo", "-bogus"}, "unknown flag -bogus"},
+		{[]string{"local", "-bogus"}, "unknown flag -bogus"},
 		{[]string{"ingest", "run", "--bogus"}, "unknown flag -bogus"},
 		{[]string{"query", "find", "--bogus"}, "unknown flag -bogus"},
 		{[]string{"kg", "frobnicate"}, `kg has no "frobnicate"`},
@@ -116,7 +115,7 @@ func TestRolesThatDoNothingSayTheyAreNotImplemented(t *testing.T) {
 
 // [REQ-289]
 func TestGlobalFlagsMayFollowTheCommand(t *testing.T) {
-	r := startDemo(t, true)
+	r := &startLocal(t, true, keepSample(t)).demoRun
 	endpoint := []string{"--endpoint", r.base, "--token", r.token}
 	_, before := demoCLI(r, "--json", "kg", "list")
 	var out, errOut bytes.Buffer
@@ -136,7 +135,7 @@ func TestGlobalFlagsMayFollowTheCommand(t *testing.T) {
 // [REQ-290]
 func TestApiServeWithoutAModeSaysWhatToRunInsteadWithoutDebtNumbers(t *testing.T) {
 	_, _, errText := helpRun(t, "api", "serve")
-	for _, want := range []string{"praxium demo", "praxium local", "-mode development"} {
+	for _, want := range []string{"praxium local", "-mode development"} {
 		if !strings.Contains(errText, want) {
 			t.Errorf("the refusal must say %q: %s", want, errText)
 		}
@@ -146,26 +145,16 @@ func TestApiServeWithoutAModeSaysWhatToRunInsteadWithoutDebtNumbers(t *testing.T
 	}
 }
 
-// [REQ-290]
-func TestDemoChecksTheFormOfTheAddressBeforeAnythingElse(t *testing.T) {
-	code, out, errText := helpRun(t, "demo", "-addr", "nonsense")
-	if code != exitUsage || out != "" || !strings.Contains(errText, "host:port") || strings.Contains(errText, "loopback") {
-		t.Fatalf("a malformed address is the first thing said: %d %s", code, errText)
+// [REQ-289]
+func TestTheRemovedDemoCommandIsAnUnknownCommandWithNoHelp(t *testing.T) {
+	for _, args := range [][]string{{"demo"}, {"demo", "-addr", "127.0.0.1:0"}} {
+		code, out, errText := helpRun(t, args...)
+		if code != exitUsage || out != "" || !strings.Contains(errText, `unknown command "demo"`) || !strings.Contains(errText, "praxium --help") {
+			t.Errorf("%v: %d %q %q", args, code, out, errText)
+		}
 	}
-}
-
-// [REQ-294]
-func TestAStartThatTakesLongSaysItIsStillWorking(t *testing.T) {
-	var out bytes.Buffer
-	err := reportWhile(&out, 5*time.Millisecond, "still loading", func() error {
-		time.Sleep(40 * time.Millisecond)
-		return nil
-	})
-	if err != nil || !strings.Contains(out.String(), "still loading (5ms)...") {
-		t.Fatalf("%v %q", err, out.String())
-	}
-	var quiet bytes.Buffer
-	if err := reportWhile(&quiet, time.Hour, "x", func() error { return nil }); err != nil || quiet.Len() != 0 {
-		t.Fatalf("a fast start says nothing: %v %q", err, quiet.String())
+	code, out, errText := helpRun(t, "help", "demo")
+	if code != exitUsage || out != "" || !strings.Contains(errText, `no help for "demo"`) {
+		t.Errorf("help demo: %d %q %q", code, out, errText)
 	}
 }

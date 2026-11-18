@@ -21,7 +21,7 @@ import (
 // call it. The interface is read-only and answers at POST /mcp of the same server and port.
 type mcpOptions struct {
 	// on is the value of -mcp; set says whether the flag was given. Not given, the mode decides: production is off,
-	// the development modes (api serve -mode development, demo, local) are on.
+	// the development modes (api serve -mode development, local) are on.
 	on, set bool
 	// origins is the comma-separated list of -mcp-allowed-origins.
 	origins string
@@ -30,7 +30,7 @@ type mcpOptions struct {
 // addMCPFlags puts the flags on a command. defaultOn is the default of -mcp for the command; api serve decides by
 // mode instead (see mcpOptions.set), so it shows the production default.
 func addMCPFlags(fs *flag.FlagSet, o *mcpOptions, defaultOn bool) {
-	fs.BoolVar(&o.on, "mcp", defaultOn, "serve the read-only MCP interface at POST /mcp (default: on in demo, local and -mode development, off in production)")
+	fs.BoolVar(&o.on, "mcp", defaultOn, "serve the read-only MCP interface at POST /mcp (default: on in local and -mode development, off in production)")
 	fs.StringVar(&o.origins, "mcp-allowed-origins", "", "origins of browsers that may call /mcp, comma separated, such as https://console.example (default: none)")
 }
 
