@@ -1,0 +1,7 @@
+doc: "docs/design-docs/postgres-ha.md"
+target: "docs/design-docs/adr/0081-postgresql-ha-tools-failover-product-rules-and-easy-setup.md"
+hash: "26059a13ddf97033"
+date: "2026-11-18"
+note: "ADR-0081 결정 기록과 대조했다: 규칙 열여섯 가지의 번호와 내용, 배포 네 가지의 권고, 점검 명령의 항목, 하지 않는 것의 목록. 다른 문서가 가리키는 3절(복제본 읽기)과 6절(점검 명령)의 위치를 확인했다"
+text_changed: true
+doc_hash: "48449cfdfa7657c5"

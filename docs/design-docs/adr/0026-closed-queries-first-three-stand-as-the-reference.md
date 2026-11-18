@@ -23,6 +23,9 @@ touches_protected:
   - harness/config/coverage-floor.json
   - docs/product-specs/requirements.md
 decision_hash: 4f01802c5c90d8bd
+amended_by:
+  - adr: "0080"
+    what: 2부 질의 단위 전체(스냅샷을 훑는 `find`, `get`, `neighbors`, 응답의 숨김 건수, 스냅샷에 고정된 커서)를 내장 읽기가 대신한다. 전체를 뒤집는 것이므로 구현하는 변경이 이 결정 기록을 superseded로 바꾼다
 ---
 # ADR-0026 사전 정의 질의의 첫 3개가 기준 구현이 된다
 

@@ -75,6 +75,7 @@ amends:
   - adr: "0062"
     what: 결정 2의 툴 목록(`kg_catalog`가 `kg_schema`로 바뀌고, `kg_reachable`이 더해지며, 저장한 질의마다 툴이 하나 더해진다)과 결정 12의 툴 정의 계약 파일이 저장한 질의의 툴을 담는 방식
 amends_tests: []
+decision_hash: 0b6af0eb8e2ef934
 ---
 # ADR-0080 저장과 질의를 PostgreSQL 하나 위에서 다시 설계한다
 

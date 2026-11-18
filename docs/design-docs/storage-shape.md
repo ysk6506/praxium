@@ -225,4 +225,4 @@ KG의 목록, 머리와 리스와 세대, 변경 배치와 항목, 확정 버전
 
 ## 13. 관련
 
-ADR-0080(결정), ADR-0009, ADR-0025(지금의 저장과 포트), ADR-0032(지금의 PostgreSQL 어댑터). 설계 문서: [질의 스키마](query-schema.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [저장한 질의와 간선 정의](saved-queries.md), [PostgreSQL의 HA와 쉬운 구성](postgres-ha.md). 요구사항: REQ-134, REQ-233, REQ-246.
+ADR-0080(결정), ADR-0009, ADR-0025(지금의 저장과 포트), ADR-0032(지금의 PostgreSQL 어댑터). 설계 문서: [질의 스키마](query-schema.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [저장한 질의와 간선 정의](saved-queries.md), [PostgreSQL의 HA와 쉬운 구성](postgres-ha.md). 요구사항: REQ-134, REQ-233, REQ-246, REQ-551, REQ-552, REQ-560~571.

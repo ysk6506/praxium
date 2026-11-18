@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-mcp.md"
 target: "docs/design-docs/kg-queries.md"
-hash: "437ccc2d3e32f21a"
+hash: "daa45fdcf468715c"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+note: "kg-queries.md의 변경은 맨 위의 예정(ADR-0080) 안내뿐이다. kg-mcp.md가 따르는 사전 정의 질의와 엔벨로프의 설명은 그대로이고, kg-mcp.md에는 툴 목록이 바뀐다는 안내(kg_schema, kg_reachable, 저장한 질의의 툴)를 더했다"
 text_changed: true
-doc_hash: "f0a2afd4a328231c"
+doc_hash: "291f210a318b987c"

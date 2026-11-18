@@ -149,4 +149,4 @@ sql: |
 
 ## 12. 관련
 
-ADR-0080(결정), ADR-0074(툴 목록의 원칙), ADR-0075(id 문법), ADR-0070(정의 오류). 설계 문서: [질의 실행기와 읽기의 세 경로](query-execution.md), [질의 스키마](query-schema.md), [정의의 버전과 브랜치](definitions.md), [KG의 MCP 인터페이스](kg-mcp.md), [임시 웹 화면](temporary-console.md). 요구사항: REQ-149.
+ADR-0080(결정), ADR-0074(툴 목록의 원칙), ADR-0075(id 문법), ADR-0070(정의 오류). 설계 문서: [질의 실행기와 읽기의 세 경로](query-execution.md), [질의 스키마](query-schema.md), [정의의 버전과 브랜치](definitions.md), [KG의 MCP 인터페이스](kg-mcp.md), [임시 웹 화면](temporary-console.md). 요구사항: REQ-149, REQ-592~601.

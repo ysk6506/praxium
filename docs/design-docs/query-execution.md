@@ -180,4 +180,4 @@ shortest_path(from_id, to_id, edges, direction, max_depth, max_nodes)
 
 ## 10. 관련
 
-ADR-0080(결정), ADR-0016(REST와 MCP는 같은 유스케이스), ADR-0062(MCP). 설계 문서: [새 저장의 모양](storage-shape.md), [질의 스키마](query-schema.md), [저장한 질의와 간선 정의](saved-queries.md), [PostgreSQL의 HA와 쉬운 구성](postgres-ha.md), [KG의 MCP 인터페이스](kg-mcp.md). 요구사항: REQ-222, REQ-250~256.
+ADR-0080(결정), ADR-0016(REST와 MCP는 같은 유스케이스), ADR-0062(MCP). 설계 문서: [새 저장의 모양](storage-shape.md), [질의 스키마](query-schema.md), [저장한 질의와 간선 정의](saved-queries.md), [PostgreSQL의 HA와 쉬운 구성](postgres-ha.md), [KG의 MCP 인터페이스](kg-mcp.md). 요구사항: REQ-222, REQ-250~256, REQ-577~591.

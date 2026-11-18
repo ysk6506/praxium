@@ -1,0 +1,7 @@
+doc: "docs/design-docs/saved-queries.md"
+target: "docs/design-docs/adr/0080-redesign-storage-and-queries-on-one-postgresql.md"
+hash: "0b6af0eb8e2ef934"
+date: "2026-11-18"
+note: "ADR-0080 결정 기록과 대조했다: 한도(깊이 12, 방문 20만, 하드 100만, 시한 60초, 풀 8과 4, 결과 200행과 1만 행), 적용의 세 경로, 질의 스키마의 구성, 다른 설계 문서에서 가리키는 절 번호와 요구사항 번호. 측정 수치는 측정과 추정을 가르고 조건을 적었다"
+text_changed: true
+doc_hash: "95987cd81cd277a7"

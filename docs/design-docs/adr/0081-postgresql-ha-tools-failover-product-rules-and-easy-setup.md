@@ -24,6 +24,7 @@ amends:
   - adr: "0032"
     what: 결정 7의 역할별 한도에 더해 연결을 쓰기, API 읽기, 대량 읽기의 풀로 나누고 여러 호스트의 연결 문자열과 풀 폐기와 죽은 연결 감지를 두는 것, 그리고 결정 10의 테스트 서버 PostgreSQL 16(18로)
 amends_tests: []
+decision_hash: 26059a13ddf97033
 ---
 # ADR-0081 PostgreSQL의 HA
 

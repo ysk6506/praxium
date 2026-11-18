@@ -34,6 +34,11 @@ touches_protected:
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
 decision_hash: b36027a06cf96e11
+amended_by:
+  - adr: "0080"
+    what: 결정 8의 저장하는 모양(행의 속성과 출처를 JSONB 하나로 두는 것. 타입마다 테이블로 바뀐다)과 결정 6의 라우팅 계층이 가리키는 저장 모양
+  - adr: "0081"
+    what: 결정 7의 역할별 한도에 더해 연결을 쓰기, API 읽기, 대량 읽기의 풀로 나누고 여러 호스트의 연결 문자열과 풀 폐기와 죽은 연결 감지를 두는 것, 그리고 결정 10의 테스트 서버 PostgreSQL 16(18로)
 ---
 # ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다
 

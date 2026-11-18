@@ -176,4 +176,4 @@ SELECT * FROM walk;
 
 ## 13. 관련
 
-ADR-0080(결정), ADR-0077과 ADR-0078(영향 범위를 제품이 계산하지 않는다). 설계 문서: [새 저장의 모양](storage-shape.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [저장한 질의와 간선 정의](saved-queries.md), [접근 제어](access-control.md). 요구사항: REQ-233.
+ADR-0080(결정), ADR-0077과 ADR-0078(영향 범위를 제품이 계산하지 않는다). 설계 문서: [새 저장의 모양](storage-shape.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [저장한 질의와 간선 정의](saved-queries.md), [접근 제어](access-control.md). 요구사항: REQ-233, REQ-572~576.

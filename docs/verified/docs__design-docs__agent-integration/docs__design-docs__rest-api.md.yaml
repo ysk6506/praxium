@@ -1,7 +1,7 @@
 doc: "docs/design-docs/agent-integration.md"
 target: "docs/design-docs/rest-api.md"
-hash: "342f483a210971f7"
+hash: "82d931c9efe8a838"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
-text_changed: false
-doc_hash: "3cdd37f8b0111a25"
+note: "rest-api.md의 변경은 질의 경로가 예정(ADR-0080)에서 바뀐다는 안내 한 문장이다. agent-integration.md가 rest-api.md에서 가져다 쓰는 이벤트 스트림과 토큰의 설명은 그대로임을 대조했고, tools/list 문단에는 저장한 질의가 툴을 더한다는 문장을 더했다"
+text_changed: true
+doc_hash: "f960ec969a4deb8a"

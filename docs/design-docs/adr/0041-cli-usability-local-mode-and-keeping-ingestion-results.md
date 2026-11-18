@@ -38,6 +38,8 @@ decision_hash: d795851d2e5b9aff
 amended_by:
   - adr: "0046"
     what: ingest init의 CSV 예제가 합격 테스트의 샘플 파일과 같다는 결정
+  - adr: "0080"
+    what: 결정 3의 수집 결과와 수집 상태를 데이터 폴더의 파일에 남기는 것(수집 상태는 PostgreSQL의 테이블에 둔다)
 ---
 # ADR-0041 명령줄 사용성, 로컬 모드, 수집 결과와 수집 상태를 데이터 폴더에 남기기
 

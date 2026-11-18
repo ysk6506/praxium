@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "docs/design-docs/query-engine-shape.md"
-hash: "fa243be741c5deb5"
+hash: "898fe74830e0a784"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
-text_changed: true
+note: "query-engine-shape.md의 변경은 맨 위에 예정(ADR-0080)에서 바뀐다는 안내를 더한 것뿐이다. worldgen.md 152행이 가리키는 query-engine-shape.md 6절과 shape-card의 설명은 그대로임을 대조했다"
+text_changed: false
 doc_hash: "a781e123c7d63be3"

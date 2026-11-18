@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "28c57a06aff13bf4"
+hash: "dd94480c86f7abc5"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
-text_changed: true
+note: "product-design.md의 변경은 문서 지도에 새 설계 문서 여섯 줄을 더한 것이다. plan.md의 단계와 번호는 이 변경과 어긋나지 않음을 대조했다"
+text_changed: false
 doc_hash: "eb3609d743fd0fd9"

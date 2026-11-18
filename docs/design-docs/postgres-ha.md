@@ -153,4 +153,4 @@ PostgreSQL이 고장 났을 때 제품이 어떻게 버티는지, 배포마다 �
 
 ## 13. 관련
 
-ADR-0081(결정), ADR-0080(저장과 질의), ADR-0076(시크릿 저장소). 설계 문서: [PostgreSQL 운영](postgres-operations.md), [새 저장의 모양](storage-shape.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [KG 운영](kg-operations.md). 요구사항: REQ-134.
+ADR-0081(결정), ADR-0080(저장과 질의), ADR-0076(시크릿 저장소). 설계 문서: [PostgreSQL 운영](postgres-operations.md), [새 저장의 모양](storage-shape.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [KG 운영](kg-operations.md). 요구사항: REQ-134, REQ-553~559, REQ-602~617.

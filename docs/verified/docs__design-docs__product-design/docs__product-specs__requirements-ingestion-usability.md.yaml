@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements-ingestion-usability.md"
-hash: "d71f9db3b783b46a"
+hash: "d5a8815b06c5e40f"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+note: "요구사항 문서 아홉 개에 REQ-551~619(예정 ADR-0080, ADR-0081)와 기존 요구사항의 예정에서 바뀐다는 표시가 더해졌다. 개요의 문서 지도에 새 설계 문서 여섯을 더했고, 요구사항 영역 표와 번호 문단이 새 번호 범위를 가리키는지 대조했다"
 text_changed: true
-doc_hash: "28c57a06aff13bf4"
+doc_hash: "dd94480c86f7abc5"
