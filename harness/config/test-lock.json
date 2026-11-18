@@ -17449,6 +17449,21 @@
    "added": "2026-11-17",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestSecretMoreTheIdOfASecretHasTheGrammarOfTheIdOfASource": {
+   "kind": "test",
+   "hash": "854d9ecffa790943",
+   "asserts": 1,
+   "literals": [
+    "8eb46a15cf9eee5d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestSecretMoreTheKeyProviderIsCarefulWhenItCannotTell": {
    "kind": "test",
    "hash": "a3b2d00aef828235",

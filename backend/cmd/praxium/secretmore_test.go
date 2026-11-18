@@ -12,7 +12,9 @@ import (
 	"testing/iotest"
 
 	"github.com/ysk6506/praxium/backend/internal/filejournal"
+	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/secrets"
 )
 
 // secRunReader runs `praxium secret <args>` with any reader as the standard input.
@@ -209,5 +211,15 @@ func TestSecretMorePathsThatCannotBeResolvedAreRefused(t *testing.T) {
 	}
 	if _, _, err := createMasterKey(filepath.Join(file, "sub", "k.key"), productBytes()); err == nil {
 		t.Errorf("a key made in a folder that cannot be made")
+	}
+}
+
+// [REQ-498]
+func TestSecretMoreTheIdOfASecretHasTheGrammarOfTheIdOfASource(t *testing.T) {
+	samples := []string{"a", "db_main", "a-b_c9", "A", "1a", "_a", "-a", "a.b", "a b", "a:b", "", strings.Repeat("a", 64), strings.Repeat("a", 65), "é", "a\n"}
+	for _, id := range samples {
+		if (secrets.ValidateID(id) == nil) != ingest.ValidID(id) {
+			t.Errorf("the grammar of a secret id and of a source id differ for a sample of %d bytes", len(id))
+		}
 	}
 }
