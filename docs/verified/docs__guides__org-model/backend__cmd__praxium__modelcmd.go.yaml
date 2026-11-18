@@ -1,7 +1,7 @@
 doc: "docs/guides/org-model.md"
 target: "backend/cmd/praxium/modelcmd.go"
-hash: "a06161966ab44f1f"
-date: "2026-11-14"
-note: "예제 명령과 출력을 빌드한 실행 파일로 돌려 확인"
+hash: "8b098f8b944cf32b"
+date: "2026-11-18"
+note: "ADR-0079: modelcmd.go 도움말의 서버 목록에서 demo를 뺐다. 가이드의 같은 목록과 모델 적용 뒤 재시작 문장을 고쳤다"
 text_changed: true
-doc_hash: "06ca96b874554722"
+doc_hash: "fd452b07d65c2380"

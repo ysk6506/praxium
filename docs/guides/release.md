@@ -43,7 +43,7 @@ scripts/release-smoke.sh /tmp/praxium-release/praxium_0.1.0-alpha.1_linux_amd64.
 ```
 
 - `--out`의 폴더는 비어 있거나 없어야 해요. 기본은 `dist/release`예요(커밋되지 않아요).
-- `release-smoke.sh`는 압축을 풀어 `praxium version`과 `--help`를 확인하고, `ingest init`으로 만든 예제를 `ingest inspect`와 `ingest run`(엑셀과 CSV)으로 수집한 뒤 `praxium local`로 띄워 API가 수집한 객체를 주는지 보고, 서버와 `praxium demo`를 차례로 띄워 `/`가 웹 UI로 200을 주는지 봐요. 이 컴퓨터의 운영체제에 맞는 파일만 테스트할 수 있어요.
+- `release-smoke.sh`는 압축을 풀어 `praxium version`과 `--help`를 확인하고, `ingest init`으로 만든 예제를 `ingest inspect`와 `ingest run`(엑셀과 CSV)으로 수집한 뒤 `praxium local`로 띄워 API가 수집한 객체를 주는지 보고, 합성 세계(`praxium worldgen`)를 올린 개발 서버를 띄워 `/`가 웹 UI로 200을 주고 KG가 보이는지 봐요. 이 컴퓨터의 운영체제에 맞는 파일만 테스트할 수 있어요.
 - 같은 커밋을 다시 빌드하면 같은 해시가 나와요(같은 Go 버전일 때). 두 번 만들어 `SHA256SUMS`를 비교해 보세요.
 - 컴파일만 확인하려면 `scripts/release-build.sh --compile-only`예요. 웹도 압축도 하지 않고 평소 CI가 같은 명령을 돌려요.
 
@@ -96,7 +96,7 @@ pnpm tsx harness/src/checks/docs.ts reverify docs/design-docs/product-design.md 
    `--note`는 확인한 내용을 적는 자리예요. "그대로 둠" 같은 한 줄이 아니라, 지난 릴리스 이후 요구사항 문서(`requirements.md`와 `requirements-<영역>.md`)에서 어떤 `REQ`가 바뀌었는지 보고 개요의 어느 절과 대조했는지, 무엇을 고쳤는지(고칠 것이 없으면 그 이유)를 적어요.
 2. 내려받으려는 커밋이 메인 브랜치에 있고 그 커밋의 CI(`gate`)가 통과했는지 확인해요.
 3. 처음 한 번은 스냅숏 실행(4절)이 성공했는지 확인해요.
-   MCP 인터페이스(`/mcp`)가 바뀐 릴리스에서는 `pnpm mcp:conformance`도 한 번 돌려요. 공식 적합성 도구(`@modelcontextprotocol/conformance`)가 이 컴퓨터에서 데모 서버를 띄워 테스트하고, 자기가 띄운 프로세스만 끝내요. 이 도구는 `pnpm check`에 들어 있지 않아요. `scripts/mcp-conformance-expected.yaml`에 없는 실패나 낡은 항목이 있으면 실패로 끝나요(ADR-0068, REQ-516).
+   MCP 인터페이스(`/mcp`)가 바뀐 릴리스에서는 `pnpm mcp:conformance`도 한 번 돌려요. 공식 적합성 도구(`@modelcontextprotocol/conformance`)가 이 컴퓨터에서 합성 세계를 올린 개발 서버를 띄워 테스트하고, 자기가 띄운 프로세스만 끝내요. 이 도구는 `pnpm check`에 들어 있지 않아요. `scripts/mcp-conformance-expected.yaml`에 없는 실패나 낡은 항목이 있으면 실패로 끝나요(ADR-0068, REQ-516).
 4. `docs/releases/<태그>.md`에 릴리스 노트를 써서 메인에 병합해요(없어도 되지만 쓰기를 권해요). 노트에 서명을 아직 하지 않았다는 말을 적어요. 맥과 윈도우는 처음 실행할 때 확인되지 않은 개발자라는 경고가 뜰 수 있고, 내려받은 사람이 확인할 수 있는 것은 `SHA256SUMS`뿐이에요(ADR-0039).
 5. 둘 중 하나로 릴리스해요.
    - 수동 실행: Actions 화면에서 `version`과 `commit`을 넣어 실행해요. 명령줄로는 `gh workflow run release.yml --ref main -f version=0.1.0-alpha.1 -f commit=<40자리 SHA>`예요.
@@ -118,7 +118,7 @@ tar -xzf praxium_0.1.0-alpha.1_linux_amd64.tar.gz
 ./praxium_0.1.0-alpha.1_linux_amd64/praxium version
 ```
 
-내려받은 뒤 가장 쉬운 첫 단계는 `praxium demo`예요. 가상의 데이터로 서버를 띄우고, 토큰이 들어 있는 링크를 출력해요. 링크를 브라우저로 열면 되고 Ctrl+C로 끝내요. 그다음에는 `praxium --help`로 명령을 둘러봐요. 자기 파일을 넣어 보려면 `praxium ingest init -out ex`로 예제를 만들고, `praxium ingest run -data-dir data ...`로 수집한 뒤 `praxium local -data-dir data`로 열어요(ADR-0041).
+내려받은 뒤 가장 쉬운 첫 단계는 `praxium --help`로 명령을 둘러보는 거예요. 그다음 `praxium ingest init -out ex`로 예제를 만들고, `praxium ingest run -data-dir data ...`로 수집한 뒤 `praxium local -data-dir data`로 열어요(ADR-0041).
 
 ## 6. 잘못됐을 때
 

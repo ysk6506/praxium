@@ -18,8 +18,8 @@ follows:
 
 ## 무엇을 할 수 있나요
 
-- `praxium demo` 한 줄로 합성한 데이터센터를 띄우고, 브라우저에서 서버, 스위치, VM과 그 연결을 둘러볼 수 있습니다.
-- 엑셀, CSV, JSON Lines 파일을 읽어 자기 데이터로 KG를 만들 수 있습니다(`praxium ingest`).
+- 엑셀, CSV, JSON Lines 파일을 읽어 자기 데이터로 KG를 만들 수 있습니다(`praxium ingest`). 예제 파일은 `praxium ingest init`이 써 줍니다.
+- 만든 KG를 브라우저에서 둘러볼 수 있습니다(`praxium local`). 서버, 스위치, VM과 그 연결을 봅니다.
 - 만든 KG를 명령줄(`praxium kg`, `types`, `query`)과 REST API로 조회할 수 있습니다.
 
 ## 왜 필요한가요
@@ -37,7 +37,7 @@ IT 인프라 정보는 여러 시스템에 나뉘어 있습니다. 자산 대장
 - 객체, 링크, 액션 타입을 담은 표준 모델(9개 층).
 - 합성 데이터센터 생성기. 같은 시드이면 같은 세계가 나옵니다.
 - 실행 파일에 포함된 웹 UI(제품 화면이 따로 생길 때까지 쓰는 임시 화면). 타입, 객체 테이블, 객체 상세(근거 등급 포함), 이웃을 읽기 전용으로 보여 줍니다.
-- 데모 모드(`praxium demo`)와 로컬 모드(`praxium local`).
+- 로컬 모드(`praxium local`).
 - 엑셀, CSV, JSON Lines 소스의 수집(`praxium ingest`). CSV는 쉼표 말고 탭, 세미콜론, 세로선 구분도 읽습니다. UTF-8이 아닌 CSV(EUC-KR, CP949, UTF-16)는 이유와 해결 방법을 알려 주고 멈춥니다. 엑셀에서 "CSV UTF-8"로 저장하거나 `.xlsx`를 그대로 쓰세요.
 - 내장 파일 스토어와 PostgreSQL 스토리지.
 - 조회 세 가지(객체 찾기 `find`, 하나 읽기 `get`, 이웃 보기 `neighbors`)를 REST API와 명령줄로 실행.
@@ -105,24 +105,7 @@ web ui:  included
 
 이 문서의 나머지 명령은 리눅스와 맥 기준(`./praxium`)입니다. 윈도우에서는 `./praxium`을 `.\praxium.exe`로 바꿔 쓰고, 줄 끝의 `\`는 쓰지 말고 한 줄로 이어 씁니다.
 
-### 2. 1분 데모
-
-```
-./praxium demo
-```
-
-```
-Synthesizing a data center (scale 20000, seed 1) and loading it...
-Praxium demo: the data is synthetic and not connected to any real system. This is not for production.
-Loaded 7236 objects and 12874 links.
-Open this address in a browser (the token is after the #, which a browser does not send to the server):
-http://127.0.0.1:8080/#/connect?token=...&demo=1
-The data is in memory and is gone when the demo stops. Press Ctrl+C to stop.
-```
-
-출력된 주소를 브라우저로 엽니다. 토큰은 주소에 들어 있어서 입력할 것이 없습니다. 타입 목록에서 시작해 객체 테이블, 객체 상세, 이웃 객체로 이동하며 둘러볼 수 있습니다. 데이터는 합성한 것이고 메모리에만 있습니다. 끝내려면 Ctrl+C를 누릅니다.
-
-### 3. 내 파일로 해 보기
+### 2. 내 파일로 해 보기
 
 예제 파일을 만들고, 파일을 살펴보고, 엑셀 예제와 CSV 예제를 하나의 KG로 읽어 들이고, 결과를 브라우저로 봅니다. `ingest init`이 출력하는 안내와 같은 순서입니다. 엑셀, CSV, JSON Lines 파일을 읽습니다.
 
@@ -160,17 +143,16 @@ completed without problems
 The result is kept in data (KG main). Look at it with: praxium local -data-dir data
 ```
 
-`local`이 출력한 주소를 브라우저로 엽니다. 데모와 달리 KG 목록에서 시작하므로 `main`을 골라 타입 목록으로 들어갑니다. 서버(PhysicalServer)는 엑셀 3대와 CSV 3대, 모두 6대가 보입니다.
+`local`이 출력한 주소를 브라우저로 엽니다. KG 목록에서 시작하므로 `main`을 골라 타입 목록으로 들어갑니다. 서버(PhysicalServer)는 엑셀 3대와 CSV 3대, 모두 6대가 보입니다.
 
 자기 데이터에는 소스 정의와 매핑 정의 JSON을 직접 써야 합니다. 예제 파일이 출발점입니다. 자기 엑셀이나 CSV는 `./praxium ingest inspect -input <파일> -emit-source`로 소스 정의 초안을 만든 뒤, `ex/ingest-definitions.md`의 "따라 하기"(엑셀 한 시트에서 정의 두 파일까지)를 보며 매핑 정의를 씁니다. 모든 필드와 문제 코드는 같은 내용의 [수집 정의 형식](docs/guides/ingest-definitions.md)에 있습니다.
 
-### 4. 명령 개요
+### 3. 명령 개요
 
 `./praxium --help`가 모든 명령을 보여 주고, `./praxium <명령> --help`가 사용법과 예를 보여 줍니다.
 
 | 명령 | 하는 일 |
 |---|---|
-| `demo` | 합성 데이터센터와 웹 UI를 띄웁니다 |
 | `local` | 내 파일로 만든 KG를 웹 UI와 API로 보여 줍니다 |
 | `ingest init`, `inspect`, `run` | 예제 만들기, 파일 살펴보기, 파일을 읽어 KG로 만들기 |
 | `kg`, `types`, `object`, `query` | 실행 중인 서버에 KG, 타입, 객체를 묻습니다 |
@@ -178,7 +160,7 @@ The result is kept in data (KG main). Look at it with: praxium local -data-dir d
 | `health` | 서버가 살아 있고 준비됐는지 확인합니다. `--json`을 붙이면 상태 코드가 나옵니다 |
 | `version` | 버전을 보여 줍니다 |
 
-조회 명령(`kg`, `types`, `object`, `query`, `catalog`, `health`)은 서버 주소와 토큰이 필요합니다. `demo`와 `local`이 토큰을 출력합니다. 아래 결과는 3단계에서 띄운 `local`(내 파일로 만든 KG)에서 나온 것입니다. `demo`에 같은 명령을 치면 합성 데이터의 서버 145대가 나와서 결과가 다릅니다.
+조회 명령(`kg`, `types`, `object`, `query`, `catalog`, `health`)은 서버 주소와 토큰이 필요합니다. `local`이 토큰을 출력합니다. 아래 결과는 2단계에서 띄운 `local`(내 파일로 만든 KG)에서 나온 것입니다.
 
 ```
 ./praxium --endpoint http://127.0.0.1:8080 --token <토큰> query find --type PhysicalServer --limit 3

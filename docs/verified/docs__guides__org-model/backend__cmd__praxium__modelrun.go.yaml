@@ -1,7 +1,7 @@
 doc: "docs/guides/org-model.md"
 target: "backend/cmd/praxium/modelrun.go"
-hash: "15e6ca51faa82efe"
-date: "2026-11-14"
-note: "모델 명령의 상태 읽기를 하나로 합친 뒤 안내서의 명령과 출력을 다시 대조했다. 동작 변화 없음"
-text_changed: true
-doc_hash: "e8519c8786fbaaa2"
+hash: "ececda74c845fb5d"
+date: "2026-11-18"
+note: "ADR-0079: modelrun.go의 잠금 오류와 재시작 안내에서 demo를 뺐다. 가이드의 영어 안내 줄도 같은 문구로 고쳤다"
+text_changed: false
+doc_hash: "fd452b07d65c2380"

@@ -1222,9 +1222,9 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::[REQ-296] an authentication error speaks in the words of the way in > sends a demo or local-mode visitor to the new address, and leaves a typed token as it was": {
+  "apps/web/src/data/access.test.tsx::[REQ-296] an authentication error speaks in the words of the way in > sends a local-mode visitor to the new address, and leaves a typed token as it was": {
    "kind": "test",
-   "hash": "3356b8a05841ff54",
+   "hash": "70544d078cd299dc",
    "asserts": 6,
    "literals": [
     "\"401\"",
@@ -1234,17 +1234,16 @@
     "\"auth\"",
     "\"auth.token_invalid\"",
     "\"auth.token_missing\"",
-    "\"demo\"",
-    "\"demo\"",
-    "\"demo\"",
-    "\"demo\"",
     "\"direct\"",
     "\"direct\"",
+    "\"local\"",
+    "\"local\"",
+    "\"local\"",
     "\"local\"",
     "\"none\"",
     "\"none\"",
     "\"not_found.resource\"",
-    "\"sends a demo or local-mode visitor to the new address, and leaves a typed token as it was\"",
+    "\"sends a local-mode visitor to the new address, and leaves a typed token as it was\"",
     "\"새 주소\"",
     "\"새 주소\"",
     "\"서버를 다시 시작하면 접속 링크가 바뀝니다. 터미널에 출력된 새 주소를 여십시오.\"",
@@ -1252,62 +1251,58 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > <suite>": {
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: local mode or a typed token > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > marks a local-mode entry and lands on the KG list, and a later demo entry replaces the mark": {
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: local mode or a typed token > marks a local-mode entry and lands on the KG list, and a later plain entry replaces the mark": {
    "kind": "test",
-   "hash": "c9147359f48d4575",
+   "hash": "ace70c6b0453bb8b",
    "asserts": 3,
    "literals": [
     "\"\"",
-    "\"#/connect?token=demo-2&demo=1\"",
     "\"#/connect?token=local-1&mode=local\"",
+    "\"#/connect?token=plain-2\"",
     "\"/\"",
-    "\"/#/kg/main/types\"",
-    "\"/#/kg/main/types\"",
+    "\"/#/kgs\"",
+    "\"/#/kgs\"",
     "\"/#/kgs\"",
     "\"/#/kgs\"",
     "\"1\"",
     "\"1\"",
-    "\"demo-2\"",
-    "\"demo-2\"",
     "\"local-1\"",
     "\"local-1\"",
     "\"local-1\"",
     "\"local-1\"",
-    "\"local-1\"",
-    "\"local-1\"",
-    "\"marks a local-mode entry and lands on the KG list, and a later demo entry replaces the mark\"",
+    "\"marks a local-mode entry and lands on the KG list, and a later plain entry replaces the mark\"",
+    "\"plain-2\"",
+    "\"plain-2\"",
     "false",
     "false",
     "false",
     "false",
     "false",
     "false",
-    "true",
-    "true",
     "true",
     "true"
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > reads the mode of an entry address": {
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: local mode or a typed token > reads the mode of an entry address": {
    "kind": "test",
-   "hash": "3f3480fc14210285",
+   "hash": "f21d2415a262fce0",
    "asserts": 4,
    "literals": [
     "\"#/connect?mode=local\"",
@@ -1324,8 +1319,8 @@
     "\"a1\"",
     "\"a1\"",
     "\"a1\"",
-    "\"demo\"",
-    "\"demo\"",
+    "\"direct\"",
+    "\"direct\"",
     "\"direct\"",
     "\"direct\"",
     "\"local\"",
@@ -1334,16 +1329,16 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > takes a new address pasted into the open page, replacing the address before the token is announced": {
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: local mode or a typed token > takes a new address pasted into the open page, replacing the address before the token is announced": {
    "kind": "test",
-   "hash": "d85c1837ceff4116",
+   "hash": "4d3d9eeae811f8ab",
    "asserts": 4,
    "literals": [
     "\"\"",
-    "\"#/connect?token=fresh-3&demo=1\"",
+    "\"#/connect?token=fresh-3&mode=local\"",
     "\"#/kgs\"",
     "\"#/kgs\"",
     "\"/\"",
@@ -1362,22 +1357,22 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > tells the components the mode, and forgets it with the token or when another token is typed": {
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: local mode or a typed token > tells the components the mode, and forgets it with the token or when another token is typed": {
    "kind": "test",
-   "hash": "87d92334b8712403",
+   "hash": "9ee15bdc8af43699",
    "asserts": 7,
    "literals": [
     "\"\"",
-    "\"#/connect?token=d-3&demo=1\"",
+    "\"#/connect?token=d-3&mode=local\"",
     "\"#/connect?token=m-1&mode=local\"",
     "\"/\"",
-    "\"demo\"",
-    "\"demo\"",
     "\"direct\"",
     "\"direct\"",
+    "\"local\"",
+    "\"local\"",
     "\"local\"",
     "\"local\"",
     "\"none\"",
@@ -1391,7 +1386,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
   "apps/web/src/data/access.test.tsx::[REQ-298] an error says what the server said about the cause > <suite>": {
@@ -1512,6 +1507,16 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "apps/web/src/data/access.test.tsx::<import:53062da7>": {
+   "kind": "support",
+   "hash": "53062da713f9a91f",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "apps/web/src/data/access.test.tsx::<import:92023283>": {
    "kind": "support",
    "hash": "92023283d48df2ba",
@@ -1562,16 +1567,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/access.test.tsx::<import:fb83b27e>": {
-   "kind": "support",
-   "hash": "fb83b27ee9b5ee02",
-   "asserts": 0,
-   "literals": [],
-   "precision": [],
-   "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "apps/web/src/data/access.test.tsx::=apiError": {
    "kind": "support",
    "hash": "37b33e4fafb09d42",
@@ -1594,37 +1589,37 @@
   },
   "apps/web/src/data/access.test.tsx::=setup": {
    "kind": "support",
-   "hash": "b444b78c463d1f10",
+   "hash": "d9fd700fbe569e77",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > <suite>": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > is a demo only while the saved token is the one that came in by the demo address": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > is local mode only while the saved token is the one that came in by the local-mode address": {
    "kind": "test",
-   "hash": "46c685d059350c20",
+   "hash": "6bfffb0cb028a5cb",
    "asserts": 3,
    "literals": [
     "\"\"",
     "\"\"",
     "\"another-token-0001\"",
     "\"another-token-0001\"",
-    "\"demo-token-0000001\"",
-    "\"demo-token-0000001\"",
-    "\"demo-token-0000001\"",
-    "\"is a demo only while the saved token is the one that came in by the demo address\"",
+    "\"is local mode only while the saved token is the one that came in by the local-mode address\"",
+    "\"local-token-000001\"",
+    "\"local-token-000001\"",
+    "\"local-token-000001\"",
     "false",
     "false",
     "false",
@@ -1634,16 +1629,16 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > keeps the mark in memory when the browser gives no storage": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > keeps the mark in memory when the browser gives no storage": {
    "kind": "test",
-   "hash": "56e6203fc501e478",
+   "hash": "36fd7ab6a775c63a",
    "asserts": 1,
    "literals": [
     "\"\"",
-    "\"#/connect?token=memory-token-0003&demo=1\"",
+    "\"#/connect?token=memory-token-0003&mode=local\"",
     "\"/\"",
     "\"keeps the mark in memory when the browser gives no storage\"",
     "true",
@@ -1651,12 +1646,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > reads the token and the demo flag from the fragment, and nothing from any other address": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > reads the token and the mode from the fragment, and nothing from any other address": {
    "kind": "test",
-   "hash": "2f0e73f5e221964f",
+   "hash": "171c1a09066b5fe6",
    "asserts": 6,
    "literals": [
     "\"\"",
@@ -1667,34 +1662,36 @@
     "\"#/connect?token=\"",
     "\"#/connect?token=%20abc123%20\"",
     "\"#/connect?token=%20abc123%20\"",
-    "\"#/connect?token=abc123&demo=1\"",
-    "\"#/connect?token=abc123&demo=1\"",
+    "\"#/connect?token=abc123&mode=local\"",
+    "\"#/connect?token=abc123&mode=local\"",
     "\"#/kgs?token=abc123\"",
     "\"#/kgs?token=abc123\"",
     "\"abc123\"",
     "\"abc123\"",
     "\"abc123\"",
     "\"abc123\"",
-    "\"reads the token and the demo flag from the fragment, and nothing from any other address\"",
-    "false",
-    "false",
-    "true",
-    "true"
+    "\"direct\"",
+    "\"direct\"",
+    "\"local\"",
+    "\"local\"",
+    "\"reads the token and the mode from the fragment, and nothing from any other address\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > saves the token, marks the demo and replaces the address with the KG screen": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > saves the token, marks the local mode and replaces the address with the KG list": {
    "kind": "test",
-   "hash": "178b7fc53460e90f",
+   "hash": "4a7b8b393b7808bc",
    "asserts": 6,
    "literals": [
     "\"\"",
-    "\"#/connect?token=secret-token-0001&demo=1\"",
+    "\"#/connect?token=secret-token-0001&mode=local\"",
     "\"/\"",
-    "\"saves the token, marks the demo and replaces the address with the KG screen\"",
+    "\"/#/kgs\"",
+    "\"/#/kgs\"",
+    "\"saves the token, marks the local mode and replaces the address with the KG list\"",
     "\"secret-token-0001\"",
     "\"secret-token-0001\"",
     "\"secret-token-0001\"",
@@ -1708,12 +1705,12 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > takes a token without the demo flag as no demo, and leaves other addresses alone": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > takes a token without the local mode as a direct entry, and leaves other addresses alone": {
    "kind": "test",
-   "hash": "52deb54a014e3c9e",
+   "hash": "9da36aac5d3bfa11",
    "asserts": 5,
    "literals": [
     "\"\"",
@@ -1733,7 +1730,7 @@
     "\"?a=1\"",
     "\"?a=1\"",
     "\"old-token-xxxxxxxxx\"",
-    "\"takes a token without the demo flag as no demo, and leaves other addresses alone\"",
+    "\"takes a token without the local mode as a direct entry, and leaves other addresses alone\"",
     "false",
     "false",
     "false",
@@ -1743,27 +1740,27 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > tells a component about the demo and stops when the token is replaced or deleted": {
+  "apps/web/src/data/entry.test.tsx::[REQ-296] the page takes the token of an entry address and shows that it came in by local mode > tells a component about the local mode and stops when the token is replaced or deleted": {
    "kind": "test",
-   "hash": "e78df3f1e5741af7",
+   "hash": "234cbbfbd70cb482",
    "asserts": 2,
    "literals": [
     "\"\"",
-    "\"#/connect?token=hook-token-0004&demo=1\"",
+    "\"#/connect?token=hook-token-0004&mode=local\"",
     "\"/\"",
-    "\"tells a component about the demo and stops when the token is replaced or deleted\"",
-    "\"typed-token-0005\"",
-    "false",
-    "false",
-    "true",
-    "true"
+    "\"direct\"",
+    "\"direct\"",
+    "\"local\"",
+    "\"local\"",
+    "\"tells a component about the local mode and stops when the token is replaced or deleted\"",
+    "\"typed-token-0005\""
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
   "apps/web/src/data/entry.test.tsx::<hook:afterEach>": {
@@ -1786,14 +1783,14 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/data/entry.test.tsx::<import:90ab63fc>": {
+  "apps/web/src/data/entry.test.tsx::<import:3fab2316>": {
    "kind": "support",
-   "hash": "90ab63fce7b7c50d",
+   "hash": "3fab231654ec64a7",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
   "apps/web/src/data/entry.test.tsx::<import:a5465db4>": {
@@ -6013,11 +6010,11 @@
   },
   "apps/web/src/data/screenstate.test.tsx::[REQ-297] a new screen opens at the top, and back returns to where the person was > keeps the position when only the query changed by a button, and goes to the top for an entry address": {
    "kind": "test",
-   "hash": "3bd1d702f9c5241c",
+   "hash": "00de69e5e2025494",
    "asserts": 2,
    "literals": [
     "\"#/a?tab=x\"",
-    "\"#/connect?token=t1&demo=1\"",
+    "\"#/connect?token=t1&mode=local\"",
     "\"0\"",
     "\"0\"",
     "\"0\"",
@@ -6039,8 +6036,8 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "apps/web/src/data/screenstate.test.tsx::[REQ-297] a new screen opens at the top, and back returns to where the person was > keeps waiting for the content when the page is not tall enough yet": {
    "kind": "test",
@@ -6664,7 +6661,7 @@
   },
   "apps/web/src/impact-screen.test.tsx::[REQ-381] the words of the screen > asks for an access token on the connection screen and says where to get it": {
    "kind": "test",
-   "hash": "0b3f16687d889a35",
+   "hash": "4f5af26936df90c8",
    "asserts": 4,
    "literals": [
     "\"#/settings\"",
@@ -6674,7 +6671,6 @@
     "\"개발 서버\"",
     "\"개발용 토큰\"",
     "\"개발용 토큰\"",
-    "\"데모\"",
     "\"로컬 모드\"",
     "\"운영 서버\"",
     "\"접근 토큰\"",
@@ -6683,7 +6679,7 @@
    "precision": [],
    "skips": 0,
    "added": "2026-11-18",
-   "amended_by": null
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "apps/web/src/impact-screen.test.tsx::<hook:afterEach>": {
    "kind": "support",
@@ -7159,28 +7155,28 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > <suite>": {
+  "apps/web/src/ui/banner.test.tsx::[REQ-296] the frame shows a banner above everything when it is given one > <suite>": {
    "kind": "support",
    "hash": "edb4bbfe0a867169",
    "asserts": 0,
    "literals": [],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
-  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > puts the banner in a status element and leaves it out when there is none": {
+  "apps/web/src/ui/banner.test.tsx::[REQ-296] the frame shows a banner above everything when it is given one > puts the banner in a status element and leaves it out when there is none": {
    "kind": "test",
-   "hash": "f1dc3c1a936fdd05",
+   "hash": "a843fbf997c69935",
    "asserts": 3,
    "literals": [
     "\"output\"",
     "\"output\"",
     "\"output\"",
     "\"puts the banner in a status element and leaves it out when there is none\"",
-    "\"데모 모드\"",
-    "\"데모 모드\"",
-    "\"데모 모드\"",
+    "\"로컬 모드\"",
+    "\"로컬 모드\"",
+    "\"로컬 모드\"",
     "\"본문\"",
     "\"본문\"",
     "\"프락시움\"",
@@ -7188,7 +7184,7 @@
    ],
    "precision": [],
    "skips": 0,
-   "added": "2026-11-14",
+   "added": "2026-11-18",
    "amended_by": null
   },
   "apps/web/src/ui/banner.test.tsx::<hook:afterEach>": {
@@ -9402,6 +9398,19 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestADevelopmentServerSaysWhenItsTruthFileCannotBeRead": {
+   "kind": "test",
+   "hash": "482b688a42e72332",
+   "asserts": 1,
+   "literals": [
+    "5870341385786ca2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestADevelopmentServerWithATruthFileServesTheKgToTheClient": {
    "kind": "test",
    "hash": "21bf6286e83bb8d2",
@@ -9462,21 +9471,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/cmd/praxium::TestAllFourStartsRefuseDefinitionsThatCannotBeUsedAndSayHowToGoOn": {
-   "kind": "test",
-   "hash": "d9fca3ddc7bfa6a1",
-   "asserts": 6,
-   "literals": [
-    "04dfc3c2ecd59701"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-369"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/cmd/praxium::TestAllowingAnUnverifiedLinkWritesAWarningToTheStartLog": {
    "kind": "test",
    "hash": "3297da1abf9a952e",
@@ -9490,6 +9484,21 @@
     "REQ-473"
    ],
    "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAllThreeStartsRefuseDefinitionsThatCannotBeUsedAndSayHowToGoOn": {
+   "kind": "test",
+   "hash": "f23940851f2e5827",
+   "asserts": 6,
+   "literals": [
+    "63fab26d30f14ec7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-369"
+   ],
+   "added": "2026-11-18",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestAnOrgPropertyNamedWithoutItsPrefixIsPointedTo": {
@@ -9614,18 +9623,18 @@
   },
   "go:backend/cmd/praxium::TestApiServeWithoutAModeSaysWhatToRunInsteadWithoutDebtNumbers": {
    "kind": "test",
-   "hash": "86678d26705b7f43",
+   "hash": "9f4c2c53473131e7",
    "asserts": 2,
    "literals": [
-    "8529d2733d5ec061"
+    "f0c886de93613f92"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-290"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestApiServeWithoutATokenServesOnlyAnonymousRoutes": {
    "kind": "test",
@@ -9733,21 +9742,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/cmd/praxium::TestAStartThatTakesLongSaysItIsStillWorking": {
-   "kind": "test",
-   "hash": "60f337d6a62fddbb",
-   "asserts": 2,
-   "literals": [
-    "4eb467a8e540e570"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-294"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/cmd/praxium::TestAStoredOverlayWhoseItemDoesNotMatchItsTargetRefusesTheStart": {
    "kind": "test",
    "hash": "25d8b76ebf0c3054",
@@ -9810,18 +9804,18 @@
   },
   "go:backend/cmd/praxium::TestAWrongCommandLinePrintsOneLineAboutItAndWhereTheHelpIs": {
    "kind": "test",
-   "hash": "0bc8b8ac22ea878e",
+   "hash": "26ba431a47e324da",
    "asserts": 2,
    "literals": [
-    "1447e4a13ad03dd9"
+    "bfbf8442eab79a57"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-289"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestBehindAProxyAPlainNonLoopbackAddressStarts": {
    "kind": "test",
@@ -9853,6 +9847,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestConnectURLNeedsAnAddressWithAPort": {
+   "kind": "test",
+   "hash": "16ae8786019062b5",
+   "asserts": 2,
+   "literals": [
+    "2988899c9e9efaec"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestContractCommandAssemblesAndChecks": {
    "kind": "test",
    "hash": "37f69ec23cfda2f8",
@@ -9866,199 +9875,6 @@
     "REQ-143"
    ],
    "added": "2026-11-13",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoChecksTheFormOfTheAddressBeforeAnythingElse": {
-   "kind": "test",
-   "hash": "f76b9be88f6d2a8b",
-   "asserts": 1,
-   "literals": [
-    "3a18e43baf4b136c"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-290"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoFillsTheKGAndTheAPIAnswers": {
-   "kind": "test",
-   "hash": "fe03b9f986810d5a",
-   "asserts": 8,
-   "literals": [
-    "89a41aab32c3efbd"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoKeepsTheKGInADataFolder": {
-   "kind": "test",
-   "hash": "f910c85381e37240",
-   "asserts": 7,
-   "literals": [
-    "b2b732e05001ae93"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoRefusesAFolderWhoseFirstLoadDidNotFinish": {
-   "kind": "test",
-   "hash": "1c66bc597e92983f",
-   "asserts": 3,
-   "literals": [
-    "1c97e7ccca408fa4"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoRefusesBadArguments": {
-   "kind": "test",
-   "hash": "f7165c86522f440d",
-   "asserts": 1,
-   "literals": [
-    "c7417e46fd063765"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoSaysWhenThePortIsTaken": {
-   "kind": "test",
-   "hash": "7114f7bca53d46f7",
-   "asserts": 5,
-   "literals": [
-    "9af4a42807df4fbf"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoServesMCPWithTheTokenOfTheRun": {
-   "kind": "test",
-   "hash": "fa3042ec1b2fe406",
-   "asserts": 11,
-   "literals": [
-    "cf236fc77fff7189"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoStopsBeforeServingWhenTheWorldCannotBeMade": {
-   "kind": "test",
-   "hash": "cedd142a3868e170",
-   "asserts": 2,
-   "literals": [
-    "d65c7833c3a302d0"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoTokenIsNewEveryRunAndOnlyInTheAddress": {
-   "kind": "test",
-   "hash": "61b28e35fe8f9e1d",
-   "asserts": 10,
-   "literals": [
-    "15ec0cc550ccda26"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-281"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoURLNeedsAnAddressWithAPort": {
-   "kind": "test",
-   "hash": "6931ceb582697c5e",
-   "asserts": 2,
-   "literals": [
-    "04c982ea0d8f2f38"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoWarnsForANonLoopbackAddress": {
-   "kind": "test",
-   "hash": "192ffef6eeba01ce",
-   "asserts": 5,
-   "literals": [
-    "bfb608074016a4ff"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoWithMCPOffAnswersJSON404": {
-   "kind": "test",
-   "hash": "cd21cb2c4de2ef77",
-   "asserts": 5,
-   "literals": [
-    "e7c4df8c03b2a2c0"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-505"
-   ],
-   "added": "2026-11-16",
-   "amended_by": null
-  },
-  "go:backend/cmd/praxium::TestDemoWithoutTheWebUIExplainsAndKeepsTheAPI": {
-   "kind": "test",
-   "hash": "0f12f66c6ea4584b",
-   "asserts": 5,
-   "literals": [
-    "103633af8393b476"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-280"
-   ],
-   "added": "2026-11-14",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestDevLoadTruthLoadsIntoAThrowawayStoreAndPrintsTheCounts": {
@@ -10107,18 +9923,18 @@
   },
   "go:backend/cmd/praxium::TestEveryCommandAnswersHelpWithUsageFlagsAndAnExample": {
    "kind": "test",
-   "hash": "0cad00f836b38551",
+   "hash": "e05f4dcd1c0ea37b",
    "asserts": 6,
    "literals": [
-    "56a323502dd5de86"
+    "699a7917dd7a07c0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-289"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestFilesThatAreNoWorkbookGiveAClearErrorWhateverTheyAreNamed": {
    "kind": "test",
@@ -10168,18 +9984,18 @@
   },
   "go:backend/cmd/praxium::TestGlobalFlagsMayFollowTheCommand": {
    "kind": "test",
-   "hash": "4509713927106351",
-   "asserts": 4,
+   "hash": "a227e0605a95f8e5",
+   "asserts": 5,
    "literals": [
-    "514d9421a77cb45d"
+    "970abe04c1feb291"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-289"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestIdgIngestToolsWriteTheVersionAndIdsOfTheGrammar": {
    "kind": "test",
@@ -10211,21 +10027,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/cmd/praxium::TestIngestDataDirRefusesADemoFolderAndALockedOne": {
-   "kind": "test",
-   "hash": "52a4b960699d1047",
-   "asserts": 6,
-   "literals": [
-    "b7a81468760ddbc1"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-291"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
   "go:backend/cmd/praxium::TestIngestDataDirRefusesAFolderThatDoesNotFitItsState": {
    "kind": "test",
    "hash": "dd9525c7aa7f29ed",
@@ -10239,6 +10040,21 @@
     "REQ-291"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestIngestDataDirRefusesALockedOne": {
+   "kind": "test",
+   "hash": "f5d65dbbe244374d",
+   "asserts": 3,
+   "literals": [
+    "9426110769a4b358"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-291"
+   ],
+   "added": "2026-11-18",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestIngestHelpPointsToTheGuideAndExplainsTheSummaryLines": {
@@ -10577,7 +10393,7 @@
   },
   "go:backend/cmd/praxium::TestIsLoopbackAddr": {
    "kind": "test",
-   "hash": "8e34cd1851942078",
+   "hash": "20c4e022069527c0",
    "asserts": 1,
    "literals": [
     "73ac15f11e51f166"
@@ -10585,10 +10401,10 @@
    "precision": [],
    "skips": 0,
    "reqs": [
-    "REQ-280"
+    "REQ-294"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestIssueTokenAtTheServerGetsAnAdministratorBackInAndNeedsTheFolderFree": {
    "kind": "test",
@@ -10604,6 +10420,21 @@
     "REQ-313"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalChecksTheFormOfTheAddressBeforeAnythingElse": {
+   "kind": "test",
+   "hash": "d54441ce2f133f43",
+   "asserts": 1,
+   "literals": [
+    "f29347c601a4189b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-18",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestLocalChecksThePortBeforeAnythingAndRefusesBadArguments": {
@@ -10623,17 +10454,32 @@
   },
   "go:backend/cmd/praxium::TestLocalExplainsABuildWithoutTheWebUI": {
    "kind": "test",
-   "hash": "9079eff0d59b7611",
+   "hash": "854247cf29c1f2d4",
    "asserts": 6,
    "literals": [
-    "fe5f96b9acaaf323"
+    "4abf4571f9ce317f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-294"
    ],
-   "added": "2026-11-14",
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
+  },
+  "go:backend/cmd/praxium::TestLocalRefusesAFolderWhoseFirstLoadDidNotFinish": {
+   "kind": "test",
+   "hash": "a3a3f8d2144879f1",
+   "asserts": 4,
+   "literals": [
+    "9a3b04b50b5f324c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-18",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestLocalSaysWhatToDoWhenThereIsNothingToServe": {
@@ -10651,19 +10497,62 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestLocalServesMCPWithTheTokenOfTheRun": {
+   "kind": "test",
+   "hash": "f1462b23769774b6",
+   "asserts": 12,
+   "literals": [
+    "c56678d2718fb540"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestLocalServesTheKGOfAFolderWithoutMakingUpData": {
    "kind": "test",
-   "hash": "3a472f23b5d8a3a2",
-   "asserts": 8,
+   "hash": "a0d2d4b3608fdd23",
+   "asserts": 9,
    "literals": [
-    "36f489517c2e0c29"
+    "ef6215c09b032666"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-294"
    ],
-   "added": "2026-11-14",
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
+  },
+  "go:backend/cmd/praxium::TestLocalStopsOnAStoreErrorAndDoesNotCallItAnEmptyFolder": {
+   "kind": "test",
+   "hash": "8c65d977318c3ded",
+   "asserts": 1,
+   "literals": [
+    "620b71402b3cab27"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalTokenIsNewEveryRunAndOnlyInTheAddress": {
+   "kind": "test",
+   "hash": "3aaf5b8915a72d04",
+   "asserts": 12,
+   "literals": [
+    "dfe2d51270059744"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-294"
+   ],
+   "added": "2026-11-18",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestLocalWarnsForANonLoopbackAddress": {
@@ -10679,6 +10568,21 @@
     "REQ-294"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestLocalWithMCPOffAnswersJSON404": {
+   "kind": "test",
+   "hash": "efc52e23cda40d41",
+   "asserts": 6,
+   "literals": [
+    "9c9d7efb18816176"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-505"
+   ],
+   "added": "2026-11-18",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestMCPAllowedOriginsMustBeOrigins": {
@@ -11042,10 +10946,10 @@
   },
   "go:backend/cmd/praxium::TestOrgPropertiesGoFromTheFileThroughIngestionToQueriesAndSurviveARestart": {
    "kind": "test",
-   "hash": "ba029ff8a16ac9ee",
+   "hash": "3d2edad6e849c7ac",
    "asserts": 10,
    "literals": [
-    "79221fe23ad44580"
+    "afd94548945382d2"
    ],
    "precision": [],
    "skips": 0,
@@ -11053,8 +10957,8 @@
     "REQ-371",
     "REQ-373"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestParseRole": {
    "kind": "test",
@@ -12239,7 +12143,7 @@
   },
   "go:backend/cmd/praxium::TestTheExamplesGiveTheirServersAnIdentifierThatFindsThem": {
    "kind": "test",
-   "hash": "85510ae95e34906b",
+   "hash": "82e2e7833d68d446",
    "asserts": 7,
    "literals": [
     "7836e48484d91e11"
@@ -12249,8 +12153,8 @@
    "reqs": [
     "REQ-322"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestTheFileDiskDoesWhatTheJournalAsks": {
    "kind": "test",
@@ -12387,6 +12291,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheRemovedDemoCommandIsAnUnknownCommandWithNoHelp": {
+   "kind": "test",
+   "hash": "2fbcc24712144e90",
+   "asserts": 2,
+   "literals": [
+    "799e00af755a9d02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-289"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheSecretsOfTokensComeFromTheRandomSourceOfTheWiring": {
    "kind": "test",
    "hash": "b574bc5990d54bc3",
@@ -12450,33 +12369,33 @@
   },
   "go:backend/cmd/praxium::TestTheTableFormShowsNestedValuesAndTheJSONFormIsUnchanged": {
    "kind": "test",
-   "hash": "8b9e6d7e6908777e",
-   "asserts": 7,
+   "hash": "772b1212f3f47270",
+   "asserts": 8,
    "literals": [
-    "67d376c69ef470d1"
+    "9632fda66a9db541"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-328"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestTopLevelHelpListsEveryCommandInGroups": {
    "kind": "test",
-   "hash": "a5c288c528d73226",
+   "hash": "4858373c077fbf21",
    "asserts": 5,
    "literals": [
-    "33f7a06ceb7b1f49"
+    "93803d93f5ad8975"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-289"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-18",
+   "amended_by": "0079-remove-demo-mode.md"
   },
   "go:backend/cmd/praxium::TestUndeclaredColumnsComeAfterTheProblemsAboutTheData": {
    "kind": "test",
@@ -49456,6 +49375,21 @@
  },
  "removed": {
   "apps/web/src/api/generator/generator.test.ts::[REQ-276] the generator turns operations into functions > writes path, query and body into the arguments and keeps header parameters out": "0072-web-write-foundation.md",
+  "apps/web/src/data/access.test.tsx::[REQ-296] an authentication error speaks in the words of the way in > sends a demo or local-mode visitor to the new address, and leaves a typed token as it was": "0079-remove-demo-mode.md",
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > <suite>": "0079-remove-demo-mode.md",
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > marks a local-mode entry and lands on the KG list, and a later demo entry replaces the mark": "0079-remove-demo-mode.md",
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > reads the mode of an entry address": "0079-remove-demo-mode.md",
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > takes a new address pasted into the open page, replacing the address before the token is announced": "0079-remove-demo-mode.md",
+  "apps/web/src/data/access.test.tsx::[REQ-296] the page knows how the person came in: demo, local mode or a typed token > tells the components the mode, and forgets it with the token or when another token is typed": "0079-remove-demo-mode.md",
+  "apps/web/src/data/access.test.tsx::<import:fb83b27e>": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > <suite>": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > is a demo only while the saved token is the one that came in by the demo address": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > keeps the mark in memory when the browser gives no storage": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > reads the token and the demo flag from the fragment, and nothing from any other address": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > saves the token, marks the demo and replaces the address with the KG screen": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > takes a token without the demo flag as no demo, and leaves other addresses alone": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::[REQ-281] the page takes the token of a demo address and shows that it is a demo > tells a component about the demo and stops when the token is replaced or deleted": "0079-remove-demo-mode.md",
+  "apps/web/src/data/entry.test.tsx::<import:90ab63fc>": "0079-remove-demo-mode.md",
   "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > <suite>": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > gives the same groups whatever the order of the items": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > keeps the members with the most severe result first, and says which result is the worst": "0077-remove-the-impact-screen-users-ask-by-query.md",
@@ -49733,6 +49667,8 @@
   "apps/web/src/test-support/impact-world.ts::=syntheticImpact": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/test-support/impact-world.ts::=upstreamItem": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/test-support/impact-world.ts::=WEIGHTS": "0077-remove-the-impact-screen-users-ask-by-query.md",
+  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > <suite>": "0079-remove-demo-mode.md",
+  "apps/web/src/ui/banner.test.tsx::[REQ-281] the frame shows a banner above everything when it is given one > puts the banner in a status element and leaves it out when there is none": "0079-remove-demo-mode.md",
   "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > <suite>": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > draws about as many elements as there are nodes and edges, never one for each frame": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > fades only where motion is welcome: the transition is a motion-safe class, so reduced motion has none": "0077-remove-the-impact-screen-users-ask-by-query.md",
@@ -49769,7 +49705,23 @@
   "apps/web/src/ui/impact-graph.test.tsx::=lanes": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/ui/impact-graph.test.tsx::=node": "0077-remove-the-impact-screen-users-ask-by-query.md",
   "apps/web/src/ui/impact-graph.test.tsx::=nodes": "0077-remove-the-impact-screen-users-ask-by-query.md",
+  "go:backend/cmd/praxium::TestAllFourStartsRefuseDefinitionsThatCannotBeUsedAndSayHowToGoOn": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestAStartThatTakesLongSaysItIsStillWorking": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoChecksTheFormOfTheAddressBeforeAnythingElse": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoFillsTheKGAndTheAPIAnswers": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoKeepsTheKGInADataFolder": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoRefusesAFolderWhoseFirstLoadDidNotFinish": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoRefusesBadArguments": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoSaysWhenThePortIsTaken": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoServesMCPWithTheTokenOfTheRun": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoStopsBeforeServingWhenTheWorldCannotBeMade": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoTokenIsNewEveryRunAndOnlyInTheAddress": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoURLNeedsAnAddressWithAPort": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoWarnsForANonLoopbackAddress": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoWithMCPOffAnswersJSON404": "0079-remove-demo-mode.md",
+  "go:backend/cmd/praxium::TestDemoWithoutTheWebUIExplainsAndKeepsTheAPI": "0079-remove-demo-mode.md",
   "go:backend/cmd/praxium::TestImpactAnswersAreTheSameOnTheMemoryTheFileAndThePostgresStore": "0078-remove-impact-computation-users-ask-by-query.md",
+  "go:backend/cmd/praxium::TestIngestDataDirRefusesADemoFolderAndALockedOne": "0079-remove-demo-mode.md",
   "go:backend/internal/cli::TestImpactCommandAsksTheRouteAndPrintsSummaryGroupsAndPaths": "0078-remove-impact-computation-users-ask-by-query.md",
   "go:backend/internal/cli::TestImpactCommandPrintsAnUpstreamAnswerWithItsSinglePointsAndHiddenSteps": "0078-remove-impact-computation-users-ask-by-query.md",
   "go:backend/internal/cli::TestImpactCommandSaysWhenNothingChangesAndListsUnfilledChannels": "0078-remove-impact-computation-users-ask-by-query.md",
