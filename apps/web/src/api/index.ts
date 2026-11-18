@@ -42,7 +42,6 @@ export type {
   Freshness,
   GetData,
   GetRequest,
-  GroupTouched,
   IdentifierItem,
   KG,
   LinkCounts,
@@ -60,7 +59,5 @@ export type {
   QueryMeta,
   ResultComplete,
   TypeCount,
-  UpstreamItem,
-  UpstreamSection,
   Valid,
 } from "./generated/types";

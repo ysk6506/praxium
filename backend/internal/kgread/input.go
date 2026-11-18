@@ -65,20 +65,6 @@ type neighborsBody struct {
 	PeerTypes []string `json:"peer_types"`
 }
 
-type impactBody struct {
-	commonBody
-	Direction      string   `json:"direction"`
-	Dead           []string `json:"dead"`
-	DeadLinks      []string `json:"dead_links"`
-	SiteFailure    []string `json:"site_failure"`
-	DeadScopeID    string   `json:"dead_scope_id"`
-	TargetObjectID string   `json:"target_object_id"`
-	Mode           string   `json:"mode"`
-	MaxHops        int      `json:"max_hops"`
-	MaxItems       int      `json:"max_items"`
-	TimeBudget     string   `json:"time_budget"`
-}
-
 // DecodeBody decodes a JSON body into dst. An empty body is the empty object. A field that dst does not know, a value
 // of the wrong type and more than one JSON value are refused with the problem; a reader that fails with a
 // *BodyTooLargeError is a body over the limit.
@@ -215,30 +201,4 @@ func (s *Service) AskNeighbors(ctx context.Context, req Request, body io.Reader)
 	}
 	return s.Neighbors(ctx, req, query.NeighborsInput{Common: common, ObjectID: b.ObjectID, LinkTypes: b.LinkTypes,
 		Meanings: b.Meanings, Direction: b.Direction, MaxSteps: b.MaxSteps, PeerTypes: b.PeerTypes})
-}
-
-// AskImpact reads the JSON body of an impact question and asks it.
-func (s *Service) AskImpact(ctx context.Context, req Request, body io.Reader) (Result[query.ImpactData], *Problem) {
-	var none Result[query.ImpactData]
-	var b impactBody
-	if p := s.Ready(); p != nil {
-		return none, p
-	}
-	if p := DecodeBody(body, &b); p != nil {
-		return none, p
-	}
-	common, p := b.common(req.KG)
-	if p != nil {
-		return none, p
-	}
-	in := query.ImpactInput{Common: common, Direction: b.Direction, Dead: b.Dead, DeadLinks: b.DeadLinks, SiteFailure: b.SiteFailure,
-		DeadScopeID: b.DeadScopeID, TargetObjectID: b.TargetObjectID, Mode: b.Mode, MaxHops: b.MaxHops, MaxItems: b.MaxItems}
-	if b.TimeBudget != "" {
-		d, err := ParseDuration(b.TimeBudget)
-		if err != nil {
-			return none, fieldProblem(field("/time_budget", "invalid_input.field_format", map[string]any{"expected": "iso8601_duration"}))
-		}
-		in.TimeBudget = d
-	}
-	return s.Impact(ctx, req, in)
 }

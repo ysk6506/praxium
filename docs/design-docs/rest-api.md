@@ -27,7 +27,7 @@ follows:
         └──────── REST API: /v1/... (OpenAPI 계약) ──────────────┤ MCP 서버
                               │                                   │
                  ┌────────────┴───── 같은 유스케이스(use case) ─────┘
-                 │  권한 판단 한 곳 · 응답 엔벨로프 · 사전 정의 질의 13종 · 정의 쓰기
+                 │  권한 판단 한 곳 · 응답 엔벨로프 · 사전 정의 질의 12종 · 정의 쓰기
                  └── 코어 ── 스토리지(PostgreSQL) · 질의 엔진 · 워커 · 수집기
 ```
 
@@ -96,13 +96,13 @@ GET /v1/kgs/main/issues?filter[kind][equals]=duplicate_key&filter[status][in]=op
 ```
 
 ### 3-5. 사전 정의 질의는 POST의 "질의" 자원
-**규칙.** 사전 정의 질의 13종은 입력이 커서(객체 목록, 필터링, 범위) URL에 담을 수 없어요. 그래서 `POST /v1/kgs/{kg}/queries:<질의 이름>`으로 받아요. 이 POST는 상태를 바꾸지 않아요. 계약에 "안전함(`x-safe: true`)"이라고 표시하고(OpenAPI에는 이 표시가 없어 확장 필드로 둬요), `Idempotency-Key`를 받지 않아요. 부작용이 없어 다시 보내도 돼요. 간단한 `get`과 `find`는 GET도 제공해요. 응답은 3-2의 엔벨로프예요.
+**규칙.** 사전 정의 질의 12종은 입력이 커서(객체 목록, 필터링, 범위) URL에 담을 수 없어요. 그래서 `POST /v1/kgs/{kg}/queries:<질의 이름>`으로 받아요. 이 POST는 상태를 바꾸지 않아요. 계약에 "안전함(`x-safe: true`)"이라고 표시하고(OpenAPI에는 이 표시가 없어 확장 필드로 둬요), `Idempotency-Key`를 받지 않아요. 부작용이 없어 다시 보내도 돼요. 간단한 `get`과 `find`는 GET도 제공해요. 응답은 3-2의 엔벨로프예요.
 **이유.** URL은 길이 제한이 있고 로그에 남아요. 상태를 바꾸지 않는다는 것을 표시해야 클라이언트와 중간 장치가 재전송해도 안전한지 알 수 있어요.
 
 ```
-POST /v1/kgs/main/queries:impact
-{"dead": ["obj_sw0417"], "mode": "both", "view": "as_observed", "shape": "summary", "limit": 50}
-→ 200 {"data": {"counts_by_result": {"down": 3, "degraded": 9}}, "meta": {...}}
+POST /v1/kgs/main/queries:neighbors
+{"object_id": "obj_7f3a", "max_steps": 1, "shape": "summary"}
+→ 200 {"data": {"groups": [...]}, "meta": {...}}
 
 GET /v1/kgs/main/objects/obj_7f3a?include=attributes,link_counts       (`get`)
 GET /v1/kgs/main/objects?filter[object_type][equals]=Server&filter[display_name][prefix]=srv-04   (`find`)
@@ -247,14 +247,14 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 
 ### 3-15. KG는 계약의 자원이고 세대가 따라다녀요
 **규칙.**
-- KG는 자원이에요(`GET /v1/kgs`, `GET /v1/kgs/{kg}`). `{kg}`는 KG의 ID이고 운영 KG는 고정된 이름 `main`으로도 가리켜요. KG에 속한 것을 다루는 모든 경로는 `/v1/kgs/{kg}/...` 아래예요: 객체, 링크, 사전 정의 질의 13종, 변경, 버전, 충족률, 헬스 상태, 문제 목록, 재수집, 기대와 대조, 식별 이벤트, 저장해 둔 범위, 고정. 후보 KG, 테스트 KG, 시스템 KG도 같은 경로로 질의해요.
+- KG는 자원이에요(`GET /v1/kgs`, `GET /v1/kgs/{kg}`). `{kg}`는 KG의 ID이고 운영 KG는 고정된 이름 `main`으로도 가리켜요. KG에 속한 것을 다루는 모든 경로는 `/v1/kgs/{kg}/...` 아래예요: 객체, 링크, 사전 정의 질의 12종, 변경, 버전, 충족률, 헬스 상태, 문제 목록, 재수집, 기대와 대조, 식별 이벤트, 저장해 둔 범위, 고정. 후보 KG, 테스트 KG, 시스템 KG도 같은 경로로 질의해요.
 - 정의(타입, 소스, 데이터셋, 피드, 브랜치, 제안), 권한 부여, 시크릿, 운영은 배포에 하나만 있어서 `/v1/...` 바로 아래예요. 정의의 메인 브랜치는 배포에 하나이고 KG는 그 메인 브랜치의 어느 정의 세트를 쓰는지 가리켜요(시스템 KG는 `sys` 네임스페이스의 항목만 써요).
 - 권한 부여의 범위에 KG를 지정하는 필드가 있어요(기본은 `main`).
 - **세대**(`generation`)는 시점 복구를 할 때마다 오르는 번호예요. `as_of`, `cursor`, 이벤트의 `event_id`, `min_seq`에 포함돼요. 세대가 다르면 `conflict.generation_changed`로 거절하고, 화면은 상태를 다시 읽어요.
 - **`min_seq`와 `wait_timeout`.** 질의하는 쪽이 `min_seq`(적어도 이 변경 번호까지 반영한 응답)와 `wait_timeout`을 줄 수 있어요. 복제본이 해당 번호에 도달하지 못했으면 주 스토리지로 질의하거나 `wait_timeout`까지 기다리고, 그래도 도달하지 못하면 `stale.min_seq_not_reached`로 거절해요. **`max_staleness`는 이것과 무관해요.** `max_staleness`는 소스에서 읽은 값이 얼마나 오래돼도 되는지만 뜻해요.
 - 큰 배치는 `change_seq` 여러 개로 나뉘어 적용되지만, 읽는 쪽은 배치가 끝날 때만 오르는 읽기 워터마크(`readable_through`)까지만 봐요. `min_seq`와 고정이 이 워터마크를 따라요.
 - "그 버전 시점"의 응답에는 `volatile` 값을 주지 않아요(현재 값을 섞지 않아요). 엔벨로프의 `volatile_as_of: omitted`가 그것을 알려요.
-**이유.** `/v1`은 같은 메이저 버전 안에서 추가만 해요. KG를 지정하는 부분을 나중에 경로에 넣으면 호환성을 깨는 변경이라 처음부터 경로에 둬요. "KG 분리"는 쓰기 한계를 해소하는 수단이 아니에요. 영향 범위 계산이 KG 하나 안에서만 이뤄져서, 서로 의존하지 않는 자산 그룹만 다른 KG가 돼요(ADR-0009).
+**이유.** `/v1`은 같은 메이저 버전 안에서 추가만 해요. KG를 지정하는 부분을 나중에 경로에 넣으면 호환성을 깨는 변경이라 처음부터 경로에 둬요. "KG 분리"는 쓰기 한계를 해소하는 수단이 아니에요. 질의가 KG 하나 안에서만 이뤄져서, 서로 의존하지 않는 자산 그룹만 다른 KG가 돼요(ADR-0009).
 
 ## 4. 로그인과 권한
 
@@ -338,7 +338,7 @@ GET  /v1/jobs/job_9a/result?cursor=...   → {"meta": {...}}\n{"object_id": ...}
 - **명령 형식은 자원과 액션을 따라가요**: `<그룹> <자원> <액션> [인자]`. 도구 이름은 `praxium`이고 서버와 같은 바이너리에 있어요. 서버는 `praxium api serve`로 기동하고(스토리지는 `-store memory|postgres`로 고르고, PostgreSQL이면 연결 문자열이 든 파일을 `-store-dsn-file`로 줘요. 시크릿이 인자와 로그에 남지 않게 파일로만 받아요), 클라이언트 플래그(`--endpoint`, `--token`, `--config`, `--json`)는 명령 앞과 뒤 어디에 놓아도 받아요(ADR-0041). `praxium --help`가 모든 명령을, `praxium <명령> --help`가 명령의 플래그와 예시를 보여 줘요. 종료 코드는 오류 그룹을 따라요(ADR-0024).
 
 ```
-praxium question impact --kg main --dead obj_sw0417 --view as_observed
+praxium query find --kg main --type PhysicalServer --limit 3
 praxium proposal approve prop_31
 praxium job get job_4d2 --wait            # 끝날 때까지 기다려요
 ```
@@ -352,7 +352,7 @@ MCP 서버는 같은 유스케이스 위의 얇은 계층이에요. **KG의 MCP 
 |---|---|---|---|
 | `find` | `GET /v1/kgs/{kg}/objects`, `POST /v1/kgs/{kg}/queries:find` | `kg_find` | |
 | `get` | `GET /v1/kgs/{kg}/objects/{object_id}` | `kg_get` | |
-| `neighbors`, `containment`, `paths`, `impact`, `exposure` | `POST /v1/kgs/{kg}/queries:<이름>` | `kg_neighbors`, `kg_impact`. 나머지는 구현되는 대로 `kg_<이름>` | |
+| `neighbors`, `containment`, `paths`, `exposure` | `POST /v1/kgs/{kg}/queries:<이름>` | `kg_neighbors`. 나머지는 구현되는 대로 `kg_<이름>` | |
 | `changes`, `versions` | `POST /v1/kgs/{kg}/queries:<이름>` | `kg_<이름>` | REST는 `GET /v1/kgs/{kg}/changes`도 줘요 |
 | `quality`, `health` | `POST /v1/kgs/{kg}/queries:<이름>` | `kg_<이름>` | |
 | `scopes` | `GET /v1/kgs/{kg}/scopes` | `kg_scopes` | 범위를 만드는 경로는 REST만 |

@@ -7,7 +7,6 @@ export type {
   AttributeValue,
   FindItem,
   GetData,
-  GroupTouched,
   IdentifierItem,
   KG,
   NeighborItem,

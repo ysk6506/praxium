@@ -1,7 +1,8 @@
 ---
 title: ADR-0043 영향 범위 질의 impact — 전파 규칙, 이중화, 근거 등급, 한도와 업스트림
 kind: decision
-status: active
+status: superseded
+superseded_by: 0078-remove-impact-computation-users-ask-by-query.md
 enforced_by:
   - GOARCH010
   - GOCOV001

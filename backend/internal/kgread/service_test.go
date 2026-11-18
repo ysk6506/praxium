@@ -128,7 +128,7 @@ func TestGetNamesTheObjectOfThePath(t *testing.T) {
 	}
 }
 
-func TestAskNeighborsAndImpact(t *testing.T) {
+func TestAskNeighbors(t *testing.T) {
 	w := newWorld(t)
 	ctx := context.Background()
 	ans, p := w.svc.AskNeighbors(ctx, w.req("main"), body(`{"object_id":"`+w.rackID()+`","max_steps":1,"shape":"items"}`))
@@ -137,10 +137,6 @@ func TestAskNeighborsAndImpact(t *testing.T) {
 	}
 	if _, p = w.svc.AskNeighbors(ctx, w.req("main"), body(`{}`)); p == nil || p.Code != "invalid_input.field_required" {
 		t.Fatalf("neighbors without an object: %+v", p)
-	}
-	imp, p := w.svc.AskImpact(ctx, w.req("main"), body(`{"dead":["`+w.rackID()+`"],"time_budget":"PT5S"}`))
-	if p != nil || len(imp.Data.Seeds) == 0 {
-		t.Fatalf("impact: %+v %+v", imp.Data, p)
 	}
 }
 
@@ -168,9 +164,6 @@ func TestInputProblems(t *testing.T) {
 	if _, p := w.svc.AskFind(ctx, w.req("main"), body(`[1]`)); p == nil || p.Code != "invalid_input.field" || len(p.Fields) != 1 ||
 		p.Fields[0].Code != "invalid_input.field_format" || p.Fields[0].Params["expected"] == nil {
 		t.Fatalf("a body that is not an object: %+v", p)
-	}
-	if _, p := w.svc.AskImpact(ctx, w.req("main"), body(`{"time_budget":"soon"}`)); p == nil || p.Fields[0].Pointer != "/time_budget" {
-		t.Fatalf("a time budget that is no duration: %+v", p)
 	}
 	if _, p := w.svc.AskFind(ctx, w.req("main"), body(``)); p != nil {
 		t.Fatalf("an empty body is the empty object: %+v", p)
@@ -201,7 +194,6 @@ func TestWithoutAStoreEveryReadIsUnavailable(t *testing.T) {
 		"find":      second(svc.AskFind(ctx, req, body(`{}`))),
 		"get":       second(svc.AskGet(ctx, req, body(`{}`))),
 		"neighbors": second(svc.AskNeighbors(ctx, req, body(`{}`))),
-		"impact":    second(svc.AskImpact(ctx, req, body(`{}`))),
 	} {
 		if p == nil || p.Code != "server.unavailable" || p.Params["reason"] != "no_store" {
 			t.Fatalf("%s: %+v", name, p)

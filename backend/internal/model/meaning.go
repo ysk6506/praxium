@@ -18,7 +18,7 @@ type ParamSpec struct {
 	Kind   ParamKind
 	Values []string // the allowed values of an enum parameter
 	// Default is the value of the meaning when nothing narrower says one (the last step of ResolveParams). Only
-	// the parameters the impact query reads have one.
+	// some parameters have one.
 	Default string
 }
 

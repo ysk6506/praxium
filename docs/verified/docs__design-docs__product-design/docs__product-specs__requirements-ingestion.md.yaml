@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements-ingestion.md"
-hash: "d4011d8295afe345"
-date: "2026-11-14"
-note: "수집(110~129, 170대, 엑셀, 식별과 갱신)은 개요의 수집 설계 항목과 일치. 이번에 문서를 나누며 줄을 그대로 옮겼고 어긋나는 곳이 없어 개요는 고치지 않았다"
+hash: "8f2f7a1e2b79471a"
+date: "2026-11-18"
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
 text_changed: true
-doc_hash: "019854b80cb4930e"
+doc_hash: "28c57a06aff13bf4"

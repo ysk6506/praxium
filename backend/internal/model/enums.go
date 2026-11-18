@@ -209,7 +209,7 @@ const (
 	BaseMap      BaseKind = "map"
 )
 
-// Tier says whether a standard type is core (needed to compute impact) or an
+// Tier says whether a standard type is core (the base of the standard model) or an
 // extension (common in sources or in operations): standard-model.md.
 type Tier string
 

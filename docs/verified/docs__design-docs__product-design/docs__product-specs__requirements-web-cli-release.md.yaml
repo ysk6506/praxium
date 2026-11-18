@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements-web-cli-release.md"
-hash: "168bf97e2b2e3e58"
-date: "2026-11-15"
-note: "용어를 고친 뒤 개요와 requirements-web-cli-release 를 다시 대조함. 어긋나는 곳이 없다"
+hash: "b1965de6fc7a9a22"
+date: "2026-11-18"
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
 text_changed: true
-doc_hash: "dbdb2419c1901ff2"
+doc_hash: "28c57a06aff13bf4"

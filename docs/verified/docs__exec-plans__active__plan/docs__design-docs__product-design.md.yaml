@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "05429803b2923c49"
+hash: "28c57a06aff13bf4"
 date: "2026-11-18"
-note: "product-design.md에 이어 가기 문서의 지도 행을 더하고 한 낱말을 고친 것을 확인했다. 계획의 내용은 바뀌지 않는다"
-text_changed: false
-doc_hash: "c2be9fea9ab6fd10"
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+text_changed: true
+doc_hash: "eb3609d743fd0fd9"

@@ -2,7 +2,7 @@ package model
 
 import "slices"
 
-// ResolvedParams are the parameters of one link that the impact query reads, after the order of the values has been
+// ResolvedParams are the parameters of one link that a query could read, after the order of the values has been
 // applied (ResolveParams).
 type ResolvedParams struct {
 	Strength       string

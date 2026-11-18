@@ -60,7 +60,7 @@ follows:
 | `link_present` | `link_type`이나 `meaning`, `direction`(`out`, `in`), `peer_type`(타입이나 특성), `min_count`(기본 1), `min_grade`, `view`(`as_designed`, `as_observed`. 기본 `as_observed`), `peers`, `distinct_at`, `then` | 조건에 맞는 링크가 `min_count`개 이상이에요. `then`이 있으면 **그 도착 객체가 `then`을 채운 것만** 세요 |
 | `follow` | `link_type`이나 `meaning`, `direction`, `until`(도달할 타입이나 특성), `max_steps`, `min_grade`, `then` | 링크를 따라가다 `until`에 도달해요. 홉 수를 미리 알 수 없어요. `max_steps` 안에 도달하지 못하면 충족하지 못한 거예요 |
 | `group_evaluated` | `via`(`meaning`, `resource`, `mediator`), `group_type`, `min_grade` | 의존하는 이중화 그룹에 도달하고, 그룹의 3가지 값을 계산할 입력(`min_alive`, 구성원)이 `min_grade` 이상으로 있어요 |
-| `query_answers` | `query`(`impact`, `paths`, `exposure`), 질의별 필드, `watch_types` | 그 객체에 대한 응답에 `unknown`이 없어요(`watch_types`가 있으면 그 타입의 객체만 봐요) |
+| `query_answers` | `query`(`paths`, `exposure`), 질의별 필드, `watch_types` | 그 객체에 대한 응답에 `unknown`이 없어요(`watch_types`가 있으면 그 타입의 객체만 봐요) |
 | `all_of`, `any_of`, `at_least` | `items`, `n` | 모두 / 하나라도 / `n`개 이상 |
 
 - **이어 붙이기**는 `then` 안에 `then`을 몇 겹이든 넣어요. 다른 질문을 이름으로 가리키는 종류는 없어서 순환이 안 생겨요.
@@ -69,7 +69,7 @@ follows:
 
 ### 4.2 등급과 2가지 읽기
 
-패턴은 한 번 적고 **2가지 읽기**로 계산해요. `impact`의 2가지 응답과 같은 의미예요(ADR-0010).
+패턴은 한 번 적고 **2가지 읽기**로 계산해요.
 
 | 읽기 | 입력을 이렇게 읽어요 |
 |---|---|
@@ -137,7 +137,7 @@ tracked_groupings: [{grouping_id: by_site, group_by: {path: [MOUNTED_IN, LOCATED
 
 읽는 방법: `psu`의 도착(전원 장치)이 2개 이상이고, 각 전원 장치가 `outlet`, `pdu`, `feed`를 끝까지 충족해야 해요. 두 분기가 도달하는 급전선(`feed`)은 서로 달라야 해요(`distinct_at`). 같은 급전선에 도달하면 `not_distinct`예요. 마지막으로 서버가 의존하는 그룹이 계산돼야 `power_group`도 충족해요. 충족하지 못한 서버에는 어디서 끊겼는지가 남아요(예: `psu-7`의 `outlet`에서 `absent`).
 
-**예시 ② ③ ④**(VM 페일오버, 스위치 영향 범위, 서비스 담당자)는 [역량 질문의 예시](competency-examples.md)에 패턴으로 끝까지 적었어요.
+**예시 ② ④**(VM 페일오버, 서비스 담당자)는 [역량 질문의 예시](competency-examples.md)에 패턴으로 끝까지 적었어요.
 
 ## 5. 충족률의 정의
 
@@ -212,7 +212,7 @@ derived 테이블 `competency_mark`예요(키는 `kg_id`, `question_id`, `object
 
 ### 6.4 사전 정의 질의에 의존하는 필요
 
-`query_answers`는 KG 전체를 가로지르는 계산이라 소비자가 아니라 **질의 엔진이** 프로젝션의 변경을 따라 다시 계산하고 **워커가 그 결과를 수신해 기록해요.** **알파에서는 주기적으로 다시 계산해요**(주기의 값은 기본값 표에 가정으로 둬요). 변경이 영향을 준 영역의 대상만 골라 다시 계산하는 증분 갱신은 클로즈드 베타예요. 어떤 대상의 영향 범위가 그 변경으로 달라지는지를 아는 일이 곧 영향 범위 계산이라서 엔진이 있어야 해요. 적용 트랜잭션과 묶지 않아서 표시가 조금 늦게 따라오고, 표시마다 `evaluated_change_seq`가 있어요.
+`query_answers`는 KG 전체를 가로지르는 계산이라 소비자가 아니라 **질의 엔진이** 프로젝션의 변경을 따라 다시 계산하고 **워커가 그 결과를 수신해 기록해요.** **알파에서는 주기적으로 다시 계산해요**(주기의 값은 기본값 표에 가정으로 둬요). 변경이 영향을 준 영역의 대상만 골라 다시 계산하는 증분 갱신은 클로즈드 베타예요. 어떤 대상의 응답이 그 변경으로 달라지는지를 알아야 해서 엔진이 있어야 해요. 적용 트랜잭션과 묶지 않아서 표시가 조금 늦게 따라오고, 표시마다 `evaluated_change_seq`가 있어요.
 
 ### 6.5 신선도는 시간이 지나기만 해도 바뀌어요
 
@@ -301,7 +301,6 @@ derived 테이블 `competency_mark`예요(키는 `kg_id`, `question_id`, `object
 | | 이 방은 어느 냉방 설비가 식히나 | `Room` | `supplied_by(cooling)`의 설비, 그 설비의 전원 |
 | 물리 서버와 부품 | 이 서버는 어느 랙의 어느 위치에 있나 | `PhysicalServer` | `MOUNTED_IN`의 `Rack`, 위치 속성 |
 | | 이 서버는 A·B 두 전원에서 전기를 받나 | `PhysicalServer` | 예시 ① |
-| 네트워크 | 이 스위치에 장애가 나면 어느 서비스가 영향받나 | `Switch` | 예시 ③ |
 | | 이 스위치는 이중화 쌍이나 그룹을 아나 | `Switch` | `group_evaluated`(`member_of`) |
 | 스토리지 | 이 볼륨은 어느 스토리지 시스템이 제공하나 | `StorageVolume` | `supplied_by(storage)`를 `follow`해 `StorageArray` |
 | | 이 볼륨은 어느 호스트에 노출되나 | `StorageVolume` | `EXPORTED_TO` 1홉 이상 |
@@ -342,16 +341,16 @@ derived 테이블 `competency_mark`예요(키는 `kg_id`, `question_id`, `object
 
 ### 10.4 에이전트와 시스템이 조회하는 경로
 
-MCP의 `kg_competency` 툴이에요(첫 릴리스의 여섯 툴에는 없고 구현되는 대로 더해요. kg-mcp.md). 읽기만 해요. 에이전트가 `kg_impact`를 쓰기 전에 "이 스위치에 대해 이 KG가 무엇에 답할 수 있나"를 먼저 조회해요.
+MCP의 `kg_competency` 툴이에요(첫 릴리스의 다섯 툴에는 없고 구현되는 대로 더해요. kg-mcp.md). 읽기만 해요. 에이전트가 다른 툴을 쓰기 전에 "이 객체에 대해 이 KG가 무엇에 답할 수 있나"를 먼저 조회해요.
 
 ```yaml
-# 입력: {object_ids: [sw-12], include: [needs], detail: brief}
+# 입력: {object_ids: [vm-3], include: [needs], detail: brief}
 # 출력의 data (엔벨로프는 kg-queries의 4절을 따른다)
-objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_grade: none,
-  unmet_fact: [{need_id: impact_ok, reason: answer_unknown, cut_object_id: svc-9}]}]}]
+objects: [{object_id: vm-3, questions: [{name: vm_failover_declared, met_grade: none,
+  unmet_fact: [{need_id: host, reason: grade_too_low, cut_object_id: host-7}]}]}]
 ```
 
-`impact`의 응답에 `unknown`이 섞일 것이고 그 이유가 `svc-9`라는 걸 에이전트가 알아요. 응답이 크면 요약을 먼저 반환하고 `detail`로 상세 보기를 선택해요.
+`host`의 링크가 사실 등급이 아니라는 것과 그 끝이 `host-7`이라는 걸 에이전트가 알아요. 응답이 크면 요약을 먼저 반환하고 `detail`로 상세 보기를 선택해요.
 
 ## 11. 알파의 범위
 
@@ -363,7 +362,7 @@ objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_gr
 - **"없다"와 "모른다"**: 선언이 없으면 링크가 없어도 `unknown_absence`예요. 둘 다 못 채움이지만 해결 경로가 달라서(선언 대 소스) 따로 남겨요. 어느 쪽도 "채웠다"가 되지 않아요.
 - **충족했다는 것이 값이 맞다는 의미는 아니에요.** 값이 있고 등급이 조건에 맞다는 의미예요. 소스가 틀린 값을 제공해도 충족해요.
 - **계산이 무거워질 수 있어요.** 패턴이 깊고 분기가 많으면, 허브(많은 대상이 읽는 PDU 하나)가 바뀔 때 다시 계산할 대상이 갑자기 늘어요. 한도(4.5절)가 있고, 한도에 걸린 것은 `not_evaluated`로 드러나요. 한도를 수정하면 분모가 바뀌므로 정의의 변경으로 드라이 런을 거쳐요.
-- **`distinct_at`은 같은 단계의 객체만 비교해요.** 서로 다른 급전선이 실제로 다른 정전 영역인지는 말하지 않아요. 그건 `impact`가 다루는 범위라 `query_answers`를 함께 적용해요.
+- **`distinct_at`은 같은 단계의 객체만 비교해요.** 서로 다른 급전선이 실제로 다른 정전 영역인지는 말하지 않아요. 그건 이 질문의 범위 밖이라 `query_answers`를 함께 적용해요.
 - 충족률은 구성(정의된 체인)에 대한 것이에요. 현재 값이나 헬스 상태는 ADR-0013이 다뤄요. 시간(지속 시간 등)은 계산하지 않아요. 질의 엔진이 `capacity` 그룹을 구현하기 전까지 그 그룹에 의존하는 필요는 `not_evaluated`로 세요. `query_answers`의 표시는 알파에서 주기적으로 다시 계산하므로 변경보다 늦어요(6.4절).
 - 질문 사이의 참조가 없어서 한 질문이 다른 질문의 충족을 필요로 할 수 없어요.
 
@@ -376,7 +375,7 @@ objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_gr
 | `follow`의 `max_steps` 상한 | 12 | 실제 체인의 길이 |
 | 읽은 항목의 인덱스(`reads_limit`) | 대상 하나당 500 | 인덱스의 행 수(합성 100만 객체에서) |
 | 시계 이벤트의 간격 | 1분 | 마감과 부하 |
-| `query_answers`를 다시 계산하는 주기(알파) | 아직 없음(가정으로 정해요) | 엔진의 영향 범위 계산 시간 |
+| `query_answers`를 다시 계산하는 주기(알파) | 아직 없음(가정으로 정해요) | 엔진의 계산 시간 |
 | 질문 하나의 노드 수 상한 | 30 | 정의의 검사 시간 |
 
 ## 14. 미결 사항
@@ -389,5 +388,5 @@ objects: [{object_id: sw-12, questions: [{name: switch_impact_answerable, met_gr
 ## 15. 관련 결정과 요구사항
 
 - [ADR-0015](adr/0015-competency-questions.md): 이 문서의 결정.
-- ADR-0007([KG의 모델](kg-model.md)): `required`, 근거 등급, 완전성 선언. ADR-0008: 피드, 속성별 신선도. ADR-0010([KG 질의](kg-queries.md)): 사전 정의 질의와 엔벨로프, 영향 범위의 두 답. ADR-0013([데이터 관측성](data-observability.md)): 지표, 목표, 헬스 상태, 알림. ADR-0014: 정의, 드라이 런, 계보. ADR-0016: 화면과 REST API의 계약(ADR-0069가 화면의 위치를 고쳤어요).
+- ADR-0007([KG의 모델](kg-model.md)): `required`, 근거 등급, 완전성 선언. ADR-0008: 피드, 속성별 신선도. ADR-0010([KG 질의](kg-queries.md)): 사전 정의 질의와 엔벨로프. ADR-0013([데이터 관측성](data-observability.md)): 지표, 목표, 헬스 상태, 알림. ADR-0014: 정의, 드라이 런, 계보. ADR-0016: 화면과 REST API의 계약(ADR-0069가 화면의 위치를 고쳤어요).
 - 요구사항: REQ-190, REQ-191, REQ-192, REQ-193, REQ-194, REQ-195.

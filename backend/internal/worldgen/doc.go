@@ -1,7 +1,7 @@
 // Package worldgen is the synthetic world generator (ADR-0021): a
 // deterministic, seed-driven generator of an invented data-centre estate that
 // conforms to the standard model. The world is the ground truth for tests,
-// for the later steps (ingestion, queries, impact) and for scale validation
+// for the later steps (ingestion, queries) and for scale validation
 // without any real environment (query-engine-shape.md 6).
 //
 // One generation walks the estate once and hands every object and link to

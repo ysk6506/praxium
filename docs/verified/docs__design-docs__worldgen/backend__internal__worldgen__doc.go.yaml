@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/internal/worldgen/doc.go"
-hash: "19e797eac2feb799"
-date: "2026-11-13"
-note: "생성기 단위 추가(ADR-0021)에 맞춰 읽고 맞춤"
+hash: "9eb9fdcad3080089"
+date: "2026-11-18"
+note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
 text_changed: true
-doc_hash: "774dc0e1b13d86d0"
+doc_hash: "a781e123c7d63be3"

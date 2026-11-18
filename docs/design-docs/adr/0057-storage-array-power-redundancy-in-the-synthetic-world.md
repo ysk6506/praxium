@@ -7,7 +7,6 @@ enforced_by:
   - GOCOV001
   - TLOCK001
   - TRACE006
-  - backend/internal/readcheck/impact_scenarios2_test.go
   - backend/internal/worldgen/golden_test.go
 updates_docs:
   - docs/design-docs/worldgen.md
