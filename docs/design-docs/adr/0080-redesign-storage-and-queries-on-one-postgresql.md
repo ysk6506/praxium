@@ -22,6 +22,7 @@ touches_protected:
   - docs/product-specs/requirements.md
   - docs/product-specs/requirements-access.md
   - docs/product-specs/requirements-definitions.md
+  - docs/product-specs/requirements-gateway.md
   - docs/product-specs/requirements-ingestion.md
   - docs/product-specs/requirements-ingestion-usability.md
   - docs/product-specs/requirements-model-storage.md
