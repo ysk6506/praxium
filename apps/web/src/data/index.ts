@@ -32,14 +32,10 @@ export {
 } from "./display";
 export {
   applyEntry,
-  DEMO_LANDING,
-  type Entry,
   type EntryMode,
   forgetToken,
-  parseEntry,
   parseEntryMode,
   saveTypedToken,
-  useDemo,
   useEntryMode,
   watchEntry,
 } from "./entry";

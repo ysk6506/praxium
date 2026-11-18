@@ -20,20 +20,13 @@ import {
 } from "./screens";
 import { AppShell, Badge, Button, NavLink, NavSection } from "./ui";
 
-/** What the strip above everything says about a way in that is not an ordinary one (ADR-0038, ADR-0042). */
-const NOTICES: Readonly<Record<"demo" | "local", { notice: string; badge: string }>> = {
-  demo: {
-    notice: "데모 모드: 합성 데이터이며 실제 시스템과 연결되어 있지 않습니다. 운영용이 아닙니다.",
-    badge: "데모",
-  },
-  local: {
-    notice: "로컬 모드: 이 컴퓨터에서 혼자 쓰는 용도이며 운영용이 아닙니다.",
-    badge: "로컬",
-  },
+/** What the strip above everything says about a way in that is not an ordinary one (ADR-0042). */
+const LOCAL_NOTICE = {
+  notice: "로컬 모드: 이 컴퓨터에서 혼자 쓰는 용도이며 운영용이 아닙니다.",
+  badge: "로컬",
 };
 
-const noticeOf = (mode: EntryMode | "none") =>
-  mode === "demo" || mode === "local" ? NOTICES[mode] : undefined;
+const noticeOf = (mode: EntryMode | "none") => (mode === "local" ? LOCAL_NOTICE : undefined);
 
 function currentKg(route: Route): string | undefined {
   return "kg" in route ? route.kg : undefined;

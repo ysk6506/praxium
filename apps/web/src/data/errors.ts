@@ -216,18 +216,18 @@ export function describeError(error: unknown): ErrorView {
 export const needsToken = (view: ErrorView): boolean => view.kind === "auth";
 
 /** How the person came in, as far as the words of an error depend on it (`entry.ts` has the full set). */
-export type AccessMode = "demo" | "local" | "direct" | "none";
+export type AccessMode = "local" | "direct" | "none";
 
 const NEW_ADDRESS_HINT =
   "서버를 다시 시작하면 접속 링크가 바뀝니다. 터미널에 출력된 새 주소를 여십시오.";
 
 /**
- * An authentication error in the words that fit how the person came in. A demo or a local-mode server makes its token
+ * An authentication error in the words that fit how the person came in. A local-mode server makes its token
  * itself and the person never typed one, so the way out is the new address the server printed. A typed token is
  * typed again in the settings. Other errors, and the typed token, are left as they are.
  */
 export function withAccessMode(view: ErrorView, mode: AccessMode): ErrorView {
-  if (view.kind !== "auth" || (mode !== "demo" && mode !== "local")) return view;
+  if (view.kind !== "auth" || mode !== "local") return view;
   if (view.code === "auth.token_missing") {
     return {
       ...view,
