@@ -408,3 +408,20 @@ func TestSecretMoreOnlyLowerCaseHexMakesAFolderIdentifier(t *testing.T) {
 		}
 	}
 }
+
+// [REQ-498]
+func TestSecretMoreAnEmptyKeyFileFlagIsAnErrorAndNotTheDefault(t *testing.T) {
+	e := newSecEnv(t)
+	for _, args := range [][]string{
+		{"put", "t1", "-kind", "token"}, {"rotate", "t1"}, {"retire", "t1", "-version", "1"}, {"set-scope", "t1", "-scope", "a"}, {"set-hosts", "t1", "-host", "a.example.test:1"},
+	} {
+		msg := e.secFails(exitUsage, secToken+"\n", append(args, "-data-dir", e.dataDir, "-secrets-key-file", "")...)
+		if !strings.Contains(msg, "-secrets-key-file is empty") {
+			t.Errorf("%s: %s", args[0], msg)
+		}
+	}
+	if _, err := os.Stat(filepath.Join(e.cfgDir, "praxium")); err == nil {
+		t.Errorf("an empty flag used the default place")
+	}
+	e.secFails(exitUsage, "", "list", "-data-dir", e.dataDir, "-secrets-key-file", "x")
+}

@@ -112,6 +112,7 @@ type secretFlags struct {
 	id, dataDir, keyFile, kind string
 	scope, hosts, fields       []string
 	scopeGiven, hostsGiven     bool
+	keyFileGiven               bool
 	// addrs are the hosts as addresses, read once when the command line is read.
 	addrs   []secrets.Address
 	version int
@@ -123,7 +124,10 @@ func newSecretFlags(spec secretSpec, name string, f *secretFlags) *flag.FlagSet 
 	fs.SetOutput(io.Discard)
 	fs.StringVar(&f.dataDir, "data-dir", "", "the data folder that holds the secrets (secrets.json)")
 	if spec.key {
-		fs.StringVar(&f.keyFile, "secrets-key-file", "", "the master key file (default: in your configuration folder, under praxium/keys, named by the identifier of the data folder)")
+		fs.Func("secrets-key-file", "the master key file (default: in your configuration folder, under praxium/keys, named by the identifier of the data folder)", func(v string) error {
+			f.keyFile, f.keyFileGiven = v, true
+			return nil
+		})
 	}
 	if spec.kind {
 		fs.StringVar(&f.kind, "kind", "", "the kind of the secret: password (fields username, password) or token (field token)")
@@ -206,6 +210,8 @@ func checkSecretFlags(spec secretSpec, f secretFlags) error {
 	switch {
 	case f.dataDir == "":
 		return kernel.Errorf(kernel.CodeInvalidValue, "a secret command needs -data-dir <folder>: the data folder that holds the secrets")
+	case spec.key && f.keyFileGiven && f.keyFile == "":
+		return kernel.Errorf(kernel.CodeInvalidValue, "-secrets-key-file is empty: name the key file, or leave the flag out to use the default place")
 	case spec.kind && f.kind == "":
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret put needs -kind password or -kind token")
 	case spec.version && f.version < 1:

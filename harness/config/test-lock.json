@@ -17121,10 +17121,10 @@
   },
   "go:backend/cmd/praxium::TestSecretDiskAWriteDoesNotWriteThroughALinkOfTheTemporaryName": {
    "kind": "test",
-   "hash": "6ed4f4b57f45168d",
-   "asserts": 2,
+   "hash": "22ac8cc9d21811af",
+   "asserts": 3,
    "literals": [
-    "43f2c3a6cc215c66"
+    "3d751a48376a7445"
    ],
    "precision": [],
    "skips": 1,
@@ -17440,6 +17440,21 @@
    "asserts": 9,
    "literals": [
     "11eff862a3c996ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreAnEmptyKeyFileFlagIsAnErrorAndNotTheDefault": {
+   "kind": "test",
+   "hash": "4195daed1c91b142",
+   "asserts": 2,
+   "literals": [
+    "232da0fc518b9fd7"
    ],
    "precision": [],
    "skips": 0,

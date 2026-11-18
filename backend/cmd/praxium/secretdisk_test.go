@@ -120,7 +120,11 @@ func TestSecretDiskDoesNotFollowLinks(t *testing.T) {
 
 // [REQ-499]
 func TestSecretDiskAWriteDoesNotWriteThroughALinkOfTheTemporaryName(t *testing.T) {
-	dir := t.TempDir()
+	e := newSecEnv(t) // hides the real configuration folder
+	dir := e.dataDir
+	if err := os.MkdirAll(dir, 0o750); err != nil {
+		t.Fatal(err)
+	}
 	victim := filepath.Join(t.TempDir(), "victim")
 	if err := os.WriteFile(victim, []byte("keep"), 0o600); err != nil {
 		t.Fatal(err)
@@ -128,8 +132,6 @@ func TestSecretDiskAWriteDoesNotWriteThroughALinkOfTheTemporaryName(t *testing.T
 	if err := os.Symlink(victim, filepath.Join(dir, "secrets.json.tmp")); err != nil {
 		t.Skip("ADR-0076: this system cannot make links: " + err.Error())
 	}
-	e := &secEnv{t: t, w: wiring{deps: fixedDeps()}, dataDir: dir, cfgDir: t.TempDir()}
-	e.w.configDir = func() (string, error) { return e.cfgDir, nil }
 	e.secPut("db_main")
 	if data, _ := os.ReadFile(victim); string(data) != "keep" {
 		t.Errorf("the write went through the link")
