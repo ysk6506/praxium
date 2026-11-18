@@ -69,6 +69,7 @@ follows:
 - 시간과 번호: `pg_sleep` 계열, `pg_current_xact_id`와 `txid_current` 계열(번호를 소모해요), `pg_export_snapshot`.
 - 파일과 큰 객체: 큰 객체 함수 전부(`lo_*`), `pg_read_file`, `pg_ls_dir`, 설정 다시 읽기(`pg_reload_conf`), `pg_log_backend_memory_contexts`.
 - 언어: `plpgsql`의 사용 권한(`DO`).
+- **이 회수는 방어의 필수 부분이에요.** 스키마 관리기의 설치 역할이 회수하고(역할 만들기와 카탈로그 함수의 권한 바꾸기가 필요해요. 필요한 권한은 배포 안내서에 적어요), 점검 명령이 회수되어 있는지 확인해요.
 - 내장 함수는 수천 개라서 허용 목록으로 갈 수 없어요. 대신 **전용 데이터베이스를 전제로** 하고, 시작할 때 설치된 확장을 점검하고(`dblink` 같은 것이 있으면 막아요), **주 버전이 오를 때 새로 생긴 함수 가운데 부작용이 있는 것을 보는 점검**을 업그레이드 절차에 넣어요.
 
 ## 3. 그래프 함수
@@ -77,7 +78,7 @@ follows:
 
 ```sql
 reachable(start, edges, direction, max_depth, max_nodes)
-    -> (id, depth, prev, via)
+    -> (id, depth)
 shortest_path(from_id, to_id, edges, direction, max_depth, max_nodes)
     -> (step, id, via)
 ```
@@ -90,10 +91,10 @@ shortest_path(from_id, to_id, edges, direction, max_depth, max_nodes)
 | `max_depth` | **물음의 일부**예요. 거기서 멈추고 정상 결과를 줘요(이웃 펼치기에 써요) |
 | `max_nodes` | **예산**이에요. 넘으면 **오류**예요. 조용히 자르지 않아요 |
 
-- 돌려주는 열 `prev`(앞 노드)와 `via`(지나온 링크의 번호)는 검토에서 채운 세부예요. 닿은 모든 노드까지의 길 하나가 나오고 이웃 펼치기(깊이 1~3)도 이것으로 돼요. 값이 싸요(너비 우선 탐색이 이미 아는 것이에요).
+- `reachable`은 닿은 노드와 깊이(`id`, `depth`)만 돌려줘요. 앞 노드와 지나온 링크는 내지 않고, 길이 필요하면 `shortest_path`가 줘요. 이웃 펼치기(깊이 1~3)는 이 열로 돼요.
 - **기본값과 한도**: 깊이 12, 방문 20만. 사용자가 올려도 **넘을 수 없는 한도**는 방문 100만이에요. 예산 오류는 고정된 코드로 답하고 방문 수와 닿은 깊이를 싣고, 글에 값을 싣지 않아요.
 - **구현의 조건**(원형에서 나온 것):
-  1. **간선 전체를 읽어 두지 않아요.** 한 번 읽어 재귀 질의 하나로 도는 꼴은 닿는 것이 30개인 흔한 질의에서도 링크 전체를 읽고, 예산 1만에도 연결 메모리가 255MB였어요(한 단계의 후보를 다 만들고 자르는 꼴. 노드당 약 0.55KB). **단계마다 링크의 인덱스로 넓혀요.** 단계 안에서 `LIMIT`을 먼저 걸거나 방문 집합의 크기를 단계 도중에 검사해요.
+  1. **간선 전체를 읽어 두지 않아요.** 한 번 읽어 재귀 질의 하나로 도는 꼴은 닿는 것이 30개인 흔한 질의에서도 링크 전체를 읽고, 예산이 메모리를 막지 못했어요(예산 1만에도 255MB. 한 단계의 후보를 다 만든 뒤에 잘랐어요. 노드당 약 0.55KB). **단계 안에서 먼저 자르고 링크의 인덱스로 넓혀요.** 방문 집합의 크기를 단계 도중에 검사해요.
   2. **최단 경로는 양쪽에서 함께 넓혀요.** 한쪽만 넓히면 116만 노드 그래프에서 3.8~6.6초였어요. 양방향이 방문 수를 크게 줄일 것으로 추측하고, 구현해서 재요.
   3. **호출자의 권한으로 돌아요**(`SECURITY INVOKER`). 저장 스키마의 모델 테이블이 아니라 질의 스키마의 뷰를 읽어요(원형에서 저장 스키마를 읽으면 질의 역할로는 안 돌았어요).
   4. **쓰기, 임시 테이블, 시퀀스 없이 순수 SQL로**(재귀 CTE, 방문 집합은 CTE 안에서) 돌려서 복제본에서 돌아요.
@@ -111,7 +112,7 @@ shortest_path(from_id, to_id, edges, direction, max_depth, max_nodes)
 | **찾기**(`find`) | `object_type`, `include_subtypes`, `trait`, `attributes`(`name`, `op`, `values`), `identifier`(`scheme`, `value`), `text`, `limit`, `cursor` | 항목(`id`, `ref`, `type`, `name`, 상태, `min_grade`)의 목록, `next_cursor` |
 | **객체 읽기**(`get`) | `object_id`나 `ref`나 `identifier`, `include`(`attributes`, `identifiers`, `link_counts`, `provenance`) | 속성마다 값과 근거 등급과 근거 종류와 시각(행에서 그대로), 링크 개수 |
 | **이웃**(`neighbors`) | `object_id`, `link_types`, `direction`, `max_steps`(기본 1, 상한 3), `peer_types`, `limit`, `cursor` | 링크 타입별 그룹과 항목, 그룹 개수 |
-| **도달 집합**(`reachable`) | `object_id`, `link_types`나 간선 정의 이름, `direction`, `max_depth`, `max_nodes` | `id`, `ref`, `type`, `name`, `depth`, `prev`, `via`, 잘렸는지 |
+| **도달 집합**(`reachable`) | `object_id`, `link_types`나 간선 정의 이름, `direction`, `max_depth`, `max_nodes` | `id`, `ref`, `type`, `name`, `depth`, 잘렸는지 |
 | **스키마 설명**(`schema`) | `name`(낱말로 찾기), 타입 하나 보기 | 호출자의 민감 등급으로 거른 타입, 속성, 링크 타입, 잇는 규칙, 조인의 본보기 |
 
 - **MCP 툴**: `kg_schema`, `kg_find`, `kg_get`, `kg_neighbors`, `kg_reachable`, `kg_whoami`가 기본으로 있어요(지금의 `kg_catalog`는 `kg_schema`로 대체돼요). 저장한 질의마다 툴이 더해져요. 임의 SQL 툴은 없어요([저장한 질의와 간선 정의](saved-queries.md) 4절).
@@ -166,7 +167,7 @@ shortest_path(from_id, to_id, edges, direction, max_depth, max_nodes)
 
 ## 8. 알려진 한계와 가정
 
-- 방어의 효과는 원형(PostgreSQL 19.0, 합성 데이터)의 74건이에요. 실제 복제본, 관리형 PostgreSQL, 수천 개의 내장 함수 전체는 점검하지 못했어요.
+- 방어의 효과는 원형(PostgreSQL 19.0, 합성 데이터)의 74건이에요. 실제 복제본과 수천 개의 내장 함수 전체는 점검하지 못했어요.
 - 드라이버(`lib/pq`)의 취소와 큰 행의 동작은 소스로만 확인했고 실험하지 않았어요.
 - 풀의 크기와 시한은 CPU 2개, 메모리 8GB의 기계에서 정한 시작값이에요.
 
