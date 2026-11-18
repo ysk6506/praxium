@@ -1,7 +1,7 @@
 doc: "docs/guides/operate-the-server.md"
 target: "backend/cmd/praxium/auth.go"
 hash: "3182ee050fd10032"
-date: "2026-11-15"
-note: "auth.go의 checkMode가 운영 모드 뒤에 DB TLS 검사(checkDBTLS)를 부르는 것과 대조해 시작 조건 표와 5절을 더했다"
+date: "2026-11-18"
+note: "시크릿 명령의 안내 문장을 고친 secretcmd.go와 7절의 값 규칙, 한계 목록을 대조했다"
 text_changed: true
-doc_hash: "278d3c473ea10fb2"
+doc_hash: "d681891fc7229447"
