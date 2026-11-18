@@ -99,15 +99,6 @@ func (s *Service) Neighbors(ctx context.Context, req Request, in query.Neighbors
 	return Result[query.NeighborsData]{Data: ans.Data, Meta: MetaOf(ans.Meta)}, nil
 }
 
-// Impact asks impact with the typed input.
-func (s *Service) Impact(ctx context.Context, req Request, in query.ImpactInput) (Result[query.ImpactData], *Problem) {
-	ans, err := s.Queries.Impact(ctx, in, s.ReadFilter(req.Subject))
-	if err != nil {
-		return Result[query.ImpactData]{}, s.Refuse(req, err)
-	}
-	return Result[query.ImpactData]{Data: ans.Data, Meta: MetaOf(ans.Meta)}, nil
-}
-
 // Refuse maps an error of the storage or of the queries to the problem of the catalogue. An error that names no code
 // is logged with the trace id and becomes server.internal.
 func (s *Service) Refuse(req Request, err error) *Problem {
@@ -117,7 +108,7 @@ func (s *Service) Refuse(req Request, err error) *Problem {
 	}
 	switch code {
 	case query.CodeObjectNotFound:
-		return NotFound("object", first(req.Object, query.MissingID(err)))
+		return NotFound("object", req.Object)
 	case graph.CodeKGNotFound:
 		return NotFound("kg", req.KG)
 	case graph.CodeGenerationChanged:
@@ -169,15 +160,6 @@ func PlainMessage(err error) string {
 	return ke.Message
 }
 
-func first(values ...string) string {
-	for _, v := range values {
-		if v != "" {
-			return v
-		}
-	}
-	return ""
-}
-
 // queryProblem is the code of the catalogue a refusal of the queries becomes, and its parameters.
 type queryProblem struct {
 	code   string
@@ -193,7 +175,7 @@ var queryProblems = map[kernel.Code]queryProblem{
 	query.CodeCursorInvalid:  {"invalid_input.cursor_invalid", func(error) map[string]any { return nil }},
 	query.CodeLimitInvalid:   {"invalid_input.limit_invalid", func(error) map[string]any { return map[string]any{"min": 1, "max": query.MaxLimit} }},
 	query.CodeScopeUnsupported: {"invalid_input.param_invalid", func(err error) map[string]any {
-		return map[string]any{"param": first(query.ParamOf(err), "scope_id"), "detail": err.Error()}
+		return map[string]any{"param": "scope_id", "detail": err.Error()}
 	}},
 }
 

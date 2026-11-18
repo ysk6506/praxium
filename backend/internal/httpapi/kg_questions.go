@@ -51,12 +51,6 @@ func (c *call) askNeighbors() {
 	c.answer(ans.Data, ans.Meta, p)
 }
 
-// askImpact serves POST /v1/kgs/{kg}/queries:impact.
-func (c *call) askImpact() {
-	ans, p := c.s.read.AskImpact(c.r.Context(), c.request(), c.body())
-	c.answer(ans.Data, ans.Meta, p)
-}
-
 // answer writes the result of a question read from a KG, or its problem.
 func (c *call) answer(data any, meta map[string]any, p *kgread.Problem) {
 	if p != nil {
