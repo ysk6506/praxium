@@ -2,12 +2,14 @@ import { Button as BaseButton } from "@base-ui/react/button";
 import type { ComponentProps } from "react";
 import { cx } from "./cx";
 
-export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger";
 
 const VARIANTS: Readonly<Record<ButtonVariant, string>> = {
   primary: "bg-accent text-accent-fg border-accent hover:opacity-90",
   secondary: "bg-surface text-fg border-control-line hover:bg-sunken",
   ghost: "bg-transparent text-muted border-transparent hover:bg-sunken hover:text-fg",
+  // An action that cannot be taken back. The edge is the danger color and the caller adds a word; color is not the only sign.
+  danger: "bg-surface text-danger border-danger hover:bg-danger-soft",
 };
 
 export interface ButtonProps extends ComponentProps<typeof BaseButton> {

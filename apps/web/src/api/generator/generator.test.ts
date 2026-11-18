@@ -149,18 +149,18 @@ describe("[REQ-276] the generator turns operations into functions", () => {
     ]);
   });
 
-  it("writes path, query and body into the arguments and keeps header parameters out", () => {
+  it("writes path, query, header parameters and body into the arguments", () => {
     const text = generateOperations(doc);
     expect(text).toContain("export interface GetThingArgs {");
     expect(text).toContain("path: { id: string; };");
     expect(text).toContain("query?: { limit?: number; filter?: QueryObject; };");
-    expect(text).not.toContain("If-None-Match");
+    expect(text).toContain('headers?: { "If-None-Match"?: string; };');
     expect(text).toContain("export interface MakeThingArgs { body: ThingInput; }");
     expect(text).toContain(
       "export const getThing = (client: Requester, args: GetThingArgs): Promise<Thing> =>",
     );
     expect(text).toContain(
-      'client.request<Thing>({ method: "GET", path: "/v1/things/{id}", pathParams: args.path, query: args.query });',
+      'client.request<Thing>({ method: "GET", path: "/v1/things/{id}", pathParams: args.path, query: args.query, headers: args.headers });',
     );
   });
 

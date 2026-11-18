@@ -63,6 +63,8 @@ function responseSchema(entry: OperationEntry, doc: OpenApiDocument): Schema | u
 interface Shape {
   readonly path: readonly Field[];
   readonly query: readonly Field[];
+  /** The header parameters of the contract (`Idempotency-Key`, `If-Match`, `If-None-Match`), by their header names. */
+  readonly headers: readonly Field[];
   readonly body: string | undefined;
   readonly bodyRequired: boolean;
 }
@@ -74,6 +76,7 @@ function shapeOf(entry: OperationEntry, doc: OpenApiDocument, refs: Set<string>)
   return {
     path: parameters.filter((p) => p.in === "path").map((p) => fieldOf(p, refs)),
     query: parameters.filter((p) => p.in === "query").map((p) => fieldOf(p, refs)),
+    headers: parameters.filter((p) => p.in === "header").map((p) => fieldOf(p, refs)),
     body: body ? typeOf(body, refs) : undefined,
     bodyRequired: request?.required === true,
   };
@@ -84,6 +87,10 @@ function argsFields(shape: Shape): string[] {
   if (shape.path.length > 0) fields.push(`path: ${group(shape.path)};`);
   if (shape.query.length > 0) {
     fields.push(`query${shape.query.some((q) => q.required) ? "" : "?"}: ${group(shape.query)};`);
+  }
+  if (shape.headers.length > 0) {
+    const required = shape.headers.some((h) => h.required);
+    fields.push(`headers${required ? "" : "?"}: ${group(shape.headers)};`);
   }
   if (shape.body) fields.push(`body${shape.bodyRequired ? "" : "?"}: ${shape.body};`);
   return fields;
@@ -97,6 +104,7 @@ function requestSpec(entry: OperationEntry, shape: Shape): string {
   const spec = [`method: ${JSON.stringify(entry.method)}`, `path: ${JSON.stringify(entry.path)}`];
   if (shape.path.length > 0) spec.push("pathParams: args.path");
   if (shape.query.length > 0) spec.push("query: args.query");
+  if (shape.headers.length > 0) spec.push("headers: args.headers");
   if (shape.body) spec.push("body: args.body");
   return spec.join(", ");
 }
@@ -109,7 +117,10 @@ function operationCode(entry: OperationEntry, doc: OpenApiDocument, refs: Set<st
   const response = schema ? typeOf(schema, refs) : "void";
   const argsName = `${pascal(id)}Args`;
   const mustPass =
-    shape.path.length > 0 || shape.query.some((q) => q.required) || shape.bodyRequired;
+    shape.path.length > 0 ||
+    shape.query.some((q) => q.required) ||
+    shape.headers.some((h) => h.required) ||
+    shape.bodyRequired;
   const comment = docComment(entry.operation.summary ?? entry.operation.description);
   const interfaceCode =
     fields.length > 0 ? `export interface ${argsName} { ${fields.join(" ")} }\n\n` : "";

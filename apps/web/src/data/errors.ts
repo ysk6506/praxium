@@ -7,6 +7,7 @@ export type ErrorKind =
   | "notFound"
   | "network"
   | "input"
+  | "conflict"
   | "server"
   | "other";
 
@@ -60,6 +61,37 @@ const BY_CODE: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "messa
     message: "다음 페이지를 가리키는 값이 더는 사용할 수 없습니다.",
     hint: "첫 페이지부터 다시 보십시오.",
   },
+  "invalid_input.precondition_required": {
+    kind: "input",
+    title: "바꿀 항목의 버전이 필요합니다",
+    message: "이 변경은 읽은 시점의 버전을 함께 보내야 하는데, 서버가 그 버전을 받지 못했습니다.",
+    hint: "화면을 다시 읽은 뒤 다시 저장하십시오.",
+  },
+  "invalid_input.idempotency_key_required": {
+    kind: "input",
+    title: "요청 번호가 필요합니다",
+    message:
+      "이 요청은 중복 처리를 막는 요청 번호(Idempotency-Key)가 있어야 하는데 실리지 않았습니다.",
+    hint: "화면을 다시 읽은 뒤 다시 저장하십시오. 같은 일이 되풀이되면 화면의 오류로 보고하십시오.",
+  },
+  "conflict.version_mismatch": {
+    kind: "conflict",
+    title: "다른 곳에서 먼저 바뀌었습니다",
+    message: "내가 읽은 뒤에 이 항목이 바뀌어 저장하지 못했습니다.",
+    hint: "최신 내용을 다시 읽고, 내 변경이 그대로 맞는지 확인한 뒤 다시 저장하십시오.",
+  },
+  "conflict.idempotency_key_reused": {
+    kind: "conflict",
+    title: "같은 요청 번호로 다른 내용을 보냈습니다",
+    message: "이 요청 번호는 다른 내용의 요청에 이미 쓰였습니다.",
+    hint: "내용을 확인한 뒤 다시 저장하십시오. 새 요청으로 보냅니다.",
+  },
+  "conflict.request_in_progress": {
+    kind: "conflict",
+    title: "같은 요청이 처리 중입니다",
+    message: "먼저 보낸 같은 요청을 서버가 아직 처리하고 있습니다.",
+    hint: "잠시 뒤 결과를 확인하십시오. 같은 내용을 다시 저장해도 한 번만 처리됩니다.",
+  },
   "stale.projection_not_ready": {
     kind: "server",
     title: "아직 읽을 수 없습니다",
@@ -86,7 +118,7 @@ const BY_GROUP: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "mess
     message: "서버가 요청의 값을 받아들이지 않았습니다.",
   },
   conflict: {
-    kind: "other",
+    kind: "conflict",
     title: "충돌했습니다",
     message: "데이터가 바뀌어 요청을 처리하지 못했습니다.",
   },
@@ -106,6 +138,38 @@ const BY_GROUP: Readonly<Record<string, Pick<ErrorView, "kind" | "title" | "mess
     message: "서버가 요청을 처리하지 못했습니다.",
   },
 };
+
+/** What the server said, when its reason changes what a person should do. */
+function refined(view: ErrorView): ErrorView {
+  if (view.code !== "conflict.idempotency_key_reused") return view;
+  switch (view.params?.reason) {
+    case "in_progress":
+      return {
+        ...view,
+        title: "같은 요청이 처리 중입니다",
+        message: "먼저 보낸 같은 요청을 서버가 아직 처리하고 있습니다.",
+        hint: "잠시 뒤 결과를 확인하십시오.",
+      };
+    case "secret_shown_once":
+      return {
+        ...view,
+        title: "결과를 다시 보여 줄 수 없습니다",
+        message:
+          "이 요청의 결과에는 한 번만 보여 주는 비밀 값이 있어, 같은 요청을 다시 보내도 받을 수 없습니다.",
+        hint: "처음 요청의 결과를 놓쳤다면 새로 만드십시오.",
+      };
+    default:
+      return view;
+  }
+}
+
+/** The version the server holds now, when it refused a change because the version sent was old (412). */
+export function currentEtag(view: ErrorView): string | undefined {
+  const sent = view.params?.current_etag;
+  return view.code === "conflict.version_mismatch" && typeof sent === "string" && sent !== ""
+    ? sent
+    : undefined;
+}
 
 /** An error of any kind as something to show. An abort is not an error and never reaches here. */
 export function describeError(error: unknown): ErrorView {
@@ -142,7 +206,7 @@ export function describeError(error: unknown): ErrorView {
     };
   }
   const known = BY_CODE[error.code];
-  if (known) return { ...base, ...known };
+  if (known) return refined({ ...base, ...known });
   const group = BY_GROUP[error.code.split(".")[0] ?? ""];
   if (group) return { ...base, ...group };
   return { ...base, kind: "other", title: error.title, message: error.code };
@@ -259,4 +323,15 @@ export function errorDetails(view: ErrorView): [label: string, value: string][] 
   }
   for (const problem of view.fieldErrors ?? []) details.push([problem.pointer, problem.code]);
   return details;
+}
+
+const FIELD_CODES: Readonly<Record<string, string>> = {
+  "invalid_input.field_required": "필수 항목입니다",
+  "invalid_input.field_format": "형식이 올바르지 않습니다",
+  "invalid_input.field": "값이 올바르지 않습니다",
+};
+
+/** The words for a code the server gave for one field (`errors[].code`). A code the table does not know shows as it is. */
+export function fieldErrorMessage(code: string): string {
+  return FIELD_CODES[code] ?? `값이 올바르지 않습니다(${code})`;
 }

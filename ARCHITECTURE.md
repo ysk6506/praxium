@@ -67,7 +67,7 @@ TypeScript의 `core.kernel`과 Go의 `core.kernel`은 이름만 같고 다른 �
 
 - 다른 단위는 그 단위의 `index.ts`로만 접근한다. 코어의 단위는 `@praxium/core/<단위>` 별칭으로 부른다.
 - 코어는 Node를 모른다. 파일, 네트워크, 프로세스는 코어 밖(서버의 어댑터)에 두고, 코어는 포트(인터페이스)만 안다.
-- 시계와 난수는 `kernel`의 `Clock`과 `Rng`를 주입받는다. 제품 코드에서 직접 읽을 수 있는 곳은 `kernel`의 한 파일(`packages/core/src/kernel/entropy.ts`)뿐이다(REQ-001, `ARCH052`). 하네스는 제품 코드가 아니라서 이 규칙에서 빠진다.
+- 시계와 난수는 `kernel`의 `Clock`과 `Rng`를 주입받는다. 제품 코드에서 직접 읽을 수 있는 곳은 `kernel`의 한 파일(`packages/core/src/kernel/entropy.ts`)뿐이다(REQ-001, `ARCH052`). 화면(`apps/web`)에서는 멱등 키를 만드는 `apps/web/src/data/idempotency.ts` 한 파일이 브라우저의 난수를 읽는다(ADR-0072). 나머지는 키를 만드는 함수를 받는다. 하네스는 제품 코드가 아니라서 이 규칙에서 빠진다.
 - 외부 패키지는 구조 계약의 `third_party`에 적힌 단위에서만 사용한다. 새 패키지는 결정 기록이 있어야 들어온다.
 - 파일 500줄, 함수 80줄, 복잡도 12, 매개변수 6개가 한도다(`DEBT*`).
 

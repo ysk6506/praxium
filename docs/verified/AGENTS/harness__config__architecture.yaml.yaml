@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "faf74d39158b0323"
-date: "2026-11-16"
-note: "main 병합 뒤 architecture.yaml에는 adapter.mcp, core.secrets, adapter.secretsfile이 함께 있다. AGENTS.md는 유닛을 나열하지 않고 규칙과 명령만 말하므로 고칠 곳이 없다"
-text_changed: true
+hash: "72667629cbb66a42"
+date: "2026-11-17"
+note: "구조 계약의 난수 허용 파일 하나(apps/web/src/data/idempotency.ts)와 web.yaml 주석의 측정값 변경을 문서와 대조해 읽었다. ARCHITECTURE.md와 web-ui-rules.md에는 이 문을 적었고 AGENTS.md는 바꿀 것이 없었다."
+text_changed: false
 doc_hash: "b20aea430b7f82a9"
