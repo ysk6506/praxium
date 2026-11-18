@@ -100,7 +100,8 @@ func TestSecretMoreValueFilesThatAreNotPlainFilesAreRefused(t *testing.T) {
 	args := []string{"put", "t1", "-kind", "token", "-data-dir", e.dataDir, "-field"}
 	for _, device := range []string{os.DevNull, "/dev/tty", "/dev/stdin"} {
 		if _, err := os.Lstat(device); err != nil {
-			continue
+			t.Logf("no %s here", device)
+			device = os.DevNull
 		}
 		msg := e.secFails(exitFailure, "", append(append([]string{}, args...), "token="+device)...)
 		if !strings.Contains(msg, "not a plain file") && !strings.Contains(msg, "cannot be opened") {
