@@ -1,7 +1,7 @@
 doc: "docs/design-docs/core-beliefs.md"
 target: "AGENTS.md"
-hash: "93fd917edf823971"
+hash: "9b6002b7868d9dd0"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+note: "ADR-0079: AGENTS.md에서 praxium demo 명령과 ADR-0038 링크를 local 기준으로 바꿨다. 핵심 신념 문서는 데모를 언급하지 않아 고칠 곳이 없다"
 text_changed: false
 doc_hash: "fa6d560a34c76e15"

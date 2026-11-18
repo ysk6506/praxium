@@ -1,7 +1,8 @@
 ---
 title: ADR-0038 데모 모드를 정식 기능으로 둔다 — 명령 하나로 합성 데이터센터가 채워진 프락시움을 띄운다
 kind: decision
-status: active
+status: superseded
+superseded_by: 0079-remove-demo-mode.md
 enforced_by:
   - backend/cmd/praxium/demo_test.go
   - apps/web/src/data/entry.test.tsx

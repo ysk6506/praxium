@@ -19,6 +19,9 @@ touches_protected:
   - docs/product-specs/requirements.md
   - harness/config/test-lock.json
 decision_hash: 203df888baf80387
+amended_by:
+  - adr: "0079"
+    what: 결정 3의 시작 배선이 `demo`를 포함한다는 부분과 `apply` 뒤에 다시 시작할 서버의 목록. REQ-369를 그에 맞게 고친다.
 ---
 # ADR-0053 조직 속성의 명령줄과 시작 배선
 

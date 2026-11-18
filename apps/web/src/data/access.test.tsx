@@ -8,7 +8,6 @@ import { createConnectionStore, type StorageLike } from "./connection";
 import {
   applyEntry,
   createMark,
-  DEMO_KEY,
   type EntryHistory,
   forgetToken,
   LOCAL_KEY,
@@ -35,14 +34,13 @@ function setup() {
     urls,
     history,
     store: createConnectionStore(storage),
-    demo: createMark(storage, DEMO_KEY),
     local: createMark(storage, LOCAL_KEY),
   };
 }
 
-describe("[REQ-296] the page knows how the person came in: demo, local mode or a typed token", () => {
+describe("[REQ-296] the page knows how the person came in: local mode or a typed token", () => {
   it("reads the mode of an entry address", () => {
-    expect(parseEntryMode("#/connect?token=a1&demo=1")).toEqual({ token: "a1", mode: "demo" });
+    expect(parseEntryMode("#/connect?token=a1&demo=1")).toEqual({ token: "a1", mode: "direct" });
     expect(parseEntryMode("#/connect?token=a1&mode=local")).toEqual({ token: "a1", mode: "local" });
     expect(parseEntryMode("#/connect?token=a1&mode=other")).toEqual({
       token: "a1",
@@ -51,32 +49,16 @@ describe("[REQ-296] the page knows how the person came in: demo, local mode or a
     expect(parseEntryMode("#/connect?mode=local")).toBeUndefined();
   });
 
-  it("marks a local-mode entry and lands on the KG list, and a later demo entry replaces the mark", () => {
+  it("marks a local-mode entry and lands on the KG list, and a later plain entry replaces the mark", () => {
     const s = setup();
     const at = { pathname: "/", search: "" };
-    applyEntry(
-      { ...at, hash: "#/connect?token=local-1&mode=local" },
-      s.history,
-      s.store,
-      s.demo,
-      s.local,
-    );
-    expect([s.local.is("local-1"), s.demo.is("local-1"), s.urls]).toEqual([
-      true,
+    applyEntry({ ...at, hash: "#/connect?token=local-1&mode=local" }, s.history, s.store, s.local);
+    expect([s.local.is("local-1"), s.urls]).toEqual([true, ["/#/kgs"]]);
+    applyEntry({ ...at, hash: "#/connect?token=plain-2" }, s.history, s.store, s.local);
+    expect([s.local.is("local-1"), s.local.is("plain-2"), s.urls[1]]).toEqual([
       false,
-      ["/#/kgs"],
-    ]);
-    applyEntry(
-      { ...at, hash: "#/connect?token=demo-2&demo=1" },
-      s.history,
-      s.store,
-      s.demo,
-      s.local,
-    );
-    expect([s.local.is("local-1"), s.demo.is("demo-2"), s.urls[1]]).toEqual([
       false,
-      true,
-      "/#/kg/main/types",
+      "/#/kgs",
     ]);
     expect(s.storage.items.has(LOCAL_KEY)).toBe(false);
   });
@@ -95,13 +77,12 @@ describe("[REQ-296] the page knows how the person came in: demo, local mode or a
         removeEventListener: (_t, l) => void listeners.splice(listeners.indexOf(l), 1),
       },
       s.store,
-      s.demo,
       s.local,
     );
-    location.hash = "#/connect?token=fresh-3&demo=1";
+    location.hash = "#/connect?token=fresh-3&mode=local";
     for (const l of listeners) l();
     expect(seen).toEqual(["fresh-3@1"]);
-    expect(s.demo.is("fresh-3")).toBe(true);
+    expect(s.local.is("fresh-3")).toBe(true);
     location.hash = "#/kgs";
     for (const l of listeners) l();
     expect(s.urls).toHaveLength(1);
@@ -112,32 +93,20 @@ describe("[REQ-296] the page knows how the person came in: demo, local mode or a
   it("tells the components the mode, and forgets it with the token or when another token is typed", async () => {
     const s = setup();
     const at = { pathname: "/", search: "" };
-    const hook = await renderHook(() => useEntryMode(s.store, s.demo, s.local));
+    const hook = await renderHook(() => useEntryMode(s.store, s.local));
     expect(hook.result.current).toBe("none");
     await act(async () => {
-      applyEntry(
-        { ...at, hash: "#/connect?token=m-1&mode=local" },
-        s.history,
-        s.store,
-        s.demo,
-        s.local,
-      );
+      applyEntry({ ...at, hash: "#/connect?token=m-1&mode=local" }, s.history, s.store, s.local);
     });
     expect(hook.result.current).toBe("local");
-    await act(async () => saveTypedToken("typed-2", s.store, s.demo, s.local));
+    await act(async () => saveTypedToken("typed-2", s.store, s.local));
     expect(hook.result.current).toBe("direct");
     expect(s.storage.items.has(LOCAL_KEY)).toBe(false);
     await act(async () => {
-      applyEntry(
-        { ...at, hash: "#/connect?token=d-3&demo=1" },
-        s.history,
-        s.store,
-        s.demo,
-        s.local,
-      );
+      applyEntry({ ...at, hash: "#/connect?token=d-3&mode=local" }, s.history, s.store, s.local);
     });
-    expect(hook.result.current).toBe("demo");
-    await act(async () => forgetToken(s.store, s.demo, s.local));
+    expect(hook.result.current).toBe("local");
+    await act(async () => forgetToken(s.store, s.local));
     expect(hook.result.current).toBe("none");
     expect([...s.storage.items.keys()]).toEqual([]);
     await hook.unmount();
@@ -148,21 +117,19 @@ const apiError = (code: string, status: number, params?: Record<string, unknown>
   new ApiError({ status, code, title: "T", traceId: "tr-9", params });
 
 describe("[REQ-296] an authentication error speaks in the words of the way in", () => {
-  it("sends a demo or local-mode visitor to the new address, and leaves a typed token as it was", () => {
+  it("sends a local-mode visitor to the new address, and leaves a typed token as it was", () => {
     const view = describeError(apiError("auth.token_invalid", 401));
-    for (const mode of ["demo", "local"] as const) {
-      const adapted = withAccessMode(view, mode);
-      expect(adapted.hint).toBe(
-        "서버를 다시 시작하면 접속 링크가 바뀝니다. 터미널에 출력된 새 주소를 여십시오.",
-      );
-      expect(adapted.kind).toBe("auth");
-    }
+    const adapted = withAccessMode(view, "local");
+    expect(adapted.hint).toBe(
+      "서버를 다시 시작하면 접속 링크가 바뀝니다. 터미널에 출력된 새 주소를 여십시오.",
+    );
+    expect(adapted.kind).toBe("auth");
     expect(withAccessMode(view, "direct")).toBe(view);
     expect(withAccessMode(view, "none")).toBe(view);
-    const missing = withAccessMode(describeError(apiError("auth.token_missing", 401)), "demo");
+    const missing = withAccessMode(describeError(apiError("auth.token_missing", 401)), "local");
     expect(missing.hint).toContain("새 주소");
     const other = describeError(apiError("not_found.resource", 404));
-    expect(withAccessMode(other, "demo")).toBe(other);
+    expect(withAccessMode(other, "local")).toBe(other);
   });
 });
 

@@ -16,7 +16,7 @@ import (
 )
 
 const worldgenHelp = `Generates a synthetic data center (a "world") from a seed: the truth of the world, and optionally views of it
-as files, a stream of changes and a shape card (docs/design-docs/worldgen.md). praxium demo uses the same generator.
+as files, a stream of changes and a shape card (docs/design-docs/worldgen.md).
   praxium worldgen [flags]            generate a synthetic world
   praxium worldgen validate <truth.jsonl>
   praxium worldgen params             list the parameters

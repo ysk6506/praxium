@@ -18,10 +18,9 @@ import (
 
 const topHelp = `Praxium turns the data of your IT infrastructure into a knowledge graph (KG) you can browse and ask.
 
-Fastest start:  praxium demo     (a made-up data center and the web UI; nothing to set up)
+Fastest start:  praxium ingest init, then ingest run and local     (your own files as a KG in the web UI; see praxium local --help)
 
 Get started
-  demo      Start a server with a synthetic data center and the web UI, to look around
   local     Serve the KG you built from your own files, with the web UI, on this computer
 
 Look at the data (these ask a running server; see the global flags below)
@@ -52,7 +51,7 @@ Sign-in (access tokens; there are no passwords)
   whoami     Say who your access token is
 
 Tools
-  worldgen   Generate a synthetic world (what praxium demo shows)
+  worldgen   Generate a synthetic world (for tests and measurements)
   contract   Assemble or check the OpenAPI contract of the API
   version    Show the version of this program
 
@@ -60,7 +59,7 @@ Use "praxium <command> --help" for the flags and examples of a command.
 
 Global flags of the commands that ask a server (kg, types, query, object, catalog, health, whoami, admin user|account|token), before or after the command:
   --endpoint URL   the server (default http://127.0.0.1:8080; environment PRAXIUM_ENDPOINT)
-  --token TOKEN    the access token (environment PRAXIUM_TOKEN); praxium demo and praxium local print theirs
+  --token TOKEN    the access token (environment PRAXIUM_TOKEN); praxium local prints its own
   --config FILE    a JSON file {"endpoint": "...", "token": "..."} (environment PRAXIUM_CONFIG)
   --json           print JSON instead of a table
 
@@ -81,7 +80,6 @@ func commandHelps() map[string]helpEntry {
 	out := map[string]helpEntry{}
 	baseHelpEntries(out)
 	apiHelpEntries(out)
-	demoHelpEntries(out)
 	ingestHelpEntries(out)
 	initHelpEntries(out)
 	inspectHelpEntries(out)
@@ -167,7 +165,7 @@ func flagProblem(err error) error {
 
 // knownCommands are the first words of a command line that the program answers.
 var knownCommands = map[string]bool{
-	"demo": true, "local": true, "dev": true, "ingest": true, "api": true, "contract": true, "worldgen": true, "version": true,
+	"local": true, "dev": true, "ingest": true, "api": true, "contract": true, "worldgen": true, "version": true,
 	"worker": true, "collector": true, "health": true, "types": true, "catalog": true, "kg": true, "object": true, "query": true,
 	"admin": true, "whoami": true, "model": true, "secret": true,
 }

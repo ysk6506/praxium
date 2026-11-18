@@ -6,12 +6,11 @@ import { renderHook } from "../test-support/render";
 import { createConnectionStore, type StorageLike, TOKEN_KEY } from "./connection";
 import {
   applyEntry,
-  createDemoMark,
-  DEMO_KEY,
-  DEMO_LANDING,
+  createMark,
   type EntryHistory,
-  parseEntry,
-  useDemo,
+  LOCAL_KEY,
+  parseEntryMode,
+  useEntryMode,
 } from "./entry";
 
 class MemoryStorage implements StorageLike {
@@ -42,38 +41,44 @@ afterEach(() => {
   document.body.innerHTML = "";
 });
 
-describe("[REQ-281] the page takes the token of a demo address and shows that it is a demo", () => {
-  it("reads the token and the demo flag from the fragment, and nothing from any other address", () => {
-    expect(parseEntry("#/connect?token=abc123&demo=1")).toEqual({ token: "abc123", demo: true });
-    expect(parseEntry("#/connect?token=%20abc123%20")).toEqual({ token: "abc123", demo: false });
-    expect(parseEntry("#/connect?token=")).toBeUndefined();
-    expect(parseEntry("#/connect")).toBeUndefined();
-    expect(parseEntry("#/kgs?token=abc123")).toBeUndefined();
-    expect(parseEntry("")).toBeUndefined();
+describe("[REQ-296] the page takes the token of an entry address and shows that it came in by local mode", () => {
+  it("reads the token and the mode from the fragment, and nothing from any other address", () => {
+    expect(parseEntryMode("#/connect?token=abc123&mode=local")).toEqual({
+      token: "abc123",
+      mode: "local",
+    });
+    expect(parseEntryMode("#/connect?token=%20abc123%20")).toEqual({
+      token: "abc123",
+      mode: "direct",
+    });
+    expect(parseEntryMode("#/connect?token=")).toBeUndefined();
+    expect(parseEntryMode("#/connect")).toBeUndefined();
+    expect(parseEntryMode("#/kgs?token=abc123")).toBeUndefined();
+    expect(parseEntryMode("")).toBeUndefined();
   });
 
-  it("saves the token, marks the demo and replaces the address with the KG screen", () => {
+  it("saves the token, marks the local mode and replaces the address with the KG list", () => {
     const storage = new MemoryStorage();
     const store = createConnectionStore(storage);
-    const marks = createDemoMark(storage);
+    const marks = createMark(storage, LOCAL_KEY);
     const history = recordingHistory();
     const location = {
-      hash: "#/connect?token=secret-token-0001&demo=1",
+      hash: "#/connect?token=secret-token-0001&mode=local",
       pathname: "/",
       search: "",
     };
     expect(applyEntry(location, history, store, marks)).toBe(true);
     expect(storage.items.get(TOKEN_KEY)).toBe("secret-token-0001");
-    expect(storage.items.get(DEMO_KEY)).toBe("secret-token-0001");
+    expect(storage.items.get(LOCAL_KEY)).toBe("secret-token-0001");
     expect(marks.is(store.getToken())).toBe(true);
-    expect(history.urls).toEqual([`/${DEMO_LANDING}`]);
+    expect(history.urls).toEqual(["/#/kgs"]);
     expect(history.urls.join()).not.toContain("secret-token-0001");
   });
 
-  it("takes a token without the demo flag as no demo, and leaves other addresses alone", () => {
+  it("takes a token without the local mode as a direct entry, and leaves other addresses alone", () => {
     const storage = new MemoryStorage();
     const store = createConnectionStore(storage);
-    const marks = createDemoMark(storage);
+    const marks = createMark(storage, LOCAL_KEY);
     const history = recordingHistory();
     marks.mark("old-token-xxxxxxxxx");
     expect(
@@ -92,19 +97,19 @@ describe("[REQ-281] the page takes the token of a demo address and shows that it
     expect(history.urls).toHaveLength(1);
   });
 
-  it("is a demo only while the saved token is the one that came in by the demo address", () => {
-    const marks = createDemoMark(new MemoryStorage());
-    marks.mark("demo-token-0000001");
-    expect(marks.is("demo-token-0000001")).toBe(true);
+  it("is local mode only while the saved token is the one that came in by the local-mode address", () => {
+    const marks = createMark(new MemoryStorage(), LOCAL_KEY);
+    marks.mark("local-token-000001");
+    expect(marks.is("local-token-000001")).toBe(true);
     expect(marks.is("another-token-0001")).toBe(false);
     expect(marks.is("")).toBe(false);
   });
 
   it("keeps the mark in memory when the browser gives no storage", () => {
     const store = createConnectionStore(failing);
-    const marks = createDemoMark(failing);
+    const marks = createMark(failing, LOCAL_KEY);
     applyEntry(
-      { hash: "#/connect?token=memory-token-0003&demo=1", pathname: "/", search: "" },
+      { hash: "#/connect?token=memory-token-0003&mode=local", pathname: "/", search: "" },
       recordingHistory(),
       store,
       marks,
@@ -112,20 +117,20 @@ describe("[REQ-281] the page takes the token of a demo address and shows that it
     expect(marks.is(store.getToken())).toBe(true);
   });
 
-  it("tells a component about the demo and stops when the token is replaced or deleted", async () => {
+  it("tells a component about the local mode and stops when the token is replaced or deleted", async () => {
     const storage = new MemoryStorage();
     const store = createConnectionStore(storage);
-    const marks = createDemoMark(storage);
+    const marks = createMark(storage, LOCAL_KEY);
     applyEntry(
-      { hash: "#/connect?token=hook-token-0004&demo=1", pathname: "/", search: "" },
+      { hash: "#/connect?token=hook-token-0004&mode=local", pathname: "/", search: "" },
       recordingHistory(),
       store,
       marks,
     );
-    const hook = await renderHook(() => useDemo(store, marks));
-    expect(hook.result.current).toBe(true);
+    const hook = await renderHook(() => useEntryMode(store, marks));
+    expect(hook.result.current).toBe("local");
     await act(async () => store.setToken("typed-token-0005"));
-    expect(hook.result.current).toBe(false);
+    expect(hook.result.current).toBe("direct");
     await hook.unmount();
   });
 });
