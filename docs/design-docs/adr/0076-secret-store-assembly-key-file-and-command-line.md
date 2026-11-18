@@ -17,7 +17,7 @@ updates_docs:
   - docs/product-specs/requirements-access.md
 amends_tests: []
 amends: []
-decision_hash: 964f17743b0ef4ae
+decision_hash: 8427b6995e7373a2
 ---
 # ADR-0076 시크릿 저장소를 디스크와 명령줄에 조립한다
 
@@ -70,5 +70,5 @@ decision_hash: 964f17743b0ef4ae
 
 - 명시한 키 파일의 링크 따라가기, 소유자에 따른 권한 규칙(현재 사용자는 0600 이하, root는 0640 이하), 키만 다루는 명령은 서버가 저장소를 여는 단계에서 정한다.
 - 명시한 키 파일의 링크를 따라가게 할 때는 풀린 대상의 경로로 데이터 폴더 밖인지를 검사해야 한다.
-- FIFO의 테스트는 빌드 조건 없이 바깥 명령 `mkfifo`(`exec.LookPath`로 찾고 없으면 건너뜀)를 쓰는 길로 더할 수 있다. `-field`의 파일이 링크나 파이프일 때의 거절을 좁힐지도 그때 정한다.
+- FIFO의 테스트는 빌드 조건 없이 바깥 명령 `mkfifo`(`exec.LookPath`로 찾고 없으면 건너뜀)를 써서 더할 수 있다. `-field`의 파일이 링크나 파이프일 때의 거절을 좁힐지도 그때 정한다.
 - 남은 `.new-key-*` 임시 파일과 짝 없는 키 파일의 청소는 뒤로 미룬다.

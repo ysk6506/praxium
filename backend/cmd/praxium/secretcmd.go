@@ -206,11 +206,16 @@ func parseSecret(name string, args []string) (secretFlags, error) {
 	return f, checkFieldArgs(f.fields)
 }
 
+// emptyKeyFile is a -secrets-key-file that was given with nothing in it: not the same as leaving the flag out.
+func emptyKeyFile(spec secretSpec, f secretFlags) bool {
+	return spec.key && f.keyFileGiven && f.keyFile == ""
+}
+
 func checkSecretFlags(spec secretSpec, f secretFlags) error {
 	switch {
 	case f.dataDir == "":
 		return kernel.Errorf(kernel.CodeInvalidValue, "a secret command needs -data-dir <folder>: the data folder that holds the secrets")
-	case spec.key && f.keyFileGiven && f.keyFile == "":
+	case emptyKeyFile(spec, f):
 		return kernel.Errorf(kernel.CodeInvalidValue, "-secrets-key-file is empty: name the key file, or leave the flag out to use the default place")
 	case spec.kind && f.kind == "":
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret put needs -kind password or -kind token")
