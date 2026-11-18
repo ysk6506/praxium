@@ -1,7 +1,8 @@
 ---
 title: ADR-0054 영향 범위 화면의 연결 — 주소, 읽기 훅, 화면, 객체 상세의 입구
 kind: decision
-status: active
+status: superseded
+superseded_by: 0077-remove-the-impact-screen-users-ask-by-query.md
 enforced_by:
   - apps/web/src/impact-screen.test.tsx
   - apps/web/src/data/useImpact.test.tsx

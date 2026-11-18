@@ -28,8 +28,6 @@ export function fallbackTitle(route: Route): string {
       return titleOf(`${route.type} 객체`, route.kg);
     case "object":
       return titleOf("객체", route.kg);
-    case "impact":
-      return titleOf("영향 범위", route.kg);
     case "notFound":
       return titleOf("페이지를 찾을 수 없습니다");
   }

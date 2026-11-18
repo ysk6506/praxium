@@ -1,10 +1,8 @@
 import { useState } from "react";
 import {
   basisLabel,
-  DEFAULT_IMPACT_VIEW,
   directionLabel,
   EMPTY_CELL,
-  EMPTY_QUESTION,
   formatCount,
   formatQuantity,
   formatTimestamp,
@@ -15,15 +13,11 @@ import {
   groupKey,
   groupNeighbors,
   groupTotals,
-  type ImpactQuestion,
-  impactAddress,
   NEIGHBOR_STEPS,
   type ObjectDetail,
-  type ObjectRef,
   type ObjectTab,
   routeHash,
   titleOf,
-  useImpactModel,
   useNeighbors,
   useObject,
   useScreenTitle,
@@ -31,7 +25,6 @@ import {
 import {
   Badge,
   Button,
-  ButtonLink,
   Coded,
   EmptyState,
   KeyValues,
@@ -287,31 +280,6 @@ function NeighborsTab({ kg, id }: { readonly kg: string; readonly id: string }) 
   );
 }
 
-const askedOf = (question: Partial<ImpactQuestion>): ImpactQuestion => ({
-  ...EMPTY_QUESTION,
-  ...question,
-});
-
-/**
- * The ways in to the impact screen: what stops with this object, what this object depends on and, for an object that
- * holds others (the model says which types do), what stops when it and everything inside it stops.
- */
-function ImpactEntrances({ kg, object }: { readonly kg: string; readonly object: ObjectRef }) {
-  const model = useImpactModel();
-  const holds = model.state.data?.containers.has(object.object_type) ?? false;
-  const to = (question: Partial<ImpactQuestion>): string =>
-    impactAddress(kg, { ...DEFAULT_IMPACT_VIEW, question: askedOf(question) });
-  return (
-    <>
-      <ButtonLink href={to({ dead: [object.object_id] })}>이 객체가 멈추면</ButtonLink>
-      {holds ? (
-        <ButtonLink href={to({ site: [object.object_id] })}>안에 든 것까지 멈추면</ButtonLink>
-      ) : null}
-      <ButtonLink href={to({ target: object.object_id })}>이 객체가 의존하는 것</ButtonLink>
-    </>
-  );
-}
-
 export interface ObjectScreenProps {
   readonly kg: string;
   readonly id: string;
@@ -338,7 +306,6 @@ export function ObjectScreen({ kg, id, tab, onTab }: ObjectScreenProps) {
           <>
             <PageHeader
               title={data.object.display_name}
-              actions={<ImpactEntrances kg={kg} object={data.object} />}
               trail={[
                 { label: "KG 목록", href: routeHash({ page: "kgs" }) },
                 { label: kg, href: routeHash({ page: "types", kg }) },

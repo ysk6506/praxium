@@ -1,7 +1,8 @@
 ---
 title: ADR-0051 영향 범위 화면의 계산과 그래프·목록 부품 (SVG 직접, 새 의존성 없음)
 kind: decision
-status: active
+status: superseded
+superseded_by: 0077-remove-the-impact-screen-users-ask-by-query.md
 enforced_by:
   - apps/web/src/data/impact-tree.test.ts
   - apps/web/src/data/impact-group.test.ts
