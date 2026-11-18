@@ -22,322 +22,323 @@ updates_docs:
   - docs/product-specs/requirements-impact.md
   - docs/product-specs/requirements-web-cli-release.md
 amends_tests:
-  - "apps/web/src/data/impact-group.test.ts::<import:47f04499>"
-  - "apps/web/src/data/impact-group.test.ts::<import:5dfd9958>"
-  - "apps/web/src/data/impact-group.test.ts::<import:6bfc9beb>"
-  - "apps/web/src/data/impact-group.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-group.test.ts::<import:f845e224>"
-  - "apps/web/src/data/impact-group.test.ts::=treeOf"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > <suite>"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > gives the same groups whatever the order of the items"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > keeps the members with the most severe result first, and says which result is the worst"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > makes a group from the nodes of one type below the members of one parent group"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > orders the groups depth first with the children sorted by type, and gives each its first step"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > puts every node in one group, so the counts add up"
-  - "apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > starts as an overview above 300 nodes and not at 300"
-  - "apps/web/src/data/impact-input.test.ts::<import:121ca3c5>"
-  - "apps/web/src/data/impact-input.test.ts::<import:17b1cd22>"
-  - "apps/web/src/data/impact-input.test.ts::<import:47f04499>"
-  - "apps/web/src/data/impact-input.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-input.test.ts::<import:a16b88d7>"
-  - "apps/web/src/data/impact-input.test.ts::<import:c7b89d3b>"
-  - "apps/web/src/data/impact-input.test.ts::impactSource and the generated types > <suite>"
-  - "apps/web/src/data/impact-input.test.ts::impactSource and the generated types > [REQ-354] carries the weakest evidence, the hidden path and the other paths, and works without them"
-  - "apps/web/src/data/impact-input.test.ts::impactSource and the generated types > accepts ImpactData of the contract without conversion"
-  - "apps/web/src/data/impact-model.test.ts::<hook:afterEach>"
-  - "apps/web/src/data/impact-model.test.ts::<import:0a47d256>"
-  - "apps/web/src/data/impact-model.test.ts::<import:1b2268ac>"
-  - "apps/web/src/data/impact-model.test.ts::<import:3d309878>"
-  - "apps/web/src/data/impact-model.test.ts::<import:416b76a5>"
-  - "apps/web/src/data/impact-model.test.ts::<import:dc80bbe0>"
-  - "apps/web/src/data/impact-model.test.ts::<import:f5e1dfab>"
-  - "apps/web/src/data/impact-model.test.ts::=into"
-  - "apps/web/src/data/impact-model.test.ts::=type"
-  - "apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > <suite>"
-  - "apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > =types"
-  - "apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > holds nothing when the model has no such binding, and gives the layer of a type by its name"
-  - "apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > is read from the link types of the meaning contained_in and their bindings"
-  - "apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > takes the types at the inside end of a binding, their subtypes, and the types that have a trait at that end"
-  - "apps/web/src/data/impact-notices.test.ts::<import:121ca3c5>"
-  - "apps/web/src/data/impact-notices.test.ts::<import:1b79bf84>"
-  - "apps/web/src/data/impact-notices.test.ts::<import:6732921a>"
-  - "apps/web/src/data/impact-notices.test.ts::<import:975ddbba>"
-  - "apps/web/src/data/impact-notices.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-notices.test.ts::<import:e4b569eb>"
-  - "apps/web/src/data/impact-notices.test.ts::=asData"
-  - "apps/web/src/data/impact-notices.test.ts::=facts"
-  - "apps/web/src/data/impact-notices.test.ts::=ids"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-377] the counts are the server's, over the whole answer > <suite>"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-377] the counts are the server's, over the whole answer > counts a downstream answer by result, the most severe first, and an upstream one by effect"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-377] the counts are the server's, over the whole answer > expects as many items as the server counted, up to the limit asked for"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > <suite>"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > has nothing to say about a complete answer without assumptions"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > is made from the capped samples of the test world"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > offers no higher limit when the highest was asked for already"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > puts what cuts the result short before what it rests on"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > tells the item limit from the time limit, the hop limit and a stop by the person"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > <suite>"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > counts the objects whose needed channel has no supplier, and says nothing when there are none"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > says the notes of the server as sentences, and an unknown note as it came"
-  - "apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > says the reading includes assumptions, or how many weak links the facts-only reading left out"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:1eda311a>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:2852912c>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:3f206a41>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:47f04499>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:5dfd9958>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:88d995df>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:b919bd80>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:e313a5ba>"
-  - "apps/web/src/data/impact-picture.test.tsx::<import:f45c2acf>"
-  - "apps/web/src/data/impact-picture.test.tsx::=treeOf"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > <hook:afterEach>"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > <suite>"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > =frames"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > allows motion when the browser cannot be asked"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > is moved by the controls and follows an answer whose last step changes"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > opens at the end, and does not play, when the system asks for less motion"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > plays on the frames the browser hands in and stops at the last step"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > <suite>"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > draws an overview with a node for each group and the number of objects it stands for"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > gives each node a position, a step, a shape and a full name for a screen reader"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > marks a hidden object without a name, an assumption and a group on the link"
-  - "apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > puts a layer the model does not list in a column named 기타"
-  - "apps/web/src/data/impact-route.test.ts::<import:21be0403>"
-  - "apps/web/src/data/impact-route.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-route.test.ts::<import:bc8799bd>"
-  - "apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > <suite>"
-  - "apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > does not take a longer path for the impact screen, and needs a token like the other screens"
-  - "apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > is named for the tab before it has read what it shows"
+  - apps/web/src/data/impact-group.test.ts::<import:47f04499>
+  - apps/web/src/data/impact-group.test.ts::<import:5dfd9958>
+  - apps/web/src/data/impact-group.test.ts::<import:6bfc9beb>
+  - apps/web/src/data/impact-group.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-group.test.ts::<import:f845e224>
+  - apps/web/src/data/impact-group.test.ts::=treeOf
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > <suite>
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > gives the same groups whatever the order of the items
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > keeps the members with the most severe result first, and says which result is the worst
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > makes a group from the nodes of one type below the members of one parent group
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > orders the groups depth first with the children sorted by type, and gives each its first step
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > puts every node in one group, so the counts add up
+  - apps/web/src/data/impact-group.test.ts::[REQ-351] a big answer opens as groups of the same type under the same parent > starts as an overview above 300 nodes and not at 300
+  - apps/web/src/data/impact-input.test.ts::<import:121ca3c5>
+  - apps/web/src/data/impact-input.test.ts::<import:17b1cd22>
+  - apps/web/src/data/impact-input.test.ts::<import:47f04499>
+  - apps/web/src/data/impact-input.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-input.test.ts::<import:a16b88d7>
+  - apps/web/src/data/impact-input.test.ts::<import:c7b89d3b>
+  - apps/web/src/data/impact-input.test.ts::impactSource and the generated types > <suite>
+  - apps/web/src/data/impact-input.test.ts::impactSource and the generated types > [REQ-354] carries the weakest evidence, the hidden path and the other paths, and works without them
+  - apps/web/src/data/impact-input.test.ts::impactSource and the generated types > accepts ImpactData of the contract without conversion
+  - apps/web/src/data/impact-model.test.ts::<hook:afterEach>
+  - apps/web/src/data/impact-model.test.ts::<import:0a47d256>
+  - apps/web/src/data/impact-model.test.ts::<import:1b2268ac>
+  - apps/web/src/data/impact-model.test.ts::<import:3d309878>
+  - apps/web/src/data/impact-model.test.ts::<import:416b76a5>
+  - apps/web/src/data/impact-model.test.ts::<import:dc80bbe0>
+  - apps/web/src/data/impact-model.test.ts::<import:f5e1dfab>
+  - apps/web/src/data/impact-model.test.ts::=into
+  - apps/web/src/data/impact-model.test.ts::=type
+  - apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > <suite>
+  - apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > =types
+  - apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > holds nothing when the model has no such binding, and gives the layer of a type by its name
+  - apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > is read from the link types of the meaning contained_in and their bindings
+  - apps/web/src/data/impact-model.test.ts::[REQ-374] the model says which objects hold others, and no type name is written in the screen > takes the types at the inside end of a binding, their subtypes, and the types that have a trait at that end
+  - apps/web/src/data/impact-notices.test.ts::<import:121ca3c5>
+  - apps/web/src/data/impact-notices.test.ts::<import:1b79bf84>
+  - apps/web/src/data/impact-notices.test.ts::<import:6732921a>
+  - apps/web/src/data/impact-notices.test.ts::<import:975ddbba>
+  - apps/web/src/data/impact-notices.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-notices.test.ts::<import:e4b569eb>
+  - apps/web/src/data/impact-notices.test.ts::=asData
+  - apps/web/src/data/impact-notices.test.ts::=facts
+  - apps/web/src/data/impact-notices.test.ts::=ids
+  - apps/web/src/data/impact-notices.test.ts::[REQ-377] the counts are the server's, over the whole answer > <suite>
+  - apps/web/src/data/impact-notices.test.ts::[REQ-377] the counts are the server's, over the whole answer > counts a downstream answer by result, the most severe first, and an upstream one by effect
+  - apps/web/src/data/impact-notices.test.ts::[REQ-377] the counts are the server's, over the whole answer > expects as many items as the server counted, up to the limit asked for
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > <suite>
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > has nothing to say about a complete answer without assumptions
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > is made from the capped samples of the test world
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > offers no higher limit when the highest was asked for already
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > puts what cuts the result short before what it rests on
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] a result that is cut short says why, in a way that tells the causes apart > tells the item limit from the time limit, the hop limit and a stop by the person
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > <suite>
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > counts the objects whose needed channel has no supplier, and says nothing when there are none
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > says the notes of the server as sentences, and an unknown note as it came
+  - apps/web/src/data/impact-notices.test.ts::[REQ-379] what the calculation assumed and what the data lacks are told > says the reading includes assumptions, or how many weak links the facts-only reading left out
+  - apps/web/src/data/impact-picture.test.tsx::<import:1eda311a>
+  - apps/web/src/data/impact-picture.test.tsx::<import:2852912c>
+  - apps/web/src/data/impact-picture.test.tsx::<import:3f206a41>
+  - apps/web/src/data/impact-picture.test.tsx::<import:47f04499>
+  - apps/web/src/data/impact-picture.test.tsx::<import:5dfd9958>
+  - apps/web/src/data/impact-picture.test.tsx::<import:88d995df>
+  - apps/web/src/data/impact-picture.test.tsx::<import:b919bd80>
+  - apps/web/src/data/impact-picture.test.tsx::<import:e313a5ba>
+  - apps/web/src/data/impact-picture.test.tsx::<import:f45c2acf>
+  - apps/web/src/data/impact-picture.test.tsx::=treeOf
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > <hook:afterEach>
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > <suite>
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > =frames
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > allows motion when the browser cannot be asked
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > is moved by the controls and follows an answer whose last step changes
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > opens at the end, and does not play, when the system asks for less motion
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-352] [REQ-356] the clock of the spread > plays on the frames the browser hands in and stops at the last step
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > <suite>
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > draws an overview with a node for each group and the number of objects it stands for
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > gives each node a position, a step, a shape and a full name for a screen reader
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > marks a hidden object without a name, an assumption and a group on the link
+  - apps/web/src/data/impact-picture.test.tsx::[REQ-354] [REQ-355] the tree becomes the picture the graph is given > puts a layer the model does not list in a column named 기타
+  - apps/web/src/data/impact-route.test.ts::<import:21be0403>
+  - apps/web/src/data/impact-route.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-route.test.ts::<import:bc8799bd>
+  - apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > <suite>
+  - apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > does not take a longer path for the impact screen, and needs a token like the other screens
+  - apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > is named for the tab before it has read what it shows
   - "apps/web/src/data/impact-route.test.ts::[REQ-374] the impact screen has an address of its own > reads #/kg/{kg}/impact with its query as the impact screen, and writes it back without the query"
-  - "apps/web/src/data/impact-rows.test.ts::<import:0c92acd7>"
-  - "apps/web/src/data/impact-rows.test.ts::<import:175d84d4>"
-  - "apps/web/src/data/impact-rows.test.ts::<import:5dfd9958>"
-  - "apps/web/src/data/impact-rows.test.ts::<import:6903db5b>"
-  - "apps/web/src/data/impact-rows.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-rows.test.ts::<import:e4e92714>"
-  - "apps/web/src/data/impact-rows.test.ts::<import:f845e224>"
-  - "apps/web/src/data/impact-rows.test.ts::=treeOf"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > <suite>"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > counts the items by result, the most severe first, and the nodes that appear at each step"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > lights the head of a column at the step the spread first reaches it"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > says in words what a step brought"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > takes a step later than the step of its cause when the answer says so"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > <suite>"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > calls the loss of redundancy by that name, and tells a dashed line from a solid one"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > has the seven grades in the order of severity, each with its own shape and word"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > shows a result it does not know as it came, and an object that is not an item as a waypoint"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > <suite>"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > carries the weakest evidence, the hidden object on the way and the other paths of a row"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > has a row for every item received, also in an answer that is too big to draw"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > makes a section for each result that has rows, the most severe first"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > names the cause of a row, and says so when the cause is an object the caller may not read"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > shows the first 50 rows of a section and 50 more each time, never past the total"
-  - "apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > sorts by a column in either direction and falls back to a fixed order for ties"
-  - "apps/web/src/data/impact-spread.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-spread.test.ts::<import:9d0b1bdf>"
-  - "apps/web/src/data/impact-spread.test.ts::=run"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > <suite>"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > has nothing to play for a spread with no steps, and follows a longer or shorter spread"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > makes a beat between 250 and 700 ms, whatever the length of the spread"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > moves to a step by the slider, stopping the play, and keeps the step inside the spread"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > pauses where it is and goes on from there"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > plays again from the start when play is pressed at the end, and replays on request"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > plays one beat at a time from the first step to the last and then stops"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > shows several steps in a beat when the plan strides, and never past the last"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > takes about 4 seconds for a spread of several steps, and shows more steps in a beat when it is long"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-356] with reduced motion the picture opens at the end and the controls still work > <suite>"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-356] with reduced motion the picture opens at the end and the controls still work > opens at the last step and does not play by itself"
-  - "apps/web/src/data/impact-spread.test.ts::[REQ-356] with reduced motion the picture opens at the end and the controls still work > steps by the slider and plays beat by beat when asked"
-  - "apps/web/src/data/impact-tree.test.ts::<import:5dfd9958>"
-  - "apps/web/src/data/impact-tree.test.ts::<import:83c1f768>"
-  - "apps/web/src/data/impact-tree.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-tree.test.ts::<import:e4e92714>"
-  - "apps/web/src/data/impact-tree.test.ts::<import:f5d0def9>"
-  - "apps/web/src/data/impact-tree.test.ts::=layoutOf"
-  - "apps/web/src/data/impact-tree.test.ts::=treeOf"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > <suite>"
+  - apps/web/src/data/impact-rows.test.ts::<import:0c92acd7>
+  - apps/web/src/data/impact-rows.test.ts::<import:175d84d4>
+  - apps/web/src/data/impact-rows.test.ts::<import:5dfd9958>
+  - apps/web/src/data/impact-rows.test.ts::<import:6903db5b>
+  - apps/web/src/data/impact-rows.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-rows.test.ts::<import:e4e92714>
+  - apps/web/src/data/impact-rows.test.ts::<import:f845e224>
+  - apps/web/src/data/impact-rows.test.ts::=treeOf
+  - apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > <suite>
+  - apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > counts the items by result, the most severe first, and the nodes that appear at each step
+  - apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > lights the head of a column at the step the spread first reaches it
+  - apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > says in words what a step brought
+  - apps/web/src/data/impact-rows.test.ts::[REQ-352] the counts of the spread > takes a step later than the step of its cause when the answer says so
+  - apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > <suite>
+  - apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > calls the loss of redundancy by that name, and tells a dashed line from a solid one
+  - apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > has the seven grades in the order of severity, each with its own shape and word
+  - apps/web/src/data/impact-rows.test.ts::[REQ-354] a grade is a shape, a word and a color, never a color alone > shows a result it does not know as it came, and an object that is not an item as a waypoint
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > <suite>
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > carries the weakest evidence, the hidden object on the way and the other paths of a row
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > has a row for every item received, also in an answer that is too big to draw
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > makes a section for each result that has rows, the most severe first
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > names the cause of a row, and says so when the cause is an object the caller may not read
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > shows the first 50 rows of a section and 50 more each time, never past the total
+  - apps/web/src/data/impact-rows.test.ts::[REQ-357] the list has every item, in sections by result, sorted and shown in steps > sorts by a column in either direction and falls back to a fixed order for ties
+  - apps/web/src/data/impact-spread.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-spread.test.ts::<import:9d0b1bdf>
+  - apps/web/src/data/impact-spread.test.ts::=run
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > <suite>
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > has nothing to play for a spread with no steps, and follows a longer or shorter spread
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > makes a beat between 250 and 700 ms, whatever the length of the spread
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > moves to a step by the slider, stopping the play, and keeps the step inside the spread
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > pauses where it is and goes on from there
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > plays again from the start when play is pressed at the end, and replays on request
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > plays one beat at a time from the first step to the last and then stops
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > shows several steps in a beat when the plan strides, and never past the last
+  - apps/web/src/data/impact-spread.test.ts::[REQ-352] the spread is paced by beats and never takes more than 4 seconds > takes about 4 seconds for a spread of several steps, and shows more steps in a beat when it is long
+  - apps/web/src/data/impact-spread.test.ts::[REQ-356] with reduced motion the picture opens at the end and the controls still work > <suite>
+  - apps/web/src/data/impact-spread.test.ts::[REQ-356] with reduced motion the picture opens at the end and the controls still work > opens at the last step and does not play by itself
+  - apps/web/src/data/impact-spread.test.ts::[REQ-356] with reduced motion the picture opens at the end and the controls still work > steps by the slider and plays beat by beat when asked
+  - apps/web/src/data/impact-tree.test.ts::<import:5dfd9958>
+  - apps/web/src/data/impact-tree.test.ts::<import:83c1f768>
+  - apps/web/src/data/impact-tree.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-tree.test.ts::<import:e4e92714>
+  - apps/web/src/data/impact-tree.test.ts::<import:f5d0def9>
+  - apps/web/src/data/impact-tree.test.ts::=layoutOf
+  - apps/web/src/data/impact-tree.test.ts::=treeOf
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > <suite>
   - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > does the work in one pass: the nodes and the path steps seen are bounded by the answer's size"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > falls back to the other reading, and to unknown, for an effect it does not find"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > has the objects that failed as roots and every item under the object just before it"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > is the same tree and the same picture whatever the order of the items"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > keeps a forest when the causes go round in a circle, and an item whose cause is unknown is a root"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > keeps the nearer, more severe item when an object is listed twice, and a seed that is also an item keeps its result"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > puts an object that is on a path but is not an item in the tree as a waypoint, and a hidden one as hidden"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > reads an answer with nothing in it and a direction it does not know"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > reads an upstream item by the effect of the reading asked for and keeps the single points of failure"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > reads the same picture upstream as downstream"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > <suite>"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > draws a line from each parent to its child"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > is empty for nothing to place"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > keeps the columns in the order of supply and puts an unknown layer last"
-  - "apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > puts a node in the column of its layer, never above its parent and never on another node"
-  - "apps/web/src/data/impact-view.test.ts::<import:983e3f78>"
-  - "apps/web/src/data/impact-view.test.ts::<import:c42f4f8b>"
-  - "apps/web/src/data/impact-view.test.ts::=lnk"
-  - "apps/web/src/data/impact-view.test.ts::=obj"
-  - "apps/web/src/data/impact-view.test.ts::=read"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > <suite>"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > knows the address of this screen and no other"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > reads a value that does not fit as the default"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > reads back what it wrote, for views that use every part of the address"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > says whether the question names a start"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > takes the target over the objects that failed, and keeps at most 20 of each list"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > writes nothing for the default view, so the plain address is the default screen"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > <suite>"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > =view"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > asks upstream with the target alone, and leaves the limit of hops out when there is none"
-  - "apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > first asks for the counts of both readings, then for the items of the reading chosen in pages of 1000"
-  - "apps/web/src/data/useImpact.test.tsx::<hook:afterEach>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:121ca3c5>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:416b76a5>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:5dfd9958>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:634c00db>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:b919bd80>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:c370c4f3>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:d3c650a5>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:dc80bbe0>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:f5e1dfab>"
-  - "apps/web/src/data/useImpact.test.tsx::<import:f848c9d5>"
-  - "apps/web/src/data/useImpact.test.tsx::=A"
-  - "apps/web/src/data/useImpact.test.tsx::=PATH"
-  - "apps/web/src/data/useImpact.test.tsx::=bodies"
-  - "apps/web/src/data/useImpact.test.tsx::=factsItems"
-  - "apps/web/src/data/useImpact.test.tsx::=meta"
-  - "apps/web/src/data/useImpact.test.tsx::=pages"
-  - "apps/web/src/data/useImpact.test.tsx::=sample"
-  - "apps/web/src/data/useImpact.test.tsx::=summary"
-  - "apps/web/src/data/useImpact.test.tsx::=view"
-  - "apps/web/src/data/useImpact.test.tsx::[REQ-374] the question and the view are in the address and come back from it > <suite>"
-  - "apps/web/src/data/useImpact.test.tsx::[REQ-374] the question and the view are in the address and come back from it > writes the address of the screen and reads the same view back"
-  - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the answer is put together from the summary and the items > <suite>"
-  - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the answer is put together from the summary and the items > makes the request of the contract from the body of the screen without sharing its arrays"
-  - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the answer is put together from the summary and the items > puts the items in the section of the reading, or of the upstream answer"
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > falls back to the other reading, and to unknown, for an effect it does not find
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > has the objects that failed as roots and every item under the object just before it
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > is the same tree and the same picture whatever the order of the items
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > keeps a forest when the causes go round in a circle, and an item whose cause is unknown is a root
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > keeps the nearer, more severe item when an object is listed twice, and a seed that is also an item keeps its result
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > puts an object that is on a path but is not an item in the tree as a waypoint, and a hidden one as hidden
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > reads an answer with nothing in it and a direction it does not know
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > reads an upstream item by the effect of the reading asked for and keeps the single points of failure
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the answer is a tree of causes > reads the same picture upstream as downstream
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > <suite>
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > draws a line from each parent to its child
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > is empty for nothing to place
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > keeps the columns in the order of supply and puts an unknown layer last
+  - apps/web/src/data/impact-tree.test.ts::[REQ-350] the layers are columns and the rows follow the tree > puts a node in the column of its layer, never above its parent and never on another node
+  - apps/web/src/data/impact-view.test.ts::<import:983e3f78>
+  - apps/web/src/data/impact-view.test.ts::<import:c42f4f8b>
+  - apps/web/src/data/impact-view.test.ts::=lnk
+  - apps/web/src/data/impact-view.test.ts::=obj
+  - apps/web/src/data/impact-view.test.ts::=read
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > <suite>
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > knows the address of this screen and no other
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > reads a value that does not fit as the default
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > reads back what it wrote, for views that use every part of the address
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > says whether the question names a start
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > takes the target over the objects that failed, and keeps at most 20 of each list
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the state of the impact screen is in the address > writes nothing for the default view, so the plain address is the default screen
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > <suite>
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > =view
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > asks upstream with the target alone, and leaves the limit of hops out when there is none
+  - apps/web/src/data/impact-view.test.ts::[REQ-353] the view makes the two requests of the screen > first asks for the counts of both readings, then for the items of the reading chosen in pages of 1000
+  - apps/web/src/data/useImpact.test.tsx::<hook:afterEach>
+  - apps/web/src/data/useImpact.test.tsx::<import:121ca3c5>
+  - apps/web/src/data/useImpact.test.tsx::<import:416b76a5>
+  - apps/web/src/data/useImpact.test.tsx::<import:5dfd9958>
+  - apps/web/src/data/useImpact.test.tsx::<import:634c00db>
+  - apps/web/src/data/useImpact.test.tsx::<import:b919bd80>
+  - apps/web/src/data/useImpact.test.tsx::<import:c370c4f3>
+  - apps/web/src/data/useImpact.test.tsx::<import:d3c650a5>
+  - apps/web/src/data/useImpact.test.tsx::<import:dc80bbe0>
+  - apps/web/src/data/useImpact.test.tsx::<import:f5e1dfab>
+  - apps/web/src/data/useImpact.test.tsx::<import:f848c9d5>
+  - apps/web/src/data/useImpact.test.tsx::=A
+  - apps/web/src/data/useImpact.test.tsx::=PATH
+  - apps/web/src/data/useImpact.test.tsx::=bodies
+  - apps/web/src/data/useImpact.test.tsx::=factsItems
+  - apps/web/src/data/useImpact.test.tsx::=meta
+  - apps/web/src/data/useImpact.test.tsx::=pages
+  - apps/web/src/data/useImpact.test.tsx::=sample
+  - apps/web/src/data/useImpact.test.tsx::=summary
+  - apps/web/src/data/useImpact.test.tsx::=view
+  - apps/web/src/data/useImpact.test.tsx::[REQ-374] the question and the view are in the address and come back from it > <suite>
+  - apps/web/src/data/useImpact.test.tsx::[REQ-374] the question and the view are in the address and come back from it > writes the address of the screen and reads the same view back
+  - apps/web/src/data/useImpact.test.tsx::[REQ-375] the answer is put together from the summary and the items > <suite>
+  - apps/web/src/data/useImpact.test.tsx::[REQ-375] the answer is put together from the summary and the items > makes the request of the contract from the body of the screen without sharing its arrays
+  - apps/web/src/data/useImpact.test.tsx::[REQ-375] the answer is put together from the summary and the items > puts the items in the section of the reading, or of the upstream answer
   - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the screen asks the real API: the counts first, then the items a page at a time > <suite>"
   - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the screen asks the real API: the counts first, then the items a page at a time > asks the items again for another reading but not the summary, and everything again for another question"
   - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the screen asks the real API: the counts first, then the items a page at a time > asks the items again on receiveAgain, and everything again on reload"
   - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the screen asks the real API: the counts first, then the items a page at a time > does not ask for items when the server counted none"
   - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the screen asks the real API: the counts first, then the items a page at a time > gives the error of the summary and keeps the items it already has when a later page fails"
   - "apps/web/src/data/useImpact.test.tsx::[REQ-375] the screen asks the real API: the counts first, then the items a page at a time > sends a summary of both readings and then the items of the reading, with the cursor of the page before"
-  - "apps/web/src/impact-screen.test.tsx::=COMPUTATION"
-  - "apps/web/src/impact-screen.test.tsx::=Call"
-  - "apps/web/src/impact-screen.test.tsx::=Handler"
-  - "apps/web/src/impact-screen.test.tsx::=ID"
-  - "apps/web/src/impact-screen.test.tsx::=IMPACT"
-  - "apps/web/src/impact-screen.test.tsx::=META"
-  - "apps/web/src/impact-screen.test.tsx::=START"
-  - "apps/web/src/impact-screen.test.tsx::=byText"
-  - "apps/web/src/impact-screen.test.tsx::=calls"
-  - "apps/web/src/impact-screen.test.tsx::=click"
-  - "apps/web/src/impact-screen.test.tsx::=downstream"
-  - "apps/web/src/impact-screen.test.tsx::=handler"
-  - "apps/web/src/impact-screen.test.tsx::=hex"
-  - "apps/web/src/impact-screen.test.tsx::=install"
-  - "apps/web/src/impact-screen.test.tsx::=item"
-  - "apps/web/src/impact-screen.test.tsx::=json"
-  - "apps/web/src/impact-screen.test.tsx::=ref"
-  - "apps/web/src/impact-screen.test.tsx::=sample"
-  - "apps/web/src/impact-screen.test.tsx::=section"
-  - "apps/web/src/impact-screen.test.tsx::=serve"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > <suite>"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > =model"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > =object"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > offers what stops with it and what it depends on, and what stops with everything inside it only for a type that holds others"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > <suite>"
+  - apps/web/src/impact-screen.test.tsx::=COMPUTATION
+  - apps/web/src/impact-screen.test.tsx::=Call
+  - apps/web/src/impact-screen.test.tsx::=Handler
+  - apps/web/src/impact-screen.test.tsx::=ID
+  - apps/web/src/impact-screen.test.tsx::=IMPACT
+  - apps/web/src/impact-screen.test.tsx::=META
+  - apps/web/src/impact-screen.test.tsx::=START
+  - apps/web/src/impact-screen.test.tsx::=byText
+  - apps/web/src/impact-screen.test.tsx::=calls
+  - apps/web/src/impact-screen.test.tsx::=click
+  - apps/web/src/impact-screen.test.tsx::=downstream
+  - apps/web/src/impact-screen.test.tsx::=handler
+  - apps/web/src/impact-screen.test.tsx::=hex
+  - apps/web/src/impact-screen.test.tsx::=install
+  - apps/web/src/impact-screen.test.tsx::=item
+  - apps/web/src/impact-screen.test.tsx::=json
+  - apps/web/src/impact-screen.test.tsx::=ref
+  - apps/web/src/impact-screen.test.tsx::=sample
+  - apps/web/src/impact-screen.test.tsx::=section
+  - apps/web/src/impact-screen.test.tsx::=serve
+  - apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > <suite>
+  - apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > =model
+  - apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > =object
+  - apps/web/src/impact-screen.test.tsx::[REQ-374] the object screen opens the impact screen three ways > offers what stops with it and what it depends on, and what stops with everything inside it only for a type that holds others
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > <suite>
   - "apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > reads the reading from the address: it asks the items of that reading and says the assumptions are included"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > says there is nothing to ask when the address names no object"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > shows what was assumed to have stopped, the direction and the reading, and the answer after the wait"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > <suite>"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > =impactCalls"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > aborts a request that is running when the screen is left"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > aborts the question before when the question changes"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > stops receiving items when the person presses stop, draws what came, and says so"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-377] the counts are the server's, and a count narrows the list > <suite>"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-377] the counts are the server's, and a count narrows the list > narrows the list to one grade when it is pressed, and widens it when it is pressed again"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-377] the counts are the server's, and a count narrows the list > shows the counts of the whole answer, not of the items received, with the shape and the word of each grade"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > <suite>"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > opens a result of more than 300 objects as groups, and a group lists its members, 100 at most"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > opens on the graph, switches to the list in the address, and comes back to the same tab from the address"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > sorts the list by a column head and says so"
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > says there is nothing to ask when the address names no object
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] [REQ-376] the screen asks the question and says what it is > shows what was assumed to have stopped, the direction and the reading, and the answer after the wait
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > <suite>
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > =impactCalls
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > aborts a request that is running when the screen is left
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > aborts the question before when the question changes
+  - apps/web/src/impact-screen.test.tsx::[REQ-375] the request stops when the screen is left, the question changes, or the person says so > stops receiving items when the person presses stop, draws what came, and says so
+  - apps/web/src/impact-screen.test.tsx::[REQ-377] the counts are the server's, and a count narrows the list > <suite>
+  - apps/web/src/impact-screen.test.tsx::[REQ-377] the counts are the server's, and a count narrows the list > narrows the list to one grade when it is pressed, and widens it when it is pressed again
+  - apps/web/src/impact-screen.test.tsx::[REQ-377] the counts are the server's, and a count narrows the list > shows the counts of the whole answer, not of the items received, with the shape and the word of each grade
+  - apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > <suite>
+  - apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > opens a result of more than 300 objects as groups, and a group lists its members, 100 at most
+  - apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > opens on the graph, switches to the list in the address, and comes back to the same tab from the address
+  - apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > sorts the list by a column head and says so
   - "apps/web/src/impact-screen.test.tsx::[REQ-378] the graph is the first tab, the list is the other, and a node tells about itself > tells about the node that is selected: its type, grade, what it lost, the way from the start and a link to it"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > <suite>"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > says how many objects have no supplier for a channel they need, what the assumptions were, and what the calculation does not see"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > tells the item limit and asks again with a higher one"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > tells the time limit, and the hop limit with a button that asks without it"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > <suite>"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > keeps what the calculation does not see in view when nothing is affected"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > marks the single points of failure of what an object depends on, with their number from the server"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > says that nothing is affected and that this does not mean it is safe"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > shows the error of the server in the words of the other screens, with what was not found"
-  - "apps/web/src/impact-screen.test.tsx::[REQ-381] the words of the screen > calls the loss of redundancy through an object it depends on 간접, and asks for an access token on the connection screen"
-  - "apps/web/src/test-support/impact-world.ts::=CHAIN"
-  - "apps/web/src/test-support/impact-world.ts::=Made"
-  - "apps/web/src/test-support/impact-world.ts::=SAMPLE_LAYERS"
-  - "apps/web/src/test-support/impact-world.ts::=SampleComputation"
-  - "apps/web/src/test-support/impact-world.ts::=SampleImpact"
-  - "apps/web/src/test-support/impact-world.ts::=SampleItem"
-  - "apps/web/src/test-support/impact-world.ts::=SampleOptions"
-  - "apps/web/src/test-support/impact-world.ts::=SampleRef"
-  - "apps/web/src/test-support/impact-world.ts::=SampleSection"
-  - "apps/web/src/test-support/impact-world.ts::=SampleStep"
-  - "apps/web/src/test-support/impact-world.ts::=SampleUpstreamItem"
-  - "apps/web/src/test-support/impact-world.ts::=WEIGHTS"
-  - "apps/web/src/test-support/impact-world.ts::=ancestors"
-  - "apps/web/src/test-support/impact-world.ts::=cappedImpact"
-  - "apps/web/src/test-support/impact-world.ts::=computationOf"
-  - "apps/web/src/test-support/impact-world.ts::=downstreamItem"
-  - "apps/web/src/test-support/impact-world.ts::=hex"
-  - "apps/web/src/test-support/impact-world.ts::=impactOfSize"
-  - "apps/web/src/test-support/impact-world.ts::=linkOf"
-  - "apps/web/src/test-support/impact-world.ts::=makeTree"
-  - "apps/web/src/test-support/impact-world.ts::=pickGrade"
-  - "apps/web/src/test-support/impact-world.ts::=sampleId"
-  - "apps/web/src/test-support/impact-world.ts::=sampleLayerOf"
-  - "apps/web/src/test-support/impact-world.ts::=sectionOf"
-  - "apps/web/src/test-support/impact-world.ts::=seededRandom"
-  - "apps/web/src/test-support/impact-world.ts::=shuffled"
-  - "apps/web/src/test-support/impact-world.ts::=smallImpact"
-  - "apps/web/src/test-support/impact-world.ts::=stepOf"
-  - "apps/web/src/test-support/impact-world.ts::=syntheticImpact"
-  - "apps/web/src/test-support/impact-world.ts::=upstreamItem"
-  - "apps/web/src/ui/impact-graph.test.tsx::<import:82e83b3a>"
-  - "apps/web/src/ui/impact-graph.test.tsx::<import:84c8ed11>"
-  - "apps/web/src/ui/impact-graph.test.tsx::<import:b919bd80>"
-  - "apps/web/src/ui/impact-graph.test.tsx::<import:c2865e69>"
-  - "apps/web/src/ui/impact-graph.test.tsx::<import:c2f79619>"
-  - "apps/web/src/ui/impact-graph.test.tsx::=buttons"
-  - "apps/web/src/ui/impact-graph.test.tsx::=byId"
-  - "apps/web/src/ui/impact-graph.test.tsx::=edges"
-  - "apps/web/src/ui/impact-graph.test.tsx::=graph"
-  - "apps/web/src/ui/impact-graph.test.tsx::=key"
-  - "apps/web/src/ui/impact-graph.test.tsx::=lanes"
-  - "apps/web/src/ui/impact-graph.test.tsx::=node"
-  - "apps/web/src/ui/impact-graph.test.tsx::=nodes"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > <suite>"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > draws about as many elements as there are nodes and edges, never one for each frame"
+  - apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > <suite>
+  - apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > says how many objects have no supplier for a channel they need, what the assumptions were, and what the calculation does not see
+  - apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > tells the item limit and asks again with a higher one
+  - apps/web/src/impact-screen.test.tsx::[REQ-379] a result cut short says why and offers the way to ask again > tells the time limit, and the hop limit with a button that asks without it
+  - apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > <suite>
+  - apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > keeps what the calculation does not see in view when nothing is affected
+  - apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > marks the single points of failure of what an object depends on, with their number from the server
+  - apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > says that nothing is affected and that this does not mean it is safe
+  - apps/web/src/impact-screen.test.tsx::[REQ-380] an answer with nothing, an error, and the single points of failure upstream > shows the error of the server in the words of the other screens, with what was not found
+  - apps/web/src/impact-screen.test.tsx::[REQ-381] the words of the screen > calls the loss of redundancy through an object it depends on 간접, and asks for an access token on the connection screen
+  - apps/web/src/test-support/impact-world.ts::=CHAIN
+  - apps/web/src/test-support/impact-world.ts::=Made
+  - apps/web/src/test-support/impact-world.ts::=SAMPLE_LAYERS
+  - apps/web/src/test-support/impact-world.ts::=SampleComputation
+  - apps/web/src/test-support/impact-world.ts::=SampleImpact
+  - apps/web/src/test-support/impact-world.ts::=SampleItem
+  - apps/web/src/test-support/impact-world.ts::=SampleOptions
+  - apps/web/src/test-support/impact-world.ts::=SampleRef
+  - apps/web/src/test-support/impact-world.ts::=SampleSection
+  - apps/web/src/test-support/impact-world.ts::=SampleStep
+  - apps/web/src/test-support/impact-world.ts::=SampleUpstreamItem
+  - apps/web/src/test-support/impact-world.ts::=WEIGHTS
+  - apps/web/src/test-support/impact-world.ts::=ancestors
+  - apps/web/src/test-support/impact-world.ts::=cappedImpact
+  - apps/web/src/test-support/impact-world.ts::=computationOf
+  - apps/web/src/test-support/impact-world.ts::=downstreamItem
+  - apps/web/src/test-support/impact-world.ts::=hex
+  - apps/web/src/test-support/impact-world.ts::=impactOfSize
+  - apps/web/src/test-support/impact-world.ts::=linkOf
+  - apps/web/src/test-support/impact-world.ts::=makeTree
+  - apps/web/src/test-support/impact-world.ts::=pickGrade
+  - apps/web/src/test-support/impact-world.ts::=sampleId
+  - apps/web/src/test-support/impact-world.ts::=sampleLayerOf
+  - apps/web/src/test-support/impact-world.ts::=sectionOf
+  - apps/web/src/test-support/impact-world.ts::=seededRandom
+  - apps/web/src/test-support/impact-world.ts::=shuffled
+  - apps/web/src/test-support/impact-world.ts::=smallImpact
+  - apps/web/src/test-support/impact-world.ts::=stepOf
+  - apps/web/src/test-support/impact-world.ts::=syntheticImpact
+  - apps/web/src/test-support/impact-world.ts::=upstreamItem
+  - apps/web/src/ui/impact-graph.test.tsx::<import:82e83b3a>
+  - apps/web/src/ui/impact-graph.test.tsx::<import:84c8ed11>
+  - apps/web/src/ui/impact-graph.test.tsx::<import:b919bd80>
+  - apps/web/src/ui/impact-graph.test.tsx::<import:c2865e69>
+  - apps/web/src/ui/impact-graph.test.tsx::<import:c2f79619>
+  - apps/web/src/ui/impact-graph.test.tsx::=buttons
+  - apps/web/src/ui/impact-graph.test.tsx::=byId
+  - apps/web/src/ui/impact-graph.test.tsx::=edges
+  - apps/web/src/ui/impact-graph.test.tsx::=graph
+  - apps/web/src/ui/impact-graph.test.tsx::=key
+  - apps/web/src/ui/impact-graph.test.tsx::=lanes
+  - apps/web/src/ui/impact-graph.test.tsx::=node
+  - apps/web/src/ui/impact-graph.test.tsx::=nodes
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > <suite>
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > draws about as many elements as there are nodes and edges, never one for each frame
   - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > fades only where motion is welcome: the transition is a motion-safe class, so reduced motion has none"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > shows the layers up to the step and hides the later ones from the keyboard and the screen reader"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > skips to a spread with nothing in it"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > <suite>"
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > shows the layers up to the step and hides the later ones from the keyboard and the screen reader
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] [REQ-356] the step decides what is shown, and with reduced motion nothing fades > skips to a spread with nothing in it
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > <suite>
   - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > draws a line of the link by what it rests on: dashed for an assumption, a diamond for a group on the way"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > draws every shape differently, with a color token and never a color of its own"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > lists the grades with their counts and narrows to one when it is pressed"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > writes the word and the count beside a figure that a screen reader does not read"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > <suite>"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > gives each node a button role and a full name, and one tab stop among them all"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > is a named region that scrolls by keyboard, holding a group with a summary"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > makes the selected node the tab stop, and leaves a skip button to the list when the screen gives one"
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > draws every shape differently, with a color token and never a color of its own
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > lists the grades with their counts and narrows to one when it is pressed
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-354] a grade is drawn as a shape, a word and a color > writes the word and the count beside a figure that a screen reader does not read
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > <suite>
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > gives each node a button role and a full name, and one tab stop among them all
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > is a named region that scrolls by keyboard, holding a group with a summary
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > makes the selected node the tab stop, and leaves a skip button to the list when the screen gives one
   - "apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > moves with the arrow keys: right to a child, left to the cause, up and down in the column, Home and End"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > selects with Enter or Space and clears with Escape, and tells the choice in a polite status"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-356] the controls of the spread work whatever the motion > <suite>"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-356] the controls of the spread work whatever the motion > plays or pauses, replays and moves by the slider, and reads the step out"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > <suite>"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > =columns"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > =sections"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > has a heading and a named table for each grade, with the sortable columns as buttons and aria-sort"
-  - "apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > says that nothing was found when there is nothing to list"
-  - "apps/web/src/impact-screen.test.tsx::<hook:beforeEach>"
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-355] the graph is reached and moved through by keyboard, with a name for each node > selects with Enter or Space and clears with Escape, and tells the choice in a polite status
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-356] the controls of the spread work whatever the motion > <suite>
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-356] the controls of the spread work whatever the motion > plays or pauses, replays and moves by the slider, and reads the step out
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > <suite>
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > =columns
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > =sections
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > has a heading and a named table for each grade, with the sortable columns as buttons and aria-sort
+  - apps/web/src/ui/impact-graph.test.tsx::[REQ-357] the list is a table for each grade, sortable, shown in steps > says that nothing was found when there is nothing to list
+  - apps/web/src/impact-screen.test.tsx::<hook:beforeEach>
 test_change_reason: 영향 범위 화면을 제품에서 삭제하기로 했다(제품 책임자의 결정). 그 화면만 테스트하던 테스트 파일과 지원 코드를 지우고, 접속 설정 화면의 문구(REQ-381)만 남는 테스트 파일의 준비 코드를 그에 맞게 줄인다. 테스트하던 동작이 사라진 것이지 단언을 느슨하게 한 것이 아니다.
 amends: []
+decision_hash: b80cd3567f0380d0
 ---
 # ADR-0077 영향 범위 화면을 삭제한다
 
