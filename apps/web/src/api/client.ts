@@ -19,7 +19,18 @@ export interface RequestSpec {
   readonly path: string;
   readonly pathParams?: Readonly<Record<string, string | number>>;
   readonly query?: QueryObject;
+  /** Header parameters of the contract such as `Idempotency-Key` and `If-Match`; one that is `undefined` is not sent. */
+  readonly headers?: Readonly<Record<string, string | undefined>>;
   readonly body?: unknown;
+  /** Told what the answer carried, once it came. `withEtag` uses it; a caller that does not need it leaves it out. */
+  readonly onResponse?: (meta: ResponseMeta) => void;
+}
+
+/** What an answer carried beside its body. */
+export interface ResponseMeta {
+  readonly status: number;
+  /** The `ETag` header: the version to send back in `If-Match`. Absent when the answer has none. */
+  readonly etag: string | undefined;
 }
 
 /** What the generated functions need from a client. */
@@ -134,14 +145,33 @@ async function errorOf(response: Response): Promise<ApiError> {
   });
 }
 
+/**
+ * The headers a request sends: the contract's header parameters first, then the ones the client owns. Names compare
+ * without regard to case, so a caller cannot replace `Authorization`, `Accept` or `Content-Type`.
+ */
+export function requestHeaders(
+  spec: RequestSpec,
+  token: string | undefined,
+): Record<string, string> {
+  const headers: Record<string, string> = {};
+  for (const [name, value] of Object.entries(spec.headers ?? {})) {
+    if (value !== undefined && value !== "") headers[name] = value;
+  }
+  for (const name of Object.keys(headers)) {
+    if (/^(accept|authorization|content-type)$/i.test(name)) delete headers[name];
+  }
+  headers.Accept = "application/json";
+  if (token) headers.Authorization = `Bearer ${token}`;
+  if (spec.body !== undefined) headers["Content-Type"] = "application/json";
+  return headers;
+}
+
 /** A client over `fetch`. The token goes in the `Authorization` header of every request and nowhere else. */
 export function createClient(options: ClientOptions = {}): Requester {
   const doFetch = options.fetch ?? ((input, init) => fetch(input, init));
   return {
     async request<T>(spec: RequestSpec): Promise<T> {
-      const headers: Record<string, string> = { Accept: "application/json" };
-      if (options.token) headers.Authorization = `Bearer ${options.token}`;
-      if (spec.body !== undefined) headers["Content-Type"] = "application/json";
+      const headers = requestHeaders(spec, options.token);
       let response: Response;
       try {
         response = await doFetch(buildUrl(options.baseUrl ?? "", spec), {
@@ -158,6 +188,10 @@ export function createClient(options: ClientOptions = {}): Requester {
           title: "The API could not be reached.",
         });
       }
+      spec.onResponse?.({
+        status: response.status,
+        etag: response.headers.get("ETag") ?? undefined,
+      });
       if (response.status === 204 || response.status === 304) return undefined as T;
       if (!response.ok) throw await errorOf(response);
       try {
@@ -171,4 +205,29 @@ export function createClient(options: ClientOptions = {}): Requester {
       }
     },
   };
+}
+
+/**
+ * Make a call and also get the `ETag` of its answer. The generated functions return the body only, so a caller that
+ * needs the version (to send it back as `If-Match`) wraps the call:
+ * `const { data, etag } = await withEtag(client, (c) => getKG(c, { path: { kg } }))`.
+ * The wrapper puts a listener on every request the call makes; the `ETag` is that of the last answer.
+ */
+export async function withEtag<T>(
+  client: Requester,
+  call: (client: Requester) => Promise<T>,
+): Promise<{ readonly data: T; readonly etag: string | undefined }> {
+  let etag: string | undefined;
+  const listening: Requester = {
+    request: <R>(spec: RequestSpec): Promise<R> =>
+      client.request<R>({
+        ...spec,
+        onResponse: (meta) => {
+          etag = meta.etag;
+          spec.onResponse?.(meta);
+        },
+      }),
+  };
+  const data = await call(listening);
+  return { data, etag };
 }

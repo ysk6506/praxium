@@ -66,9 +66,28 @@ follows:
 |---|---|---|
 | 모든 입력에 보이는 `<label>`을 연결하고, 도움말은 설명으로 연결한다. 자리표시자를 라벨로 쓰지 않는다(`TextField`) | `guides/forms/forms` | 쓰는 쪽 |
 | 검색과 필터는 `<search>`로 감싸고 `type="search"`를 쓴다. 식별자나 이름을 치는 입력에는 `spellCheck={false}`와 `autoComplete="off"`를 둔다 | `guides/forms/forms`, `guides/html/html` | 쓰는 쪽 |
-| 검증은 사용자가 입력을 마친 뒤(`blur`)와 제출 때 한다. 입력 중에는 오류를 삭제하기만 한다. 제출에 실패하면 첫 오류로 포커스를 옮긴다. 제출 버튼을 미리 비활성화하지 않는다 | `guides/forms/validate-input-after-interaction`, `guides/accessibility/accessible-error-announcement` | 쓰는 쪽 |
-| `Enter`로 제출하거나 실행하는 입력은 입력기 조합 중(`event.isComposing`, Safari에서는 `keyCode === 229`)의 `Enter`를 무시한다. 한국어는 `Enter`로 글자를 확정한다 | `guides/forms/ime-safe-enter-submit` | 쓰는 쪽 |
+| 검증은 사용자가 입력을 마친 뒤(`blur`)와 제출 때 한다. 입력 중에는 오류를 삭제하기만 한다. 제출에 실패하면 첫 오류로 포커스를 옮긴다. 제출 버튼을 미리 비활성화하지 않는다 | `guides/forms/validate-input-after-interaction`, `guides/accessibility/accessible-error-announcement` | `Form`, `SubmitButton`(4.1절) |
+| `Enter`로 제출하거나 실행하는 입력은 입력기 조합 중(`event.isComposing`, Safari에서는 `keyCode === 229`)의 `Enter`를 무시한다. 한국어는 `Enter`로 글자를 확정한다 | `guides/forms/ime-safe-enter-submit` | `Form`, `ListEditor`(`isComposingKey`) |
 | 오류는 `role="alert"`, 읽는 중은 `<output>`으로 알린다. 읽는 중을 긴급 알림으로 쓰지 않는다 | `guides/accessibility/accessibility` | `ErrorState`, `LoadingState` |
+
+### 4.1 폼 부품과 쓰는 법
+
+폼은 `ui`의 부품과 `data`의 훅으로 짠다. 화면이 필드, 오류 글, 포커스 이동, 제출을 직접 짜지 않는다(ADR-0072).
+
+| 하려는 일 | 쓰는 것 | 지키는 것 |
+|---|---|---|
+| 한 줄, 여러 줄, 숫자, 시크릿을 받는다 | `TextField`, `TextAreaField`, `NumberInput`, `SecretField` | 이름표, 도움말, 오류 글이 입력과 이어진다(`aria-describedby`, `aria-invalid`). `error`에 문장을 주면 `role="alert"`로 읽힌다. `required`는 글(필수)과 속성으로 알린다. 비운 숫자 칸은 `null`이고 `0`이 아니다 |
+| 토큰, 비밀번호, 키를 받는다 | `SecretField` | 값을 주소, 브라우저 저장소, 쿠키에 두지 않는다. 꼭 보관해야 하면 화면의 코드 한 곳에서 이유를 적고 한다(접속 설정이 접근 토큰을 그렇게 보관한다) |
+| 항목을 더하고, 지우고, 순서를 바꾼다 | `ListEditor` | 단추 이름에 항목이 들어 있다("헤더 2 위로 옮기기"). 입력에서 Alt+위, Alt+아래로도 옮긴다. 항목마다 오류(`itemErrors`)를 준다 |
+| 보내기 | `Form`, `SubmitButton` | `onSubmit`이 성공이면 `true`를 준다. `false`면 첫 `aria-invalid` 칸으로, 칸이 없으면 실패 알림으로 포커스가 간다. 제출 단추는 보내는 중에만 기다린다. 입력기로 글자를 확정하는 Enter는 보내지 않는다 |
+| 결과를 알린다 | `ResultNotice` | 성공은 `<output>`, 실패는 `role="alert"`이고 둘 다 먼저 페이지에 있다. 단추 가까이에 둔다 |
+| 되돌릴 수 없는 일을 묻는다 | `ConfirmDialog` (`danger`) | 포커스는 취소에서 시작하고, 바깥을 눌러도 닫히지 않으며, 닫으면 연 단추로 돌아간다. `danger`는 글("되돌릴 수 없습니다")로도 알린다 |
+| 서버에 쓴다 | `useMutation` | 진행 중에는 다시 내지 않는다. 제출 하나에 멱등 키 하나(같은 제출의 다시 시도는 같은 키)이고 키는 `data/idempotency.ts`가 만든다(난수를 읽는 `apps/web`의 유일한 파일이다). 테스트는 `newKey`를 넘겨 결정적으로 돈다. 실패는 `ErrorView`와 필드별 오류(`issues`)로 나온다. `invalidates`에 바꾼 주제를 적는다 |
+| 쓴 뒤 읽기를 새로 한다 | `useAsync(load, enabled, { refreshOn, poll })` | `refreshOn`의 주제가 `invalidate`되면 로딩 표시 없이 다시 읽는다. `poll`은 `until`이 참이 될 때까지 간격을 두고 읽고, 숨겨진 탭은 쉬며, 실패하면 멈춘다 |
+| 문서(JSON)를 편집한다 | `getAt`, `setAt`, `writeValue`, `moveItem` 따위(`data/json-doc.ts`) | 위치는 JSON 포인터다. 모르는 키와 그 순서를 지키고, 비운 칸은 `""` 대신 키를 없앤다. `attachIssues`가 서버의 오류 위치를 칸에 잇는다 |
+| 저장하지 않은 편집을 지킨다 | `useLeaveGuard(dirty)` | 창을 닫을 때는 브라우저가 묻고, 다른 화면으로 갈 때는 `pending`이 생기니 `ConfirmDialog`로 `leave`나 `stay`를 고르게 한다 |
+
+숫자 입력은 브라우저의 `<input type="number">`이다. Base UI의 `NumberField`는 gzip으로 약 4.9KB가 늘어서 쓰지 않았다(ADR-0072). 검증 문구는 `data/errors.ts`의 표(`fieldErrorMessage`, `describeError`)에서 온다.
 
 ## 5. 테이블, 대화 상자, 탭
 
@@ -95,7 +114,7 @@ follows:
 
 | 규칙 | 근거 가이드 | 확인 |
 |---|---|---|
-| 번들은 gzip으로 JS 170000바이트, CSS 10000바이트 이하이다(2026-11 측정은 JS 약 143000, CSS 약 6000). 예산을 올리려면 이유를 적은 ADR이 필요하다 | `guides/performance/performance` | `WEB045` |
+| 번들은 gzip으로 JS 170000바이트, CSS 10000바이트 이하이다(2026-11 측정은 JS 약 163000, CSS 약 6600). 예산을 올리려면 이유를 적은 ADR이 필요하다 | `guides/performance/performance` | `WEB045` |
 | 스크립트는 `type="module"`이고 CSS `@import`는 빌드 입력에서만 쓴다. 쓰지 않는 코드는 트리 셰이킹으로 뺀다 | 같은 곳 | Vite 빌드 |
 | 한 번에 50ms를 넘기는 일을 만들지 않는다. 큰 목록은 페이지네이션으로 자른다 | `guides/performance/break-up-long-tasks` | 쓰는 쪽 |
 | 지연 로딩(`import()`)은 번들이 예산에 다가올 때 화면 단위로 도입한다. 지금은 번들 하나이다 | `guides/performance/performance` | `WEB045` |
