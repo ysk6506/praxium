@@ -7,7 +7,7 @@ follows:
 ---
 # 요구사항 — 웹 UI, 명령줄, 릴리스
 
-웹 화면(275번대, 296~299, 315~319, 448~449)과 화면의 쓰기 기반(407~409), 명령줄, 데모, 릴리스 빌드(282~283), 취약점 신고 안내와 액션 고정(470~471)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
+웹 화면(275번대, 296~299, 315~319, 381, 448~449)과 화면의 쓰기 기반(407~409), 명령줄, 데모, 릴리스 빌드(282~283), 취약점 신고 안내와 액션 고정(470~471)의 요구사항이다. 목표와 REQ 번호의 규칙은 [요구사항 입구](requirements.md)에 있다. 번호는 모든 요구사항 문서에서 하나뿐이다.
 
 | ID | 요구사항 |
 |---|---|
@@ -37,6 +37,7 @@ follows:
 | REQ-317 | 웹 UI는 움직임 줄이기를 존중한다: 움직이는 CSS가 있으면 `prefers-reduced-motion` 처리가 있어야 하고 Tailwind의 `animate-`는 `motion-safe:` 뒤에서만 쓴다(`WEB044`). 강제 색상 모드에서 현재 메뉴, 선택한 탭, 배지, 회전 표시가 구별되고, 글자가 든 컨트롤의 높이는 고정하지 않아 200% 확대와 글자 간격 조정에서 잘리지 않는다 | ADR-0045, `harness/src/checks/web-rules.test.ts` |
 | REQ-318 | 웹 UI의 소스는 위험한 삽입 함수(`innerHTML` 대입, `dangerouslySetInnerHTML`, `eval` 등, `WEB041`)와 절대 `http(s)://` 주소(`WEB042`)를 쓰지 않고, 포커스 표시를 대체 없이 지우지 않으며(`WEB043`), 빌드 결과는 gzip 예산 이하이다(`WEB045`). 화면 응답은 `script-src`, `connect-src`, `worker-src`, `object-src`를 명시한 CSP와 `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`을 가지고 `no-store`를 쓰지 않는다 | ADR-0045, `harness/src/checks/web-rules.test.ts`, `backend/internal/httpapi/ui_headers_test.go` |
 | REQ-319 | 웹 UI 규칙 문서가 지원 브라우저 기준(Baseline Widely available을 기본, Newly available은 기능 감지와 점진 향상일 때만, Limited와 오리진 트라이얼 금지, 하한은 Tailwind CSS v4의 최소 버전)과 채택하지 않는 것, 출처와 라이선스(CC BY 4.0)를 밝히고 AGENTS.md가 그 문서로 이끈다. 빌드 대상은 그 하한의 브라우저 목록이다 | ADR-0045, `harness/src/checks/web-rules.test.ts` |
+| REQ-381 | 접속 설정 화면은 "개발용 토큰"이 아니라 "접근 토큰"이라고 말하고, 데모, 로컬 모드, 개발 서버, 운영 서버 각각에서 토큰을 어디서 얻는지 한 줄씩 안내한다(운영 서버는 관리자가 `praxium admin token create`로 만든 `pxm_…` 토큰) |
 | REQ-407 | 웹 UI의 API 호출 계층은 계약의 머리글 인자(`Idempotency-Key`, `If-Match`, `If-None-Match`)를 호출 함수의 `headers` 인자로 받아 요청에 싣는다. 생성기가 머리글 인자가 있는 연산마다 이를 만들고 생성 파일은 생성기로만 바꾼다. 요청을 보내는 한 곳이 머리글을 싣되 토큰과 미디어 타입의 머리글은 바꾸지 못하게 한다. 응답의 `ETag`는 호출 결과의 모양을 바꾸지 않고 `withEtag`로 읽는다. 본문은 JSON만 보낸다 | ADR-0072, `apps/web/src/api/headers.test.ts`, `apps/web/src/api/generator/generator.test.ts` |
 | REQ-408 | 웹 UI의 쓰기는 변경용 훅(`useMutation`)이 맡는다. 진행 중에는 같은 제출을 다시 내지 않고, 제출 하나에 멱등 키 하나를 쓴다(같은 제출의 다시 시도는 같은 키, 내용이 바뀐 제출과 성공 뒤의 제출은 새 키, 서버가 거절한 키는 버린다). 실패는 한국어 문장과 서버가 `errors[]`로 알린 필드별 오류로 나오고, 428, 412, 409의 문구가 따로 있다. 쓰기가 성공하면 바꾼 주제를 읽는 화면만 로딩 표시 없이 다시 읽고(전역 캐시는 두지 않는다), 읽기는 간격을 두고 다시 읽을 수 있되 멈춤 조건이 있고 숨겨진 탭은 쉰다. JSON 문서는 JSON 포인터(RFC 6901)로 읽고 쓰고 지우며, 모르는 키와 그 순서를 지키고 비운 칸은 키를 없애며, 서버의 오류 위치를 폼의 칸과 잇는다 | ADR-0072, `apps/web/src/data/mutation.test.tsx`, `apps/web/src/data/poll.test.tsx`, `apps/web/src/data/json-doc.test.ts` |
 | REQ-409 | 웹 UI의 폼 부품은 이름표, 도움말, 오류 글을 입력과 `aria-describedby`, `aria-invalid`로 잇고 필수를 글로 알린다. 시크릿 입력은 값을 주소와 브라우저 저장소에 두지 않는다. 목록 편집은 키보드만으로 더하고 지우고 순서를 바꾼다. 제출 단추는 미리 비활성화하지 않고, 제출이 실패하면 첫 오류 칸(없으면 실패 알림)으로 포커스를 옮기며, 입력기로 글자를 확정하는 Enter는 제출하거나 항목을 더하지 않는다. 확인 대화상자는 포커스를 가두고 닫을 때 돌려 주며 위험한 동작을 글로 알린다. 저장의 성공과 실패는 화면 읽기 프로그램에도 알리고(`aria-live`), 저장하지 않은 편집이 있으면 창을 닫거나 다른 화면으로 갈 때 묻는다 | ADR-0072, `apps/web/src/ui/form.test.tsx`, `apps/web/src/data/leaveGuard.test.tsx` |

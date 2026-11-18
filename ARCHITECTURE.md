@@ -49,8 +49,8 @@ covers:
 | `core.worldgen` | Go | `backend/internal/worldgen` | 합성 세계 생성기. 시드와 인자로 표준 모델만 사용한 데이터센터의 정답(JSON Lines), 소스 뷰(CSV, JSON 페이지, 장치 설정, 고정 폭 테이블), 변경 스트림, 분포 프로파일을 스트리밍으로 생성하고, 정답을 등록부로 검증한다. 파일은 `Store`로 받는다(운영체제에 접근하지 않는다) | `core.kernel`, `core.model` |
 | `cmd.praxium` | Go | `backend/cmd/praxium` | 시작점. 역할 이름만 주면 커널을 조립하고 한 줄짜리 구조화 로그를 남긴 뒤 종료한다. `demo`는 합성 세계를 적재한 서버와 웹 UI를 명령 하나로 띄운다(ADR-0038). `api serve`는 서버를 기동하고, `api routes`, `contract`, 클라이언트 명령(`health`, `types`, `catalog`, `kg`, `object`, `query`)과 개발용 `dev load-truth`, 파일 소스 한 번의 수집 `ingest run`과 파일을 살펴보는 `ingest inspect`를 가진다. `api serve -mode development`는 기본으로 인메모리 스토리지를 만들고 `-dev-truth`로 세계를 적재한다. `-store postgres -store-dsn-file <파일>`을 주면 PostgreSQL 스토리지를 쓴다(연결 문자열은 파일에서만 읽는다). 운영 모드는 실제 인증기가 없어 거부한다. 환경 변수와 파일, 리스닝, 종료 신호는 `wiring`으로 묶어 테스트에서 대체한다 | `core.*`, `adapter.*` |
 | `web.api` | TypeScript | `apps/web/src/api` | 웹 화면의 API 호출 계층(ADR-0035). 계약(OpenAPI)에서 생성한 타입과 호출 함수(`generated/`, 손으로 고치지 않는다), 요청을 만들고 오류(`problem+json`)를 `ApiError`로 바꾸는 클라이언트, 의존성 없는 생성기(`generator/`) | 없음 |
-| `web.data` | TypeScript | `apps/web/src/data` | 조회와 로딩·오류 상태, 커서 페이지네이션, 주소(해시 라우터), 접속 토큰, 오류를 한국어로 바꾸는 말, 표의 열 고르기, 영향 범위 응답의 계산(원인 트리, 층별 배치, 묶음, 재생 상태, 주소 상태, 목록 행. ADR-0051)과 읽기(요약과 항목 쪽, 중지, 알림 문구, 모델에서 읽는 담는 타입. ADR-0054) | `web.api` |
-| `web.ui` | TypeScript | `apps/web/src/ui` | 프락시움 이름의 컴포넌트와 토큰 파일(`tokens.css`, 색은 여기에만 쓴다). Base UI는 여기에서만 import한다. 영향 범위의 그래프(SVG)와 등급별 목록 부품을 포함한다(ADR-0051) | 없음 |
+| `web.data` | TypeScript | `apps/web/src/data` | 조회와 로딩·오류 상태, 커서 페이지네이션, 주소(해시 라우터), 접속 토큰, 오류를 한국어로 바꾸는 말, 표의 열 고르기 | `web.api` |
+| `web.ui` | TypeScript | `apps/web/src/ui` | 프락시움 이름의 컴포넌트와 토큰 파일(`tokens.css`, 색은 여기에만 쓴다). Base UI는 여기에서만 import한다. | 없음 |
 | `web.screens` | TypeScript | `apps/web/src/screens` | 웹 화면(접속 설정, KG 선택, 객체 타입, 객체 표, 객체 상세와 이웃, 영향 범위). `ui`와 `data`만 쓴다. 테스트 잠금과 요구사항 추적에서 빠진다 | `web.data`, `web.ui` |
 | `web.app` | TypeScript | `apps/web/src` | 진입점(`main.tsx`)과 틀(`App.tsx`) | `web.data`, `web.ui`, `web.screens` |
 | `web.build` | TypeScript | `apps/web/config` | Vite 설정. 번들을 만든다 | 없음 |

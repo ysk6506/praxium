@@ -1,5 +1,4 @@
 /** The screens. They are thrown away and made again often, so nothing else depends on them but the app (ADR-0035). */
-export { ImpactScreen } from "./ImpactScreen";
 export { KgsScreen } from "./KgsScreen";
 export { NotFoundScreen } from "./NotFoundScreen";
 export { ObjectScreen } from "./ObjectScreen";
