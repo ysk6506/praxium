@@ -144,7 +144,7 @@ shortest_path(from_id, to_id, edges, direction, max_depth, max_nodes)
 적대적 테스트 묶음을 잠가요(원형은 74건이에요). 질의 역할의 연결에서 실행기를 흉내 내(확장 프로토콜, 감싸기, 읽기 전용·반복 읽기, `SET LOCAL ROLE`, 시한 10초, 실행 뒤 초기화) 돌렸고, **데이터 접근과 설정 변경의 시도는 모두 막혔어요**(한 건은 결함 둘을 고친 뒤의 결과예요). 목록:
 
 - **문장**: 문장 이어 붙이기, 감싼 틀을 닫고 둘째 문장, 감싼 틀을 닫고 `UNION`으로 `LIMIT` 우회(통과하지만 행이 여전히 한도 안), `SET`, `SHOW`, `COPY TO STDOUT`, `LISTEN`, `EXPLAIN ANALYZE`, `BEGIN`/`COMMIT`, `DISCARD ALL`, `DECLARE … WITH HOLD`, `PREPARE`, `DO`, `INSERT`, 데이터를 바꾸는 CTE, `SELECT INTO`, `SELECT … FOR UPDATE`, `CREATE TEMP TABLE AS`.
-- **함수**: `set_config`로 작업 메모리, 읽기 전용 기본값, 검색 경로, 역할 되돌리기. `pg_sleep`, `pg_sleep_for`, 어드바이저리 잠금(세션, 트랜잭션, try), `pg_notify`, `pg_logical_emit_message`, `pg_current_xact_id`, `txid_current`, `pg_export_snapshot`, 큰 객체(`lo_creat`, `lo_import`, `lo_export`), `pg_read_file`, `pg_ls_dir`, `pg_reload_conf`, `pg_log_backend_memory_contexts`.
+- **함수**: `set_config`로 작업 메모리, 읽기 전용 기본값, 검색 경로, 역할 리버트. `pg_sleep`, `pg_sleep_for`, 어드바이저리 잠금(세션, 트랜잭션, try), `pg_notify`, `pg_logical_emit_message`, `pg_current_xact_id`, `txid_current`, `pg_export_snapshot`, 큰 객체(`lo_creat`, `lo_import`, `lo_export`), `pg_read_file`, `pg_ls_dir`, `pg_reload_conf`, `pg_log_backend_memory_contexts`.
 - **격리**: 다른 KG의 질의 스키마, 저장 스키마의 테이블, 높은 등급의 뷰와 열, 검색 경로를 높은 스키마로 바꾸기(`SET LOCAL`), `SET ROLE`과 `RESET ROLE`, 상세 함수를 등급 인자로 직접 부르기, 그래프 함수에 다른 KG의 뷰 이름과 저장 테이블 이름, 타입 목록과 방향 인자에 문장 끼우기.
 - **세션**: `pg_stat_activity` 읽기, 같은 역할의 다른 세션에 `pg_terminate_backend`와 `pg_cancel_backend`, 읽기 전용을 푼 뒤 다음 트랜잭션의 큰 객체.
 - **카탈로그**: 높은 등급 뷰의 정의, `pg_attribute`의 높은 등급 열, 다른 KG의 테이블 크기와 행 수 추정(거절), 그리고 보이는 것을 기록하는 항목들(`pg_class`의 테이블 개수, `pg_proc`의 함수 본문, `pg_roles`, `pg_settings`, 열 설명, `version()`).
