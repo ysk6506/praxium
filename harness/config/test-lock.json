@@ -16892,6 +16892,773 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestSecretAssemblyAReadOnlyStoreHasNoKeyAndHoldsNoLock": {
+   "kind": "test",
+   "hash": "45e9fda4029f44a2",
+   "asserts": 6,
+   "literals": [
+    "00bd4e1022979fdd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretAssemblyGivesTheStoreTheRandomnessOfTheSystem": {
+   "kind": "test",
+   "hash": "80e288867f61df0b",
+   "asserts": 4,
+   "literals": [
+    "b91016b58c84cd69"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretAssemblyNoProductCodeOfTheRootUsesTheDeterministicRandomness": {
+   "kind": "test",
+   "hash": "87a1aea78f8009a4",
+   "asserts": 4,
+   "literals": [
+    "afd07def36bf98b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdAServerThatHoldsTheFolderStopsTheChangesNotTheReads": {
+   "kind": "test",
+   "hash": "dddb37250a0dd4a5",
+   "asserts": 3,
+   "literals": [
+    "708f35e8fbcba117"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474",
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdBadIdKindAndHostAreRefused": {
+   "kind": "test",
+   "hash": "c1ed82e6758eecd5",
+   "asserts": 3,
+   "literals": [
+    "c5874da1c753afb7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdFlowPutListShowRotateRetireDelete": {
+   "kind": "test",
+   "hash": "b7bc24b9cfb34162",
+   "asserts": 9,
+   "literals": [
+    "0de3c8b345243a95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474",
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdHelpListsTheCommandsAndTheTopHelpNamesSecret": {
+   "kind": "test",
+   "hash": "8e69d0a9619c0ea6",
+   "asserts": 6,
+   "literals": [
+    "854e69495fb2e9d1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdNoValueAndNoKeyInAnyOutputOrJSON": {
+   "kind": "test",
+   "hash": "0f7e9e6a9ec75648",
+   "asserts": 4,
+   "literals": [
+    "66eb4904a01bf3d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdOnlyPutMakesAFolderThatIsNotThere": {
+   "kind": "test",
+   "hash": "a4f5312720200b6c",
+   "asserts": 3,
+   "literals": [
+    "bd748aaa6aadf024"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdPutNeverChangesASecretAndRotateNeedsOne": {
+   "kind": "test",
+   "hash": "ddce666bf0fedbf1",
+   "asserts": 3,
+   "literals": [
+    "a55259e706bcfc88"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdReadsOfAFolderThatIsNotThereFail": {
+   "kind": "test",
+   "hash": "ea0f613f20cbd8fc",
+   "asserts": 2,
+   "literals": [
+    "d48b022a1526850b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdScopeAndHostsAreReplacedAndCanBeCleared": {
+   "kind": "test",
+   "hash": "224760ed0fcd9f87",
+   "asserts": 9,
+   "literals": [
+    "e5c5e9c0c1d83d95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdTakesValuesFromFilesAndStripsOneLineBreak": {
+   "kind": "test",
+   "hash": "f0754a3b860902c0",
+   "asserts": 4,
+   "literals": [
+    "ee2f4344def4bc72"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretCmdTheFlagsOfEveryCommandTakeNoValue": {
+   "kind": "test",
+   "hash": "2bbc55e754c66a6f",
+   "asserts": 1,
+   "literals": [
+    "78941bd479376ea4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskARewrittenFileStaysForTheOwnerOnly": {
+   "kind": "test",
+   "hash": "bf614d63f0702c0b",
+   "asserts": 3,
+   "literals": [
+    "0401140b02058e51"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskAWriteDoesNotWriteThroughALinkOfTheTemporaryName": {
+   "kind": "test",
+   "hash": "22ac8cc9d21811af",
+   "asserts": 3,
+   "literals": [
+    "3d751a48376a7445"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskAWriteThatFailsLeavesNoTemporaryFile": {
+   "kind": "test",
+   "hash": "3b92cf7085e43510",
+   "asserts": 6,
+   "literals": [
+    "100dbd2c41c7e2c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskDoesNotFollowLinks": {
+   "kind": "test",
+   "hash": "0a8f355745431baf",
+   "asserts": 5,
+   "literals": [
+    "1cadaa15d1656bc9"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskLooksAtTheSizeBeforeItReads": {
+   "kind": "test",
+   "hash": "c608981bec360d47",
+   "asserts": 4,
+   "literals": [
+    "fec6a40450cf8f05"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskMakesFilesForTheOwnerOnly": {
+   "kind": "test",
+   "hash": "bf377a60e7105bf7",
+   "asserts": 4,
+   "literals": [
+    "2669b4d7f977f512"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskRefusesToReadAFileOthersCanRead": {
+   "kind": "test",
+   "hash": "d80cd630e7d2b8c5",
+   "asserts": 7,
+   "literals": [
+    "6ef668e779b4bb4e"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretDiskTheLeftoverOfAnInterruptedWriteIsRemovedByAWriterAndKeptByAReader": {
+   "kind": "test",
+   "hash": "708cc8edb2363dd4",
+   "asserts": 7,
+   "literals": [
+    "f180238d0dff91b4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyAFileThatIsNamedComesBeforeTheDefaultPlace": {
+   "kind": "test",
+   "hash": "a5b50c3267a71893",
+   "asserts": 3,
+   "literals": [
+    "882d520018be4bc5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyAnotherKeyIsRefusedByPutAndRotateAndTheStoreKeepsOneKey": {
+   "kind": "test",
+   "hash": "c3821728f36ab8b8",
+   "asserts": 2,
+   "literals": [
+    "0ffafcc16fd4ff64"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyAnotherKeyIsTheMismatchOfTheUnit": {
+   "kind": "test",
+   "hash": "38bb2c1204e7d8f6",
+   "asserts": 1,
+   "literals": [
+    "3dc5b2b34fdc5d02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyIdentifierIsRandomAndNotMadeFromThePath": {
+   "kind": "test",
+   "hash": "f16029257a25027f",
+   "asserts": 7,
+   "literals": [
+    "ddcb32f073d46046"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyInsideTheDataFolderIsRefused": {
+   "kind": "test",
+   "hash": "5276d9f849b91966",
+   "asserts": 7,
+   "literals": [
+    "41c22bfa0f55fab3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyIsFoundAgainWhenTheFolderMoves": {
+   "kind": "test",
+   "hash": "f7fcacbdd284ff78",
+   "asserts": 4,
+   "literals": [
+    "fc1d1afed8069323"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyIsMadeOnlyWhenTheFirstSecretIsPutIn": {
+   "kind": "test",
+   "hash": "60e59b629c0a2b6a",
+   "asserts": 8,
+   "literals": [
+    "53513184928b94d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyNoConfigurationFolderAsksForTheFile": {
+   "kind": "test",
+   "hash": "f72dd5bb212c901f",
+   "asserts": 1,
+   "literals": [
+    "8cdf1b83276e9b00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyThatIsThereIsNeverOverwrittenNotEvenByTwoCommandsAtOnce": {
+   "kind": "test",
+   "hash": "ae5b163b8e4a94f3",
+   "asserts": 7,
+   "literals": [
+    "e6545bf533d44ea6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyTheDefaultPlaceInsideTheDataFolderIsRefused": {
+   "kind": "test",
+   "hash": "3324f32782b06029",
+   "asserts": 1,
+   "literals": [
+    "9ed873600d1c5078"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyTheDefaultPlaceIsOutsideTheDataFolderUnderTheConfigurationFolder": {
+   "kind": "test",
+   "hash": "acdbaa7508165398",
+   "asserts": 5,
+   "literals": [
+    "04f04b28e3bdde77"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyTheFolderIdentifierIsMadeWholeAndReadAsAPlainFileOfNoSize": {
+   "kind": "test",
+   "hash": "dc7e9196c9b83bc4",
+   "asserts": 4,
+   "literals": [
+    "7151f5395ac18213"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretKeyWithLooseModeOrOfAnotherKindIsRefused": {
+   "kind": "test",
+   "hash": "49b25ddf66f56d62",
+   "asserts": 7,
+   "literals": [
+    "8576f0a0f91b2532"
+   ],
+   "precision": [],
+   "skips": 2,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreAFileIsReadOnlyWhenItIsPlainSmallAndPrivate": {
+   "kind": "test",
+   "hash": "b694e20ebe9f0543",
+   "asserts": 5,
+   "literals": [
+    "c1971c78df750021"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreAllVersionsRetiredAndTheSmallAnswers": {
+   "kind": "test",
+   "hash": "d4b163479feb0aae",
+   "asserts": 9,
+   "literals": [
+    "11eff862a3c996ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreAnEmptyKeyFileFlagIsAnErrorAndNotTheDefault": {
+   "kind": "test",
+   "hash": "4195daed1c91b142",
+   "asserts": 2,
+   "literals": [
+    "232da0fc518b9fd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreAnEmptyListIsAnEmptyListInJSON": {
+   "kind": "test",
+   "hash": "dbdee2249893871f",
+   "asserts": 2,
+   "literals": [
+    "a792169d5cffc6af"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreFieldFilesThatAreWrong": {
+   "kind": "test",
+   "hash": "4f6b615668c291fa",
+   "asserts": 2,
+   "literals": [
+    "219ddef383d1dcb1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreOnlyLowerCaseHexMakesAFolderIdentifier": {
+   "kind": "test",
+   "hash": "e3310837472716a1",
+   "asserts": 2,
+   "literals": [
+    "84775582bedeee94"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMorePathsAreMadeWholeWithLinksFollowedInOrder": {
+   "kind": "test",
+   "hash": "765da1c15b2d7c36",
+   "asserts": 8,
+   "literals": [
+    "e95110198bb128cb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMorePathsThatCannotBeResolvedAreRefused": {
+   "kind": "test",
+   "hash": "2735d45dbc5dc6ea",
+   "asserts": 6,
+   "literals": [
+    "fce5e473f569e509"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreTheDiskAndTheAssemblyAnswerSmallThings": {
+   "kind": "test",
+   "hash": "1c45988f49d8d5be",
+   "asserts": 7,
+   "literals": [
+    "35df2154924e3560"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-499"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreTheFolderIdentifierIsMadeOnceAndSaysWhatFailed": {
+   "kind": "test",
+   "hash": "6eb3ced0eaf6878c",
+   "asserts": 5,
+   "literals": [
+    "e07ac8c9a580e4ca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreTheIdOfASecretHasTheGrammarOfTheIdOfASource": {
+   "kind": "test",
+   "hash": "854d9ecffa790943",
+   "asserts": 1,
+   "literals": [
+    "8eb46a15cf9eee5d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreTheKeyProviderIsCarefulWhenItCannotTell": {
+   "kind": "test",
+   "hash": "ae04a5567606762a",
+   "asserts": 5,
+   "literals": [
+    "2eacec0b0f3af8c5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-474"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreTheStandardInputIsNotAFileOfDevicesNorTooLongNorBroken": {
+   "kind": "test",
+   "hash": "1075aad5b4bae937",
+   "asserts": 5,
+   "literals": [
+    "7750889f8842ded0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreValueFilesThatAreNotPlainFilesAreRefused": {
+   "kind": "test",
+   "hash": "bbd311b6f22453e7",
+   "asserts": 2,
+   "literals": [
+    "3d49d29f81a0c71f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreValuesWithControlCharactersOrAMarkAreRefused": {
+   "kind": "test",
+   "hash": "7ac1ee570b8bf8de",
+   "asserts": 6,
+   "literals": [
+    "5575bd62dca252fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSecretMoreWhatWasTypedIsNeverRepeatedByAFlagError": {
+   "kind": "test",
+   "hash": "ee00e780d0ea1350",
+   "asserts": 2,
+   "literals": [
+    "a2fc7d2c0dd3bbb0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-498"
+   ],
+   "added": "2026-11-18",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestStartsWithoutDefinitionsAreAsBeforeAndNothingIsWrittenForThem": {
    "kind": "test",
    "hash": "f355e086e1f8ff34",
