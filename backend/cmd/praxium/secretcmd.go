@@ -221,6 +221,13 @@ func checkSecretFlags(spec secretSpec, f secretFlags) error {
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret put needs -kind password or -kind token")
 	case spec.version && f.version < 1:
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret retire needs -version <N>, a number from 1")
+	}
+	return checkSetFlags(spec, f)
+}
+
+// checkSetFlags is the check of the two commands that only replace a list: the list must be given, even when empty.
+func checkSetFlags(spec secretSpec, f secretFlags) error {
+	switch {
 	case spec.scope && !spec.kind && !f.scopeGiven:
 		return kernel.Errorf(kernel.CodeInvalidValue, "secret set-scope needs -scope <source-id>,... (-scope \"\" for no source)")
 	case spec.host && !spec.kind && !f.hostsGiven:
