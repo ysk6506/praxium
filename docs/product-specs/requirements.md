@@ -62,7 +62,7 @@ REQ-002와 REQ-003은 화면의 요구이고 화면은 이 리포지토리의 `a
 | [requirements-ingestion-usability.md](requirements-ingestion-usability.md) | 수집의 사용성과 메시지: 처음 쓰는 사람을 위한 수집 명령, 옵션, 메시지, 정의 형식 안내서 |
 | [requirements-definitions.md](requirements-definitions.md) | 정의: 정의의 버전, 브랜치, 제안(100번대 후반, 170번대), 정의 저장소(330번대), 조직 속성(366~373), 저장한 질의와 간선 정의(592~594, 600, 예정) |
 | [requirements-access.md](requirements-access.md) | 인증, 권한, 시크릿: 권한(160번대), 시크릿(210~217, 저장소의 구현 403~406), 접근 토큰과 관리 API(307~314), 토큰의 헤더 규칙(543, 예정), 질의의 등급별 역할(573, 예정) |
-| [requirements-operations.md](requirements-operations.md) | 운영과 관측: 운영(150번대), 관측(180번대), 역량 질문(190번대), 프락시움 자신의 운영 요구(200~208), 알림의 재발(548, 예정), PostgreSQL의 연결과 HA와 점검 명령과 규모 검증 도구(553~559, 602~619, 예정), 단계 |
+| [requirements-operations.md](requirements-operations.md) | 운영과 관측: 운영(150번대), 관측(180번대), 역량 질문(190번대), 프락시움 자신의 운영 요구(200~208), 알림의 재발(548, 예정), PostgreSQL의 연결과 HA와 점검 명령과 규모 검증 도구(553~559, 602~621, 628, 예정), 단계 |
 | [requirements-gateway.md](requirements-gateway.md) | MCP 게이트웨이(450~469, 520~534, 539~542, 544~546, 549~550): 실행의 계약, 호출의 순서, 분류와 연결, 확인, 가용성, 단계(아직 구현하지 않았다) |
 | [requirements-web-cli-release.md](requirements-web-cli-release.md) | 웹 UI, 명령줄, 릴리스: 임시 웹 UI(275번대, 296~299, 315~319)와 쓰기 기반(407~409), 명령줄, 릴리스 빌드(282~283), 질의 화면(591, 601, 예정) |
 

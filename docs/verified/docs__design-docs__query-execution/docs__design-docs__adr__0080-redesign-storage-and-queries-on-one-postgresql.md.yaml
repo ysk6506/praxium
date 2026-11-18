@@ -1,7 +1,7 @@
 doc: "docs/design-docs/query-execution.md"
 target: "docs/design-docs/adr/0080-redesign-storage-and-queries-on-one-postgresql.md"
-hash: "23920f5c7cdc95f9"
+hash: "81fda430762eece1"
 date: "2026-11-18"
-note: "ADR-0080 본문의 용어를 용어집에 맞춰 고친 뒤(시험은 테스트, 재다는 측정, 투영은 프로젝션 등) 이 문서와 다시 대조했다. 한도, 적용의 세 경로, 절 번호와 요구사항 번호는 그대로이고 문서의 용어도 같은 기준으로 고쳤다"
+note: "ADR-0080과 대조해 읽고 그래프 함수의 열, 컬럼 이름 규칙, 툴 목록, 청소와 통계, 방어의 필수 회수를 고쳤다"
 text_changed: true
-doc_hash: "9095345ed7657c81"
+doc_hash: "e773e902e650e1d2"

@@ -1,7 +1,7 @@
 doc: "README.md"
 target: "docs/exec-plans/active/plan.md"
-hash: "eb3609d743fd0fd9"
+hash: "f1604d4c2a08c342"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+note: "plan.md의 10번 항목에 재설계 예정 한 줄이 붙은 것을 확인했고 README의 서술은 바꿀 것이 없다"
 text_changed: true
-doc_hash: "e208c9cbc779b446"
+doc_hash: "39ef992725e7d6bc"

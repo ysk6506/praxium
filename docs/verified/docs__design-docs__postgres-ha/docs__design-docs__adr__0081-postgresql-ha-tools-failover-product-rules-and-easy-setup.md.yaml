@@ -1,7 +1,7 @@
 doc: "docs/design-docs/postgres-ha.md"
 target: "docs/design-docs/adr/0081-postgresql-ha-tools-failover-product-rules-and-easy-setup.md"
-hash: "d80224d6d6d5cf6b"
+hash: "07f5d180c2310b9f"
 date: "2026-11-18"
-note: "ADR-0081 본문의 용어를 용어집에 맞춰 고친 뒤 다시 대조했다. 규칙 열여섯 가지의 번호와 내용, 배포 네 가지, 점검 명령의 항목은 그대로이고 문서의 용어도 같은 기준으로 고쳤다"
+note: "ADR-0081과 대조해 읽고 관리형 DB 제외, 로그 있는 준비 테이블, 점검 항목, 마지막 사용 시각의 쓰기 규칙을 고쳤다"
 text_changed: true
-doc_hash: "da0818b0ff85c20d"
+doc_hash: "64570055f9fb39ab"

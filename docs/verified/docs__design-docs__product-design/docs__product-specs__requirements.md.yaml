@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "874eb9e0e09aa17c"
+hash: "8f8231b7c1e36031"
 date: "2026-11-18"
-note: "요구사항 문서 아홉 개에 REQ-551~619(예정 ADR-0080, ADR-0081)와 기존 요구사항의 예정에서 바뀐다는 표시가 더해졌다. 개요의 문서 지도에 새 설계 문서 여섯을 더했고, 요구사항 영역 표와 번호 문단이 새 번호 범위를 가리키는지 대조했다"
-text_changed: true
+note: "번호 범위 문장 변경을 개요와 대조했고 고칠 것이 없다"
+text_changed: false
 doc_hash: "dd94480c86f7abc5"

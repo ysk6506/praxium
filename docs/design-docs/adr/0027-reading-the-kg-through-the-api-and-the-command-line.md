@@ -87,6 +87,8 @@ decision_hash: 53de10c2f2349e2e
 amended_by:
   - adr: "0044"
     what: 운영 모드가 실제 인증기를 기다린다는 배선
+  - adr: "0080"
+    what: 결정 6의 메모리 저장소 위의 개발 모드(PostgreSQL이 대신한다)와 결정 3의 질의용 POST 경로(내장 읽기와 저장한 질의가 대신한다)
 ---
 # ADR-0027 KG를 API와 명령줄로 읽는다
 
