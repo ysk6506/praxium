@@ -24,6 +24,7 @@ touches_protected:
   - docs/product-specs/requirements-query-api.md
   - docs/product-specs/requirements.md
   - harness/config/architecture.yaml
+  - harness/config/coverage-floor.json
   - harness/config/test-lock.json
 updates_docs:
   - AGENTS.md
@@ -132,7 +133,7 @@ amends:
     what: 결정 8의 영향 범위를 쓰는 조건은 완전성 선언이 있어야 통과한다는 항목, 결정 12의 승인 화면이 영향 요약을 보여 준다는 문장. 준비 응답과 승인 화면에는 조건 평가와 조건의 증거만 남는다. REQ-456과 REQ-458을 그에 맞게 고친다.
   - adr: "0062"
     what: 결정 2의 MCP 툴 여섯 개에서 `kg_impact`를 빼 다섯 개로 한다는 부분, 결정 8의 영향 범위의 큰 결과, 결정 10의 영향 범위 계산의 프로세스 전체 동시 상한. REQ-500, REQ-511, REQ-513을 그에 맞게 고친다.
-decision_hash: aef79adefacf5b28
+decision_hash: fcbd1f4b7574a38b
 ---
 # ADR-0078 영향 범위 계산을 삭제한다
 
@@ -183,6 +184,7 @@ decision_hash: aef79adefacf5b28
 - 서버에서 영향 범위 계산이 사라지고, 계약에서 경로 하나(`queries:impact`)가 사라진다. 릴리스 노트용 한 줄: 이 버전부터 `POST /v1/kgs/{kg}/queries:impact`와 `praxium query impact`가 없어지며, 영향 범위는 `neighbors`, `paths`, `exposure` 같은 남은 질의로 직접 구한다.
 - 요구사항 문서 `requirements-impact.md`가 없어지고 설계 문서 `kg-queries-examples.md`가 없어진다(영향 범위의 예시만 있었다).
 - 커버리지 바닥은 낮추지 않는다. 지운 뒤의 유닛의 값은 바닥 이상이다.
+- 영향 범위 테스트가 빠진 자리를 남은 코드의 테스트로 채우면서 `pnpm ratchet`이 커버리지 바닥을 올렸다(내린 것 없음).
 - 이 결정은 새 의존성도 새 설정도 더하지 않는다.
 
 ## 뒤의 변경
