@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "5472d0e001ae4963"
-date: "2026-11-16"
-note: "product-design.md의 낱말 교체(교체하기 쉽게)만 바뀐 것을 확인했다. 계획의 문장은 그대로 맞다"
+hash: "05429803b2923c49"
+date: "2026-11-18"
+note: "product-design.md에 이어 가기 문서의 지도 행을 더하고 한 낱말을 고친 것을 확인했다. 계획의 내용은 바뀌지 않는다"
 text_changed: false
-doc_hash: "439b60ac326581c1"
+doc_hash: "c2be9fea9ab6fd10"
