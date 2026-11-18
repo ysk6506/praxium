@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-// mcpPost sends a message to /mcp of a running demo as an agent harness of the new version would.
+// mcpPost sends a message to /mcp of a running local server as an agent harness of the new version would.
 func mcpPost(t *testing.T, r *demoRun, token, body string, headers map[string]string) (int, http.Header, string) {
 	t.Helper()
 	req, err := http.NewRequest(http.MethodPost, r.base+"/mcp", strings.NewReader(body))
@@ -38,8 +38,8 @@ const listBody = `{"jsonrpc":"2.0","id":1,"method":"tools/list","params":{"_meta
 
 var listHeaders = map[string]string{"MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/list"}
 
-func TestDemoServesMCPWithTheTokenOfTheRun(t *testing.T) {
-	r := startDemo(t, true)
+func TestLocalServesMCPWithTheTokenOfTheRun(t *testing.T) {
+	r := &startLocal(t, true, keepSample(t)).demoRun
 	status, _, body := mcpPost(t, r, r.token, listBody, listHeaders)
 	if status != 200 || !strings.Contains(body, `"kg_whoami"`) || !strings.Contains(body, `"resultType":"complete"`) {
 		t.Fatalf("tools/list: %d %s", status, body)
@@ -50,7 +50,7 @@ func TestDemoServesMCPWithTheTokenOfTheRun(t *testing.T) {
 	}
 	callBody := `{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"kg_whoami","_meta":{"io.modelcontextprotocol/protocolVersion":"2026-07-28","io.modelcontextprotocol/clientCapabilities":{}}}}`
 	status, _, body = mcpPost(t, r, r.token, callBody, map[string]string{"MCP-Protocol-Version": "2026-07-28", "Mcp-Method": "tools/call", "Mcp-Name": "kg_whoami"})
-	if status != 200 || !strings.Contains(body, `"demo-user"`) || strings.Contains(body, r.token) {
+	if status != 200 || !strings.Contains(body, `"local-user"`) || strings.Contains(body, r.token) {
 		t.Fatalf("kg_whoami: %d %s", status, body)
 	}
 	if code, body := demoGet(r, "/mcp", r.token); code != 405 || strings.Contains(body, "<html") {
@@ -68,8 +68,8 @@ func TestDemoServesMCPWithTheTokenOfTheRun(t *testing.T) {
 }
 
 // [REQ-505]
-func TestDemoWithMCPOffAnswersJSON404(t *testing.T) {
-	r := startDemo(t, true, "-mcp=false")
+func TestLocalWithMCPOffAnswersJSON404(t *testing.T) {
+	r := &startLocal(t, true, keepSample(t), "-mcp=false").demoRun
 	status, _, body := mcpPost(t, r, r.token, listBody, listHeaders)
 	if status != 404 || strings.Contains(body, "<html") || !strings.Contains(body, "not_found.resource") {
 		t.Fatalf("/mcp with the interface off: %d %s", status, body)

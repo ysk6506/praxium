@@ -1,7 +1,7 @@
 doc: "docs/design-docs/worldgen.md"
 target: "backend/cmd/praxium/worldgen.go"
-hash: "2bb14e1b1a619dd7"
-date: "2026-11-14"
-note: "ADR-0041: re-read; CLI help/local/ingest state and REQ-289~295 do not change what this doc says"
+hash: "03f06ffc1f7923cc"
+date: "2026-11-18"
+note: "ADR-0079: worldgen.go의 도움말에서 praxium demo가 같은 생성기를 쓴다는 문장을 뺐다. 설계 문서는 데모를 언급하지 않고 생성기의 동작은 그대로라 고칠 곳이 없다"
 text_changed: false
-doc_hash: "ad0fd0d54ae8d74f"
+doc_hash: "a781e123c7d63be3"

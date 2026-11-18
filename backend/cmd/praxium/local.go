@@ -43,7 +43,7 @@ type localOptions struct {
 func newLocalFlags(o *localOptions) *flag.FlagSet {
 	fs := flag.NewFlagSet("local", flag.ContinueOnError)
 	fs.SetOutput(io.Discard)
-	fs.StringVar(&o.addr, "addr", demoDefaultAddr, "where to listen, host:port; an address other than this computer's own is warned about")
+	fs.StringVar(&o.addr, "addr", localDefaultAddr, "where to listen, host:port; an address other than this computer's own is warned about")
 	fs.StringVar(&o.dataDir, "data-dir", "", "the data folder that \"praxium ingest run -data-dir\" built (required)")
 	addMCPFlags(fs, &o.mcp, true)
 	return fs
@@ -125,6 +125,6 @@ func requireKG(ctx context.Context, store graph.Store, dir string) error {
 func announceLocal(out io.Writer, o localOptions, addr net.Addr, token string, webBuilt bool) {
 	fmt.Fprintln(out, "Praxium local mode: for one person on their own computer. The sign-in is weak and this is not for production.")
 	fmt.Fprintf(out, "Serving the KG kept in %s.\n", o.dataDir)
-	announceWhere(out, connectURL(addr, token, "mode=local"), token, webBuilt)
+	announceWhere(out, connectURL(addr, token), token, webBuilt)
 	fmt.Fprintln(out, "Press Ctrl+C to stop. Stop it before you run praxium ingest run for this folder again.")
 }

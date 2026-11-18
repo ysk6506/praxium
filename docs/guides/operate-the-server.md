@@ -76,7 +76,7 @@ praxium admin issue-token -owner root -store file -store-data-dir /var/lib/praxi
 - 같은 주소에서 거절된 토큰이 10번 쌓이면 5분 동안 그 주소의 거절된 토큰에 429를 줘요. 유효한 토큰은 막히지 않아서 프록시 뒤의 다른 사람에게 영향이 없어요. 이 기록은 프로세스 메모리에 있어서 재시작하면 지워져요.
 - 인증 저장소가 응답하지 못하면 401이 아니라 503이에요. 클라이언트는 토큰을 버리지 말고 다시 시도해요.
 - `identity.json`(또는 `identity_record` 테이블)에 쓸 수 있는 사람은 전권을 가져요. 데이터 폴더의 소유권을 서버 계정으로 한정해요. 다른 사용자가 읽을 수 있는 `identity.json`은 서버가 열기를 거절해요.
-- `praxium demo`와 `praxium local`은 이 절차와 상관없이 그대로예요.
+- `praxium local`은 이 절차와 상관없이 그대로예요.
 
 ## 5. PostgreSQL 접속의 TLS
 
@@ -94,7 +94,7 @@ praxium admin issue-token -owner root -store file -store-data-dir /var/lib/praxi
 praxium api serve -addr 127.0.0.1:8080 -store file -store-data-dir /var/lib/praxium -mcp
 ```
 
-- **받는 토큰**: 토큰이 가진 역할이 `viewer` 하나뿐인 서비스 계정의 토큰만 받아요(`praxium admin account create`로 만들고 `viewer`만 주거나, 다른 역할이 있는 계정이면 `viewer`로 좁혀 토큰을 발급해요). 사람의 토큰이나 `viewer` 말고 다른 역할이 있는 토큰은 HTTP 403 `permission.mcp_not_allowed`이고 본문에 이유가 있어요. 개발 모드와 `demo`, `local`의 실행용 토큰은 받아요.
+- **받는 토큰**: 토큰이 가진 역할이 `viewer` 하나뿐인 서비스 계정의 토큰만 받아요(`praxium admin account create`로 만들고 `viewer`만 주거나, 다른 역할이 있는 계정이면 `viewer`로 좁혀 토큰을 발급해요). 사람의 토큰이나 `viewer` 말고 다른 역할이 있는 토큰은 HTTP 403 `permission.mcp_not_allowed`이고 본문에 이유가 있어요. 개발 모드와 `local`의 실행용 토큰은 받아요.
 - **브라우저**: 브라우저가 아닌 클라이언트는 `Origin`을 보내지 않아서 그대로 받아요. 브라우저에서 부르려면 `-mcp-allowed-origins https://console.example`처럼 출처를 적어요(쉼표로 여럿). 목록에 없는 `Origin`은 403이에요. 서버를 루프백 주소에 묶었고 `-behind-proxy`를 주지 않았으면 `Host`도 루프백 이름(`localhost`, `127.0.0.1`, `::1`)만 받아요. 프록시 뒤(`-behind-proxy`)에서는 프록시가 바깥 이름을 `Host`로 넘기므로 `Host`는 보지 않고 `Origin`과 토큰만 봐요.
 - **꺼져 있을 때**: `/mcp`와 `/.well-known/` 아래는 JSON 404이고 웹 화면이 대신 나오지 않아요.
 - **지켜볼 것**: 툴을 부를 때마다 로그에 `read_record: true`인 `mcp_read` 줄이 한 줄 남아요(토큰 ID, 추적 ID, 툴, 판, 클라이언트 이름, 걸린 시간). 판별 요청 수와 판 헤더 없이 거절한 수는 `kg_whoami`의 `server.requests_by_version`에서 봐요(프로세스가 뜬 뒤의 숫자예요).
@@ -114,7 +114,7 @@ praxium secret show db_main -data-dir /var/lib/praxium
 - **`put`은 새 시크릿만 만들어요.** 있는 id에는 `praxium secret rotate <id>`로 새 버전을 더해요. 가장 높은 번호의 버전이 쓰이고 옛 버전은 `praxium secret retire <id> -version N`으로 폐기할 때까지 남아요. 폐기한 버전의 값은 지워지고 되돌릴 수 없어요.
 - **누가 쓸 수 있는지를 정해요.** `-scope`(소스 id, 쉼표로 여럿)와 `-host`(`호스트:포트`)를 주지 않으면 아무도 쓸 수 없어요. 나중에 `set-scope`와 `set-hosts`로 바꿔요. 소스가 정말 있는지는 아직 확인하지 않아요.
 - **마스터 키 파일.** 처음 시크릿을 넣을 때 만들고 위치를 알려 줘요. `-secrets-key-file`이 없으면 사용자 설정 폴더 아래 `praxium/keys/`에 데이터 폴더의 식별자(폴더 안의 `FOLDER_ID`)로 이름을 붙여요. 폴더를 옮겨도 같은 키를 찾아요. 데이터 폴더 안에는 둘 수 없어요. 폴더의 백업이 키를 함께 가져가기 때문이에요. **키 파일은 따로 백업해 둬요.** 잃으면 시크릿을 열 수 없고, 지우고(`delete`) 다시 넣어야 해요. 키 파일과 `secrets.json`은 소유자만 읽을 수 있어야 하고(`chmod 600`), 아니면 명령이 거절하고 고치는 법을 말해요.
-- **서버와 함께는 못 써요.** 바꾸는 명령은 데이터 폴더의 잠금을 잡아서 서버(`local`, `demo`, `api serve`)나 `ingest run`이 폴더를 쥐고 있으면 "서버를 멈추고 다시 하라"로 실패해요. `list`와 `show`는 잠금 없이 돼요.
+- **서버와 함께는 못 써요.** 바꾸는 명령은 데이터 폴더의 잠금을 잡아서 서버(`local`, `api serve`)나 `ingest run`이 폴더를 쥐고 있으면 "서버를 멈추고 다시 하라"로 실패해요. `list`와 `show`는 잠금 없이 돼요.
 - 종료 코드는 0(됨), 1(실패), 2(명령줄이 틀림)이고 `--json`을 주면 표 대신 JSON을 내요. 오류에는 코드(`secret_master_key_missing` 같은 것)와 고치는 법이 있어요.
 - **알아 둘 한계(ADR-0076).**
   - 기본 키 위치는 명령을 실행한 사용자의 설정 폴더예요. 다른 계정으로 도는 서버나 홈이 일회용인 컨테이너는 `-secrets-key-file`을 줘야 해요.

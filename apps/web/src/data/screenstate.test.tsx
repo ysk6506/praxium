@@ -272,7 +272,7 @@ describe("[REQ-297] a new screen opens at the top, and back returns to where the
     forwardNavigation();
     f.navigate("#/a?tab=x");
     expect(f.win.scrollY).toBe(400);
-    f.navigate("#/connect?token=t1&demo=1");
+    f.navigate("#/connect?token=t1&mode=local");
     expect(f.win.scrollY).toBe(0);
     f.fire("click", {
       target: { closest: () => null },

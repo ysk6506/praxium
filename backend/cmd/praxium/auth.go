@@ -83,7 +83,7 @@ func checkMode(o serveOptions, d wiring) error {
 }
 
 // elsewhere is the sentence that sends a person who only wants to look around to the commands for that.
-const elsewhere = "To look around run `praxium demo`; for your own data run `praxium local`; for development use `-mode development`."
+const elsewhere = "To look at your own data run `praxium local`; for development use `-mode development`."
 
 func checkProduction(o serveOptions, d wiring) error {
 	if o.devFlag != "" {

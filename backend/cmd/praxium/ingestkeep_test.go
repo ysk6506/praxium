@@ -113,17 +113,9 @@ func TestIngestDataDirRefusesAFolderThatDoesNotFitItsState(t *testing.T) {
 }
 
 // [REQ-291]
-func TestIngestDataDirRefusesADemoFolderAndALockedOne(t *testing.T) {
-	demoDir := filepath.Join(t.TempDir(), "demo")
-	r := startDemo(t, true, "-data-dir", demoDir)
-	if code := demoStop(r); code != exitOK {
-		t.Fatalf("demo stop: %d", code)
-	}
+func TestIngestDataDirRefusesALockedOne(t *testing.T) {
 	d, _, stop := apiDeps(nil, nil)
 	defer stop()
-	if code, _, errText := keepRun(t, d, demoDir, keepRacks); code != exitFailure || !strings.Contains(errText, "did not build") {
-		t.Fatalf("a folder of the demo is not an ingestion folder: %d %s", code, errText)
-	}
 	locked := filepath.Join(t.TempDir(), "locked")
 	disk, err := openDataDir(locked)
 	if err != nil {

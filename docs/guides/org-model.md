@@ -22,7 +22,7 @@ covers:
 2. `praxium model check`로 검사한다. 아무것도 저장하지 않는다.
 3. `praxium model apply`로 데이터 폴더에 저장한다.
 4. 수집 매핑(`mapping.json`)의 `attribute`에 `org.이름`을 쓰고 `praxium ingest run -data-dir`로 수집한다.
-5. `praxium local`, `praxium demo`, `praxium api serve -store file`이 폴더의 속성을 읽어 보여 준다.
+5. `praxium local`, `praxium api serve -store file`이 폴더의 속성을 읽어 보여 준다.
 
 조직 속성은 데이터 폴더의 `definitions.json`에 저장되고, 수집과 서버는 시작할 때 이 파일을 한 번 읽는다. **속성을 바꾼 뒤에는 서버를 다시 시작해야 반영된다**(7절). 데이터 폴더가 없는 실행(메모리)과 PostgreSQL 스토어의 서버는 표준 모델만 쓴다.
 
@@ -122,7 +122,7 @@ covers:
 - 모든 명령에 `--help`(사용 예가 있다)와 `--json`이 있다. `export`는 늘 JSON이다.
 - 종료 코드: 0은 끝남(`check`는 파일이 괜찮음), 1은 실패(`check`는 오류나 호환성을 깨는 변경이 있음, `apply`는 거절), 2는 명령줄 오류다.
 - `-store postgres`를 주면 "정의의 PostgreSQL 저장은 아직 없다"고 말하고 종료 코드 2로 끝난다.
-- `apply`는 데이터 폴더의 잠금을 잡는다. 서버(`local`, `demo`, `api serve`)나 `ingest run`이 폴더를 열고 있으면 이유를 말하고 거절한다. 서버를 멈추고 `apply`한 뒤 다시 시작한다. `check`, `show`, `export`, `history`는 잠금을 잡지 않아 서버가 도는 중에도 된다.
+- `apply`는 데이터 폴더의 잠금을 잡는다. 서버(`local`, `api serve`)나 `ingest run`이 폴더를 열고 있으면 이유를 말하고 거절한다. 서버를 멈추고 `apply`한 뒤 다시 시작한다. `check`, `show`, `export`, `history`는 잠금을 잡지 않아 서버가 도는 중에도 된다.
 - 번호는 저장소의 번호 원장에서 받고, 번호 올리기와 새 정의 세트와 머리 쓰기는 한 번의 쓰기다. 도중에 멈춰도 옛 상태나 새 상태 하나만 보인다. 거절된 `apply`는 아무것도 쓰지 않는다.
 
 ## 4. 따라 하기: 자산 대장에 관리 부서와 도입 연도가 있을 때
@@ -170,7 +170,7 @@ ok: apply would store 2 properties added and 0 changed
 ```
 $ praxium model apply -file org-model.json -data-dir data -m "관리 부서와 도입 연도 추가"
 stored D-1 (13b6ec31): 2 properties added, 0 changed
-A running praxium reads the definitions when it starts: start praxium local, demo or api serve again for the change to show.
+A running praxium reads the definitions when it starts: start praxium local or api serve again for the change to show.
 $ praxium model apply -file org-model.json -data-dir data
 nothing changed: the stored definitions (D-1) already say this
 $ praxium model show -data-dir data
@@ -333,7 +333,7 @@ D-1    2026-11-14T19:39:15Z  13b6ec31  +2 added, 0 changed  관리 부서와 도
 
 ## 7. 서버를 다시 시작해야 반영된다
 
-`praxium local`, `praxium demo`, `praxium api serve -store file`은 시작할 때 폴더의 조직 속성을 읽고 도는 동안 바꾸지 않는다. 그래서 `apply`는 폴더를 연 프로세스가 있으면 거절한다. 순서는 이렇다.
+`praxium local`, `praxium api serve -store file`은 시작할 때 폴더의 조직 속성을 읽고 도는 동안 바꾸지 않는다. 그래서 `apply`는 폴더를 연 프로세스가 있으면 거절한다. 순서는 이렇다.
 
 1. 서버를 멈춘다(Ctrl+C).
 2. `praxium model apply`.

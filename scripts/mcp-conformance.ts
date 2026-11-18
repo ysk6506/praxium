@@ -1,10 +1,11 @@
 /**
- * Runs the official MCP conformance tests (@modelcontextprotocol/conformance, ADR-0068) against a local demo server.
+ * Runs the official MCP conformance tests (@modelcontextprotocol/conformance, ADR-0068) against a local development server.
  * Run it by hand before a release: `pnpm mcp:conformance` (it is not part of `pnpm check`).
  *
  * What it starts, all on 127.0.0.1 and all stopped by their own process id at the end:
- *  1. the demo server (built from backend/cmd/praxium into a temporary folder), with the proxy's own origin allowed,
- *     because the test sends a call from a local origin and expects it to be accepted;
+ *  1. the development server (`api serve -mode development`, built from backend/cmd/praxium into a temporary folder)
+ *     over a small synthetic world from `praxium worldgen`, with a token made for the run and the proxy's own origin
+ *     allowed, because the test sends a call from a local origin and expects it to be accepted;
  *  2. a small proxy in front of it that adds the run's token to every request, because the conformance client
  *     cannot send a token and the server refuses a call without one. The proxy changes nothing else.
  *
@@ -14,7 +15,8 @@
  * listed one that now passes.
  */
 import { type ChildProcess, spawn, spawnSync } from "node:child_process";
-import { mkdtempSync, rmSync } from "node:fs";
+import { randomBytes } from "node:crypto";
+import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import http from "node:http";
 import net from "node:net";
 import { tmpdir } from "node:os";
@@ -33,41 +35,54 @@ const freePort = (): Promise<number> =>
     });
   });
 
-const tokenWaitMs = 60_000;
+const readyWaitMs = 60_000;
 
 /**
- * Starts the demo server and resolves with the token it prints for this run: "token of this run is …" in a build
- * without the web UI, or "#token=…" in the address of a build that has it. It gives up after a minute.
+ * Starts the development server and resolves when it says it listens: the start log has a line with
+ * "praxium api listening" once the world is loaded. It gives up after a minute.
  */
 const startServer = (
   binary: string,
   port: number,
   origin: string,
-): Promise<{ child: ChildProcess; token: string }> =>
+  tokenFile: string,
+  truth: string,
+): Promise<ChildProcess> =>
   new Promise((resolve, reject) => {
     const child = spawn(
       binary,
-      ["demo", "-addr", `127.0.0.1:${port}`, "-scale", "500", "-mcp-allowed-origins", origin],
-      {
-        stdio: ["ignore", "pipe", "inherit"],
-      },
+      [
+        "api",
+        "serve",
+        "-addr",
+        `127.0.0.1:${port}`,
+        "-mode",
+        "development",
+        "-dev-token-file",
+        tokenFile,
+        "-dev-truth",
+        truth,
+        "-mcp-allowed-origins",
+        origin,
+      ],
+      { stdio: ["ignore", "inherit", "pipe"] },
     );
     let seen = "";
     const timer = setTimeout(() => {
       child.kill("SIGTERM");
-      reject(new Error(`the demo server printed no token within ${tokenWaitMs / 1000} seconds`));
-    }, tokenWaitMs);
-    child.stdout.on("data", (chunk: Buffer) => {
+      reject(new Error(`the server did not listen within ${readyWaitMs / 1000} seconds`));
+    }, readyWaitMs);
+    child.stderr.on("data", (chunk: Buffer) => {
+      process.stderr.write(chunk);
       seen += chunk.toString();
-      const token = /(?:token of this run is |#token=)([0-9a-f]+)/.exec(seen)?.[1];
-      if (token) {
+      if (seen.includes("praxium api listening")) {
         clearTimeout(timer);
-        resolve({ child, token });
+        resolve(child);
       }
     });
     child.once("exit", (code) => {
       clearTimeout(timer);
-      reject(new Error(`the demo server ended early (exit ${code})`));
+      reject(new Error(`the server ended early (exit ${code})`));
     });
   });
 
@@ -113,9 +128,22 @@ const main = async (): Promise<number> => {
     if (built.status !== 0) return 1;
     const serverPort = await freePort();
     const proxyPort = await freePort();
-    const started = await startServer(binary, serverPort, `http://127.0.0.1:${proxyPort}`);
-    server = started.child;
-    proxy = await startProxy(serverPort, started.token, proxyPort);
+    const world = path.join(work, "world");
+    const made = spawnSync(binary, ["worldgen", "-seed", "1", "-scale", "500", "-out", world], {
+      stdio: "inherit",
+    });
+    if (made.status !== 0) return 1;
+    const token = randomBytes(16).toString("hex");
+    const tokenFile = path.join(work, "token");
+    writeFileSync(tokenFile, token, { mode: 0o600 });
+    server = await startServer(
+      binary,
+      serverPort,
+      `http://127.0.0.1:${proxyPort}`,
+      tokenFile,
+      path.join(world, "truth.jsonl"),
+    );
+    proxy = await startProxy(serverPort, token, proxyPort);
     const extra = process.argv.slice(2).filter((arg) => arg !== "--");
     const run = spawn(
       path.join(root, "node_modules", ".bin", "conformance"),

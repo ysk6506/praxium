@@ -30,6 +30,9 @@ updates_docs:
   - docs/guides/release.md
   - docs/product-specs/requirements-query-api.md
 decision_hash: 04007f0d7f4b3f36
+amended_by:
+  - adr: "0079"
+    what: 켜고 끄기의 `api serve`, `demo`, `local` 목록과, 적합성 확인이 데모 서버를 띄운다는 부분(개발 서버로 바뀐다).
 ---
 # ADR-0068 KG 읽기 MCP의 전송을 구현한다
 

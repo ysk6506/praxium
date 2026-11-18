@@ -21,31 +21,23 @@ import {
 } from "../ui";
 
 const MODE_NAMES = {
-  demo: "데모(접속 링크)",
   local: "로컬 모드(접속 링크)",
   direct: "접근 토큰(직접 입력)",
   none: "접속하지 않음",
 } as const;
 
-/** The three ways in, in the words of a person who has not used the product yet. */
+/** The ways in, in the words of a person who has not used the product yet. */
 function Ways() {
   return (
     <ul className="flex max-w-3xl flex-col gap-3 text-sm">
-      <li>
-        <strong className="font-semibold">데모</strong>
-        <p className="text-muted">
-          <Mono>praxium demo</Mono>가 터미널에 출력한 주소를 브라우저로 여십시오. 토큰이 주소에 들어
-          있어 입력할 것이 없습니다. 합성 데이터이며, 서버를 다시 시작하면 주소가 바뀝니다.
-        </p>
-      </li>
       <li>
         <strong className="font-semibold">로컬 모드</strong>
         <p className="text-muted">
           이 컴퓨터에서 혼자 쓰는 용도입니다. <Mono>praxium local -data-dir &lt;폴더&gt;</Mono>가
           터미널에 출력한 주소를 여십시오. 수집은{" "}
           <Mono>praxium ingest run -data-dir &lt;폴더&gt;</Mono>로 하고, 예제는{" "}
-          <Mono>praxium ingest init</Mono>이 만듭니다. 데모와 같이 토큰은 주소에 들어 있고, 운영용이
-          아닙니다.
+          <Mono>praxium ingest init</Mono>이 만듭니다. 토큰은 주소에 들어 있어 입력할 것이 없고,
+          서버를 다시 시작하면 주소가 바뀝니다. 운영용이 아닙니다.
         </p>
       </li>
       <li>

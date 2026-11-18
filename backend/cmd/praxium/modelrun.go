@@ -167,7 +167,7 @@ func applyLocked(dir string, err error) error {
 	if kernel.CodeOf(err) != filejournal.CodeLocked {
 		return err
 	}
-	return kernel.Errorf(filejournal.CodeLocked, "the data folder %s is in use by another praxium (a server such as praxium local, demo or api serve, or an ingest run). "+
+	return kernel.Errorf(filejournal.CodeLocked, "the data folder %s is in use by another praxium (a server such as praxium local or api serve, or an ingest run). "+
 		"A server reads the definitions only when it starts, so they are not changed under it: stop it, run praxium model apply, and start it again", dir)
 }
 
@@ -244,7 +244,7 @@ func printApplied(out io.Writer, asJSON bool, rep applyReport) error {
 	}
 	fmt.Fprintln(out, rep.Message)
 	if rep.Applied {
-		fmt.Fprintln(out, "A running praxium reads the definitions when it starts: start praxium local, demo or api serve again for the change to show.")
+		fmt.Fprintln(out, "A running praxium reads the definitions when it starts: start praxium local or api serve again for the change to show.")
 	}
 	return nil
 }

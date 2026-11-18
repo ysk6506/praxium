@@ -1,7 +1,7 @@
 doc: "docs/guides/operate-the-server.md"
 target: "backend/cmd/praxium/auth.go"
-hash: "3182ee050fd10032"
+hash: "6a201a41018a2b78"
 date: "2026-11-18"
-note: "시크릿 명령의 안내 문장을 고친 secretcmd.go와 7절의 값 규칙, 한계 목록을 대조했다"
+note: "ADR-0079: auth.go의 안내 문구에서 praxium demo를 뺐다. 가이드의 demo 언급(서버 절차 예외, MCP 토큰, 서버 목록)을 같은 변경에서 local 기준으로 고쳤다"
 text_changed: true
-doc_hash: "d681891fc7229447"
+doc_hash: "2c74a04bb9ccb975"

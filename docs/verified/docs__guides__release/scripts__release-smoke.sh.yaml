@@ -1,7 +1,7 @@
 doc: "docs/guides/release.md"
 target: "scripts/release-smoke.sh"
-hash: "9d2fcb2639680fbd"
-date: "2026-11-14"
-note: "ADR-0041: added the demo-first step, smoke checks and sorted SHA256SUMS"
+hash: "51d6397f8baa87a9"
+date: "2026-11-18"
+note: "ADR-0079: release-smoke.sh에서 데모 블록을 지우고 합성 세계를 올린 개발 서버 확인으로 바꿨다. 가이드의 스모크 설명과 첫 단계 안내를 같은 변경에서 고쳤다"
 text_changed: true
-doc_hash: "dd05546c217ac2ab"
+doc_hash: "e29f6adf0939e7dc"

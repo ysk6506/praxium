@@ -40,7 +40,7 @@ follows:
 
 | ID | 요구사항 | 근거·테스트 |
 |---|---|---|
-| REQ-290 | 서버의 오류 응답은 대상과 이유를 `params`에 싣는다: `not_found.resource`에 `resource`와 `id`, 질문의 값 오류(`invalid_input.field`)에 사람이 읽는 `message`와, 아는 경우 `field`. CLI는 이것을 오류 한 줄에 보여 준다(`field "object_type" (--type): no object type "X"`). 운영 모드 오류는 내부 부채 번호 없이 `praxium demo`, `praxium local`, `-mode development` 중 무엇을 하면 되는지 말한다. `demo`는 `-addr`의 형식 오류를 가장 먼저 말한다 | ADR-0041, `backend/internal/httpapi/errordetail_test.go`, `backend/internal/cli/cause_test.go`, `backend/cmd/praxium/help_test.go` |
+| REQ-290 | 서버의 오류 응답은 대상과 이유를 `params`에 싣는다: `not_found.resource`에 `resource`와 `id`, 질문의 값 오류(`invalid_input.field`)에 사람이 읽는 `message`와, 아는 경우 `field`. CLI는 이것을 오류 한 줄에 보여 준다(`field "object_type" (--type): no object type "X"`). 운영 모드 오류는 내부 부채 번호 없이 `praxium local`, `-mode development` 중 무엇을 하면 되는지 말한다. `local`은 `-addr`의 형식 오류를 가장 먼저 말한다 | ADR-0041, `backend/internal/httpapi/errordetail_test.go`, `backend/internal/cli/cause_test.go`, `backend/cmd/praxium/help_test.go` |
 | REQ-295 | `/v1`의 응답은 `X-Content-Type-Options: nosniff`와 `Referrer-Policy: no-referrer`를 가진다(JSON 응답이라 CSP는 두지 않는다). 릴리스의 `SHA256SUMS`는 파일 이름순으로 정렬하고, 릴리스 확인 스크립트는 `local`과 `ingest init → ingest run -data-dir → local` 흐름을 확인한다 | ADR-0041, `backend/internal/httpapi/errordetail_test.go` |
 
 ## KG의 읽기 전용 MCP 인터페이스 (500~519, 예정)
@@ -49,7 +49,7 @@ follows:
 |---|---|
 | REQ-500 | **예정(ADR-0062)** `POST /mcp`로 KG의 읽기 전용 MCP 인터페이스를 제공한다. 툴은 다섯 개(`kg_whoami`, `kg_catalog`, `kg_find`, `kg_get`, `kg_neighbors`)이다. 읽기 전용은 호출의 결과로 프락시움 안팎의 어떤 상태도 바뀌지 않는다는 뜻이다(읽기 기록과 한도의 계수는 제외). 작업을 만들거나 소스를 다시 읽게 하거나 KG·정의·범위·문제 목록을 바꾸는 툴과 운영 MCP(`ops_*`)는 `/mcp`에 얹지 않는다. `/mcp`의 `tools/list`는 계약 파일의 KG 읽기 툴 목록과 정확히 같고, 등록부에 다른 종류의 툴이 있어도 `/mcp`에 나오지 않는다는 것을 테스트가 확인한다. 게이트웨이는 다른 주소의 다른 구성요소이다. |
 | REQ-501 | **예정(ADR-0062)** 툴 이름은 `kg_` 접두어를 가지고, 설명은 KG의 값이 들어가지 않는 고정된 영어 글이며, 인자 이름은 REST의 본문 필드와 같다. 모든 툴이 `kg`(기본 `main`)와 `detail`(`brief` 기본, `full`)을 받고 읽기 전용 주석을 가진다. 툴의 이름, 설명, 입력과 출력 스키마는 계약 파일에 두고 코드의 등록부와 어긋나면 검사가 실패한다. |
-| REQ-502 | **예정(ADR-0062)** MCP 인터페이스는 운영 모드에서 기본으로 꺼져 있고 명시적으로 켜며, `demo`, `local`, 개발 모드에서는 기본으로 켜진다. 가진 역할이 `viewer` 하나뿐인 주체의 토큰만 받고, 운영 모드에서는 그 주체가 서비스 계정이어야 한다. `demo`, `local`, 개발 모드의 실행용 토큰(사람, `viewer`)은 받는다. 그 밖의 토큰은 HTTP 403과 이유를 적은 문제 상세 본문으로 거절한다. MCP로 내보내는 민감 등급의 상한을 설정으로 두고 기본은 `open`이다. 상한 밖의 속성은 값을 가려서 성공으로 답하고, 그 속성을 조건으로 쓰면 오류로 거절한다. |
+| REQ-502 | **예정(ADR-0062)** MCP 인터페이스는 운영 모드에서 기본으로 꺼져 있고 명시적으로 켜며, `local`, 개발 모드에서는 기본으로 켜진다. 가진 역할이 `viewer` 하나뿐인 주체의 토큰만 받고, 운영 모드에서는 그 주체가 서비스 계정이어야 한다. `local`, 개발 모드의 실행용 토큰(사람, `viewer`)은 받는다. 그 밖의 토큰은 HTTP 403과 이유를 적은 문제 상세 본문으로 거절한다. MCP로 내보내는 민감 등급의 상한을 설정으로 두고 기본은 `open`이다. 상한 밖의 속성은 값을 가려서 성공으로 답하고, 그 속성을 조건으로 쓰면 오류로 거절한다. |
 | REQ-503 | **예정(ADR-0062)** 지원하는 규격의 판은 2026-07-28, 2025-11-25, 2025-06-18이고 요청마다 어느 판의 요청인지 정해 그 판의 규칙으로 답하며 서버는 판을 기억하지 않는다. 미확인 칸을 닫은 판 처리 표(kg-mcp.md)의 모든 행이 HTTP 수준의 테스트로 고정되고 테스트는 바이트가 아니라 뜻으로 비교한다. 세션 ID를 주지 않고, `GET`과 `DELETE`는 405이며, 일괄 요청과 2024-11-05는 받지 않는다. 판 헤더가 없는 요청은 `initialize`가 아니면 400으로 거절한다. |
 | REQ-504 | 판별 요청 수와 판 헤더가 없어 거절한 수를 판마다 센다. |
 | REQ-505 | `/mcp`와 `/.well-known/` 아래 전체는 웹 화면보다 먼저 처리하고, 인가 메타데이터를 내지 않는 동안 `/.well-known/` 아래는 JSON 404로 답한다. `Origin`이 있으면 허용 목록(기본은 비어 있다)에 있을 때만 받고 아니면 403이다. `Content-Type`은 `application/json`만 받고, 서버가 루프백 주소에 묶였고 프록시 뒤라는 선언이 없을 때는 루프백 `Host`만 받는다. 확인 순서는 `Origin`과 `Host`, 인증, `Content-Type`과 `Accept`, 본문 해석, 판 헤더다. |

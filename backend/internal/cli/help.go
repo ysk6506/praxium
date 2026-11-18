@@ -8,7 +8,7 @@ import "strings"
 
 const globalFlagsHelp = `global flags (before or after the command):
   --endpoint URL   the server to ask (default http://127.0.0.1:8080; environment PRAXIUM_ENDPOINT)
-  --token TOKEN    the access token (environment PRAXIUM_TOKEN). praxium demo and praxium local print theirs
+  --token TOKEN    the access token (environment PRAXIUM_TOKEN). praxium local prints its own
   --config FILE    a JSON file {"endpoint": "...", "token": "..."} (environment PRAXIUM_CONFIG)
   --json           print JSON instead of a table
   A flag wins over its environment variable, which wins over the config file.

@@ -49,7 +49,7 @@ func openIngestTarget(ctx context.Context, reg *model.Registry, w wiring, dataDi
 }
 
 // bindFolder finds or makes the KG of the folder and the state that belongs to it. The two must fit: a KG and a state
-// that never met (a folder of praxium demo, or a state file that was deleted), a state without its KG, and a state of
+// that never met (a state file that was deleted), a state without its KG, and a state of
 // another KG are refused before anything is changed, since going on would make objects twice or retire the wrong ones.
 func bindFolder(ctx context.Context, reg *model.Registry, w wiring, store graph.Store, dir string) (ingestTarget, error) {
 	disk, err := openDataDir(dir)
@@ -64,7 +64,7 @@ func bindFolder(ctx context.Context, reg *model.Registry, w wiring, store graph.
 	switch {
 	case err == nil && states.KG() == "":
 		return ingestTarget{}, kernel.Errorf(kernel.CodeConflict,
-			"%s holds a KG that praxium ingest did not build (a folder of praxium demo, or %s was removed); ingest into an empty folder", dir, ingest.StateFileName)
+			"%s holds a KG that praxium ingest did not build (%s was removed); ingest into an empty folder", dir, ingest.StateFileName)
 	case err == nil && states.KG() != kg.ID.String():
 		return ingestTarget{}, kernel.Errorf(kernel.CodeConflict, "%s belongs to KG %s but the folder holds KG %s; the folder does not fit its state, use another folder", ingest.StateFileName, states.KG(), kg.ID)
 	case err == nil:

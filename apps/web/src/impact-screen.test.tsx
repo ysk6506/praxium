@@ -46,8 +46,7 @@ describe("[REQ-381] the words of the screen", () => {
     await open("#/settings");
     expect(text()).toContain("접근 토큰");
     expect(text()).not.toContain("개발용 토큰");
-    for (const where of ["데모", "로컬 모드", "개발 서버", "운영 서버"])
-      expect(text()).toContain(where);
+    for (const where of ["로컬 모드", "개발 서버", "운영 서버"]) expect(text()).toContain(where);
     expect(text()).toContain("praxium admin token create");
   });
 });

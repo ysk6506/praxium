@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Try a release archive of this machine's kind the way a person who downloaded it would (ADR-0039): unpack it, ask
-# `praxium version`, start the server and ask for the web UI at /, then do the same with `praxium demo`, and then
-# with the way to one's own data: `praxium ingest init`, `praxium ingest run -data-dir` and `praxium local`.
+# `praxium version`, start the server and ask for the web UI at /, and then the way to one's own data:
+# `praxium ingest init`, `praxium ingest run -data-dir` and `praxium local`.
 #
 #   scripts/release-smoke.sh <praxium_<version>_linux_amd64.tar.gz>
 #
@@ -35,7 +35,8 @@ grep -qx "praxium $want_version" <<< "$info" || fail "the program does not repor
 grep -qx 'web ui:  included' <<< "$info" || fail "the program does not have the web UI inside"
 
 printf 'smoke-token-not-a-secret' > "$work/token"
-"$dir/praxium" api serve -addr 127.0.0.1:0 -mode development -dev-token-file "$work/token" 2> "$work/server.log" &
+"$dir/praxium" worldgen -seed 1 -scale 500 -out "$work/world" > /dev/null || fail "worldgen failed"
+"$dir/praxium" api serve -addr 127.0.0.1:0 -mode development -dev-token-file "$work/token" -dev-truth "$work/world/truth.jsonl" 2> "$work/server.log" &
 server=$!
 addr=""
 for _ in $(seq 1 100); do
@@ -49,29 +50,12 @@ done
 status="$(curl -s -o "$work/index.html" -w '%{http_code}' "http://$addr/")"
 [ "$status" = 200 ] || fail "GET / answered $status"
 grep -q '<div id="root"' "$work/index.html" || fail "GET / did not answer the web UI's page"
-kill "$server" 2>/dev/null || true; wait "$server" 2>/dev/null || true; server=""
-
-# The demo: `praxium demo` on a free port prints an address with the token after the #; / must give the web UI.
-"$dir/praxium" demo -addr 127.0.0.1:0 > "$work/demo.out" 2> "$work/demo.err" &
-server=$!
-url=""
-for _ in $(seq 1 300); do
-  url="$(grep -m1 '^http://' "$work/demo.out" || true)"
-  [ -n "$url" ] && break
-  kill -0 "$server" 2>/dev/null || fail "the demo stopped: $(cat "$work/demo.out" "$work/demo.err")"
-  sleep 0.1
-done
-[ -n "$url" ] || fail "the demo did not print an address: $(cat "$work/demo.out" "$work/demo.err")"
-status="$(curl -s -o "$work/demo.html" -w '%{http_code}' "${url%%#*}")"
-[ "$status" = 200 ] || fail "demo: GET / answered $status"
-grep -q '<div id="root"' "$work/demo.html" || fail "demo: GET / did not answer the web UI's page"
-grep -q 'does not include the web UI' "$work/demo.out" && fail "demo: the program says the web UI is not inside"
-
+curl -s -H "Authorization: Bearer $(cat "$work/token")" "http://$addr/v1/kgs" | grep -q '"dev"' || fail "the development server does not list the KG made from the synthetic world"
 kill "$server" 2>/dev/null || true; wait "$server" 2>/dev/null || true; server=""
 
 # The way to one's own data (ADR-0041): the examples are written, read into a data folder, and `praxium local` serves
 # what was read. The address carries the mark of local mode, the web UI is at /, and the API has the objects.
-"$dir/praxium" --help | grep -q 'Fastest start:  praxium demo' || fail "the help does not lead with praxium demo"
+"$dir/praxium" --help | grep -q 'Fastest start:  praxium ingest init' || fail "the help does not lead with praxium ingest init"
 "$dir/praxium" ingest init -out "$work/ex" > "$work/init.out" || fail "ingest init failed: $(cat "$work/init.out")"
 book="$work/ex/excel/datacenter.xlsx"
 "$dir/praxium" ingest inspect -input "$book" > /dev/null || fail "ingest inspect failed on the example workbook"
@@ -99,4 +83,4 @@ grep -q '<div id="root"' "$work/local.html" || fail "local: GET / did not answer
 token="$(sed -n 's/.*token=\([0-9a-f]*\).*/\1/p' <<< "$url")"
 curl -sg -H "Authorization: Bearer $token" "${url%%/#*}/v1/kgs/main/objects?filter[object_type][equals]=Rack" | grep -q 'rack-x1' || fail "local: the API does not serve the objects the ingest runs made"
 
-echo "release-smoke: ok (version $want_version, GET / = 200 with the web UI, also in praxium demo, and in praxium local over the ingested examples)"
+echo "release-smoke: ok (version $want_version, GET / = 200 with the web UI, also in praxium local over the ingested examples)"

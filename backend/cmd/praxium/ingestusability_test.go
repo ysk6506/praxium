@@ -192,7 +192,7 @@ func TestGlobalFlagsBeforeIngestAreExplained(t *testing.T) {
 
 // [REQ-328]
 func TestTheTableFormShowsNestedValuesAndTheJSONFormIsUnchanged(t *testing.T) {
-	r := startDemo(t, true)
+	r := &startLocal(t, true, keepSample(t)).demoRun
 	code, out := demoCLI(r, "health")
 	if code != 0 || strings.Contains(out, "{...}") || !strings.Contains(out, "live") || !strings.Contains(out, "ok (200)") {
 		t.Fatalf("health: %d %s", code, out)

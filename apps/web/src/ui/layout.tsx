@@ -6,7 +6,7 @@ export interface AppShellProps {
   readonly nav: ReactNode;
   readonly children: ReactNode;
   readonly footer?: ReactNode;
-  /** A strip above everything, for a state the person must not miss (the demo mode, the local mode). */
+  /** A strip above everything, for a state the person must not miss (the local mode). */
   readonly banner?: ReactNode;
   /** Where the person is; when it changes, the folded menu closes (a link of the menu was followed). */
   readonly place?: string;

@@ -194,7 +194,7 @@ func run(opts options, stdout io.Writer, httpClient *http.Client) error {
 
 // localCommands are the commands that run on this computer and never ask a server, so the flags that say which server
 // to ask (--endpoint, --token, --config, --json) are not theirs.
-var localCommands = map[string]bool{"ingest": true, "demo": true, "local": true, "worldgen": true, "api": true, "contract": true, "version": true, "dev": true}
+var localCommands = map[string]bool{"ingest": true, "local": true, "worldgen": true, "api": true, "contract": true, "version": true, "dev": true}
 
 // unknownCommandMessage names the command that is not one of the commands that ask a server. A command that does not
 // ask one, written after the flags of one, is the mistake of a person who thinks it takes them.

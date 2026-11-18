@@ -93,8 +93,6 @@ func runCommand(args []string, stdout, stderr io.Writer, w wiring) (code int, ha
 		return runAdminOffline(args, stdout, stderr, w), true
 	case args[0] == "api":
 		return runAPICommand(args, stdout, stderr, w)
-	case args[0] == "demo":
-		return runDemo(args[1:], stdout, stderr, w), true
 	case args[0] == "local":
 		return runLocal(args[1:], stdout, stderr, w), true
 	case args[0] == "dev":
@@ -277,7 +275,7 @@ func serveAPI(args []string, stderr io.Writer, d wiring) error {
 	return runServer(plan, stderr, d)
 }
 
-// serverPlan is what one start of the server needs. `api serve` and `demo` both build one and share runServer, so
+// serverPlan is what one start of the server needs. `api serve` and `local` both build one and share runServer, so
 // the store, the server and the shutdown are assembled in one place.
 type serverPlan struct {
 	opts serveOptions

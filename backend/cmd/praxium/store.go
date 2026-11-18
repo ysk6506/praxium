@@ -110,5 +110,5 @@ func lockHint(err error) error {
 	if kernel.CodeOf(err) != filejournal.CodeLocked {
 		return err
 	}
-	return kernel.Wrap(filejournal.CodeLocked, err, "another praxium has this data folder open (a server such as praxium demo or praxium local, or another ingest run); stop it and run this again")
+	return kernel.Wrap(filejournal.CodeLocked, err, "another praxium has this data folder open (a server such as praxium local, or another ingest run); stop it and run this again")
 }
