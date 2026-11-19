@@ -1,13 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-<<<<<<< HEAD
-hash: "72e4dce1d78b243f"
+hash: "a22a91da7adf3b29"
 date: "2026-11-19"
-note: "architecture.yaml에 낮은 층 연결 패키지(crypto/tls 등)를 cmd.praxium과 adapter.egress로만 제한하는 줄을 더했다. AGENTS.md의 규칙 설명과 어긋남 없음"
-=======
-hash: "9ac28e919644c6b0"
-date: "2026-11-19"
-note: "architecture.yaml gained only the test-only unit adapter.pgcheck; AGENTS.md lists no units, so no change"
->>>>>>> origin/main
-text_changed: false
+note: "main을 합친 뒤 다시 확인: 유닛 표에 adapter.egress와 adapter.pgcheck가 모두 있고 AGENTS.md의 내용은 그대로 맞다"
+text_changed: true
 doc_hash: "9b6002b7868d9dd0"

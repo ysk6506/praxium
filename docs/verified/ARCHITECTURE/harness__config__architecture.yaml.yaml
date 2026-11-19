@@ -1,15 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-<<<<<<< HEAD
-hash: "72e4dce1d78b243f"
+hash: "a22a91da7adf3b29"
 date: "2026-11-19"
-note: "adapter.egress 행에 Client.Do(Request/Response) 인터페이스와 restricted_stdlib 확대를 반영함"
+note: "main을 합친 뒤 다시 확인: 유닛 표에 adapter.egress와 adapter.pgcheck가 모두 있고 restricted_stdlib의 설명이 맞다"
 text_changed: true
-doc_hash: "582a22df1d4ac8d7"
-=======
-hash: "9ac28e919644c6b0"
-date: "2026-11-19"
-note: "added the adapter.pgcheck row to match architecture.yaml"
-text_changed: true
-doc_hash: "b9eaceb31fa5c13f"
->>>>>>> origin/main
+doc_hash: "8f2f48f63893961a"
