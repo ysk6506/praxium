@@ -80,7 +80,7 @@ follows:
 | `token_request` | `credential`, `request`(`path`, `format`, `body`), `token_path`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요) | `password` |
 
   `token_request`는 본문 형식(`json`이나 `form`)으로 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요. 토큰 주소는 `base_url`과 같은 호스트여야 해요. 다른 호스트의 토큰 주소(OAuth2의 대부분)는 안 돼요(10절).
-- `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `tls_verify`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
+- `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
 - `ca_pem`은 **그 인증서만 신뢰해요**(시스템의 신뢰 목록을 대신해요). 인증서가 아닌 블록(개인 키 같은 것)이 있으면 정의 오류예요.
 - 플레이스홀더 `{{credential.<필드>}}`는 인증 설정의 값 자리에서만, 문자열 치환이 아니라 값 단위로 바뀌어요. 값이 정확히 플레이스홀더인 문자열 값만 바뀌어요. 주소(경로, 질의)에는 둘 수 없어요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 3절).
 - `pagination.kind`는 `none`, `page`, `offset`, `cursor`(표지를 싣는 자리를 `query`나 `body`로 적어요), `next_url`(본문의 다음 주소. 같은 출처만), `link_header`예요. 종류마다 읽는 필드가 달라요(구현됨, ADR-0090). 모든 종류에 `max_pages`(기본 1,000)가 있어요.
@@ -97,7 +97,7 @@ follows:
   `first_page`를 꼭 적게 한 것은 0부터 시작하는 소스를 1부터 읽으면 첫 페이지가 조용히 빠지기 때문이에요. 페이지네이션이 더하는 인자의 이름이 `request.query`의 이름과 겹치면 정의 오류예요.
 - 소스가 전체 개수를 주면(`total_path`) 수집한 수와 견줘요. 다르면 불완전한 수집이에요. 페이지를 넘기는 사이에 소스가 바뀌어 겹치거나 빠진 것을 잡으려는 거예요.
 - 응답은 JSON만 읽어요. `connection.headers`에는 쓸 수 없는 헤더가 있어요(8절).
-- TLS 확인을 끄려면 `connection.tls_verify: false`를 적고 서버 플래그가 있어야 해요(8절). 이 필드를 바꾸는 저장은 접속 변경이에요.
+- 서버 인증서의 확인을 끄거나 낮추는 필드는 없어요. `tls_verify` 같은 필드를 적으면 모르는 필드와 같은 정의 오류예요.
 - 데이터셋의 `request.method`는 `GET`이 기본이에요. `POST`로 읽는 데이터셋은 `"post_reads": true`로 밝혀야 해요(7.1).
 
 ### 2.3 PostgreSQL 소스
@@ -114,8 +114,8 @@ follows:
 }
 ```
 - 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있고 그 인증서만 신뢰해요(인증서가 아닌 블록은 정의 오류예요. PostgreSQL 드라이버에 넘기는 방법은 어댑터의 단계가 정해요).
-- 필드는 `host`, `port`(기본 5432), `database`, `credential`(필수), `sslmode`(`verify-full`, `verify-ca`, `require`, `disable`. 기본 `verify-full`), `ca_pem`, `connect_timeout_seconds`(기본 10), `statement_timeout_seconds`(기본 60), `lock_timeout_seconds`(기본 5)예요.
-- `sslmode`는 원격이면 `verify-full`이나 `verify-ca`예요. 확인을 낮추는 값은 정의에 적고 서버 플래그 `-allow-unverified-source-tls`가 있을 때만, 암호화 없는 `disable`은 루프백이거나 `-allow-insecure-sources`일 때만 받아요(8절. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
+- 필드는 `host`, `port`(기본 5432), `database`, `credential`(필수), `sslmode`(`verify-full`, `disable`. 기본 `verify-full`), `ca_pem`, `connect_timeout_seconds`(기본 10), `statement_timeout_seconds`(기본 60), `lock_timeout_seconds`(기본 5)예요.
+- `sslmode`는 `verify-full`과 `disable` 둘뿐이고 확인을 낮추는 값(`require`, `verify-ca`)은 없어요. `disable`은 정의로는 받지만 실제 허용은 운영자 설정(암호화 없는 접속 허용)이 정해요(8절. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
 - `table`이면 서버가 컬럼 목록으로 `SELECT`를 만들어요(그 데이터셋은 뒤에 `keyed_read` 지원 기능을 저절로 가져요). `sql`이면 사용자가 쓴 문장 하나예요(7.2).
 - **값을 문자열로 바꾸는 규칙.** 모든 값은 문자열이에요.
 
@@ -252,7 +252,7 @@ follows:
 | 실제 IP | 연결을 맺는 순간에 검사해요(이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`, 멀티캐스트, IPv4로 매핑된 IPv6의 같은 대역, 서버 자신의 API 주소. 서버 플래그(`-source-deny-hosts`)로 더해요. 사설 주소와 루프백은 허용해요 |
 | 프록시 | 쓰지 않아요. 환경 변수를 읽지 않는 전송 계층을 새로 만들어요 |
 | 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`을 쓸 수 없어요. 인증은 `auth`로만 해요 |
-| 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS 확인을 끄는 것(HTTP는 `connection.tls_verify: false`, PostgreSQL은 `sslmode`를 낮춘 값)은 정의에 적고 `-allow-unverified-source-tls`가 있을 때만 받고 실행 기록마다 경고해요 |
+| 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS 확인을 끄는 것은 `-allow-unverified-source-tls`가 있을 때만 받고 실행 기록마다 경고해요 |
 | 오류 | 표준 라이브러리와 드라이버의 문장을 그대로 쓰지 않아요. 이름 풀이, 연결, TLS, 인증, 권한, 시간 초과, 응답 형식으로 분류해요. 토큰 발급 응답의 본문을 오류에 넣지 않아요 |
 | 로그 | 값을 래핑한 타입에서 꺼내는 자리는 어댑터의 요청 조립 한 곳이에요(테스트로 고정). 요청과 응답을 로그에 찍는 코드가 없어요 |
 

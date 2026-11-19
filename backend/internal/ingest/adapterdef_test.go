@@ -72,6 +72,8 @@ func adpCases(t *testing.T) []adpCase {
 		{"host with a port", p("cmdb.example.test", "cmdb.example.test:5432"), "source.connection.host_invalid", "/connection/host"},
 		{"port", p(`"port":5432`, `"port":70000`), "source.connection.port_invalid", "/connection/port"},
 		{"sslmode", p("verify-full", "prefer"), "source.connection.sslmode_invalid", "/connection/sslmode"},
+		{"sslmode require lowers the check", p("verify-full", "require"), "source.connection.sslmode_invalid", "/connection/sslmode"},
+		{"sslmode verify-ca lowers the check", p("verify-full", "verify-ca"), "source.connection.sslmode_invalid", "/connection/sslmode"},
 		{"ca_pem is no certificate", h(`"timeout_seconds":30`, `"timeout_seconds":30,"ca_pem":"not a certificate"`), "source.connection.ca_pem_invalid", "/connection/ca_pem"},
 		{"ca_pem is a key", h(`"timeout_seconds":30`, `"timeout_seconds":30,"ca_pem":"-----BEGIN PRIVATE KEY-----\\nAAAA\\n-----END PRIVATE KEY-----\\n"`), "source.connection.ca_pem_invalid", "/connection/ca_pem"},
 		{"ca_pem without TLS", p("verify-full", "disable\",\"ca_pem\":\""+strings.ReplaceAll(adpCert, "\n", "\\n")), "source.connection.ca_pem_invalid", "/connection/ca_pem"},
@@ -164,7 +166,7 @@ func TestAdpHTTPAndPostgresDefinitionsAreRead(t *testing.T) {
 	if _, err := ParseAdapterSource(strings.NewReader(withCA)); err != nil {
 		t.Errorf("a certificate in PEM form: %v", err)
 	}
-	for _, off := range []string{`"tls_verify":false,`, `"max_response_bytes":2048,`, `"max_retry_wait_seconds":5,`} {
+	for _, off := range []string{`"max_response_bytes":2048,`, `"max_retry_wait_seconds":5,`} {
 		if _, err := ParseAdapterSource(strings.NewReader(adpSwap(t, adpHTTP, `"timeout_seconds":30,`, `"timeout_seconds":30,`+off))); err != nil {
 			t.Errorf("%s: %v", off, err)
 		}
@@ -248,6 +250,7 @@ func TestAdpFieldsOfLaterStepsAreUnknown(t *testing.T) {
 		{adpSwap(t, adpHTTP, `"id":"ds_servers"`, `"id":"ds_servers","keyed_read":true`), "keyed_read"},
 		{adpSwap(t, adpHTTP, `"timeout_seconds":30`, `"timeout_seconds":30,"proxy":"http://p.example.test"`), "proxy"},
 		{adpSwap(t, adpPG, `"database":"cmdb"`, `"database":"cmdb","sslcert":"x"`), "sslcert"},
+		{adpSwap(t, adpHTTP, `"timeout_seconds":30`, `"timeout_seconds":30,"tls_verify":false`), "tls_verify"},
 	} {
 		_, err := ParseAdapterSource(strings.NewReader(c.doc))
 		de, ok := DefinitionErrorsOf(err)

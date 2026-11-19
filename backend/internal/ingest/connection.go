@@ -37,11 +37,10 @@ const (
 	InBody     = "body"
 )
 
-// The modes of the TLS of a PostgreSQL connection, from the one that checks the most.
+// The modes of the TLS of a PostgreSQL connection. A definition has no way to lower the check of the certificate; whether
+// disable is allowed is for the operator's setting.
 const (
 	SSLVerifyFull = "verify-full"
-	SSLVerifyCA   = "verify-ca"
-	SSLRequire    = "require"
 	SSLDisable    = "disable"
 )
 
@@ -78,8 +77,6 @@ type Connection struct {
 	RequestsPerSecond float64           `json:"requests_per_second,omitempty"`
 	Headers           map[string]string `json:"headers,omitempty"`
 	Auth              *Auth             `json:"auth,omitempty"`
-	// TLSVerify false turns the check of the server's certificate off; the server must allow it (sources-and-adapters.md 8).
-	TLSVerify *bool `json:"tls_verify,omitempty"`
 	// MaxResponseBytes is the most one response may have after it is unpacked.
 	MaxResponseBytes int `json:"max_response_bytes,omitempty"`
 	// MaxRetryWaitSeconds is the longest the reader waits for one retry, whatever Retry-After says.

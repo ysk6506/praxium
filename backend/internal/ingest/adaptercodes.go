@@ -44,7 +44,7 @@ var (
 	ecAdBaseURL      = regAdapter("source.connection.base_url_invalid", inv, "The base address is not an http or https address of a host with a path and nothing else.", "source,reason")
 	ecAdHost         = regAdapter("source.connection.host_invalid", inv, "The host is not one name or one IP address.", "source,reason")
 	ecAdPort         = regAdapter("source.connection.port_invalid", inv, "The port is not between 1 and 65535.", "source,port")
-	ecAdSSLMode      = regAdapter("source.connection.sslmode_invalid", inv, "The sslmode is not one of the four.", "source,sslmode,supported")
+	ecAdSSLMode      = regAdapter("source.connection.sslmode_invalid", inv, "The sslmode is not one of the two.", "source,sslmode,supported")
 	ecAdCAPEM        = regAdapter("source.connection.ca_pem_invalid", inv, "The ca_pem is not one or more certificates in PEM form.", "source,reason")
 	ecAdRange        = regAdapter("source.connection.value_out_of_range", inv, "A number of the connection is outside the range it may have.", "source,field,value,min,max")
 	ecAdHeader       = regAdapter("source.connection.header_not_allowed", inv, "A header of the connection is not a valid name, is one the product sets itself, or has a bad value.", "source,header,reason")

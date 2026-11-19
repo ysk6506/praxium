@@ -20,7 +20,7 @@ amends:
   - adr: "0058"
     what: 결정 3의 adapter 값을 받는 자리(file, http, postgres. 파일 흐름의 ParseSource는 파일만 받고 ParseAdapterSource가 셋을 받는다)와 미결 표의 종류별 HTTP 본문의 필드 이름
 amends_tests: []
-decision_hash: 52c74b6d5ec94ec3
+decision_hash: c22d9b8d36b8803e
 ---
 # ADR-0090 HTTP와 PostgreSQL 소스 정의의 형식과 어댑터가 쓸 수집 부품
 
@@ -38,6 +38,7 @@ ADR-0086이 수집을 페이지의 흐름으로 다시 설계했고 ADR-0088이 
    - `connection.headers`는 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`을 쓰지 못한다.
    - `{`와 `}`가 든 글(요청의 경로, 질의, 본문, SQL)은 두 번 겹쳐 쓴 것(`{{`, `}}`)만 받는다. `{{credential.<필드>}}`는 `token_request`의 본문의 값 하나 전체일 때만 받는다.
    - `ca_pem`은 인증서만 받는다(개인 키가 든 블록은 정의 오류). 뜻은 "그 인증서만 신뢰한다"이다.
+   - 정의에는 서버 인증서의 확인을 끄거나 낮추는 길이 없다(ADR-0091과 맞춘다). HTTP에 `tls_verify` 필드가 없고(적으면 모르는 필드와 같은 정의 오류) PostgreSQL의 `sslmode`는 `verify-full`(기본)과 `disable`만 받는다. `disable`을 실제로 받을지는 운영자 설정(암호화 없는 접속 허용)이 정한다.
    - DB와 API의 데이터셋이 `parser`를 적으면 정의 오류다. 방식은 `snapshot`뿐이고 `capabilities`와 뒤에 올 필드(`keyed_read` 등)는 모르는 필드로 거절한다(지금 그대로).
    - `page` 종류는 `first_page`(0이나 1)를 꼭 적게 한다. 0부터 시작하는 소스를 1부터 읽으면 첫 페이지가 조용히 빠지기 때문이다.
    - 값의 시작 값은 정의가 바꿀 수 있다: 요청 시간 30초, 초당 5회, 응답 하나 16 MiB(압축을 푼 뒤), 재시도 기다림 60초, `max_pages` 1,000, PostgreSQL의 연결 10초, 문장 60초, 잠금 5초.

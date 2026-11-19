@@ -16752,10 +16752,10 @@
   },
   "go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace": {
    "kind": "test",
-   "hash": "50b21e295658e424",
+   "hash": "1998067b3fd9cf87",
    "asserts": 8,
    "literals": [
-    "9a1f82f3720ff164"
+    "a014451b55771029"
    ],
    "precision": [],
    "skips": 0,
@@ -16767,10 +16767,10 @@
   },
   "go:backend/internal/ingest::TestAdpFieldsOfLaterStepsAreUnknown": {
    "kind": "test",
-   "hash": "f881d1cfe491324c",
-   "asserts": 5,
+   "hash": "1353a60b931985d1",
+   "asserts": 6,
    "literals": [
-    "c9215c4bb6ca5aaa"
+    "e3e5e0ec5a34dbc9"
    ],
    "precision": [],
    "skips": 0,
@@ -16797,10 +16797,10 @@
   },
   "go:backend/internal/ingest::TestAdpHTTPAndPostgresDefinitionsAreRead": {
    "kind": "test",
-   "hash": "af35dd4e552ba09c",
+   "hash": "766518c9b313ab82",
    "asserts": 11,
    "literals": [
-    "21cadbe92b721f0c"
+    "bb38713a9892479c"
    ],
    "precision": [],
    "skips": 0,

@@ -43,7 +43,7 @@ type namedSet struct {
 
 func (cn Connection) httpFields() []namedSet {
 	return []namedSet{{"base_url", cn.BaseURL != ""}, {"timeout_seconds", cn.TimeoutSeconds != 0}, {"requests_per_second", cn.RequestsPerSecond != 0},
-		{"headers", cn.Headers != nil}, {"auth", cn.Auth != nil}, {"tls_verify", cn.TLSVerify != nil},
+		{"headers", cn.Headers != nil}, {"auth", cn.Auth != nil},
 		{"max_response_bytes", cn.MaxResponseBytes != 0}, {"max_retry_wait_seconds", cn.MaxRetryWaitSeconds != 0}}
 }
 
@@ -256,13 +256,13 @@ func (cn Connection) checkPostgresCredential(c *collector, id string) {
 }
 
 func (cn *Connection) checkSSL(c *collector, id string) {
-	supported := []string{SSLVerifyFull, SSLVerifyCA, SSLRequire, SSLDisable}
+	supported := []string{SSLVerifyFull, SSLDisable}
 	switch {
 	case cn.SSLMode == "":
 		cn.SSLMode = SSLVerifyFull
 	case !containsString(supported, cn.SSLMode):
 		c.add(ecAdSSLMode, ptr("connection", "sslmode"), Params{"source": id, "sslmode": clip(cn.SSLMode, idClipAt), "supported": supported},
-			"source %s: sslmode %q is none of verify-full, verify-ca, require, disable", id, clip(cn.SSLMode, idClipAt))
+			"source %s: sslmode %q is none of verify-full, disable", id, clip(cn.SSLMode, idClipAt))
 	case cn.SSLMode == SSLDisable && cn.CAPEM != "":
 		c.add(ecAdCAPEM, ptr("connection", "ca_pem"), Params{"source": id, "reason": "is given with sslmode disable, which uses no TLS"}, "source %s: ca_pem is given with sslmode disable, which uses no TLS", id)
 	}
