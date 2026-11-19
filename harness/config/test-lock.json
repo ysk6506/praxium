@@ -26183,12 +26183,12 @@
    "added": "2026-11-19",
    "amended_by": null
   },
-  "go:backend/internal/pgingest::TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeedAsItsComplement": {
+  "go:backend/internal/pgingest::TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeed": {
    "kind": "test",
-   "hash": "9fa8dd9df8b29e69",
-   "asserts": 16,
+   "hash": "887a47f8e101316f",
+   "asserts": 15,
    "literals": [
-    "d2884e3c5fb4e15e"
+    "fab427036a406247"
    ],
    "precision": [],
    "skips": 0,
@@ -26468,10 +26468,10 @@
   },
   "go:backend/internal/pgingest::TestPgiTheColumnsOfEachCopyAreTheColumnsOfItsTable": {
    "kind": "test",
-   "hash": "fb61d77cb0792fc6",
+   "hash": "a77e2221f62eaa39",
    "asserts": 2,
    "literals": [
-    "070c4cbc03586f2d"
+    "f7679e13e4ac980a"
    ],
    "precision": [],
    "skips": 0,
@@ -26608,16 +26608,16 @@
   },
   "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
    "kind": "test",
-   "hash": "8559faa2359638b4",
+   "hash": "e7e4531217192526",
    "asserts": 2,
    "literals": [
-    "d47f2120d5f3dd39"
+    "2a7e4b5df1691cb0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": "0095-ingestion-tables-in-the-schema-plan.md"
+   "amended_by": "0098-receiving-step-and-run-ledger-in-adapter-pgingest.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -26727,10 +26727,10 @@
   },
   "go:backend/internal/pgschema::TestIngestDiffFollowsTheStepFromTheGeneratorBeforeByAddingOnly": {
    "kind": "test",
-   "hash": "15b5b76bf94c84b0",
+   "hash": "1217fe5d1917bdc8",
    "asserts": 8,
    "literals": [
-    "f0a416aaa6d8fdb1"
+    "8dc5fbdf9bfa2b35"
    ],
    "precision": [],
    "skips": 0,
@@ -26738,7 +26738,7 @@
     "REQ-680"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0098-receiving-step-and-run-ledger-in-adapter-pgingest.md"
   },
   "go:backend/internal/pgschema::TestIngestDiffRefusesAGeneratorItCannotFollowByAdding": {
    "kind": "test",
@@ -26796,6 +26796,21 @@
    "skips": 0,
    "reqs": [
     "REQ-681"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheRowsReceivedAndNothingElse": {
+   "kind": "test",
+   "hash": "de7b7a9beb0b909a",
+   "asserts": 9,
+   "literals": [
+    "bced1c211548e4f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
    ],
    "added": "2026-11-19",
    "amended_by": null
@@ -27305,6 +27320,21 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestHeldAKGOfGeneratorThreeGetsTheColumnHeldOnItsTablesAndItsSourcePartitionsWhenItIsAdjusted": {
+   "kind": "test",
+   "hash": "e8d782ce1cd50b93",
+   "asserts": 19,
+   "literals": [
+    "f8918bad5a350cd3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestIdentifiersOfListsTheLiveIdentifiersOfOneObject": {
