@@ -27,6 +27,9 @@ amends:
     what: 스키마 상태(kg_schema_state)의 자리는 그대로 공용이라는 것의 확인(바뀌는 것은 없다)
 amends_tests: []
 decision_hash: 556a8255fffd540c
+amended_by:
+  - adr: "0094"
+    what: 결과의 "제품의 길은 아직 옛 구현을 쓴다"와 `OpenV2`, `StoreV2`, `NewTestStoreV2`의 이름(제품의 이름은 `Open`, `Store`, `NewTestStore`가 된다)
 ---
 # ADR-0089 새 KG 저장: KG는 자기 스키마에서 스스로 선다
 

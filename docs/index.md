@@ -56,6 +56,8 @@ covers:
 - [일반 용어집 — 개발과 운영에서 쓰는 표준 용어](design-docs/glossary-general.md)
 - [용어집 — 문서와 화면에 쓰는 표준 용어](design-docs/glossary.md)
 - [품질 하네스 사용법](design-docs/harness-guide.md)
+- [수집의 규모 설계 — 식별과 영향 집합, 적용, 유닛, 범위, 원형 측정](design-docs/ingestion-at-scale-identity.md)
+- [수집의 규모 설계 — 원칙과 불변식, 흐름, 테이블](design-docs/ingestion-at-scale.md)
 - [수집 확장 — 푸시 수집, 지정 재수집, 기대와 대조, 매핑 지원 API, 문서에서 행까지](design-docs/ingestion-extensions.md)
 - [수집 서비스와 실행 — KG 단위의 계획, 수집과 적용, 재계산, 확인 후 적용, 실행 기록](design-docs/ingestion-service.md)
 - [현실 데이터 수집 설계 — 소스, 수집 방식, 수집, 원본 레코드, 읽기 전용, 안전장치](design-docs/ingestion.md)
