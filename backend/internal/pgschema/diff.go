@@ -22,26 +22,27 @@ func notAdditive(format string, args ...any) error {
 }
 
 // Diff finds the steps that bring a schema described by old up to the model described by next. It follows
-// only additions: a type, a property, a volatile property, a change of the search set, and the changes that
-// touch no table (a name, a label, a flag of the model). A value kind or a number that changed, a type or a
-// property that is gone, a change of the common state or of the generator is not an addition, and Diff says so
-// without a step.
+// only additions: a type, a property, a volatile property, a change of the search set, the fixed tables that a
+// newer generator adds, and the changes that touch no table (a name, a label, a flag of the model). A value
+// kind or a number that changed, a type or a property that is gone, a change of the common state, or a change
+// of the generator that is not a known addition is not an addition, and Diff says so without a step.
 func Diff(old, next Manifest) (Delta, error) {
 	if old.KGNo != next.KGNo {
 		return Delta{}, notAdditive("the manifests are of two KGs (%d and %d)", old.KGNo, next.KGNo)
 	}
-	if old.GeneratorVersion != next.GeneratorVersion {
-		return Delta{}, notAdditive("the generator changed from version %d to %d", old.GeneratorVersion, next.GeneratorVersion)
+	schema := SchemaName(next.KGNo)
+	fixed, err := fixedAdditions(schema, old.GeneratorVersion, next.GeneratorVersion)
+	if err != nil {
+		return Delta{}, err
 	}
 	if !slices.Equal(old.CommonState, next.CommonState) {
 		return Delta{}, notAdditive("the volatile attributes that every type has changed")
 	}
-	schema := SchemaName(next.KGNo)
 	oldTypes := map[int]TypeSummary{}
 	for _, t := range old.Types {
 		oldTypes[t.TypeNo] = t
 	}
-	var tx, concurrent []Step
+	tx, concurrent := fixed, []Step(nil)
 	result := next
 	result.State = StateOK
 	result.Types = nil

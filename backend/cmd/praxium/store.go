@@ -49,6 +49,7 @@ func openStoreLogged(ctx context.Context, o serveOptions, d wiring, log *slog.Lo
 		if err != nil {
 			return nil, nil, err
 		}
+		adjustSchemas(ctx, st, log)
 		resumeWork(ctx, st, log)
 		return st, closeStore, nil
 	case storeFile:
@@ -120,6 +121,36 @@ func openPostgres(ctx context.Context, o serveOptions, d wiring) (graph.Store, f
 		return nil, nil, err
 	}
 	return st, st.Close, nil
+}
+
+// schemaAdjuster is a store that can bring the storage schemas of KGs made by an older build up to this one (the
+// PostgreSQL store).
+type schemaAdjuster interface {
+	AdjustOldSchemas(ctx context.Context) ([]pgstore.SchemaStartup, error)
+}
+
+// adjustSchemas brings the KGs that an older build made up to this build before the server answers (ADR-0095), so
+// that a new generator of the schema plan does not close the KGs made before it. A KG it cannot adjust, because the
+// difference is not an addition or because another server is adjusting it, is a log line; one that failed is a
+// warning, not a reason to stay down (the same rule as resumeWork). Such a KG stays refused as D19 says until it is
+// adjusted.
+func adjustSchemas(ctx context.Context, st graph.Store, log *slog.Logger) {
+	a, ok := st.(schemaAdjuster)
+	if !ok {
+		return
+	}
+	done, err := a.AdjustOldSchemas(ctx)
+	for _, d := range done {
+		if d.Adjusted {
+			log.Info("praxium brought the storage schema of a KG up to this build", slog.String("kg", d.KG.String()))
+			continue
+		}
+		log.Info("praxium left the storage schema of a KG made by an older build as it is", slog.String("kg", d.KG.String()),
+			slog.String("reason", d.Reason))
+	}
+	if err != nil {
+		log.Warn("praxium could not bring the storage schema of a KG up to this build", slog.String("error", err.Error()))
+	}
 }
 
 // workResumer is a store that can end the abandon or restore a server left half done (the PostgreSQL store).
