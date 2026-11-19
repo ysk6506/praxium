@@ -215,3 +215,25 @@ func TestPgfAKeyWithMoreRowsThanAPageEndsTheReadWithItsReason(t *testing.T) {
 		t.Fatalf("the read of a key bigger than a page ended with %+v", last.End)
 	}
 }
+
+// [REQ-670] A key whose rows go away between the page statement and the group statement of one transaction ends the
+// read as changed, with no record. A volatile view that shows three rows the first three times it is asked does that.
+func TestPgfARowsThatGoAwayInsideOneTransactionEndTheReadAsChanged(t *testing.T) {
+	r := pgsNewRig(t)
+	r.exec(`CREATE TABLE pgf_t (k text, v int)`)
+	r.exec(`INSERT INTO pgf_t VALUES ('a', 1), ('a', 2), ('a', 3)`)
+	r.exec(`CREATE FUNCTION pgf_tick() RETURNS boolean LANGUAGE plpgsql VOLATILE AS $$ DECLARE n int := coalesce(nullif(current_setting('pgf.calls', true), ''), '0')::int + 1; BEGIN PERFORM pg_catalog.set_config('pgf.calls', n::text, true); RETURN n <= 3; END $$`)
+	r.exec(`CREATE VIEW pgf_v AS SELECT k, v FROM pgf_t WHERE pgf_tick()`)
+	rd, ds := r.one(pgsDS("ds", pgsTable("pgf_v"), "k", "k", "v"), "")
+	res := pgsRead(rd, ds, ingest.PageOptions{MaxRows: 3})
+	if res.err != nil {
+		t.Fatalf("%v", res.err)
+	}
+	if n := len(res.rows()); n != 0 {
+		t.Fatalf("the read gave %d records, want none", n)
+	}
+	last := res.pages[len(res.pages)-1]
+	if last.End.Complete || !strings.HasPrefix(last.End.Reason, "the source changed while the dataset was read") {
+		t.Fatalf("the read did not end as changed: %+v", last.End)
+	}
+}
