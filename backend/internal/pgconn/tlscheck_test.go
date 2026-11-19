@@ -1,4 +1,4 @@
-package pgstore
+package pgconn
 
 import (
 	"strings"

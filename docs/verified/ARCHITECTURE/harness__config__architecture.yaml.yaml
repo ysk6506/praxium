@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "3524b77d8708b3b3"
-date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+hash: "8e472b1b7e1116da"
+date: "2026-11-19"
+note: "ADR-0083과 대조해 유닛 표에 adapter.pgconn 행을 더하고 adapter.pgstore 행을 고치고, 모듈 표의 lib/pq 쓰는 단위와 어댑터끼리 import하지 않는다는 규칙의 말을 고쳤다."
 text_changed: true
-doc_hash: "21a99d8782a5f125"
+doc_hash: "a6651ca545994b09"

@@ -41,6 +41,8 @@ amended_by:
     what: 결정 7의 역할별 한도에 더해 연결을 쓰기 풀, 읽기 풀, 임의 질의 풀의 셋으로 나누고 여러 호스트의 연결 문자열과 풀 폐기와 죽은 연결 감지를 두는 것, 그리고 결정 10의 테스트 서버 PostgreSQL 16(18로)
   - adr: "0082"
     what: 결정 10의 테스트 서버 PostgreSQL 16과 CI의 서비스 컨테이너 `postgres:16`(러너에 깐 18의 서버 프로그램과 `scripts/with-postgres.sh`로 바뀐다)
+  - adr: "0083"
+    what: 결정 1의 PostgreSQL 어댑터 한 유닛과 어댑터는 다른 어댑터를 import하지 않는다는 규칙, 결정 2의 lib/pq를 import하는 유닛, 결정 4의 마이그레이션 실행기와 파일이 있는 자리
 ---
 # ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다
 

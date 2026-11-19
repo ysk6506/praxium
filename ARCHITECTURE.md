@@ -25,7 +25,8 @@ covers:
 | `core.kgread` | Go | `backend/internal/kgread` | KG 읽기의 유스케이스(ADR-0062). 어댑터가 넘긴 자격 증명에서 주체를 구하고(`Gate`: 토큰 확인, 실패 제한, 감사 줄, 역할 판정), 읽기 필터를 만들고, 질의 오류를 오류 코드의 대응(`Problem`)으로 바꾸고, 질의 응답의 엔벨로프를 응답의 `meta` 모양으로 바꾸고, 질문의 원본 JSON(`find`, `get`, `neighbors`)을 해석해 질의를 부르고(`Service`), 모델 목록의 내용(타입 요약, 속성·링크 타입의 뷰)을 만든다. HTTP도 `net`도 모른다. 호출자의 주소 구하기, 헤더, 쿼리 문자열, 상태 코드는 어댑터의 일이다. 어댑터를 import하지 않는다 | `core.kernel`, `core.model`, `core.graph`, `core.query`, `core.access` |
 | `adapter.memstore` | Go | `backend/internal/memstore` | 스토리지 포트의 인메모리 구현. 적합성 테스트(`adapter.graphcheck`)를 모두 통과하는 기준 구현이고 테스트와 개발 모드의 스토리지다. 저널 포트(`Journal`)를 붙여 `Open`하면 `adapter.filejournal`이 받치는 내장 파일 스토어가 된다(처음 써 보기와 소규모용, ADR-0034). 저널이 없으면 프로세스가 끝날 때 사라지는 운영용이 아닌 스토리지다. PostgreSQL 어댑터(`adapter.pgstore`)가 이것을 참고 구현으로 삼았다(ADR-0025) | `core.kernel`, `core.graph` |
 | `adapter.filejournal` | Go | `backend/internal/filejournal` | 내장 파일 스토어의 저널(ADR-0034). 데이터 폴더 하나에 추가 전용 로그 세그먼트와 스냅샷(두 세대)을 쓰고, 레코드마다 CRC-32C와 번호를 달아 응답 전에 동기화한다. 시작할 때 최신의 온전한 스냅샷을 읽고 그 뒤의 로그를 재생하며, 끝의 깨진 레코드는 잘라 내고 중간의 손상은 오류로 멈춘다. 디스크는 `Disk` 인터페이스로만 만나고(실제 구현은 `cmd.praxium`이 넘긴다) `adapter.memstore`를 import하지 않는다. 레코드는 바이트이고 그래프를 모른다 | `core.kernel`. 테스트 파일만 `core.graph`, `adapter.graphcheck`, `adapter.memstore` (`test_may_import`) |
-| `adapter.pgstore` | Go | `backend/internal/pgstore` | 스토리지 포트의 PostgreSQL 구현(드라이버 `lib/pq`, ADR-0032). 적합성 테스트 31개 사례를 모두 통과한다. 쓰기는 `kg_head` 행을 잠그고 세대, 리스(lease), 엔진 의미 버전, 기대한 `applied_seq`를 차례로 검증한 뒤 행과 `kg_head`를 한 트랜잭션에서 쓴다. 변경 번호는 `kg_head` 행의 카운터다. 모든 기본키와 인덱스는 `kg_id`로 시작하고, 스토리지 접근은 `kg_id`를 키로 하는 라우팅 계층을 거친다(현재는 답이 하나다). 마이그레이션은 직접 만든 실행기와 내장 SQL 파일로 하고, 역할별 문 실행 시간 제한과 잠금 대기 제한을 둔다 | `core.kernel`, `core.model`, `core.graph` |
+| `adapter.pgconn` | Go | `backend/internal/pgconn` | PostgreSQL 어댑터들의 연결 기반(ADR-0083). 연결과 풀(`Open`, `Pool`), 설정(`Config`, 역할마다의 시간 한도), 역할의 시간 한도를 거는 트랜잭션 도우미(`Pool.Tx`), 드라이버 오류에 이 백엔드의 코드를 붙이는 `DBErr`, 마이그레이션의 실행기(직접 만든 것, 트랜잭션 범위의 잠금과 체크섬)와 마이그레이션 파일 전부(번호 하나로 이어지는 공용 스키마), 연결 문자열의 TLS 확인(`InspectTLS`), 테스트용 데이터베이스 도우미(`NewTestDatabase`, `NewTestPool`). 포트를 구현하지 않고 그래프와 모델을 모른다. 드라이버 `lib/pq`를 import할 수 있는 유닛 둘 가운데 하나다 | `core.kernel` |
+| `adapter.pgstore` | Go | `backend/internal/pgstore` | 스토리지 포트의 PostgreSQL 구현(드라이버 `lib/pq`, ADR-0032)과 내장 인증의 기록(`Records`). 연결은 `adapter.pgconn`이 준다(ADR-0083). 적합성 테스트 31개 사례를 모두 통과한다. 쓰기는 `kg_head` 행을 잠그고 세대, 리스(lease), 엔진 의미 버전, 기대한 `applied_seq`를 차례로 검증한 뒤 행과 `kg_head`를 한 트랜잭션에서 쓴다. 변경 번호는 `kg_head` 행의 카운터다. 모든 기본키와 인덱스는 `kg_id`로 시작하고, 스토리지 접근은 `kg_id`를 키로 하는 라우팅 계층을 거친다(현재는 답이 하나다). `Open`과 `NewTestStore`, `Config`, `InspectTLS`는 `adapter.pgconn`의 것을 이 유닛의 이름으로 넘긴다(조립부와 다른 유닛의 테스트가 이 이름을 부른다) | `core.kernel`, `core.model`, `core.graph`, `adapter.pgconn` |
 | `adapter.graphcheck` | Go | `backend/internal/graphcheck` | 스토리지 포트의 적합성 테스트(`Cases()`, 31개 사례. 사례 이름과 순서는 테스트가 고정하고, 사례의 내용은 테스트 잠금이 지문에 포함한다, ADR-0028). 어댑터가 통과해야 하는 요건을 `TB` 인터페이스 기반으로 작성하고, 어댑터의 테스트가 `t.Run`으로 실행한다(ADR-0025) | `core.kernel`, `core.model`, `core.graph`. 테스트 파일만 `adapter.memstore`도 (`test_may_import`) |
 | `core.contract` | Go | `backend/internal/contract` | 외부에 공개하는 계약. OpenAPI 3.1 계약을 조각(`openapi/parts`)으로 두고 도구가 병합해(`openapi.json`) `go:embed`로 내장한다. 아직 구현되지 않은 경로의 등록부(`planned/routes.json`), JSON Schema 부분집합 검증기, 문제 코드 목록을 함께 가진다. MCP 툴의 계약 파일(`mcp/tools.json`: 이름, 설명, 입력과 출력 스키마, 읽기 전용 주석)을 함께 가지고, 코드의 등록부와의 대조는 `adapter.mcp`의 테스트가 한다. 파일 형식은 이후에 추가한다 | `core.kernel` |
 | `core.identity` | Go | `backend/internal/identity` | 내장 인증(ADR-0044). 접근 토큰의 형식(`pxm_` + ID + 비밀)과 해시(SHA-256, 상수 시간 비교), 사용자와 서비스 계정, 토큰의 발급·사용·만료·폐기, 부트스트랩, 감사 로그, 연속 실패 속도 제한기. 저장은 원시 타입만 쓰는 `Store` 포트(읽기, 버전 비교 쓰기, 훑기)로 받고 인메모리 구현을 함께 둔다. 어댑터를 import하지 않는다 | `core.kernel`, `core.access` |
@@ -130,7 +131,7 @@ core.contract   외부에 공개하는 계약: HTTP 경로와 스키마, MCP 툴
 - 포트(인터페이스)는 사용하는 쪽 코어 단위에 둔다. 어댑터는 바깥 층에 둔다. 소스에 접속하는 어댑터의 포트에는 쓰기 메서드가 없다(ADR-0008).
 - 조립은 시작점 한 곳에서만 한다. 어댑터의 구체 객체를 생성하는 곳도 거기뿐이다.
 - 코어는 운영체제와 네트워크를 모른다. 시계와 난수는 주입받고, 직접 읽는 곳은 공통 기반 코드의 한 곳뿐이다(REQ-001).
-- 순환 의존을 두지 않고, 같은 층의 형제 단위끼리 직접 import하지 않는다.
+- 순환 의존을 두지 않고, 같은 층의 형제 단위끼리 직접 import하지 않는다. 어댑터는 서로 다른 기술의 어댑터를 import하지 않는다. 다만 PostgreSQL 어댑터들은 포트를 구현하지 않는 공용 부품(`adapter.pgconn`, 뒤에 스키마 계획의 `adapter.pgschema`)만 import할 수 있고, 구조 계약의 `may_import`에 적힌 것만이다(ADR-0083).
 - 새 외부 모듈은 결정 기록이 있어야 들어온다.
 - 현재 코드는 현실 시스템에 읽기만 하고 실제 툴을 호출하는 코드는 어느 층에도 없다. 게이트웨이는 별도 기동 모드로 예정이다(ADR-0061, [게이트웨이 설계](docs/design-docs/gateway.md)). 구현할 때 역할 표와 구조 계약을 결정 기록으로 고친다.
 
@@ -196,4 +197,4 @@ KG는 계약의 자원이다(`/v1/kgs/{kg}/...`). 운영 KG(`main`), 후보 KG, 
 
 | 모듈 | 라이선스 | 이유 | 쓰는 단위 |
 |---|---|---|---|
-| `github.com/lib/pq` | MIT | PostgreSQL의 와이어 프로토콜과 인증(SCRAM-SHA-256 등)을 직접 구현하면 오래 안전하게 유지하기 어렵다. 순수 Go이고 다른 모듈에 의존하지 않는다(전이 의존 없음, ADR-0032) | `adapter.pgstore` |
+| `github.com/lib/pq` | MIT | PostgreSQL의 와이어 프로토콜과 인증(SCRAM-SHA-256 등)을 직접 구현하면 오래 안전하게 유지하기 어렵다. 순수 Go이고 다른 모듈에 의존하지 않는다(전이 의존 없음, ADR-0032) | `adapter.pgconn`, `adapter.pgstore` |

@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "3524b77d8708b3b3"
-date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+hash: "8e472b1b7e1116da"
+date: "2026-11-19"
+note: "ADR-0083의 구조 계약 변경(새 유닛 adapter.pgconn, pgstore의 may_import, lib/pq 허용 유닛, 어댑터 import 규칙의 주석)과 대조했다. AGENTS.md는 유닛 이름이나 어댑터의 import 규칙을 적지 않아 고칠 곳이 없다."
 text_changed: true
-doc_hash: "93fd917edf823971"
+doc_hash: "9b6002b7868d9dd0"

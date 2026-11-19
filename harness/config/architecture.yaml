@@ -62,15 +62,17 @@ go:
     # The KG as a sequence of applied changes and the storage port (ADR-0025); the conformance suite for its adapters is its own unit, apart so that each unit's tests reach the coverage floor.
     core.graph:     {path: backend/internal/graph, may_import: [core.kernel, core.model]}
     adapter.memstore: {path: backend/internal/memstore, may_import: [core.kernel, core.graph]}
-    # The PostgreSQL implementation of the storage port (ADR-0032). core.model is for the grade and basis types the rows carry; its tests run the conformance suite against a real server.
-    adapter.pgstore: {path: backend/internal/pgstore, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.graphcheck]}
+    # The connection base of the PostgreSQL adapters (ADR-0083): the pool and its settings, the transaction helper with the limits of a role, the numbered migrations and their runner, the check of the link of a connection string, the helpers that give a test an empty database. It implements no port and knows neither the graph nor the model; the PostgreSQL adapters import it.
+    adapter.pgconn: {path: backend/internal/pgconn, may_import: [core.kernel]}
+    # The PostgreSQL implementation of the storage port (ADR-0032) and the records of the built-in authentication. core.model is for the grade and basis types the rows carry; adapter.pgconn gives it the connection (ADR-0083). Its tests run the conformance suite against a real server.
+    adapter.pgstore: {path: backend/internal/pgstore, may_import: [core.kernel, core.model, core.graph, adapter.pgconn], test_may_import: [adapter.graphcheck]}
     # The conformance suite is production code of its own (it cannot import "testing"), so it never imports the adapter it checks: only the test that runs it does (ADR-0028).
     adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.memstore]}
     # The first three closed queries over the storage port (ADR-0026). The core imports no adapter (ADR-0027): its tests run on graph.ScratchStore.
     core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph]}
     # The ingestion pipeline of the vertical slice (ADR-0033): source and mapping definitions, the stages from parse to apply, the state between runs. The core imports no adapter: the bytes of a file come in as a capture, and its tests run on graph.ScratchStore.
     core.ingest:    {path: backend/internal/ingest, may_import: [core.kernel, core.model, core.graph]}
-    # Adapters sit outside the core and never import each other: only the composition root joins them.
+    # Adapters sit outside the core. Adapters of different technologies never import each other: only the composition root joins them. The PostgreSQL adapters may import the shared parts that implement no port (adapter.pgconn, later the schema plan), and only those that their may_import names (ADR-0083).
     # The file adapter: reads the bytes of a file into a capture; the operating system is reached through an opener the composition root gives (ADR-0033).
     adapter.filesource: {path: backend/internal/filesource, may_import: [core.kernel, core.ingest]}
     # The file journal of the built-in file store (ADR-0034): an append-only log and snapshots in one data folder, reached through a Disk interface that the composition root implements. It meets the in-memory store only through method signatures, never by import; its tests run the conformance suite on a store with this journal.
@@ -115,7 +117,7 @@ go:
   # Module path -> units allowed to import it. The backend uses the standard library and the one driver below.
   # Every module here also needs a row in the table of ARCHITECTURE.md (REQ-239) and an ADR.
   third_party:
-    github.com/lib/pq: [adapter.pgstore]
+    github.com/lib/pq: [adapter.pgconn, adapter.pgstore]
   # Standard-library packages that only the listed units may import: the core knows no operating system and no network.
   # An entry that ends in .go is one file: the environment is read through entropy.go and nowhere else in core.kernel (ADR-0028).
   restricted_stdlib:
