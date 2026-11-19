@@ -22094,6 +22094,253 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgschema::TestBuildMakesTheTablesOfASmallModel": {
+   "kind": "test",
+   "hash": "74bce8e43708adc8",
+   "asserts": 10,
+   "literals": [
+    "05a1616db1462dcf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestBuildRefusesWhatItCannotServe": {
+   "kind": "test",
+   "hash": "91662fa315932c50",
+   "asserts": 4,
+   "literals": [
+    "d244d015acce48d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestBuildWithoutStatisticsDefersThemAndKeepsTheHash": {
+   "kind": "test",
+   "hash": "a6584ada54f18b25",
+   "asserts": 7,
+   "literals": [
+    "2f151080ae6ce10b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDiffDropsAnIndexWhenTheMarkGoes": {
+   "kind": "test",
+   "hash": "5168c650ccab942d",
+   "asserts": 6,
+   "literals": [
+    "cf8694e89b5fe53e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDiffFollowsAdditions": {
+   "kind": "test",
+   "hash": "ad1178253032ce26",
+   "asserts": 14,
+   "literals": [
+    "2244c40e2d06585d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDiffKeepsTheGroupsOfTheStatisticsThatExist": {
+   "kind": "test",
+   "hash": "99f523c7cd950adb",
+   "asserts": 9,
+   "literals": [
+    "3ed82f22b503884c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDiffRefusesAChangedCommonStateGeneratorAndKG": {
+   "kind": "test",
+   "hash": "d1fdc0b85c3d34ff",
+   "asserts": 3,
+   "literals": [
+    "68a56a88d01408bc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDiffRefusesWhatIsNotAnAddition": {
+   "kind": "test",
+   "hash": "ca68db2f8c74b674",
+   "asserts": 6,
+   "literals": [
+    "0a069ce18fe4edfc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestEveryValueKindHasAColumnTypeAndAnExpression": {
+   "kind": "test",
+   "hash": "8d69300716e7c921",
+   "asserts": 5,
+   "literals": [
+    "2ccf6556fabf804b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestManifestHashDoesNotDependOnTheOrderOfTheInput": {
+   "kind": "test",
+   "hash": "3426cfab0ab37e89",
+   "asserts": 6,
+   "literals": [
+    "76cfd300be205c66"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestManifestHashMovesWithTheShapeButNotWithTheState": {
+   "kind": "test",
+   "hash": "687b2332c52f41bb",
+   "asserts": 10,
+   "literals": [
+    "b25c0cdc0a7ca078"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestManifestRoundTripsAndKnowsItsTables": {
+   "kind": "test",
+   "hash": "1907fb7eb9674067",
+   "asserts": 8,
+   "literals": [
+    "fdbbb9a7a6effd4f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestModelWithoutCommonStateStillHasAStateTable": {
+   "kind": "test",
+   "hash": "b704a3441bcd7d53",
+   "asserts": 4,
+   "literals": [
+    "50adfd2eeeef3028"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestNamesAreBuiltFromNumbersAndQuoted": {
+   "kind": "test",
+   "hash": "28f712b2cd88a2b1",
+   "asserts": 5,
+   "literals": [
+    "c3b9588f781549c0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestSearchSetIsOrderFree": {
+   "kind": "test",
+   "hash": "16c05ba5bf319c11",
+   "asserts": 1,
+   "literals": [
+    "7692717b6a820d6f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestTheDefaultSearchSetIsTheIdentityKeyProperties": {
+   "kind": "test",
+   "hash": "3b3265e708e3ce56",
+   "asserts": 4,
+   "literals": [
+    "6bc4645cc3c6eadf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestTheSameInputGivesTheSameText": {
+   "kind": "test",
+   "hash": "dc7829683ff11dcd",
+   "asserts": 4,
+   "literals": [
+    "98dfa89942fec023"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestTheStandardModelHasAPlan": {
+   "kind": "test",
+   "hash": "95ca7e43b352cff8",
+   "asserts": 8,
+   "literals": [
+    "6fa94a1220adb88b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestTheStandardPlanIsTheSameTwiceAndItsManifestFollowsItself": {
+   "kind": "test",
+   "hash": "7b7adc15738b4d9b",
+   "asserts": 4,
+   "literals": [
+    "d92e91fe8e38556b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestAChunkLargerThanOneStatementIsWrittenWhole": {
    "kind": "test",
    "hash": "5e5f50afd49d9fbd",
