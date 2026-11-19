@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "e88908a5f6c10222"
+hash: "72e378d0fcc2dbf9"
 date: "2026-11-19"
-note: "architecture.yaml의 새 유닛 adapter.pgschema에 맞춰 유닛 표에 행을 더하고 어댑터 import 규칙의 문장에서 pgschema를 구체적인 공용 부품으로 고쳤다. ADR-0085"
+note: "architecture.yaml: adapter.pgstore may_import gets adapter.pgschema (ADR-0087); read the doc against it, ARCHITECTURE.md row updated, AGENTS.md needs no change"
 text_changed: true
-doc_hash: "aa3bae8dab3421af"
+doc_hash: "b5ff4aef8c889412"
