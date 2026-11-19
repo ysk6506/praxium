@@ -12,7 +12,7 @@ import (
 )
 
 // Seal implements graph.Writer: it records the version and its ordering event and moves the head.
-func (s *StoreV2) Seal(ctx context.Context, w graph.SealWrite) error {
+func (s *Store) Seal(ctx context.Context, w graph.SealWrite) error {
 	a, err := s.access(ctx, w.KG)
 	if err != nil {
 		return err

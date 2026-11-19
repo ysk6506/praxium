@@ -30,7 +30,7 @@ func TestABuildThatKnowsAnOlderStorageFormatRefusesToStartAndSaysWhy(t *testing.
 	noErr(t, "open", err)
 	var stored int
 	noErr(t, "read", p.DB().QueryRowContext(ctx, `SELECT version FROM storage_format WHERE id = 1`).Scan(&stored))
-	if stored != StorageFormat || StorageFormat != 1 {
+	if stored != StorageFormat || StorageFormat != 2 {
 		t.Fatalf("the database has the format %d and the build knows %d", stored, StorageFormat)
 	}
 	noErr(t, "same format", CheckStorageFormat(StorageFormat))
@@ -39,7 +39,7 @@ func TestABuildThatKnowsAnOlderStorageFormatRefusesToStartAndSaysWhy(t *testing.
 	noErr(t, "close", p.Close())
 	_, err = Open(ctx, Config{DSN: dsn})
 	wantCode(t, "a newer format", err, CodeStorageFormatTooNew)
-	if !strings.Contains(err.Error(), "storage format 2") || !strings.Contains(err.Error(), "as new as the database") {
+	if !strings.Contains(err.Error(), "storage format 3") || !strings.Contains(err.Error(), "as new as the database") {
 		t.Fatalf("the reason is not told: %v", err)
 	}
 	raw, err := sql.Open("postgres", dsn)

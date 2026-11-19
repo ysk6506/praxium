@@ -11,7 +11,7 @@ import (
 )
 
 // feed runs a read of the feed in a reading transaction with the readable_through it saw.
-func (s *StoreV2) feed(ctx context.Context, kg graph.KGID, fn func(tx *sql.Tx, a *kgAccess, readable int64) error) error {
+func (s *Store) feed(ctx context.Context, kg graph.KGID, fn func(tx *sql.Tx, a *kgAccess, readable int64) error) error {
 	a, err := s.access(ctx, kg)
 	if err != nil {
 		return err
@@ -29,7 +29,7 @@ func (s *StoreV2) feed(ctx context.Context, kg graph.KGID, fn func(tx *sql.Tx, a
 }
 
 // AppliedChanges implements graph.Feed: the chunks above after, up to readable_through.
-func (s *StoreV2) AppliedChanges(ctx context.Context, kg graph.KGID, after int64, limit int) ([]graph.AppliedChange, error) {
+func (s *Store) AppliedChanges(ctx context.Context, kg graph.KGID, after int64, limit int) ([]graph.AppliedChange, error) {
 	var out []graph.AppliedChange
 	err := s.feed(ctx, kg, func(tx *sql.Tx, a *kgAccess, readable int64) error {
 		if limit <= 0 {
@@ -100,7 +100,7 @@ func scanKGEntry(sc scanner) (graph.ChangeEntry, error) {
 }
 
 // LightChanges implements graph.Feed.
-func (s *StoreV2) LightChanges(ctx context.Context, kg graph.KGID, after int64, limit int) ([]graph.LightChange, error) {
+func (s *Store) LightChanges(ctx context.Context, kg graph.KGID, after int64, limit int) ([]graph.LightChange, error) {
 	var out []graph.LightChange
 	err := s.feed(ctx, kg, func(tx *sql.Tx, a *kgAccess, readable int64) error {
 		if limit <= 0 {
@@ -124,7 +124,7 @@ func (s *StoreV2) LightChanges(ctx context.Context, kg graph.KGID, after int64, 
 }
 
 // OrderEvents implements graph.Feed. The ordering events are not bound by readable_through.
-func (s *StoreV2) OrderEvents(ctx context.Context, kg graph.KGID, after int64, limit int) ([]graph.OrderEvent, error) {
+func (s *Store) OrderEvents(ctx context.Context, kg graph.KGID, after int64, limit int) ([]graph.OrderEvent, error) {
 	var out []graph.OrderEvent
 	err := s.feed(ctx, kg, func(tx *sql.Tx, a *kgAccess, _ int64) error {
 		if limit <= 0 {
@@ -151,7 +151,7 @@ func (s *StoreV2) OrderEvents(ctx context.Context, kg graph.KGID, after int64, l
 
 // WaitReadable implements graph.Feed: it polls readable_through until it reaches minSeq. There is no notification
 // channel; a wait costs one small read per poll interval.
-func (s *StoreV2) WaitReadable(ctx context.Context, kg graph.KGID, minSeq int64, waitTimeout time.Duration) (int64, error) {
+func (s *Store) WaitReadable(ctx context.Context, kg graph.KGID, minSeq int64, waitTimeout time.Duration) (int64, error) {
 	deadline := time.NewTimer(waitTimeout)
 	defer deadline.Stop()
 	tick := time.NewTicker(s.poll)

@@ -2,100 +2,10 @@ package pgstore
 
 import (
 	"github.com/ysk6506/praxium/backend/internal/graph"
-	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
-const objectColumns = `object_id, type_no, name, min_grade, attrs, source_refs, content_hash, seq_from`
-
-// objectSelect is the objects valid at $3 whose id is above $2, in id order, at most $4. A row is valid in the
-// live table when it began by then and in the history when it also ended after.
-const objectSelect = `SELECT ` + objectColumns + `, 0::bigint AS seq_to FROM (
-	(SELECT ` + objectColumns + ` FROM object_live WHERE kg_id = $1 AND object_id > $2 AND seq_from <= $3 ORDER BY object_id LIMIT $4)
-	UNION ALL
-	(SELECT ` + objectColumns + ` FROM object_hist WHERE kg_id = $1 AND object_id > $2 AND seq_from <= $3 AND seq_to > $3 ORDER BY object_id LIMIT $4)
-) o ORDER BY object_id LIMIT $4`
-
-func scanObject(sc scanner) (graph.ObjectRow, error) {
-	var (
-		r                 graph.ObjectRow
-		id, grade         string
-		attrs, refs, hash []byte
-		typeNo            int
-	)
-	if err := sc.Scan(&id, &typeNo, &r.Name, &grade, &attrs, &refs, &hash, &r.SeqFrom, &r.SeqTo); err != nil {
-		return r, err
-	}
-	var err error
-	if r.ID, err = parseObject(id); err != nil {
-		return r, err
-	}
-	r.TypeNo, r.MinGrade = typeNo, model.Grade(grade)
-	if r.Attrs, err = decodeAttrs(attrs); err != nil {
-		return r, err
-	}
-	if r.SourceRefs, err = refsOf(refs); err != nil {
-		return r, err
-	}
-	r.ContentHash, err = hashOf(hash)
-	return r, err
-}
-
-const linkSelectColumns = `link_id, link_type_no, src_object_id, dst_object_id, discriminator, grade, basis, attrs, source_refs, content_hash, seq_from`
-
-// linkSelect is objectSelect for links with one more condition, on the ends, that may use $5 (an object id).
-func linkSelect(where string) string {
-	return `SELECT ` + linkSelectColumns + `, 0::bigint AS seq_to FROM (
-	(SELECT ` + linkSelectColumns + ` FROM link_live WHERE kg_id = $1 AND link_id > $2 AND seq_from <= $3 AND ` + where + ` ORDER BY link_id LIMIT $4)
-	UNION ALL
-	(SELECT ` + linkSelectColumns + ` FROM link_hist WHERE kg_id = $1 AND link_id > $2 AND seq_from <= $3 AND seq_to > $3 AND ` + where + ` ORDER BY link_id LIMIT $4)
-) l ORDER BY link_id LIMIT $4`
-}
-
-func scanLink(sc scanner) (graph.LinkRow, error) {
-	var (
-		r                          graph.LinkRow
-		id, src, dst, grade, basis string
-		attrs, refs, hash          []byte
-		typeNo                     int
-	)
-	if err := sc.Scan(&id, &typeNo, &src, &dst, &r.Discriminator, &grade, &basis, &attrs, &refs, &hash, &r.SeqFrom, &r.SeqTo); err != nil {
-		return r, err
-	}
-	var err error
-	if r.ID, err = parseLink(id); err != nil {
-		return r, err
-	}
-	if r.Src, err = parseObject(src); err != nil {
-		return r, err
-	}
-	if r.Dst, err = parseObject(dst); err != nil {
-		return r, err
-	}
-	r.TypeNo, r.Grade, r.Basis = typeNo, model.Grade(grade), model.Basis(basis)
-	if r.Attrs, err = decodeAttrs(attrs); err != nil {
-		return r, err
-	}
-	if r.SourceRefs, err = refsOf(refs); err != nil {
-		return r, err
-	}
-	r.ContentHash, err = hashOf(hash)
-	return r, err
-}
-
-func scanVolatile(sc scanner, id graph.ObjectID) (graph.VolatileRow, error) {
-	var (
-		r     = graph.VolatileRow{Object: id}
-		value []byte
-		g, b  string
-	)
-	if err := sc.Scan(&r.AttrNo, &value, &g, &b, &r.SeenAt, &r.Ref); err != nil {
-		return r, err
-	}
-	var err error
-	r.Grade, r.Basis = model.Grade(g), model.Basis(b)
-	r.Value, err = decodeValue(value)
-	return r, err
-}
+// The scans of the rows that every part of the storage reads the same way.
 
 func scanIdentifier(sc scanner) (graph.IdentifierRecord, error) {
 	var (
@@ -135,4 +45,81 @@ func scanEvent(sc scanner) (graph.IdentityEvent, error) {
 	}
 	e.LinkMap, err = linkMapOf(links)
 	return e, err
+}
+
+func scanBatch(sc scanner) (graph.ChangeBatch, error) {
+	var b graph.ChangeBatch
+	var kind string
+	err := sc.Scan(&b.Seq, &kind, &b.SourceID, &b.ApplyID, &b.ChunkNo, &b.ChunkCount, &b.IngestSeq, &b.Attempt, &b.AppliedAt, &b.Objects, &b.Links)
+	b.Kind, b.AppliedAt = graph.BatchKind(kind), b.AppliedAt.UTC()
+	return b, err
+}
+
+func scanEntry(sc scanner) (graph.ChangeEntry, error) {
+	var e graph.ChangeEntry
+	var change string
+	var oldHash, newHash []byte
+	if err := sc.Scan(&e.Seq, &e.Entity, &e.ID, &change, &oldHash, &newHash); err != nil {
+		return e, err
+	}
+	var err error
+	e.Change = graph.ChangeKind(change)
+	if e.OldHash, err = hashOf(oldHash); err != nil {
+		return e, err
+	}
+	e.NewHash, err = hashOf(newHash)
+	return e, err
+}
+
+// afterText is the id to scan after; an empty text is below every id.
+func afterText[K any](id kernel.ID[K]) string {
+	if id.IsZero() {
+		return ""
+	}
+	return id.String()
+}
+
+const versionColumns = `version_no, version_id, sealed_seq, generation, prev_version_id, definition_set_hash, engine_version,
+	hash_rule_version, input_digest, graph_hash, row_count, sealed_at, seal_kind`
+
+func scanVersion(kg graph.KGID) func(scanner) (graph.Version, error) {
+	return func(sc scanner) (graph.Version, error) {
+		v := graph.Version{KG: kg}
+		var id, prev, kind string
+		var definitions, digest, sum []byte
+		if err := sc.Scan(&v.No, &id, &v.SealedSeq, &v.Generation, &prev, &definitions, &v.EngineVersion, &v.HashRuleVersion, &digest, &sum, &v.Rows, &v.SealedAt, &kind); err != nil {
+			return v, err
+		}
+		var err error
+		if v.ID, err = parseID[graph.VersionKind](id); err != nil {
+			return v, err
+		}
+		if prev != "" {
+			if v.Prev, err = parseID[graph.VersionKind](prev); err != nil {
+				return v, err
+			}
+		}
+		if v.DefinitionSetHash, err = hashOf(definitions); err != nil {
+			return v, err
+		}
+		if v.InputDigest, err = hashOf(digest); err != nil {
+			return v, err
+		}
+		if v.GraphHash, err = sumFrom(sum); err != nil {
+			return v, err
+		}
+		v.SealedAt, v.Kind = v.SealedAt.UTC(), graph.SealKind(kind)
+		v.Parts = map[graph.PartKey]graph.Part{}
+		return v, nil
+	}
+}
+
+// checkOpenings verifies that the rows the chunk opens begin at the chunk's change number.
+func checkOpenings(w graph.ChunkWrite, seq int64) error {
+	for _, c := range w.Objects {
+		if c.New != nil && c.New.SeqFrom != seq {
+			return kernel.Errorf(kernel.CodeInvalidValue, "object row %s opens at %d, the chunk is %d", c.New.ID, c.New.SeqFrom, seq)
+		}
+	}
+	return nil
 }

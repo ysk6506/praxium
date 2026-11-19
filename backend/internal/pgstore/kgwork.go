@@ -3,6 +3,7 @@ package pgstore
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -19,7 +20,7 @@ import (
 // a restore raises the generation in its first transaction and closes the KG to reads and writes until its last.
 
 // AbandonApply implements graph.Writer: the chunks past readable_through go and what they closed is open again.
-func (s *StoreV2) AbandonApply(ctx context.Context, w graph.AbandonWrite) error {
+func (s *Store) AbandonApply(ctx context.Context, w graph.AbandonWrite) error {
 	a, err := s.access(ctx, w.KG)
 	if err != nil {
 		return err
@@ -49,7 +50,7 @@ func (s *StoreV2) AbandonApply(ctx context.Context, w graph.AbandonWrite) error 
 
 // resolveWork decides an error of the first transaction of a work: when its COMMIT got no answer the head says
 // whether the work began.
-func (s *StoreV2) resolveWork(ctx context.Context, a *kgAccess, kind string, err error) error {
+func (s *Store) resolveWork(ctx context.Context, a *kgAccess, kind string, err error) error {
 	if kernel.CodeOf(err) != pgconn.CodeOutcomeUnknown {
 		return err
 	}
@@ -83,8 +84,10 @@ func startWork(ctx context.Context, tx *sql.Tx, a *kgAccess, w kgWorkStart) erro
 }
 
 // ResumeWork ends the abandon or the restore that a head says is half done; it does nothing for a KG that has none.
-// A server that finds the KG in that state calls it, and any server can: the progress is in the head.
-func (s *StoreV2) ResumeWork(ctx context.Context, kg graph.KGID) error {
+// A server that finds the KG in that state calls it, and any server can: the progress is in the head. The server
+// calls it for every KG when it starts (ResumeAllWork), and AcquireLease calls it before it hands out a lease of a KG
+// in that state (ADR-0094).
+func (s *Store) ResumeWork(ctx context.Context, kg graph.KGID) error {
 	a, err := s.access(ctx, kg)
 	if err != nil {
 		return err
@@ -92,8 +95,57 @@ func (s *StoreV2) ResumeWork(ctx context.Context, kg graph.KGID) error {
 	return s.runWork(ctx, a)
 }
 
+// ResumeAllWork ends the work that any KG's head says is half done and returns the KGs it ended it for. A KG whose
+// work cannot be ended (the database failed, the KG is damaged) does not stop the others: its error is in the one
+// returned, which joins them, and the KG stays closed or refusing writes as the head says.
+func (s *Store) ResumeAllWork(ctx context.Context) ([]graph.KGID, error) {
+	kgs, err := s.ListKGs(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var resumed []graph.KGID
+	var failed []error
+	for _, kg := range kgs {
+		done, err := s.resumeOne(ctx, kg.ID)
+		if err != nil {
+			failed = append(failed, kernel.Wrap(kernel.CodeOf(err), err, "cannot end the work half done on KG "+kg.ID.String()))
+		}
+		if done {
+			resumed = append(resumed, kg.ID)
+		}
+	}
+	return resumed, errors.Join(failed...)
+}
+
+// resumeOne ends the work of one KG if its head has any, and says whether it did.
+func (s *Store) resumeOne(ctx context.Context, kg graph.KGID) (bool, error) {
+	a, err := s.access(ctx, kg)
+	if err != nil {
+		return false, err
+	}
+	pending, err := s.workPending(ctx, a)
+	if err != nil || !pending {
+		return false, err
+	}
+	if err := s.runWork(ctx, a); err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+// workPending says whether the head of the KG is in the middle of an abandon or a restore.
+func (s *Store) workPending(ctx context.Context, a *kgAccess) (bool, error) {
+	var cur kgHeadRow
+	err := a.sh.tx(ctx, RoleAPIRead, true, func(tx *sql.Tx) error {
+		var e error
+		cur, e = loadKGHeadRaw(ctx, tx, a, false)
+		return e
+	})
+	return cur.work != workNone, err
+}
+
 // runWork runs the transactions of the work the head names until it ends.
-func (s *StoreV2) runWork(ctx context.Context, a *kgAccess) error {
+func (s *Store) runWork(ctx context.Context, a *kgAccess) error {
 	for {
 		var done bool
 		var seq int64
@@ -114,7 +166,7 @@ func (s *StoreV2) runWork(ctx context.Context, a *kgAccess) error {
 }
 
 // workStep does one transaction of the work: takes the change number the head is at out, or ends the work.
-func (s *StoreV2) workStep(ctx context.Context, tx *sql.Tx, a *kgAccess) (bool, int64, error) {
+func (s *Store) workStep(ctx context.Context, tx *sql.Tx, a *kgAccess) (bool, int64, error) {
 	cur, err := loadKGHeadRaw(ctx, tx, a, true)
 	if err != nil {
 		return false, 0, err
@@ -168,7 +220,7 @@ func dropLaterKG(ctx context.Context, tx *sql.Tx, a *kgAccess, seq int64) error 
 // Restore implements graph.Catalog: the KG goes back to change number toSeq, the generation goes up by one and the
 // restore is kept as an event. The first transaction raises the generation and closes the KG; the rest take the
 // change numbers back out one by one; the last puts the head in place and opens the KG.
-func (s *StoreV2) Restore(ctx context.Context, id graph.KGID, toSeq int64, head graph.Head, now time.Time) (graph.KG, error) {
+func (s *Store) Restore(ctx context.Context, id graph.KGID, toSeq int64, head graph.Head, now time.Time) (graph.KG, error) {
 	a, err := s.access(ctx, id)
 	if err != nil {
 		return graph.KG{}, err
