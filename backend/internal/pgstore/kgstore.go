@@ -74,7 +74,7 @@ type StoreV2 struct {
 	hook func(stage string, seq int64) error
 }
 
-var _ graph.Reader = (*StoreV2)(nil)
+var _ graph.Store = (*StoreV2)(nil)
 
 // OpenV2 connects like Open and returns the new storage. The schemas of the KGs are made by CreateKG.
 func OpenV2(ctx context.Context, cfg Config, opts V2Options) (*StoreV2, error) {

@@ -4,7 +4,11 @@ import "context"
 
 // NewTestStoreV2 opens a StoreV2 on a new empty test database with the standard model (without the statistics
 // objects). The store is closed and the database dropped when the test ends.
-func NewTestStoreV2(tb TB) *StoreV2 {
+func NewTestStoreV2(tb TB) *StoreV2 { return NewTestStoreV2With(tb, LeaseClockDB) }
+
+// NewTestStoreV2With is NewTestStoreV2 with the clock that decides when a lease has run out: the conformance
+// suite moves a clock of its own, so it asks for the caller's.
+func NewTestStoreV2With(tb TB, clock LeaseClock) *StoreV2 {
 	tb.Helper()
 	dsn := NewTestDatabase(tb)
 	if dsn == "" {
@@ -15,7 +19,7 @@ func NewTestStoreV2(tb TB) *StoreV2 {
 		tb.Fatalf("cannot load the standard model: %v", err)
 		return nil
 	}
-	st, err := OpenV2(context.Background(), Config{DSN: dsn}, V2Options{Models: models})
+	st, err := OpenV2(context.Background(), Config{DSN: dsn}, V2Options{Models: models, LeaseClock: clock})
 	if err != nil {
 		tb.Fatalf("cannot open the test store: %v", err)
 		return nil

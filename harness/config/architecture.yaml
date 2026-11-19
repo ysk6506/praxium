@@ -113,6 +113,8 @@ go:
     adapter.readcheck: {path: backend/internal/readcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.query, core.worldgen, adapter.memstore, adapter.devload]}
     # A package of tests only: the acceptance of the slice, which runs the generator's source views through the pipeline and compares the KG with the development load of the truth (ADR-0033).
     adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource, adapter.xlsx]}
+    # A package of tests only: the current ingestion and the current query engine run on the new PostgreSQL storage and on the memory store and must agree (ADR-0089).
+    adapter.pgcheck: {path: backend/internal/pgcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, core.query, adapter.memstore, adapter.devload, adapter.filesource, adapter.pgstore]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium

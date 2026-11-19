@@ -11,6 +11,7 @@ enforced_by:
 touches_protected:
   - docs/design-docs/adr/0080-redesign-storage-and-queries-on-one-postgresql.md
   - docs/design-docs/adr/0085-new-kg-storage-implementation-decisions-and-the-schema-plan-unit.md
+  - docs/design-docs/adr/0087-schema-executor-and-shared-tables.md
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
   - harness/config/test-lock.json

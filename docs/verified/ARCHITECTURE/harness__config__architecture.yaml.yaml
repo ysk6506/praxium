@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "72e378d0fcc2dbf9"
+hash: "9ac28e919644c6b0"
 date: "2026-11-19"
-note: "architecture.yaml: adapter.pgstore may_import gets adapter.pgschema (ADR-0087); read the doc against it, ARCHITECTURE.md row updated, AGENTS.md needs no change"
+note: "added the adapter.pgcheck row to match architecture.yaml"
 text_changed: true
-doc_hash: "b5ff4aef8c889412"
+doc_hash: "b9eaceb31fa5c13f"
