@@ -25991,10 +25991,10 @@
   },
   "go:backend/internal/pgsource::TestPgsAKeyGroupThatFillsABatchIsReadWhole": {
    "kind": "test",
-   "hash": "59ce1d63e6ebe662",
+   "hash": "c4593b3cdd3ad9b2",
    "asserts": 3,
    "literals": [
-    "650e48cb2bb997f7"
+    "cda750566ee36d5d"
    ],
    "precision": [],
    "skips": 0,
@@ -26007,10 +26007,10 @@
   },
   "go:backend/internal/pgsource::TestPgsAKeyWithMoreRowsThanTheDatasetMayHaveIsIncomplete": {
    "kind": "test",
-   "hash": "03954480bb2aedac",
+   "hash": "3c14c78a267b65e9",
    "asserts": 3,
    "literals": [
-    "61eb0cf71b305a17"
+    "49be25ade7dd93cb"
    ],
    "precision": [],
    "skips": 0,
@@ -26023,10 +26023,10 @@
   },
   "go:backend/internal/pgsource::TestPgsAnUnreadableDatasetIsRefusedByEveryEntrance": {
    "kind": "test",
-   "hash": "df12f27e395839df",
+   "hash": "86406c3af79129bf",
    "asserts": 5,
    "literals": [
-    "ec1f7b7afbdfbb7f"
+    "3812c7713e9e05f9"
    ],
    "precision": [],
    "skips": 0,
@@ -26039,10 +26039,10 @@
   },
   "go:backend/internal/pgsource::TestPgsASecretWithoutAPasswordIsNotUsed": {
    "kind": "test",
-   "hash": "cf9b11dc5ad0cc82",
+   "hash": "66cf7a8c538399c9",
    "asserts": 3,
    "literals": [
-    "af45f84912a9faee"
+    "ce400728470c5fee"
    ],
    "precision": [],
    "skips": 0,
@@ -26055,10 +26055,10 @@
   },
   "go:backend/internal/pgsource::TestPgsAskedForAnotherSourceIsAnInternalFailure": {
    "kind": "test",
-   "hash": "a931c15dc74493fa",
+   "hash": "cb1a4e8916d881e3",
    "asserts": 3,
    "literals": [
-    "914e5dae20d1bc3c"
+    "2aa53664e969eca2"
    ],
    "precision": [],
    "skips": 0,
@@ -26071,10 +26071,10 @@
   },
   "go:backend/internal/pgsource::TestPgsCancelStopsTheQueryOfTheSource": {
    "kind": "test",
-   "hash": "f64142de1da26696",
-   "asserts": 5,
+   "hash": "4a13ccf260b1a40b",
+   "asserts": 4,
    "literals": [
-    "f985ebab38ae5747"
+    "ff7f9d7d08b3eca9"
    ],
    "precision": [],
    "skips": 0,
@@ -26087,10 +26087,10 @@
   },
   "go:backend/internal/pgsource::TestPgsCheckTellsAnIncompleteFirstPage": {
    "kind": "test",
-   "hash": "e19221a04724cda3",
+   "hash": "edad176edf7dd646",
    "asserts": 2,
    "literals": [
-    "50ce5203220a3bb5"
+    "8dbe2fe8b754d9da"
    ],
    "precision": [],
    "skips": 0,
@@ -26103,10 +26103,10 @@
   },
   "go:backend/internal/pgsource::TestPgsCheckTellsItsSteps": {
    "kind": "test",
-   "hash": "ae77e7813c419b18",
+   "hash": "976a36165bd0c7d7",
    "asserts": 6,
    "literals": [
-    "4b869b96233e0aa1"
+    "11db35a7c4b5b136"
    ],
    "precision": [],
    "skips": 0,
@@ -26134,10 +26134,10 @@
   },
   "go:backend/internal/pgsource::TestPgsConnectsOnlyThroughTheEgressDialer": {
    "kind": "test",
-   "hash": "cc2d4af97db49812",
+   "hash": "51645e2a22dd0b5f",
    "asserts": 7,
    "literals": [
-    "6d3594f4b3c36ad6"
+    "64dafe3e66517b46"
    ],
    "precision": [],
    "skips": 0,
@@ -26164,10 +26164,10 @@
   },
   "go:backend/internal/pgsource::TestPgsConvertsEveryTypeToItsText": {
    "kind": "test",
-   "hash": "1a09012f6876150e",
+   "hash": "0ac8f441ce1c7a64",
    "asserts": 6,
    "literals": [
-    "2d9a8ff3a50c130b"
+    "d608458644a3d9bc"
    ],
    "precision": [],
    "skips": 0,
@@ -26180,10 +26180,10 @@
   },
   "go:backend/internal/pgsource::TestPgsDoesNotReadTheEnvironmentOrTheHomeFolder": {
    "kind": "test",
-   "hash": "cd8dd3c4f162cd22",
-   "asserts": 5,
+   "hash": "e2a892cc8ed7a652",
+   "asserts": 3,
    "literals": [
-    "ffabca6a019c404a"
+    "2d2d41157ff8f343"
    ],
    "precision": [],
    "skips": 0,
@@ -26196,10 +26196,10 @@
   },
   "go:backend/internal/pgsource::TestPgsEmptyKeysAreSkippedWhenTheDatasetSaysSo": {
    "kind": "test",
-   "hash": "09cc5f04ebc784d9",
+   "hash": "44e919d9cd1b5b76",
    "asserts": 3,
    "literals": [
-    "fd9900e31a3d9548"
+    "06e943b3921da89e"
    ],
    "precision": [],
    "skips": 0,
@@ -26212,10 +26212,10 @@
   },
   "go:backend/internal/pgsource::TestPgsKeepsRowsOfOneKeyOnOnePage": {
    "kind": "test",
-   "hash": "c08c9ec06a89f84b",
+   "hash": "2f2b1fcc42772252",
    "asserts": 6,
    "literals": [
-    "856974b3a127a74f"
+    "23d7d568e6172325"
    ],
    "precision": [],
    "skips": 0,
@@ -26241,10 +26241,10 @@
   },
   "go:backend/internal/pgsource::TestPgsKeyTypesRoundTripThroughTokens": {
    "kind": "test",
-   "hash": "7525f22e520e8791",
+   "hash": "46f6f0d13222aa7f",
    "asserts": 6,
    "literals": [
-    "fcac7299136d87d0"
+    "90c74180a5bb2a72"
    ],
    "precision": [],
    "skips": 0,
@@ -26257,10 +26257,10 @@
   },
   "go:backend/internal/pgsource::TestPgsLockTimeoutSaysTheSourceIsBusy": {
    "kind": "test",
-   "hash": "42ed540d16c6570c",
+   "hash": "b8cd1ffc7dd3d0de",
    "asserts": 4,
    "literals": [
-    "7f0110e8202d3a7d"
+    "a9f3798c80463064"
    ],
    "precision": [],
    "skips": 0,
@@ -26273,10 +26273,10 @@
   },
   "go:backend/internal/pgsource::TestPgsNewRefusesWhatItCannotRead": {
    "kind": "test",
-   "hash": "2c9bcf5e94e02d1f",
+   "hash": "6d89e4f85d9154ef",
    "asserts": 3,
    "literals": [
-    "99ce974fa36304a3"
+    "96f376df6f7219a4"
    ],
    "precision": [],
    "skips": 0,
@@ -26289,10 +26289,10 @@
   },
   "go:backend/internal/pgsource::TestPgsObserverIsToldWhatHappensAndNothingMore": {
    "kind": "test",
-   "hash": "ef81dfb46b5936c0",
+   "hash": "c8f941b8444c8023",
    "asserts": 5,
    "literals": [
-    "7dc57bb7a0442255"
+    "b146f653a73c0e0b"
    ],
    "precision": [],
    "skips": 0,
@@ -26320,10 +26320,10 @@
   },
   "go:backend/internal/pgsource::TestPgsPageLimitsOfTheCallAreKept": {
    "kind": "test",
-   "hash": "715218eaebbd7dab",
+   "hash": "a4d91499479b06ff",
    "asserts": 4,
    "literals": [
-    "36a43556e7adae11"
+    "f153c7e39ec9dbd0"
    ],
    "precision": [],
    "skips": 0,
@@ -26350,10 +26350,10 @@
   },
   "go:backend/internal/pgsource::TestPgsPreviewGivesMaskedFirstRows": {
    "kind": "test",
-   "hash": "a37503ac46ba40be",
+   "hash": "5eee7fe63b29de9b",
    "asserts": 5,
    "literals": [
-    "370949f7d1d4cbbc"
+    "8890f6523e2a23fe"
    ],
    "precision": [],
    "skips": 0,
@@ -26366,10 +26366,10 @@
   },
   "go:backend/internal/pgsource::TestPgsReadsAStatement": {
    "kind": "test",
-   "hash": "895f4e1588fec4e3",
+   "hash": "483ca92db3daff41",
    "asserts": 3,
    "literals": [
-    "891be1d004f27342"
+    "53274ef8852549cd"
    ],
    "precision": [],
    "skips": 0,
@@ -26383,10 +26383,10 @@
   },
   "go:backend/internal/pgsource::TestPgsReadsATableInThePagesOfItsKey": {
    "kind": "test",
-   "hash": "171d3e374a4e0cf5",
+   "hash": "2d32870a5bf3a7e8",
    "asserts": 7,
    "literals": [
-    "4c51da7ecaf8367e"
+    "60a24ef6e878c353"
    ],
    "precision": [],
    "skips": 0,
@@ -26400,10 +26400,10 @@
   },
   "go:backend/internal/pgsource::TestPgsReadsDoNotLeaveConnectionsOrChangeTheSourcesSettings": {
    "kind": "test",
-   "hash": "75eb29f840665d3a",
+   "hash": "abcdcc6ba522676c",
    "asserts": 4,
    "literals": [
-    "0558546f2f64c646"
+    "8be06e2359d39484"
    ],
    "precision": [],
    "skips": 0,
@@ -26416,10 +26416,10 @@
   },
   "go:backend/internal/pgsource::TestPgsReadsWithoutObserverOrClock": {
    "kind": "test",
-   "hash": "2e33fa51a0d50b1c",
+   "hash": "8bb0a39506336b1c",
    "asserts": 3,
    "literals": [
-    "c480ef799b8f96e5"
+    "f2c29b4a5b268637"
    ],
    "precision": [],
    "skips": 0,
@@ -26433,10 +26433,10 @@
   },
   "go:backend/internal/pgsource::TestPgsRefusesAKeyThatCannotBeOrderedFaithfully": {
    "kind": "test",
-   "hash": "527d711bfd4fc622",
+   "hash": "bffe0abbc8e2fdda",
    "asserts": 4,
    "literals": [
-    "3d4f082a06a56b7d"
+    "2538203ead08b912"
    ],
    "precision": [],
    "skips": 0,
@@ -26465,10 +26465,10 @@
   },
   "go:backend/internal/pgsource::TestPgsResumesFromAMiddleToken": {
    "kind": "test",
-   "hash": "7c9782caeec617eb",
+   "hash": "cf94fea42047492a",
    "asserts": 6,
    "literals": [
-    "eed6cf3fd5174d31"
+    "0d7e6e312f8f9707"
    ],
    "precision": [],
    "skips": 0,
@@ -26481,10 +26481,10 @@
   },
   "go:backend/internal/pgsource::TestPgsRowsWithoutAKeyAreReportedNotRead": {
    "kind": "test",
-   "hash": "4351ce63cb5337b7",
+   "hash": "27992da1b2fd89c5",
    "asserts": 6,
    "literals": [
-    "051e761581694a66"
+    "f760a1725d189cee"
    ],
    "precision": [],
    "skips": 0,
@@ -26497,10 +26497,10 @@
   },
   "go:backend/internal/pgsource::TestPgsSecretsAppearNowhere": {
    "kind": "test",
-   "hash": "b2da06930d53316e",
+   "hash": "3ab648695b175d7a",
    "asserts": 5,
    "literals": [
-    "495147331e77901e"
+    "cdddb1aa867699d6"
    ],
    "precision": [],
    "skips": 0,
@@ -26530,10 +26530,10 @@
   },
   "go:backend/internal/pgsource::TestPgsSortsFailuresIntoTheClosedKinds": {
    "kind": "test",
-   "hash": "15816d495a914cd0",
+   "hash": "551ccfdf1f5a2ac9",
    "asserts": 14,
    "literals": [
-    "ed0ab95aaf7b43c6"
+    "1f7894c926d5f596"
    ],
    "precision": [],
    "skips": 0,
@@ -26547,10 +26547,10 @@
   },
   "go:backend/internal/pgsource::TestPgsSourceThatChangesBetweenPagesDoesNotBreakTheRead": {
    "kind": "test",
-   "hash": "9224226cb918b599",
+   "hash": "2c065e18dcf72d02",
    "asserts": 7,
    "literals": [
-    "bcfe7d0f2f92c3a2"
+    "fb708afc9f3a55d1"
    ],
    "precision": [],
    "skips": 0,
@@ -26564,10 +26564,10 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementOfAnotherKindOfTextIsRefused": {
    "kind": "test",
-   "hash": "7d83e5006135fe76",
+   "hash": "58269d99ea2febda",
    "asserts": 5,
    "literals": [
-    "4281bd1206229b5b"
+    "78fd6720a5ab917f"
    ],
    "precision": [],
    "skips": 0,
@@ -26595,10 +26595,10 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementTimeoutEndsTheQuery": {
    "kind": "test",
-   "hash": "cab8f32d26fdae72",
-   "asserts": 3,
+   "hash": "02379ff99a32b537",
+   "asserts": 2,
    "literals": [
-    "80051b3694d1b03c"
+    "4e1c222ded4d8aee"
    ],
    "precision": [],
    "skips": 0,
@@ -26611,10 +26611,10 @@
   },
   "go:backend/internal/pgsource::TestPgsStopsBetweenPagesWhenTheContextEnds": {
    "kind": "test",
-   "hash": "17ce572b438f1a9e",
+   "hash": "ab73f327abd70db1",
    "asserts": 2,
    "literals": [
-    "1defc4a7c1912862"
+    "229fd26d0db0b49f"
    ],
    "precision": [],
    "skips": 0,
@@ -26627,10 +26627,10 @@
   },
   "go:backend/internal/pgsource::TestPgsStopsWhenTheCallerLeavesTheLoopInTheNullKeyRows": {
    "kind": "test",
-   "hash": "f97a9ae0d6511afa",
+   "hash": "ea1154a948a138f0",
    "asserts": 3,
    "literals": [
-    "696d946433d540a1"
+    "2450c043e93850e7"
    ],
    "precision": [],
    "skips": 0,
@@ -26643,10 +26643,10 @@
   },
   "go:backend/internal/pgsource::TestPgsTextIsAlwaysValidUTF8": {
    "kind": "test",
-   "hash": "db3b9f4961b1a3a3",
+   "hash": "28dcdeef5dc02617",
    "asserts": 3,
    "literals": [
-    "8dabe00bb15372ee"
+    "40b24da054f7d5a1"
    ],
    "precision": [],
    "skips": 0,
@@ -26659,7 +26659,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "401a987d2a249c2e",
+   "hash": "d60aaf960eb3133a",
    "asserts": 5,
    "literals": [
     "54cee5b3e3655fb3"
@@ -26677,10 +26677,10 @@
   },
   "go:backend/internal/pgsource::TestPgsTLSModeAgainstAServerWithoutTLSRefusesAndDoesNotFallBack": {
    "kind": "test",
-   "hash": "538266535e9767cf",
+   "hash": "780985100b917137",
    "asserts": 7,
    "literals": [
-    "8c8c564173f84b58"
+    "0eee43e0eaba6d48"
    ],
    "precision": [],
    "skips": 0,
