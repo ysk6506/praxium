@@ -8,7 +8,7 @@ follows:
 ---
 # 소스와 어댑터
 
-[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스 쪽이에요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요.** 소스 정의의 형식(2절)과 경로의 문법(3.2)은 [ADR-0090](adr/0090-http-postgres-source-definitions-and-ingest-adapter-parts.md)으로 구현했고, 어댑터가 쓸 `core.ingest`의 부품(행 만들기, 페이지 자르기, 소스 오류의 세 갈래, 가리기, 관측과 미리 읽기의 인터페이스)도 함께 있어요. HTTP와 PostgreSQL 어댑터와 나가는 연결은 아직 없고 지금 수집 명령은 파일 소스만 읽어요. 수집 서비스는 [수집 서비스와 실행](ingestion-service.md)에, 정의를 쓰는 경로와 시크릿과 경로와 화면은 [정의의 쓰기, 시크릿, 경로, 화면](source-editing.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, id의 문법과 스키마 버전은 [ADR-0075](adr/0075-definition-id-grammar-and-schema-version.md)로 구현했어요. 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 예시의 이름, 주소, 숫자는 모두 지어낸 것이고 주소는 문서용으로 예약된 `example.test`예요.
+[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스 쪽이에요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요.** 소스 정의의 형식(2절)과 경로의 문법(3.2)은 [ADR-0090](adr/0090-http-postgres-source-definitions-and-ingest-adapter-parts.md)으로 구현했고, 어댑터가 쓸 `core.ingest`의 부품(행 만들기, 페이지 자르기, 소스 오류의 세 갈래, 가리기, 관측과 미리 읽기의 인터페이스)도 함께 있어요. HTTP와 PostgreSQL 어댑터는 아직 없고 나가는 연결의 방어(8절)는 `adapter.egress`가 구현했어요([ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 지금 수집 명령은 파일 소스만 읽어요. 수집 서비스는 [수집 서비스와 실행](ingestion-service.md)에, 정의를 쓰는 경로와 시크릿과 경로와 화면은 [정의의 쓰기, 시크릿, 경로, 화면](source-editing.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, id의 문법과 스키마 버전은 [ADR-0075](adr/0075-definition-id-grammar-and-schema-version.md)로 구현했어요. 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 예시의 이름, 주소, 숫자는 모두 지어낸 것이고 주소는 문서용으로 예약된 `example.test`예요.
 
 ## 1. 목적과 범위
 
@@ -97,7 +97,7 @@ follows:
   `first_page`를 꼭 적게 한 것은 0부터 시작하는 소스를 1부터 읽으면 첫 페이지가 조용히 빠지기 때문이에요. 페이지네이션이 더하는 인자의 이름이 `request.query`의 이름과 겹치면 정의 오류예요.
 - 소스가 전체 개수를 주면(`total_path`) 수집한 수와 견줘요. 다르면 불완전한 수집이에요. 페이지를 넘기는 사이에 소스가 바뀌어 겹치거나 빠진 것을 잡으려는 거예요.
 - 응답은 JSON만 읽어요. `connection.headers`에는 쓸 수 없는 헤더가 있어요(8절).
-- 서버 인증서의 확인을 끄거나 낮추는 필드는 없어요. `tls_verify` 같은 필드를 적으면 모르는 필드와 같은 정의 오류예요.
+- TLS 확인을 끄거나 낮추는 길은 없어요(8절, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 정의에 `tls_verify` 같은 필드를 적으면 모르는 필드와 같은 정의 오류예요. 사설 인증 기관의 서버는 `ca_pem`으로 받고, 그러면 그 인증서만 믿어요.
 - 데이터셋의 `request.method`는 `GET`이 기본이에요. `POST`로 읽는 데이터셋은 `"post_reads": true`로 밝혀야 해요(7.1).
 
 ### 2.3 PostgreSQL 소스
@@ -115,7 +115,7 @@ follows:
 ```
 - 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있고 그 인증서만 신뢰해요(인증서가 아닌 블록은 정의 오류예요. PostgreSQL 드라이버에 넘기는 방법은 어댑터의 단계가 정해요).
 - 필드는 `host`, `port`(기본 5432), `database`, `credential`(필수), `sslmode`(`verify-full`, `disable`. 기본 `verify-full`), `ca_pem`, `connect_timeout_seconds`(기본 10), `statement_timeout_seconds`(기본 60), `lock_timeout_seconds`(기본 5)예요.
-- `sslmode`는 `verify-full`과 `disable` 둘뿐이고 확인을 낮추는 값(`require`, `verify-ca`)은 없어요. `disable`은 정의로는 받지만 실제 허용은 운영자 설정(암호화 없는 접속 허용)이 정해요(8절. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
+- `sslmode`는 `verify-full`과 `disable` 둘뿐이고 확인을 낮추는 값(`require`, `verify-ca`)은 없어요. `disable`은 정의로는 받지만 실제 허용은 연결할 때 정해요. 풀린 주소가 모두 루프백이거나 운영자 설정(`-allow-insecure-sources`)이 있을 때만이에요(8절. 이름이 아니라 풀린 주소로 다이얼러가 정하고, 어댑터는 연결 맥락에 `egress.WithPlaintext`를 달아요. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
 - `table`이면 서버가 컬럼 목록으로 `SELECT`를 만들어요(그 데이터셋은 뒤에 `keyed_read` 지원 기능을 저절로 가져요). `sql`이면 사용자가 쓴 문장 하나예요(7.2).
 - **값을 문자열로 바꾸는 규칙.** 모든 값은 문자열이에요.
 
@@ -249,14 +249,16 @@ follows:
 |---|---|
 | 경로 | `/`로 시작해요. `//`, `\`, `?`, `#`, 스킴이 없어요. 조립한 주소의 스킴, 호스트, 포트가 `base_url`과 같은지 다시 확인해요 |
 | 리디렉션 | 따르지 않아요(3xx는 오류). 다음 페이지의 주소(본문, `Link` 헤더)는 같은 출처일 때만 따라요 |
-| 실제 IP | 연결을 맺는 순간에 검사해요(이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`, 멀티캐스트, IPv4로 매핑된 IPv6의 같은 대역, 서버 자신의 API 주소. 서버 플래그(`-source-deny-hosts`)로 더해요. 사설 주소와 루프백은 허용해요 |
+| 실제 IP | **이름을 스스로 한 번 풀고, 풀린 모든 주소를 검사하고, 검사한 IP 글자로 연결해요**(다시 풀지 않아요. 이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 하나라도 거절 목록에 있으면 전체를 거절해요. 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`과 `0.0.0.0/8`, 멀티캐스트, 예약 대역과 브로드캐스트, IPv4가 든 IPv6(매핑, 호환, 번역, NAT64, 6to4)의 속 주소, 터널 주소(Teredo), 서버 자신의 API 주소. 서버 플래그(`-source-deny-hosts`)로 더해요. 사설 주소와 루프백은 기본으로 허용해요. 사설과 루프백을 막고 예외만 여는 엄격한 정책(`DenyPrivate`)도 있어요 |
 | 프록시 | 쓰지 않아요. 환경 변수를 읽지 않는 전송 계층을 새로 만들어요 |
 | 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`을 쓸 수 없어요. 인증은 `auth`로만 해요 |
-| 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS 확인을 끄는 것은 `-allow-unverified-source-tls`가 있을 때만 받고 실행 기록마다 경고해요 |
+| 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS는 1.2 이상이고 인증서와 이름을 언제나 확인해요. **확인을 끄는 길은 없어요**(ADR-0091이 ADR-0058의 `tls_verify: false`와 `-allow-unverified-source-tls`를 거두었어요) |
 | 오류 | 표준 라이브러리와 드라이버의 문장을 그대로 쓰지 않아요. 이름 풀이, 연결, TLS, 인증, 권한, 시간 초과, 응답 형식으로 분류해요. 토큰 발급 응답의 본문을 오류에 넣지 않아요 |
 | 로그 | 값을 래핑한 타입에서 꺼내는 자리는 어댑터의 요청 조립 한 곳이에요(테스트로 고정). 요청과 응답을 로그에 찍는 코드가 없어요 |
 
-`-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources`와 `-allow-unverified-source-tls` 둘이고 [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 플래그와 같은 방식(기본은 꺼짐)이에요. `-source-deny-hosts`는 거절 목록에 더하는 플래그예요. 이것은 ADR-0018 결정 9의 "소스별 예외, 승인, 기한"이 아니라 정의의 명시와 서버 플래그로 여는 방식이고 기한이 없어요.
+`-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources` 하나이고 [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 플래그와 같은 방식(기본은 꺼짐)이에요. `-source-deny-hosts`는 거절 목록에 더하는 플래그예요. 이것은 ADR-0018 결정 9의 "소스별 예외, 승인, 기한"이 아니라 정의의 명시와 서버 플래그로 여는 방식이고 기한이 없어요.
+
+**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`와 `TLSConfig`를 여기서 받고 자기 연결을 따로 만들지 않아요. 아직 이 유닛을 부르는 어댑터와 조립부가 없어서 `-allow-insecure-sources`와 `-source-deny-hosts` 플래그는 예정이에요. 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) TLS 확인을 끄는 길이 없어요. (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). HTTP 어댑터는 `net/http`를 import하지 않고 이 유닛의 `Request`와 `Response`(`Client.Do(ctx, Request)`)만 써요. 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이에요.
 
 ## 9. 한도
 숫자는 [기본값 표](defaults.md)에 "예정"으로 있어요. 넘으면 불완전한 수집이에요.

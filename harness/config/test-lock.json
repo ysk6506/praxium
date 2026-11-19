@@ -14282,6 +14282,906 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/egress::TestABodyThatBreaksMidwayLeaksNoAddress": {
+   "kind": "test",
+   "hash": "5ae6933b0b674994",
+   "asserts": 6,
+   "literals": [
+    "82cf30ae34f2bbee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestABodyThatEndsTooEarlyIsAnEgressErrorToo": {
+   "kind": "test",
+   "hash": "98ecaac242f9b425",
+   "asserts": 4,
+   "literals": [
+    "3be10731d858c758"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestAddressesThatAreNotHostAndPortAreRefused": {
+   "kind": "test",
+   "hash": "ee12463a6ee45357",
+   "asserts": 6,
+   "literals": [
+    "741a9a51773cb024"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestAllowRangesNeverOpenWhatTheOperatorOrThePolicyDenied": {
+   "kind": "test",
+   "hash": "f8363564235f5700",
+   "asserts": 7,
+   "literals": [
+    "f0ed02ab64623179"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestAnAddressThatIsNotValidIsRefused": {
+   "kind": "test",
+   "hash": "417a0e008552d0bc",
+   "asserts": 2,
+   "literals": [
+    "2e8913d5c510973b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestARebindingNameIsJudgedAgainOnTheNextConnection": {
+   "kind": "test",
+   "hash": "b1bb37e17327fbe8",
+   "asserts": 9,
+   "literals": [
+    "d56f6dd0f2b80a5b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestAResponseHeaderOverTheLimitIsRefused": {
+   "kind": "test",
+   "hash": "43d25ac82655b89a",
+   "asserts": 3,
+   "literals": [
+    "b074d558b232cbbf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestAServerThatSpeaksOnlyTLS11IsRefused": {
+   "kind": "test",
+   "hash": "bcaede65dff71f86",
+   "asserts": 4,
+   "literals": [
+    "22c3184cdc6f4702"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestCancellationDuringTheConnectIsNotAFailureOfTheSource": {
+   "kind": "test",
+   "hash": "361aa0c7f353d071",
+   "asserts": 4,
+   "literals": [
+    "929a14e8caaa8832"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientDoesNotShowAnAddressOrAQueryOfARefusedHost": {
+   "kind": "test",
+   "hash": "b67ea3dc2660a4cd",
+   "asserts": 4,
+   "literals": [
+    "ccc8be5a11afcecb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientDoesNotTrustWhatItWasNotGiven": {
+   "kind": "test",
+   "hash": "c81f3086cceff88b",
+   "asserts": 7,
+   "literals": [
+    "003eadc27557a74e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientIgnoresTheProxyOfTheEnvironment": {
+   "kind": "test",
+   "hash": "01c80621ecd5b0f1",
+   "asserts": 4,
+   "literals": [
+    "92954949cd962d5d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientReachesAHostOfAFakeResolverOverVerifiedTLS": {
+   "kind": "test",
+   "hash": "fc2070e9114a640c",
+   "asserts": 5,
+   "literals": [
+    "785d92e1cc6c064f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientRefusesAnExpiredCertificateAndAnotherHostName": {
+   "kind": "test",
+   "hash": "d805212e42e7eaa3",
+   "asserts": 10,
+   "literals": [
+    "08af0f287fa6a083"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientRefusesRequestsThatAreNotPlainAddresses": {
+   "kind": "test",
+   "hash": "4cc45977121e00e6",
+   "asserts": 4,
+   "literals": [
+    "c487c1b654d7f151"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestClientWithABadAuthorityTextIsNotMade": {
+   "kind": "test",
+   "hash": "f4040ea0d22e4f9d",
+   "asserts": 3,
+   "literals": [
+    "8be7cff7cc9ffa4e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDefaultClientTimeIsThirtySeconds": {
+   "kind": "test",
+   "hash": "27681ba1b61da775",
+   "asserts": 2,
+   "literals": [
+    "656af9547ce1fbde"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDefaultPolicyAllowsPublicPrivateAndLoopbackAddresses": {
+   "kind": "test",
+   "hash": "41e9e390088414e0",
+   "asserts": 3,
+   "literals": [
+    "27b4d7e512d2607f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDenyListWorksOnTheEmbeddedAddressToo": {
+   "kind": "test",
+   "hash": "7df81e5ceb4747c7",
+   "asserts": 5,
+   "literals": [
+    "17858cb49ff6817f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDenyLoopbackRefusesOnlyTheLoopback": {
+   "kind": "test",
+   "hash": "50e2eebc75f5ae86",
+   "asserts": 8,
+   "literals": [
+    "6251eba477df9712"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDenyPrivateAlsoRefusesTheDocumentationAndOtherSpecialRanges": {
+   "kind": "test",
+   "hash": "64f652b275dd9de6",
+   "asserts": 6,
+   "literals": [
+    "551496152d57ed34"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDenyPrivateRefusesLoopbackAndPrivateAddressesExceptTheOnesAllowed": {
+   "kind": "test",
+   "hash": "b44afdb32156a398",
+   "asserts": 5,
+   "literals": [
+    "1e5bf9c79846a477"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDialerConnectsToARealLoopbackListener": {
+   "kind": "test",
+   "hash": "fef4593ff5fc3408",
+   "asserts": 10,
+   "literals": [
+    "b85f40ec399463cf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDialerConnectsToTheAddressItJudgedAndResolvesOnce": {
+   "kind": "test",
+   "hash": "e80dbda28764b412",
+   "asserts": 9,
+   "literals": [
+    "518131877161f747"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestDialerKeepsToTheFamilyAskedFor": {
+   "kind": "test",
+   "hash": "c8772a4fb1c7148a",
+   "asserts": 9,
+   "literals": [
+    "90790acbfb6e1b1b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestEveryAddressFailingIsAConnectErrorThatHoldsNoDetail": {
+   "kind": "test",
+   "hash": "6e890d5665467bb5",
+   "asserts": 6,
+   "literals": [
+    "553c27f8cda3aca8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestEveryPolicyRefusesTheRangesOfTheDesign": {
+   "kind": "test",
+   "hash": "e3a1049de8805cf0",
+   "asserts": 3,
+   "literals": [
+    "fa08352d101aea07"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHostAndPortLists": {
+   "kind": "test",
+   "hash": "75e9820ad92bba53",
+   "asserts": 6,
+   "literals": [
+    "6699e12d2bd9f24a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHostAndPortListsKeepASourceOnItsOwnAddress": {
+   "kind": "test",
+   "hash": "399d0bff7a375768",
+   "asserts": 7,
+   "literals": [
+    "bae09626c1176791"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestIPLiteralsAreJudgedWithoutResolving": {
+   "kind": "test",
+   "hash": "fb1dfda206757315",
+   "asserts": 7,
+   "literals": [
+    "8026712fbbdfe2b6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestIsatapAddressesAreJudgedByTheirIPv4Part": {
+   "kind": "test",
+   "hash": "e25817c872374999",
+   "asserts": 9,
+   "literals": [
+    "af3c97d80eb993e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestNewFillsTheDefaults": {
+   "kind": "test",
+   "hash": "f3599e6925a5aad4",
+   "asserts": 4,
+   "literals": [
+    "b6cb5bf2bc5523f2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestNormalizeHostAcceptsNamesAndPlainLiterals": {
+   "kind": "test",
+   "hash": "cd5dc5ce99062445",
+   "asserts": 1,
+   "literals": [
+    "14a233b050157fbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestNormalizeHostGivesTheAddressOfALiteralOnly": {
+   "kind": "test",
+   "hash": "0ff78346d7fe64d0",
+   "asserts": 3,
+   "literals": [
+    "faddab16037f9f63"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestNormalizeHostRefusesWhatIsNotAPlainHost": {
+   "kind": "test",
+   "hash": "f3c5f8c913e55899",
+   "asserts": 1,
+   "literals": [
+    "a584e534e2b107e1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestOneRefusedAddressRefusesTheWholeAnswer": {
+   "kind": "test",
+   "hash": "60680381a86e55ff",
+   "asserts": 7,
+   "literals": [
+    "f7c9510e9c7c12b6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestParsePortReadsDigitsOnly": {
+   "kind": "test",
+   "hash": "aca779627df50bea",
+   "asserts": 2,
+   "literals": [
+    "04fcf329f5287236"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestPlainHTTPGoesOnlyToAnAddressOnTheLoopbackUnlessThePolicyAllowsIt": {
+   "kind": "test",
+   "hash": "12080b4984fd893b",
+   "asserts": 9,
+   "literals": [
+    "58f0f4638a834c1b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestPolicyWithBadValuesIsRefused": {
+   "kind": "test",
+   "hash": "e607ad54e36a956e",
+   "asserts": 2,
+   "literals": [
+    "8c0249314062c2a3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestRedirectsAreNotFollowedByDefault": {
+   "kind": "test",
+   "hash": "b202ea33fcc1a37c",
+   "asserts": 3,
+   "literals": [
+    "e2bc23558884d7dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestRedirectsToTheSameOriginAreFollowedUpToTheLimitAndNoFurther": {
+   "kind": "test",
+   "hash": "734611b87f27b621",
+   "asserts": 7,
+   "literals": [
+    "9447d9bd29d713d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestRefusalGivesAReasonWithoutTheAddress": {
+   "kind": "test",
+   "hash": "8131e821d1f05036",
+   "asserts": 3,
+   "literals": [
+    "7b67700d2e9e2db7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestRequestTimeAndCancellationAreReported": {
+   "kind": "test",
+   "hash": "bde5bc5e7d3a2138",
+   "asserts": 6,
+   "literals": [
+    "dd57c7e1d9aca81c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestResolveFailuresAreResolveErrors": {
+   "kind": "test",
+   "hash": "0c964f9dc5330d31",
+   "asserts": 4,
+   "literals": [
+    "62563e02b8c18ef9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestResolveSameOriginTakesOnlyTheOriginOfTheSource": {
+   "kind": "test",
+   "hash": "58c0fde42ec9abec",
+   "asserts": 5,
+   "literals": [
+    "ecdb45a6d1489f13"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestSameOriginComparesSchemeHostAndPort": {
+   "kind": "test",
+   "hash": "5550c4d8ba8858e7",
+   "asserts": 4,
+   "literals": [
+    "56eba05cdb9c3307"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestSanitizeKeepsTheContextErrorForErrorsIs": {
+   "kind": "test",
+   "hash": "b1c6b642c119fe8a",
+   "asserts": 3,
+   "literals": [
+    "cee96811a9b859ed"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestSanitizeNamesTheKindAndDropsTheDetail": {
+   "kind": "test",
+   "hash": "02b81cf6d51a458d",
+   "asserts": 2,
+   "literals": [
+    "0122576a8860571c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestSanitizeReturnsAnOwnErrorUnchangedAndNilForNil": {
+   "kind": "test",
+   "hash": "1b69ecee0cd0d8eb",
+   "asserts": 7,
+   "literals": [
+    "dc51ec16ef0ab487"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestSelfEntryWithAnOpenAddressUsesTheInterfacesOfTheConfig": {
+   "kind": "test",
+   "hash": "d2c2687f2cecd211",
+   "asserts": 6,
+   "literals": [
+    "b033b4c54f1667f8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestServersOwnAddressIsRefusedOnItsPortOnly": {
+   "kind": "test",
+   "hash": "a7335df276465a80",
+   "asserts": 13,
+   "literals": [
+    "f5f0ed19ee03121d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
+   "kind": "test",
+   "hash": "285a387ace5e4f2f",
+   "asserts": 4,
+   "literals": [
+    "1002af0c6c4f9e98"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
+   "kind": "test",
+   "hash": "9ebf3a158a9da6ac",
+   "asserts": 3,
+   "literals": [
+    "3a10675d9b7896dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTheMetadataAddressOfGoogleOverIPv6IsRefused": {
+   "kind": "test",
+   "hash": "afcd8627c655e0bf",
+   "asserts": 3,
+   "literals": [
+    "30d39bbf73c075fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTimeLimitAndCancellationEndTheDial": {
+   "kind": "test",
+   "hash": "544c00f7a58cd22b",
+   "asserts": 7,
+   "literals": [
+    "0fb91725969fce8b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTLSConfigAlwaysVerifies": {
+   "kind": "test",
+   "hash": "3ed1da406696333c",
+   "asserts": 3,
+   "literals": [
+    "dbe86a38b2f371eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt": {
+   "kind": "test",
+   "hash": "42034ec7920db134",
+   "asserts": 2,
+   "literals": [
+    "0d07c3e7b7d5c78e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestTLSConfigTrustsOnlyTheGivenAuthority": {
+   "kind": "test",
+   "hash": "d6a48936d70215da",
+   "asserts": 3,
+   "literals": [
+    "230e489885dd4e95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestWhenTheLocalAddressesCannotBeListedAnOpenSelfEntryRefuses": {
+   "kind": "test",
+   "hash": "c5c89b746471f74e",
+   "asserts": 5,
+   "literals": [
+    "2575c461816bb548"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestWhichKindsMayPass": {
+   "kind": "test",
+   "hash": "4832d727a2b26bfc",
+   "asserts": 2,
+   "literals": [
+    "ef1853082affd95a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-661"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/filejournal::TestADamagedNewestSnapshotIsReplacedByTheOneBeforeIt": {
    "kind": "test",
    "hash": "c2fa086e3577d7bc",

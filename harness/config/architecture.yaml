@@ -113,6 +113,8 @@ go:
     adapter.readcheck: {path: backend/internal/readcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.query, core.worldgen, adapter.memstore, adapter.devload]}
     # A package of tests only: the acceptance of the slice, which runs the generator's source views through the pipeline and compares the KG with the development load of the truth (ADR-0033).
     adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource, adapter.xlsx]}
+    # The one place where the connections to a source leave the program (ADR-0091): the dialer that resolves a name itself, judges every address it resolved to and connects to the address it judged (no second resolving, no proxy, no way to skip the verification of a certificate), the HTTP client and the TLS settings built on it, and the errors that hold no address, query or sentence of the standard library. The source adapters take their connections from it; it knows no adapter and no port.
+    adapter.egress: {path: backend/internal/egress, may_import: [core.kernel]}
     # A package of tests only: the current ingestion and the current query engine run on the new PostgreSQL storage and on the memory store and must agree (ADR-0089).
     adapter.pgcheck: {path: backend/internal/pgcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, core.query, adapter.memstore, adapter.devload, adapter.filesource, adapter.pgstore]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
@@ -129,9 +131,19 @@ go:
     os/exec: [cmd.praxium]
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
-    net: [cmd.praxium, adapter.http]
-    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp]
+    net: [cmd.praxium, adapter.http, adapter.egress]
+    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp, adapter.egress]
     net/rpc: [cmd.praxium]
+    # Packages that make a connection themselves, or hand one to the caller, without importing net: only the unit that makes the connections of the sources (and the composition root) may import them (ADR-0091).
+    crypto/tls: [cmd.praxium, adapter.egress]
+    net/textproto: [cmd.praxium, adapter.egress]
+    net/smtp: [cmd.praxium, adapter.egress]
+    net/rpc/jsonrpc: [cmd.praxium, adapter.egress]
+    net/http/httputil: [cmd.praxium, adapter.egress]
+    net/http/httptrace: [cmd.praxium, adapter.egress]
+    net/http/cgi: [cmd.praxium, adapter.egress]
+    net/http/fcgi: [cmd.praxium, adapter.egress]
+    log/syslog: [cmd.praxium, adapter.egress]
     syscall: [cmd.praxium]
   # The only files that may read the clock, system randomness and the environment (REQ-001).
   nondeterminism_allowed: [backend/internal/kernel/entropy.go]

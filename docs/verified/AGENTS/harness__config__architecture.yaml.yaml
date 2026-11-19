@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "9ac28e919644c6b0"
+hash: "a22a91da7adf3b29"
 date: "2026-11-19"
-note: "architecture.yaml gained only the test-only unit adapter.pgcheck; AGENTS.md lists no units, so no change"
-text_changed: false
+note: "main을 합친 뒤 다시 확인: 유닛 표에 adapter.egress와 adapter.pgcheck가 모두 있고 AGENTS.md의 내용은 그대로 맞다"
+text_changed: true
 doc_hash: "9b6002b7868d9dd0"
