@@ -59,7 +59,7 @@ func New(cfg Config) (*Reader, error) {
 // ReadPages gives the dataset page by page, in the order of its natural key; see the package comment.
 func (r *Reader) ReadPages(ctx context.Context, source string, ds ingest.Dataset, opts ingest.PageOptions) iter.Seq2[ingest.Page, error] {
 	return func(yield func(ingest.Page, error) bool) {
-		r.read(ctx, secrets.PurposeRun, source, ds, opts, false, yield)
+		r.read(ctx, readSpec{purpose: secrets.PurposeRun, source: source, ds: ds, opts: opts}, yield)
 	}
 }
 
@@ -85,21 +85,31 @@ func (r *Reader) Preview(ctx context.Context, source string, ds ingest.Dataset, 
 
 func (r *Reader) previewPages(ctx context.Context, source string, ds ingest.Dataset, opts ingest.PreviewOptions) iter.Seq2[ingest.Page, error] {
 	return func(yield func(ingest.Page, error) bool) {
-		r.read(ctx, secrets.PurposeCheck, source, ds, ingest.PageOptions{MaxRows: opts.MaxRows}, true, yield)
+		r.read(ctx, readSpec{purpose: secrets.PurposeCheck, source: source, ds: ds, opts: ingest.PageOptions{MaxRows: opts.MaxRows}, skipNull: true}, yield)
 	}
 }
 
 // read makes the connection, describes the statement and gives the pages.
-func (r *Reader) read(ctx context.Context, purpose secrets.Purpose, source string, ds ingest.Dataset, opts ingest.PageOptions, skipNull bool, yield func(ingest.Page, error) bool) {
-	f := r.newFlow(source, ds.ID, yield)
-	sess, pl, err := r.begin(ctx, purpose, source, ds)
+func (r *Reader) read(ctx context.Context, rs readSpec, yield func(ingest.Page, error) bool) {
+	f := r.newFlow(rs.source, rs.ds.ID, yield)
+	sess, pl, err := r.begin(ctx, rs.purpose, rs.source, rs.ds)
 	if err != nil {
 		f.fail(ctx, err)
 		return
 	}
 	defer sess.close()
 	f.sess, f.pl = sess, pl
-	f.pages(ctx, opts, skipNull)
+	f.pages(ctx, rs.opts, rs.skipNull)
+}
+
+// readSpec is what a read is asked for: why the secret is opened, which source and dataset, the limits of the call, and
+// whether the rows without a key are left uncounted (a preview and a check do not scan the table for them).
+type readSpec struct {
+	purpose  secrets.Purpose
+	source   string
+	ds       ingest.Dataset
+	opts     ingest.PageOptions
+	skipNull bool
 }
 
 // begin gets everything a read needs before it reads a row: the plan, the pool, the first connection, the description.
