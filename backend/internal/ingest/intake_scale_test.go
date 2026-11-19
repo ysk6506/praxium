@@ -216,8 +216,10 @@ func TestIntakeRefusesAReaderThatEndsWithoutALastPageAndPassesOnItsErrors(t *tes
 	if _, err := (Intake{Reader: sxScript{pages: []Page{{Dataset: "ds_racks", Last: true}}}, Sink: &sxMemory{}, Plan: plan}).Run(ctx); !errors.Is(err, context.Canceled) {
 		t.Fatalf("a canceled context stops the receiving: %v", err)
 	}
-	if _, err := (Intake{Reader: endless, Sink: &sxMemory{}, Plan: &Plan{Source: Source{Datasets: []Dataset{{ID: "ds_none"}}}}}).Run(context.Background()); kernel.CodeOf(err) != kernel.CodeNotFound {
-		t.Logf("a plan whose dataset the preparer does not know: %v", err)
+	unknown := &sxMemory{}
+	rep, err := (Intake{Reader: endless, Sink: unknown, Plan: &Plan{Source: Source{Datasets: []Dataset{{ID: "ds_none"}}}}}).Run(context.Background())
+	if err != nil || len(rep.Datasets) != 0 || len(unknown.pages) != 0 {
+		t.Fatalf("a dataset the reader does not give is left as it is, with no error, no line and no page: %v %+v %+v", err, rep, unknown.pages)
 	}
 }
 

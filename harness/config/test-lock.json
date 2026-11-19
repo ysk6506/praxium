@@ -17858,10 +17858,10 @@
   },
   "go:backend/internal/ingest::TestIntakeRefusesAReaderThatEndsWithoutALastPageAndPassesOnItsErrors": {
    "kind": "test",
-   "hash": "6d67e286128c2e7a",
-   "asserts": 4,
+   "hash": "838690d6e80cc592",
+   "asserts": 5,
    "literals": [
-    "d34d1bd7d87da121"
+    "6555e34502d2f81b"
    ],
    "precision": [],
    "skips": 0,
