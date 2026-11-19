@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "docs/design-docs/ingestion.md"
-hash: "05e557224f6d3fff"
-date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
+hash: "6b371736dfe881b2"
+date: "2026-11-19"
+note: "ingestion.md에 예정(ADR-0086) 표시만 더해졌다. 현재 동작을 설명하는 이 안내서는 바뀔 곳이 없다"
 text_changed: true
-doc_hash: "51f2680ca4bccd8b"
+doc_hash: "76b4ed66afd1f142"

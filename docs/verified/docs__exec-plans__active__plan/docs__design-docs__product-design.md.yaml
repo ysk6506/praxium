@@ -1,7 +1,7 @@
 doc: "docs/exec-plans/active/plan.md"
 target: "docs/design-docs/product-design.md"
-hash: "dd94480c86f7abc5"
-date: "2026-11-18"
-note: "product-design.md의 변경은 문서 지도에 새 설계 문서 여섯 줄을 더한 것이다. plan.md의 단계와 번호는 이 변경과 어긋나지 않음을 대조했다"
-text_changed: false
-doc_hash: "eb3609d743fd0fd9"
+hash: "6b7072fb07140e7c"
+date: "2026-11-19"
+note: "product-design.md에 새 문서 링크만 더해졌다. 계획은 바뀔 곳이 없다"
+text_changed: true
+doc_hash: "f1604d4c2a08c342"
