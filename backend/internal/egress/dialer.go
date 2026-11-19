@@ -191,7 +191,7 @@ func filterFamily(addrs []netip.Addr, network string) []netip.Addr {
 	return out
 }
 
-// dialAny connects to the addresses in turn, each with a share of the time that is left. What is dialed is the
+// dialAny connects to the addresses in turn, each for at most attemptTimeout, all within the time of the dial. What is dialed is the
 // literal address that was judged, never the name.
 func (d *Dialer) dialAny(ctx context.Context, host string, addrs []netip.Addr, port uint16) (net.Conn, error) {
 	if len(addrs) == 0 {

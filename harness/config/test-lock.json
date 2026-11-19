@@ -14489,7 +14489,7 @@
   },
   "go:backend/internal/egress::TestDialerConnectsToARealLoopbackListener": {
    "kind": "test",
-   "hash": "919eb50c2ab7f058",
+   "hash": "846cab9e791f03c4",
    "asserts": 10,
    "literals": [
     "b85f40ec399463cf"
@@ -14924,7 +14924,7 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "57d1c3befb6e5d5c",
+   "hash": "bd61eae642bf8ec9",
    "asserts": 4,
    "literals": [
     "1002af0c6c4f9e98"
@@ -14939,7 +14939,7 @@
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "9a390376a7cbfce5",
+   "hash": "16e56a8e044e05c4",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"

@@ -359,10 +359,9 @@ func TestDialerConnectsToARealLoopbackListener(t *testing.T) {
 		for i := 0; i < 3; i++ {
 			c, err := ln.Accept()
 			accepted <- err
-			if err != nil {
-				return
+			if c != nil {
+				_ = c.Close()
 			}
-			_ = c.Close()
 		}
 	}()
 	_, port, _ := net.SplitHostPort(ln.Addr().String())
