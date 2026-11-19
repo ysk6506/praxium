@@ -14,6 +14,7 @@ touches_protected:
   - docs/design-docs/adr/0085-new-kg-storage-implementation-decisions-and-the-schema-plan-unit.md
   - docs/design-docs/adr/0087-schema-executor-and-shared-tables.md
   - docs/design-docs/adr/0089-new-kg-storage-the-kg-stands-on-its-own-schema.md
+  - docs/product-specs/requirements-model-storage.md
   - harness/config/test-lock.json
 updates_docs:
   - ARCHITECTURE.md
