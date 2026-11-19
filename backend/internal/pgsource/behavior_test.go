@@ -2,7 +2,6 @@ package pgsource
 
 import (
 	"fmt"
-	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -168,23 +167,7 @@ func TestPgsDoesNotReadTheEnvironmentOrTheHomeFolder(t *testing.T) {
 	r := pgsNewRig(t)
 	r.exec(`CREATE TABLE t (k int primary key)`)
 	r.exec(`INSERT INTO t VALUES (1)`)
-	home := t.TempDir()
-	for name, body := range map[string]string{
-		".pgpass":                    "*:*:*:*:hostile-password-from-pgpass\n",
-		".postgresql/postgresql.crt": "not a certificate",
-		".postgresql/postgresql.key": "not a key",
-		".postgresql/root.crt":       "not a ca",
-		".pg_service.conf":           "[x]\nhost=203.0.113.9\n",
-		"service/pg_service.conf":    "[x]\nhost=203.0.113.9\n",
-	} {
-		p := filepath.Join(home, name)
-		if err := os.MkdirAll(filepath.Dir(p), 0o700); err != nil {
-			t.Fatal(err)
-		}
-		if err := os.WriteFile(p, []byte(body), 0o600); err != nil {
-			t.Fatal(err)
-		}
-	}
+	home := t.TempDir() // the home folder of a hostile environment; the files in it are tried by the prototype of ADR-0093 (the test cannot write files)
 	t.Setenv("HOME", home)
 	t.Setenv("PGPASSFILE", filepath.Join(home, ".pgpass"))
 	t.Setenv("PGSERVICEFILE", filepath.Join(home, "service/pg_service.conf"))

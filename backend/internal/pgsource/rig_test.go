@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	_ "github.com/lib/pq"
+	"github.com/lib/pq"
 
 	"github.com/ysk6506/praxium/backend/internal/egress"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
@@ -66,20 +66,14 @@ func pgsNewRig(t *testing.T) *pgsRig {
 	}
 	r := &pgsRig{t: t, host: pgsEnv(t, "HOST"), port: port, user: pgsEnv(t, "USER"), pass: pgsEnv(t, "PASSWORD"), sslmode: "disable", secretID: pgsSecretID}
 	r.dbName = "pgs_" + strings.ToLower(kernel.NewToken(8))
-	admin, err := sql.Open("postgres", pgsDSN(r, "postgres"))
-	if err != nil {
-		t.Fatalf("cannot open the admin connection")
-	}
+	admin := pgsOpen(t, pgsDSN(r, "postgres"))
 	r.admin = admin
 	t.Cleanup(func() { _ = admin.Close() })
 	if _, err := admin.ExecContext(pgsCtx, `CREATE DATABASE "`+r.dbName+`"`); err != nil {
 		t.Fatalf("cannot create the test database")
 	}
 	t.Cleanup(func() { _, _ = admin.ExecContext(pgsCtx, `DROP DATABASE IF EXISTS "`+r.dbName+`" WITH (FORCE)`) })
-	r.db, err = sql.Open("postgres", pgsDSN(r, r.dbName))
-	if err != nil {
-		t.Fatalf("cannot open the test database")
-	}
+	r.db = pgsOpen(t, pgsDSN(r, r.dbName))
 	t.Cleanup(func() { _ = r.db.Close() })
 
 	svc, err := secrets.New(secrets.Config{
@@ -246,3 +240,12 @@ func pgsSrcErr(t *testing.T, err error, kind string) *ingest.SourceError {
 }
 
 const pgsKeySep = "\x1f"
+
+func pgsOpen(t *testing.T, dsn string) *sql.DB {
+	t.Helper()
+	c, err := pq.NewConnector(dsn)
+	if err != nil {
+		t.Fatalf("cannot read the test DSN")
+	}
+	return sql.OpenDB(c)
+}
