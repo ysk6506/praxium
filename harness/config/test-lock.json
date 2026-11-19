@@ -22080,6 +22080,81 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestAStartAfterAnotherCallersRenewalIsTriedOnceOnTheNewPool": {
+   "kind": "test",
+   "hash": "ce5e989825b2c71a",
+   "asserts": 4,
+   "literals": [
+    "a39a5e777ba04dc8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAStartThatFailsWithALostConnectionIsTriedOnceMoreOnANewPool": {
+   "kind": "test",
+   "hash": "763a438960c7ad03",
+   "asserts": 4,
+   "literals": [
+    "376a69c08682f055"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAStartThatFailsWithALostConnectionTwiceGivesTheLossAndNoThirdTry": {
+   "kind": "test",
+   "hash": "0b54a4d9a0a6130b",
+   "asserts": 5,
+   "literals": [
+    "34c06d939cbc5881"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAStartThatFailsWithAnAnswerOfTheServerIsNotTriedAgain": {
+   "kind": "test",
+   "hash": "2b434592afb124d8",
+   "asserts": 3,
+   "literals": [
+    "6407edb8dd446689"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAStartThatTheCallerEndedIsNotTriedAgain": {
+   "kind": "test",
+   "hash": "6cca2b17a832f710",
+   "asserts": 3,
+   "literals": [
+    "bf26650e3ad3baf2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestATestServerThatRefusesToMakeADatabaseIsReportedByItsOwnWords": {
    "kind": "test",
    "hash": "69b2f848ef0b8e35",
@@ -22332,6 +22407,21 @@
    "skips": 0,
    "reqs": [
     "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheRenewalByAnotherCallerAndTheLossShareOneRetry": {
+   "kind": "test",
+   "hash": "bf443b75455cd593",
+   "asserts": 3,
+   "literals": [
+    "3ff7587196c02083"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
    ],
    "added": "2026-11-19",
    "amended_by": null

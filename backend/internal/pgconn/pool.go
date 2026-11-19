@@ -187,16 +187,32 @@ func (p *Pool) TxOn(ctx context.Context, kind PoolKind, role Role, readOnly bool
 	return p.commit(ctx, h, gen, tx)
 }
 
-// begin starts a transaction; when the pool was renewed while it tried, it tries once more on the new one.
+// begin starts a transaction. When the start fails because the connection is lost or the role of the server changed,
+// the pool is renewed and the start is tried once more on the new one; nothing was written before the start, so
+// the second try is safe. When another caller renewed the pool while this one tried, the start is tried once on the
+// new pool. A start that the context of the caller ended is not tried again, and neither is any other failure.
+// The generation comes back as the pool's current one on a success. On a failure of the retry it is the one the
+// caller looked at before this call renewed the pool, so that the caller's renewal does not renew it a second time.
 func begin(ctx context.Context, h *Handle, opts *sql.TxOptions) (*sql.Tx, uint64, error) {
 	db, gen := h.current()
 	tx, err := db.BeginTx(ctx, opts)
-	if err != nil {
-		if _, now := h.current(); now != gen {
-			db, gen = h.current()
-			tx, err = db.BeginTx(ctx, opts)
-		}
+	if err == nil || ctx.Err() != nil || Classify(err) == KindCaller {
+		return tx, gen, err
 	}
+	if k := Classify(err); k == KindLost || k == KindRoleChanged {
+		h.renew(gen) // a no-op when another caller renewed the pool already
+		db, now := h.current()
+		tx, err = db.BeginTx(ctx, opts)
+		if err != nil {
+			return nil, gen, err
+		}
+		return tx, now, nil
+	}
+	if _, now := h.current(); now == gen {
+		return tx, gen, err
+	}
+	db, gen = h.current()
+	tx, err = db.BeginTx(ctx, opts)
 	return tx, gen, err
 }
 
