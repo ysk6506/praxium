@@ -14,9 +14,9 @@ import (
 
 // A write whose COMMIT gets no answer is decided by the head, on the new storage too. The names start with v2o.
 
-// v2oStore opens a StoreV2 on a new test database. After arm() is called, the next transaction that moves a head has
+// v2oStore opens a Store on a new test database. After arm() is called, the next transaction that moves a head has
 // its backend ended by the server just before its COMMIT.
-func v2oStore(tb TB) (*StoreV2, func()) {
+func v2oStore(tb TB) (*Store, func()) {
 	tb.Helper()
 	armed := new(atomic.Bool)
 	var pool *pgconn.Pool
@@ -52,7 +52,7 @@ func v2oStore(tb TB) (*StoreV2, func()) {
 	if err != nil {
 		tb.Fatalf("models: %v", err)
 	}
-	return &StoreV2{rt: singleRouter{&shard{pool: pool}}, poll: defaultPollInterval, models: models, clock: LeaseClockCaller}, func() { armed.Store(true) }
+	return &Store{rt: singleRouter{&shard{pool: pool}}, poll: defaultPollInterval, models: models, clock: LeaseClockCaller}, func() { armed.Store(true) }
 }
 
 func TestV2oAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated(t *testing.T) {

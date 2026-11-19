@@ -81,7 +81,7 @@ func TestPgxIngestionGivesTheSameGraphHashAsMemory(t *testing.T) {
 		t.Fatal(err)
 	}
 	files, _ := pgxWorld(t, reg, 7, 500)
-	pg := pgstore.NewTestStoreV2With(t, pgstore.LeaseClockCaller)
+	pg := pgstore.NewTestStoreWith(t, pgstore.LeaseClockCaller)
 	mem := memstore.New()
 	repPG, kgPG := pgxIngest(t, reg, pg, files)
 	repMem, _ := pgxIngest(t, reg, mem, files)
@@ -109,7 +109,7 @@ func TestPgxQueriesAnswerTheSameAsMemory(t *testing.T) {
 	ctx := context.Background()
 	clock := kernel.NewManualClock(pgxStart)
 	engines := map[string]*query.Engine{}
-	for name, store := range map[string]graph.Store{"memory": memstore.New(), "postgres": pgstore.NewTestStoreV2With(t, pgstore.LeaseClockCaller)} {
+	for name, store := range map[string]graph.Store{"memory": memstore.New(), "postgres": pgstore.NewTestStoreWith(t, pgstore.LeaseClockCaller)} {
 		ids := kernel.NewRandomIDs(kernel.NewSeededRng(5))
 		kg, err := devload.NewKG(ctx, store, reg, ids, clock, "dev")
 		if err != nil {

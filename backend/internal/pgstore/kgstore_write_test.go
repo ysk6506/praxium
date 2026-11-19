@@ -258,7 +258,7 @@ func TestV2wAWriteIsRefusedWhenTheSchemaWasMadeFromAnotherModel(t *testing.T) {
 	r.v2wApply(t, r.fx.World(1, 1, 1))
 	std, err := StandardModels(false)
 	noErr(t, "models", err)
-	other, err := OpenV2(r.ctx, Config{DSN: r.dsn}, V2Options{Models: func(h kernel.Hash) (SchemaModel, error) {
+	other, err := Open(r.ctx, Config{DSN: r.dsn, Models: func(h kernel.Hash) (SchemaModel, error) {
 		m, err := std(h)
 		m.Search = pgschema.NewSearchSet()
 		return m, err

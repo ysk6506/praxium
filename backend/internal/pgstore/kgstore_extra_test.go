@@ -13,7 +13,7 @@ import (
 // More tests of the catalog, the read points and the refusals of the new storage. Their names start with v2e.
 
 func TestV2eTheTestStoreMakesKGsAndTheCatalogFindsThemByIdNameAndMain(t *testing.T) {
-	st, ctx := NewTestStoreV2(t), context.Background()
+	st, ctx := NewTestStoreWith(t, LeaseClockDB), context.Background()
 	fx, err := graph.NewFixture()
 	if err != nil {
 		t.Fatal(err)
@@ -56,8 +56,6 @@ func TestV2eTheTestStoreMakesKGsAndTheCatalogFindsThemByIdNameAndMain(t *testing
 	if list, _ = st.ListKGs(ctx); len(list) != 1 {
 		t.Fatalf("list after the delete: %v", list)
 	}
-	_, err = OpenV2(ctx, Config{DSN: "x"}, V2Options{})
-	wantCode(t, "no models", err, kernel.CodeInvalidValue)
 }
 
 func TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel(t *testing.T) {
@@ -66,7 +64,7 @@ func TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel(t *testing.T) {
 	models := func(kernel.Hash) (SchemaModel, error) {
 		return SchemaModel{}, kernel.Errorf(kernel.CodeNotFound, "no model")
 	}
-	fresh, err := OpenV2(ctx, Config{DSN: w.dsn}, V2Options{Models: models})
+	fresh, err := Open(ctx, Config{DSN: w.dsn, Models: models})
 	noErr(t, "open", err)
 	defer fresh.Close()
 	_, err = fresh.Head(ctx, w.kg.ID)
@@ -76,9 +74,9 @@ func TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel(t *testing.T) {
 
 	std, err := StandardModels(false)
 	noErr(t, "models", err)
-	damage := func(set string) *StoreV2 {
+	damage := func(set string) *Store {
 		v2rExec(t, w.admin, `UPDATE kg_catalog SET `+set)
-		st, err := OpenV2(ctx, Config{DSN: w.dsn}, V2Options{Models: std})
+		st, err := Open(ctx, Config{DSN: w.dsn, Models: std})
 		noErr(t, "open", err)
 		t.Cleanup(func() { _ = st.Close() })
 		return st
@@ -150,7 +148,7 @@ func TestV2eAServerThatHoldsAnotherModelRefusesTheKG(t *testing.T) {
 		m.Search = pgschema.NewSearchSet()
 		return m, err
 	}
-	st, err := OpenV2(ctx, Config{DSN: w.dsn}, V2Options{Models: other})
+	st, err := Open(ctx, Config{DSN: w.dsn, Models: other})
 	noErr(t, "open", err)
 	defer st.Close()
 	_, err = st.Snapshot(ctx, graph.ReadPoint{KG: w.kg.ID, Kind: graph.ReadLatest})
