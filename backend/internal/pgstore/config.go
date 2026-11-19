@@ -29,10 +29,17 @@ type Config struct {
 	DSN string
 	// Limits override the default limits of the roles named in it; a role that is not in the map keeps its default.
 	Limits map[Role]Limits
-	// MaxOpenConns, MaxIdleConns and ConnMaxLifetime size the pool of database/sql (defaults 16, 4 and 30 minutes).
+	// ReadDSN is the connection string of the read pool; empty means DSN is used for it too.
+	ReadDSN string
+	// MaxOpenConns is the size of the write pool (default 8), ReadConns of the read pool (8) and QueryConns of the
+	// pool of free-form queries (4); MaxIdleConns and ConnMaxLifetime size them all (defaults 4 and 30 minutes).
 	MaxOpenConns    int
+	ReadConns       int
+	QueryConns      int
 	MaxIdleConns    int
 	ConnMaxLifetime time.Duration
+	// NewConnsPerSecond limits how fast the pools open new connections (default 20).
+	NewConnsPerSecond int
 	// PollInterval is how often WaitReadable looks at the head (default 50 ms). There is no LISTEN/NOTIFY.
 	PollInterval time.Duration
 }
@@ -48,7 +55,8 @@ func (c Config) GoString() string { return c.String() }
 
 // conn is the part of the Config that the connection base reads.
 func (c Config) conn() pgconn.Config {
-	return pgconn.Config{DSN: c.DSN, Limits: c.Limits, MaxOpenConns: c.MaxOpenConns, MaxIdleConns: c.MaxIdleConns, ConnMaxLifetime: c.ConnMaxLifetime}
+	return pgconn.Config{DSN: c.DSN, ReadDSN: c.ReadDSN, Limits: c.Limits, MaxOpenConns: c.MaxOpenConns, ReadConns: c.ReadConns,
+		QueryConns: c.QueryConns, MaxIdleConns: c.MaxIdleConns, ConnMaxLifetime: c.ConnMaxLifetime, NewConnsPerSecond: c.NewConnsPerSecond}
 }
 
 // poll is the polling interval with its default filled in.

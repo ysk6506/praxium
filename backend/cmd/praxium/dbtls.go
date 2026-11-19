@@ -9,7 +9,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgstore"
 )
 
-// dbTLSState reads how the connection string of -store-dsn-file protects the link to the database (ADR-0064). It
+// dbTLSState reads how the connection strings of -store-dsn-file and -store-read-dsn-file protect the link to the database (ADR-0064). It
 // says false when there is nothing to judge: the store is not PostgreSQL, or the file cannot be read (opening the
 // store reports that, in the same words, a moment later).
 func dbTLSState(o serveOptions, d wiring) (pgstore.TLSState, bool, error) {
@@ -21,7 +21,22 @@ func dbTLSState(o serveOptions, d wiring) (pgstore.TLSState, bool, error) {
 		return pgstore.TLSState{}, false, nil
 	}
 	st, err := pgstore.InspectTLS(strings.TrimSpace(string(raw)))
-	return st, err == nil, err
+	if err != nil || o.storeReadDSNFile == "" {
+		return st, err == nil, err
+	}
+	readRaw, rerr := d.env.ReadFile(o.storeReadDSNFile)
+	if rerr != nil {
+		return st, true, nil
+	}
+	rt, err := pgstore.InspectTLS(strings.TrimSpace(string(readRaw)))
+	if err != nil {
+		return st, false, err
+	}
+	// The link is as weak as the weaker of the two: a remote read server that does not check the certificate counts.
+	if st.Acceptable() && !rt.Acceptable() {
+		return rt, true, nil
+	}
+	return st, true, nil
 }
 
 // checkDBTLS is the production-mode guard for the link to PostgreSQL: a database on another machine must be reached

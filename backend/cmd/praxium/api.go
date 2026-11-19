@@ -165,6 +165,10 @@ type serveOptions struct {
 	// store is "memory" (the default), "postgres" or "file"; storeDSNFile is the file that holds the PostgreSQL DSN and
 	// storeDataDir the data folder of the file store.
 	store, storeDSNFile, storeDataDir string
+	// storeReadDSNFile is the file with the connection string of the read pool (-store postgres; empty: the one in
+	// storeDSNFile); the sizes are those of the three pools and the most new connections a second (0: the default).
+	storeReadDSNFile                                                string
+	storeWriteConns, storeReadConns, storeQueryConns, storeNewConns int
 	// web is whether the server also serves the embedded web UI at / (ADR-0035).
 	web bool
 	// tlsCert and tlsKey are the files of the certificate and key the server speaks TLS with; behindProxy says that a
@@ -196,6 +200,7 @@ func newServeFlags(o *serveOptions) *flag.FlagSet {
 	fs.StringVar(&o.truth, "dev-truth", "", "development mode: a truth file of praxium worldgen to load into the KG before serving")
 	fs.StringVar(&o.store, "store", storeMemory, "memory, postgres or file")
 	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "-store postgres: the file that holds the connection string")
+	addPoolFlags(fs, o)
 	fs.BoolVar(&o.web, "web", true, "serve the web UI at / (false: the API only)")
 	fs.StringVar(&o.storeDataDir, "store-data-dir", "", "-store file: the data folder that keeps the KG (and, in production, the users and tokens)")
 	fs.StringVar(&o.tlsCert, "tls-cert", "", "the PEM file of the TLS certificate; with -tls-key the server speaks HTTPS")

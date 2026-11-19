@@ -30,7 +30,10 @@ mode. It takes only the token of a service account that holds the viewer role an
 of the run). -mcp-allowed-origins lists the browser origins that may call it (none by default).
 
 -store file keeps the KG in a data folder (-store-data-dir, ADR-0034); -store postgres reads the connection string
-from a file (-store-dsn-file) so no secret is in the process list.
+from a file (-store-dsn-file) so no secret is in the process list. The connections are three pools: writes (always the
+primary server; -store-write-conns, 8), reads (-store-read-conns, 8, with -store-read-dsn-file for another connection
+string) and free-form queries (-store-query-conns, 4); -store-new-conns-per-second (20) spaces new connections. The
+server refuses to start on PostgreSQL older than 18, and while an environment variable of the driver (PGHOST, ...) is set.
 
 example:
   praxium admin bootstrap -name root -store file -store-data-dir /var/lib/praxium

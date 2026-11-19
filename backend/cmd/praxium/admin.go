@@ -66,6 +66,7 @@ func newAdminFlags(command string, o *adminOptions) *flag.FlagSet {
 	fs.StringVar(&o.store, "store", "", "file or postgres: where the users and tokens are kept")
 	fs.StringVar(&o.storeDataDir, "store-data-dir", "", "-store file: the data folder (the one praxium api serve uses)")
 	fs.StringVar(&o.storeDSNFile, "store-dsn-file", "", "-store postgres: the file that holds the connection string")
+	addPoolFlags(fs, &o.serveOptions)
 	fs.IntVar(&o.days, "expires-in-days", 0, "the lifetime of the token in days, 1 to 365 (default 90)")
 	if command == "bootstrap" {
 		fs.StringVar(&o.name, "name", "", "the name of the administrator: lower-case letters, digits and . _ @ - (required)")
