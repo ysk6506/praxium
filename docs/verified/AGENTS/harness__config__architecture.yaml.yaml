@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "10a3135d5486b93b"
+hash: "fdc98a8b738248fb"
 date: "2026-11-19"
-note: "architecture.yaml의 adapter.pgstore test_may_import에 core.query, adapter.devload, core.worldgen을 더한 것(ADR-0099)이 이 문서의 내용과 어긋나지 않음을 확인"
+note: "architecture.yaml의 adapter.pgstore test_may_import에 core.query, adapter.devload, core.worldgen을 더한 것(ADR-0099)과 main의 sourcecheck 단위 추가가 이 문서의 내용과 어긋나지 않음을 확인"
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"

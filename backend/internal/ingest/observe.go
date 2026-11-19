@@ -60,6 +60,7 @@ const (
 	DefaultPreviewPages = 1
 	DefaultPreviewRows  = 200
 	MaxPreviewRows      = 1000
+	MaxPreviewPages     = 20
 )
 
 // PreviewOptions says how much to read for a preview. A value that is not set is the default and one over the most is
@@ -78,6 +79,7 @@ func (o PreviewOptions) WithDefaults() PreviewOptions {
 		o.MaxRows = DefaultPreviewRows
 	}
 	o.MaxRows = min(o.MaxRows, MaxPreviewRows)
+	o.MaxPages = min(o.MaxPages, MaxPreviewPages)
 	return o
 }
 

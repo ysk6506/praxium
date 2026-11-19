@@ -28,6 +28,8 @@ const (
 	KindCanceled Kind = "canceled"
 	// KindRedirect is a redirect that the client does not follow.
 	KindRedirect Kind = "redirect"
+	// KindLimit is a connection of a Tracker that read more than the budget of its window.
+	KindLimit Kind = "limit"
 )
 
 // Error is every failure this package returns. Its text is built from a kind and a fixed reason (and the host

@@ -36,6 +36,9 @@ amends:
   - adr: "0018"
     what: 결정 9의 소스로 가는 연결에서 TLS 확인을 끄는 예외(verify_off)
 decision_hash: 03a3d65bb212de3e
+amended_by:
+  - adr: "0093"
+    what: 다이얼러에 연결 추적 변종(전체 닫기, 바이트 예산, 모두 평문으로 보기)을 더한다. 뒤로 미룬 일의 PostgreSQL 연결 감싸개 함수는 이것으로 닫는다
 ---
 # ADR-0091 소스가 밖으로 붙는 연결을 한 곳에서 막는다
 
