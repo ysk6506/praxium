@@ -309,6 +309,9 @@ func rowLimitReason(l *Limits) string {
 
 // plainMessage is the text of an error without the codes of the errors it wraps.
 func plainMessage(err error) string {
+	if se, ok := SourceErrorOf(err); ok {
+		return se.Message
+	}
 	var ke *kernel.Error
 	if !errors.As(err, &ke) {
 		return err.Error()

@@ -112,10 +112,20 @@ const (
 )
 
 // CheckResult is what a connection check found: the kind, the words for the person and the rows of the first page.
+// Steps is the same told item by item (the connection, the sign-in, the right to read, the first page) for a reader
+// that can say which step it was; a reader that cannot leaves it empty.
 type CheckResult struct {
 	Kind    CheckKind
 	Message string
 	Rows    int
+	Steps   []CheckStep
+}
+
+// CheckStep is one item of a check: its name (a closed phrase of the reader's), how it came out and the words for it.
+type CheckStep struct {
+	Name    string
+	Kind    CheckKind
+	Message string
 }
 
 // CheckFirstPage makes the check of a reader by reading its first page and stopping.
@@ -142,8 +152,11 @@ func firstPageResult(p Page) CheckResult {
 
 // ClassifyCheckError says which kind of trouble an error of a read is. A deadline or an error that says it is passing
 // is transient; a refusal of the setting (an invalid value, a missing or unsupported thing, a write to a real system)
-// is the setting's; anything else is the product's.
+// is the setting's; anything else is the product's. An error an adapter made as a SourceError says its class itself.
 func ClassifyCheckError(err error) CheckKind {
+	if se, ok := SourceErrorOf(err); ok {
+		return se.Class
+	}
 	var passing interface{ Temporary() bool }
 	var late interface{ Timeout() bool }
 	switch {
