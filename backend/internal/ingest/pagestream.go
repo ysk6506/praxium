@@ -45,6 +45,9 @@ type pageStream struct {
 	total int
 	count int
 	first *Shape
+	// token is what the source needs to go on after the last record on the page being filled; an adapter that is not
+	// read from the bytes of a file sets it (PageWriter), and the page that is cut takes it.
+	token []byte
 }
 
 // run reads the records and cuts the pages. A record is a Table of one line: its row, its unreadable line or its skip.
@@ -108,7 +111,7 @@ func (s *pageStream) add(ctx context.Context, rec Table, yield func(Page, error)
 // cut gives the page that is full and starts the next one, with the next number.
 func (s *pageStream) cut() Page {
 	p := s.page
-	p.Shape, s.first = s.first, nil
+	p.Shape, s.first, p.Token = s.first, nil, s.token
 	s.page = Page{Dataset: s.ds.ID, No: p.No + 1}
 	s.count = 0
 	return p
@@ -116,7 +119,7 @@ func (s *pageStream) cut() Page {
 
 // finish gives the last page, with the shape of the header when no page has carried it yet.
 func (s *pageStream) finish(yield func(Page, error) bool, end Completeness) {
-	if s.guard.bad != nil {
+	if s.guard != nil && s.guard.bad != nil {
 		yield(Page{}, kernel.Errorf(kernel.CodeInvalidValue, "dataset %s: %s", s.ds.ID, plainMessage(s.guard.bad)))
 		return
 	}
