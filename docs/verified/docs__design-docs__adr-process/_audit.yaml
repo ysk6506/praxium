@@ -1,0 +1,4 @@
+doc: "docs/design-docs/adr-process.md"
+date: "2026-11-16"
+note: "front matter의 covers 15개, 규칙 코드 22개, docs.ts 하위 명령, 보호 경로, 테스트 잠금 키와 한도(40자, 10개)를 하네스 코드와 대조함. 틀린 곳 1(_audit.yaml의 위치), 빠진 곳 1(오래된 대상이 없을 때의 reverify)을 고침"
+doc_hash: "fbf40a327bccbe75"

@@ -238,22 +238,17 @@ function useColumns(
   return { ordered, candidates, columns, toggle };
 }
 
-/** The objects of one type as a table: a page at a time, with the attributes the person picked as columns. */
-export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type: string }) {
-  const { params, set } = useHashParams();
-  const view = readObjectsView(params);
-  const typeDetail = useObjectTypeDetail(type);
-  useScreenTitle(titleOf(`${type} 객체`, kg));
-  const page = useObjectPage(kg, type, view.size, view.cursor);
-  const [pickerOpen, setPickerOpen] = useState(false);
+/** Moving between the pages of one type: the trail of cursors this tab has seen and the steps back and to the first. */
+function usePageNav(
+  kg: string,
+  type: string,
+  view: ObjectsView,
+  set: ReturnType<typeof useHashParams>["set"],
+): PageNav {
   const trail = useMemo(
     () => createTrail(tabStorage(), `praxium.pages:${kg}/${type}/${view.size}`),
     [kg, type, view.size],
   );
-  const properties = typeDetail.state.data?.effective_properties;
-
-  const { ordered, candidates, columns, toggle } = useColumns(properties, view, set);
-
   const show = (next: Partial<ObjectsView>): void => {
     set(objectsViewParams({ ...view, ...next }), "push");
     globalThis.scrollTo(0, 0);
@@ -262,10 +257,25 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
   const previousCursor = previousPage > 1 ? trail.get(previousPage) : undefined;
   const hasPrevious = view.page > 1 && (previousPage === 1 || previousCursor !== undefined);
   const toFirst = (): void => show({ page: 1, cursor: undefined });
+  return { trail, show, hasPrevious, previousPage, previousCursor, toFirst };
+}
+
+/** The objects of one type as a table: a page at a time, with the attributes the person picked as columns. */
+export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type: string }) {
+  const { params, set } = useHashParams();
+  const view = readObjectsView(params);
+  const typeDetail = useObjectTypeDetail(type);
+  useScreenTitle(titleOf(`${type} 객체`, kg));
+  const page = useObjectPage(kg, type, view.size, view.cursor);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const properties = typeDetail.state.data?.effective_properties;
+
+  const { ordered, candidates, columns, toggle } = useColumns(properties, view, set);
+  const nav = usePageNav(kg, type, view, set);
 
   const recover = (error: ErrorView): ReactNode =>
     error.code === "invalid_input.cursor_invalid" ? (
-      <Button onClick={toFirst}>첫 페이지로</Button>
+      <Button onClick={nav.toFirst}>첫 페이지로</Button>
     ) : undefined;
 
   return (
@@ -306,7 +316,7 @@ export function ObjectsScreen({ kg, type }: { readonly kg: string; readonly type
             items={items}
             info={info}
             columns={columns}
-            nav={{ trail, show, hasPrevious, previousPage, previousCursor, toFirst }}
+            nav={nav}
           />
         )}
       </Async>

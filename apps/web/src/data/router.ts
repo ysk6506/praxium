@@ -30,23 +30,29 @@ const decode = (part: string): string => {
   }
 };
 
+/** The route under one KG (`kg/{kg}/...`); a section that names no screen reads as the list of types. */
+function kgRoute(
+  kg: string,
+  section: string | undefined,
+  third: string | undefined,
+  query: string,
+): Route {
+  if (section === "types" && third !== undefined) return { page: "objects", kg, type: third };
+  if (section === "objects" && third !== undefined) {
+    const tab = new URLSearchParams(query).get("tab");
+    const known = OBJECT_TABS.find((t) => t === tab);
+    return { page: "object", kg, id: third, tab: known ?? "attributes" };
+  }
+  return { page: "types", kg };
+}
+
 /** The route of an address hash. With no token yet, the way in is the connection settings. */
 export function parseRoute(hash: string, hasToken: boolean): Route {
   const [path = "", query = ""] = hash.replace(/^#/, "").split("?");
   const parts = path.split("/").filter(Boolean).map(decode);
   const [head, kg, section, third] = parts;
-  if (head === "settings") return { page: "settings" };
-  if (!hasToken) return { page: "settings" };
-  if (head === "kg" && kg !== undefined) {
-    if (section === "types" && third !== undefined) return { page: "objects", kg, type: third };
-    if (section === "types") return { page: "types", kg };
-    if (section === "objects" && third !== undefined) {
-      const tab = new URLSearchParams(query).get("tab");
-      const known = OBJECT_TABS.find((t) => t === tab);
-      return { page: "object", kg, id: third, tab: known ?? "attributes" };
-    }
-    return { page: "types", kg };
-  }
+  if (head === "settings" || !hasToken) return { page: "settings" };
+  if (head === "kg" && kg !== undefined) return kgRoute(kg, section, third, query);
   return { page: "kgs" };
 }
 
