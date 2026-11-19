@@ -23,6 +23,9 @@ type plan struct {
 	fp        string
 	// types is the type of each column of the source (the name the driver gives), known after the description.
 	types map[string]string
+	// keyKinds says of each key column what the catalog of the source says its type is: "listed" (a type of the list, or a
+	// domain over one), "enum", or the name of the type that is neither (known after the description).
+	keyKinds map[string]string
 }
 
 // keyColumnName is the name of the column that carries the text of key column i, which the next page starts after.
@@ -142,11 +145,20 @@ func fingerprint(p *plan) string {
 func quoted(name string) string { return "q." + pq.QuoteIdentifier(name) }
 
 // The types a column of the key may have: they sort the way a person expects, and the text the server prints for them
-// gives the same value back when it is sent as the argument of the next page. An enum has no name in the driver (the
-// empty text); a type that cannot be ordered is refused by the server when the statement is prepared.
+// gives the same value back when it is sent as the argument of the next page (the prototype of ADR-0093 sent each of
+// them back). The driver gives an enum, and every type it does not know (an extension's, a composite), the empty name, so
+// the name tells nothing there: the catalog of the source says which it is (describeKeys), and only an enum and a domain
+// over a type of the list pass.
 var keyTypes = map[string]bool{
 	"INT2": true, "INT4": true, "INT8": true, "NUMERIC": true, "TEXT": true, "VARCHAR": true, "BPCHAR": true, "UUID": true,
-	"DATE": true, "TIMESTAMP": true, "TIMESTAMPTZ": true, "TIME": true, "BOOL": true, "": true,
+	"DATE": true, "TIMESTAMP": true, "TIMESTAMPTZ": true, "TIME": true, "BOOL": true,
+}
+
+// catalogKeyTypes are the names of the types of pg_catalog that a key may have (the names of the catalog, which are not
+// those of the driver).
+var catalogKeyTypes = map[string]bool{
+	"int2": true, "int4": true, "int8": true, "numeric": true, "text": true, "varchar": true, "bpchar": true, "uuid": true,
+	"date": true, "timestamp": true, "timestamptz": true, "time": true, "bool": true,
 }
 
 var collatedTypes = map[string]bool{"TEXT": true, "VARCHAR": true, "BPCHAR": true}
@@ -164,7 +176,7 @@ func (p *plan) keyExpr(i int) string {
 // trimmed), so that the rows of one key are found by comparing texts.
 func (p *plan) keyText(i int) string {
 	if p.types[p.keys[i]] == "NUMERIC" {
-		return "trim_scale(" + quoted(p.keys[i]) + ")::text"
+		return "pg_catalog.trim_scale(" + quoted(p.keys[i]) + ")::text"
 	}
 	return quoted(p.keys[i]) + "::text"
 }
@@ -175,7 +187,7 @@ func (p *plan) selectList() string {
 	items := make([]string, 0, len(p.columns)+len(p.keys))
 	for _, c := range p.columns {
 		if strings.HasPrefix(p.types[c], "_") {
-			items = append(items, "to_jsonb("+quoted(c)+") AS "+pq.QuoteIdentifier(c))
+			items = append(items, "pg_catalog.to_jsonb("+quoted(c)+") AS "+pq.QuoteIdentifier(c))
 			continue
 		}
 		items = append(items, quoted(c))
@@ -237,6 +249,6 @@ func (p *plan) nullKeySQL() string {
 		first = append(first, "WHEN "+quoted(k)+" IS NULL THEN "+strconv.Itoa(i))
 		nulls[i] = quoted(k) + " IS NULL"
 	}
-	return "SELECT CASE " + strings.Join(first, " ") + " END, (" + strings.Join(nulls, " AND ") + "), count(*) FROM " + p.from +
+	return "SELECT CASE " + strings.Join(first, " ") + " END, (" + strings.Join(nulls, " AND ") + "), pg_catalog.count(*) FROM " + p.from +
 		" WHERE " + strings.Join(nulls, " OR ") + " GROUP BY 1, 2"
 }

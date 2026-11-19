@@ -89,7 +89,7 @@ func TestPgsTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 				}
 			}
 			for text, why := range forbidden {
-				if strings.Contains(line, text) {
+				if pgsHasWord(line, text) {
 					t.Errorf("%s: %q is %s", name, strings.TrimSpace(line), why)
 				}
 			}
@@ -106,6 +106,34 @@ func TestPgsTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 		}
 		if !found {
 			t.Errorf("%s does not have %q", c.file, c.text)
+		}
+	}
+}
+
+// pgsHasWord is whether the text is in the line and not at the end of a longer name (catalog. is no log.).
+func pgsHasWord(line, text string) bool {
+	for from := 0; ; {
+		i := strings.Index(line[from:], text)
+		if i < 0 {
+			return false
+		}
+		i += from
+		if i == 0 || !(line[i-1] == '_' || line[i-1] >= '0' && line[i-1] <= '9' || line[i-1] >= 'a' && line[i-1] <= 'z' || line[i-1] >= 'A' && line[i-1] <= 'Z') {
+			return true
+		}
+		from = i + 1
+	}
+}
+
+// [REQ-679] Every function the statements of the adapter call is named with its schema, so that the account of the source
+// cannot put a function of its own in the place of one by a search_path of its own.
+func TestPgsStatementsNameTheSchemaOfTheirFunctions(t *testing.T) {
+	bare := regexp.MustCompile(`(^|[^.\w"])(set_config|count|trim_scale|to_jsonb|pg_typeof|pg_type)\(`)
+	for name, lines := range pgsCode(t) {
+		for _, line := range lines {
+			if bare.MatchString(line) {
+				t.Fatalf("%s calls a function without its schema: %s", name, strings.TrimSpace(line))
+			}
 		}
 	}
 }

@@ -121,6 +121,8 @@ go:
     adapter.pgsource: {path: backend/internal/pgsource, may_import: [core.kernel, core.ingest, core.secrets, adapter.egress]}
     # A package of tests only: the current ingestion and the current query engine run on the new PostgreSQL storage and on the memory store and must agree (ADR-0089).
     adapter.pgcheck: {path: backend/internal/pgcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, core.query, adapter.memstore, adapter.devload, adapter.filesource, adapter.pgstore]}
+    # A package of tests only: a source that is not honest (a server that sends the bytes a test chooses) and TLS that works (a terminator in front of the test server). It opens sockets, which no unit with product code may do, so it is here, and its test files are named in restricted_stdlib (ADR-0093).
+    adapter.sourcecheck: {path: backend/internal/sourcecheck, may_import: [], test_may_import: [core.kernel, core.ingest, core.secrets, adapter.egress, adapter.pgsource]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium
@@ -135,11 +137,11 @@ go:
     os/exec: [cmd.praxium]
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
-    net: [cmd.praxium, adapter.http, adapter.egress]
+    net: [cmd.praxium, adapter.http, adapter.egress, backend/internal/sourcecheck/fakepg_test.go, backend/internal/sourcecheck/tlsproxy_test.go]
     net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp, adapter.egress]
     net/rpc: [cmd.praxium]
     # Packages that make a connection themselves, or hand one to the caller, without importing net: only the unit that makes the connections of the sources (and the composition root) may import them (ADR-0091).
-    crypto/tls: [cmd.praxium, adapter.egress]
+    crypto/tls: [cmd.praxium, adapter.egress, backend/internal/sourcecheck/tlsproxy_test.go]
     net/textproto: [cmd.praxium, adapter.egress]
     net/smtp: [cmd.praxium, adapter.egress]
     net/rpc/jsonrpc: [cmd.praxium, adapter.egress]

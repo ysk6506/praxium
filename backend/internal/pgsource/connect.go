@@ -3,7 +3,6 @@ package pgsource
 import (
 	"context"
 	"database/sql"
-	"database/sql/driver"
 	"strconv"
 	"sync/atomic"
 	"time"
@@ -12,6 +11,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/egress"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/secrets"
 )
 
@@ -27,18 +27,6 @@ const applicationName = "praxium-source"
 // tlsKeys makes the name that a TLS configuration is registered with in the driver. The registry of the driver is
 // shared by the whole process, so every read has a name of its own and removes it when its connection is closed.
 var tlsKeys atomic.Uint64
-
-// plaintextConnector marks every connection it makes as one without TLS, so that adapter.egress lets it go only to the
-// loopback or where the operator allowed connections without TLS (sslmode disable, sources-and-adapters.md 8).
-type plaintextConnector struct {
-	inner *pq.Connector
-}
-
-func (c plaintextConnector) Connect(ctx context.Context) (driver.Conn, error) {
-	return c.inner.Connect(egress.WithPlaintext(ctx))
-}
-
-func (c plaintextConnector) Driver() driver.Driver { return c.inner.Driver() }
 
 // settings are the values of the connection of the source with the defaults of the definition applied.
 type settings struct {
@@ -70,12 +58,29 @@ func secondsOr(n, def int) time.Duration {
 	return time.Duration(n) * time.Second
 }
 
+// controlIn tells whether a text has a NUL or another control character. The driver writes the start packet as texts that
+// end with NUL, so a NUL in the user name or the database name would put a start parameter of its own in the packet.
+func controlIn(texts ...string) bool {
+	for _, t := range texts {
+		for _, c := range t {
+			if c < 0x20 || c == 0x7f {
+				return true
+			}
+		}
+	}
+	return false
+}
+
 // open makes the pool of one read: the secret is opened for this source and this address, the connection configuration
 // is filled in here (never read from a string or from the environment), the dialer is the one of adapter.egress, and the
 // TLS settings are registered under a name of this read. The pool has at most one connection and is made again for
 // every read; close it when the read is over.
 func (r *Reader) open(ctx context.Context, purpose secrets.Purpose) (*session, error) {
 	st := r.st
+	if _, set := kernel.LookupEnv("PQGO_DEBUG"); set {
+		// The driver then writes the password and every row it reads to the standard error (ADR-0093).
+		return nil, sourceErr(ingest.SrcInternal, "the server was started with PQGO_DEBUG set, which makes the driver write passwords to its log; a source is not read", nil)
+	}
 	opened, err := r.secrets.Open(ctx, r.conn.Credential.SecretID, secrets.Use{SourceID: r.src.ID, Host: st.host, Port: st.port, Purpose: purpose})
 	if err != nil {
 		return nil, openError(err)
@@ -84,6 +89,9 @@ func (r *Reader) open(ctx context.Context, purpose secrets.Purpose) (*session, e
 	acct, serr := accountOf(opened)
 	if serr != nil {
 		return nil, serr
+	}
+	if controlIn(opened.Address().Host) {
+		return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the address of the secret has a control character", nil)
 	}
 	// The address that was allowed is the address that is connected to (ADR-0071 decision 5).
 	addr := opened.Address()
@@ -94,7 +102,10 @@ func (r *Reader) open(ctx context.Context, purpose secrets.Purpose) (*session, e
 		ConnectTimeout: st.connect, ClientEncoding: "UTF8", Datestyle: "ISO, MDY",
 		ApplicationName: applicationName, SSLCert: noFile, SSLKey: noFile, Passfile: noFile,
 	}
-	sess := &session{r: r, st: st, unregister: func() {}}
+	if bad := controlIn(cfg.Host, cfg.Database); bad {
+		return nil, planError("the host or the database name of the source has a control character")
+	}
+	sess := &session{r: r, st: st, unregister: func() {}, budget: connectBudget}
 	if !st.disable {
 		if err := sess.useTLS(&cfg); err != nil {
 			return nil, err
@@ -105,12 +116,11 @@ func (r *Reader) open(ctx context.Context, purpose secrets.Purpose) (*session, e
 		sess.unregister()
 		return nil, sourceErr(ingest.SrcInternal, "the connection could not be set up", err)
 	}
-	conn.Dialer(r.dialer)
-	var connector driver.Connector = conn
-	if st.disable {
-		connector = plaintextConnector{inner: conn}
-	}
-	sess.db = sql.OpenDB(connector)
+	// The tracker is the dialer of the driver: it closes every connection of the read at once when the read has to end,
+	// counts the bytes read, and (sslmode disable) judges every dial, the cancel request included, as one without TLS.
+	sess.tr = r.dialer.Tracker(egress.TrackerConfig{Plaintext: st.disable, Budget: connectBudget})
+	conn.Dialer(sess.tr)
+	sess.db = sql.OpenDB(conn)
 	sess.db.SetMaxOpenConns(1)
 	sess.db.SetMaxIdleConns(1)
 	return sess, nil

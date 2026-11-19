@@ -48,6 +48,11 @@ func classify(parent context.Context, err error) error {
 	if errors.Is(err, context.DeadlineExceeded) {
 		return sourceErr(ingest.SrcTimeout, "the source did not answer within the time the read may take", err)
 	}
+	// The handshake of TLS is made inside the driver, so its failures (a certificate that is not trusted, a name that does
+	// not match) are not egress errors yet: egress reads them.
+	if ee, ok := egress.Sanitize(err).(*egress.Error); ok && ee.Kind == egress.KindTLS {
+		return fromEgress(ee, err)
+	}
 	if errors.Is(err, driver.ErrBadConn) || errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || isNetwork(err) {
 		return sourceErr(ingest.SrcConnectionLost, "the connection to the source broke", err)
 	}
@@ -76,6 +81,8 @@ func fromEgress(ee *egress.Error, cause error) error {
 		return sourceErr(ingest.SrcTimeout, "the source did not answer within the time limit of the connection", cause)
 	case egress.KindCanceled:
 		return context.Canceled
+	case egress.KindLimit:
+		return sourceErr(ingest.SrcResponseFormat, "the source sent more data than one page of the read may take (a row that is too large, or an answer that never ends)", cause)
 	}
 	return sourceErr(ingest.SrcConnectionLost, "the source could not be reached, or the connection broke", cause)
 }
@@ -116,9 +123,9 @@ func fromServerClass(pe *pq.Error, code string, cause error) error {
 // serverSentence is what the server said about a statement it refused, with the place in the statement. It is the
 // detail the person who asked sees.
 func serverSentence(pe *pq.Error) string {
-	text := pe.Message
+	text := cleanDetail(pe.Message)
 	if pe.Position != "" {
-		text += " (position " + pe.Position + ")"
+		text += " (position " + cleanDetail(pe.Position) + ")"
 	}
 	return text
 }
@@ -133,4 +140,23 @@ func openError(err error) error {
 		return sourceErr(ingest.SrcSecretUnusable, "the secret of the source cannot be used", err)
 	}
 	return sourceErr(ingest.SrcInternal, "the secret of the source could not be opened", err)
+}
+
+// maxDetailBytes is how much of the server's own sentence goes to the person who asked.
+const maxDetailBytes = 1 << 10
+
+// cleanDetail cuts the sentence of a server at a kibibyte and takes the control characters out, so that what a source
+// that is not honest sends cannot fill a screen or move a terminal.
+func cleanDetail(s string) string {
+	s = strings.ToValidUTF8(s, "\ufffd")
+	if len(s) > maxDetailBytes {
+		s = s[:maxDetailBytes]
+		s = strings.ToValidUTF8(s, "")
+	}
+	return strings.Map(func(r rune) rune {
+		if r < 0x20 || r == 0x7f || (r >= 0x80 && r < 0xa0) {
+			return -1
+		}
+		return r
+	}, s)
 }

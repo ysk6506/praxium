@@ -65,27 +65,34 @@ func (r *Reader) ReadPages(ctx context.Context, source string, ds ingest.Dataset
 
 // Preview reads the first pages for a person to look at. The rows are the same a read gives, with the value of every
 // column whose name says it is a secret's left out. A preview does not count the rows without a key, which is a scan of
-// the whole table.
+// the whole table. The rows are shared out over the pages (a preview of two pages and a hundred rows has pages of fifty)
+// and the preview ends at MaxRows, however many pages the options ask for.
 func (r *Reader) Preview(ctx context.Context, source string, ds ingest.Dataset, opts ingest.PreviewOptions) (ingest.Preview, error) {
 	opts = opts.WithDefaults()
 	var out ingest.Preview
-	for page, err := range r.previewPages(ctx, source, ds, opts) {
+	rows := 0
+	pageRows := (opts.MaxRows + opts.MaxPages - 1) / opts.MaxPages
+	for page, err := range r.previewPages(ctx, source, ds, pageRows) {
 		if err != nil {
 			return ingest.Preview{}, err
 		}
+		if room := opts.MaxRows - rows; len(page.Rows) > room {
+			page.Rows, page.Unreadable = page.Rows[:room], nil
+		}
+		rows += page.Received()
 		masked, was := ingest.MaskPage(page)
 		out.Pages = append(out.Pages, masked)
 		out.Masked = out.Masked || was
-		if len(out.Pages) >= opts.MaxPages {
+		if len(out.Pages) >= opts.MaxPages || rows >= opts.MaxRows {
 			break
 		}
 	}
 	return out, nil
 }
 
-func (r *Reader) previewPages(ctx context.Context, source string, ds ingest.Dataset, opts ingest.PreviewOptions) iter.Seq2[ingest.Page, error] {
+func (r *Reader) previewPages(ctx context.Context, source string, ds ingest.Dataset, pageRows int) iter.Seq2[ingest.Page, error] {
 	return func(yield func(ingest.Page, error) bool) {
-		r.read(ctx, readSpec{purpose: secrets.PurposeCheck, source: source, ds: ds, opts: ingest.PageOptions{MaxRows: opts.MaxRows}, skipNull: true}, yield)
+		r.read(ctx, readSpec{purpose: secrets.PurposeCheck, source: source, ds: ds, opts: ingest.PageOptions{MaxRows: pageRows}, skipNull: true}, yield)
 	}
 }
 

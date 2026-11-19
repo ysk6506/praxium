@@ -27,5 +27,8 @@ func accountOf(opened *secrets.Opened) (account, *ingest.SourceError) {
 	if a.user == "" || a.password == "" {
 		return account{}, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret has an empty user name or an empty password (a connection with no password is not made)", nil)
 	}
+	if controlIn(a.user, a.password) {
+		return account{}, ingest.NewSourceError(ingest.SrcSecretUnusable, "the user name or the password of the secret has a control character", nil)
+	}
 	return a, nil
 }

@@ -221,13 +221,3 @@ func TestPgsStatementsQuoteNamesAndTakeValuesAsArguments(t *testing.T) {
 		t.Errorf("%s", g)
 	}
 }
-
-func TestPgsPlaintextConnectorHasTheDriverOfTheConnector(t *testing.T) {
-	conn, err := pq.NewConnectorConfig(pq.Config{Host: "h", Port: 5432, User: "u", Database: "d", SSLMode: pq.SSLModeDisable})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if (plaintextConnector{inner: conn}).Driver() == nil {
-		t.Fatal("no driver")
-	}
-}

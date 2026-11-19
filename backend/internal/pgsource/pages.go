@@ -56,6 +56,7 @@ func (f *flow) fail(ctx context.Context, err error) {
 func (f *flow) pages(ctx context.Context, opts ingest.PageOptions, skipNull bool) {
 	opts = opts.WithDefaults()
 	f.w = ingest.NewPageWriter(f.pl.ds, opts)
+	f.sess.budget = pageBudget(opts.MaxBytes)
 	after, resumed := decodeToken(opts.Resume, f.pl.fp, len(f.pl.keys))
 	if !resumed && !skipNull && !f.nullKeys(ctx) {
 		return
@@ -68,6 +69,10 @@ func (f *flow) pages(ctx context.Context, opts ingest.PageOptions, skipNull bool
 		res, err := f.next(ctx, after, opts)
 		if err != nil {
 			f.fail(ctx, err)
+			return
+		}
+		if res.changed || (len(res.rows) == 0 && !res.end) {
+			f.w.Finish(f.emit, ingest.Completeness{Reason: "the source changed while the dataset was read; the dataset is read up to the page before"})
 			return
 		}
 		if res.tooBig {
@@ -196,3 +201,11 @@ func (f *flow) since(start int64) int64 {
 }
 
 func itoa(n int) string { return strconv.Itoa(n) }
+
+// pageBudget is the bytes one transaction may read: four times the bytes of a page and a mebibyte. A transaction of an
+// honest source reads a batch (the cells of up to a page and one row over, and the text of the keys and the names of the
+// columns round them) and, when one key fills a batch, the rows of that key (up to a page of rows); the cells of the
+// statement are counted as the driver gives them, and the wire holds them as text with a few bytes of a message round
+// each, so the two reads together come to about twice a page, and the factor gives room for the rest. A row that is
+// larger than that is a row the read does not take (it ends with the kind response_format).
+func pageBudget(maxBytes int) int64 { return 4*int64(maxBytes) + 1<<20 }

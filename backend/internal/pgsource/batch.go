@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"slices"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 )
@@ -21,6 +22,10 @@ type batchResult struct {
 	bytes  int
 	end    bool
 	tooBig bool
+	// changed is a batch that cannot be read as the batch of one state of the source: the rows of a key that filled the
+	// last batch are gone when they are asked for (the statement of the dataset gives other rows in one transaction than
+	// in another).
+	changed bool
 }
 
 // describe reads the names and the types of the columns of the statement without reading a row, and refuses what the
@@ -40,7 +45,72 @@ func (p *plan) describe(ctx context.Context, tx *sql.Tx) error {
 	for _, ct := range cts {
 		p.types[ct.Name()] = ct.DatabaseTypeName()
 	}
-	return rs.Close()
+	if err := rs.Close(); err != nil {
+		return err
+	}
+	return p.describeKeys(ctx, tx)
+}
+
+// describeKeys asks the catalog of the source what the type of each key column is. The static type of the column is the
+// type of a scalar sub query that reads it and no row (pg_typeof of it), so it is known for an empty table as well; a
+// domain is followed down to its base.
+func (p *plan) describeKeys(ctx context.Context, tx *sql.Tx) error {
+	p.keyKinds = make(map[string]string, len(p.keys))
+	for _, k := range p.keys {
+		if _, ok := p.types[k]; !ok {
+			continue // validate says it
+		}
+		kind, err := p.keyKind(ctx, tx, k)
+		if err != nil {
+			return err
+		}
+		p.keyKinds[k] = kind
+	}
+	return nil
+}
+
+const typeBySubquery = "pg_catalog.pg_typeof((SELECT %s FROM %s LIMIT 0))"
+
+func (p *plan) keyKind(ctx context.Context, tx *sql.Tx, key string) (string, error) {
+	const cols = "t.typname::pg_catalog.text, t.typtype::pg_catalog.text, t.typnamespace = 'pg_catalog'::pg_catalog.regnamespace, t.typbasetype::pg_catalog.int8"
+	query := "SELECT " + cols + " FROM pg_catalog.pg_type t WHERE t.oid = " + strings.Replace(strings.Replace(typeBySubquery, "%s", quoted(key), 1), "%s", p.from, 1)
+	var args []any
+	for depth := 0; depth < 8; depth++ {
+		rs, err := runStmt(ctx, tx, query, args...)
+		if err != nil {
+			return "", err
+		}
+		var (
+			name, typtype string
+			inCatalog     bool
+			base          int64
+		)
+		found := false
+		if rs.Next() {
+			found = true
+			if err := rs.Scan(&name, &typtype, &inCatalog, &base); err != nil {
+				_ = rs.Close()
+				return "", err
+			}
+		}
+		if err := rs.Close(); err != nil {
+			return "", err
+		}
+		switch {
+		case !found:
+			return "unknown", nil
+		case typtype == "e":
+			return "enum", nil
+		case typtype == "d":
+			query = "SELECT " + cols + " FROM pg_catalog.pg_type t WHERE t.oid = $1::pg_catalog.oid"
+			args = []any{base}
+		case typtype == "b" && inCatalog && catalogKeyTypes[name]:
+			return "listed", nil
+		default:
+			return cleanDetail(name), nil
+		}
+	}
+	return "a domain that is too deep", nil
 }
 
 // validate says whether the described columns fit the dataset. It is the check of the "key columns" step.
@@ -59,8 +129,12 @@ func (p *plan) validate() error {
 		if !ok {
 			return planError("a natural key column is not in the result of the statement")
 		}
-		if !keyTypes[typ] {
-			return planError("a natural key column has a type that has no order the pages can follow (a number, a text, a uuid, a date or time, a boolean or an enum can)")
+		switch kind := p.keyKinds[k]; {
+		case kind == "enum" && typ == "":
+		case kind == "listed" && keyTypes[typ]:
+		default:
+			return planError("a natural key column has a type that has no order the pages can follow (a whole number, a numeric, a text, a uuid, a date or time, a boolean, an enum, or a domain over one of them can)").
+				WithDetail("the key column has the type " + typeWords(kind, typ))
 		}
 	}
 	return nil
@@ -79,6 +153,9 @@ func (p *plan) nullKeys(ctx context.Context, tx *sql.Tx) ([]nullGroup, error) {
 		var g nullGroup
 		if err := rs.Scan(&g.first, &g.all, &g.n); err != nil {
 			return nil, err
+		}
+		if g.first < 0 || g.first >= len(p.keys) || g.n < 0 {
+			return nil, sourceErr(ingest.SrcResponseFormat, "the answer of the source does not fit the statement that was sent", nil)
 		}
 		out = append(out, g)
 	}
@@ -134,6 +211,9 @@ func (p *plan) group(ctx context.Context, tx *sql.Tx, key []string, limit int) (
 	if err != nil {
 		return batchResult{}, err
 	}
+	if len(rows) == 0 {
+		return batchResult{changed: true}, nil
+	}
 	if len(rows) > limit {
 		return batchResult{tooBig: true}, nil
 	}
@@ -154,6 +234,9 @@ func (p *plan) scanRows(rs *stmtRows, limit, maxBytes int) (rows []dbRow, size i
 	cts, err := rs.ColumnTypes()
 	if err != nil {
 		return nil, 0, false, err
+	}
+	if len(cts) != len(p.columns)+len(p.keys) {
+		return nil, 0, false, sourceErr(ingest.SrcResponseFormat, "the answer of the source has other columns than the statement that was sent", nil)
 	}
 	names := make([]string, len(cts))
 	for i, ct := range cts {
@@ -222,4 +305,14 @@ func rawSize(v any) int {
 		return len(x)
 	}
 	return 8
+}
+
+func typeWords(kind, driverName string) string {
+	if kind == "" || kind == "listed" || kind == "enum" {
+		kind = strings.ToLower(driverName)
+	}
+	if kind == "" {
+		kind = "that the server does not name"
+	}
+	return kind
 }
