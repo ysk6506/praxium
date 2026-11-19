@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "3d6241f766095cff"
+hash: "d9021b175cb9ba6e"
 date: "2026-11-19"
-note: "adapter.pgsource 유닛 등록과 lib/pq 허용 유닛 추가만 바뀜. AGENTS.md는 유닛 목록을 싣지 않아 고칠 것 없음"
+note: "architecture.yaml에 테스트만 있는 유닛 adapter.sourcecheck와 restricted_stdlib의 파일 단위 줄이 더해졌다. AGENTS.md가 말하는 구조와 규칙은 그대로라 고칠 곳이 없음을 확인했다"
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"
