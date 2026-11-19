@@ -39,7 +39,8 @@ func TestConfigFillsDefaultsAndRefusesWhatIsWrong(t *testing.T) {
 	wantCode(t, "negative limit", err, kernel.CodeInvalidValue)
 	rc, err := Config{DSN: "x", Limits: map[Role]Limits{RoleBulk: {Statement: time.Hour}}}.resolve()
 	noErr(t, "resolve", err)
-	if rc.MaxOpenConns != 16 || rc.MaxIdleConns != 4 || rc.ConnMaxLifetime != 30*time.Minute {
+	if rc.MaxOpenConns != 8 || rc.ReadConns != 8 || rc.QueryConns != 4 || rc.MaxIdleConns != 4 || rc.ConnMaxLifetime != 30*time.Minute ||
+		rc.ConnectTimeout != 5*time.Second || rc.NewConnsPerSecond != 20 {
 		t.Fatalf("defaults %+v", rc.Config)
 	}
 	if rc.limits[RoleBulk].Statement != time.Hour || rc.limits[RoleAPIRead] != DefaultLimits(RoleAPIRead) {

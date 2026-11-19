@@ -3,69 +3,170 @@ package pgconn
 import (
 	"context"
 	"database/sql"
-	"errors"
 	"strconv"
+	"sync/atomic"
 	"time"
-
-	"github.com/lib/pq"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
-// Pool is one database with the limits of its roles: the connection pool of database/sql and the settings that
-// every transaction of a role starts with. Make one with Open and close it with Close.
+// PoolKind names one of the three pools of a Pool.
+type PoolKind string
+
+// The pools: writes go to the primary server; the read pool serves the built-in reads and the saved queries; the
+// query pool is for the free-form queries of people (nothing uses it yet).
+const (
+	WritePool PoolKind = "write"
+	ReadPool  PoolKind = "read"
+	QueryPool PoolKind = "query"
+)
+
+// Pool is a database with the limits of its roles: three pools of connections (write, read, query) and the settings
+// that every transaction of a role starts with. Make one with Open and close it with Close.
 type Pool struct {
-	db     *sql.DB
+	db     *Handle // the write pool
+	read   *Handle
+	query  *Handle
 	limits map[Role]Limits
+	hook   func(ctx context.Context, tx *sql.Tx) error
+	closed atomic.Bool
 }
 
-// Open connects, checks the connection and brings the schema up to date with the migrations of this build. The
-// DSN is never part of an error. Closing the Pool closes the connections.
+// Open connects, checks the connection and the version of the server (18 or newer), and brings the schema up to date
+// with the migrations of this build. The DSN is never part of an error. Closing the Pool closes the connections.
 func Open(ctx context.Context, cfg Config) (*Pool, error) {
 	rc, err := cfg.resolve()
 	if err != nil {
 		return nil, err
 	}
-	conn, err := pq.NewConnector(rc.DSN)
+	p, err := build(rc)
 	if err != nil {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "the DSN cannot be read as a PostgreSQL connection string (its text is not shown)")
+		return nil, err
 	}
-	db := sql.OpenDB(conn)
-	db.SetMaxOpenConns(rc.MaxOpenConns)
-	db.SetMaxIdleConns(rc.MaxIdleConns)
-	db.SetConnMaxLifetime(rc.ConnMaxLifetime)
-	p := &Pool{db: db, limits: rc.limits}
-	if err := db.PingContext(ctx); err != nil {
-		_ = db.Close()
-		return nil, kernel.Wrap(kernel.CodeInternal, err, "cannot reach the PostgreSQL server")
-	}
-	steps, err := embedded()
-	if err == nil {
-		err = migrate(ctx, p, steps)
-	}
-	if err != nil {
-		_ = db.Close()
+	if err := p.start(ctx, rc); err != nil {
+		_ = p.Close()
 		return nil, err
 	}
 	return p, nil
 }
 
-// DB is the pool of database/sql, for the statements a unit runs inside Tx or reads with.
-func (p *Pool) DB() *sql.DB { return p.db }
+// build makes the three pools of a resolved configuration; no connection is opened yet.
+func build(rc resolved) (*Pool, error) {
+	lim := newLimiter(rc.Clock, rc.NewConnsPerSecond)
+	readDSN := rc.ReadDSN
+	if readDSN == "" {
+		readDSN = rc.DSN
+	}
+	mk := func(dsn string, write bool, size int) (*Handle, error) {
+		c, err := newConnector(dsn, write, rc.ConnectTimeout)
+		if err != nil {
+			return nil, err
+		}
+		return newHandle(limitedConnector{inner: c, lim: lim}, size, rc.MaxIdleConns, rc.ConnMaxLifetime), nil
+	}
+	w, err := mk(rc.DSN, true, rc.MaxOpenConns)
+	if err != nil {
+		return nil, err
+	}
+	r, err := mk(readDSN, false, rc.ReadConns)
+	if err != nil {
+		_ = w.close()
+		return nil, err
+	}
+	q, err := mk(readDSN, false, rc.QueryConns)
+	if err != nil {
+		_ = w.close()
+		_ = r.close()
+		return nil, err
+	}
+	return &Pool{db: w, read: r, query: q, limits: rc.limits, hook: rc.BeforeCommit}, nil
+}
 
-// Close closes the connections. The Pool cannot be used afterwards.
-func (p *Pool) Close() error { return p.db.Close() }
+// start reaches the server(s), applies the version gate and runs the migrations.
+func (p *Pool) start(ctx context.Context, rc resolved) error {
+	if err := p.db.PingContext(ctx); err != nil {
+		return kernel.Wrap(kernel.CodeInternal, err, "cannot reach the PostgreSQL server")
+	}
+	if err := gate(ctx, rc.ReadVersion, p.db); err != nil {
+		return err
+	}
+	if rc.ReadDSN != "" && rc.ReadDSN != rc.DSN {
+		if err := p.read.PingContext(ctx); err != nil {
+			return kernel.Wrap(kernel.CodeInternal, err, "cannot reach the PostgreSQL server of the read pool")
+		}
+		if err := gate(ctx, rc.ReadVersion, p.read); err != nil {
+			return err
+		}
+	}
+	steps, err := embedded()
+	if err != nil {
+		return err
+	}
+	return migrate(ctx, p, steps)
+}
 
-// Tx runs fn in one transaction with the limits of the role. A reading transaction is read-only at repeatable
-// read, so everything fn reads is one state; a writing one is read committed and locks what it needs.
+// DB is the write pool, a handle that follows the renewal of its connections. Do not keep what it gives out.
+func (p *Pool) DB() *Handle { return p.db }
+
+// Generation is how many times the pool of that kind was renewed.
+func (p *Pool) Generation(kind PoolKind) uint64 {
+	if h := p.handle(kind); h != nil {
+		return h.Generation()
+	}
+	return 0
+}
+
+func (p *Pool) handle(kind PoolKind) *Handle {
+	switch kind {
+	case WritePool:
+		return p.db
+	case ReadPool:
+		return p.read
+	case QueryPool:
+		return p.query
+	}
+	return nil
+}
+
+// Close closes the connections of the three pools. The Pool cannot be used afterwards.
+func (p *Pool) Close() error {
+	p.closed.Store(true)
+	var first error
+	for _, h := range []*Handle{p.db, p.read, p.query} {
+		if err := h.close(); err != nil && first == nil {
+			first = err
+		}
+	}
+	return first
+}
+
+// Tx runs fn in one transaction with the limits of the role: a reading transaction on the read pool, a writing one
+// on the write pool. See TxOn.
 func (p *Pool) Tx(ctx context.Context, role Role, readOnly bool, fn func(*sql.Tx) error) error {
+	kind := WritePool
+	if readOnly {
+		kind = ReadPool
+	}
+	return p.TxOn(ctx, kind, role, readOnly, fn)
+}
+
+// TxOn runs fn in one transaction on the pool of that kind. A reading transaction is read-only at repeatable read, so
+// everything fn reads is one state; a writing one is read committed and locks what it needs. When a failure says the
+// role of the server changed or the connection is lost, the connections of that pool are thrown away (once, however
+// many callers meet the failure) and the error comes back with the code CodeRoleChanged or CodeConnectionLost. A
+// COMMIT that got no answer comes back as CodeOutcomeUnknown: the caller must find out whether it happened.
+func (p *Pool) TxOn(ctx context.Context, kind PoolKind, role Role, readOnly bool, fn func(*sql.Tx) error) error {
+	h := p.handle(kind)
+	if h == nil || p.closed.Load() {
+		return kernel.Errorf(kernel.CodeInternal, "the pool %q is not open", kind)
+	}
 	opts := &sql.TxOptions{}
 	if readOnly {
 		opts = &sql.TxOptions{Isolation: sql.LevelRepeatableRead, ReadOnly: true}
 	}
-	tx, err := p.db.BeginTx(ctx, opts)
+	tx, gen, err := begin(ctx, h, opts)
 	if err != nil {
-		return DBErr(err, "begin")
+		return settle(h, gen, Classify(err), err, "begin")
 	}
 	defer func() { _ = tx.Rollback() }()
 	l := p.limits[role]
@@ -75,42 +176,64 @@ func (p *Pool) Tx(ctx context.Context, role Role, readOnly bool, fn func(*sql.Tx
 		set_config('idle_in_transaction_session_timeout', $3, true)`, millis(l.Statement), millis(l.LockWait), millis(l.IdleInTx)).
 		Scan(&unused[0], &unused[1], &unused[2])
 	if err != nil {
-		return DBErr(err, "set the limits of the role")
+		return settle(h, gen, Classify(err), err, "set the limits of the role")
 	}
 	if err := fn(tx); err != nil {
+		if k := kindOfWork(err, readOnly); k == KindRoleChanged || k == KindLost {
+			return settle(h, gen, k, err, "the work of the transaction")
+		}
 		return err
 	}
-	return DBErr(tx.Commit(), "commit")
+	return p.commit(ctx, h, gen, tx)
+}
+
+// begin starts a transaction; when the pool was renewed while it tried, it tries once more on the new one.
+func begin(ctx context.Context, h *Handle, opts *sql.TxOptions) (*sql.Tx, uint64, error) {
+	db, gen := h.current()
+	tx, err := db.BeginTx(ctx, opts)
+	if err != nil {
+		if _, now := h.current(); now != gen {
+			db, gen = h.current()
+			tx, err = db.BeginTx(ctx, opts)
+		}
+	}
+	return tx, gen, err
+}
+
+// settle renews the pool when the kind of an error says so, and gives the error its code. An error of another
+// kind is only given a code of this backend.
+func settle(h *Handle, gen uint64, k Kind, err error, what string) error {
+	switch k {
+	case KindRoleChanged:
+		h.renew(gen)
+		return kernel.Wrap(CodeRoleChanged, err, what+": the server cannot take this work (the connections of the pool were thrown away)")
+	case KindLost:
+		h.renew(gen)
+		return kernel.Wrap(CodeConnectionLost, err, what+": the connection is lost (the connections of the pool were thrown away)")
+	}
+	return DBErr(err, what)
+}
+
+// commit commits and sorts the answer. A success is a commit; an answer of the server and an end of the context
+// before the COMMIT was sent are not; everything else is unknown, and the connections are thrown away.
+func (p *Pool) commit(ctx context.Context, h *Handle, gen uint64, tx *sql.Tx) error {
+	if p.hook != nil {
+		if err := p.hook(ctx, tx); err != nil {
+			return DBErr(err, "before the commit")
+		}
+	}
+	err := tx.Commit()
+	switch CommitOutcome(err) {
+	case OutcomeCommitted:
+		return nil
+	case OutcomeNotCommitted:
+		if k := Classify(err); k == KindRoleChanged {
+			return settle(h, gen, k, err, "commit")
+		}
+		return DBErr(err, "commit")
+	}
+	h.renew(gen)
+	return kernel.Wrap(CodeOutcomeUnknown, err, "commit got no answer: the transaction may or may not be committed (the connections of the pool were thrown away)")
 }
 
 func millis(d time.Duration) string { return strconv.FormatInt(d.Milliseconds(), 10) }
-
-// SQLSTATE classes this unit tells apart.
-const (
-	sqlUniqueViolation = "23505"
-	sqlLockNotAvail    = "55P03"
-	sqlQueryCanceled   = "57014"
-	sqlIdleInTxTimeout = "25P03"
-)
-
-// DBErr gives an error from the database or the driver a code of this backend. An error that already has a code
-// passes unchanged. The text of a driver error never carries the DSN.
-func DBErr(err error, what string) error {
-	if err == nil {
-		return nil
-	}
-	var coded *kernel.Error
-	if errors.As(err, &coded) {
-		return err
-	}
-	var pe *pq.Error
-	if errors.As(err, &pe) {
-		switch string(pe.Code) {
-		case sqlUniqueViolation:
-			return kernel.Wrap(kernel.CodeConflict, err, what+": a row with that key is already there")
-		case sqlLockNotAvail, sqlQueryCanceled, sqlIdleInTxTimeout:
-			return kernel.Wrap(kernel.CodeInternal, err, what+": a time limit of the role passed")
-		}
-	}
-	return kernel.Wrap(kernel.CodeInternal, err, what)
-}

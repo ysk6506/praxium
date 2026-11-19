@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"flag"
 	"log/slog"
 	"strings"
 
@@ -32,6 +33,9 @@ func openStore(ctx context.Context, o serveOptions, d wiring) (graph.Store, func
 func openStoreLogged(ctx context.Context, o serveOptions, d wiring, log *slog.Logger) (graph.Store, func() error, error) {
 	if o.storeDataDir != "" && o.store != storeFile {
 		return nil, nil, kernel.Errorf(kernel.CodeInvalidValue, "-store-data-dir belongs to -store file")
+	}
+	if o.storeReadDSNFile != "" && o.store != storePostgres {
+		return nil, nil, kernel.Errorf(kernel.CodeInvalidValue, "-store-read-dsn-file belongs to -store postgres")
 	}
 	switch o.store {
 	case storeMemory:
@@ -97,7 +101,16 @@ func openPostgres(ctx context.Context, o serveOptions, d wiring) (graph.Store, f
 	if err != nil {
 		return nil, nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the DSN file")
 	}
-	st, err := pgstore.Open(ctx, pgstore.Config{DSN: strings.TrimSpace(string(raw))})
+	cfg := pgstore.Config{DSN: strings.TrimSpace(string(raw)), MaxOpenConns: o.storeWriteConns, ReadConns: o.storeReadConns,
+		QueryConns: o.storeQueryConns, NewConnsPerSecond: o.storeNewConns}
+	if o.storeReadDSNFile != "" {
+		readRaw, err := d.env.ReadFile(o.storeReadDSNFile)
+		if err != nil {
+			return nil, nil, kernel.Wrap(kernel.CodeInvalidValue, err, "cannot read the read DSN file")
+		}
+		cfg.ReadDSN = strings.TrimSpace(string(readRaw))
+	}
+	st, err := pgstore.Open(ctx, cfg)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -111,4 +124,13 @@ func lockHint(err error) error {
 		return err
 	}
 	return kernel.Wrap(filejournal.CodeLocked, err, "another praxium has this data folder open (a server such as praxium local, or another ingest run); stop it and run this again")
+}
+
+// addPoolFlags adds the flags of the PostgreSQL pools to a command that opens the PostgreSQL store (ADR-0084).
+func addPoolFlags(fs *flag.FlagSet, o *serveOptions) {
+	fs.StringVar(&o.storeReadDSNFile, "store-read-dsn-file", "", "-store postgres: the file that holds the connection string of the read pool (default: the one of -store-dsn-file)")
+	fs.IntVar(&o.storeWriteConns, "store-write-conns", 0, "-store postgres: the most connections of the write pool (default 8)")
+	fs.IntVar(&o.storeReadConns, "store-read-conns", 0, "-store postgres: the most connections of the read pool (default 8)")
+	fs.IntVar(&o.storeQueryConns, "store-query-conns", 0, "-store postgres: the most connections of the pool of free-form queries (default 4)")
+	fs.IntVar(&o.storeNewConns, "store-new-conns-per-second", 0, "-store postgres: the most new connections all the pools open in a second (default 20)")
 }

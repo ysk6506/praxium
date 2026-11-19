@@ -9,6 +9,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/pgconn"
 )
 
 // ApplyChunk implements graph.Writer. One transaction: lock the head, verify (generation, lease, engine, head),
@@ -18,7 +19,8 @@ func (s *Store) ApplyChunk(ctx context.Context, w graph.ChunkWrite) error {
 	if err != nil {
 		return err
 	}
-	return sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error { return applyChunk(ctx, tx, w) })
+	err = sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error { return applyChunk(ctx, tx, w) })
+	return sh.resolve(ctx, w.KG, w.Head, err)
 }
 
 func applyChunk(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) error {
@@ -81,7 +83,7 @@ func (s *Store) AbandonApply(ctx context.Context, w graph.AbandonWrite) error {
 	if err != nil {
 		return err
 	}
-	return sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
+	err = sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
 		cur, err := guard(ctx, tx, planned{w.KG, w.Generation, w.ExpectedSeq, w.Lease, w.Now})
 		if err != nil {
 			return err
@@ -94,6 +96,7 @@ func (s *Store) AbandonApply(ctx context.Context, w graph.AbandonWrite) error {
 		}
 		return saveHead(ctx, tx, w.KG, w.Head)
 	})
+	return sh.resolve(ctx, w.KG, w.Head, err)
 }
 
 // truncateSteps take a KG back to change number $2: rows that began later go, rows that ended later are open
@@ -132,7 +135,7 @@ func (s *Store) Seal(ctx context.Context, w graph.SealWrite) error {
 	if err != nil {
 		return err
 	}
-	return sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
+	err = sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
 		cur, err := guard(ctx, tx, planned{w.KG, w.Generation, w.ExpectedSeq, w.Lease, w.Now})
 		if err != nil {
 			return err
@@ -155,6 +158,7 @@ func (s *Store) Seal(ctx context.Context, w graph.SealWrite) error {
 		}
 		return saveHead(ctx, tx, w.KG, w.Head)
 	})
+	return sh.resolve(ctx, w.KG, w.Head, err)
 }
 
 const versionSQL = `INSERT INTO kg_version (kg_id, version_no, version_id, sealed_seq, generation, prev_version_id, definition_set_hash,
@@ -224,6 +228,12 @@ func (s *Store) Restore(ctx context.Context, id graph.KGID, toSeq int64, head gr
 		out, err = scanKG(row)
 		return dbErr(err, "read the KG")
 	})
+	if kernel.CodeOf(err) == pgconn.CodeOutcomeUnknown {
+		if err = sh.resolve(ctx, id, head, err); err != nil {
+			return graph.KG{}, err
+		}
+		return s.GetKG(ctx, id.String())
+	}
 	return out, err
 }
 

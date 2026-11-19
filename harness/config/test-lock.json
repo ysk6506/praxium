@@ -12261,6 +12261,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestThePoolFlagsReachTheStoreAndTheReadStringHasItsOwnFile": {
+   "kind": "test",
+   "hash": "80e3a1cdeba04a6e",
+   "asserts": 9,
+   "literals": [
+    "aeaba72175d9c2c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-554"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheReadConnectionStringIsJudgedForTLSToo": {
+   "kind": "test",
+   "hash": "a59d48852f560a87",
+   "asserts": 9,
+   "literals": [
+    "9ea4b49b63e49b67"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheReadersDiskChangesNothing": {
    "kind": "test",
    "hash": "d4fab5173878b7b6",
@@ -21854,6 +21884,97 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestACommitIsKnownOnlyWhenTheDriverOrTheServerSaysSo": {
+   "kind": "test",
+   "hash": "f13cb4ce2f76b428",
+   "asserts": 1,
+   "literals": [
+    "cf6a1ccf608bb303"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestACommitThatGetsNoAnswerIsUnknownAndNeverASuccessOrAFailure": {
+   "kind": "test",
+   "hash": "f49527afeec30997",
+   "asserts": 7,
+   "literals": [
+    "98011b220a1008a0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555",
+    "REQ-557"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAConnectionThatWaitsForItsPlaceGivesUpWhenItsContextEnds": {
+   "kind": "test",
+   "hash": "0807bbf3c10b5b39",
+   "asserts": 1,
+   "literals": [
+    "0edb9f068bcd37e0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-558"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAContextThatEndsBeforeTheCommitIsTheCallersAndNotUnknown": {
+   "kind": "test",
+   "hash": "b6ae7f6a2fef85a0",
+   "asserts": 2,
+   "literals": [
+    "337c50f4934d62eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestALostConnectionRenewsThePoolAndTheNextCallGoesOnANewConnection": {
+   "kind": "test",
+   "hash": "ce3895ab9b8b98f6",
+   "asserts": 7,
+   "literals": [
+    "b1388cf687e6d396"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAnAnswerThatSaysTheRoleChangedRenewsThePoolOnce": {
+   "kind": "test",
+   "hash": "828434eb0a594d34",
+   "asserts": 6,
+   "literals": [
+    "22269ffb3cf3be05"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestAPoolOfALimitedRoleStopsASlowStatementAndSaysSo": {
    "kind": "test",
    "hash": "2b7e66a0e2659239",
@@ -21899,6 +22020,36 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestAPoolThatCannotConnectIsRenewedAndSaysTheConnectionIsLost": {
+   "kind": "test",
+   "hash": "6bbfabeba1c31d57",
+   "asserts": 5,
+   "literals": [
+    "30a7545b0388ad6e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAPoolThatIsClosedOrNotOpenedGivesAnError": {
+   "kind": "test",
+   "hash": "48c01c70e56bd043",
+   "asserts": 4,
+   "literals": [
+    "2b7328d2eb1fd0f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestAPoolWillNotOpenOnADatabaseWhoseMigrationWasEdited": {
    "kind": "test",
    "hash": "de94e2c9f0b41989",
@@ -21910,6 +22061,21 @@
    "skips": 0,
    "reqs": [
     "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAServerOlderThan18IsRefusedAtTheStartWithTheReason": {
+   "kind": "test",
+   "hash": "fe2a97b85f6d9bd1",
+   "asserts": 12,
+   "literals": [
+    "50955a53bd8fd01e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-553"
    ],
    "added": "2026-11-19",
    "amended_by": null
@@ -21946,10 +22112,10 @@
   },
   "go:backend/internal/pgconn::TestConfigFillsDefaultsAndRefusesWhatIsWrong": {
    "kind": "test",
-   "hash": "ad7faedb3df997c7",
+   "hash": "07ca4cf181d2cc0e",
    "asserts": 7,
    "literals": [
-    "9896c6529538477c"
+    "176831c3f0418ba6"
    ],
    "precision": [],
    "skips": 0,
@@ -21957,7 +22123,7 @@
     "REQ-270"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0084-postgresql-connection-rules-pool-set-error-kinds-version-gate.md"
   },
   "go:backend/internal/pgconn::TestConfigNeverPrintsItsDSN": {
    "kind": "test",
@@ -21985,6 +22151,22 @@
    "skips": 0,
    "reqs": [
     "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestErrorsOfTheDriverAreSortedByWhatTheySayAboutTheConnection": {
+   "kind": "test",
+   "hash": "d3a8def52aba6308",
+   "asserts": 1,
+   "literals": [
+    "a2719d5170794382"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-554",
+    "REQ-555"
    ],
    "added": "2026-11-19",
    "amended_by": null
@@ -22064,6 +22246,36 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestNewConnectionsAreSpacedByTheLimitOnTheClockOfTheTest": {
+   "kind": "test",
+   "hash": "80b95fca188f7c41",
+   "asserts": 9,
+   "literals": [
+    "3eb1fc7cdf762d14"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-558"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestSeveralHostsAreTriedInOrderAndAReadConnectionStringHasItsOwnPool": {
+   "kind": "test",
+   "hash": "061ff4b4956ab59b",
+   "asserts": 8,
+   "literals": [
+    "a8f72a064e925b3d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-554"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestTestDatabasesNeedTheServerAndAreMadeOnIt": {
    "kind": "test",
    "hash": "c519182c06297266",
@@ -22079,6 +22291,36 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestTheConnectionStringIsReadByTheCodeAndNotByTheEnvironment": {
+   "kind": "test",
+   "hash": "53e5e3e70f4e020d",
+   "asserts": 6,
+   "literals": [
+    "dba21db6f724c688"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-554"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheConnectorOpensNoFasterThanTheLimitAllows": {
+   "kind": "test",
+   "hash": "699076fe71105303",
+   "asserts": 3,
+   "literals": [
+    "f7fbf1c29491ba31"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-558"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestTheLimitsOfARoleApplyToItsTransactionsOnly": {
    "kind": "test",
    "hash": "40432468269e6dba",
@@ -22090,6 +22332,66 @@
    "skips": 0,
    "reqs": [
     "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheUniqueKeyQuestionAnswersAsTheCodesOfThisBackendDo": {
+   "kind": "test",
+   "hash": "3c235987ed185f14",
+   "asserts": 5,
+   "literals": [
+    "c4928e343052d53f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-554"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheWorkOfATransactionRenewsThePoolOnlyForErrorsOfTheDriver": {
+   "kind": "test",
+   "hash": "62d9a49054b0bcd1",
+   "asserts": 1,
+   "literals": [
+    "87f6e32c9fade6c0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheWritePoolWantsAServerThatTakesWritesAndTheReadPoolDoesNot": {
+   "kind": "test",
+   "hash": "86c03a4a945d7092",
+   "asserts": 6,
+   "literals": [
+    "be3ad8cc0b12b355"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-554"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestWhatMayNotStayOnASessionIsFoundInTheSourcesOfThisUnit": {
+   "kind": "test",
+   "hash": "4c2d6cf2f915e47e",
+   "asserts": 5,
+   "literals": [
+    "6dcf45df2bd6e14e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-559"
    ],
    "added": "2026-11-19",
    "amended_by": null
@@ -22388,6 +22690,22 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/pgstore::TestAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
+   "kind": "test",
+   "hash": "a28eb4df6adb5a63",
+   "asserts": 9,
+   "literals": [
+    "d549ea2016eae922"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-555",
+    "REQ-557"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestAnUnknownKGIsRefusedByEveryOperation": {
    "kind": "test",
    "hash": "252e9ac052d1d162",
@@ -22671,6 +22989,21 @@
    "skips": 0,
    "reqs": [
     "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestTheSourcesOfTheStoreLeaveNothingOnASessionAndWriteOnlyInTransactions": {
+   "kind": "test",
+   "hash": "bd26f445439bcff9",
+   "asserts": 2,
+   "literals": [
+    "a16789e3ba23a51a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-559"
    ],
    "added": "2026-11-19",
    "amended_by": null

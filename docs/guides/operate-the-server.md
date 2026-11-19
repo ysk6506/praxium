@@ -82,6 +82,15 @@ praxium admin issue-token -owner root -store file -store-data-dir /var/lib/praxi
 
 운영 모드에서 데이터베이스가 다른 기계에 있으면 서버 인증서를 확인하는 접속이어야 시작해요(ADR-0064). 접속 문자열(`-store-dsn-file`의 파일)에 `sslmode=verify-full`이나 `sslmode=verify-ca`를 적어요. 인증서를 낸 CA를 이 기계가 믿지 않으면 `sslrootcert=<파일>`도 줘요. `sslmode`를 적지 않으면 드라이버는 `require`로 접속하는데, 이것은 인증서를 확인하지 않아서 거부해요. 호스트가 여럿이면 하나라도 다른 기계일 때 이 규칙을 적용해요.
 
+### PostgreSQL 연결의 풀과 규칙
+
+- **PostgreSQL 18 이상**이어야 해요. 더 낮은 서버에 붙으면 이유를 알리고 시작하지 않아요(ADR-0084).
+- 연결은 풀 셋이에요: 쓰기(주 서버만. `-store-write-conns`, 기본 8), 읽기(`-store-read-conns`, 8), 임의 질의(`-store-query-conns`, 4). 서버 하나가 쓰는 연결은 최대 20개이니 `인스턴스 수 × 20`이 `max_connections`보다 작게 두세요. 새 연결은 모든 풀을 합쳐 초당 `-store-new-conns-per-second`(20)개까지만 열어요.
+- 읽기만 다른 서버(복제본)로 보내려면 그 연결 문자열을 파일에 적고 `-store-read-dsn-file`로 알려요. 없으면 `-store-dsn-file`의 것을 같이 써요. 연결 문자열은 호스트를 여럿 적을 수 있어요(`host=a,b`). 쓰기 풀은 `target_session_attrs=read-write`를 제품이 넣어서 주 서버에만 붙어요. 그 키를 직접 적으면 거절해요.
+- 연결 문자열에 드라이버가 모르는 키(`search_path`, `keepalives_idle` 등)를 적으면 서버의 시작 파라미터로 나가므로 거절해요. `PGHOST` 같은 `PG*` 환경 변수가 있어도 시작하지 않아요(드라이버가 연결 문자열에 없는 값을 환경에서 채워서요). 지우고 시작하세요.
+- 서버가 읽기 전용이 되었거나 연결이 끊기면 그 풀의 연결을 모두 버리고 새로 열어요. 이때 요청 하나는 `pgconn_role_changed`나 `pgconn_connection_lost`로 실패하고 다시 시도하면 돼요. 커밋의 답이 오지 않은 쓰기는 `pgconn_outcome_unknown`이고, 적용은 머리 행을 보고 커밋됐는지 스스로 가려요.
+
+
 - 같은 기계의 데이터베이스(`127.0.0.1`, `::1`, `localhost`, 유닛스 소켓)는 확인하지 않아요.
 - 사설망이나 터널 같은 다른 수단으로 접속을 보호한다면 `-allow-unverified-db-tls`로 시작할 수 있어요. 시작 로그에 경고가 남아요.
 - 개발 모드와 `-store file`에는 영향이 없어요.

@@ -14,7 +14,6 @@ import (
 // shard is one database with the limits of its roles, held by the pool of the connection base. The router hands
 // out shards; today there is one.
 type shard struct {
-	db   *sql.DB
 	pool *pgconn.Pool
 }
 
@@ -47,7 +46,7 @@ func Open(ctx context.Context, cfg Config) (*Store, error) {
 	if err != nil {
 		return nil, err
 	}
-	sh := &shard{db: pool.DB(), pool: pool}
+	sh := &shard{pool: pool}
 	return newStore(singleRouter{sh}, cfg.poll(), pool.Close), nil
 }
 

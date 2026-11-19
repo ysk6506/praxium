@@ -1,6 +1,8 @@
 package pgconn
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"sort"
 	"time"
@@ -64,16 +66,36 @@ type Config struct {
 	DSN string
 	// Limits override the default limits of the roles named in it; a role that is not in the map keeps its default.
 	Limits map[Role]Limits
-	// MaxOpenConns, MaxIdleConns and ConnMaxLifetime size the pool of database/sql (defaults 16, 4 and 30 minutes).
+	// ReadDSN is the connection string of the read pool and the query pool. Empty means DSN is used for them too
+	// (the read pool may go to a replica in a later step; today it may be the same server).
+	ReadDSN string
+	// MaxOpenConns is the size of the write pool (default 8); ReadConns is the size of the read pool (default 8) and
+	// QueryConns the size of the pool of free-form queries (default 4). MaxIdleConns caps the idle connections of
+	// each pool (default 4) and ConnMaxLifetime is how long a connection lives (default 30 minutes).
 	MaxOpenConns    int
+	ReadConns       int
+	QueryConns      int
 	MaxIdleConns    int
 	ConnMaxLifetime time.Duration
+	// ConnectTimeout is the longest a connection attempt waits (default 5 seconds). The driver waits for ever when
+	// the connection string names none, so a value is always set.
+	ConnectTimeout time.Duration
+	// NewConnsPerSecond limits how many new connections the pools open together (default 20), so that all the pools
+	// of all the servers do not reconnect at once after a failure (postgres-ha.md, rule 10).
+	NewConnsPerSecond int
+	// Clock is the time of the limit on new connections (default the system clock).
+	Clock kernel.Clock
+	// ReadVersion reads server_version_num of a server; it is replaced in tests to give the version gate a server
+	// of version 17 (default: SHOW server_version_num).
+	ReadVersion func(ctx context.Context, db *Handle) (int, error)
+	// BeforeCommit is a hook for tests: it runs after the work of a transaction and before its COMMIT.
+	BeforeCommit func(ctx context.Context, tx *sql.Tx) error
 }
 
 // String is the Config without its secret, for logs.
 func (c Config) String() string {
-	return fmt.Sprintf("pgconn.Config{DSN: <redacted>, MaxOpenConns: %d, MaxIdleConns: %d}",
-		c.MaxOpenConns, c.MaxIdleConns)
+	return fmt.Sprintf("pgconn.Config{DSN: <redacted>, MaxOpenConns: %d, ReadConns: %d, QueryConns: %d, MaxIdleConns: %d}",
+		c.MaxOpenConns, c.ReadConns, c.QueryConns, c.MaxIdleConns)
 }
 
 // GoString keeps %#v from printing the DSN.
@@ -106,9 +128,16 @@ func (c Config) resolve() (resolved, error) {
 		}
 		limits[r] = l
 	}
-	c.MaxOpenConns = orInt(c.MaxOpenConns, 16)
+	c.MaxOpenConns = orInt(c.MaxOpenConns, 8)
+	c.ReadConns = orInt(c.ReadConns, 8)
+	c.QueryConns = orInt(c.QueryConns, 4)
 	c.MaxIdleConns = orInt(c.MaxIdleConns, 4)
 	c.ConnMaxLifetime = orDuration(c.ConnMaxLifetime, 30*time.Minute)
+	c.ConnectTimeout = orDuration(c.ConnectTimeout, 5*time.Second)
+	c.NewConnsPerSecond = orInt(c.NewConnsPerSecond, 20)
+	if c.Clock == nil {
+		c.Clock = kernel.SystemClock{}
+	}
 	return resolved{Config: c, limits: limits}, nil
 }
 

@@ -1,7 +1,7 @@
 doc: "docs/guides/operate-the-server.md"
 target: "backend/cmd/praxium/admin.go"
-hash: "7143937fb7d5af8f"
-date: "2026-11-18"
-note: "시크릿 명령의 안내 문장을 고친 secretcmd.go와 7절의 값 규칙, 한계 목록을 대조했다"
+hash: "cbd06b59f3271484"
+date: "2026-11-19"
+note: "풀 절과 새 플래그(-store-read-dsn-file, 풀 크기)를 cmd/praxium 코드와 대조해 확인"
 text_changed: true
-doc_hash: "d681891fc7229447"
+doc_hash: "ea29eaf47d9df05f"
