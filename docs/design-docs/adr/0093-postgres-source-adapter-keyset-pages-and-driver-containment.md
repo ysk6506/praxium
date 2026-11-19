@@ -30,7 +30,11 @@ updates_docs:
   - ARCHITECTURE.md
   - docs/design-docs/sources-and-adapters.md
   - docs/product-specs/requirements-ingestion.md
-decision_hash: 9c669e19dc5abef6
+amends_tests:
+  - go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence
+  - go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged
+test_change_reason: 두 테스트는 egress의 소스 전체(go:embed *.go)를 읽어 방어를 우회하는 글자가 없는지 보므로, 결정 2의 추적 다이얼러(tracker.go)와 오류 종류 KindLimit이 더해지면 지문이 바뀐다. 테스트 파일은 한 글자도 바뀌지 않았고 단언과 기대 값도 그대로이며, 새 소스에서도 두 테스트가 통과한다
+decision_hash: 95dbedf3fd334f69
 ---
 # ADR-0093 PostgreSQL 소스 어댑터
 
@@ -171,6 +175,7 @@ decision_hash: 9c669e19dc5abef6
 
 ## 결과
 
-- 새 유닛 둘(`adapter.pgsource`, 테스트만 있는 `adapter.sourcecheck`), `third_party`의 한 줄, `restricted_stdlib`의 파일 단위 줄 셋, 커버리지 하한의 새 키(도구로), 새 테스트의 잠금이 더해진다. 잠긴 테스트를 바꾸지 않는다.
+- 새 유닛 둘(`adapter.pgsource`, 테스트만 있는 `adapter.sourcecheck`), `third_party`의 한 줄, `restricted_stdlib`의 파일 단위 줄 셋, 커버리지 하한의 새 키(도구로), 새 테스트의 잠금이 더해진다.
+- 잠긴 테스트의 글은 바꾸지 않는다. 다만 egress의 소스를 품는 잠긴 테스트 둘(`TestTheCodeHasNoWayAroundTheDefence`, `TestTheDialerConnectsToTheLiteralAddressItJudged`)은 품은 소스가 바뀌어 지문만 새로 잠근다(`amends_tests`). 새 소스에서도 두 테스트는 그대로 통과한다. egress를 고치는 변경은 앞으로도 이렇게 결정 기록을 남긴다.
 - ADR-0091의 "뒤로 미룬 일" 가운데 PostgreSQL 연결 감싸개 함수는 추적 다이얼러(`Dialer.Tracker`)로 닫힌다(결정 2).
 - 조립부와 소스 탐색, 쓰기 권한 점검은 이어지는 변경이다.
