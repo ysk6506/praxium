@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net"
 	"strconv"
 	"strings"
 	"testing"
@@ -173,7 +172,7 @@ func TestPgfAReadWhoseLimitsTheSourceRefusesIsAnError(t *testing.T) {
 func TestPgfConnectionsAreClosedAfterTheGraceWhenTheReadIsCancelled(t *testing.T) {
 	r := pgsNewRig(t)
 	tr := r.dialer.Tracker(egress.TrackerConfig{Plaintext: true})
-	c, err := tr.Dial("tcp", net.JoinHostPort(r.host, strconv.Itoa(r.port)))
+	c, err := tr.Dial("tcp", r.host+":"+strconv.Itoa(r.port))
 	if err != nil {
 		t.Fatalf("%v", err)
 	}
