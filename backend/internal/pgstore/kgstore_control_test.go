@@ -15,7 +15,7 @@ import (
 // The tests of the control rows of the new storage: the lease, the head, the guard of the writes and the codecs.
 // Their names start with v2c.
 
-func v2cLease(t *testing.T, st *StoreV2, kg graph.KGID, owner string, now time.Time, ttl time.Duration, semantic int) (graph.Lease, error) {
+func v2cLease(t *testing.T, st *Store, kg graph.KGID, owner string, now time.Time, ttl time.Duration, semantic int) (graph.Lease, error) {
 	t.Helper()
 	return st.AcquireLease(context.Background(), graph.LeaseRequest{KG: kg, Owner: owner, Now: now, TTL: ttl, Semantic: semantic})
 }
