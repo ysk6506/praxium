@@ -20,6 +20,9 @@ updates_docs:
   - docs/product-specs/requirements-model-storage.md
 amends: []
 decision_hash: 5ca2c6c45b5cec29
+amended_by:
+  - adr: "0089"
+    what: 스키마 상태(kg_schema_state)의 자리는 그대로 공용이라는 것의 확인(바뀌는 것은 없다)
 ---
 # ADR-0087 스키마 실행기와 공용 테이블
 

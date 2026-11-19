@@ -9306,6 +9306,26 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "backend/internal/pgcheck/testdata/mapping.json::<data>": {
+   "kind": "data",
+   "hash": "0ba361b7ea872e05",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "backend/internal/pgcheck/testdata/source.json::<data>": {
+   "kind": "data",
+   "hash": "6b12689b8bfc75dc",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestACSVInALocalCodePageStopsInspectAndRunWithWhatToDo": {
    "kind": "test",
    "hash": "ad269658e54f17b9",
@@ -15582,6 +15602,45 @@
    "reqs": [],
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
+  },
+  "go:backend/internal/graph::TestBulkReadsServeTheApplierAndTheCacheRemembersWhatIsNotThere": {
+   "kind": "test",
+   "hash": "bf5e6ff380f55ed8",
+   "asserts": 41,
+   "literals": [
+    "b503304c3c3e01ca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestBulkRowSumIsTheRowHashOfTheEntityTheIdAndTheContent": {
+   "kind": "test",
+   "hash": "31defcc4748ce5b2",
+   "asserts": 2,
+   "literals": [
+    "8ea44cfc3f245942"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestBulkSnapshotGivesTheSameChunkAndTheSameRefusals": {
+   "kind": "test",
+   "hash": "a8e057753a2e8288",
+   "asserts": 21,
+   "literals": [
+    "a6f4c60fd08a5716"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
   },
   "go:backend/internal/graph::TestCanonicalValuesIgnoreListOrderAndKeepConfidentialValuesOut": {
    "kind": "test",
@@ -23687,6 +23746,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/pgcheck::TestPgxIngestionGivesTheSameGraphHashAsMemory": {
+   "kind": "test",
+   "hash": "1ba4af92c4e87358",
+   "asserts": 7,
+   "literals": [
+    "cba3373721e7f878"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-265"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgcheck::TestPgxQueriesAnswerTheSameAsMemory": {
+   "kind": "test",
+   "hash": "f2089d01c0aee288",
+   "asserts": 7,
+   "literals": [
+    "b705914b31271e43"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestABuildThatKnowsAnOlderStorageFormatRefusesToStartAndSaysWhy": {
    "kind": "test",
    "hash": "2eb142f39803e683",
@@ -24401,6 +24490,45 @@
    "asserts": 7,
    "literals": [
     "2f151080ae6ce10b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestControlAppendOnlyTablesLeadTheirKeyWithTheChangeNumber": {
+   "kind": "test",
+   "hash": "2a69edbff41f7513",
+   "asserts": 3,
+   "literals": [
+    "3960f9f0c89ec70c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
+   "kind": "test",
+   "hash": "39f51dccf97e60b5",
+   "asserts": 2,
+   "literals": [
+    "1f15dd1a6574ccc0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
+   "kind": "test",
+   "hash": "b9597b19743dd47f",
+   "asserts": 5,
+   "literals": [
+    "3717589218d6984d"
    ],
    "precision": [],
    "skips": 0,
@@ -25190,6 +25318,432 @@
    "reqs": [
     "REQ-565"
    ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2cCodecsOfGradesAndKeys": {
+   "kind": "test",
+   "hash": "5c2c07034e7c07fd",
+   "asserts": 9,
+   "literals": [
+    "aa39879d5f31222a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2cGuardChecksInOrderAndTheHeadRoundTrips": {
+   "kind": "test",
+   "hash": "34c1344c03c7b216",
+   "asserts": 15,
+   "literals": [
+    "432ec8b3b1d0b12c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2cLeaseIsTakenRenewedAndReleasedByTheDatabaseClock": {
+   "kind": "test",
+   "hash": "fd2c0172e36f34f8",
+   "asserts": 21,
+   "literals": [
+    "184e0b0936518fcc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2cLeaseRunsOutByTheClockOfTheCallerWhenTheStoreIsAskedTo": {
+   "kind": "test",
+   "hash": "1ceeaadf288962f2",
+   "asserts": 7,
+   "literals": [
+    "ac218ef291b004be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2cResolveDecidesAnUnknownCommitByTheHead": {
+   "kind": "test",
+   "hash": "818dcdea447f4f89",
+   "asserts": 6,
+   "literals": [
+    "423fda0588240024"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2dEveryOperationFailsOnAClosedPool": {
+   "kind": "test",
+   "hash": "7bd8515ead60d989",
+   "asserts": 7,
+   "literals": [
+    "e79cdc854e6eb890"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2dReadsFailOnRowsThatHoldWhatTheStoreDidNotWrite": {
+   "kind": "test",
+   "hash": "709547887221fbfd",
+   "asserts": 6,
+   "literals": [
+    "63c704b7601f92d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2dReadsFailWhenATableTheyNeedIsMissing": {
+   "kind": "test",
+   "hash": "39a6057f8880ad83",
+   "asserts": 15,
+   "literals": [
+    "91c1e85664ee8c1f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2eALeaseAndAHeadThatAreDamagedFail": {
+   "kind": "test",
+   "hash": "65b6f80d3cc12282",
+   "asserts": 11,
+   "literals": [
+    "2573b51307f626fb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2eAServerThatHoldsAnotherModelRefusesTheKG": {
+   "kind": "test",
+   "hash": "24bc805602e7e08c",
+   "asserts": 5,
+   "literals": [
+    "c5ca681eaec5b5fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2eReadPointsAndVersions": {
+   "kind": "test",
+   "hash": "18f4a4c31064a5ab",
+   "asserts": 18,
+   "literals": [
+    "f06a38fd3e7c7838"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel": {
+   "kind": "test",
+   "hash": "879c551335770734",
+   "asserts": 12,
+   "literals": [
+    "0186a69153a4a72c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2eTheTestStoreMakesKGsAndTheCatalogFindsThemByIdNameAndMain": {
+   "kind": "test",
+   "hash": "645e71186bf106ce",
+   "asserts": 14,
+   "literals": [
+    "5efc4d3f340c0f4f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2mAChunkWithAValueThatHasNoPlaceIsRefused": {
+   "kind": "test",
+   "hash": "de7e04c2a0297b52",
+   "asserts": 9,
+   "literals": [
+    "6a701185b8c7d5f8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2mAnUnknownOutcomeOfTheStartOfAWorkIsDecidedByTheHead": {
+   "kind": "test",
+   "hash": "4878418747a204ee",
+   "asserts": 9,
+   "literals": [
+    "1fdb0f8f12c533ea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2mASealThatIsNotReadyOrDoesNotFollowIsRefused": {
+   "kind": "test",
+   "hash": "a6df2d40340871e3",
+   "asserts": 12,
+   "literals": [
+    "8582915ef492a00f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2mWritesAndFeedsFailWhenATableIsGone": {
+   "kind": "test",
+   "hash": "69fd8c8688c4c10b",
+   "asserts": 6,
+   "literals": [
+    "622eee5702d16025"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2oAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
+   "kind": "test",
+   "hash": "33cdd8fa6d5d64c3",
+   "asserts": 10,
+   "literals": [
+    "19c373654e45d08d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2rCatalogListsGetsAndDeletesAKG": {
+   "kind": "test",
+   "hash": "617ed9cfca7f92b4",
+   "asserts": 11,
+   "literals": [
+    "0bf5ca92bd6d54e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2rReadsLinksIdentifiersAndVolatileValues": {
+   "kind": "test",
+   "hash": "9f5f13c6dd6bc859",
+   "asserts": 28,
+   "literals": [
+    "ff478ba23bc97b6e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2rReadsTheNewestAndThePastStates": {
+   "kind": "test",
+   "hash": "143ac1dfce9f4c5e",
+   "asserts": 20,
+   "literals": [
+    "c0749a8c5fad5587"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2rRefusesReadsThatCannotBeAnswered": {
+   "kind": "test",
+   "hash": "a1ee33ff0bf44fc8",
+   "asserts": 9,
+   "literals": [
+    "1a16e7c6bd7cc2e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2StorePassesThePreviewSuite": {
+   "kind": "test",
+   "hash": "4647688125fd085d",
+   "asserts": 1,
+   "literals": [
+    "44481bf4a77cf729"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-410"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2StorePassesTheSuite": {
+   "kind": "test",
+   "hash": "70a29df86271a248",
+   "asserts": 1,
+   "literals": [
+    "b0683ad31d32e641"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-132",
+    "REQ-135",
+    "REQ-246",
+    "REQ-247",
+    "REQ-248",
+    "REQ-249",
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wAbandonTakesTheChunksOutOneNumberAtATimeAndLeavesNoTraceAndAnInterruptedOneIsEnded": {
+   "kind": "test",
+   "hash": "bf7ae4ef95e13a6b",
+   "asserts": 23,
+   "literals": [
+    "e8bdbc5a8763e8b7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wAChangeOfValuesAloneDoesNotTouchTheRowsOfTheObjectAndTheRowsAreWrittenInOrder": {
+   "kind": "test",
+   "hash": "54c0791f6a547b27",
+   "asserts": 13,
+   "literals": [
+    "a90349d376f00f67"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wARefThatCameBackWithAnotherTypeIsRefused": {
+   "kind": "test",
+   "hash": "5df3b48684671bb2",
+   "asserts": 6,
+   "literals": [
+    "68f5307da533bae3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wARetiredObjectComesBackWithTheSameNumberAndTheKeyStaysBound": {
+   "kind": "test",
+   "hash": "daf96b1f57bb62c5",
+   "asserts": 18,
+   "literals": [
+    "e65438aed7b1da00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wAWriteIsRefusedWhenTheSchemaWasMadeFromAnotherModel": {
+   "kind": "test",
+   "hash": "01457922faeda7e5",
+   "asserts": 5,
+   "literals": [
+    "2eb72ae83cf1a4f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wBulkReadsGiveWhatReadsOneAtATimeGive": {
+   "kind": "test",
+   "hash": "39ceb9df092c06bb",
+   "asserts": 10,
+   "literals": [
+    "66cc4253e56b7540"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wRestoreClosesTheKGUntilItEndsAndAnInterruptedOneIsResumed": {
+   "kind": "test",
+   "hash": "4d26c948d002ee97",
+   "asserts": 25,
+   "literals": [
+    "6ec354ed00082148"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestV2wTheSettingsOfTheTablesAreInForce": {
+   "kind": "test",
+   "hash": "b19ad16fbc917249",
+   "asserts": 5,
+   "literals": [
+    "5706a17ba3f28529"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
    "added": "2026-11-19",
    "amended_by": null
   },

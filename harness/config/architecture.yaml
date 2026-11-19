@@ -115,6 +115,8 @@ go:
     adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource, adapter.xlsx]}
     # The one place where the connections to a source leave the program (ADR-0091): the dialer that resolves a name itself, judges every address it resolved to and connects to the address it judged (no second resolving, no proxy, no way to skip the verification of a certificate), the HTTP client and the TLS settings built on it, and the errors that hold no address, query or sentence of the standard library. The source adapters take their connections from it; it knows no adapter and no port.
     adapter.egress: {path: backend/internal/egress, may_import: [core.kernel]}
+    # A package of tests only: the current ingestion and the current query engine run on the new PostgreSQL storage and on the memory store and must agree (ADR-0089).
+    adapter.pgcheck: {path: backend/internal/pgcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, core.query, adapter.memstore, adapter.devload, adapter.filesource, adapter.pgstore]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium

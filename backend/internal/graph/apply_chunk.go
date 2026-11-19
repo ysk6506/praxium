@@ -26,7 +26,7 @@ type chunkBuilder struct {
 }
 
 func newChunkBuilder(a *Applier, kg KGID, snap Snapshot, hash HashState) *chunkBuilder {
-	return &chunkBuilder{a: a, kg: kg, snap: snap, hs: hasher{reg: a.reg, keys: a.keys, kg: kg, objTypes: a.objTypeIDs, linkTypes: a.linkTypeIDs}, hash: hash.Clone()}
+	return &chunkBuilder{a: a, kg: kg, snap: withBulk(snap), hs: hasher{reg: a.reg, keys: a.keys, kg: kg, objTypes: a.objTypeIDs, linkTypes: a.linkTypeIDs}, hash: hash.Clone()}
 }
 
 func (c *chunkBuilder) empty() bool {
@@ -41,6 +41,27 @@ func (c *chunkBuilder) build(ctx context.Context, p *plan, items []item, last bo
 	for _, l := range p.links {
 		links[l.id.String()] = l
 	}
+	if err := c.prefetch(ctx, p, items, objects, links); err != nil {
+		return err
+	}
+	if err := c.buildItems(ctx, p, items, objects, links); err != nil {
+		return err
+	}
+	if !last {
+		return nil
+	}
+	if err := c.writeVolatile(ctx, p.volatile); err != nil {
+		return err
+	}
+	if err := c.writeIdentifiers(ctx, p.idents); err != nil {
+		return err
+	}
+	c.events = append(c.events, p.events...)
+	return nil
+}
+
+// buildItems turns the items of the chunk into rows and entries, in order.
+func (c *chunkBuilder) buildItems(ctx context.Context, p *plan, items []item, objects map[string]plannedObject, links map[string]plannedLink) error {
 	for _, it := range items {
 		var err error
 		switch {
@@ -57,16 +78,6 @@ func (c *chunkBuilder) build(ctx context.Context, p *plan, items []item, last bo
 			return err
 		}
 	}
-	if !last {
-		return nil
-	}
-	if err := c.writeVolatile(ctx, p.volatile); err != nil {
-		return err
-	}
-	if err := c.writeIdentifiers(ctx, p.idents); err != nil {
-		return err
-	}
-	c.events = append(c.events, p.events...)
 	return nil
 }
 
@@ -101,6 +112,9 @@ func (c *chunkBuilder) upsertObject(ctx context.Context, po plannedObject) error
 	key := PartKey{Entity: entityObject, TypeID: po.typ.ID.String()}
 	entry := ChangeEntry{Entity: entityObject, ID: po.id.String(), Change: ChangeAdded, NewHash: content}
 	change := ObjectChange{New: &row}
+	if !found {
+		change.Key = cloneKey(po.upsert.Key)
+	}
 	if found {
 		if old.ContentHash == content {
 			return nil
@@ -277,4 +291,39 @@ func (c *chunkBuilder) assign(seq int64) {
 	for i := range c.events {
 		c.events[i].Seq = seq
 	}
+}
+
+// cloneKey copies the key parts, the objects of a part included, so the change shares nothing with the batch.
+func cloneKey(key []KeyPart) []KeyPart {
+	if len(key) == 0 {
+		return nil
+	}
+	out := make([]KeyPart, len(key))
+	for i, p := range key {
+		p.Objects = append([]ObjectID(nil), p.Objects...)
+		out[i] = p
+	}
+	return out
+}
+
+// prefetch reads the current rows of what the chunk touches, in two reads, when the snapshot can read in bulk.
+func (c *chunkBuilder) prefetch(ctx context.Context, p *plan, items []item, objects map[string]plannedObject, links map[string]plannedLink) error {
+	var objIDs []ObjectID
+	var linkIDs []LinkID
+	for _, it := range items {
+		switch {
+		case it.entity == entityObject && it.retire:
+			objIDs = append(objIDs, p.retObjs[it.index])
+		case it.entity == entityObject:
+			objIDs = append(objIDs, objects[it.id].id)
+		case it.retire:
+			linkIDs = append(linkIDs, p.retLinks[it.index])
+		default:
+			linkIDs = append(linkIDs, links[it.id].id)
+		}
+	}
+	if err := prefetchObjects(ctx, c.snap, objIDs); err != nil {
+		return err
+	}
+	return prefetchLinks(ctx, c.snap, linkIDs)
 }

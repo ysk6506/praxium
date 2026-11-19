@@ -143,6 +143,10 @@ func (t testKeys) KeyedHash(_ KGID, data []byte) (kernel.Hash, error) {
 	return out, nil
 }
 
+// RowSum is the row hash of a stored row: SHA-256 of the entity ("object" or "link"), the id and the content
+// hash, as a 256-bit number. A store that keeps the row hash beside the row computes it with this.
+func RowSum(entity, id string, content kernel.Hash) (Sum, error) { return rowSum(entity, id, content) }
+
 // rowSum is row_hash = SHA-256(kind, id, content hash) as a 256-bit number.
 func rowSum(entity, id string, content kernel.Hash) (Sum, error) {
 	h, err := kernel.ContentHash([]any{"praxium.row.v1", entity, id, content.String()})

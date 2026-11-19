@@ -133,7 +133,7 @@ func fixedTableDefs(common []Column) ([]tableDef, error) {
 	if err != nil {
 		return nil, err
 	}
-	return append(registryTableDefs(state), recordTableDefs()...), nil
+	return append(append(registryTableDefs(state), recordTableDefs()...), controlTableDefs()...), nil
 }
 
 // registryTableDefs are the registry, the state, the links, the history and the identification index.
@@ -163,9 +163,9 @@ func registryTableDefs(state tableDef) []tableDef {
 			"row_hash bytea NOT NULL",
 			"seq_from bigint NOT NULL",
 			"seq_to bigint NOT NULL",
-			"PRIMARY KEY (obj_no, seq_from)",
+			"PRIMARY KEY (seq_to, obj_no, seq_from)",
 		}},
-		{Name: TableLinkHist, With: vacuumBig, Cols: append(append([]string(nil), linkCols...), "seq_to bigint NOT NULL", "PRIMARY KEY (link_no, seq_from)")},
+		{Name: TableLinkHist, With: vacuumBig, Cols: append(append([]string(nil), linkCols...), "seq_to bigint NOT NULL", "PRIMARY KEY (seq_to, link_no, seq_from)")},
 		{Name: TableObjectKey, With: vacuumBig, Cols: []string{
 			"type_no smallint NOT NULL",
 			"ctx_no bigint NOT NULL DEFAULT 0",
@@ -239,6 +239,77 @@ func recordTableDefs() []tableDef {
 	}
 }
 
+// fillControlTable leaves room in a page for the rows that are written at every chunk (the head, the lease),
+// so an update stays in the page.
+const fillControlTable = "fillfactor = 50"
+
+// controlTableDefs are the tables of the control rows of a KG: the head (the change number, the generation,
+// the read watermark, the state of an open apply, the hash state, the progress of an abandon or a restore, the
+// floor of the history), the lease, the generations and the sealed versions with their partial sums. Each of
+// the first two has one row.
+func controlTableDefs() []tableDef {
+	return []tableDef{
+		{Name: TableHead, With: fillControlTable, Cols: []string{
+			"id smallint NOT NULL PRIMARY KEY CHECK (id = 1)",
+			"state text NOT NULL DEFAULT 'building' CHECK (state IN ('building', 'serving'))",
+			"generation integer NOT NULL DEFAULT 1 CHECK (generation >= 1)",
+			"applied_seq bigint NOT NULL DEFAULT 0",
+			"readable_through bigint NOT NULL DEFAULT 0",
+			"applied_through bigint NOT NULL DEFAULT 0",
+			"hash_sum bytea NOT NULL",
+			"hash_rows bigint NOT NULL DEFAULT 0",
+			"hash_parts jsonb NOT NULL DEFAULT '[]'",
+			"input_digest bytea NOT NULL",
+			"apply_id text NOT NULL DEFAULT ''",
+			"next_chunk_no integer NOT NULL DEFAULT 0",
+			"chunk_count integer NOT NULL DEFAULT 0",
+			"rollback jsonb",
+			"last_apply_id text NOT NULL DEFAULT ''",
+			"applied_semantic_version integer NOT NULL DEFAULT 0",
+			"work text NOT NULL DEFAULT '' CHECK (work IN ('', 'abandoning', 'restoring'))",
+			"work_seq bigint NOT NULL DEFAULT 0",
+			"work_floor bigint NOT NULL DEFAULT 0",
+			"work_head jsonb",
+			"history_floor bigint NOT NULL DEFAULT 0",
+		}},
+		{Name: TableLease, With: fillControlTable, Cols: []string{
+			"id smallint NOT NULL PRIMARY KEY CHECK (id = 1)",
+			"lease_owner text",
+			"lease_until timestamptz",
+			"attempt bigint NOT NULL DEFAULT 0",
+			"semantic_version integer NOT NULL DEFAULT 0",
+		}},
+		{Name: TableGenerationEvent, Cols: []string{
+			"generation integer NOT NULL PRIMARY KEY",
+			"restored_to_seq bigint NOT NULL",
+			"at timestamptz NOT NULL",
+		}},
+		{Name: TableVersion, Cols: []string{
+			"version_no integer NOT NULL PRIMARY KEY",
+			`version_id text COLLATE "C" NOT NULL`,
+			"sealed_seq bigint NOT NULL",
+			"generation integer NOT NULL",
+			"prev_version_id text NOT NULL",
+			"definition_set_hash bytea NOT NULL",
+			"engine_version integer NOT NULL",
+			"hash_rule_version integer NOT NULL",
+			"input_digest bytea NOT NULL",
+			"graph_hash bytea NOT NULL",
+			"row_count bigint NOT NULL",
+			"sealed_at timestamptz NOT NULL",
+			"seal_kind text NOT NULL",
+		}},
+		{Name: TableVersionHashPart, Cols: []string{
+			"version_no integer NOT NULL",
+			"entity_kind text NOT NULL",
+			"type_id text NOT NULL",
+			"partial_sum bytea NOT NULL",
+			"row_count bigint NOT NULL",
+			"PRIMARY KEY (version_no, entity_kind, type_id)",
+		}},
+	}
+}
+
 // fixedIndexDefs are the indexes of the fixed tables, besides the keys. Every one has a reader: the link
 // has the two that a walk needs and one to find a link by its id, and no more (a walk is answered from the
 // indexes alone when the cleaning keeps up).
@@ -254,12 +325,20 @@ func fixedIndexDefs(common []Column) []indexDef {
 		indexDef{Name: "link_ref", Table: TableLink, Expr: "ref", Unique: true},
 		indexDef{Name: "link_src", Table: TableLink, Expr: "src, type_no, dst"},
 		indexDef{Name: "link_dst", Table: TableLink, Expr: "dst, type_no, src"},
+		indexDef{Name: "object_hist_obj", Table: TableObjectHist, Expr: "obj_no, seq_from"},
 		indexDef{Name: "object_hist_type_seq_to", Table: TableObjectHist, Expr: "type_no, seq_to"},
+		indexDef{Name: "link_hist_link", Table: TableLinkHist, Expr: "link_no, seq_from"},
+		indexDef{Name: "link_hist_src", Table: TableLinkHist, Expr: "src, type_no, dst"},
+		indexDef{Name: "link_hist_dst", Table: TableLinkHist, Expr: "dst, type_no, src"},
 		indexDef{Name: "link_hist_type_seq_to", Table: TableLinkHist, Expr: "type_no, seq_to"},
 		indexDef{Name: "link_hist_ref", Table: TableLinkHist, Expr: "ref, seq_from"},
 		indexDef{Name: "object_key_obj", Table: TableObjectKey, Expr: "obj_no"},
 		indexDef{Name: "object_key_bound", Table: TableObjectKey, Expr: "bound_seq"},
 		indexDef{Name: "object_identifier_value", Table: TableObjectIdentifier, Expr: "scheme, value"},
+		indexDef{Name: "object_identifier_from", Table: TableObjectIdentifier, Expr: "seq_from"},
+		indexDef{Name: "object_identifier_to", Table: TableObjectIdentifier, Expr: "seq_to", Where: "seq_to IS NOT NULL"},
+		indexDef{Name: "ingest_order_change", Table: TableIngestOrder, Expr: "change_seq"},
+		indexDef{Name: "version_id", Table: TableVersion, Expr: "version_id", Unique: true},
 	)
 }
 
