@@ -93,6 +93,11 @@ func UnescapeBraces(s string) string {
 // page changes nothing about what is read (ingestion-at-scale.md, P1).
 type PageWriter struct {
 	s *pageStream
+	// after, yield and give belong to AddLazy: the token function of the record added last, the caller's yield, and the
+	// function that fills the token of a page that is cut (made once).
+	after func() []byte
+	yield func(Page, error) bool
+	give  func(Page, error) bool
 }
 
 // NewPageWriter begins the pages of a dataset. A zero value of the options is the default.
@@ -112,6 +117,29 @@ func (w *PageWriter) Add(ctx context.Context, rec Table, after []byte, yield fun
 	}
 	w.s.token = after
 	return true
+}
+
+// AddLazy is Add for a token that costs something to make: after makes the token of the position just after this record,
+// and it is called only when a page is cut at this record, once for each page and never for a record in the middle of
+// one (ADR-0097). A nil after gives the page no token. A writer is used with Add or with AddLazy, not with both.
+func (w *PageWriter) AddLazy(ctx context.Context, rec Table, after func() []byte, yield func(Page, error) bool) bool {
+	w.yield = yield
+	if w.give == nil {
+		w.give = w.fill
+	}
+	if !w.s.add(ctx, rec, w.give) {
+		return false
+	}
+	w.s.token, w.after = nil, after
+	return true
+}
+
+// fill gives a page that was cut the token of the record it ends with.
+func (w *PageWriter) fill(p Page, err error) bool {
+	if err == nil && !p.Last && w.after != nil {
+		p.Token = w.after()
+	}
+	return w.yield(p, err)
 }
 
 // Finish gives the last page. end says whether the dataset was read to its end and, if not, why.

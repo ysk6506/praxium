@@ -78,7 +78,7 @@ follows:
 | `token_request` | `credential`, `request`(`path`, `format`, `body`), `token_path`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요) | `password` |
 
   `token_request`는 본문 형식(`json`이나 `form`)으로 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요. 토큰 주소는 `base_url`과 같은 호스트여야 해요. 다른 호스트의 토큰 주소(OAuth2의 대부분)는 안 돼요(10절).
-- `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
+- `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB, 정의에서 256 MiB까지), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
 - `ca_pem`은 **그 인증서만 신뢰해요**(시스템의 신뢰 목록을 대신해요). 인증서가 아닌 블록(개인 키 같은 것)이 있으면 정의 오류예요.
 - 플레이스홀더 `{{credential.<필드>}}`는 인증 설정의 값 자리에서만, 문자열 치환이 아니라 값 단위로 바뀌어요. 값이 정확히 플레이스홀더인 문자열 값만 바뀌어요. 주소(경로, 질의)에는 둘 수 없어요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 3절).
 - `pagination.kind`는 `none`, `page`, `offset`, `cursor`(표지를 싣는 자리를 `query`나 `body`로 적어요), `next_url`(본문의 다음 주소. 같은 출처만), `link_header`예요. 종류마다 읽는 필드가 달라요(구현됨, ADR-0090). 모든 종류에 `max_pages`(기본 1,000)가 있어요.
@@ -99,6 +99,8 @@ follows:
 - 데이터셋의 `request.method`는 `GET`이 기본이에요. `POST`로 읽는 데이터셋은 `"post_reads": true`로 밝혀야 해요(7.1).
 
 **구현(`adapter.httpsource`, [ADR-0092](adr/0092-http-source-adapter-adapter-httpsource.md)).** 위의 인증 다섯과 페이지 넘김 여섯, `post_reads`, `total_path`의 견줌, 한도와 재시도를 이 유닛이 구현했어요(구현됨). `core.ingest`의 `PageReader`(`ReadPages`, `Check`)와 선택 인터페이스 `Observer`, `Previewer`를 가져요. 시크릿은 값을 여는 포트(`secrets.Opener`)만 받아 인증을 붙이는 한 곳에서 꺼내요. 설계와 다르게 한 곳은 셋이에요. (1) 응답 하나가 `max_response_bytes`를 넘으면 불완전한 수집이 아니라 **설정 오류**(`response_format`)예요(같은 요청은 같은 크기로 다시 오므로 일부만 받아 완전하다고 하면 안 되고, 정의를 고쳐야 해요). (2) `next_url`과 `link_header`는 이어 읽기 토큰을 내지 않아요(서버가 준 주소에 서명된 질의가 들 수 있어서 처음부터 다시 읽어요). (3) 데이터셋 전체의 바이트와 실행 전체의 시간은 아직 한도가 없어요(정의에 그 필드가 없어요).
+
+  응답은 JSON 토큰 단위로 흘려 읽어요([ADR-0097](adr/0097-http-source-review-secrets-everywhere-streaming-and-limits.md)). `records_path`의 레코드를 하나씩 풀어 페이지에 넘기고, 페이지 넘김이 읽는 값(`total_path`, `next_cursor_path`, `next_path`)은 레코드 배열의 앞에 있든 뒤에 있든 잡아 둬요. 그래서 읽는 동안 쥐고 있는 메모리는 레코드 하나와 채우는 페이지이고 응답 크기에 따르지 않아요. 레코드 하나는 쓴 그대로 2 MiB까지이고(고정 값) 넘으면 `response_format`이에요. 응답에서 가져오는 페이지 넘김 값(표지, 다음 주소, `Link`의 대상)은 8 KiB까지예요. 시크릿 값은 어댑터가 내보내는 모든 것(사건, 미리 보기의 교환 기록, 오류, 이어 읽기 토큰, 실행과 미리 보기의 행)에서 가려요. 가리는 글은 시크릿 값, 보낸 인증 값, 받은 토큰의 그대로와 이스케이프와 base64의 꼴이고, 4바이트보다 짧은 값은 가리지 않아요.
 
 ### 2.3 PostgreSQL 소스
 ```json
@@ -251,7 +253,7 @@ follows:
 | 리디렉션 | 따르지 않아요(3xx는 오류). 다음 페이지의 주소(본문, `Link` 헤더)는 같은 출처일 때만 따라요 |
 | 실제 IP | **이름을 스스로 한 번 풀고, 풀린 모든 주소를 검사하고, 검사한 IP 글자로 연결해요**(다시 풀지 않아요. 이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 하나라도 거절 목록에 있으면 전체를 거절해요. 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`과 `0.0.0.0/8`, 멀티캐스트, 예약 대역과 브로드캐스트, IPv4가 든 IPv6(매핑, 호환, 번역, NAT64, 6to4)의 속 주소, 터널 주소(Teredo), 서버 자신의 API 주소. 서버 플래그(`-source-deny-hosts`)로 더해요. 사설 주소와 루프백은 기본으로 허용해요. 사설과 루프백을 막고 예외만 여는 엄격한 정책(`DenyPrivate`)도 있어요 |
 | 프록시 | 쓰지 않아요. 환경 변수를 읽지 않는 전송 계층을 새로 만들어요 |
-| 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`을 쓸 수 없어요. 인증은 `auth`로만 해요 |
+| 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`과 메서드를 바꾸는 `X-HTTP-Method-Override`, `X-HTTP-Method`, `X-Method-Override`를 쓸 수 없어요. 인증은 `auth`로만 해요 |
 | 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS는 1.2 이상이고 인증서와 이름을 언제나 확인해요. **확인을 끄는 길은 없어요**(ADR-0091이 ADR-0058의 `tls_verify: false`와 `-allow-unverified-source-tls`를 거두었어요) |
 | 오류 | 표준 라이브러리와 드라이버의 문장을 그대로 쓰지 않아요. 이름 풀이, 연결, TLS, 인증, 권한, 시간 초과, 응답 형식으로 분류해요. 토큰 발급 응답의 본문을 오류에 넣지 않아요 |
 | 로그 | 값을 래핑한 타입에서 꺼내는 자리는 어댑터의 요청 조립 한 곳이에요(테스트로 고정). 요청과 응답을 로그에 찍는 코드가 없어요 |
@@ -265,7 +267,7 @@ follows:
 
 - 페이지 수(기본 1,000), 압축을 푼 뒤의 바이트(한 페이지의 바이트와 데이터셋 전체의 바이트), 실행 전체의 시간과 요청 수.
 - 요청의 속도(초당 5회)와 재시도(GET의 429와 5xx에서 `Retry-After`를 지켜 세 번까지, 401과 403은 곧바로 멈춰요).
-- 데이터셋마다 5천만 행이고 한 페이지는 1만 행이나 8 MiB 가운데 먼저 닿는 쪽이에요([ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md)의 새 흐름의 시작 값이에요. 옛 파일 흐름의 20만 행 한도는 그 흐름에만 남아요). HTTP 응답 하나는 압축을 푼 뒤 16 MiB, 한 번의 재시도를 기다리는 시간은 60초가 시작 값이고 `connection`에서 바꿀 수 있어요. PostgreSQL의 문장 시간은 60초예요.
+- 데이터셋마다 5천만 행이고 한 페이지는 1만 행이나 8 MiB 가운데 먼저 닿는 쪽이에요([ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md)의 새 흐름의 시작 값이에요. 옛 파일 흐름의 20만 행 한도는 그 흐름에만 남아요). HTTP 응답 하나는 압축을 푼 뒤 16 MiB(정의에서 256 MiB까지), 한 번의 재시도를 기다리는 시간은 60초가 시작 값이고 `connection`에서 바꿀 수 있어요. 레코드 하나는 2 MiB까지이고 정의에서 바꿀 수 없어요. PostgreSQL의 문장 시간은 60초예요.
 - 동시에 도는 수집은 4개이고, 소스 하나의 수집은 겹치지 않아요([수집 서비스와 실행](ingestion-service.md) 5절).
 
 ## 10. HTTP의 선언만으로 되는 것과 안 되는 것

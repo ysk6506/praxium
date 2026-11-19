@@ -17934,6 +17934,336 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestHsfACursorThatHoldsASecretIsNotPutInAToken": {
+   "kind": "test",
+   "hash": "3c2709443bfba660",
+   "asserts": 6,
+   "literals": [
+    "aafabbf20061afb2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfACursorWithNoSecretStaysInTheToken": {
+   "kind": "test",
+   "hash": "e9b75a2c3a90bf24",
+   "asserts": 4,
+   "literals": [
+    "b170d88ac4a4f589"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfAnAnswerThatIsNotTheShapeIsAFailureAtTheFirstPlaceItIsSeen": {
+   "kind": "test",
+   "hash": "d1c410e28f73fff9",
+   "asserts": 4,
+   "literals": [
+    "490596f8b5317920"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfAPlaceInsideARecordAndABooleanAreReadByThePagination": {
+   "kind": "test",
+   "hash": "f46fdc0e7be56e07",
+   "asserts": 5,
+   "literals": [
+    "6d03546d41092fab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfARecordHasAMostOfTwoMebibytes": {
+   "kind": "test",
+   "hash": "3d69d9022bfc2b18",
+   "asserts": 5,
+   "literals": [
+    "23418aa8f1ab488e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfARecordIsNeverGivenTwiceWhenABodyBreaksAndTheRequestIsSentAgain": {
+   "kind": "test",
+   "hash": "c52c073741bc8ce7",
+   "asserts": 5,
+   "literals": [
+    "a28e776126a61a08"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfARecordWhoseKeyIsASecretHasNoSecretInItsRow": {
+   "kind": "test",
+   "hash": "b93e6423ee0d5da6",
+   "asserts": 4,
+   "literals": [
+    "2c69577f086892ad"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfARequestSentAgainAfterABrokenBodyMayFailInItsWaitOrItsAnswer": {
+   "kind": "test",
+   "hash": "ad8dc486e730ebd7",
+   "asserts": 4,
+   "literals": [
+    "7fccc8712bbd2380"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfARetryAfterThatOverflowsIsLongerThanTheLimit": {
+   "kind": "test",
+   "hash": "d069c9c96349ef76",
+   "asserts": 5,
+   "literals": [
+    "af8a58ecbbaabd0f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-694"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfASecretEchoedIntoTheNextPathIsInNoEventAndNoExchange": {
+   "kind": "test",
+   "hash": "af8105317cd9da25",
+   "asserts": 7,
+   "literals": [
+    "f2a493ec92138c58"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfASecretIsTakenOutOfNumbersAndOfEveryDepthOfARecord": {
+   "kind": "test",
+   "hash": "654a4420f29c836c",
+   "asserts": 3,
+   "literals": [
+    "df5f3d6228c8515d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfATokenIsMadeOncePerPageAndNotOncePerRecord": {
+   "kind": "test",
+   "hash": "96748305fa890395",
+   "asserts": 6,
+   "literals": [
+    "c010f32b59c5a3c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-693"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfAValueForTheNextPageHasAMostOfEightKibibytes": {
+   "kind": "test",
+   "hash": "00f987c471ec8d20",
+   "asserts": 4,
+   "literals": [
+    "84cda5653afebb7a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-693"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfEchoedSecretsAreTakenOutOfTheRowsOfARunAndOfAPreview": {
+   "kind": "test",
+   "hash": "b047192f20d49110",
+   "asserts": 6,
+   "literals": [
+    "67f9c4f276d4e63b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfEveryTextOfAnExchangeHasTheValuesTakenOut": {
+   "kind": "test",
+   "hash": "c6d7fd62a6f3bbdc",
+   "asserts": 5,
+   "literals": [
+    "609f3e55b17263c7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfFailuresOfTheShapeInsideTheParts": {
+   "kind": "test",
+   "hash": "3359ce1d7f976b75",
+   "asserts": 4,
+   "literals": [
+    "be7f65e4098ca402"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfTheAnswerToTheRequestForATokenIsSmallAndWhole": {
+   "kind": "test",
+   "hash": "38d40b50a73d50d8",
+   "asserts": 4,
+   "literals": [
+    "6a4969fb1496f777"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfTheCursorIsLookedAtAsItIsAndNotOnlyInsideTheToken": {
+   "kind": "test",
+   "hash": "a23e6486bfe9e5cb",
+   "asserts": 6,
+   "literals": [
+    "5044030994dc94a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfTheEventOfAResponseHasTheBytesOfTheBodyRead": {
+   "kind": "test",
+   "hash": "01488274afd8347b",
+   "asserts": 4,
+   "literals": [
+    "4431e3df98c056aa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfTheMemoryOfAReadDoesNotFollowTheSizeOfTheAnswer": {
+   "kind": "test",
+   "hash": "c53c630acff01d73",
+   "asserts": 3,
+   "literals": [
+    "35c4c4864b5d2055"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfThePlacesThePaginationReadsAreFoundWhereverTheyAre": {
+   "kind": "test",
+   "hash": "80214473e442c5cf",
+   "asserts": 6,
+   "literals": [
+    "58e32c47439b988e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-692"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHsfTheShapesOfASecretAreAllListedAndAShortValueIsNone": {
+   "kind": "test",
+   "hash": "1d550c4505dace20",
+   "asserts": 5,
+   "literals": [
+    "2799419269fb5948"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-690"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestLeavingTheLoopClosesTheClientAndTheBodies": {
    "kind": "test",
    "hash": "cef43298bf266c4d",
@@ -18131,7 +18461,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "c556e8b8800ea7ca",
+   "hash": "e3a9ddd97cbe59a1",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -18142,7 +18472,7 @@
     "REQ-662"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0097-http-source-review-secrets-everywhere-streaming-and-limits.md"
   },
   "go:backend/internal/httpsource::TestTheRequestsAreSpacedByTheRateOfTheConnection": {
    "kind": "test",
@@ -18236,7 +18566,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "289681e6ce30dc22",
+   "hash": "1ec0051fe4a3e147",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -18247,7 +18577,7 @@
     "REQ-665"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0097-http-source-review-secrets-everywhere-streaming-and-limits.md"
   },
   "go:backend/internal/httpsource::TestTheWordsForWhatIsNotASourceErrorAreFixed": {
    "kind": "test",
@@ -20166,6 +20496,51 @@
     "REQ-265"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHsfHeadersThatChangeTheMethodAreNotAllowed": {
+   "kind": "test",
+   "hash": "7a2fa89fd29eef65",
+   "asserts": 2,
+   "literals": [
+    "753d5a97f422c69a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-691"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHsfMaxResponseBytesHasALimit": {
+   "kind": "test",
+   "hash": "7b138e612e893cc6",
+   "asserts": 3,
+   "literals": [
+    "35a652910a1b7561"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-691"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHsfPageWriterMakesTheTokenWhenAPageIsCutAndNotForEveryRecord": {
+   "kind": "test",
+   "hash": "61e813cbeb9a9d15",
+   "asserts": 7,
+   "literals": [
+    "8d5c7f5132275321"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-693"
+   ],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdentifiersOfAFeedAreBoundAndAClashIsReported": {
@@ -26501,10 +26876,10 @@
   },
   "go:backend/internal/pgsource::TestPgfConnectionsAreClosedAfterTheGraceWhenTheReadIsCancelled": {
    "kind": "test",
-   "hash": "28ca9a9fd8ea52a5",
+   "hash": "433b04329abed070",
    "asserts": 4,
    "literals": [
-    "294389d989d38c01"
+    "018275df79fb0ccd"
    ],
    "precision": [],
    "skips": 0,
@@ -27167,7 +27542,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "e23f2f3cdccbc80e",
+   "hash": "0441d3a0e63b20e7",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -27261,7 +27636,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "265699c390e5189c",
+   "hash": "e4a5fbc8147cd495",
    "asserts": 5,
    "literals": [
     "e75973869c22b055"

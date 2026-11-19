@@ -21,6 +21,9 @@ amends:
     what: 결정 3의 adapter 값을 받는 자리(file, http, postgres. 파일 흐름의 ParseSource는 파일만 받고 ParseAdapterSource가 셋을 받는다)와 미결 표의 종류별 HTTP 본문의 필드 이름
 amends_tests: []
 decision_hash: c22d9b8d36b8803e
+amended_by:
+  - adr: "0097"
+    what: 헤더 금지 목록과 응답 크기 상한
 ---
 # ADR-0090 HTTP와 PostgreSQL 소스 정의의 형식과 어댑터가 쓸 수집 부품
 
