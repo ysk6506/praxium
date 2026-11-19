@@ -16,7 +16,7 @@ import (
 // tested with the conformance cases.
 
 type v2rWorld struct {
-	st         *StoreV2
+	st         *Store
 	admin      *sql.DB
 	dsn        string
 	kg         graph.KG
@@ -47,7 +47,7 @@ func v2rWorldWith(t *testing.T, clock LeaseClock) *v2rWorld {
 	if err != nil {
 		t.Fatal(err)
 	}
-	st, err := OpenV2(ctx, Config{DSN: dsn}, V2Options{Models: models, LeaseClock: clock})
+	st, err := Open(ctx, Config{DSN: dsn, Models: models, LeaseClock: clock})
 	if err != nil {
 		t.Fatal(err)
 	}

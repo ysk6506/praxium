@@ -24948,7 +24948,7 @@
   },
   "go:backend/internal/pgcheck::TestPgxIngestionGivesTheSameGraphHashAsMemory": {
    "kind": "test",
-   "hash": "1ba4af92c4e87358",
+   "hash": "dead951beda36b12",
    "asserts": 7,
    "literals": [
     "cba3373721e7f878"
@@ -24959,11 +24959,11 @@
     "REQ-265"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgcheck::TestPgxQueriesAnswerTheSameAsMemory": {
    "kind": "test",
-   "hash": "f2089d01c0aee288",
+   "hash": "8d389c8e0cb77686",
    "asserts": 7,
    "literals": [
     "b705914b31271e43"
@@ -24974,7 +24974,7 @@
     "REQ-258"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgconn::TestABuildThatKnowsAnOlderStorageFormatRefusesToStartAndSaysWhy": {
    "kind": "test",
@@ -26409,7 +26409,7 @@
   },
   "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheAbandonThatWasCutIsEnded": {
    "kind": "test",
-   "hash": "50639ff0126954fc",
+   "hash": "e0be350724374575",
    "asserts": 10,
    "literals": [
     "b9ccbce5dc1e750f"
@@ -26418,11 +26418,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheRestoreThatWasCutIsEndedAndTheKGIsOpenAgain": {
    "kind": "test",
-   "hash": "77b641a1b3424ea0",
+   "hash": "aae8f4f6f8a95c6f",
    "asserts": 13,
    "literals": [
     "11ac05e80e780cd7"
@@ -26431,11 +26431,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseOfAKGWithNoWorkHalfDoneIsGivenAtOnce": {
    "kind": "test",
-   "hash": "afef8173375e0e6c",
+   "hash": "f79ce9556276eadc",
    "asserts": 5,
    "literals": [
     "42ea9c644b47dedb"
@@ -26444,11 +26444,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestRsmTheServerEndsTheWorkOfEveryKGAndOneThatCannotBeEndedDoesNotStopTheOthers": {
    "kind": "test",
-   "hash": "b8d041aa7af7921b",
+   "hash": "b02960452c5ac59c",
    "asserts": 17,
    "literals": [
     "6fd563788849e473"
@@ -26457,7 +26457,7 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestStatisticsThatCannotBeMadeAndATableThatIsInUseStopTheirRunWithAnError": {
    "kind": "test",
@@ -26633,7 +26633,7 @@
   },
   "go:backend/internal/pgstore::TestV2cGuardChecksInOrderAndTheHeadRoundTrips": {
    "kind": "test",
-   "hash": "34c1344c03c7b216",
+   "hash": "2354243061d0caed",
    "asserts": 15,
    "literals": [
     "432ec8b3b1d0b12c"
@@ -26642,11 +26642,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2cLeaseIsTakenRenewedAndReleasedByTheDatabaseClock": {
    "kind": "test",
-   "hash": "fd2c0172e36f34f8",
+   "hash": "893ba45c2b18408d",
    "asserts": 21,
    "literals": [
     "184e0b0936518fcc"
@@ -26655,11 +26655,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2cLeaseRunsOutByTheClockOfTheCallerWhenTheStoreIsAskedTo": {
    "kind": "test",
-   "hash": "1ceeaadf288962f2",
+   "hash": "cc688e9bcfcfb577",
    "asserts": 7,
    "literals": [
     "ac218ef291b004be"
@@ -26668,11 +26668,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2cResolveDecidesAnUnknownCommitByTheHead": {
    "kind": "test",
-   "hash": "818dcdea447f4f89",
+   "hash": "dcabd317fa1fa488",
    "asserts": 6,
    "literals": [
     "423fda0588240024"
@@ -26681,11 +26681,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2dEveryOperationFailsOnAClosedPool": {
    "kind": "test",
-   "hash": "7bd8515ead60d989",
+   "hash": "7011d9de0a60219d",
    "asserts": 7,
    "literals": [
     "e79cdc854e6eb890"
@@ -26694,11 +26694,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2dReadsFailOnRowsThatHoldWhatTheStoreDidNotWrite": {
    "kind": "test",
-   "hash": "709547887221fbfd",
+   "hash": "f115c2552bd9c1aa",
    "asserts": 6,
    "literals": [
     "63c704b7601f92d0"
@@ -26707,11 +26707,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2dReadsFailWhenATableTheyNeedIsMissing": {
    "kind": "test",
-   "hash": "39a6057f8880ad83",
+   "hash": "29b14c6e35260f2e",
    "asserts": 15,
    "literals": [
     "91c1e85664ee8c1f"
@@ -26720,11 +26720,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2eALeaseAndAHeadThatAreDamagedFail": {
    "kind": "test",
-   "hash": "65b6f80d3cc12282",
+   "hash": "216a40cb43ac14d7",
    "asserts": 11,
    "literals": [
     "2573b51307f626fb"
@@ -26733,11 +26733,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2eAServerThatHoldsAnotherModelRefusesTheKG": {
    "kind": "test",
-   "hash": "24bc805602e7e08c",
+   "hash": "6de3f0aae75867ac",
    "asserts": 5,
    "literals": [
     "c5ca681eaec5b5fc"
@@ -26746,11 +26746,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2eReadPointsAndVersions": {
    "kind": "test",
-   "hash": "18f4a4c31064a5ab",
+   "hash": "beccda5b1c8ffc61",
    "asserts": 18,
    "literals": [
     "f06a38fd3e7c7838"
@@ -26759,11 +26759,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel": {
    "kind": "test",
-   "hash": "879c551335770734",
+   "hash": "c61cbb5692d9a6a4",
    "asserts": 12,
    "literals": [
     "0186a69153a4a72c"
@@ -26772,24 +26772,24 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2eTheTestStoreMakesKGsAndTheCatalogFindsThemByIdNameAndMain": {
    "kind": "test",
-   "hash": "645e71186bf106ce",
-   "asserts": 14,
+   "hash": "6b3c345775a62ff5",
+   "asserts": 13,
    "literals": [
-    "5efc4d3f340c0f4f"
+    "2a477252ce6f352f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2mAChunkWithAValueThatHasNoPlaceIsRefused": {
    "kind": "test",
-   "hash": "de7e04c2a0297b52",
+   "hash": "6ca54e1969c34513",
    "asserts": 9,
    "literals": [
     "6a701185b8c7d5f8"
@@ -26798,11 +26798,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2mAnUnknownOutcomeOfTheStartOfAWorkIsDecidedByTheHead": {
    "kind": "test",
-   "hash": "4878418747a204ee",
+   "hash": "07ab0f7c21118e9d",
    "asserts": 9,
    "literals": [
     "1fdb0f8f12c533ea"
@@ -26811,11 +26811,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2mASealThatIsNotReadyOrDoesNotFollowIsRefused": {
    "kind": "test",
-   "hash": "a6df2d40340871e3",
+   "hash": "4db2c86254a66d11",
    "asserts": 12,
    "literals": [
     "8582915ef492a00f"
@@ -26824,11 +26824,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2mWritesAndFeedsFailWhenATableIsGone": {
    "kind": "test",
-   "hash": "69fd8c8688c4c10b",
+   "hash": "0adb22a7011e1aa3",
    "asserts": 6,
    "literals": [
     "622eee5702d16025"
@@ -26837,11 +26837,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2oAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
    "kind": "test",
-   "hash": "33cdd8fa6d5d64c3",
+   "hash": "588b60ea3523a911",
    "asserts": 10,
    "literals": [
     "19c373654e45d08d"
@@ -26850,11 +26850,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2rCatalogListsGetsAndDeletesAKG": {
    "kind": "test",
-   "hash": "617ed9cfca7f92b4",
+   "hash": "2e3f5b915f3c428e",
    "asserts": 11,
    "literals": [
     "0bf5ca92bd6d54e6"
@@ -26863,11 +26863,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2rReadsLinksIdentifiersAndVolatileValues": {
    "kind": "test",
-   "hash": "9f5f13c6dd6bc859",
+   "hash": "8d2861d19225db58",
    "asserts": 28,
    "literals": [
     "ff478ba23bc97b6e"
@@ -26876,11 +26876,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2rReadsTheNewestAndThePastStates": {
    "kind": "test",
-   "hash": "143ac1dfce9f4c5e",
+   "hash": "5d5757da4c3f50b0",
    "asserts": 20,
    "literals": [
     "c0749a8c5fad5587"
@@ -26889,11 +26889,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2rRefusesReadsThatCannotBeAnswered": {
    "kind": "test",
-   "hash": "a1ee33ff0bf44fc8",
+   "hash": "77f9168b80c8d176",
    "asserts": 9,
    "literals": [
     "1a16e7c6bd7cc2e5"
@@ -26902,11 +26902,26 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
+  },
+  "go:backend/internal/pgstore::TestV2sOpenWithoutModelsHoldsTheStandardModelWithItsStatistics": {
+   "kind": "test",
+   "hash": "d4a51f05a503075f",
+   "asserts": 6,
+   "literals": [
+    "70e72e2f08fa4e92"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-369"
+   ],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestV2StorePassesThePreviewSuite": {
    "kind": "test",
-   "hash": "4647688125fd085d",
+   "hash": "e2714db502e80873",
    "asserts": 1,
    "literals": [
     "44481bf4a77cf729"
@@ -26917,11 +26932,11 @@
     "REQ-410"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2StorePassesTheSuite": {
    "kind": "test",
-   "hash": "70a29df86271a248",
+   "hash": "82681eaf1da0fa77",
    "asserts": 1,
    "literals": [
     "b0683ad31d32e641"
@@ -26938,11 +26953,11 @@
     "REQ-270"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wAbandonTakesTheChunksOutOneNumberAtATimeAndLeavesNoTraceAndAnInterruptedOneIsEnded": {
    "kind": "test",
-   "hash": "bf7ae4ef95e13a6b",
+   "hash": "6270d2bfb466e463",
    "asserts": 23,
    "literals": [
     "e8bdbc5a8763e8b7"
@@ -26951,11 +26966,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wAChangeOfValuesAloneDoesNotTouchTheRowsOfTheObjectAndTheRowsAreWrittenInOrder": {
    "kind": "test",
-   "hash": "54c0791f6a547b27",
+   "hash": "e13a551734bd341f",
    "asserts": 13,
    "literals": [
     "a90349d376f00f67"
@@ -26964,11 +26979,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wARefThatCameBackWithAnotherTypeIsRefused": {
    "kind": "test",
-   "hash": "5df3b48684671bb2",
+   "hash": "43f6f6a1d0902282",
    "asserts": 6,
    "literals": [
     "68f5307da533bae3"
@@ -26977,11 +26992,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wARetiredObjectComesBackWithTheSameNumberAndTheKeyStaysBound": {
    "kind": "test",
-   "hash": "daf96b1f57bb62c5",
+   "hash": "ceaecf4c871dc733",
    "asserts": 18,
    "literals": [
     "e65438aed7b1da00"
@@ -26990,11 +27005,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wAWriteIsRefusedWhenTheSchemaWasMadeFromAnotherModel": {
    "kind": "test",
-   "hash": "01457922faeda7e5",
+   "hash": "390f1ac91736285d",
    "asserts": 5,
    "literals": [
     "2eb72ae83cf1a4f7"
@@ -27003,11 +27018,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wBulkReadsGiveWhatReadsOneAtATimeGive": {
    "kind": "test",
-   "hash": "39ceb9df092c06bb",
+   "hash": "f2a0bed1f160750c",
    "asserts": 10,
    "literals": [
     "66cc4253e56b7540"
@@ -27016,11 +27031,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wRestoreClosesTheKGUntilItEndsAndAnInterruptedOneIsResumed": {
    "kind": "test",
-   "hash": "4d26c948d002ee97",
+   "hash": "c42d80222681b08f",
    "asserts": 25,
    "literals": [
     "6ec354ed00082148"
@@ -27029,11 +27044,11 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestV2wTheSettingsOfTheTablesAreInForce": {
    "kind": "test",
-   "hash": "b19ad16fbc917249",
+   "hash": "666a181a86b4ad6b",
    "asserts": 5,
    "literals": [
     "5706a17ba3f28529"
@@ -27042,7 +27057,7 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
   },
   "go:backend/internal/pgstore::TestVersionsCarryTheirPartsAndRestoreDropsTheLaterOnes": {
    "kind": "test",

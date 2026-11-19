@@ -167,7 +167,7 @@ func TestV2dEveryOperationFailsOnAClosedPool(t *testing.T) {
 			t.Errorf("%s on a closed pool: %v", name, err)
 		}
 	}
-	other := &StoreV2{rt: w.st.rt, models: w.st.models}
+	other := &Store{rt: w.st.rt, models: w.st.models}
 	if _, err := other.Head(ctx, kg); err == nil || kernel.CodeOf(err) == graph.CodeKGNotFound {
 		t.Errorf("a KG that is not known yet, on a closed pool: %v", err)
 	}
