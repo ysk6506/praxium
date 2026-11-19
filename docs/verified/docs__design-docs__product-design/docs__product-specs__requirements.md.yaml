@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements.md"
-hash: "380b38984c7687b8"
+hash: "8f8231b7c1e36031"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
-text_changed: true
-doc_hash: "28c57a06aff13bf4"
+note: "번호 범위 문장 변경을 개요와 대조했고 고칠 것이 없다"
+text_changed: false
+doc_hash: "dd94480c86f7abc5"

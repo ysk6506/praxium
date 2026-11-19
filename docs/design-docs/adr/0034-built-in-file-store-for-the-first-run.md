@@ -28,6 +28,9 @@ touches_protected:
   - harness/config/test-lock.json
   - docs/product-specs/requirements.md
 decision_hash: b697e91f2a167bcc
+amended_by:
+  - adr: "0080"
+    what: 내장 파일 스토어 전체(PostgreSQL 없이 KG를 저장하는 것)를 걷어낸다. 전체를 뒤집는 것이므로 구현하는 변경이 이 결정 기록을 superseded로 바꾼다
 ---
 # ADR-0034 내장 파일 스토어
 

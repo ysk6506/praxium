@@ -1,7 +1,7 @@
 doc: "docs/design-docs/product-design.md"
 target: "docs/product-specs/requirements-operations.md"
-hash: "f62c72ee4eeb8b05"
+hash: "75c4d1f9b3003994"
 date: "2026-11-18"
-note: "영향 범위 삭제(ADR-0078)에 따른 변경 뒤 다시 읽고 맞는지 확인함"
-text_changed: true
-doc_hash: "28c57a06aff13bf4"
+note: "재설계의 예정 요구와 바뀜 표시를 개요와 대조해 읽었고 개요에 고칠 것이 없다"
+text_changed: false
+doc_hash: "dd94480c86f7abc5"

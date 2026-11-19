@@ -1,0 +1,7 @@
+doc: "docs/design-docs/postgres-ha.md"
+target: "docs/design-docs/adr/0081-postgresql-ha-tools-failover-product-rules-and-easy-setup.md"
+hash: "da5c12550b78c395"
+date: "2026-11-19"
+note: "수정 3차(D24~D27, M1, M3, M4, 쓰기 풀 8) 뒤 ADR-0080/0081과 대조했다. 풀 수와 크기, 툴 여섯, 단계 번호, 기본값이 같다"
+text_changed: true
+doc_hash: "45a96d050882edca"
