@@ -115,7 +115,9 @@ func isToken(s string) bool {
 }
 
 // A header the product sets itself; the definition may not (sources-and-adapters.md 8).
-var forbiddenHeaders = []string{"host", "cookie", "accept-encoding", "content-length", "transfer-encoding", "connection"}
+// The three that follow x-http-method-override make a server read a POST as another method (ADR-0097).
+var forbiddenHeaders = []string{"host", "cookie", "accept-encoding", "content-length", "transfer-encoding", "connection",
+	"x-http-method-override", "x-http-method", "x-method-override"}
 
 // headerProblem says why a header may not be named in a definition, or "".
 func headerProblem(name string, allowAuthorization bool) string {

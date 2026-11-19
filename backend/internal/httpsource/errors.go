@@ -23,7 +23,7 @@ var (
 )
 
 func (rn *run) fail(kind, message string, cause error) *ingest.SourceError {
-	return ingest.NewSourceError(kind, ingest.MaskText(message, rn.texts()...), cause)
+	return ingest.NewSourceError(kind, rn.clean(message), cause)
 }
 
 // transportError says what an error of a request or of reading its answer is. The error of the caller's context is given
@@ -56,6 +56,15 @@ func (rn *run) transportError(ctx context.Context, err error) error {
 		return context.Canceled
 	}
 	return rn.fail(ingest.SrcInternal, "the connection to the source failed in a way that is not known", err)
+}
+
+// pageValueError says what a failure of reading where the next page is. A value that is too long is a failure of the shape
+// of the answer; any other is an address that may not be followed.
+func (rn *run) pageValueError(ctx context.Context, err error) error {
+	if errors.Is(err, errPageValue) {
+		return rn.fail(ingest.SrcResponseFormat, "a value the source gave for the next page (a cursor or an address) is longer than "+strconv.Itoa(pageValueMax)+" bytes", nil)
+	}
+	return rn.transportError(ctx, err)
 }
 
 // statusError says what a status that is not a success is. The body of such an answer is never read.

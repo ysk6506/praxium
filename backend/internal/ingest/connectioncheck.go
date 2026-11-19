@@ -86,7 +86,7 @@ func (cn *Connection) normalizeHTTP(c *collector, id string) {
 	cn.checkHeaders(c, id)
 	c.intOr(id, "timeout_seconds", &cn.TimeoutSeconds, 1, 3600, DefaultHTTPTimeoutSeconds)
 	cn.RequestsPerSecond = defaultedF(c.checkRange(ecAdRange, Params{"source": id}, "requests_per_second", ptr("connection", "requests_per_second"), cn.RequestsPerSecond, numBounds{0.01, 1000}), cn.RequestsPerSecond, DefaultRequestsPerSecond)
-	c.intOr(id, "max_response_bytes", &cn.MaxResponseBytes, 1<<10, 1<<30, DefaultMaxResponseBytes)
+	c.intOr(id, "max_response_bytes", &cn.MaxResponseBytes, 1<<10, MaxResponseBytesLimit, DefaultMaxResponseBytes)
 	c.intOr(id, "max_retry_wait_seconds", &cn.MaxRetryWaitSeconds, 1, 3600, DefaultMaxRetryWaitSeconds)
 	a := Auth{Kind: AuthNone}
 	if cn.Auth != nil {

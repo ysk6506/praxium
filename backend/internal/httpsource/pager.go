@@ -1,12 +1,19 @@
 package httpsource
 
 import (
+	"errors"
 	"net/url"
 	"strconv"
 
 	"github.com/ysk6506/praxium/backend/internal/egress"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 )
+
+// pageValueMax is the most bytes a value the source gave for the next page may have: a cursor, an address, the target of
+// a Link header (ADR-0097). A longer one is a failure of the shape of the answer.
+const pageValueMax = 8 << 10
+
+var errPageValue = errors.New("a value for the next page is longer than the limit")
 
 // pos is where a request is in the pagination of a dataset: the number of the page, the offset or the cursor it asks
 // for (whichever the kind uses), or, for the two kinds that follow an address the source gave, that address.
@@ -105,13 +112,34 @@ func (g *pager) advance(at pos, r *reply, doc any, n, seen int) (step, error) {
 	case ingest.PageOffset:
 		return g.countStep(doc, n, seen, pos{offset: at.offset + n}), nil
 	case ingest.PageCursor:
-		return g.cursorStep(at, doc), nil
+		return g.cursorStep(at, doc)
 	case ingest.PageNextURL:
 		return g.addressStep(r, nextText(g.pg.NextPath, doc))
 	case ingest.PageLinkHeader:
 		return g.addressStep(r, linkTarget(r.header, g.pg.Rel))
 	}
 	return step{complete: true}, nil
+}
+
+// reads lists the places of a response that the pagination reads, for the reading of the response to keep (stream.go).
+func (g *pager) reads() []ingest.Path {
+	var text string
+	switch g.pg.Kind {
+	case ingest.PagePage, ingest.PageOffset:
+		text = g.pg.TotalPath
+	case ingest.PageCursor:
+		text = g.pg.NextCursorPath
+	case ingest.PageNextURL:
+		text = g.pg.NextPath
+	}
+	if text == "" {
+		return nil
+	}
+	p, err := ingest.ParsePath(text)
+	if err != nil {
+		return nil
+	}
+	return []ingest.Path{p}
 }
 
 // totalOf reads the number of records the source says the dataset has, when the definition says where.
@@ -145,21 +173,26 @@ func (g *pager) countStep(doc any, n, seen int, next pos) step {
 	return step{complete: true}
 }
 
-func (g *pager) cursorStep(at pos, doc any) step {
+func (g *pager) cursorStep(at pos, doc any) (step, error) {
 	next := nextText(g.pg.NextCursorPath, doc)
 	switch {
 	case next == "":
-		return step{complete: true}
+		return step{complete: true}, nil
+	case len(next) > pageValueMax:
+		return step{}, errPageValue
 	case next == at.cursor:
-		return step{reason: "the source gave the same cursor again, so the read cannot go on"}
+		return step{reason: "the source gave the same cursor again, so the read cannot go on"}, nil
 	}
-	return step{more: true, next: pos{cursor: next}}
+	return step{more: true, next: pos{cursor: next}}, nil
 }
 
 // addressStep follows an address the source gave, if it is of the origin of the request it came with.
 func (g *pager) addressStep(r *reply, ref string) (step, error) {
 	if ref == "" {
 		return step{complete: true}, nil
+	}
+	if len(ref) > pageValueMax {
+		return step{}, errPageValue
 	}
 	next, err := egress.ResolveSameOrigin(r.url, ref)
 	if err != nil {

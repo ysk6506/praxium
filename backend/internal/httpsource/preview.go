@@ -10,7 +10,8 @@ import (
 // Preview reads the first pages of a dataset for a person to look at: the pages as masked rows (at most MaxRows rows in all,
 // in at most MaxPages pages) and the requests that made them as a record of exchanges (ADR-0090). What a person is shown goes through the masks of core.ingest: the value
 // of a column whose name is a secret's, the headers but the three that are shown, the query of an address the source gave,
-// and, as a second wall, any value of an open secret that turns up in a cell.
+// and the values of the open secrets, which are taken out of every record before it is made into a row and out of every
+// text of the exchanges (ADR-0097).
 func (r *Reader) Preview(ctx context.Context, source string, ds ingest.Dataset, opts ingest.PreviewOptions) (ingest.Preview, error) {
 	opts = opts.WithDefaults()
 	rn, err := r.begin(ctx, source, ds, secrets.PurposeDiscover)
@@ -35,28 +36,13 @@ func (r *Reader) Preview(ctx context.Context, source string, ds ingest.Dataset, 
 		rows += p.Received()
 		page, masked := ingest.MaskPage(p)
 		out.Masked = out.Masked || masked
-		out.Pages = append(out.Pages, rn.wipeValues(page))
+		out.Pages = append(out.Pages, page)
 		return len(out.Pages) < opts.MaxPages && rows < opts.MaxRows
 	})
 	if failed != nil {
 		return ingest.Preview{}, failed
 	}
 	out.Exchanges = rn.exchanges
+	out.Masked = out.Masked || rn.cleaned > 0
 	return out, nil
-}
-
-// wipeValues takes the values of the open secrets out of the cells of a page.
-func (rn *run) wipeValues(p ingest.Page) ingest.Page {
-	texts := rn.texts()
-	if len(texts) == 0 {
-		return p
-	}
-	for i, row := range p.Rows {
-		fields := make(map[string]string, len(row.Fields))
-		for k, v := range row.Fields {
-			fields[k] = ingest.MaskText(v, texts...)
-		}
-		p.Rows[i].Fields = fields
-	}
-	return p
 }

@@ -12,7 +12,7 @@ import (
 const reasonFirstOnly = "only the first response was read"
 
 // loop is the reading of one dataset: the requests, one after the other, and the records of their answers cut into
-// pages. It reads in one goroutine and holds one response at a time.
+// pages. It reads in one goroutine and holds one record at a time and the page being filled (ADR-0097).
 type loop struct {
 	rn    *run
 	ctx   context.Context
@@ -27,6 +27,26 @@ type loop struct {
 	skip, seen, requests int
 	last                 kernel.Hash
 	haveLast             bool
+	// tail is the record added last, whose token a page that ends with it takes (mint).
+	tail tail
+	mint func() []byte
+}
+
+// tail is what the token of a record is made of: where the record is in its response, and the response.
+type tail struct {
+	i    int
+	at   pos
+	seen int
+	end  *respEnd
+}
+
+// respEnd is what the end of a response says, which is known when the whole answer is read: how many records it had and
+// what comes next. The token of the last record of a response needs it, and the token is made when a page is cut, which
+// may be after the next response began.
+type respEnd struct {
+	done bool
+	n    int
+	sp   step
 }
 
 // read gives the pages of a dataset to yield. It ends with a page that has Last set, or with an error.
@@ -44,6 +64,7 @@ func (rn *run) read(ctx context.Context, ds ingest.Dataset, opts ingest.PageOpti
 	}
 	fp := fingerprint(rn.set, ds)
 	l := &loop{rn: rn, ctx: ctx, ds: ds, rb: rb, pw: ingest.NewPageWriter(ds, opts), yield: out, fp: fp}
+	l.mint = l.tokenOfTail
 	start := rn.startAt(fp, opts.Resume)
 	l.at, l.skip, l.seen = start.at, start.skip, start.base
 	if start.done {
@@ -63,36 +84,47 @@ func (l *loop) run() {
 			l.yield(ingest.Page{}, err)
 			return
 		}
-		px, err := l.rn.data(l.ctx, l.ds, l.at)
-		if err != nil {
-			l.fail(err)
-			return
-		}
-		l.requests++
-		if !l.take(px) {
+		if !l.fetch() {
 			return
 		}
 	}
 }
 
-// take gives the records of a response to the pages and finds where the read goes on. It tells whether it does.
-func (l *loop) take(px *parsed) bool {
-	sum := kernel.HashBytes(px.reply.body)
-	if l.haveLast && sum == l.last {
+// fetch sends the request for the position, reads the records of the answer onto the pages as they come and finds where
+// the read goes on. It tells whether it does.
+func (l *loop) fetch() bool {
+	a, err := l.rn.data(l.ctx, l.ds, l.at)
+	if err != nil {
+		l.fail(err)
+		return false
+	}
+	l.requests++
+	end := &respEnd{}
+	w, err := a.records(l.ctx, l.skip, func(rec any, i int) bool { return l.feed(rec, i, end) })
+	if err != nil {
+		l.fail(err)
+		return false
+	}
+	if w.stopped {
+		return false
+	}
+	return l.take(w, end)
+}
+
+// take finds where the read goes on after an answer that was read to its end. It tells whether it does.
+func (l *loop) take(w *walked, end *respEnd) bool {
+	if l.haveLast && w.sum == l.last {
 		l.finish(ingest.Completeness{Reason: "the source gave the same answer twice in a row, so the parameters of the pages are not read by it; the rest was not read"})
 		return false
 	}
-	l.last, l.haveLast = sum, true
-	n := len(px.records)
-	sp, err := l.rn.pager.advance(l.at, px.reply, px.doc, n, l.seen+n)
+	l.last, l.haveLast = w.sum, true
+	sp, err := l.rn.pager.advance(l.at, w.reply, w.doc, w.n, l.seen+w.n)
 	if err != nil {
-		l.fail(l.rn.transportError(l.ctx, err))
+		l.fail(l.rn.pageValueError(l.ctx, err))
 		return false
 	}
-	if !l.feed(px, sp) {
-		return false
-	}
-	l.at, l.skip, l.seen = sp.next, 0, l.seen+n
+	end.n, end.sp, end.done = w.n, sp, true
+	l.at, l.skip, l.seen = sp.next, 0, l.seen+w.n
 	switch {
 	case !sp.more:
 		l.finish(ingest.Completeness{Complete: sp.complete, Reason: sp.reason})
@@ -104,30 +136,33 @@ func (l *loop) take(px *parsed) bool {
 	return false
 }
 
-// feed puts the records of a response on the pages, each with the token of the position after it. It tells whether to go on.
-func (l *loop) feed(px *parsed, sp step) bool {
-	n := len(px.records)
-	for i := l.skip; i < n; i++ {
-		where := "page " + strconv.Itoa(l.requests) + ", record " + strconv.Itoa(i+1)
-		rec := l.rb.Record(px.records[i], l.seen+i+1, where)
-		if !l.pw.Add(l.ctx, rec, l.tokenAfter(i, n, sp), l.yield) {
-			return false
-		}
+// feed puts a record of the response on the pages. The values of the open secrets are taken out of it first, and the token
+// of the position after it is made only if a page is cut there. It tells whether to go on.
+func (l *loop) feed(rec any, i int, end *respEnd) bool {
+	where := "page " + strconv.Itoa(l.requests) + ", record " + strconv.Itoa(i+1)
+	table := l.rb.Record(l.rn.cleanValue(rec), l.seen+i+1, where)
+	var after func() []byte
+	if l.rn.pager.resumable() {
+		after = l.mint
 	}
-	return true
+	ok := l.pw.AddLazy(l.ctx, table, after, l.yield)
+	l.tail = tail{i: i, at: l.at, seen: l.seen, end: end}
+	return ok
 }
 
-// tokenAfter is the token of the position after record i of the response that has n.
-func (l *loop) tokenAfter(i, n int, sp step) []byte {
+// tokenOfTail is the token of the position after the record added last, made when a page ends with it. A record in the
+// middle of a response is followed by the next of it; the last is followed by the next response. The last record of the
+// last response ends no page that is cut, so no token is made for it.
+func (l *loop) tokenOfTail() []byte {
+	l.rn.tokens++
+	t := l.tail
 	switch {
-	case !l.rn.pager.resumable():
-		return nil
-	case i < n-1:
-		return tokenAt(l.fp, l.at, i+1, l.seen)
-	case sp.more:
-		return tokenAt(l.fp, sp.next, 0, l.seen+n)
+	case !t.end.done || t.i < t.end.n-1:
+		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i+1, t.seen), t.at.cursor)
+	case t.end.sp.more:
+		return l.rn.safeToken(tokenAt(l.fp, t.end.sp.next, 0, t.seen+t.end.n), t.end.sp.next.cursor)
 	}
-	return tokenEnd(l.fp, l.seen+n)
+	return nil
 }
 
 func (l *loop) finish(end ingest.Completeness) {

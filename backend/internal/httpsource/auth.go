@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/url"
 	"regexp"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/secrets"
@@ -39,9 +40,14 @@ func (secretText) MarshalJSON() ([]byte, error) { return []byte(`"` + secrets.Re
 
 // maskSet holds the texts that must not appear in any words (the values of the secrets and what is made of them) in the
 // same way: in a function value, printing as nothing.
-type maskSet struct{ get func() []string }
+type maskSet struct {
+	get  func() []string
+	repl *strings.Replacer
+}
 
-func holdTexts(v []string) maskSet { return maskSet{get: func() []string { return v }} }
+func holdTexts(v []string) maskSet {
+	return maskSet{get: func() []string { return v }, repl: newReplacer(v)}
+}
 
 func (m maskSet) list() []string {
 	if m.get == nil {
@@ -97,19 +103,22 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, purpos
 			return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret has no value in a field this authentication needs", nil)
 		}
 	}
-	s.mask = holdTexts(s.maskTexts())
+	s.mask = holdTexts(maskForms(s.maskTexts()))
 	return s, nil
 }
 
-// maskTexts are the values that must not appear in any text: the secret's own and what is made of them.
+// maskTexts are the values that must not appear in any text: the ones the adapter took out of the secret and the ones it
+// made of them for the requests (maskForms makes the other shapes they may come back in).
 func (s *signer) maskTexts() []string {
 	switch s.auth.Kind {
-	case ingest.AuthBearer, ingest.AuthHeader:
-		return []string{s.field("token")}
+	case ingest.AuthBearer:
+		return []string{s.field("token"), "Bearer " + s.field("token")}
+	case ingest.AuthHeader:
+		return []string{s.field("token"), ingest.UnescapeBraces(s.auth.Prefix) + s.field("token")}
 	case ingest.AuthBasic:
-		return []string{s.field("password"), s.basicValue()}
+		return []string{s.field("username"), s.field("password"), s.basicValue(), "Basic " + s.basicValue()}
 	case ingest.AuthTokenRequest:
-		return []string{s.field("password")}
+		return []string{s.field("username"), s.field("password")}
 	}
 	return nil
 }
@@ -218,11 +227,16 @@ func (s *signer) ensure(ctx context.Context, rn *run) error {
 	}
 	u := *rn.origin
 	u.Path += s.auth.Request.Path
-	rep, err := rn.exchange(ctx, plan{method: ingest.MethodPost, url: &u, body: body, ctype: ctype, token: true})
+	p := plan{method: ingest.MethodPost, url: &u, body: body, ctype: ctype, token: true}
+	rep, err := rn.exchange(ctx, p)
 	if err != nil {
 		return err
 	}
-	doc, err := decodeJSON(rep.body)
+	data, err := rn.smallBody(ctx, p, rep, tokenAnswerMax)
+	if err != nil {
+		return err
+	}
+	doc, err := decodeJSON(data)
 	if err != nil {
 		return rn.fail(ingest.SrcResponseFormat, "the answer to the token request is not JSON", nil)
 	}
@@ -235,7 +249,7 @@ func (s *signer) ensure(ctx context.Context, rn *run) error {
 		return rn.fail(ingest.SrcResponseFormat, "the answer to the token request has no token at token_path", nil)
 	}
 	s.token = holdText(tok)
-	s.mask = holdTexts(append(s.mask.list(), tok))
+	s.mask = holdTexts(append(s.mask.list(), maskForms([]string{tok, s.sendPrefix() + tok})...))
 	rn.prog.authenticated = true
 	return nil
 }
