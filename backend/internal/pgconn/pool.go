@@ -82,7 +82,7 @@ func build(rc resolved) (*Pool, error) {
 	return &Pool{db: w, read: r, query: q, limits: rc.limits, hook: rc.BeforeCommit}, nil
 }
 
-// start reaches the server(s), applies the version gate and runs the migrations.
+// start reaches the server(s), applies the version gate, runs the migrations and applies the gate of the storage format.
 func (p *Pool) start(ctx context.Context, rc resolved) error {
 	if err := p.db.PingContext(ctx); err != nil {
 		return kernel.Wrap(kernel.CodeInternal, err, "cannot reach the PostgreSQL server")
@@ -102,7 +102,10 @@ func (p *Pool) start(ctx context.Context, rc resolved) error {
 	if err != nil {
 		return err
 	}
-	return migrate(ctx, p, steps)
+	if err := migrate(ctx, p, steps); err != nil {
+		return err
+	}
+	return storageGate(ctx, p.db)
 }
 
 // DB is the write pool, a handle that follows the renewal of its connections. Do not keep what it gives out.

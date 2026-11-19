@@ -31,10 +31,16 @@ var sessionStatements = []struct {
 
 var setLocal = regexp.MustCompile(`(^|;)\s*SET\s+LOCAL\b`)
 
+// execExempt are the files that may run statements on something that is not a transaction: the helper that makes
+// test databases, and the one place that runs a statement PostgreSQL does not allow in a transaction (CREATE INDEX
+// CONCURRENTLY; Pool.ExecOutsideTx). Neither is scanned.
+var execExempt = map[string]bool{"testdb.go": true, "online_exec.go": true}
+
 // SessionStateViolations reads the Go files of fsys (the files of a PostgreSQL adapter, tests left out) and lists what
 // breaks the rules above: an SQL string that leaves something on the session, a statement prepared on a pool or a
 // connection, and an Exec on anything but a transaction (a variable named tx). The test helper of the connection
-// base that makes databases (testdb.go) is the one file that may run statements on a pool.
+// base that makes databases (testdb.go) and the one that runs a statement outside a transaction (online_exec.go) are the
+// files that may run statements on a pool or a connection.
 func SessionStateViolations(fsys fs.FS) ([]string, error) {
 	names, err := fs.Glob(fsys, "*.go")
 	if err != nil {
@@ -42,7 +48,7 @@ func SessionStateViolations(fsys fs.FS) ([]string, error) {
 	}
 	var out []string
 	for _, name := range names {
-		if strings.HasSuffix(name, "_test.go") || name == "testdb.go" {
+		if strings.HasSuffix(name, "_test.go") || execExempt[name] {
 			continue
 		}
 		src, err := fs.ReadFile(fsys, name)
