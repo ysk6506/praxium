@@ -4,9 +4,10 @@
 #   scripts/with-postgres.sh pnpm check
 #   scripts/with-postgres.sh go test ./...
 #
-# If PRAXIUM_TEST_PG_DSN is already set (CI gives a service container), the command runs as it is. Otherwise the
-# script needs the server programs (initdb, pg_ctl) of an installed PostgreSQL: from PG_BIN, from pg_config, from
-# the PATH, or from /usr/lib/postgresql/<version>/bin. The server listens on a socket in a temporary directory only,
+# If PRAXIUM_TEST_PG_DSN is already set (your own test server), the command runs as it is. Otherwise the script
+# needs the server programs (initdb, pg_ctl) of an installed PostgreSQL 18 or newer: from PG_BIN, from pg_config,
+# from the PATH, or from /usr/lib/postgresql/<version>/bin. CI runs this script too, with the programs that
+# scripts/ci-install-postgres.sh installs (ADR-0082). The server listens on a socket in a temporary directory only,
 # no port, and everything is removed when the command ends. As root, initdb refuses to run, so the server is run
 # as an unprivileged user (PG_RUN_USER, default praxium-pg, made if missing); this is for sandboxes and containers.
 set -euo pipefail
@@ -29,7 +30,13 @@ find_bin() {
 }
 bin=$(find_bin || true)
 if [ -z "$bin" ] || [ ! -x "$bin/initdb" ] || [ ! -x "$bin/pg_ctl" ]; then
-  echo "with-postgres: no PostgreSQL server programs found (initdb, pg_ctl); install PostgreSQL 16 or set PG_BIN, or set PRAXIUM_TEST_PG_DSN to a test server" >&2
+  echo "with-postgres: no PostgreSQL server programs found (initdb, pg_ctl); install PostgreSQL 18 or set PG_BIN, or set PRAXIUM_TEST_PG_DSN to a test server" >&2
+  exit 1
+fi
+
+major=$("$bin/postgres" --version | sed -E 's/^[^0-9]*([0-9]+).*/\1/')
+if [ -z "$major" ] || [ "$major" -lt 18 ]; then
+  echo "with-postgres: the server programs in $bin are PostgreSQL ${major:-of an unknown version}; the tests need 18 or newer (ADR-0082). Install PostgreSQL 18 and point PG_BIN at its bin directory" >&2
   exit 1
 fi
 

@@ -82,39 +82,28 @@ jobs:
       - run: pnpm typecheck
 
   # Tests once, with coverage; then every structure check, which reads that coverage. The tests of the PostgreSQL
-  # adapter and of the server on it run against a real PostgreSQL 16, the service container below. The variable gives
-  # them its address; without it those tests fail (they are never skipped, ADR-0032). The container is throwaway
-  # and listens on the job's own network only, so it needs no password.
+  # adapter and of the server on it run against a real PostgreSQL 18 (ADR-0082). The job installs the server programs
+  # and runs the commands through scripts/with-postgres.sh, as a developer does: the script starts a throwaway server
+  # on a socket and sets PRAXIUM_TEST_PG_DSN; without a server those tests fail (they are never skipped, ADR-0032).
   test:
     needs: changes
     if: needs.changes.outputs.docs_only != 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    services:
-      postgres:
-        image: postgres:16
-        env:
-          POSTGRES_USER: praxium
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U praxium"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 12
     env:
-      PRAXIUM_TEST_PG_DSN: postgres://praxium@127.0.0.1:5432/postgres?sslmode=disable
+      PG_BIN: /usr/lib/postgresql/18/bin
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           fetch-depth: 0
       - uses: ./.github/actions/setup
-      - run: pnpm test
+      - name: Install PostgreSQL 18 (the server programs, for scripts/with-postgres.sh)
+        run: scripts/ci-install-postgres.sh
+      - run: scripts/with-postgres.sh pnpm test
       - if: github.event_name == 'pull_request'
-        run: pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
+        run: scripts/with-postgres.sh pnpm tsx harness/src/run-all.ts --with-coverage --base origin/${{ github.base_ref }}
       - if: github.event_name != 'pull_request'
-        run: pnpm tsx harness/src/run-all.ts --with-coverage
+        run: scripts/with-postgres.sh pnpm tsx harness/src/run-all.ts --with-coverage
       # The web UI (ADR-0035): the typed API layer must be what the contract generates, and the web build and the
       # program with the build inside must succeed. The tests and structure checks above ran without the web build.
       - name: Web API layer matches the contract
@@ -126,7 +115,7 @@ jobs:
       # The quality table's coverage column is read from a record made here, from the coverage this job just measured
       # (docs/generated/coverage-record.json, not committed). Without it every coverage cell says "unknown".
       - name: Record the measured coverage
-        run: pnpm tsx harness/src/checks/quality.ts record > /dev/null
+        run: scripts/with-postgres.sh pnpm tsx harness/src/checks/quality.ts record > /dev/null
       - name: Quality grades of this change
         if: always()
         run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"
