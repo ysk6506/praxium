@@ -37,6 +37,9 @@ func (p *Plan) keyFor(fp *feedPlan, im IdentityMap, at string, registry []model.
 	if im.Scheme != "" {
 		return p.schemeKey(fp, im, at, registry)
 	}
+	if p.contexts && hasContextComponent(im) {
+		return p.contextKey(fp, im, at, registry, props)
+	}
 	return p.componentKey(fp, im, at, registry, props)
 }
 
@@ -61,10 +64,15 @@ func (p *Plan) componentKey(fp *feedPlan, im IdentityMap, at string, registry []
 	if !found {
 		return keyPlan{}, false
 	}
-	for _, k := range registry {
+	for ord, k := range registry {
 		if k.Scheme.IsZero() && p.sameProperties(k, names) {
-			return keyPlan{name: keyName(im, fmt.Sprint(names)), priority: im.Priority, parts: parts}, columnsOK
+			return keyPlan{name: keyName(im, fmt.Sprint(names)), priority: im.Priority, parts: parts, modelOrd: ord}, columnsOK
 		}
+	}
+	if p.contexts && p.onlySetKeys(registry) {
+		p.errs.add(ecScaleSetKey, at+ptr("components"), Params{"feed": fp.feed.ID, "type": fp.typ.Name},
+			"feed %s: the identity keys of type %s name a set of objects, which a mapping cannot write in this build", fp.feed.ID, fp.typ.Name)
+		return keyPlan{}, false
 	}
 	p.errs.add(ecMapIdentNoKey, at+ptr("components"), Params{"feed": fp.feed.ID, "type": fp.typ.Name, "properties": names},
 		"feed %s: type %s has no identity key made of the properties %v, in that order. %s", fp.feed.ID, fp.typ.Name, names, p.keysHint(fp))
@@ -110,9 +118,9 @@ func (p *Plan) schemeKey(fp *feedPlan, im IdentityMap, at string, registry []mod
 	if !schemeOK {
 		return keyPlan{}, false
 	}
-	for _, k := range registry {
+	for ord, k := range registry {
 		if k.Scheme == sch.ID && len(k.Components) == 0 {
-			return keyPlan{name: keyName(im, im.Scheme), priority: im.Priority, scheme: sch.ID,
+			return keyPlan{name: keyName(im, im.Scheme), priority: im.Priority, scheme: sch.ID, modelOrd: ord,
 				parts: []keyPart{{kind: graph.PartScheme, ref: sch.ID.String(), vt: sch.Normalizer, column: im.Column}}}, columnOK
 		}
 	}

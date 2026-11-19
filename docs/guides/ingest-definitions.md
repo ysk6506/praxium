@@ -226,6 +226,7 @@ CSV와 JSON Lines에는 `max_rows_per_dataset`(기본 200000, 엑셀의 시트�
 - 행은 칸이 모두 찬 규칙의 키를 만든다. 만들 수 있는 키가 없으면 `missing_identity`이다. 이미 아는 키가 있으면 그 객체이고, 없고 피드가 객체를 만들면 첫 키로 새 객체를 만든다.
 - **`key_name`은 이름표일 뿐이다.** 메시지에 키를 가리킬 때만 쓰고 어느 객체인지 알아보는 데는 끼지 않는다. 객체가 같은지는 타입과 키를 이룬 속성(또는 식별자 방식)의 순서와 값으로만 정해진다. 같은 객체를 가리키는 두 피드 가운데 한쪽에만 `key_name`을 주거나 서로 다른 이름을 줘도 같은 객체이다.
 - 키가 둘이 서로 다른 객체를 가리키면 `identity_conflict`이다. 식별자 하나가 이미 다른 객체의 것이어도 같다.
+- **문맥 구성 요소(새 수집 흐름 전용).** `components`의 첫 항목은 `{ "context": "LOCATED_IN", "parent": { "object_type": "Building", "identity": [ ... ] } }`처럼 부모를 가리키는 문맥일 수 있다. 문맥은 부모 객체가 같은 것을 키의 일부로 삼는다(예: 같은 이름의 방도 다른 층에 있으면 다른 객체). `parent.identity`는 부모 타입의 키를 같은 규칙으로 쓰며 문맥을 다시 품을 수 있지만 깊이는 4단계까지이다. 링크 타입은 자식과 부모 타입을 이어야 하고, 집합 키만 가진 타입은 쓸 수 없으며, 같은 피드에 같은 링크 타입의 링크 정의를 함께 적을 수 없다(문맥이 그 링크도 만든다). 지금의 `ingest` 명령은 문맥 구성 요소를 받지 않고 거절한다. 새 흐름의 컴파일(`CompileScale`)만 받으며 그 오류 코드는 `mapping.identity.context_*`, `mapping.identity.set_key_unsupported`, `mapping.link.duplicates_context`이다.
 
 ### 4.2 identifiers
 

@@ -26,6 +26,10 @@ type Plan struct {
 	// errs gathers the errors of the check that is going on; broken are the refinements whose own input was refused.
 	errs   *collector
 	broken map[string]bool
+	// contexts is true while the mapping is compiled for the new flow, which reads context keys (CompileScale); depth
+	// is how deep the parents of the context key being compiled nest.
+	contexts bool
+	depth    int
 }
 
 type valueSpec struct {
@@ -52,6 +56,10 @@ type keyPlan struct {
 	priority int
 	parts    []keyPart
 	scheme   model.IdentifierSchemeID
+	// modelOrd is the place of the key in the list the model gives its object type. ctx is set for a key that begins
+	// with a context component; parts are then the components after it. Only the new flow reads them (ADR-0086).
+	modelOrd int
+	ctx      *ctxPlan
 }
 
 type identPlan struct {
@@ -91,7 +99,11 @@ type linkPlan struct {
 // allow is an error here and never a surprise in a run. It tells every mistake that does not come of another, as a
 // *DefinitionErrors (ADR-0070).
 func Compile(reg *model.Registry, src Source, m Mapping) (*Plan, error) {
-	p := &Plan{Source: src, Mapping: m, reg: reg, columns: map[string][]string{}, roots: map[string]string{}, errs: newCollector(DocumentMapping), broken: map[string]bool{}}
+	return compile(reg, src, m, false)
+}
+
+func compile(reg *model.Registry, src Source, m Mapping, contexts bool) (*Plan, error) {
+	p := &Plan{Source: src, Mapping: m, reg: reg, columns: map[string][]string{}, roots: map[string]string{}, errs: newCollector(DocumentMapping), broken: map[string]bool{}, contexts: contexts}
 	for _, d := range src.Datasets {
 		p.roots[d.ID] = d.ID
 		for _, c := range d.Columns {
@@ -117,6 +129,9 @@ func Compile(reg *model.Registry, src Source, m Mapping) (*Plan, error) {
 	}
 	if len(m.Feeds) > 0 {
 		p.compileLinks(byID)
+	}
+	if contexts {
+		p.checkContextLinks()
 	}
 	err := p.errs.err()
 	p.errs = nil
