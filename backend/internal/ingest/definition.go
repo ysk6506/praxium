@@ -42,7 +42,7 @@ type Dataset struct {
 	Name        string   `json:"name,omitempty"`
 	Kind        string   `json:"kind,omitempty"`
 	ReceiveMode string   `json:"receive_mode,omitempty"`
-	Parser      string   `json:"parser"`
+	Parser      string   `json:"parser,omitempty"`
 	NaturalKey  []string `json:"natural_key"`
 	Deletion    string   `json:"deletion,omitempty"`
 	Columns     []Column `json:"columns"`
@@ -58,17 +58,32 @@ type Dataset struct {
 	IgnoreRowsWithoutKey bool `json:"ignore_rows_without_key,omitempty"`
 	// Sheet says which sheet of a workbook the dataset is and how its rows are laid out. Only the xlsx parser has it.
 	Sheet *SheetOptions `json:"sheet,omitempty"`
+	// Request, RecordsPath, Pagination and PostReads are the fields of a dataset of an HTTP source: the request, where
+	// in the response the records are, how the pages go, and whether the dataset reads with POST (sources-and-adapters.md 2.2).
+	Request     *Request    `json:"request,omitempty"`
+	RecordsPath string      `json:"records_path,omitempty"`
+	Pagination  *Pagination `json:"pagination,omitempty"`
+	PostReads   bool        `json:"post_reads,omitempty"`
+	// Table and SQL say what a dataset of a PostgreSQL source reads: a table or view, or one statement; and
+	// KeyCollation is the collation the natural key is ordered by, when it is not the column's own (sources-and-adapters.md 2.3).
+	Table        string `json:"table,omitempty"`
+	SQL          string `json:"sql,omitempty"`
+	KeyCollation string `json:"key_collation,omitempty"`
 }
 
 // Source is a place data comes from (ingestion.md 3.1) with the datasets it gives.
 type Source struct {
 	// Version is the version of the document; none is version 1 (ADR-0075).
-	Version   *int      `json:"version,omitempty"`
-	ID        string    `json:"id"`
-	Name      string    `json:"name,omitempty"`
-	Adapter   string    `json:"adapter"`
-	Collector string    `json:"collector,omitempty"`
-	Datasets  []Dataset `json:"datasets"`
+	Version   *int   `json:"version,omitempty"`
+	ID        string `json:"id"`
+	Name      string `json:"name,omitempty"`
+	Adapter   string `json:"adapter"`
+	Collector string `json:"collector,omitempty"`
+	// Connection is where an http or postgres source is reached; a file source has none.
+	Connection *Connection `json:"connection,omitempty"`
+	// Disabled stops the runs of the source (sources-and-adapters.md 2.1).
+	Disabled bool      `json:"disabled,omitempty"`
+	Datasets []Dataset `json:"datasets"`
 	// Limits are the safety limits of the readers of workbook files; an unset one is the default.
 	Limits *Limits `json:"limits,omitempty"`
 }
@@ -131,37 +146,63 @@ func decodeProblem(c *collector, data []byte, what string, into any, err error) 
 	c.add(ecDefUnknownField, where, params, "the %s is not a valid definition: %s", what, msg)
 }
 
-// ParseSource reads and checks a source definition. A definition that is refused gives a *DefinitionErrors.
+// ParseSource reads and checks a source definition of the file flow: the adapter is file. A definition that is refused
+// gives a *DefinitionErrors. A source of another adapter is refused here as one this build does not have, which is what
+// the file flow of the command line is to say of it; ParseAdapterSource reads all three.
 func ParseSource(r io.Reader) (Source, error) {
+	return parseSourceFor(r, fileOnly)
+}
+
+// ParseAdapterSource reads and checks a source definition of any adapter: file, http or postgres (ADR-0090).
+func ParseAdapterSource(r io.Reader) (Source, error) {
+	return parseSourceFor(r, allAdapters)
+}
+
+var (
+	fileOnly    = []string{AdapterFile}
+	allAdapters = []string{AdapterFile, AdapterHTTP, AdapterPostgres}
+)
+
+func parseSourceFor(r io.Reader, adapters []string) (Source, error) {
 	var s Source
 	if err := decodeStrict(r, DocumentSource, "source definition", &s); err != nil {
 		return Source{}, err
 	}
-	return s.normalized()
+	return s.normalized(adapters)
 }
 
 // normalized fills the defaults and checks the whole source.
-func (s Source) normalized() (Source, error) {
+func (s Source) normalized(adapters []string) (Source, error) {
 	c := newCollector(DocumentSource)
-	s = s.normalize(c)
+	s = s.normalize(c, adapters)
 	if err := c.err(); err != nil {
 		return Source{}, err
 	}
 	return s, nil
 }
 
-func (s Source) normalize(c *collector) Source {
+func (s Source) normalize(c *collector, adapters []string) Source {
 	c.checkVersion(s.Version, "source definition")
 	if s.ID == "" {
 		c.add(ecSrcIDMissing, ptr("id"), nil, "a source needs an id")
 	}
 	c.checkID(ecSrcIDInvalid, ptr("id"), "source", s.ID, nil)
-	if s.Adapter != "file" {
-		c.add(ecSrcAdapter, ptr("adapter"), Params{"source": s.ID, "adapter": s.Adapter, "supported": []string{"file"}},
-			"source %s: adapter %q is not one this build has (only file)", s.ID, s.Adapter)
+	adapterOK := slices.Contains(adapters, s.Adapter)
+	if !adapterOK {
+		c.add(ecSrcAdapter, ptr("adapter"), Params{"source": s.ID, "adapter": s.Adapter, "supported": adapters},
+			"source %s: adapter %q is not one this build has (only %s)", s.ID, s.Adapter, strings.Join(adapters, ", "))
+	}
+	if adapterOK {
+		s = s.normalizeConnection(c)
 	}
 	if s.Collector == "" {
 		s.Collector = "in_product"
+	}
+	// A dataset of a source whose adapter this build does not have is checked as it always was: by the rules of a file's
+	// dataset, with nothing said of the fields of the other adapters.
+	datasetAdapter := ""
+	if adapterOK {
+		datasetAdapter = s.Adapter
 	}
 	s.Limits.check(c, s.ID)
 	if len(s.Datasets) == 0 {
@@ -170,7 +211,7 @@ func (s Source) normalize(c *collector) Source {
 	first := map[string]int{}
 	ds := make([]Dataset, len(s.Datasets))
 	for i, d := range s.Datasets {
-		nd := d.normalize(c, s.ID, i)
+		nd := d.normalize(c, s.ID, datasetAdapter, i)
 		if at, dup := first[nd.ID]; dup && nd.ID != "" {
 			c.add(ecSrcDatasetDup, ptr("datasets", i, "id"), Params{"source": s.ID, "dataset": nd.ID, "first": at},
 				"source %s: dataset %s appears twice", s.ID, nd.ID)
@@ -186,11 +227,11 @@ func (s Source) normalize(c *collector) Source {
 // normalized checks one dataset of the source and fills its defaults; the errors come as one error.
 func (d Dataset) normalized(source string) (Dataset, error) {
 	c := newCollector(DocumentSource)
-	d = d.normalize(c, source, 0)
+	d = d.normalize(c, source, AdapterFile, 0)
 	return d, c.err()
 }
 
-func (d Dataset) normalize(c *collector, source string, i int) Dataset {
+func (d Dataset) normalize(c *collector, source, adapter string, i int) Dataset {
 	at := ptr("datasets", i)
 	where := "source " + source + ", dataset " + d.ID
 	if d.ID == "" {
@@ -206,8 +247,13 @@ func (d Dataset) normalize(c *collector, source string, i int) Dataset {
 	if d.Deletion == "" {
 		d.Deletion = DeletionAbsentInFull
 	}
-	parserOK := d.checkSupported(c, at, where)
+	d.checkAdapterFields(c, source, adapter, at)
+	parserOK := d.checkSupported(c, at, where, adapter)
 	cols := d.checkColumns(c, at, where)
+	if adapter == AdapterHTTP || adapter == AdapterPostgres {
+		d = d.checkRecords(c, source, adapter, at)
+		d.checkColumnPaths(c, source, at)
+	}
 	if parserOK {
 		d.Sheet = d.Sheet.normalize(c, at+ptr("sheet"), d, where)
 		d.Delimiter = normalizedDelimiterTo(c, at+ptr("delimiter"), d.Delimiter, d.Parser, d.ID, where)
@@ -219,13 +265,15 @@ func (d Dataset) normalize(c *collector, source string, i int) Dataset {
 }
 
 // checkSupported refuses what this build does not have. It tells whether the parser is one of the build's.
-func (d Dataset) checkSupported(c *collector, at, where string) bool {
+func (d Dataset) checkSupported(c *collector, at, where, adapter string) bool {
 	if d.Kind != "raw" || d.ReceiveMode != "snapshot" {
 		c.add(ecSrcMode, at+ptr("kind"), Params{"dataset": d.ID, "kind": d.Kind, "receive_mode": d.ReceiveMode},
 			"%s: only raw datasets received as snapshot exist in this build", where)
 	}
 	parserOK := d.Parser == ParserCSV || d.Parser == ParserJSONLines || d.Parser == ParserXLSX
-	if !parserOK {
+	if adapter == AdapterHTTP || adapter == AdapterPostgres {
+		parserOK = false // the records of these adapters are JSON objects already, and there is no parser to check
+	} else if !parserOK {
 		c.add(ecSrcParser, at+ptr("parser"), Params{"dataset": d.ID, "parser": d.Parser, "supported": []string{ParserCSV, ParserJSONLines, ParserXLSX}},
 			"%s: parser %q is not in this build (csv, json_lines, xlsx)", where, d.Parser)
 	}

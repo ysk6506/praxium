@@ -17,6 +17,7 @@ touches_protected:
   - docs/design-docs/adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md
   - docs/product-specs/requirements-ingestion.md
   - docs/product-specs/requirements-access.md
+  - docs/product-specs/requirements-operations.md
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
   - harness/config/test-lock.json
@@ -28,6 +29,7 @@ updates_docs:
   - docs/design-docs/rest-api-resources-data.md
   - docs/product-specs/requirements-ingestion.md
   - docs/product-specs/requirements-access.md
+  - docs/product-specs/requirements-operations.md
 amends:
   - adr: "0058"
     what: 결정 9의 TLS 확인을 낮추는 정의 필드와 서버 플래그(-allow-unverified-source-tls)

@@ -17605,6 +17605,306 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestAdpADisabledSourceIsRead": {
+   "kind": "test",
+   "hash": "fba22512cda97f9b",
+   "asserts": 2,
+   "literals": [
+    "025d5e5144ce4734"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpDoubledBracesStandForTheBrace": {
+   "kind": "test",
+   "hash": "d688be1e478060d4",
+   "asserts": 2,
+   "literals": [
+    "70722e9b8284e8d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpEventsHaveOnlyWhatALogMayHold": {
+   "kind": "test",
+   "hash": "2ddf3734bdce9923",
+   "asserts": 6,
+   "literals": [
+    "a8ef497f113f0c32"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-660"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace": {
+   "kind": "test",
+   "hash": "1998067b3fd9cf87",
+   "asserts": 8,
+   "literals": [
+    "a014451b55771029"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpFieldsOfLaterStepsAreUnknown": {
+   "kind": "test",
+   "hash": "1353a60b931985d1",
+   "asserts": 6,
+   "literals": [
+    "e3e5e0ec5a34dbc9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpFurtherRefusals": {
+   "kind": "test",
+   "hash": "bf1dd1bed0ac9f42",
+   "asserts": 2,
+   "literals": [
+    "cade4d714e620723"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpHTTPAndPostgresDefinitionsAreRead": {
+   "kind": "test",
+   "hash": "766518c9b313ab82",
+   "asserts": 11,
+   "literals": [
+    "bb38713a9892479c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpMaskSample": {
+   "kind": "test",
+   "hash": "5df500fee9c73298",
+   "asserts": 4,
+   "literals": [
+    "6e3f8fedb2768c50"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-660"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpMaskTextHeadersAndAddresses": {
+   "kind": "test",
+   "hash": "d7d6adf03f92fffd",
+   "asserts": 7,
+   "literals": [
+    "0176b4b02d499cef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-660"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpOtherKindsOfAuthenticationAndPaginationAreRead": {
+   "kind": "test",
+   "hash": "b6a36f0a7c349487",
+   "asserts": 2,
+   "literals": [
+    "53d76802ba1045f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpPageWriterCutsAsTheFileReaderDoes": {
+   "kind": "test",
+   "hash": "07620e0162a74592",
+   "asserts": 7,
+   "literals": [
+    "e3681120f9b6cbbb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-658"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpPageWriterStopsWhenTheCallerDoes": {
+   "kind": "test",
+   "hash": "9f6a354f5cf04807",
+   "asserts": 2,
+   "literals": [
+    "dac84c1c9c3c754b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-658"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpPathGrammar": {
+   "kind": "test",
+   "hash": "592f64f4f329934c",
+   "asserts": 3,
+   "literals": [
+    "84001fe15ca01ede"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-658"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpPathLookups": {
+   "kind": "test",
+   "hash": "82d69428ce95ad51",
+   "asserts": 6,
+   "literals": [
+    "2ba782e117a3243f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-658"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpRowBuilderReadsARecordAsAJSONLineIs": {
+   "kind": "test",
+   "hash": "7578cd177272cfa6",
+   "asserts": 6,
+   "literals": [
+    "f2a57284fde4c760"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-658"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpRowBuilderTellsWhereAndKeepsEveryRecord": {
+   "kind": "test",
+   "hash": "a7cd9c449d7aea1f",
+   "asserts": 6,
+   "literals": [
+    "2e700d72e87cdf37"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-658"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpSensitiveNames": {
+   "kind": "test",
+   "hash": "ae358a67c824431a",
+   "asserts": 2,
+   "literals": [
+    "09a2a2749dd53c80"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-660"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpSourceErrorsHaveTheirClass": {
+   "kind": "test",
+   "hash": "387a9ebd4fb8db92",
+   "asserts": 5,
+   "literals": [
+    "1422800c74c9b632"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpSourceErrorsWriteOnlyTheirMessage": {
+   "kind": "test",
+   "hash": "3379610b78fbf1c2",
+   "asserts": 4,
+   "literals": [
+    "967e4c7dcf89c138"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestAdpTheFileFlowStaysFileOnly": {
+   "kind": "test",
+   "hash": "17b314897c42d7ec",
+   "asserts": 4,
+   "literals": [
+    "42c4e45c8222dfee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-401"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestADraftSourceIsADefinitionThatNeedsOnlyItsNaturalKey": {
    "kind": "test",
    "hash": "a806e51e50c6978a",
