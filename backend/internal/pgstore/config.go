@@ -42,6 +42,11 @@ type Config struct {
 	NewConnsPerSecond int
 	// PollInterval is how often WaitReadable looks at the head (default 50 ms). There is no LISTEN/NOTIFY.
 	PollInterval time.Duration
+	// Models gives the model of a KG. Nil means the standard model with its statistics objects.
+	Models ModelProvider
+	// LeaseClock is whose time a lease runs out by. The zero value is the database's, the one to use; the caller's
+	// is for tests, which move a manual clock.
+	LeaseClock LeaseClock
 }
 
 // String is the Config without its secret, for logs.

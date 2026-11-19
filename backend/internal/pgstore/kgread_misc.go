@@ -129,7 +129,7 @@ func (sn *kgSnapshot) IdentityEvents(ctx context.Context) ([]graph.IdentityEvent
 }
 
 // Versions implements graph.Reader: the sealed versions in order.
-func (s *StoreV2) Versions(ctx context.Context, kg graph.KGID) ([]graph.Version, error) {
+func (s *Store) Versions(ctx context.Context, kg graph.KGID) ([]graph.Version, error) {
 	a, err := s.access(ctx, kg)
 	if err != nil {
 		return nil, err

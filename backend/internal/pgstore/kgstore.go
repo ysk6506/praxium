@@ -14,11 +14,10 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
-// The new KG storage (ADR-0089). A KG stands on its own in a storage schema of its own (s_<kg_no>): its head, its
-// lease, its generations, its versions, its rows and its change records are there, so one transaction of the
+// The KG storage (ADR-0089, ADR-0094). A KG stands on its own in a storage schema of its own (s_<kg_no>): its head,
+// its lease, its generations, its versions, its rows and its change records are there, so one transaction of the
 // applier never leaves the schema. What is shared is the list of KGs (kg_catalog), the numbers of objects and
-// links, and the state of the schemas (kg_schema_state). StoreV2 stands beside the store of the old tables
-// (Store) until a change puts it in its place.
+// links, the state of the schemas (kg_schema_state), the identity records and the number of the storage format.
 
 // ModelProvider gives the model a KG is made from, by the hash of its definition set. A server holds the
 // model it was built with; a KG whose storage schema was made from another model is refused (CodeSchemaMismatch).
@@ -50,19 +49,11 @@ const (
 	LeaseClockCaller
 )
 
-// V2Options are what the new storage needs besides the connection.
-type V2Options struct {
-	// Models gives the model of a KG. It is required.
-	Models ModelProvider
-	// LeaseClock is whose time a lease runs out by. The zero value is the database's.
-	LeaseClock LeaseClock
-}
-
 // CodeKGRestoring is a read or a write of a KG that is being restored: it is closed until the last step.
 const CodeKGRestoring kernel.Code = "pgstore_kg_restoring"
 
-// StoreV2 is the PostgreSQL implementation of graph.Store on the storage schemas. Make one with OpenV2.
-type StoreV2 struct {
+// Store is the PostgreSQL implementation of graph.Store on the storage schemas. Make one with Open.
+type Store struct {
 	rt      router
 	poll    time.Duration
 	closers []func() error
@@ -74,23 +65,30 @@ type StoreV2 struct {
 	hook func(stage string, seq int64) error
 }
 
-var _ graph.Store = (*StoreV2)(nil)
+var _ graph.Store = (*Store)(nil)
 
-// OpenV2 connects like Open and returns the new storage. The schemas of the KGs are made by CreateKG.
-func OpenV2(ctx context.Context, cfg Config, opts V2Options) (*StoreV2, error) {
-	if opts.Models == nil {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "the storage needs a provider of the model")
+// Open connects, checks the connection and brings the shared tables up to date with the migrations of this build
+// (the connection base, pgconn, does all three). The DSN is never part of an error. The schemas of the KGs are made
+// by CreateKG. cfg.Models is the model the server holds; when it is nil the standard model is held (with its
+// statistics objects). Closing the Store closes the pool.
+func Open(ctx context.Context, cfg Config) (*Store, error) {
+	models := cfg.Models
+	if models == nil {
+		var err error
+		if models, err = StandardModels(true); err != nil {
+			return nil, err
+		}
 	}
 	pool, err := pgconn.Open(ctx, cfg.conn())
 	if err != nil {
 		return nil, err
 	}
 	sh := &shard{pool: pool}
-	return &StoreV2{rt: singleRouter{sh}, poll: cfg.poll(), closers: []func() error{pool.Close}, models: opts.Models, clock: opts.LeaseClock}, nil
+	return &Store{rt: singleRouter{sh}, poll: cfg.poll(), closers: []func() error{pool.Close}, models: models, clock: cfg.LeaseClock}, nil
 }
 
 // Close closes the pool. The store cannot be used afterwards.
-func (s *StoreV2) Close() error {
+func (s *Store) Close() error {
 	var first error
 	for _, c := range s.closers {
 		if err := c(); err != nil && first == nil {
@@ -123,7 +121,7 @@ func (a *kgAccess) typeTable(typeNo int) string { return a.t(pgschema.TypeTable(
 
 // access resolves a KG to its shard, schema and model. The result is kept: a KG's number and the model it was
 // made from do not change.
-func (s *StoreV2) access(ctx context.Context, kg graph.KGID) (*kgAccess, error) {
+func (s *Store) access(ctx context.Context, kg graph.KGID) (*kgAccess, error) {
 	if kg.IsZero() {
 		return nil, kernel.Errorf(graph.CodeKGNotFound, "no KG %q", kg)
 	}
@@ -185,4 +183,4 @@ func valueKinds(m pgschema.Manifest) (map[int]model.BaseKind, map[int]map[int]mo
 }
 
 // forget drops what was kept of a KG (it was deleted).
-func (s *StoreV2) forget(kg graph.KGID) { s.cache.Delete(kg.String()) }
+func (s *Store) forget(kg graph.KGID) { s.cache.Delete(kg.String()) }

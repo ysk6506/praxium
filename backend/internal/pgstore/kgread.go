@@ -26,7 +26,7 @@ var (
 )
 
 // Snapshot implements graph.Reader.
-func (s *StoreV2) Snapshot(ctx context.Context, rp graph.ReadPoint) (graph.Snapshot, error) {
+func (s *Store) Snapshot(ctx context.Context, rp graph.ReadPoint) (graph.Snapshot, error) {
 	a, err := s.access(ctx, rp.KG)
 	if err != nil {
 		return nil, err
@@ -128,7 +128,7 @@ func (sn *kgSnapshot) Volatile(ctx context.Context, id graph.ObjectID, attrNo in
 }
 
 // Head implements graph.Reader.
-func (s *StoreV2) Head(ctx context.Context, kg graph.KGID) (graph.Head, error) {
+func (s *Store) Head(ctx context.Context, kg graph.KGID) (graph.Head, error) {
 	a, err := s.access(ctx, kg)
 	if err != nil {
 		return graph.Head{}, err

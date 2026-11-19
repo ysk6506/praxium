@@ -14,7 +14,7 @@ import (
 // the middle, the generation, the lease, the engine, the head), write every row, move the head. readable_through
 // moves only because the head the applier computed says so. When the COMMIT gets no answer the head is read again
 // and decides (resolve).
-func (s *StoreV2) ApplyChunk(ctx context.Context, w graph.ChunkWrite) error {
+func (s *Store) ApplyChunk(ctx context.Context, w graph.ChunkWrite) error {
 	a, err := s.access(ctx, w.KG)
 	if err != nil {
 		return err
@@ -26,7 +26,7 @@ func (s *StoreV2) ApplyChunk(ctx context.Context, w graph.ChunkWrite) error {
 	return s.resolve(ctx, a, w.Head, err)
 }
 
-func (s *StoreV2) applyChunk(ctx context.Context, tx *sql.Tx, a *kgAccess, w graph.ChunkWrite) error {
+func (s *Store) applyChunk(ctx context.Context, tx *sql.Tx, a *kgAccess, w graph.ChunkWrite) error {
 	cur, err := s.kgGuard(ctx, tx, a, planned{w.KG, w.Generation, w.ExpectedSeq, w.Lease, w.Now})
 	if err != nil {
 		return err
