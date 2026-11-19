@@ -8,8 +8,6 @@ follows:
 ---
 # 소스와 어댑터
 
-[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스 쪽이에요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요.** 소스 정의의 형식(2절)과 경로의 문법(3.2)은 [ADR-0090](adr/0090-http-postgres-source-definitions-and-ingest-adapter-parts.md)으로 구현했고, 어댑터가 쓸 `core.ingest`의 부품(행 만들기, 페이지 자르기, 소스 오류의 세 갈래, 가리기, 관측과 미리 읽기의 인터페이스)도 함께 있어요. HTTP 어댑터(`adapter.httpsource`, [ADR-0092](adr/0092-http-source-adapter-adapter-httpsource.md))와 나가는 연결의 방어(8절, `adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md))는 구현했어요. PostgreSQL 어댑터는 아직 없고, 조립부에 아직 이어 놓지 않아서 지금 수집 명령은 파일 소스만 읽어요. 수집 서비스는 [수집 서비스와 실행](ingestion-service.md)에, 정의를 쓰는 경로와 시크릿과 경로와 화면은 [정의의 쓰기, 시크릿, 경로, 화면](source-editing.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, id의 문법과 스키마 버전은 [ADR-0075](adr/0075-definition-id-grammar-and-schema-version.md)로 구현했어요. 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 예시의 이름, 주소, 숫자는 모두 지어낸 것이고 주소는 문서용으로 예약된 `example.test`예요.
-
 ## 1. 목적과 범위
 
 로컬 PC에서 PostgreSQL과 HTTP REST API(JSON)와 파일을 소스로 붙이는 데 필요한 소스 정의, 어댑터의 포트, 읽기 전용의 강제, 바깥으로 나가는 요청의 묶기를 정해요.
@@ -124,7 +122,7 @@ follows:
   ]
 }
 ```
-- 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있고 그 인증서만 신뢰해요(인증서가 아닌 블록은 정의 오류예요. PostgreSQL 드라이버에 넘기는 방법은 어댑터의 단계가 정해요).
+- 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있고 그 인증서만 신뢰해요(인증서가 아닌 블록은 정의 오류예요. 어댑터는 이것을 등록한 TLS 설정으로 드라이버에 넘기고 드라이버의 `sslmode` 값은 `disable`과 그것 둘만 써요).
 - 필드는 `host`, `port`(기본 5432), `database`, `credential`(필수), `sslmode`(`verify-full`, `disable`. 기본 `verify-full`), `ca_pem`, `connect_timeout_seconds`(기본 10), `statement_timeout_seconds`(기본 60), `lock_timeout_seconds`(기본 5)예요.
 - `sslmode`는 `verify-full`과 `disable` 둘뿐이고 확인을 낮추는 값(`require`, `verify-ca`)은 없어요. `disable`은 정의로는 받지만 실제 허용은 연결할 때 정해요. 풀린 주소가 모두 루프백이거나 운영자 설정(`-allow-insecure-sources`)이 있을 때만이에요(8절. 이름이 아니라 풀린 주소로 다이얼러가 정하고, 어댑터는 연결 맥락에 `egress.WithPlaintext`를 달아요. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
 - `table`이면 서버가 컬럼 목록으로 `SELECT`를 만들어요(그 데이터셋은 뒤에 `keyed_read` 지원 기능을 저절로 가져요). `sql`이면 사용자가 쓴 문장 하나예요(7.2).
@@ -253,13 +251,13 @@ follows:
 | 약해져요 | [ADR-0008](adr/0008-ingestion.md) 결정 1과 15의 첫째 방어선(프리셋의 요청 허용 목록)이 없어요. 사용자가 요청을 직접 적어요 | 그래서 소스의 등록과 접속 변경은 `edit_definitions`와 `run_sources`를 둘 다 가진 주체의 일이에요(8절) |
 
 ### 7.2 PostgreSQL
-**실행마다** 새 연결을 맺고, 읽기 전용 트랜잭션(`BeginTx(ReadOnly)`)에서 **준비한 문장 하나**만 실행해요. 문장 시간(`statement_timeout`), 잠금 시간(`lock_timeout`), 트랜잭션 안의 대기 시간(`idle_in_transaction_session_timeout`)을 걸어요. 사용자의 문장은 하나만 받아요(준비한 문장). 큰 결과를 한꺼번에 메모리에 올리지 않아요. 방법은 PostgreSQL 어댑터의 단계가 실제 드라이버로 확인해 정해요. **예정(ADR-0086)에서** 큰 결과는 자연 키의 순서로 끊어 읽고 이어 읽기 토큰은 마지막 키예요. `sql`은 준비 단계의 결과 설명(행을 돌려주는가)과 첫 낱말(`SELECT`, `WITH`, `TABLE`, `VALUES`)로 걸러요.
+**실행마다** 새 연결을 맺고(연결은 1개), 데이터셋을 자연 키의 순서로 **페이지마다 짧은 읽기 전용 트랜잭션 하나**(반복 가능한 읽기, `BeginTx(ReadOnly)`)에서 읽어요. 페이지마다 **같은 모양의 준비한 문장 하나**만 실행하고(`table`이든 `sql`이든 키 뒤의 조건과 `LIMIT`만 달라지는 문장이에요. 준비하지 않고 보내는 방법이 없어서 여러 문장은 문법 오류예요), 페이지 사이에는 원본에 아무것도 잡아 두지 않아요. 문장 시간(`statement_timeout`), 잠금 시간(`lock_timeout`), 트랜잭션 안의 대기 시간(`idle_in_transaction_session_timeout`)은 세션이 아니라 그 트랜잭션에만 걸어요(`set_config(…, true)`). 큰 결과를 한꺼번에 메모리에 올리지 않아요. 트랜잭션 하나는 시간(문장 시간의 5배와 10초)과 읽는 바이트(페이지 바이트 한도의 4배와 1MiB)에 한도가 있어, 넘으면 그 읽기의 모든 연결을 닫고 조용해진 소스에서도 시간 안에 돌아와요. 악의적인 서버가 보낸 모양이 틀린 바이트는 드라이버가 패닉해도 그 읽기 하나만 `response_format`으로 끝내요. 이어 읽기 토큰은 마지막 키의 글과 데이터셋의 지문이고, 한 키의 행은 한 페이지에 통째로 실어요(한 페이지보다 많으면 불완전한 수집이에요). 키로 쓰는 타입과 값을 글로 바꾸는 규칙, 토큰의 모양은 [ADR-0093](adr/0093-postgres-source-adapter-keyset-pages-and-driver-containment.md)에 있어요. 사용자의 `sql`은 준비 단계의 결과 설명으로 걸러요. **예정(ADR-0093)에서** 첫 낱말(`SELECT`, `WITH`, `TABLE`, `VALUES`) 거르개도 더해요.
 
 문서와 화면에 이 문장을 그대로 써요. **"프락시움은 읽기 전용 트랜잭션에서 문장 하나만 실행한다. 보통의 쓰기 문장은 막히지만 함수 호출과 `COPY TO`는 막지 못한다. 경계는 소스 쪽의 읽기 전용 계정이다."**
 
-- 점검은 그 계정이 쓰기 권한을 가졌는지 조사해 경고해요. 조사하지 못하면 "확인했다"가 아니라 "확인하지 못함"이라고 써요.
+- 점검은 첫 페이지을 실제로 읽고 단계별로(시크릿, 이름과 연결, TLS, 인증, 문장, 키 컬럼, 첫 페이지) 알려요. **예정(ADR-0093)에서** 그 계정이 쓰기 권한을 가졌는지도 조사해 경고해요. 조사하지 못하면 "확인했다"가 아니라 "확인하지 못함"이라고 써요.
 - 연결을 맺는 순간의 실제 IP 검사와 거절 목록(8절)을 HTTP와 같은 다이얼러로 PostgreSQL 접속에도 걸어요.
-- 접속 설정을 서버의 환경에서 읽지 않아요. 접속 설정을 손으로 채워서 환경 변수, 서비스 파일, `.pgpass`를 보지 않아요.
+- 접속 설정을 서버의 환경에서 읽지 않아요. 접속 설정을 손으로 채워서 환경 변수, 서비스 파일, `.pgpass`, 홈 폴더의 인증서를 보지 않아요(어댑터가 구현했고 테스트가 적대적인 환경으로 확인해요). `PQGO_DEBUG`가 설정된 채로는 서버가 시작하지 않고 어댑터도 읽지 않아요. 사용자 이름, 비밀번호, 호스트, 데이터베이스 이름에 NUL이나 제어 문자가 있으면 연결하지 않아요.
 - 오류는 8절의 분류로 바꿔요. 예외 하나: 사용자가 쓴 SQL의 문법 오류와 없는 테이블과 컬럼(SQLSTATE 42류)은 요청한 사람에게 그 응답에서만 서버의 문장과 위치를 보여요. 실행 기록과 로그에는 분류만 남겨요.
 
 ## 8. 바깥으로 나가는 요청의 묶기
@@ -330,4 +328,4 @@ DB와 API는 붙일 곳이 있어야 해 볼 수 있어요. 합성 세계(작은
 - 미결: 문서의 `version`과 정의 저장소의 `schema_version`의 관계(8a 단계의 결정 기록). 인증과 페이지네이션의 종류별 필드 이름은 ADR-0090이 정했어요.
 
 ## 13. 관련 결정과 요구사항
-[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md), [ADR-0008](adr/0008-ingestion.md), [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md). 요구사항: REQ-110, REQ-111, REQ-174(예정, 문장을 이 설계에 맞춰 두었어요), REQ-401, REQ-411, REQ-412, REQ-419, REQ-441, REQ-484, REQ-486부터 REQ-491까지. 앞 문서: [수집 설계](ingestion.md), [파이프라인 설계](pipeline.md).
+[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md), [ADR-0008](adr/0008-ingestion.md), [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md), [ADR-0093](adr/0093-postgres-source-adapter-keyset-pages-and-driver-containment.md). 요구사항: REQ-110, REQ-111, REQ-174(예정, 문장을 이 설계에 맞춰 두었어요), REQ-401, REQ-411, REQ-412, REQ-419, REQ-441, REQ-484, REQ-486부터 REQ-491까지, REQ-655, REQ-670, REQ-671. 앞 문서: [수집 설계](ingestion.md), [파이프라인 설계](pipeline.md).
