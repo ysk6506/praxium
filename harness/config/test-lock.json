@@ -26859,6 +26859,21 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgsource::TestPgfARowsThatGoAwayInsideOneTransactionEndTheReadAsChanged": {
+   "kind": "test",
+   "hash": "ebbd957a607e5086",
+   "asserts": 4,
+   "literals": [
+    "539a9ec5ac765dbf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgsource::TestPgfAStatementThatFailsOnARowIsReportedByTheCheckAndTheRead": {
    "kind": "test",
    "hash": "eadc03e6b3863ef9",
@@ -27542,7 +27557,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "0441d3a0e63b20e7",
+   "hash": "f3a51e6ed76765b2",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -27636,7 +27651,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "e4a5fbc8147cd495",
+   "hash": "4dda964b1ff48bb2",
    "asserts": 5,
    "literals": [
     "e75973869c22b055"
