@@ -11,7 +11,7 @@
 # on 127.0.0.1 at a free TCP port that is picked for each run. Socket connections are trusted, as before. TCP
 # connections need the password of a test role that the script makes for each run; the command gets the connection
 # through PRAXIUM_TEST_PG_TCP_HOST, PRAXIUM_TEST_PG_TCP_PORT, PRAXIUM_TEST_PG_TCP_USER and PRAXIUM_TEST_PG_TCP_PASSWORD
-# (docs/harness-guide.md). Everything is removed when the command ends. As root, initdb refuses to run, so the server
+# (docs/design-docs/harness-guide.md). Everything is removed when the command ends. As root, initdb refuses to run, so the server
 # is run as an unprivileged user (PG_RUN_USER, default praxium-pg, made if missing); this is for sandboxes and containers.
 set -euo pipefail
 
