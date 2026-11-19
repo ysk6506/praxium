@@ -7,7 +7,7 @@ follows:
 ---
 # REST API 설계
 
-화면은 이 리포지토리의 `apps/web`에 있지만 화면만 다시 만들기 쉽게 지켜요(ADR-0069). 그래서 백엔드와 화면은 **REST API의 계약(OpenAPI 문서) 하나로만** 만나요. 이 문서는 계약 전체에 적용되는 규칙을 적어요. 자원과 경로의 목록은 [모델·수집·실행·정의](rest-api-resources-data.md), [KG·관측·역량 질문·권한·기반](rest-api-resources-graph.md), [추가 기능의 경로](rest-api-resources-additions.md)에, 기능마다 경로가 있는지를 확인하는 표는 [기능별 경로](rest-api-feature-routes.md)에, 처음부터 끝까지 따라가는 예시 3개는 [예시 3개](rest-api-walkthroughs.md)에 있어요. 결정은 ADR-0016에 있어요. **예정(ADR-0080)에서 질의 경로가 바뀌어요**: 사전 정의 질의 경로는 내장 읽기(찾기, 객체 읽기, 이웃, 도달 집합, 스키마 설명), 저장한 질의의 실행, 임의 질의로 바뀌어요([질의 실행기와 읽기의 세 경로](query-execution.md) 4절). 경로의 이름은 구현할 때 정해요.
+화면은 이 리포지토리의 `apps/web`에 있지만 화면만 다시 만들기 쉽게 지켜요(ADR-0069). 그래서 백엔드와 화면은 **REST API의 계약(OpenAPI 문서) 하나로만** 만나요. 이 문서는 계약 전체에 적용되는 규칙을 적어요. 자원과 경로의 목록은 [모델·수집·실행·정의](rest-api-resources-data.md), [KG·관측·역량 질문·권한·기반](rest-api-resources-graph.md), [추가 기능의 경로](rest-api-resources-additions.md)에, 기능마다 경로가 있는지를 확인하는 표는 [기능별 경로](rest-api-feature-routes.md)에, 처음부터 끝까지 따라가는 예시 3개는 [예시 3개](rest-api-walkthroughs.md)에 있어요. 결정은 ADR-0016에 있어요. **예정(ADR-0080)에서 질의 경로가 바뀌어요**: 지금 경로(KG 목록과 단건, 객체 목록, 객체 상세, 이웃)는 남고 내부만 내장 읽기(찾기, 객체 읽기, 이웃)로 바뀌어요. 새로 생기는 경로(도달 집합, 스키마 설명, 저장한 질의의 실행, 임의 질의)의 이름만 구현할 때 정해요([질의 실행기와 읽기의 세 경로](query-execution.md) 4절).
 
 > **계약은 이제 `backend/internal/contract/openapi/parts`의 조각으로 있고 병합한 `openapi.json`이 서버에 내장돼요(ADR-0024). 경로와 필드가 이 문서와 다르면 계약이 맞아요. 이 문서의 경로 중 알파에 있는 것은 24개이고 나머지는 `planned/routes.json`에 단계와 함께 있어요.** 이 문서는 OpenAPI 문서를 작성하는 사람이 규칙과 자원 목록을 혼동하지 않게 하려는 설계예요. 경로는 `/v1/...`로 적어요.
 
