@@ -26659,7 +26659,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "d60aaf960eb3133a",
+   "hash": "dd538c641e29bfc4",
    "asserts": 5,
    "literals": [
     "54cee5b3e3655fb3"
