@@ -32,6 +32,9 @@ amends:
     what: 결정 5의 포기와 결정 8의 복원이 변경 번호 하나씩 거꾸로 번호마다 트랜잭션 하나로 되돌린다는 것과 복원하는 동안 그 KG를 닫는다는 것
 amends_tests: []
 decision_hash: 5649fe4abc0b4f01
+amended_by:
+  - adr: "0089"
+    what: 공용에 남는 것의 목록(KG의 목록, 스키마 상태, 번호의 시퀀스와 함수, 저장 형식만)과 KG의 제어 테이블이 저장 스키마에 있다는 것
 ---
 # ADR-0085 새 KG 저장의 구현 결정과 스키마 계획의 유닛 `adapter.pgschema`
 

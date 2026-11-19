@@ -22,6 +22,13 @@ const (
 	TableObjectIdentifier = "object_identifier"
 	TableIdentityEvent    = "identity_event"
 	TableIngestOrder      = "ingest_order"
+	// The control tables of a KG (ADR-0089): the head, the lease, the generations and the sealed versions. They
+	// are in the storage schema, so a KG stands on its own and a transaction of the applier never leaves it.
+	TableHead            = "head"
+	TableLease           = "lease"
+	TableGenerationEvent = "generation_event"
+	TableVersion         = "version"
+	TableVersionHashPart = "version_hash_part"
 )
 
 // FixedTables lists the fixed tables in the order they are created.
@@ -29,6 +36,7 @@ func FixedTables() []string {
 	return []string{
 		TableObject, TableObjectState, TableLink, TableObjectHist, TableLinkHist, TableObjectKey,
 		TableChangeBatch, TableChangeEntry, TableLightChange, TableObjectIdentifier, TableIdentityEvent, TableIngestOrder,
+		TableHead, TableLease, TableGenerationEvent, TableVersion, TableVersionHashPart,
 	}
 }
 
@@ -38,11 +46,16 @@ const (
 	ReservedPrefixStage = "stage_"
 	ReservedPrefixCalc  = "calc_"
 	ReservedIngestDiff  = "ingest_diff"
+	// ReservedPrefixPartition is the prefix of the partitions of the tables that only grow (the history and the
+	// change records), which a later change may cut by change number (ADR-0089 decision 6). Nothing makes them yet.
+	ReservedPrefixPartition = "part_"
 )
 
-// IsReservedName reports whether a table name is one that a later change will make for the staged apply.
+// IsReservedName reports whether a table name is one that a later change will make: for the staged apply or for
+// a partition of a table that only grows.
 func IsReservedName(name string) bool {
-	return strings.HasPrefix(name, ReservedPrefixStage) || strings.HasPrefix(name, ReservedPrefixCalc) || name == ReservedIngestDiff
+	return strings.HasPrefix(name, ReservedPrefixStage) || strings.HasPrefix(name, ReservedPrefixCalc) ||
+		strings.HasPrefix(name, ReservedPrefixPartition) || name == ReservedIngestDiff
 }
 
 // SchemaName is the storage schema of a KG.

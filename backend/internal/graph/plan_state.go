@@ -87,7 +87,7 @@ type stateCheck struct {
 // links, retirements that leave links dangling, cardinalities, volatile writes
 // and identifiers. It reads only what the batch touches.
 func checkState(ctx context.Context, snap Snapshot, reg *model.Registry, v *validator, p *plan) error {
-	c := &stateCheck{snap: snap, reg: reg, v: v, p: p, retObj: map[ObjectID]bool{}, retLink: map[LinkID]bool{},
+	c := &stateCheck{snap: withBulk(snap), reg: reg, v: v, p: p, retObj: map[ObjectID]bool{}, retLink: map[LinkID]bool{},
 		byEnd: map[string]map[LinkID]bool{}, planned: map[LinkID]plannedLink{}, bindMemo: map[bindKey]*model.Binding{}, typeMemo: map[ObjectID]model.ObjectType{}}
 	for _, id := range p.retObjs {
 		c.retObj[id] = true
@@ -99,6 +99,9 @@ func checkState(ctx context.Context, snap Snapshot, reg *model.Registry, v *vali
 		c.planned[l.id] = l
 		c.index("out", l.typ.ID, l.upsert.Src, l.id)
 		c.index("in", l.typ.ID, l.upsert.Dst, l.id)
+	}
+	if err := c.prefetch(ctx); err != nil {
+		return err
 	}
 	for _, step := range []func(context.Context) error{c.links, c.retirements, c.volatile, c.identifiers} {
 		if err := step(ctx); err != nil {
@@ -303,4 +306,30 @@ func (c *stateCheck) identifiers(ctx context.Context) error {
 		}
 	}
 	return nil
+}
+
+// prefetch reads in bulk what the checks ask one at a time: the objects at the ends of the links, the objects of
+// the volatile values and the identifiers, and the links at the objects that retire. A snapshot that cannot bulk
+// read is left to the one-at-a-time reads.
+func (c *stateCheck) prefetch(ctx context.Context) error {
+	var objs []ObjectID
+	add := func(id ObjectID) {
+		if _, planned := c.p.objTypes[id]; !planned && !c.retObj[id] {
+			objs = append(objs, id)
+		}
+	}
+	for _, l := range c.p.links {
+		add(l.upsert.Src)
+		add(l.upsert.Dst)
+	}
+	for _, w := range c.p.volatile {
+		add(w.Object)
+	}
+	for _, w := range c.p.idents {
+		add(w.Object)
+	}
+	if err := prefetchObjects(ctx, c.snap, objs); err != nil {
+		return err
+	}
+	return prefetchLinksOf(ctx, c.snap, c.p.retObjs, Both)
 }

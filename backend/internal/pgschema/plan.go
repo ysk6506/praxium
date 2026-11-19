@@ -8,7 +8,7 @@ import (
 // GeneratorVersion is the version of the rules that turn a model into tables. A change of a rule (a column,
 // a setting, an index) is a new version; a schema made by an older version is not followed by a newer one
 // without a decision of its own.
-const GeneratorVersion = 1
+const GeneratorVersion = 2
 
 // Phase says where a step may run.
 type Phase int
