@@ -268,7 +268,7 @@ func TestPgiTheColumnsOfEachCopyAreTheColumnsOfItsTable(t *testing.T) {
 			t.Errorf("%s: the table has %s, the COPY gives %s", table, got, strings.Join(cols, ","))
 		}
 	}
-	if got := copyStatement(7, 12, pgschema.TableStageEnd, endCols); got != `COPY "s_7"."stage_end_p12" ("src_no", "dataset_no", "page", "row_no", "def_no", "side", "lookup_hash") FROM STDIN` {
+	if got := copyStatement(7, 12, pgschema.TableStageEnd, endCols); got != `COPY "s_7"."stage_end_p12" ("src_no", "dataset_no", "page", "row_no", "def_no", "side", "lookup_hash", "held") FROM STDIN` {
 		t.Errorf("%s", got)
 	}
 }

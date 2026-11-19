@@ -27,6 +27,9 @@ amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
 test_change_reason: 생성기 버전이 2에서 3이 되어, 버전이 2라고 단언하던 테스트가 3이라고 같은 것을 확인한다. 단언은 줄지 않았고 파티션 접두어의 예약을 확인하는 앞부분도 그대로다. 옛 값과 새 값은 아래 표에 있다.
 decision_hash: 4104eeeec0af9351
+amended_by:
+  - adr: "0098"
+    what: 결정 3과 4의 수신 테이블 세 곳에 held 열을 더하고 생성기 버전을 4로 올리는 것
 ---
 # ADR-0095 새 수집 흐름의 테이블을 스키마 계획에 더한다
 

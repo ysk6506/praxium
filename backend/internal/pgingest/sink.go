@@ -21,8 +21,8 @@ import (
 //     the page (a line that could not be read, a header that changed, a dataset that was not read to its end) have no record:
 //     they are on one row of the page whose row_no is -1.
 //   - stage_key, stage_end and stage_claim have the rows of the records that are new or changed only. A key, an end or a claim
-//     that is held (the feed sees the row as one a rule filtered out) has the number of its feed or definition stored as ^n, which
-//     is negative, and every other as n. A claim names its scheme by the number SchemeNumbers gives. The parents a context key
+//     that is held (the feed sees the row as one a rule filtered out) has held set; its feed or definition number is always the
+//     number itself, never a complement. A claim names its scheme by the number SchemeNumbers gives. The parents a context key
 //     needs are the arrays on its row, nearest first.
 type Sink struct {
 	st       *Store
@@ -41,11 +41,11 @@ var (
 	recordCols = []string{pgschema.ColSrcNo, pgschema.ColDatasetNo, pgschema.ColPage, pgschema.ColRowNo, pgschema.ColKey, pgschema.ColPlace,
 		pgschema.ColFiltered, pgschema.ColChangeKind, pgschema.ColRawHash, pgschema.ColFields, pgschema.ColProblems}
 	keyCols = []string{pgschema.ColSrcNo, pgschema.ColDatasetNo, pgschema.ColPage, pgschema.ColRowNo, pgschema.ColFeedNo, pgschema.ColKeyOrd,
-		pgschema.ColTypeNo, pgschema.ColSigHash, pgschema.ColCandRef, pgschema.ColAncTypes, pgschema.ColAncSigs}
+		pgschema.ColTypeNo, pgschema.ColSigHash, pgschema.ColCandRef, pgschema.ColAncTypes, pgschema.ColAncSigs, pgschema.ColHeld}
 	endCols = []string{pgschema.ColSrcNo, pgschema.ColDatasetNo, pgschema.ColPage, pgschema.ColRowNo, pgschema.ColDefNo, pgschema.ColSide,
-		pgschema.ColLookupHash}
+		pgschema.ColLookupHash, pgschema.ColHeld}
 	claimCols = []string{pgschema.ColSrcNo, pgschema.ColDatasetNo, pgschema.ColPage, pgschema.ColRowNo, pgschema.ColSchemeNo, pgschema.ColFeedNo,
-		pgschema.ColValueHash, pgschema.ColValue}
+		pgschema.ColValueHash, pgschema.ColValue, pgschema.ColHeld}
 )
 
 // pageRow is the row_no of the row that holds the problems of a page.
@@ -189,14 +189,6 @@ func decide(r ingest.StageRecord, hash []byte, old map[string]rawState) int16 {
 	return pgschema.ReceiveSame
 }
 
-// held is the number of a feed or a definition as a held key, end or claim keeps it: n as it is, ^n when held.
-func held(n int, isHeld bool) int64 {
-	if isHeld {
-		return int64(^n)
-	}
-	return int64(n)
-}
-
 func (w *pageWriter) base(no int) []any {
 	return []any{w.sink.srcNo, w.dataset, int64(w.page.Page), int64(no)}
 }
@@ -269,7 +261,7 @@ func (w *pageWriter) keys() error {
 		if len(types) > 0 {
 			ancTypes, ancSigs = smallArray(types), bytesArray(sigs)
 		}
-		if err := c.add(append(w.base(k.No), held(k.Feed, k.Held), int64(k.Ord), int64(k.TypeNo), k.SigHash[:], cand, ancTypes, ancSigs)...); err != nil {
+		if err := c.add(append(w.base(k.No), int64(k.Feed), int64(k.Ord), int64(k.TypeNo), k.SigHash[:], cand, ancTypes, ancSigs, k.Held)...); err != nil {
 			return err
 		}
 	}
@@ -290,7 +282,7 @@ func (w *pageWriter) ends() error {
 		if e.Side == "to" {
 			side = pgschema.RefRoleLinkTo
 		}
-		if err := c.add(append(w.base(e.No), held(e.Def, e.Held), int64(side), e.LookupHash[:])...); err != nil {
+		if err := c.add(append(w.base(e.No), int64(e.Def), int64(side), e.LookupHash[:], e.Held)...); err != nil {
 			return err
 		}
 	}
@@ -312,7 +304,7 @@ func (w *pageWriter) claims() error {
 			c.abort()
 			return kernel.Errorf(kernel.CodeInvalidValue, "the model has no identifier scheme %q", cl.Scheme)
 		}
-		if err := c.add(append(w.base(cl.No), int64(scheme), held(cl.Feed, cl.Held), cl.ValueHash[:], cl.Value)...); err != nil {
+		if err := c.add(append(w.base(cl.No), int64(scheme), int64(cl.Feed), cl.ValueHash[:], cl.Value, cl.Held)...); err != nil {
 			return err
 		}
 	}

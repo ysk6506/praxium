@@ -208,7 +208,7 @@ func TestPgiARecordIsNewChangedOrTheSameAndOnlyNewAndChangedOnesCarryCellsKeysEn
 }
 
 // [REQ-701]
-func TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeedAsItsComplement(t *testing.T) {
+func TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeed(t *testing.T) {
 	filter := `{"op":"filter","column":"power_state","in":["on"]}`
 	mapping := strings.Replace(pgiMappingJSON, `{"feeds":[`, `{"refinements":[{"id":"r_on","input":"ds_servers","ops":[`+filter+`]}],"feeds":[`, 1)
 	mapping = strings.Replace(mapping, `"id":"f_server","dataset":"ds_servers"`, `"id":"f_server","dataset":"r_on"`, 1)
@@ -235,16 +235,13 @@ func TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberO
 			}
 		}
 	}
-	keys := e.text(t, fmt.Sprintf(`SELECT string_agg(row_no || ':' || feed_no, ' ' ORDER BY row_no) FROM %s WHERE dataset_no = %d`, pgiTable(ref, pgschema.TableStageKey), servers))
-	if want := fmt.Sprintf("0:%d 1:%d", feed, ^feed); keys != want || feed != 1 {
+	keys := e.text(t, fmt.Sprintf(`SELECT string_agg(row_no || ':' || feed_no || ':' || held, ' ' ORDER BY row_no) FROM %s WHERE dataset_no = %d`, pgiTable(ref, pgschema.TableStageKey), servers))
+	if want := fmt.Sprintf("0:%d:false 1:%d:true", feed, feed); keys != want || feed != 1 {
 		t.Errorf("the keys of the servers: %q, want %q", keys, want)
 	}
-	ends := e.text(t, fmt.Sprintf(`SELECT string_agg(row_no || ':' || def_no, ' ' ORDER BY row_no) FROM %s WHERE dataset_no = %d`, pgiTable(ref, pgschema.TableStageEnd), servers))
-	if want := fmt.Sprintf("0:%d 1:%d", def, ^def); ends != want {
+	ends := e.text(t, fmt.Sprintf(`SELECT string_agg(row_no || ':' || def_no || ':' || held, ' ' ORDER BY row_no) FROM %s WHERE dataset_no = %d`, pgiTable(ref, pgschema.TableStageEnd), servers))
+	if want := fmt.Sprintf("0:%d:false 1:%d:true", def, def); ends != want {
 		t.Errorf("the ends of the servers: %q, want %q", ends, want)
-	}
-	if held(3, false) != 3 || held(3, true) != -4 {
-		t.Error("the number of a held feed is its complement")
 	}
 }
 
