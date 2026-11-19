@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -194,5 +195,24 @@ func TestPgfConnectionsAreClosedAfterTheGraceWhenTheReadIsCancelled(t *testing.T
 		}
 	case <-time.After(30 * time.Second):
 		t.Fatalf("the connection was not closed after the grace")
+	}
+}
+
+// [REQ-670] A key with more rows than a page holds ends the read as incomplete, with the reason of that key and not of a changed source.
+func TestPgfAKeyWithMoreRowsThanAPageEndsTheReadWithItsReason(t *testing.T) {
+	r := pgsNewRig(t)
+	r.exec(`CREATE TABLE t (k int, v int)`)
+	r.exec(`INSERT INTO t SELECT 1, i FROM generate_series(1, 12) i`)
+	rd, ds := r.one(pgsDS("ds", pgsTable("t"), "k", "k", "v"), "")
+	res := pgsRead(rd, ds, ingest.PageOptions{MaxRows: 5})
+	if res.err != nil {
+		t.Fatalf("%v", res.err)
+	}
+	if len(res.pages) == 0 {
+		t.Fatalf("the read gave no page")
+	}
+	last := res.pages[len(res.pages)-1]
+	if last.End.Complete || !strings.Contains(last.End.Reason, "more than 5 rows have one natural key") || strings.Contains(last.End.Reason, "changed") {
+		t.Fatalf("the read of a key bigger than a page ended with %+v", last.End)
 	}
 }

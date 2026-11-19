@@ -26304,6 +26304,216 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgsource::TestPgfAConnectionThatCannotStartInItsTimeIsATimeout": {
+   "kind": "test",
+   "hash": "95898db28de5de5e",
+   "asserts": 3,
+   "literals": [
+    "b1e7a6efba357b70"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAKeyExpressionThatFailsOnARowIsAFailureOfTheRead": {
+   "kind": "test",
+   "hash": "437b13d9c345a98a",
+   "asserts": 2,
+   "literals": [
+    "3d92741be9b1f8d5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAKeyThatTheStatementDoesNotGiveIsRefused": {
+   "kind": "test",
+   "hash": "1288c23b1c9cd4cf",
+   "asserts": 2,
+   "literals": [
+    "488a57ca5e9a53b7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAKeyWithADomainNineStepsDeepIsRefused": {
+   "kind": "test",
+   "hash": "8f75a6597895888a",
+   "asserts": 2,
+   "literals": [
+    "4fa60153b0073f25"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAKeyWithMoreRowsThanAPageEndsTheReadWithItsReason": {
+   "kind": "test",
+   "hash": "ebc6fc137f2e6ccd",
+   "asserts": 4,
+   "literals": [
+    "a0d363a30656736c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAPanicOfTheDriverEndsTheReadAndTheConnection": {
+   "kind": "test",
+   "hash": "3ad4c8abc714e761",
+   "asserts": 4,
+   "literals": [
+    "9b411ee9e1ed74b7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAPreviewEndsAtItsRowLimitWithinAPage": {
+   "kind": "test",
+   "hash": "1b01826770678f85",
+   "asserts": 3,
+   "literals": [
+    "adbb6d1a9884b883"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAReadOnAClosedConnectionIsAnError": {
+   "kind": "test",
+   "hash": "0f0f07a2d0ec0ed6",
+   "asserts": 4,
+   "literals": [
+    "35bbcaf73c127813"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAReadTransactionThatRunsOutOfItsTimeIsATimeout": {
+   "kind": "test",
+   "hash": "9271d752b9ae543d",
+   "asserts": 4,
+   "literals": [
+    "aea5256585ce286a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAReadWhoseLimitsTheSourceRefusesIsAnError": {
+   "kind": "test",
+   "hash": "d6e2238911c5827b",
+   "asserts": 4,
+   "literals": [
+    "9bce9ed2275fedd9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAResumeTokenWithAKeyTheColumnCannotReadIsRefused": {
+   "kind": "test",
+   "hash": "37f4a0f24224be8f",
+   "asserts": 3,
+   "literals": [
+    "a91c49240ae66f52"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfARowLargerThanTheBudgetIsRefused": {
+   "kind": "test",
+   "hash": "976536c5e00bdaef",
+   "asserts": 2,
+   "literals": [
+    "1a02418a32b01fe1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfAStatementThatFailsOnARowIsReportedByTheCheckAndTheRead": {
+   "kind": "test",
+   "hash": "eadc03e6b3863ef9",
+   "asserts": 3,
+   "literals": [
+    "d57cf5967872d1d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfConnectionsAreClosedAfterTheGraceWhenTheReadIsCancelled": {
+   "kind": "test",
+   "hash": "28ca9a9fd8ea52a5",
+   "asserts": 4,
+   "literals": [
+    "294389d989d38c01"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgsource::TestPgsAKeyGroupThatFillsABatchIsReadWhole": {
    "kind": "test",
    "hash": "be9548079ee584b8",
@@ -26762,10 +26972,10 @@
   },
   "go:backend/internal/pgsource::TestPgsReadsDoNotLeaveConnectionsOrChangeTheSourcesSettings": {
    "kind": "test",
-   "hash": "a92c80fa7acc27e7",
-   "asserts": 4,
+   "hash": "78f12c30f2969516",
+   "asserts": 5,
    "literals": [
-    "ec90037beb237e8d"
+    "d6d74314b7d63244"
    ],
    "precision": [],
    "skips": 0,
@@ -26957,7 +27167,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "c622793482bfd735",
+   "hash": "e23f2f3cdccbc80e",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -27051,7 +27261,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "475c16aa84bebb68",
+   "hash": "265699c390e5189c",
    "asserts": 5,
    "literals": [
     "e75973869c22b055"

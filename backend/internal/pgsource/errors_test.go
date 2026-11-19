@@ -194,9 +194,19 @@ func TestPgsReadsDoNotLeaveConnectionsOrChangeTheSourcesSettings(t *testing.T) {
 	if res := pgsRead(rd, ds, ingest.PageOptions{MaxRows: 5}); res.err != nil || len(res.rows()) != 50 {
 		t.Fatalf("%v", res.err)
 	}
-	var n int
-	if err := r.admin.QueryRowContext(pgsCtx, `SELECT count(*) FROM pg_stat_activity WHERE datname = $1 AND application_name = $2`, r.dbName, applicationName).Scan(&n); err != nil || n != 0 {
-		t.Fatalf("connections left: %d %v", n, err)
+	// The read closes its connections; the server ends each backend when it sees the close, a moment later.
+	for attempt := 0; ; attempt++ {
+		var n int
+		if err := r.admin.QueryRowContext(pgsCtx, `SELECT count(*) FROM pg_stat_activity WHERE datname = $1 AND application_name = $2`, r.dbName, applicationName).Scan(&n); err != nil {
+			t.Fatalf("%v", err)
+		}
+		if n == 0 {
+			break
+		}
+		if attempt >= 100 {
+			t.Fatalf("connections left: %d", n)
+		}
+		time.Sleep(50 * time.Millisecond)
 	}
 	// The role's and the database's settings are as they were.
 	var cfg int

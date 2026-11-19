@@ -89,12 +89,12 @@ func (f *flow) begin(ctx context.Context, resumed, skipNull bool) bool {
 // afterBatch puts the rows of a batch on the pages and tells whether the read goes on. A batch that ends the read, or
 // that cannot be trusted (the source changed, or one key holds more rows than a page), finishes the pages here.
 func (f *flow) afterBatch(ctx context.Context, res batchResult, opts ingest.PageOptions) bool {
-	if res.changed || (len(res.rows) == 0 && !res.end) {
-		f.w.Finish(f.emit, ingest.Completeness{Reason: "the source changed while the dataset was read; the dataset is read up to the page before"})
-		return false
-	}
 	if res.tooBig {
 		f.w.Finish(f.emit, ingest.Completeness{Reason: "more than " + itoa(opts.MaxRows) + " rows have one natural key, more than a page holds; the dataset is read up to that key"})
+		return false
+	}
+	if res.changed || (len(res.rows) == 0 && !res.end) {
+		f.w.Finish(f.emit, ingest.Completeness{Reason: "the source changed while the dataset was read; the dataset is read up to the page before"})
 		return false
 	}
 	if !f.give(ctx, res.rows) {
