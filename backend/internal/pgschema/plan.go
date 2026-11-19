@@ -7,8 +7,9 @@ import (
 
 // GeneratorVersion is the version of the rules that turn a model into tables. A change of a rule (a column,
 // a setting, an index) is a new version; a schema made by an older version is not followed by a newer one
-// without a decision of its own.
-const GeneratorVersion = 2
+// without a decision of its own. Version 3 adds the tables of the ingestion at scale (ADR-0095): Diff follows
+// the step from 2 to 3 by making them (generations.go).
+const GeneratorVersion = 3
 
 // Phase says where a step may run.
 type Phase int

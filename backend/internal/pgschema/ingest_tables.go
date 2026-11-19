@@ -1,0 +1,225 @@
+package pgschema
+
+import (
+	"strconv"
+	"strings"
+)
+
+func itoa16(v int16) string { return strconv.Itoa(int(v)) }
+
+// col is one line of a CREATE TABLE: the name and what follows it.
+func col(name, rest string) string { return name + " " + rest }
+
+// kindCheck is the check that keeps a column of problem kinds to the closed list.
+func kindCheck() string {
+	words := make([]string, 0, len(ProblemKinds()))
+	for _, k := range ProblemKinds() {
+		words = append(words, "'"+k+"'")
+	}
+	return ColKind + " text NOT NULL CHECK (" + ColKind + " IN (" + strings.Join(words, ", ") + "))"
+}
+
+const (
+	typeSrc     = "integer NOT NULL"
+	typeKeyText = `text COLLATE "C" NOT NULL`
+	typeHash16  = "bytea NOT NULL"
+	typeSmall   = "smallint NOT NULL"
+	typeBig     = "bigint NOT NULL"
+	typeInt     = "integer NOT NULL"
+)
+
+// ingestTableDefs are the tables of the ingestion at scale that every storage schema has: the permanent ones
+// and the staged ones. A source's raw records and the staged rows of its receiving are partitioned by the
+// number of the source; the partitions are made when the source is put to the KG (SourcePartitionSteps).
+func ingestTableDefs() []tableDef {
+	return append(append(permanentIngestDefs(), receiveTableDefs()...), computeTableDefs()...)
+}
+
+// permanentIngestDefs are the tables that keep what the runs learned: the raw records, what is waited for, what
+// the records asked to find, and the problems of the records. The object_key (the identification index) is among
+// the registry tables (ADR-0089) and has what the ingestion needs.
+func permanentIngestDefs() []tableDef {
+	return []tableDef{
+		// One partition per source. The hash and the fate are in the key's index, so the comparison of a page
+		// with what is kept reads the index only.
+		{Name: TableRawRecord, PartitionBy: ColSrcNo, Cols: []string{
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText),
+			col(ColRawHash, typeHash16), col(ColFields, "text[] NOT NULL"), col(ColDeclRev, typeInt),
+			col(ColOpenedSeq, typeBig), col(ColFate, typeSmall),
+			"PRIMARY KEY (" + ColSrcNo + ", " + ColDatasetNo + ", " + ColKey + ") INCLUDE (" + ColRawHash + ", " + ColFate + ")",
+		}},
+		{Name: TableRecordWait, With: vacuumBig, Cols: []string{
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColKind, typeSmall),
+			col(ColRuns, typeInt), col(ColFirstAt, "timestamptz NOT NULL"),
+			"PRIMARY KEY (" + ColSrcNo + ", " + ColDatasetNo + ", " + ColKey + ", " + ColKind + ")",
+		}},
+		// What a record asked to find, and what it found. A target of NULL is not solved.
+		{Name: TableRecordRef, With: fillTypeTable + ", " + vacuumBig, Cols: []string{
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColRole, typeSmall),
+			col(ColDefNo, typeInt), col(ColSub, typeInt), col(ColLookupHash, "bytea"), col(ColTargetNo, "bigint"),
+			col(ColState, typeSmall), col(ColRetirable, "boolean NOT NULL DEFAULT false"),
+			"PRIMARY KEY (" + strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey, ColRole, ColDefNo, ColSub}, ", ") + ")",
+		}},
+		{Name: TableRecordProblem, With: vacuumBig, Cols: []string{
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColDefNo, typeInt),
+			col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
+		}},
+	}
+}
+
+// receiveTableDefs are the tables a source is received into, one partition per source. A page gives all its rows
+// to stage_record (the key, the place, the change against the raw record) and the fields, the keys, the ends of
+// the links and the identifier claims only for the rows that are new or changed.
+func receiveTableDefs() []tableDef {
+	row := func() []string {
+		return []string{col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColPage, typeInt), col(ColRowNo, typeInt)}
+	}
+	cat := func(parts ...[]string) []string {
+		var out []string
+		for _, p := range parts {
+			out = append(out, p...)
+		}
+		return out
+	}
+	return []tableDef{
+		{Name: TableStageRecord, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
+			col(ColKey, typeKeyText), col(ColPlace, "text NOT NULL DEFAULT ''"), col(ColFiltered, "boolean NOT NULL DEFAULT false"),
+			col(ColChangeKind, typeSmall), col(ColRawHash, "bytea"), col(ColFields, "text[]"), col(ColProblems, "jsonb"),
+		})},
+		{Name: TableStageKey, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
+			col(ColFeedNo, typeInt), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall), col(ColSigHash, typeHash16),
+			col(ColCandRef, `text COLLATE "C"`), col(ColAncTypes, "smallint[]"), col(ColAncSigs, "bytea[]"),
+		})},
+		{Name: TableStageEnd, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
+			col(ColDefNo, typeInt), col(ColSide, typeSmall), col(ColLookupHash, typeHash16),
+		})},
+		{Name: TableStageClaim, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
+			col(ColSchemeNo, typeInt), col(ColFeedNo, typeInt), col(ColValueHash, typeHash16), col(ColValue, "text NOT NULL"),
+		})},
+	}
+}
+
+// computeTableDefs are the tables of one computation, one set per KG. They are logged and only inserted into.
+// A record of the computation is a rid, a number given in the order they are put in.
+func computeTableDefs() []tableDef {
+	defs := computeRecordDefs()
+	defs = append(defs, computeKeyDefs()...)
+	defs = append(defs, computeResultDefs()...)
+	return append(defs, ingestDiffDef())
+}
+
+func computeRecordDefs() []tableDef {
+	return []tableDef{
+		{Name: TableCalcRecord, Cols: []string{
+			col(ColRid, "bigint GENERATED ALWAYS AS IDENTITY PRIMARY KEY"),
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText),
+			col(ColFields, "text[] NOT NULL"), col(ColRawHash, typeHash16), col(ColDeclRev, typeInt),
+			col(ColOpenedSeq, typeBig), col(ColFate, typeSmall), col(ColWhy, typeSmall),
+		}},
+		{Name: TableCalcWait, Cols: []string{
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColKind, typeSmall),
+			col(ColRuns, typeInt), col(ColFirstAt, "timestamptz NOT NULL"), col(ColExpired, "boolean NOT NULL"),
+		}},
+	}
+}
+
+// computeKeyDefs are the keys, the ends and the claims of the records that are read again, and what the
+// identification makes of them.
+func computeKeyDefs() []tableDef {
+	return []tableDef{
+		{Name: TableCalcKey, Cols: []string{
+			col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall),
+			col(ColSigHash, typeHash16), col(ColCandRef, `text COLLATE "C"`), col(ColAncTypes, "smallint[]"), col(ColAncSigs, "bytea[]"),
+		}},
+		{Name: TableCalcEnd, Cols: []string{
+			col(ColRid, typeBig), col(ColDefNo, typeInt), col(ColSide, typeSmall), col(ColLookupHash, typeHash16),
+		}},
+		{Name: TableCalcClaim, Cols: []string{
+			col(ColRid, typeBig), col(ColSchemeNo, typeInt), col(ColFeedNo, typeInt), col(ColValueHash, typeHash16), col(ColValue, "text NOT NULL"),
+		}},
+		// The object a row is bound to, whether it is new, and the round of the identification that bound it.
+		{Name: TableCalcBind, Cols: []string{
+			col(ColRid, typeBig), col(ColKeyOrd, typeSmall), col(ColObjNo, typeBig), col(ColIsNew, "boolean NOT NULL"), col(ColRound, typeSmall),
+		}},
+		// A key bound in this run, and a key that this run dropped because it led to two objects: it stays dropped
+		// for the rest of the run (ingestion-at-scale-identity.md 2.2, rule 3).
+		{Name: TableCalcNewKey, Cols: []string{
+			col(ColTypeNo, typeSmall), col(ColCtxNo, "bigint NOT NULL DEFAULT 0"), col(ColSigHash, typeHash16),
+			col(ColObjNo, typeBig), col(ColRound, typeSmall),
+		}},
+		{Name: TableCalcDropped, Cols: []string{
+			col(ColTypeNo, typeSmall), col(ColCtxNo, "bigint NOT NULL DEFAULT 0"), col(ColSigHash, typeHash16), col(ColRound, typeSmall),
+			"PRIMARY KEY (" + ColTypeNo + ", " + ColCtxNo + ", " + ColSigHash + ")",
+		}},
+		// The objects that are computed again, and why.
+		{Name: TableCalcObject, Cols: []string{
+			col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColWhy, typeSmall),
+		}},
+	}
+}
+
+// computeResultDefs are what the computation makes: the objects, the links, the volatile values, the identifier
+// claims, the problems and the new record references. The objects and the links have the columns of the tables
+// they will be put into, so the apply copies them.
+func computeResultDefs() []tableDef {
+	return []tableDef{
+		{Name: TableStageObject, Cols: []string{
+			col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColRef, typeKeyText), col(ColTypeNo, typeSmall), col(ColName, "text NOT NULL"),
+			col(ColMinGrade, typeSmall), col(ColDoc, "jsonb NOT NULL"), col(ColSourceRefs, "jsonb NOT NULL DEFAULT '[]'"),
+			col(ColContentHash, typeHash16), col(ColRowHash, typeHash16), col(ColFirstKey, "jsonb"), col(ColIsNew, "boolean NOT NULL"),
+		}},
+		{Name: TableStageLink, Cols: []string{
+			col(ColLinkNo, "bigint NOT NULL PRIMARY KEY"), col(ColRef, typeKeyText), col(ColDefNo, typeInt), col(ColTypeNo, typeSmall),
+			col(ColSrc, typeBig), col(ColDst, typeBig), col(ColDiscrim, "text NOT NULL DEFAULT ''"), col(ColGrade, "text NOT NULL"),
+			col(ColBasis, "text NOT NULL"), col(ColDoc, "jsonb NOT NULL DEFAULT '{}'"), col(ColSourceRefs, "jsonb NOT NULL DEFAULT '[]'"),
+			col(ColContentHash, typeHash16), col(ColRowHash, typeHash16),
+		}},
+		// The entry of an attribute in the prov of the object's state row (value, grade, basis, time seen).
+		{Name: TableStageVolat, Cols: []string{
+			col(ColObjNo, typeBig), col(ColTypeNo, typeSmall), col(ColAttrNo, typeInt), col(ColEntry, "jsonb NOT NULL"),
+			"PRIMARY KEY (" + ColObjNo + ", " + ColAttrNo + ")",
+		}},
+		{Name: TableStageIdent, Cols: []string{
+			col(ColObjNo, typeBig), col(ColScheme, "text NOT NULL"), col(ColValue, "text NOT NULL"), col(ColScope, "text NOT NULL"),
+			"PRIMARY KEY (" + ColObjNo + ", " + ColScheme + ", " + ColValue + ", " + ColScope + ")",
+		}},
+		{Name: TableCalcProblem, Cols: []string{
+			col(ColRid, typeBig), col(ColDefNo, typeInt), col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
+		}},
+		{Name: TableCalcRef, Cols: []string{
+			col(ColRid, typeBig), col(ColRole, typeSmall), col(ColDefNo, typeInt), col(ColSub, typeInt), col(ColLookupHash, "bytea"),
+			col(ColTargetNo, "bigint"), col(ColState, typeSmall), col(ColRetirable, "boolean NOT NULL DEFAULT false"),
+		}},
+	}
+}
+
+// ingestDiffDef is the difference between the computed rows and the stored ones, in the order the apply writes
+// it. ord is the order (kind, type number, id) and chunk_no is stored, so the list of chunks, the preview, the
+// fingerprint and the digest all read the same rows. A row of the kind key keeps the key it binds in ctx_no and
+// sig_hash.
+func ingestDiffDef() tableDef {
+	return tableDef{Name: TableIngestDiff, Cols: []string{
+		col(ColOrd, "bigint NOT NULL PRIMARY KEY"), col(ColChunkNo, typeInt), col(ColKind, typeSmall), col(ColTypeNo, typeSmall),
+		col(ColEntityNo, typeBig), col(ColRef, `text COLLATE "C"`), col(ColChangeKind, typeSmall),
+		col(ColOldHash, "bytea"), col(ColNewHash, "bytea"), col(ColCtxNo, "bigint NOT NULL DEFAULT 0"), col(ColSigHash, "bytea"),
+	}}
+}
+
+// ingestIndexDefs are the indexes of the ingestion tables, besides the keys. The tables that are emptied and
+// filled again have only the ones a step reads by; the others are made by a later change if a measurement asks.
+func ingestIndexDefs() []indexDef {
+	identity := ColRole + " = " + itoa16(RefRoleIdentity)
+	return []indexDef{
+		// From an object to the records that feed it.
+		{Name: "record_ref_target", Table: TableRecordRef, Expr: ColTargetNo, Where: identity},
+		// From a link to the record whose end made it.
+		{Name: "record_ref_link", Table: TableRecordRef, Expr: ColTargetNo, Where: ColRole + " = " + itoa16(RefRoleLinkFrom)},
+		// Find an end or a claim by its key.
+		{Name: "record_ref_lookup", Table: TableRecordRef, Expr: strings.Join([]string{ColRole, ColDefNo, ColLookupHash}, ", "), Where: ColLookupHash + " IS NOT NULL"},
+		// The list of what is not solved, as the records that have a part of it.
+		{Name: "record_ref_open", Table: TableRecordRef, Expr: strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey}, ", "), Where: ColState + " <> " + itoa16(RefResolved)},
+		{Name: "record_problem_record", Table: TableRecordProblem, Expr: strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey}, ", ")},
+		{Name: "calc_record_key", Table: TableCalcRecord, Expr: strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey}, ", "), Unique: true},
+		{Name: "ingest_diff_chunk", Table: TableIngestDiff, Expr: ColChunkNo + ", " + ColOrd},
+	}
+}

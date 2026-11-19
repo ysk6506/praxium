@@ -1,0 +1,83 @@
+package pgstore
+
+import (
+	"context"
+	"errors"
+	"fmt"
+
+	"github.com/ysk6506/praxium/backend/internal/graph"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/pgschema"
+)
+
+// SchemaStartup says what the adjustment at the start of a server did with one KG whose schema was made by an
+// older generator (ADR-0095): it was brought up to this build (Adjusted), or it was left as it is, for the reason.
+type SchemaStartup struct {
+	KG       graph.KGID
+	Adjusted bool
+	Reason   string
+}
+
+// AdjustOldSchemas is what a server does when it starts, after the migrations and the check of the storage
+// format: every KG whose storage schema was made by an older generator of the plan is brought up to this build
+// with AdjustStorageSchema, so that a new build does not refuse the KGs that the build before made (D19).
+//
+// Only an addition is followed. A KG whose schema differs from the model in anything but the generator (the
+// model, its numbering or the search set), and one whose difference is not an addition, is left as it is, and
+// stays refused by D19; so is one that another run is already adjusting (servers that start together take
+// turns: the state "building" of ADR-0087 is the claim). A KG made by a newer generator than this build is not
+// touched. A KG that could not be adjusted because of a failure does not stop the others: the failures are
+// joined in the error returned, and the KG stays refused until it is adjusted.
+func (s *Store) AdjustOldSchemas(ctx context.Context) ([]SchemaStartup, error) {
+	kgs, err := s.ListKGs(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var done []SchemaStartup
+	var failed []error
+	for _, kg := range kgs {
+		out, err := s.adjustOldOne(ctx, kg.ID)
+		if err != nil {
+			failed = append(failed, kernel.Errorf(kernel.CodeOf(err), "cannot adjust the storage schema of KG %s: %v", kg.ID, err))
+			continue
+		}
+		if out != nil {
+			done = append(done, *out)
+		}
+	}
+	return done, errors.Join(failed...)
+}
+
+// adjustOldOne handles one KG; nil means it is not of an older generator and nothing was said about it.
+func (s *Store) adjustOldOne(ctx context.Context, kg graph.KGID) (*SchemaStartup, error) {
+	rec, err := s.StorageSchema(ctx, kg)
+	if err != nil {
+		return nil, err
+	}
+	if rec.GeneratorVersion >= pgschema.GeneratorVersion {
+		return nil, nil
+	}
+	defer s.forget(kg)
+	a, err := s.access(ctx, kg)
+	if err != nil {
+		return nil, err
+	}
+	left := func(reason string) (*SchemaStartup, error) { return &SchemaStartup{KG: kg, Reason: reason}, nil }
+	want, err := hashesOfModel(a.model)
+	if err != nil {
+		return nil, err
+	}
+	if a.rec.RegistryHash != want.registry || a.rec.NumberingHash != want.numbering || a.rec.SearchHash != want.search {
+		return left("the schema differs from the model in more than the generator")
+	}
+	_, err = s.AdjustStorageSchema(ctx, kg, a.model)
+	switch {
+	case err == nil:
+		return &SchemaStartup{KG: kg, Adjusted: true}, nil
+	case kernel.CodeOf(err) == pgschema.CodeNotAdditive:
+		return left(fmt.Sprintf("the difference is not an addition: %v", err))
+	case kernel.CodeOf(err) == kernel.CodeConflict:
+		return left(fmt.Sprintf("another run holds the schema: %v", err))
+	}
+	return nil, err
+}

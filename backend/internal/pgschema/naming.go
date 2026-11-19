@@ -33,15 +33,17 @@ const (
 
 // FixedTables lists the fixed tables in the order they are created.
 func FixedTables() []string {
-	return []string{
+	base := []string{
 		TableObject, TableObjectState, TableLink, TableObjectHist, TableLinkHist, TableObjectKey,
 		TableChangeBatch, TableChangeEntry, TableLightChange, TableObjectIdentifier, TableIdentityEvent, TableIngestOrder,
 		TableHead, TableLease, TableGenerationEvent, TableVersion, TableVersionHashPart,
 	}
+	return append(base, IngestTables()...)
 }
 
-// The names that the plan keeps for the tables of an apply that works from staged rows. The tables are made
-// by a later change; the manifest knows these names, so a check of the schema does not take them for strangers.
+// The names that the plan keeps for the tables of an apply that works from staged rows (the tables themselves are
+// in ingest_names.go). A name of this prefix that is not in the plan is a table of a later version, and the
+// manifest knows it, so a check of the schema does not take it for a stranger.
 const (
 	ReservedPrefixStage = "stage_"
 	ReservedPrefixCalc  = "calc_"
@@ -51,11 +53,29 @@ const (
 	ReservedPrefixPartition = "part_"
 )
 
+// IngestTables lists the tables of the ingestion at scale in the order they are created: the permanent ones, the
+// ones a source is received into, and the ones of a computation.
+func IngestTables() []string {
+	out := []string{TableRawRecord, TableRecordWait, TableRecordRef, TableRecordProblem}
+	out = append(out, ReceiveTables()...)
+	return append(out, ComputeTables()...)
+}
+
 // IsReservedName reports whether a table name is one that a later change will make: for the staged apply or for
 // a partition of a table that only grows.
 func IsReservedName(name string) bool {
-	return strings.HasPrefix(name, ReservedPrefixStage) || strings.HasPrefix(name, ReservedPrefixCalc) ||
+	return isSourcePartition(name) || strings.HasPrefix(name, ReservedPrefixStage) || strings.HasPrefix(name, ReservedPrefixCalc) ||
 		strings.HasPrefix(name, ReservedPrefixPartition) || name == ReservedIngestDiff
+}
+
+// isSourcePartition reports whether a name is the partition of a source of one of the tables that have one.
+func isSourcePartition(name string) bool {
+	for _, t := range SourceTables() {
+		if rest, ok := strings.CutPrefix(name, t+"_p"); ok && rest != "" && strings.Trim(rest, "0123456789") == "" {
+			return true
+		}
+	}
+	return false
 }
 
 // SchemaName is the storage schema of a KG.
