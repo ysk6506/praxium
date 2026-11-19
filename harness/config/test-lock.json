@@ -21854,6 +21854,246 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestAPoolOfALimitedRoleStopsASlowStatementAndSaysSo": {
+   "kind": "test",
+   "hash": "2b7e66a0e2659239",
+   "asserts": 1,
+   "literals": [
+    "ff578e1c55f11649"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAPoolRefusesWhatItCannotOpenAndNeverShowsTheDSN": {
+   "kind": "test",
+   "hash": "0f48dcf9b790ee17",
+   "asserts": 3,
+   "literals": [
+    "86db00ccb414e880"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAPoolRunsTransactionsAndClosesItsConnections": {
+   "kind": "test",
+   "hash": "0484323513d3fcc2",
+   "asserts": 7,
+   "literals": [
+    "c0424a22b32e9ee2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestAPoolWillNotOpenOnADatabaseWhoseMigrationWasEdited": {
+   "kind": "test",
+   "hash": "de94e2c9f0b41989",
+   "asserts": 4,
+   "literals": [
+    "037c393e6bd14c89"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestATestServerThatRefusesToMakeADatabaseIsReportedByItsOwnWords": {
+   "kind": "test",
+   "hash": "69b2f848ef0b8e35",
+   "asserts": 1,
+   "literals": [
+    "278d878a46fb7c4a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestConfigDefaultsAndRoleOrder": {
+   "kind": "test",
+   "hash": "106b0087cc76f19b",
+   "asserts": 3,
+   "literals": [
+    "48d6589654c984b0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestConfigFillsDefaultsAndRefusesWhatIsWrong": {
+   "kind": "test",
+   "hash": "ad7faedb3df997c7",
+   "asserts": 7,
+   "literals": [
+    "9896c6529538477c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestConfigNeverPrintsItsDSN": {
+   "kind": "test",
+   "hash": "b9237b7b8f547f37",
+   "asserts": 1,
+   "literals": [
+    "aab47273971b5b7c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestDatabaseErrorsAreGivenTheCodesOfThisBackend": {
+   "kind": "test",
+   "hash": "69349959410f18f4",
+   "asserts": 5,
+   "literals": [
+    "bfafb05eba7828f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestInspectTLSJudgesTheLinkOfAConnectionString": {
+   "kind": "test",
+   "hash": "4d93f34f7c117296",
+   "asserts": 2,
+   "literals": [
+    "5df5dc7cbc9b2b79"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestInspectTLSReportsTheModeAndHidesTheString": {
+   "kind": "test",
+   "hash": "e704f0d963ae6427",
+   "asserts": 2,
+   "literals": [
+    "0baf4f3b40ca37d4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-472"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestMigrationFilesAreNumberedWithoutGapsAndCarryKnownDirectives": {
+   "kind": "test",
+   "hash": "84c2f7c280476b34",
+   "asserts": 5,
+   "literals": [
+    "dec56cfe3eebb59f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited": {
+   "kind": "test",
+   "hash": "f7a59674753ca09f",
+   "asserts": 8,
+   "literals": [
+    "00852abf9748803b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns": {
+   "kind": "test",
+   "hash": "64f575965585e4c3",
+   "asserts": 8,
+   "literals": [
+    "86b37ba2726b5f8b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTestDatabasesNeedTheServerAndAreMadeOnIt": {
+   "kind": "test",
+   "hash": "c519182c06297266",
+   "asserts": 6,
+   "literals": [
+    "aff637a3f032bffe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheLimitsOfARoleApplyToItsTransactionsOnly": {
+   "kind": "test",
+   "hash": "40432468269e6dba",
+   "asserts": 5,
+   "literals": [
+    "c588349eb3b4abee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestAChunkLargerThanOneStatementIsWrittenWhole": {
    "kind": "test",
    "hash": "5e5f50afd49d9fbd",
@@ -21924,51 +22164,6 @@
    "asserts": 1,
    "literals": [
     "3a76bea51752fb34"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/pgstore::TestConfigDefaultsAndRoleOrder": {
-   "kind": "test",
-   "hash": "106b0087cc76f19b",
-   "asserts": 3,
-   "literals": [
-    "48d6589654c984b0"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/pgstore::TestConfigFillsDefaultsAndRefusesWhatIsWrong": {
-   "kind": "test",
-   "hash": "2bbca1e3b68ff3ed",
-   "asserts": 7,
-   "literals": [
-    "aa35b1bb48b5ff13"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/pgstore::TestConfigNeverPrintsItsDSN": {
-   "kind": "test",
-   "hash": "b9237b7b8f547f37",
-   "asserts": 1,
-   "literals": [
-    "aab47273971b5b7c"
    ],
    "precision": [],
    "skips": 0,
@@ -22071,36 +22266,6 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/pgstore::TestInspectTLSJudgesTheLinkOfAConnectionString": {
-   "kind": "test",
-   "hash": "4d93f34f7c117296",
-   "asserts": 2,
-   "literals": [
-    "5df5dc7cbc9b2b79"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-472"
-   ],
-   "added": "2026-11-15",
-   "amended_by": null
-  },
-  "go:backend/internal/pgstore::TestInspectTLSReportsTheModeAndHidesTheString": {
-   "kind": "test",
-   "hash": "e704f0d963ae6427",
-   "asserts": 2,
-   "literals": [
-    "0baf4f3b40ca37d4"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-472"
-   ],
-   "added": "2026-11-15",
-   "amended_by": null
-  },
   "go:backend/internal/pgstore::TestLeasesRefuseBadInputAndStaleHolders": {
    "kind": "test",
    "hash": "ff7000664d3273ee",
@@ -22113,51 +22278,6 @@
    "reqs": [
     "REQ-132",
     "REQ-135",
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/pgstore::TestMigrationFilesAreNumberedWithoutGapsAndCarryKnownDirectives": {
-   "kind": "test",
-   "hash": "84c2f7c280476b34",
-   "asserts": 5,
-   "literals": [
-    "dec56cfe3eebb59f"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": null
-  },
-  "go:backend/internal/pgstore::TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited": {
-   "kind": "test",
-   "hash": "574535aa9bbf6098",
-   "asserts": 9,
-   "literals": [
-    "925bd7232aa03046"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-270"
-   ],
-   "added": "2026-11-14",
-   "amended_by": "0044-built-in-authentication-with-access-tokens.md"
-  },
-  "go:backend/internal/pgstore::TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns": {
-   "kind": "test",
-   "hash": "467383fc2efd3eda",
-   "asserts": 9,
-   "literals": [
-    "9841e9a5c9a231fc"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
     "REQ-270"
    ],
    "added": "2026-11-14",
@@ -22293,19 +22413,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/pgstore::TestTheLimitsOfARoleApplyToItsTransactionsOnly": {
+  "go:backend/internal/pgstore::TestThePollIntervalOfTheStoreHasItsDefaultAndTheRestGoesToTheConnectionBase": {
    "kind": "test",
-   "hash": "aae2bd3c2e830d94",
-   "asserts": 6,
+   "hash": "dad397a3c855ed79",
+   "asserts": 5,
    "literals": [
-    "ca7aad071ccc1060"
+    "4bd47aec9f66b9d4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-270"
    ],
-   "added": "2026-11-14",
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestVersionsCarryTheirPartsAndRestoreDropsTheLaterOnes": {
@@ -49729,6 +49849,15 @@
   "go:backend/internal/httpapi::TestImpactOverHTTPAnswersASiteFailureAndAnUpstreamQuestion": "0078-remove-impact-computation-users-ask-by-query.md",
   "go:backend/internal/httpapi::TestImpactOverHTTPRefusesWhatItCannotAnswerWithAProblem": "0078-remove-impact-computation-users-ask-by-query.md",
   "go:backend/internal/kgread::TestAskNeighborsAndImpact": "0078-remove-impact-computation-users-ask-by-query.md",
+  "go:backend/internal/pgstore::TestConfigDefaultsAndRoleOrder": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestConfigFillsDefaultsAndRefusesWhatIsWrong": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestConfigNeverPrintsItsDSN": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestInspectTLSJudgesTheLinkOfAConnectionString": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestInspectTLSReportsTheModeAndHidesTheString": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestMigrationFilesAreNumberedWithoutGapsAndCarryKnownDirectives": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestMigrationsAreRecordedAndAnAppliedOneIsNeverEdited": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestMigrationWaitsForTheLockWithinItsLimitAndThenTakesTurns": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
+  "go:backend/internal/pgstore::TestTheLimitsOfARoleApplyToItsTransactionsOnly": "0083-split-the-postgresql-adapter-into-connection-base-and-port-implementations.md",
   "go:backend/internal/query::TestFindPagesAtASealedVersionKeepTheVersion": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestFindPagesRoundTripAndStayWhereTheyWereWhileTheKGMoves": "0027-reading-the-kg-through-the-api-and-the-command-line.md",
   "go:backend/internal/query::TestGetReadsThePastWithoutVolatileValues": "0027-reading-the-kg-through-the-api-and-the-command-line.md",

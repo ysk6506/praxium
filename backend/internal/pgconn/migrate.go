@@ -1,4 +1,4 @@
-package pgstore
+package pgconn
 
 import (
 	"context"
@@ -112,7 +112,7 @@ func readDirectives(m *migration) error {
 
 // migrate applies the steps that are not applied yet, in order, each in its own transaction. A step whose lock
 // wait ran out is tried again a few times, so that several servers started together take turns.
-func migrate(ctx context.Context, sh *shard, steps []migration) error {
+func migrate(ctx context.Context, sh *Pool, steps []migration) error {
 	for _, m := range steps {
 		if err := retryLocks(ctx, func() error { return applyStep(ctx, sh, m) }); err != nil {
 			return err
@@ -147,17 +147,17 @@ func lockTimedOut(err error) bool {
 // applyStep applies one step unless the database has it already. Under the advisory lock it is the only runner:
 // it creates the bookkeeping table if needed, compares the checksum of a step that is there, and otherwise runs
 // the file and records it, in one transaction.
-func applyStep(ctx context.Context, sh *shard, m migration) error {
-	return sh.tx(ctx, RoleMigration, false, func(tx *sql.Tx) error {
+func applyStep(ctx context.Context, sh *Pool, m migration) error {
+	return sh.Tx(ctx, RoleMigration, false, func(tx *sql.Tx) error {
 		if err := stepLimits(ctx, tx, m); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `SELECT pg_advisory_xact_lock($1)`, migrationLockKey); err != nil {
-			return dbErr(err, "take the migration lock")
+			return DBErr(err, "take the migration lock")
 		}
 		if _, err := tx.ExecContext(ctx, `CREATE TABLE IF NOT EXISTS schema_migrations (
 			version int PRIMARY KEY, name text NOT NULL, checksum text NOT NULL, applied_at timestamptz NOT NULL DEFAULT now())`); err != nil {
-			return dbErr(err, "create the table of migrations")
+			return DBErr(err, "create the table of migrations")
 		}
 		var have string
 		err := tx.QueryRowContext(ctx, `SELECT checksum FROM schema_migrations WHERE version = $1`, m.version).Scan(&have)
@@ -165,13 +165,13 @@ func applyStep(ctx context.Context, sh *shard, m migration) error {
 			return sameChecksum(m, have)
 		}
 		if !errors.Is(err, sql.ErrNoRows) {
-			return dbErr(err, "read the table of migrations")
+			return DBErr(err, "read the table of migrations")
 		}
 		if _, err := tx.ExecContext(ctx, m.sql); err != nil {
-			return dbErr(err, "run migration "+strconv.Itoa(m.version))
+			return DBErr(err, "run migration "+strconv.Itoa(m.version))
 		}
 		_, err = tx.ExecContext(ctx, `INSERT INTO schema_migrations (version, name, checksum) VALUES ($1, $2, $3)`, m.version, m.name, m.checksum)
-		return dbErr(err, "record the migration")
+		return DBErr(err, "record the migration")
 	})
 }
 
@@ -185,7 +185,7 @@ func stepLimits(ctx context.Context, tx *sql.Tx, m migration) error {
 			continue
 		}
 		if _, err := tx.ExecContext(ctx, `SELECT set_config($1, $2, true)`, l.name, millis(l.d)); err != nil {
-			return dbErr(err, "set a limit of the migration")
+			return DBErr(err, "set a limit of the migration")
 		}
 	}
 	return nil
