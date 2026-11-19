@@ -98,6 +98,9 @@ func (s *Store) DropStorageSchema(ctx context.Context, kg graph.KGID) error {
 	if err != nil {
 		return err
 	}
+	if err := s.detachSources(ctx, sh, kg); err != nil {
+		return err
+	}
 	return locked(ctx, sh, kg, func(tx *sql.Tx) error {
 		rec, found, err := readRecord(ctx, tx, kg)
 		if err != nil || !found {
@@ -106,7 +109,6 @@ func (s *Store) DropStorageSchema(ctx context.Context, kg graph.KGID) error {
 		if _, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(rec.Schema())+` CASCADE`); err != nil {
 			return dbErr(err, "drop the storage schema")
 		}
-		_, err = tx.ExecContext(ctx, `DELETE FROM kg_schema_state WHERE kg_id = $1`, kg.String())
-		return dbErr(err, "delete the state of the storage schema")
+		return dropStateRows(ctx, tx, kg)
 	})
 }

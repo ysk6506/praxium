@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "22866326946878f3"
+hash: "77987225238fd4e1"
 date: "2026-11-19"
-note: "adapter.httpsource 유닛 행을 더하고 adapter.egress 행의 어댑터 문장을 맞췄다. architecture.yaml의 변경은 새 유닛 한 줄이다"
+note: "유닛 행의 용어를 표준어(수신)로 고쳤다."
 text_changed: true
-doc_hash: "f3884500cdcafdd3"
+doc_hash: "944a1762f8c06b0f"

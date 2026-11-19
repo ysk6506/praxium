@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "backend/go.mod"
 hash: "bb0c12bc6870bd05"
-date: "2026-11-14"
-note: "영향 범위 질의(ADR-0043) 병합 뒤 REQ-300~341의 공존을 대조해 확인함"
+date: "2026-11-19"
+note: "유닛 행의 용어를 표준어(수신)로 고쳤다."
 text_changed: true
-doc_hash: "8db2847b038220e0"
+doc_hash: "944a1762f8c06b0f"

@@ -16,6 +16,7 @@
   "go:adapter.mcp": 97,
   "go:adapter.memstore": 95.5,
   "go:adapter.pgconn": 95,
+  "go:adapter.pgingest": 92.5,
   "go:adapter.pgschema": 94,
   "go:adapter.pgstore": 92,
   "go:adapter.secretsfile": 98,

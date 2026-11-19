@@ -19914,6 +19914,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestARunIsOpenedAndEndedOnlyWithWhatItNeeds": {
+   "kind": "test",
+   "hash": "8874434d1ff8cc32",
+   "asserts": 6,
+   "literals": [
+    "fd806313c5c099f6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
    "kind": "test",
    "hash": "40836a2338ae3490",
@@ -21292,6 +21307,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestRunStagesMoveOnlyAlongTheWorkAndAnEndIsOver": {
+   "kind": "test",
+   "hash": "9ba88b926670f8e6",
+   "asserts": 5,
+   "literals": [
+    "1f856c370ab85166"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestSameInputSameObjectIDs": {
    "kind": "test",
    "hash": "d96cdd42835e5187",
@@ -21318,6 +21348,21 @@
    "skips": 0,
    "reqs": [
     "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestSchemeNumbersAreTheOrderOfTheModelFromOne": {
+   "kind": "test",
+   "hash": "17236d54315919a4",
+   "asserts": 3,
+   "literals": [
+    "00f52f5555a3c8f8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
    ],
    "added": "2026-11-19",
    "amended_by": null
@@ -26123,6 +26168,392 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestPgiACallThatNeedsATableThatIsDamagedFailsWithAnError": {
+   "kind": "test",
+   "hash": "d462cbc2ce28c6c7",
+   "asserts": 29,
+   "literals": [
+    "f7f0884e7f729dea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeedAsItsComplement": {
+   "kind": "test",
+   "hash": "9fa8dd9df8b29e69",
+   "asserts": 16,
+   "literals": [
+    "d2884e3c5fb4e15e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiAPageOfTenThousandRowsGoesInWithOneCopyOfEachTable": {
+   "kind": "test",
+   "hash": "0368abb775d094c7",
+   "asserts": 14,
+   "literals": [
+    "7d2b4c5ea2766fe1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiAPageThatFailsHalfWayLeavesNothingNotEvenItsPlaceAndNoRowIsHalfWritten": {
+   "kind": "test",
+   "hash": "15389862454df8f7",
+   "asserts": 25,
+   "literals": [
+    "4153ac387f4b2892"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiAPageWhoseRowOneTableRefusesLeavesNothingWhicheverTableItIsAndTheSinkGoesOn": {
+   "kind": "test",
+   "hash": "82379bd94ec8b605",
+   "asserts": 13,
+   "literals": [
+    "37f48a6d2ff2fd97"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiARecordIsNewChangedOrTheSameAndOnlyNewAndChangedOnesCarryCellsKeysEndsAndClaims": {
+   "kind": "test",
+   "hash": "c7c63cc37a9238ea",
+   "asserts": 33,
+   "literals": [
+    "15a640772220d4bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiArraysAreWrittenInTheTextFormPostgreSQLReads": {
+   "kind": "test",
+   "hash": "b2b13eef061df766",
+   "asserts": 4,
+   "literals": [
+    "b57df2f6c6c33271"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiARunMovesOnlyAlongTheStagesAndTheGateOfTheKGHoldsOneRunAtWork": {
+   "kind": "test",
+   "hash": "f907f3c129468de4",
+   "asserts": 26,
+   "literals": [
+    "f64d27a0281c9236"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiASourceHasOneRunThatIsNotOver": {
+   "kind": "test",
+   "hash": "cca5fe1bc8d8e5a8",
+   "asserts": 20,
+   "literals": [
+    "9068961c808077ee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiASourcePutToAKGHasItsRowsAndItsPartitionsAndPuttingItAgainChangesNothingButTheDatasetsItAdds": {
+   "kind": "test",
+   "hash": "cf62f0d9dab0e3e5",
+   "asserts": 28,
+   "literals": [
+    "b69deeaafe0a472c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-703"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiAWriteOfAnAttemptThatIsNotTheRunsIsRefusedAndChangesNothing": {
+   "kind": "test",
+   "hash": "2f816267e12646cb",
+   "asserts": 25,
+   "literals": [
+    "7ae21f1ae6140223"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiAWriteOfAnOldAttemptAfterAnotherServerTookTheRunOverWritesNothing": {
+   "kind": "test",
+   "hash": "ce3b1561f9c05843",
+   "asserts": 27,
+   "literals": [
+    "c020f1c8d45eb9fb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiDeletingAKGTakesItsSourcesOffFirstWithTheirRunsAndAKGWithNoSourcesIsDeletedAsBefore": {
+   "kind": "test",
+   "hash": "dbf714437eeb5f7d",
+   "asserts": 24,
+   "literals": [
+    "9546464da9813313"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiEveryCallWithAContextThatHasEndedFailsAndChangesNothing": {
+   "kind": "test",
+   "hash": "4548924aa6b95351",
+   "asserts": 16,
+   "literals": [
+    "35cf9e083222599e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiNothingOfThisUnitLeavesStateOnASessionAndOnlyTheCopyPreparesAStatement": {
+   "kind": "test",
+   "hash": "2ab5e5c4151e08aa",
+   "asserts": 6,
+   "literals": [
+    "45145d7895a6ac29"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-559"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable": {
+   "kind": "test",
+   "hash": "3e57c16b64c42297",
+   "asserts": 24,
+   "literals": [
+    "cef847e91984da18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-683"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiReceiveStoresEveryPageWithItsPlaceAndMovesTheRunToComputing": {
+   "kind": "test",
+   "hash": "8b4a8a8223c9801b",
+   "asserts": 19,
+   "literals": [
+    "982192f0966e66d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiReceivingAgainEmptiesTheSourcesPartitionAndBeginsAtTheFirstPageAndTheOtherSourcesAreLeftAlone": {
+   "kind": "test",
+   "hash": "7c2bd3a487abb846",
+   "asserts": 32,
+   "literals": [
+    "6af433ed69832f3c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-702"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiReceivingIsRefusedForAWrongPlanARunThatIsNotThereAndADatasetTheSourceWasNotPutWith": {
+   "kind": "test",
+   "hash": "f98df2968e65c00f",
+   "asserts": 13,
+   "literals": [
+    "d9222be681d32675"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiTakingASourceOffDropsItsPartitionsAndRowsInChunksAndRefusesASourceWithARunThatIsNotOver": {
+   "kind": "test",
+   "hash": "3ec0cb97e22a6d64",
+   "asserts": 35,
+   "literals": [
+    "51af1ba00e023cdb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-703"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiTheColumnsOfEachCopyAreTheColumnsOfItsTable": {
+   "kind": "test",
+   "hash": "fb61d77cb0792fc6",
+   "asserts": 2,
+   "literals": [
+    "070c4cbc03586f2d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiTheNamesTheCoreAndTheSchemaGiveForStagesClassesAndProblemsAreTheSame": {
+   "kind": "test",
+   "hash": "fbf16396487a60cb",
+   "asserts": 5,
+   "literals": [
+    "8540dc8fef3c9090"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-700"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiThePlaceOfARecordIsItsRangeOnTheSheetElseItsLineAndTheLinesPassedOverAreCounted": {
+   "kind": "test",
+   "hash": "265a13169f08d9b5",
+   "asserts": 14,
+   "literals": [
+    "117781419bbb5791"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiTheProblemsOfARecordAreOnItsRowAndTheProblemsOfAPageOnTheRowMinusOneAndAnIncompleteDatasetIsToldToo": {
+   "kind": "test",
+   "hash": "d02ddb5fab7abc5f",
+   "asserts": 23,
+   "literals": [
+    "709dc8a7cf0755f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiTheRowsOfAPageAreTheRowsThePreparerGaveWithTheCellsAndTheKeysIntact": {
+   "kind": "test",
+   "hash": "2501d7dd931cc761",
+   "asserts": 24,
+   "literals": [
+    "10a0d66f524ebb8f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-701"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestPgiTheTokenOfAPageIsWrittenAsTextAndReadBack": {
+   "kind": "test",
+   "hash": "acbef1fb4a97fed7",
+   "asserts": 6,
+   "literals": [
+    "931024d7831349f0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgschema::TestBuildMakesTheTablesOfASmallModel": {
    "kind": "test",
    "hash": "74bce8e43708adc8",
@@ -27102,6 +27533,21 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestPgsrcDeletingAKGOrDroppingItsSchemaTakesTheSourcesOffFirstEvenWithARunThatIsNotOver": {
+   "kind": "test",
+   "hash": "1b6e7fa61c7380a8",
+   "asserts": 17,
+   "literals": [
+    "4c266c627d3b1dca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestPostgresStorePassesThePreviewSuite": {

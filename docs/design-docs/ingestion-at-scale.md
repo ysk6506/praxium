@@ -7,7 +7,7 @@ follows:
 ---
 # 수집의 규모 설계
 
-수집을 한 KG에 객체와 링크가 수천만 개인 규모로 다시 설계해요. 결정은 [ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md)에 있어요. **이 문서는 아직 구현하지 않은 설계(예정)예요. 5절의 테이블은 스키마 계획에 들어갔어요([ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md)). 그 테이블을 쓰는 코드는 아직 없어요.** 지금 구현은 [수집 설계](ingestion.md)와 [파이프라인 설계](pipeline.md)가 설명하는 코드이고, 새 흐름은 그 옆에 지어요. 식별과 영향 집합, 적용, 유닛, 범위, 원형 측정은 [식별과 영향 집합, 적용, 범위](ingestion-at-scale-identity.md)에 있어요. 예시의 이름과 숫자는 지어낸 것이에요. **시작 값**은 원형이나 어림에서 정한 값이고 측정으로 고쳐요.
+수집을 한 KG에 객체와 링크가 수천만 개인 규모로 다시 설계해요. 결정은 [ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md)에 있어요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요. 5절의 테이블은 스키마 계획에 들어갔어요([ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md)). 1단계(수신)와 실행 기록의 최소한, 소스를 KG에 붙이고 떼는 일은 구현했어요([ADR-0098](adr/0098-receiving-step-and-run-ledger-in-adapter-pgingest.md)). 2단계부터는 아직 없어요.** 지금 구현은 [수집 설계](ingestion.md)와 [파이프라인 설계](pipeline.md)가 설명하는 코드이고, 새 흐름은 그 옆에 지어요. 식별과 영향 집합, 적용, 유닛, 범위, 원형 측정은 [식별과 영향 집합, 적용, 범위](ingestion-at-scale-identity.md)에 있어요. 예시의 이름과 숫자는 지어낸 것이에요. **시작 값**은 원형이나 어림에서 정한 값이고 측정으로 고쳐요.
 
 ## 1. 목적과 다루는 질문
 
@@ -54,7 +54,7 @@ follows:
 
 | 단계 | 누가 무엇을 해요 | 한 트랜잭션 | 죽으면 |
 |---|---|---|---|
-| 1 수신 | 어댑터가 페이지의 흐름을 줘요. 페이지마다 Go가 파싱하고, 뿌리 데이터셋에서 걸러졌는지 표시하고, 자연 키와 원본 해시를 만들어요. 그 페이지의 키로 `raw_record`의 해시와 운명을 배치로 찾아(인덱스만 읽어요) 견줘요. `stage_record`에 **모든 행**의 (페이지, 번호, 키, 자리, 변화)를, **새로 왔거나 바뀐 행**만 필드를 `COPY`해요. 바뀐 행은 식별 키(후보 id 포함), 끝 키, 식별자의 주장도 함께 싣고요 | 페이지 하나(와 페이지 번호) | 어댑터가 토큰으로 이어 줄 수 있으면 다음 페이지부터, 아니면 그 데이터셋의 파티션을 비우고 0페이지부터. 처음 구현은 언제나 0페이지부터예요 |
+| 1 수신 | 어댑터가 페이지의 흐름을 줘요. 페이지마다 Go가 파싱하고, 뿌리 데이터셋에서 걸러졌는지 표시하고, 자연 키와 원본 해시를 만들어요. 그 페이지의 키로 `raw_record`의 해시와 운명을 배치로 찾아(인덱스만 읽어요) 견줘요. `stage_record`에 **모든 행**의 (페이지, 번호, 키, 자리, 변화)를, **새로 왔거나 바뀐 행**만 필드를 `COPY`해요. 바뀐 행은 식별 키(후보 id 포함), 끝 키, 식별자의 주장도 함께 싣고요 | 페이지 하나(와 페이지 번호) | 어댑터가 토큰으로 이어 줄 수 있으면 다음 페이지부터, 아니면 그 데이터셋의 파티션을 비우고 0페이지부터. 처음 구현은 언제나 0페이지부터예요. **구현했어요**: `adapter.pgingest`의 `Receive`가 소스의 파티션을 `TRUNCATE`하고 페이지마다 트랜잭션 하나로 넣어요. 페이지에는 키 순서, 부모 키, 방향의 자리 같은 값을 열이 모자라 약속으로 실어요(ADR-0098 결정 5) |
 | 2 원본 차이 | SQL이 배치 안의 중복(나중 행이 이기고 앞 행은 `duplicate_key`), 새로 옴, 바뀜, 그대로, 안 보임, 돌아옴, **기다림이 끝남**(안 보임과 걸러짐 각각)을 구해요. 안 보임은 완전한 전체 수집에서만 세요. **새 횟수와 처음 시각을 여기서 계산해 `calc_wait`에 적어요**(정리는 옮기기만 해요). 불완전한 수집의 데이터셋은 통째로 빼요(바뀐 행도 반영하지 않아요) | 구간 하나(키 해시의 앞자리로 버킷을 나눠요. 같은 키는 같은 버킷이에요) | 그 구간부터 |
 | 3 영향 집합의 출발과 식별 | 출발 레코드([식별과 영향 집합](ingestion-at-scale-identity.md) 3절)를 `calc_record`에 넣어요. 미해결 레코드는 그대로인 레코드이므로 Go가 `raw_record`의 필드에서 키를 다시 만들어 실어요. 식별은 [같은 문서](ingestion-at-scale-identity.md) 2절 | 구간, 라운드, 회 하나 | 그 라운드의 처음부터(결과 테이블을 그 라운드만 비우고) |
 | 4 다시 계산 | 영향받은 객체의 번호 순으로 페이지마다, 그 객체들에 기여하는 **모든 열린 레코드**(영구 테이블과 이번 준비 테이블. 다른 소스의 레코드는 그 소스의 매핑으로)를 읽어 Go가 값을 매핑하고, 이긴 값을 고르고(순위, 나중, 피드 순), 검사하고, 문서와 내용 해시와 행 합을 만들어 `stage_object`에 넣어요. 기여하는 살아 있는 레코드가 없고 폐기할 수 있는 객체는 폐기 후보예요. 링크는 끝 풀기와 차수를 SQL이, 링크 id와 속성과 해시를 Go가 해서 `stage_link`에 넣어요. 변동 값, 식별자의 주장, 레코드의 문제도 계산용 테이블에 넣어요 | 페이지 하나 | 그 페이지부터 |
@@ -114,9 +114,9 @@ follows:
 ## 6. 알려진 한계와 가정
 
 - 원형은 7.5만 대까지 쟀고 더 큰 규모는 재지 못했어요. 3천만의 수치는 어림이에요([식별과 영향 집합, 적용, 범위](ingestion-at-scale-identity.md) 8절).
-- 한 KG에 소스가 수백 개까지를 가정해요(소스마다의 파티션). 그보다 많은 경우는 뒤로 둬요. 소스마다 파티션이 다섯이라, KG를 지울 때 소스가 붙은 채로 한 트랜잭션에 지우면 소스 하나에 잠금이 약 68개 들어요. 그래서 소스를 하나씩 먼저 떼고 지워요(ADR-0095의 측정).
+- 한 KG에 소스가 수백 개까지를 가정해요(소스마다의 파티션). 그보다 많은 경우는 뒤로 둬요. 소스마다 파티션이 다섯이라, KG를 지울 때 소스가 붙은 채로 한 트랜잭션에 지우면 소스 하나에 잠금이 약 68개 들어요. 그래서 소스를 하나씩 먼저 떼고 지워요(ADR-0095의 측정). `DeleteKG`가 그렇게 해요(ADR-0098, 소스 30개의 KG 삭제를 테스트가 지켜요).
 - 자식의 소스를 부모의 소스보다 먼저 넣으면 다음 실행이 커요(미해결 참조 전부가 출발 레코드예요). 받아들여요.
 
 ## 7. 관련 결정과 요구사항
 
-[ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md), [ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md), [ADR-0080](adr/0080-redesign-storage-and-queries-on-one-postgresql.md), [ADR-0085](adr/0085-new-kg-storage-implementation-decisions-and-the-schema-plan-unit.md). 요구사항: REQ-633부터 REQ-657까지. 앞 문서: [수집 서비스와 실행](ingestion-service.md), [새 저장의 모양](storage-shape.md).
+[ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md), [ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md), [ADR-0080](adr/0080-redesign-storage-and-queries-on-one-postgresql.md), [ADR-0085](adr/0085-new-kg-storage-implementation-decisions-and-the-schema-plan-unit.md), [ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md), [ADR-0098](adr/0098-receiving-step-and-run-ledger-in-adapter-pgingest.md). 요구사항: REQ-633부터 REQ-657까지, REQ-680부터 REQ-685까지, REQ-700부터 REQ-703까지. 앞 문서: [수집 서비스와 실행](ingestion-service.md), [새 저장의 모양](storage-shape.md).
