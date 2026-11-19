@@ -26859,21 +26859,6 @@
    "added": "2026-11-19",
    "amended_by": null
   },
-  "go:backend/internal/pgsource::TestPgfARowsThatGoAwayInsideOneTransactionEndTheReadAsChanged": {
-   "kind": "test",
-   "hash": "ebbd957a607e5086",
-   "asserts": 4,
-   "literals": [
-    "539a9ec5ac765dbf"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-670"
-   ],
-   "added": "2026-11-19",
-   "amended_by": null
-  },
   "go:backend/internal/pgsource::TestPgfAStatementThatFailsOnARowIsReportedByTheCheckAndTheRead": {
    "kind": "test",
    "hash": "eadc03e6b3863ef9",
@@ -26895,6 +26880,21 @@
    "asserts": 4,
    "literals": [
     "018275df79fb0ccd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-670"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgfRowsThatGoAwayInsideOneTransactionEndTheReadAsChanged": {
+   "kind": "test",
+   "hash": "c8201d13d4e4e358",
+   "asserts": 4,
+   "literals": [
+    "539a9ec5ac765dbf"
    ],
    "precision": [],
    "skips": 0,
@@ -27557,7 +27557,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "f3a51e6ed76765b2",
+   "hash": "a7646fe88a52553a",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -27651,7 +27651,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "4dda964b1ff48bb2",
+   "hash": "da4585f3fd0e2664",
    "asserts": 5,
    "literals": [
     "e75973869c22b055"

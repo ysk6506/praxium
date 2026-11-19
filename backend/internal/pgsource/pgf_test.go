@@ -218,7 +218,7 @@ func TestPgfAKeyWithMoreRowsThanAPageEndsTheReadWithItsReason(t *testing.T) {
 
 // [REQ-670] A key whose rows go away between the page statement and the group statement of one transaction ends the
 // read as changed, with no record. A volatile view that shows three rows the first three times it is asked does that.
-func TestPgfARowsThatGoAwayInsideOneTransactionEndTheReadAsChanged(t *testing.T) {
+func TestPgfRowsThatGoAwayInsideOneTransactionEndTheReadAsChanged(t *testing.T) {
 	r := pgsNewRig(t)
 	r.exec(`CREATE TABLE pgf_t (k text, v int)`)
 	r.exec(`INSERT INTO pgf_t VALUES ('a', 1), ('a', 2), ('a', 3)`)
