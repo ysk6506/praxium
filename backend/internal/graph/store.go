@@ -45,10 +45,12 @@ type Catalog interface {
 	Generations(ctx context.Context, id KGID) ([]GenerationEvent, error)
 }
 
-// ObjectChange closes the open row Old (if any) and opens New (if any).
+// ObjectChange closes the open row Old (if any) and opens New (if any). Key is the identity key a new object
+// (New without Old) was first seen with; a store that keeps an identification index writes it there.
 type ObjectChange struct {
 	Old *ObjectRow
 	New *ObjectRow
+	Key []KeyPart
 }
 
 // LinkChange closes the open row Old (if any) and opens New (if any).
