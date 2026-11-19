@@ -92,7 +92,7 @@ follows:
 | 문서 | 다루는 것 | 결정 |
 |---|---|---|
 | [KG의 모델](kg-model.md), [표준 모델](standard-model.md) | 타입 등록부, 링크 의미와 채널, 이중화 그룹, 근거, 식별, 타입 관리, 계층별 표준 타입 | ADR-0007 |
-| [현실 데이터 수집](ingestion.md), [파이프라인](pipeline.md), [수집 확장](ingestion-extensions.md) | 소스와 어댑터, 수집 방식, 읽기 전용, 안전장치, 수집 엔벨로프, 실행기와 정제·피드·식별·링크 정의, 푸시 수집, 재수집, 매핑 지원 | ADR-0008 |
+| [현실 데이터 수집](ingestion.md), [파이프라인](pipeline.md), [수집 확장](ingestion-extensions.md), [수집의 규모 설계](ingestion-at-scale.md), [식별과 영향 집합, 적용, 범위](ingestion-at-scale-identity.md) | 소스와 어댑터, 수집 방식, 읽기 전용, 안전장치, 수집 엔벨로프, 실행기와 정제·피드·식별·링크 정의, 푸시 수집, 재수집, 매핑 지원 | ADR-0008 |
 | [KG의 저장과 버전](kg-storage.md), [적용](kg-storage-apply.md), [스토리지 운영](postgres-operations.md) | 저장, 변경 배치, 확정 버전, 적용, 쓰기 경로와 복제와 신호 | ADR-0009 |
 | [KG 질의](kg-queries.md), [질의 엔진의 언어와 구조](query-engine-shape.md) | 사전 정의 질의, 프로젝션과 질의 엔진, 엔진의 언어와 규모 검증(예정(ADR-0080)에서 아래로 바뀐다) | ADR-0010 |
 | [새 저장의 모양](storage-shape.md), [질의 스키마](query-schema.md), [질의 실행기와 읽기의 세 경로](query-execution.md), [저장한 질의와 간선 정의](saved-queries.md) | 예정: 타입마다 테이블, 질의 스키마, 그래프 함수, 질의 실행기, 저장한 질의, MCP 툴 | ADR-0080 |
