@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "a22a91da7adf3b29"
+hash: "22866326946878f3"
 date: "2026-11-19"
-note: "main을 합친 뒤 다시 확인: 유닛 표에 adapter.egress와 adapter.pgcheck가 모두 있고 restricted_stdlib의 설명이 맞다"
+note: "adapter.httpsource 유닛 행을 더하고 adapter.egress 행의 어댑터 문장을 맞췄다. architecture.yaml의 변경은 새 유닛 한 줄이다"
 text_changed: true
-doc_hash: "8f2f48f63893961a"
+doc_hash: "f3884500cdcafdd3"

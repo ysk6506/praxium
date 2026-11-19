@@ -8,7 +8,7 @@ follows:
 ---
 # 소스와 어댑터
 
-[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스 쪽이에요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요.** 소스 정의의 형식(2절)과 경로의 문법(3.2)은 [ADR-0090](adr/0090-http-postgres-source-definitions-and-ingest-adapter-parts.md)으로 구현했고, 어댑터가 쓸 `core.ingest`의 부품(행 만들기, 페이지 자르기, 소스 오류의 세 갈래, 가리기, 관측과 미리 읽기의 인터페이스)도 함께 있어요. HTTP와 PostgreSQL 어댑터는 아직 없고 나가는 연결의 방어(8절)는 `adapter.egress`가 구현했어요([ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 지금 수집 명령은 파일 소스만 읽어요. 수집 서비스는 [수집 서비스와 실행](ingestion-service.md)에, 정의를 쓰는 경로와 시크릿과 경로와 화면은 [정의의 쓰기, 시크릿, 경로, 화면](source-editing.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, id의 문법과 스키마 버전은 [ADR-0075](adr/0075-definition-id-grammar-and-schema-version.md)로 구현했어요. 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 예시의 이름, 주소, 숫자는 모두 지어낸 것이고 주소는 문서용으로 예약된 `example.test`예요.
+[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스 쪽이에요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요.** 소스 정의의 형식(2절)과 경로의 문법(3.2)은 [ADR-0090](adr/0090-http-postgres-source-definitions-and-ingest-adapter-parts.md)으로 구현했고, 어댑터가 쓸 `core.ingest`의 부품(행 만들기, 페이지 자르기, 소스 오류의 세 갈래, 가리기, 관측과 미리 읽기의 인터페이스)도 함께 있어요. HTTP 어댑터(`adapter.httpsource`, [ADR-0092](adr/0092-http-source-adapter-adapter-httpsource.md))와 나가는 연결의 방어(8절, `adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md))는 구현했어요. PostgreSQL 어댑터는 아직 없고, 조립부에 아직 이어 놓지 않아서 지금 수집 명령은 파일 소스만 읽어요. 수집 서비스는 [수집 서비스와 실행](ingestion-service.md)에, 정의를 쓰는 경로와 시크릿과 경로와 화면은 [정의의 쓰기, 시크릿, 경로, 화면](source-editing.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, id의 문법과 스키마 버전은 [ADR-0075](adr/0075-definition-id-grammar-and-schema-version.md)로 구현했어요. 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 예시의 이름, 주소, 숫자는 모두 지어낸 것이고 주소는 문서용으로 예약된 `example.test`예요.
 
 ## 1. 목적과 범위
 
@@ -99,6 +99,8 @@ follows:
 - 응답은 JSON만 읽어요. `connection.headers`에는 쓸 수 없는 헤더가 있어요(8절).
 - TLS 확인을 끄거나 낮추는 길은 없어요(8절, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 정의에 `tls_verify` 같은 필드를 적으면 모르는 필드와 같은 정의 오류예요. 사설 인증 기관의 서버는 `ca_pem`으로 받고, 그러면 그 인증서만 믿어요.
 - 데이터셋의 `request.method`는 `GET`이 기본이에요. `POST`로 읽는 데이터셋은 `"post_reads": true`로 밝혀야 해요(7.1).
+
+**구현(`adapter.httpsource`, [ADR-0092](adr/0092-http-source-adapter-adapter-httpsource.md)).** 위의 인증 다섯과 페이지 넘김 여섯, `post_reads`, `total_path`의 견줌, 한도와 재시도를 이 유닛이 구현했어요(구현됨). `core.ingest`의 `PageReader`(`ReadPages`, `Check`)와 선택 인터페이스 `Observer`, `Previewer`를 가져요. 시크릿은 값을 여는 포트(`secrets.Opener`)만 받아 인증을 붙이는 한 곳에서 꺼내요. 설계와 다르게 한 곳은 셋이에요. (1) 응답 하나가 `max_response_bytes`를 넘으면 불완전한 수집이 아니라 **설정 오류**(`response_format`)예요(같은 요청은 같은 크기로 다시 오므로 일부만 받아 완전하다고 하면 안 되고, 정의를 고쳐야 해요). (2) `next_url`과 `link_header`는 이어 읽기 토큰을 내지 않아요(서버가 준 주소에 서명된 질의가 들 수 있어서 처음부터 다시 읽어요). (3) 데이터셋 전체의 바이트와 실행 전체의 시간은 아직 한도가 없어요(정의에 그 필드가 없어요).
 
 ### 2.3 PostgreSQL 소스
 ```json
@@ -258,10 +260,10 @@ follows:
 
 `-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources` 하나이고 [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 플래그와 같은 방식(기본은 꺼짐)이에요. `-source-deny-hosts`는 거절 목록에 더하는 플래그예요. 이것은 ADR-0018 결정 9의 "소스별 예외, 승인, 기한"이 아니라 정의의 명시와 서버 플래그로 여는 방식이고 기한이 없어요.
 
-**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`와 `TLSConfig`를 여기서 받고 자기 연결을 따로 만들지 않아요. 아직 이 유닛을 부르는 어댑터와 조립부가 없어서 `-allow-insecure-sources`와 `-source-deny-hosts` 플래그는 예정이에요. 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) TLS 확인을 끄는 길이 없어요. (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). HTTP 어댑터는 `net/http`를 import하지 않고 이 유닛의 `Request`와 `Response`(`Client.Do(ctx, Request)`)만 써요. 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이에요.
+**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`와 `TLSConfig`를 여기서 받고 자기 연결을 따로 만들지 않아요. 아직 이 유닛을 부르는 어댑터와 조립부가 없어서 `-allow-insecure-sources`와 `-source-deny-hosts` 플래그는 예정이에요. 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) TLS 확인을 끄는 길이 없어요. (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). HTTP 어댑터는 `net/http`를 import하지 않고 이 유닛의 `Request`와 `Response`(`Client.Do(ctx, Request)`)만 써요. 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이고 `adapter.httpsource`가 해요(구현됨). 조립부에서 이 어댑터를 등록하는 일과 `-allow-insecure-sources`, `-source-deny-hosts` 플래그는 아직 예정이에요.
 
 ## 9. 한도
-숫자는 [기본값 표](defaults.md)에 "예정"으로 있어요. 넘으면 불완전한 수집이에요.
+숫자는 [기본값 표](defaults.md)에 "예정"으로 있어요. 넘으면 불완전한 수집이에요(HTTP의 응답 하나가 `max_response_bytes`를 넘는 것만 설정 오류예요. 구현됨, ADR-0092. 페이지 수, 요청 속도, 재시도, 요청 시간도 HTTP 쪽은 구현됨).
 
 - 페이지 수(기본 1,000), 압축을 푼 뒤의 바이트(한 페이지의 바이트와 데이터셋 전체의 바이트), 실행 전체의 시간과 요청 수.
 - 요청의 속도(초당 5회)와 재시도(GET의 429와 5xx에서 `Retry-After`를 지켜 세 번까지, 401과 403은 곧바로 멈춰요).
