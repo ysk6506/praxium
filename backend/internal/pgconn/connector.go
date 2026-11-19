@@ -17,6 +17,9 @@ import (
 var libpqUnsupportedEnv = []string{"PGREQUIRESSL", "PGSSLCOMPRESSION", "PGREALM", "PGGSSENCMODE", "PGGSSDELEGATION", "PGGSSLIB",
 	"PGREQUIREAUTH", "PGCHANNELBINDING", "PGSSLCERTMODE", "PGSSLCRL", "PGSSLCRLDIR", "PGREQUIREPEER"}
 
+// driverDebugEnv is the variable that makes the driver write what it sends and receives to the standard error.
+const driverDebugEnv = "PQGO_DEBUG"
+
 // driverEnvNames are the environment variables pq.NewConfig reads: the env tags of pq.Config. The driver reads the
 // whole environment and lets it fill whatever the connection string does not name; there is no way to switch that
 // off, so the connection is made only when none of them is set.
@@ -30,6 +33,10 @@ func driverEnvNames() []string {
 		}
 	}
 	out = append(out, libpqUnsupportedEnv...)
+	// PQGO_DEBUG is read by the driver when it starts, outside Config: set, it writes every message the driver sends
+	// (the password included) and every row it reads to the standard error, for this connection and for the connections
+	// of the sources, which use the same driver (ADR-0093).
+	out = append(out, driverDebugEnv)
 	sort.Strings(out)
 	return out
 }

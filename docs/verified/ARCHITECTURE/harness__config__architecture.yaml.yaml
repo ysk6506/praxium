@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "22866326946878f3"
+hash: "d9021b175cb9ba6e"
 date: "2026-11-19"
-note: "adapter.httpsource 유닛 행을 더하고 adapter.egress 행의 어댑터 문장을 맞췄다. architecture.yaml의 변경은 새 유닛 한 줄이다"
+note: "유닛 표에 adapter.sourcecheck를 더하고 adapter.egress와 adapter.pgsource의 줄에 연결 추적 다이얼러와 한도를 적었다"
 text_changed: true
-doc_hash: "f3884500cdcafdd3"
+doc_hash: "5b91d141b679d7ab"
