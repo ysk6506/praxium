@@ -14577,6 +14577,71 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/filesource::TestPageSourceChecksTheFirstPage": {
+   "kind": "test",
+   "hash": "320290969b27ab05",
+   "asserts": 2,
+   "literals": [
+    "b89ad8b906e4fcfc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestPageSourceClosesTheFileWhenThePagesAreNotWantedAnyMore": {
+   "kind": "test",
+   "hash": "30d53671215c6a2b",
+   "asserts": 1,
+   "literals": [
+    "289a967e0fb35ecc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestPageSourceEndsADatasetOverTheRowLimitAsNotComplete": {
+   "kind": "test",
+   "hash": "1ab7d2c8293b27bf",
+   "asserts": 2,
+   "literals": [
+    "205bec55262e4dca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestPageSourceGivesTheRowsOfTheOldReadOfTheSameFile": {
+   "kind": "test",
+   "hash": "d98d66e40184a06d",
+   "asserts": 2,
+   "literals": [
+    "ac8ca90c9d2b4d96"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/filesource::TestPageSourceRefusesWhatItCannotReadAndSaysSo": {
+   "kind": "test",
+   "hash": "be98f1381f7607fa",
+   "asserts": 3,
+   "literals": [
+    "bb81ef33fc03c1a4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/graph::TestACardinalityBelongsToABindingNotToALinkType": {
    "kind": "test",
    "hash": "c2c67450476afc09",
@@ -17271,6 +17336,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestCheckFirstPageReadsThePageAndSaysHowItWentOut": {
+   "kind": "test",
+   "hash": "50f021db4a08cb0c",
+   "asserts": 6,
+   "literals": [
+    "32304eb063aa2ed9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestCircuitWithTwoOwningOrganizationsLosesTheSecondLink": {
    "kind": "test",
    "hash": "69da47d1cc3a6df3",
@@ -17284,6 +17362,19 @@
     "REQ-421"
    ],
    "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestClassifyCheckErrorSortsTheTroubleIntoTheFourKinds": {
+   "kind": "test",
+   "hash": "0dcd96ec97df2d41",
+   "asserts": 1,
+   "literals": [
+    "a19174ab7f0cedcc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestCompileRejectsWrongMappings": {
@@ -17314,6 +17405,66 @@
     "REQ-263"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCompileScaleGivesTheSamePlanForADefinitionTheCurrentCompileAccepts": {
+   "kind": "test",
+   "hash": "ad7fbd21bfb9a81b",
+   "asserts": 6,
+   "literals": [
+    "a3b87ca905aafff5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCompileScaleReadsAKeyWithContextsFiveLevelsDeepAndTheCurrentCompileRefusesIt": {
+   "kind": "test",
+   "hash": "60a7c0ce3d83c96f",
+   "asserts": 6,
+   "literals": [
+    "cb6ab34242fe7eb7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCompileScaleRefusesALinkDefinitionThatMakesTheLinkOfTheContext": {
+   "kind": "test",
+   "hash": "1e653411d4e7462b",
+   "asserts": 6,
+   "literals": [
+    "f2b33eff2d00e742"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestCompileScaleRefusesWhatIsNotAContextKeyOfTheModel": {
+   "kind": "test",
+   "hash": "a2c824a07e5280dd",
+   "asserts": 2,
+   "literals": [
+    "1e4e86aee1b1e5ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestCSVOdditiesAreReadOrReported": {
@@ -17679,6 +17830,97 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestIntakeHoldsOnePageAtATimeWhateverTheSizeOfTheSource": {
+   "kind": "test",
+   "hash": "5045317477a336c2",
+   "asserts": 6,
+   "literals": [
+    "46dd507610fc7cc0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIntakeKeepsThePageNumberAndTheTokenOfEveryPage": {
+   "kind": "test",
+   "hash": "876e887f9f121444",
+   "asserts": 4,
+   "literals": [
+    "92c6ef2038b00f5b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIntakeRefusesAReaderThatEndsWithoutALastPageAndPassesOnItsErrors": {
+   "kind": "test",
+   "hash": "838690d6e80cc592",
+   "asserts": 5,
+   "literals": [
+    "6555e34502d2f81b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIntakeReportsWhatEachDatasetGaveAndSkipsTheOnesTheReaderDoesNotGive": {
+   "kind": "test",
+   "hash": "98055992aa3b7f5e",
+   "asserts": 6,
+   "literals": [
+    "fdc0307acbe19265"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIntakeStopsAtTheNextPageWhenTheContextIsCanceledAndClosesTheReader": {
+   "kind": "test",
+   "hash": "3156e60ff3fd4b3e",
+   "asserts": 2,
+   "literals": [
+    "94464ac97d9fe4bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIntakeStopsWhenTheSinkFailsWithoutReadingOn": {
+   "kind": "test",
+   "hash": "218aae467043ab29",
+   "asserts": 2,
+   "literals": [
+    "b946d6ecb25d3f3b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIntakeTellsADatasetThatWentOverTheLimitIsNotCompleteAndGivesTheProblem": {
+   "kind": "test",
+   "hash": "a6b21c88bb29616b",
+   "asserts": 4,
+   "literals": [
+    "134322a7ebd6ec6a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestLinkAttributeNamesFollowTheRulesOfObjectAttributes": {
    "kind": "test",
    "hash": "88a29ab0ce6327de",
@@ -17755,6 +17997,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestMappingWithoutContextFieldsReadsAndWritesAsBefore": {
+   "kind": "test",
+   "hash": "b5fb6dd004216d18",
+   "asserts": 4,
+   "literals": [
+    "e5e9dcba46cadbac"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestMendingTheFilterInTimeKeepsEverythingAndRestartsTheCount": {
    "kind": "test",
    "hash": "8a878bbb027fe373",
@@ -17815,6 +18072,19 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestNewPreparerOfADatasetTheSourceLacksIsNotFound": {
+   "kind": "test",
+   "hash": "57e5d7fcb38692f9",
+   "asserts": 2,
+   "literals": [
+    "7beb9924040030cb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestOneChangedRowChangesOneObject": {
    "kind": "test",
    "hash": "281a86fdfa283831",
@@ -17828,6 +18098,168 @@
     "REQ-266"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPageOptionsDefaultsAreTheStartingValues": {
+   "kind": "test",
+   "hash": "c534b7d5c2c235e0",
+   "asserts": 2,
+   "literals": [
+    "12600f0765e8b84d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPageReceivedCountsTheRowsAndTheLinesThatCouldNotBeRead": {
+   "kind": "test",
+   "hash": "e366b37e7a0f8dc6",
+   "asserts": 1,
+   "literals": [
+    "a96b433e9be4a5a2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareClaimsTheIdentifierColumnsOfAFeedThatFitTheScheme": {
+   "kind": "test",
+   "hash": "7d0dfb716f08403a",
+   "asserts": 5,
+   "literals": [
+    "cd7ab0ba9e958030"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareFindsTheObjectOfARowByTheKeysInTheOrderTheModelGivesThem": {
+   "kind": "test",
+   "hash": "6f31f0508add7248",
+   "asserts": 9,
+   "literals": [
+    "5e98e7d6337edd4a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareGivesAContextKeyTheKeysOfItsParentsThatTheParentsGiveThemselves": {
+   "kind": "test",
+   "hash": "4eadbba6c2310367",
+   "asserts": 9,
+   "literals": [
+    "244a72f9c3de4300"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareGivesTheCandidateIdsTheCurrentFlowGivesTheObjects": {
+   "kind": "test",
+   "hash": "244e3280dd38e0c9",
+   "asserts": 6,
+   "literals": [
+    "6e79f82a241f4bb8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareGivesTheIdentifiersAndTheKeysOfTheEndsOfLinks": {
+   "kind": "test",
+   "hash": "cd504f439dd4b5e4",
+   "asserts": 6,
+   "literals": [
+    "f0f7346e16670447"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareGivesTheRawRecordsTheCurrentFlowKeeps": {
+   "kind": "test",
+   "hash": "9b779f937b24df10",
+   "asserts": 6,
+   "literals": [
+    "17e179ad9074c1d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareMarksTheRowsARefinementFiltersOutAndGivesTheirKeysAsHeldWithTheRewritesAfterTheFilter": {
+   "kind": "test",
+   "hash": "99df946945f1fade",
+   "asserts": 10,
+   "literals": [
+    "fd9fedaed8f73f65"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-360"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareNamesTheFieldThatKeepsAContextKeyFromBeingFormed": {
+   "kind": "test",
+   "hash": "8650314ace42f1b5",
+   "asserts": 5,
+   "literals": [
+    "d4a3f92be85f217a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareReportsTheProblemsOfTheRowsWithTheFieldAndTheWordsOfTheCurrentFlow": {
+   "kind": "test",
+   "hash": "f58335f01e767144",
+   "asserts": 7,
+   "literals": [
+    "45aea01938cc1492"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestPrepareTellsTheProblemsOfThePageThatAreAboutNoRecord": {
+   "kind": "test",
+   "hash": "a04140160fd13a20",
+   "asserts": 6,
+   "literals": [
+    "8c3b7b09fe9ca0bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestProfileHelpers": {
@@ -18026,6 +18458,21 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestScaleErrorCodesAreTheTableOfTheCodesOnlyTheNewCompileGives": {
+   "kind": "test",
+   "hash": "8d7d03614853d8b2",
+   "asserts": 2,
+   "literals": [
+    "842db1f843e83fb3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-639"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestSecondLinkThatBreaksCardinalityIsSetAside": {
    "kind": "test",
    "hash": "ca6ac2dd227ac686",
@@ -18129,6 +18576,162 @@
     "REQ-263"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesCutsPagesByBytesAndKeepsAHugeRowOnAPageOfItsOwn": {
+   "kind": "test",
+   "hash": "7b6119e67d8a0dc9",
+   "asserts": 4,
+   "literals": [
+    "175eb72f4a0034d1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesCutsPagesByRowsAndHasTheLastOneSayItIsComplete": {
+   "kind": "test",
+   "hash": "b78d11b24d47d150",
+   "asserts": 6,
+   "literals": [
+    "1e9d45007cb68e37"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesDoesNotReadAWorkbookOrAnUnknownParser": {
+   "kind": "test",
+   "hash": "8c0c8119301161ee",
+   "asserts": 1,
+   "literals": [
+    "6521f9654d9e0a6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesGivesTheRowsTheCurrentParserGives": {
+   "kind": "test",
+   "hash": "b3fd8efe0b5b77c7",
+   "asserts": 3,
+   "literals": [
+    "8ce4cf05e0c4b0c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesGoingOverTheRowLimitEndsIncompleteAndStopsReading": {
+   "kind": "test",
+   "hash": "2c58f2aaa1aeb530",
+   "asserts": 7,
+   "literals": [
+    "7424c6a6006c38f6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesOfAnEmptyDatasetIsOneLastPage": {
+   "kind": "test",
+   "hash": "f11761541142fafd",
+   "asserts": 4,
+   "literals": [
+    "274f7decaf838b6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesReadsCharactersThatAreCutBetweenReads": {
+   "kind": "test",
+   "hash": "f5b76c40b487b4ac",
+   "asserts": 2,
+   "literals": [
+    "9ec80264fecbf3bd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesReadsOnlyAsFarAsThePageInHand": {
+   "kind": "test",
+   "hash": "39f934d796615537",
+   "asserts": 2,
+   "literals": [
+    "37f6c43dc168e880"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesRefusesWhatIsNotUTF8TheWayTheCheckOfAFileDoes": {
+   "kind": "test",
+   "hash": "35314a0fe8ad73eb",
+   "asserts": 3,
+   "literals": [
+    "1c1570fe9ade684a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesSeesCancelBetweenPages": {
+   "kind": "test",
+   "hash": "b4d37accaf9e0dfd",
+   "asserts": 3,
+   "literals": [
+    "8cb4742e63a2233f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesStopsAfterAHeaderThatLacksAColumn": {
+   "kind": "test",
+   "hash": "b755d9bb6176b6a5",
+   "asserts": 2,
+   "literals": [
+    "40fda5b3f9a81333"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStreamPagesWhoseSourceBreaksEndsIncompleteAfterTheRowsRead": {
+   "kind": "test",
+   "hash": "9a63615881549fff",
+   "asserts": 6,
+   "literals": [
+    "966ea71ffa7e5884"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestTheErrorKeepsTheKernelCodeAndTheSentenceOfTheFirst": {

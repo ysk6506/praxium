@@ -47,10 +47,23 @@ type AttrMap struct {
 	Rank      int    `json:"rank,omitempty"`
 }
 
-// KeyComponent maps a column to one property that is a component of an identity key.
+// KeyComponent maps a column to one property that is a component of an identity key. A component that is a
+// context instead names the link type that leads to the parent object the key is unique inside, and says which
+// parent that is (Context and Parent, without Property and Column; ADR-0086). Only the new ingestion flow reads a
+// context component: the first one of its key, at most one in a key.
 type KeyComponent struct {
-	Property string `json:"property"`
-	Column   string `json:"column"`
+	Property string         `json:"property,omitempty"`
+	Column   string         `json:"column,omitempty"`
+	Context  string         `json:"context,omitempty"`
+	Parent   *ContextParent `json:"parent,omitempty"`
+}
+
+// ContextParent says which object a context component points at: its object type and the identity key of the parent
+// as the columns of the child's row give it. The identity may itself begin with a context component, which names the
+// parent's own parent, up to the depth a mapping may nest.
+type ContextParent struct {
+	ObjectType string      `json:"object_type"`
+	Identity   IdentityMap `json:"identity"`
 }
 
 // IdentityMap maps columns to one identity key of the standard model: a scheme with the column of its identifier,
