@@ -9,7 +9,13 @@
 // in the model never touches a table. The text that reads a value out of a document (expr.go) is made in one
 // place, so an index, a statistic and a later view all spell it the same way and the planner can match them.
 //
+// The tables of the ingestion at scale (ingest_names.go, ingest_tables.go: the raw records, the references the
+// records made, the staged rows, the computation and the difference) are fixed tables of the schema too. This
+// package also gives the names and the columns of them (so the units that write to them spell nothing), the
+// statements that put a source to a KG and take it off (ingest_source.go), and the bytes of a line of the digest
+// of the input of an apply with a reference implementation in Go (ingest_digest.go).
+//
 // Only additions can be followed: a new type, a new property, a new volatile property, a change of the
-// search set. A change of a value type or of a number is refused, and so is anything that takes a column or a
-// type away.
+// search set, and the fixed tables that a newer generator adds (generations.go). A change of a value type or of
+// a number is refused, and so is anything that takes a column or a type away.
 package pgschema

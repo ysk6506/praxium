@@ -32,6 +32,9 @@ type tableDef struct {
 	Name string
 	Cols []string
 	With string
+	// PartitionBy is the column a table is cut into partitions by, one list partition for each value. A
+	// partitioned table has no storage parameters of its own; its partitions are given them when they are made.
+	PartitionBy string
 }
 
 func (d tableDef) sql(schema string) string {
@@ -39,6 +42,9 @@ func (d tableDef) sql(schema string) string {
 	b.WriteString("CREATE TABLE " + Qualified(schema, d.Name) + " (\n    ")
 	b.WriteString(strings.Join(d.Cols, ",\n    "))
 	b.WriteString("\n)")
+	if d.PartitionBy != "" {
+		b.WriteString(" PARTITION BY LIST (" + d.PartitionBy + ")")
+	}
 	if d.With != "" {
 		b.WriteString(" WITH (" + d.With + ")")
 	}
@@ -133,7 +139,8 @@ func fixedTableDefs(common []Column) ([]tableDef, error) {
 	if err != nil {
 		return nil, err
 	}
-	return append(append(registryTableDefs(state), recordTableDefs()...), controlTableDefs()...), nil
+	defs := append(append(registryTableDefs(state), recordTableDefs()...), controlTableDefs()...)
+	return append(defs, ingestTableDefs()...), nil
 }
 
 // registryTableDefs are the registry, the state, the links, the history and the identification index.
@@ -321,6 +328,7 @@ func fixedIndexDefs(common []Column) []indexDef {
 	for _, c := range common {
 		defs = append(defs, indexDef{Name: TableObjectState + "_" + StateColumn(c.AttrNo), Table: TableObjectState, Expr: StateColumn(c.AttrNo)})
 	}
+	defs = append(defs, ingestIndexDefs()...)
 	return append(defs,
 		indexDef{Name: "link_ref", Table: TableLink, Expr: "ref", Unique: true},
 		indexDef{Name: "link_src", Table: TableLink, Expr: "src, type_no, dst"},

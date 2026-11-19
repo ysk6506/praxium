@@ -9461,6 +9461,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestAdjustSchemasLogsWhatItDidAndNeverStopsTheStart": {
+   "kind": "test",
+   "hash": "12da02daad4a056e",
+   "asserts": 4,
+   "literals": [
+    "35b872038c9fba3d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-685"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestAFileStoreAfterAKillAndACutRecord": {
    "kind": "test",
    "hash": "cb981f4f5f59bd8d",
@@ -9745,6 +9760,21 @@
     "REQ-392"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestAServerThatStartsOnAKGOfTheGeneratorBeforeAdjustsItAndServesIt": {
+   "kind": "test",
+   "hash": "a8d05a808c75bfa4",
+   "asserts": 11,
+   "literals": [
+    "b7ae08154a75a3ee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-685"
+   ],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestAStartThatDropsTheTailSaysSo": {
@@ -25512,6 +25542,21 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestRetryLocksStopsAtOnceWhenTheContextIsCancelledWhileItWaitsForALock": {
+   "kind": "test",
+   "hash": "61b3ea2da61501b7",
+   "asserts": 2,
+   "literals": [
+    "dfb013b26646b67f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestSeveralHostsAreTriedInOrderAndAReadConnectionStringHasItsOwnPool": {
    "kind": "test",
    "hash": "061ff4b4956ab59b",
@@ -25757,16 +25802,16 @@
   },
   "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
    "kind": "test",
-   "hash": "39f51dccf97e60b5",
+   "hash": "8559faa2359638b4",
    "asserts": 2,
    "literals": [
-    "1f15dd1a6574ccc0"
+    "d47f2120d5f3dd39"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0095-ingestion-tables-in-the-schema-plan.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -25856,6 +25901,201 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestComputeTablesAreEmptiedTogetherAndTheirNumbersStartAgain": {
+   "kind": "test",
+   "hash": "159b6334b6b6efdc",
+   "asserts": 6,
+   "literals": [
+    "9ba0ab79f2c205ac"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestDiffFollowsTheStepFromTheGeneratorBeforeByAddingOnly": {
+   "kind": "test",
+   "hash": "15b5b76bf94c84b0",
+   "asserts": 8,
+   "literals": [
+    "f0a416aaa6d8fdb1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestDiffRefusesAGeneratorItCannotFollowByAdding": {
+   "kind": "test",
+   "hash": "48fed7d8078c4a7d",
+   "asserts": 3,
+   "literals": [
+    "f0f7c99f274325d4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestDigestLinesHaveAFixedWidthAndFixedBytes": {
+   "kind": "test",
+   "hash": "169dfe2d27de2545",
+   "asserts": 4,
+   "literals": [
+    "074bbafc30fe2dd8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-681"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestDigestOfTheSameLinesIsTheSameValueWhateverTheChunksAreCutAt": {
+   "kind": "test",
+   "hash": "df65df7d8315f83f",
+   "asserts": 6,
+   "literals": [
+    "f4eee20d40148cc6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-681"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestDigestSQLSpellsTheSameLineAsTheGoCode": {
+   "kind": "test",
+   "hash": "62c646ce8da84b18",
+   "asserts": 4,
+   "literals": [
+    "1f379fbd448b2f7d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-681"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestIndexesOfTheKeptTablesAreInThePlan": {
+   "kind": "test",
+   "hash": "42cef681e6929a10",
+   "asserts": 2,
+   "literals": [
+    "166b2ce107ab901c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestKeyRowHashCoversTheTypeTheContextAndTheSignature": {
+   "kind": "test",
+   "hash": "46a9fcb1511bf388",
+   "asserts": 3,
+   "literals": [
+    "b137fe82f6dbe5d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-681"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestProblemTablesRefuseAKindThatIsNotInTheClosedList": {
+   "kind": "test",
+   "hash": "6d211b2f22574168",
+   "asserts": 4,
+   "literals": [
+    "0e5282ed20a32d94"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestRunNamesAreAClosedSet": {
+   "kind": "test",
+   "hash": "796c80ebaf528a25",
+   "asserts": 5,
+   "literals": [
+    "413038c44cd056b3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-682"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestSourcePartitionsAreMadeThenAttachedAndDropped": {
+   "kind": "test",
+   "hash": "2aa926f25b8f53eb",
+   "asserts": 13,
+   "literals": [
+    "ec4e8fbaa34f37d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestTablesAreInThePlanInTheOrderTheNamesSay": {
+   "kind": "test",
+   "hash": "931fbdaa35ca1711",
+   "asserts": 6,
+   "literals": [
+    "0e68d3073fbefb4e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIngestTablesThatHaveAPartitionPerSourceAreListPartitionedBySource": {
+   "kind": "test",
+   "hash": "bab7e8ef7c5f2296",
+   "asserts": 4,
+   "literals": [
+    "1eb2c30f6ec78115"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
    "added": "2026-11-19",
    "amended_by": null
   },
@@ -27040,6 +27280,141 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/pgstore::TestIngestAKGMadeByTheGeneratorBeforeIsAdjustedByAddingTheTablesWithoutClosingIt": {
+   "kind": "test",
+   "hash": "c56c1a98fe57aa0d",
+   "asserts": 23,
+   "literals": [
+    "919c6fbe1185e4aa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestARunKeepsToTheClosedStagesAndSaysHowItFailedInThreeWays": {
+   "kind": "test",
+   "hash": "b6868b64305287b7",
+   "asserts": 10,
+   "literals": [
+    "4746ab0d7c24b9f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-682"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestASourceHasPartitionsThatAreAttachedEmptiedAndDroppedOneByOne": {
+   "kind": "test",
+   "hash": "babb744161aa4686",
+   "asserts": 21,
+   "literals": [
+    "d23168f35879f196"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable": {
+   "kind": "test",
+   "hash": "3225145d7c1b3747",
+   "asserts": 18,
+   "literals": [
+    "5c7ddda778695699"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-683"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestPuttingASourceToAKGDoesNotWaitForAnotherSourceThatIsBeingReceived": {
+   "kind": "test",
+   "hash": "aca3a5f5cea9f516",
+   "asserts": 12,
+   "literals": [
+    "f7a98c99f1bb9284"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestSharedTablesHaveTheColumnsTheNamesSay": {
+   "kind": "test",
+   "hash": "613084757c535880",
+   "asserts": 7,
+   "literals": [
+    "7a7cd3ec2dfc7af5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-682"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestTablesOfANewKGAreLoggedAndHaveTheColumnsTheNamesSay": {
+   "kind": "test",
+   "hash": "b56dbf544a513129",
+   "asserts": 16,
+   "literals": [
+    "f21c722d4f832b3f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-680"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestTheDigestOfAChunkInSQLIsTheDigestTheGoCodeGives": {
+   "kind": "test",
+   "hash": "052fe52a3021c0b2",
+   "asserts": 12,
+   "literals": [
+    "777a7dd6920bf51a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-681"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestIngestTheGateOfTheRunsAllowsOneOpenRunPerSourceAndOneWorkingRunPerKG": {
+   "kind": "test",
+   "hash": "414fcb53d957478a",
+   "asserts": 14,
+   "literals": [
+    "81fd6a66aa3c72b1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-682"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestLeasesRefuseBadInputAndStaleHolders": {
    "kind": "test",
    "hash": "ff7000664d3273ee",
@@ -27176,6 +27551,66 @@
    "reqs": [],
    "added": "2026-11-19",
    "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
+  },
+  "go:backend/internal/pgstore::TestSchemaStartupAdjustsAKGOfTheGeneratorBeforeAndOpensIt": {
+   "kind": "test",
+   "hash": "d67f4c447300b85c",
+   "asserts": 11,
+   "literals": [
+    "3e253284cea8a767"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-685"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSchemaStartupLeavesAKGThatDiffersInMoreThanTheGeneratorRefused": {
+   "kind": "test",
+   "hash": "252f4b78344d6845",
+   "asserts": 10,
+   "literals": [
+    "6a3856160228c027"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-685"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSchemaStartupReportsAFailureAndLeavesANewerKGAlone": {
+   "kind": "test",
+   "hash": "713efc78c082b0a0",
+   "asserts": 12,
+   "literals": [
+    "09a93c88b6d7bfa4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-685"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSchemaStartupSkipsAKGThatAnotherRunIsBuilding": {
+   "kind": "test",
+   "hash": "c513d34521aa54f3",
+   "asserts": 8,
+   "literals": [
+    "2f38872c72b31431"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-685"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
   },
   "go:backend/internal/pgstore::TestStatisticsThatCannotBeMadeAndATableThatIsInUseStopTheirRunWithAnError": {
    "kind": "test",
