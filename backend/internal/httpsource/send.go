@@ -3,6 +3,7 @@ package httpsource
 import (
 	"context"
 	"errors"
+	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -39,21 +40,28 @@ func (p *pacer) wait(ctx context.Context) error {
 
 // exchange sends a request and gives the answer of a success, sending it again when it may and the source asks to wait.
 func (rn *run) exchange(ctx context.Context, p plan) (*reply, error) {
-	for attempt := 0; ; attempt++ {
+	rep, _, err := rn.exchangeFrom(ctx, p, 0)
+	return rep, err
+}
+
+// exchangeFrom is exchange that begins at the attempt first (a read that broke goes on with the attempts it has left) and
+// says which attempt gave the answer. The body of the answer is open.
+func (rn *run) exchangeFrom(ctx context.Context, p plan, first int) (*reply, int, error) {
+	for attempt := first; ; attempt++ {
 		if err := rn.pace.wait(ctx); err != nil {
-			return nil, err
+			return nil, attempt, err
 		}
 		rep, err := rn.once(ctx, p, attempt)
 		if err == nil {
-			return rep, nil
+			return rep, attempt, nil
 		}
 		wait, ok := rn.retryWait(rep, err, p, attempt)
 		if !ok {
-			return nil, err
+			return nil, attempt, err
 		}
 		rn.emit(ingest.Event{Kind: ingest.EventRetry, Attempt: attempt + 1, Reason: retryReason(err), Status: statusOf(rep)})
 		if err := rn.r.cfg.Sleep(ctx, wait); err != nil {
-			return nil, err
+			return nil, attempt, err
 		}
 	}
 }
@@ -89,17 +97,26 @@ func (rn *run) retryWait(rep *reply, err error, p plan, attempt int) (time.Durat
 	return min(d, rn.set.maxWait), true
 }
 
-// retryAfter reads the header: a number of seconds, or a date.
+// longestWait stands for a Retry-After that is more than a duration can hold: longer than any limit.
+const longestWait = time.Duration(math.MaxInt64)
+
+// retryAfter reads the header: a number of seconds, or a date. A number that is more than a duration holds is a wait longer
+// than any limit, so that it is compared with the limit and never multiplied first (ADR-0097).
 func retryAfter(h map[string][]string, now time.Time) (time.Duration, bool) {
 	v := strings.TrimSpace(headerValue(h, "Retry-After"))
 	if v == "" {
 		return 0, false
 	}
-	if n, err := strconv.Atoi(v); err == nil {
-		if n < 0 {
-			return 0, false
-		}
+	n, err := strconv.Atoi(v)
+	switch {
+	case err == nil && n < 0:
+		return 0, false
+	case err == nil && n > int(math.MaxInt64/int64(time.Second)):
+		return longestWait, true
+	case err == nil:
 		return time.Duration(n) * time.Second, true
+	case isHugeNumber(v, err):
+		return longestWait, true
 	}
 	for _, layout := range []string{time.RFC1123, time.RFC850, time.ANSIC} {
 		if t, err := time.Parse(layout, v); err == nil {
@@ -109,8 +126,15 @@ func retryAfter(h map[string][]string, now time.Time) (time.Duration, bool) {
 	return 0, false
 }
 
-// once sends the request one time and reads the answer. The answer comes back with the error when the status was a
-// failure, so that the headers (Retry-After) are there to be read; its body is not read then.
+// isHugeNumber tells whether a text is digits that are more than an integer holds.
+func isHugeNumber(v string, err error) bool {
+	var ne *strconv.NumError
+	return errors.As(err, &ne) && errors.Is(ne.Err, strconv.ErrRange) && !strings.HasPrefix(v, "-")
+}
+
+// once sends the request one time. The answer comes back with the error when the status was a failure, so that the headers
+// (Retry-After) are there to be read; its body is not read then. The body of a success is open, and the one who asked reads
+// it, so that an answer is never held whole.
 func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	clock := rn.r.cfg.Clock
 	started := clock.Now()
@@ -123,49 +147,20 @@ func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	if !p.token && resp.Status != 401 && resp.Status != 403 {
 		rn.prog.authenticated = true
 	}
-	rep := &reply{status: resp.Status, header: resp.Header, url: p.url}
+	rep := &reply{status: resp.Status, header: resp.Header, url: p.url, started: started}
 	if resp.Status < 200 || resp.Status > 299 {
 		_ = resp.Body.Close()
-		rn.after(p, rep, started, 0)
+		rn.after(p, rep, 0)
 		return rep, rn.statusError(resp.Status)
 	}
-	body, err := readBody(resp.Body, rn.set.maxBytes)
-	if errors.Is(err, errTooLarge) {
-		return rep, rn.fail(ingest.SrcResponseFormat, "an answer is larger than max_response_bytes ("+strconv.Itoa(rn.set.maxBytes)+" bytes after it is unpacked); lower the size of a page or raise the limit", nil)
-	}
-	if err != nil {
-		return nil, rn.transportError(ctx, err)
-	}
-	rep.body = body
-	rn.after(p, rep, started, len(body))
+	rep.rc = resp.Body
+	rn.open = rep
 	return rep, nil
 }
 
-// after tells the observer and the preview that an answer came.
-func (rn *run) after(p plan, rep *reply, started time.Time, size int) {
+// after tells the observer and the preview that an answer came, when its body has been read.
+func (rn *run) after(p plan, rep *reply, size int) {
 	rn.emit(ingest.Event{Kind: ingest.EventResponse, Method: p.method, Path: p.url.Path, Status: rep.status, Bytes: size,
-		ElapsedMillis: rn.r.cfg.Clock.Now().Sub(started).Milliseconds()})
+		ElapsedMillis: rn.r.cfg.Clock.Now().Sub(rep.started).Milliseconds()})
 	rn.record(p, rep)
-}
-
-// data sends the request for a position and reads the answer as JSON. A token that the source no longer accepts is asked
-// for once more.
-func (rn *run) data(ctx context.Context, ds ingest.Dataset, at pos) (*parsed, error) {
-	p, err := rn.dataPlan(ds, at)
-	if err != nil {
-		return nil, err
-	}
-	for refreshed := false; ; refreshed = true {
-		if err := rn.signer.ensure(ctx, rn); err != nil {
-			return nil, err
-		}
-		rep, err := rn.exchange(ctx, p)
-		if err == nil {
-			return rn.parse(rep, ds.RecordsPath)
-		}
-		if !errors.Is(err, errUnauthorized) || !rn.signer.refreshable() || refreshed {
-			return nil, err
-		}
-		rn.signer.drop()
-	}
 }
