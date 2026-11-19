@@ -113,7 +113,7 @@ func TestSapChunkDigestsOfSQLAreThoseOfGo(t *testing.T) {
 	if end.State != graph.StagedDone || end.Chain != chain {
 		t.Fatalf("the chain at the end: %x, from the lines %x", end.Chain, chain)
 	}
-	got, err := chainBeforeTest(ctx, k, len(chunks))
+	got, err := sapChainBefore(ctx, k, len(chunks))
 	noErr(t, "chain from the stored lines", err)
 	if got != chain {
 		t.Fatalf("the chain a server that takes over makes: %x, wanted %x", got, chain)
@@ -123,7 +123,7 @@ func TestSapChunkDigestsOfSQLAreThoseOfGo(t *testing.T) {
 	}
 }
 
-func chainBeforeTest(ctx context.Context, k *sapKG, n int) ([32]byte, error) {
+func sapChainBefore(ctx context.Context, k *sapKG, n int) ([32]byte, error) {
 	a, err := k.st.access(ctx, k.kg.ID)
 	if err != nil {
 		return [32]byte{}, err

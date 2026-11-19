@@ -143,9 +143,6 @@ func chunksOf(ctx context.Context, tx *sql.Tx, a *kgAccess) (int, error) {
 // chainBefore makes the chain of the digests of the chunks before chunk n from the stored difference.
 func chainBefore(ctx context.Context, tx *sql.Tx, a *kgAccess, n int) (kernel.Hash, error) {
 	var chain [sha256.Size]byte
-	if n == 0 {
-		return kernel.Hash(chain), nil
-	}
 	rows, err := tx.QueryContext(ctx, pgschema.ChunkDigestsSQL(a.rec.KGNo), n)
 	if err != nil {
 		return kernel.Hash{}, dbErr(err, "read the digests of the chunks that are done")

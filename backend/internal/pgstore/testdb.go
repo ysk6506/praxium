@@ -3,6 +3,7 @@ package pgstore
 import (
 	"context"
 
+	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/pgconn"
 )
 
@@ -49,6 +50,11 @@ func NewTestStoreWith(tb TB, clock LeaseClock) *Store {
 	tb.Cleanup(func() { _ = st.Close() })
 	return st
 }
+
+// RecordChunks makes this Store hand every chunk that ApplyChunk wrote to fn once it is written, in the order they were
+// written. The tests of the staged apply use it to take the rows the rows path wrote (ADR-0099). Only tests use it, and
+// they set it before the calls that write.
+func (s *Store) RecordChunks(fn func(graph.ChunkWrite)) { s.record = fn }
 
 // StopWorkAfter makes an abandon or a restore of this Store stop with err once it has done n steps (n of at least 1),
 // as a server that dies in the middle does: the head keeps the work and ResumeWork ends it. Only tests use it, and

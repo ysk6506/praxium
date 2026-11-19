@@ -68,8 +68,8 @@ const (
 type StagedState string
 
 // StagedProgress is the position of a staged apply. Chain is the chain of the digests of the chunks before
-// NextChunk (the zero hash before the first), and once the apply is done by the chunk this value came from, the
-// input digest of the whole apply. ApplyID of the head and the chain are not stored beside each other: a server that
+// NextChunk (the zero hash before the first); once the apply is done it is the chain of the digests of all the
+// chunks. ApplyID of the head and the chain are not stored beside each other: a server that
 // takes over makes the chain again from the stored difference (StagedProgress), so every chunk is applied against the
 // chain of the chunks before it.
 type StagedProgress struct {

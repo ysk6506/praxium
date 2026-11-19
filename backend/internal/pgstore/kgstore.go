@@ -63,6 +63,8 @@ type Store struct {
 	// hook is called between the transactions of an abandon or a restore. Only the tests of this unit set it, to
 	// stop the work in the middle.
 	hook func(stage string, seq int64) error
+	// record is called with every chunk that ApplyChunk wrote. Only tests set it (RecordChunks).
+	record func(graph.ChunkWrite)
 }
 
 var _ graph.Store = (*Store)(nil)

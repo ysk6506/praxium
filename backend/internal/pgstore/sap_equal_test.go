@@ -3,6 +3,7 @@ package pgstore
 import (
 	"bytes"
 	"context"
+	"sync"
 	"testing"
 	"time"
 
@@ -61,7 +62,7 @@ func sapOpen(t TB, st *Store, reg *model.Registry, store graph.Store) *sapKG {
 	return &sapKG{st: st, kg: kg, app: app, lease: lease, clock: clock, reg: reg}
 }
 
-func (k *sapKG) apply(id string) graph.StagedApply {
+func (k *sapKG) sapApply(id string) graph.StagedApply {
 	return graph.StagedApply{KG: k.kg.ID, Generation: k.kg.Generation, Lease: k.lease, Now: k.clock.Now(), ApplyID: id, Kind: graph.BatchSync, SourceID: "sap"}
 }
 
@@ -69,10 +70,10 @@ func (k *sapKG) apply(id string) graph.StagedApply {
 func sapRun(t *testing.T, k *sapKG, id string) graph.StagedProgress {
 	t.Helper()
 	ctx := context.Background()
-	p, err := k.st.StagedProgress(ctx, k.apply(id))
+	p, err := k.st.StagedProgress(ctx, k.sapApply(id))
 	noErr(t, "progress", err)
 	for p.State == graph.StagedPending || p.State == graph.StagedOpen {
-		p, err = k.st.ApplyStagedChunk(ctx, k.apply(id), p)
+		p, err = k.st.ApplyStagedChunk(ctx, k.sapApply(id), p)
 		noErr(t, "chunk", err)
 	}
 	return p
@@ -97,7 +98,7 @@ func sapVolatile(t *testing.T, k *sapKG, id string, limit int) (steps, written i
 // apply (with the stager that wrote the difference).
 type sapPair struct {
 	rows, staged *sapKG
-	rec          *sapRecorder
+	rec          *sapTape
 	stg          *sapStager
 	first        []graph.ChunkWrite
 	// arm makes the next transaction that moves a head of the staged side lose its backend before its COMMIT.
@@ -117,26 +118,72 @@ func sapLoadBothInto(t *testing.T, reg *model.Registry, truth []byte, items int,
 	ctx := context.Background()
 	a := NewTestStore(t)
 	b, arm := open(t)
-	p := &sapPair{rec: &sapRecorder{Store: a}, arm: arm}
-	p.rows = sapOpen(t, a, reg, p.rec)
+	p := &sapPair{rec: &sapTape{}, arm: arm}
+	a.RecordChunks(p.rec.sapNote)
+	p.rows = sapOpen(t, a, reg, a)
 	noErr(t, "release", p.rows.app.Release(ctx, p.rows.lease))
-	_, err := (devload.Loader{Store: p.rec, Reg: reg, Clock: p.rows.clock, IDs: kernel.NewRandomIDs(kernel.NewSeededRng(5)), BatchItems: items}).Load(ctx, p.rows.kg.ID, bytes.NewReader(truth))
+	_, err := (devload.Loader{Store: a, Reg: reg, Clock: p.rows.clock, IDs: kernel.NewRandomIDs(kernel.NewSeededRng(5)), BatchItems: items}).Load(ctx, p.rows.kg.ID, bytes.NewReader(truth))
 	noErr(t, "rows path", err)
 	p.staged = sapOpen(t, b, reg, b)
 	p.stg, err = sapNewStager(ctx, b, p.staged.kg.ID)
 	noErr(t, "stager", err)
-	p.first = p.rec.take()
-	p.stage(t, p.first)
+	p.first = p.rec.sapTake()
+	p.sapStageChunks(t, p.first)
 	return p
 }
 
-// stage writes the chunks as the stored difference of the staged side, from the first chunk.
-func (p *sapPair) stage(t *testing.T, chunks []graph.ChunkWrite) {
+// sapCache keeps the chunks the rows path writes for the world of the tests, by the size of its batches: the rows path
+// is run once for all the tests that need only the rows it wrote.
+var sapCache struct {
+	sync.Mutex
+	chunks map[int][]graph.ChunkWrite
+}
+
+// sapFirstChunks gives the chunks of the first load of the world (seed 9, scale 500) by the rows path.
+func sapFirstChunks(t *testing.T, reg *model.Registry, items int) []graph.ChunkWrite {
+	t.Helper()
+	sapCache.Lock()
+	defer sapCache.Unlock()
+	if c, ok := sapCache.chunks[items]; ok {
+		return c
+	}
+	ctx := context.Background()
+	a := NewTestStore(t)
+	tape := &sapTape{}
+	a.RecordChunks(tape.sapNote)
+	rows := sapOpen(t, a, reg, a)
+	noErr(t, "release", rows.app.Release(ctx, rows.lease))
+	_, err := (devload.Loader{Store: a, Reg: reg, Clock: rows.clock, IDs: kernel.NewRandomIDs(kernel.NewSeededRng(5)), BatchItems: items}).Load(ctx, rows.kg.ID, bytes.NewReader(sapTruth(t, reg, 9, 500)))
+	noErr(t, "rows path", err)
+	if sapCache.chunks == nil {
+		sapCache.chunks = map[int][]graph.ChunkWrite{}
+	}
+	sapCache.chunks[items] = tape.sapTake()
+	return sapCache.chunks[items]
+}
+
+// sapStagedInto stages the first load of the world in a store made by open and does not apply it. There is no store
+// of the rows path beside it: it is for the tests that look at the staged apply only.
+func sapStagedInto(t *testing.T, items int, open func(TB) (*Store, func())) *sapPair {
+	t.Helper()
+	reg, err := model.LoadStandard()
+	noErr(t, "model", err)
+	first := sapFirstChunks(t, reg, items)
+	b, arm := open(t)
+	p := &sapPair{arm: arm, first: first, staged: sapOpen(t, b, reg, b)}
+	p.stg, err = sapNewStager(context.Background(), b, p.staged.kg.ID)
+	noErr(t, "stager", err)
+	p.sapStageChunks(t, first)
+	return p
+}
+
+// sapStageChunks writes the chunks as the stored difference of the staged side, from the first chunk.
+func (p *sapPair) sapStageChunks(t *testing.T, chunks []graph.ChunkWrite) {
 	t.Helper()
 	ctx := context.Background()
-	noErr(t, "reset", p.stg.reset(ctx))
+	noErr(t, "reset", p.stg.sapReset(ctx))
 	for _, w := range chunks {
-		noErr(t, "stage", p.stg.stage(ctx, w))
-		noErr(t, "stage volatile", p.stg.volatile(ctx, w))
+		noErr(t, "stage", p.stg.sapStage(ctx, w))
+		noErr(t, "stage volatile", p.stg.sapStageVolatile(ctx, w))
 	}
 }

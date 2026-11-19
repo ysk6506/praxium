@@ -49,7 +49,7 @@ func sapFactsOf(reg *model.Registry, chunks []graph.ChunkWrite) sapFacts {
 	return f
 }
 
-func (f sapFacts) typeID(no int) model.ObjectTypeID {
+func (f sapFacts) sapTypeID(no int) model.ObjectTypeID {
 	for _, t := range f.reg.ObjectTypes() {
 		if t.TypeNo == no {
 			return t.ID
@@ -58,7 +58,7 @@ func (f sapFacts) typeID(no int) model.ObjectTypeID {
 	return model.ObjectTypeID{}
 }
 
-func (f sapFacts) linkTypeID(no int) model.LinkTypeID {
+func (f sapFacts) sapLinkTypeID(no int) model.LinkTypeID {
 	for _, t := range f.reg.LinkTypes() {
 		if t.LinkTypeNo == no {
 			return t.ID
@@ -67,8 +67,8 @@ func (f sapFacts) linkTypeID(no int) model.LinkTypeID {
 	return model.LinkTypeID{}
 }
 
-// changed is the upsert of an object whose first string attribute and name are changed.
-func (f sapFacts) changed(t *testing.T) (graph.ObjectUpsert, graph.ObjectID) {
+// sapChanged is the upsert of an object whose first string attribute and name are changed.
+func (f sapFacts) sapChanged(t *testing.T) (graph.ObjectUpsert, graph.ObjectID) {
 	t.Helper()
 	for _, o := range f.objects {
 		for no, a := range o.New.Attrs {
@@ -79,7 +79,7 @@ func (f sapFacts) changed(t *testing.T) (graph.ObjectUpsert, graph.ObjectID) {
 				}
 				a.Value = s + "-sap"
 				attrs[no] = a
-				return graph.ObjectUpsert{Type: f.typeID(o.New.TypeNo), Key: o.Key, Name: o.New.Name + " sap", Attrs: attrs, SourceRefs: o.New.SourceRefs}, o.New.ID
+				return graph.ObjectUpsert{Type: f.sapTypeID(o.New.TypeNo), Key: o.Key, Name: o.New.Name + " sap", Attrs: attrs, SourceRefs: o.New.SourceRefs}, o.New.ID
 			}
 		}
 	}
@@ -87,8 +87,8 @@ func (f sapFacts) changed(t *testing.T) (graph.ObjectUpsert, graph.ObjectID) {
 	return graph.ObjectUpsert{}, graph.ObjectID{}
 }
 
-// retired picks an object that ends a link and gives it with all its links, whoever made them.
-func (f sapFacts) retired() (graph.ObjectID, []graph.LinkID) {
+// sapRetired picks an object that ends a link and gives it with all its links, whoever made them.
+func (f sapFacts) sapRetired() (graph.ObjectID, []graph.LinkID) {
 	last := f.links[len(f.links)-1]
 	var gone []graph.LinkID
 	for _, l := range f.links {
@@ -104,20 +104,20 @@ func (f sapFacts) retired() (graph.ObjectID, []graph.LinkID) {
 // the identifier that is replaced.
 func sapBatch(t *testing.T, f sapFacts) graph.Batch {
 	t.Helper()
-	up, changedID := f.changed(t)
+	up, changedID := f.sapChanged(t)
 	b := graph.Batch{ApplyID: "sap-step-2", Kind: graph.BatchSync, SourceID: "sap", Objects: []graph.ObjectUpsert{up}}
-	retire, links := f.retired()
+	retire, links := f.sapRetired()
 	b.RetireObjects, b.RetireLinks = []graph.ObjectID{retire}, links
 	for _, l := range f.links {
 		if l.Src != retire && l.Dst != retire && l.Src != changedID && l.Dst != changedID {
 			b.RetireLinks = append(b.RetireLinks, l.ID)
-			b.Links = append(b.Links, graph.LinkUpsert{Type: f.linkTypeID(l.TypeNo), Src: l.Src, Dst: l.Dst, Discriminator: "sap-added",
+			b.Links = append(b.Links, graph.LinkUpsert{Type: f.sapLinkTypeID(l.TypeNo), Src: l.Src, Dst: l.Dst, Discriminator: "sap-added",
 				Grade: l.Grade, Basis: l.Basis, SourceRefs: l.SourceRefs})
 			break
 		}
 	}
 	for _, i := range f.idents {
-		if id, ok := f.replaced(i, retire); ok {
+		if id, ok := f.sapReplaced(i, retire); ok {
 			b.Identifiers = []graph.IdentifierWrite{{Object: i.Object, Scheme: id.scheme, Value: i.Value, Scope: i.Scope, Close: true},
 				{Object: i.Object, Scheme: id.scheme, Value: id.value, Scope: i.Scope}}
 			break
@@ -131,8 +131,8 @@ type sapIdent struct {
 	value  string
 }
 
-// replaced finds a value that the scheme of an identifier takes in place of its value.
-func (f sapFacts) replaced(i graph.IdentifierRecord, not graph.ObjectID) (sapIdent, bool) {
+// sapReplaced finds a value that the scheme of an identifier takes in place of its value.
+func (f sapFacts) sapReplaced(i graph.IdentifierRecord, not graph.ObjectID) (sapIdent, bool) {
 	if i.Object == not {
 		return sapIdent{}, false
 	}
@@ -158,13 +158,13 @@ func sapStepTwo(t *testing.T, p *sapPair, reg *model.Registry) (graph.Batch, gra
 	ctx := context.Background()
 	facts := sapFactsOf(reg, p.first)
 	b := sapBatch(t, facts)
-	_, changed := facts.changed(t)
+	_, changed := facts.sapChanged(t)
 	var err error
 	p.rows.lease, err = p.rows.app.Acquire(ctx, p.rows.kg.ID)
 	noErr(t, "lease", err)
 	_, err = p.rows.app.Apply(ctx, p.rows.kg.ID, p.rows.lease, b)
 	noErr(t, "rows path, second step", err)
-	p.stage(t, p.rec.take())
+	p.sapStageChunks(t, p.rec.sapTake())
 	if got := sapRun(t, p.staged, "sap-2"); got.State != graph.StagedDone {
 		t.Fatalf("the second apply ended in %q", got.State)
 	}
@@ -313,12 +313,14 @@ func sapAroundOne(t *testing.T, a, b sapSide, ca, cb query.Common, someone, labe
 func sapSameState(t *testing.T, p *sapPair, label string) {
 	t.Helper()
 	ctx := context.Background()
-	ha, err := p.rows.st.Head(ctx, p.rows.kg.ID)
-	noErr(t, label+" head, rows path", err)
-	hb, err := p.staged.st.Head(ctx, p.staged.kg.ID)
-	noErr(t, label+" head, staged", err)
-	if !ha.Hash.Equal(hb.Hash) {
-		t.Fatalf("%s: the state hashes differ: rows path %+v, staged %+v", label, ha.Hash.Rows, hb.Hash.Rows)
+	if p.rows != nil {
+		ha, err := p.rows.st.Head(ctx, p.rows.kg.ID)
+		noErr(t, label+" head, rows path", err)
+		hb, err := p.staged.st.Head(ctx, p.staged.kg.ID)
+		noErr(t, label+" head, staged", err)
+		if !ha.Hash.Equal(hb.Hash) {
+			t.Fatalf("%s: the state hashes differ: rows path %+v, staged %+v", label, ha.Hash.Rows, hb.Hash.Rows)
+		}
 	}
 	noErr(t, label+" verify, staged", p.staged.app.Verify(ctx, p.staged.kg.ID))
 }

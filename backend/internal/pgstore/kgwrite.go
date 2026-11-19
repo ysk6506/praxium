@@ -23,7 +23,10 @@ func (s *Store) ApplyChunk(ctx context.Context, w graph.ChunkWrite) error {
 		return err
 	}
 	err = a.sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error { return s.applyChunk(ctx, tx, a, w) })
-	return s.resolve(ctx, a, w.Head, err)
+	if err = s.resolve(ctx, a, w.Head, err); err == nil && s.record != nil {
+		s.record(w)
+	}
+	return err
 }
 
 func (s *Store) applyChunk(ctx context.Context, tx *sql.Tx, a *kgAccess, w graph.ChunkWrite) error {

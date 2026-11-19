@@ -7,7 +7,6 @@ import (
 	"testing"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
-	"github.com/ysk6506/praxium/backend/internal/model"
 	"github.com/ysk6506/praxium/backend/internal/pgconn"
 )
 
@@ -18,7 +17,7 @@ type sapLockTaps struct {
 	on    bool
 }
 
-func (l *sapLockTaps) hook(ctx context.Context, tx *sql.Tx) error {
+func (l *sapLockTaps) sapHook(ctx context.Context, tx *sql.Tx) error {
 	l.mu.Lock()
 	on := l.on
 	l.mu.Unlock()
@@ -38,7 +37,7 @@ func (l *sapLockTaps) hook(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
-func (l *sapLockTaps) take() []int {
+func (l *sapLockTaps) sapTake() []int {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	out := l.locks
@@ -52,7 +51,7 @@ func sapMerge(chunks []graph.ChunkWrite, n int) []graph.ChunkWrite {
 	for i := 0; i < len(chunks); i += n {
 		var m graph.ChunkWrite
 		for _, c := range chunks[i:min(i+n, len(chunks))] {
-			m.Objects, m.Links, m.Identifiers = append(m.Objects, c.Objects...), append(m.Links, c.Links...), append(m.Identifiers, c.Identifiers...)
+			m.Objects, m.Links, m.Identifiers, m.Volatile = append(m.Objects, c.Objects...), append(m.Links, c.Links...), append(m.Identifiers, c.Identifiers...), append(m.Volatile, c.Volatile...)
 		}
 		out = append(out, m)
 	}
@@ -65,19 +64,16 @@ func sapMerge(chunks []graph.ChunkWrite, n int) []graph.ChunkWrite {
 //
 // [REQ-728]
 func TestSapLocksOfAChunkDoNotGrowWithItsRows(t *testing.T) {
-	reg, err := model.LoadStandard()
-	noErr(t, "model", err)
-	truth := sapTruth(t, reg, 9, 500)
 	var worst, best = 0, 1 << 30
 	for _, n := range []int{1, 3, 9} {
 		taps := &sapLockTaps{}
-		pair := sapLoadBothInto(t, reg, truth, 120, func(tb TB) (*Store, func()) { return sapTapStore(tb, taps), func() {} })
-		pair.stage(t, sapMerge(pair.first, n))
+		pair := sapStagedInto(t, 120, func(tb TB) (*Store, func()) { return sapTapStore(tb, taps), func() {} })
+		pair.sapStageChunks(t, sapMerge(pair.first, n))
 		taps.mu.Lock()
 		taps.on = true
 		taps.mu.Unlock()
 		end := sapRun(t, pair.staged, "sap-run")
-		held := taps.take()
+		held := taps.sapTake()
 		rows := sapCount(t, pair.staged, `SELECT count(*) FROM {ingest_diff}`)
 		hi, lo := 0, 1<<30
 		for _, h := range held {
@@ -97,7 +93,7 @@ func TestSapLocksOfAChunkDoNotGrowWithItsRows(t *testing.T) {
 // sapTapStore opens a Store whose transactions are counted by the taps.
 func sapTapStore(tb TB, taps *sapLockTaps) *Store {
 	tb.Helper()
-	pool := pgconn.NewTestPoolWith(tb, pgconn.Config{BeforeCommit: taps.hook})
+	pool := pgconn.NewTestPoolWith(tb, pgconn.Config{BeforeCommit: taps.sapHook})
 	models, err := StandardModels(false)
 	if err != nil {
 		tb.Fatalf("models: %v", err)

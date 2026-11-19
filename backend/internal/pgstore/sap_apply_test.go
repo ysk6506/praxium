@@ -8,7 +8,6 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
-	"github.com/ysk6506/praxium/backend/internal/model"
 	"github.com/ysk6506/praxium/backend/internal/pgconn"
 )
 
@@ -41,9 +40,7 @@ func sapExec(t *testing.T, k *sapKG, statement string) {
 // sapStaged is a pair with the world staged on the one side and not applied.
 func sapStaged(t *testing.T) *sapPair {
 	t.Helper()
-	reg, err := model.LoadStandard()
-	noErr(t, "model", err)
-	return sapLoadBoth(t, reg, sapTruth(t, reg, 9, 500), 120)
+	return sapStagedInto(t, 120, func(tb TB) (*Store, func()) { return NewTestStore(tb), func() {} })
 }
 
 // A server that dies between two chunks leaves the head open at the chunk it was at; the one that takes the work over
@@ -55,32 +52,32 @@ func TestSapStagedApplyGoesOnAfterACrashBetweenChunks(t *testing.T) {
 	p := sapStaged(t)
 	ctx := context.Background()
 	k := p.staged
-	start, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	start, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress", err)
 	if start.State != graph.StagedPending || start.ChunkCount < 4 {
 		t.Fatalf("before the first chunk: %+v", start)
 	}
 	mid := start
 	for i := 0; i < 2; i++ {
-		mid, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), mid)
+		mid, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), mid)
 		noErr(t, "chunk", err)
 	}
 	if mid.State != graph.StagedOpen || mid.NextChunk != 2 || mid.Chain == (kernel.Hash{}) {
 		t.Fatalf("after two chunks: %+v", mid)
 	}
-	again, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	again, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress after the crash", err)
 	if again != mid {
 		t.Fatalf("the progress after the crash is not the one the chunk gave:\n%+v\n%+v", again, mid)
 	}
 	_, err = sapInterval(t, k, graph.StagedVolatileCursor{}, 100)
 	wantCode(t, "volatile values while the apply is half done", err, graph.CodeApplyInProgress)
-	end, err := k.st.StagedProgress(ctx, k.apply("sap-other"))
+	end, err := k.st.StagedProgress(ctx, k.sapApply("sap-other"))
 	if kernel.CodeOf(err) != graph.CodeApplyInProgress {
 		t.Fatalf("another apply on an open head: %+v %v", end, err)
 	}
 	for again.State == graph.StagedOpen {
-		again, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), again)
+		again, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), again)
 		noErr(t, "chunk", err)
 	}
 	if again.State != graph.StagedDone {
@@ -88,11 +85,11 @@ func TestSapStagedApplyGoesOnAfterACrashBetweenChunks(t *testing.T) {
 	}
 	sapVolatile(t, k, "sap-run", 1000)
 	sapSameState(t, p, "after the crash")
-	done, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	done, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	if err != nil || done.State != graph.StagedDone {
 		t.Fatalf("an apply that is done is told so: %+v %v", done, err)
 	}
-	_, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), mid)
+	_, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), mid)
 	wantCode(t, "a chunk of an apply that is done", err, graph.CodeHeadMoved)
 }
 
@@ -103,18 +100,18 @@ func TestSapStagedChunkOfAStalePositionIsRefused(t *testing.T) {
 	p := sapStaged(t)
 	ctx := context.Background()
 	k := p.staged
-	start, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	start, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress", err)
-	next, err := k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), start)
+	next, err := k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), start)
 	noErr(t, "chunk", err)
-	_, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), start)
+	_, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), start)
 	wantCode(t, "the chunk applied twice", err, graph.CodeHeadMoved)
 	h, err := k.st.Head(ctx, k.kg.ID)
 	noErr(t, "head", err)
 	if h.AppliedSeq != next.AppliedSeq || h.NextChunkNo != 1 {
 		t.Fatalf("the refused chunk moved the head: %+v", h)
 	}
-	_, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), graph.StagedProgress{State: graph.StagedDone})
+	_, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), graph.StagedProgress{State: graph.StagedDone})
 	wantCode(t, "a chunk from a done position", err, kernel.CodeInvalidValue)
 }
 
@@ -126,15 +123,15 @@ func TestSapEmptyDifferenceLeavesTheHeadAlone(t *testing.T) {
 	p := sapStaged(t)
 	ctx := context.Background()
 	k := p.staged
-	noErr(t, "reset", p.stg.reset(ctx))
-	empty, err := k.st.StagedProgress(ctx, k.apply("sap-empty"))
+	noErr(t, "reset", p.stg.sapReset(ctx))
+	empty, err := k.st.StagedProgress(ctx, k.sapApply("sap-empty"))
 	noErr(t, "progress", err)
 	if empty.State != graph.StagedEmpty || empty.ChunkCount != 0 {
 		t.Fatalf("an empty difference: %+v", empty)
 	}
 	before, err := k.st.Head(ctx, k.kg.ID)
 	noErr(t, "head", err)
-	_, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-empty"), graph.StagedProgress{State: graph.StagedPending})
+	_, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-empty"), graph.StagedProgress{State: graph.StagedPending})
 	wantCode(t, "a chunk of an empty difference", err, kernel.CodeInvalidValue)
 	after, err := k.st.Head(ctx, k.kg.ID)
 	noErr(t, "head", err)
@@ -144,10 +141,10 @@ func TestSapEmptyDifferenceLeavesTheHeadAlone(t *testing.T) {
 	if n := sapCount(t, k, `SELECT count(*) FROM {change_batch}`) + sapCount(t, k, `SELECT count(*) FROM {ingest_order}`); n != 0 {
 		t.Fatalf("an empty apply wrote %d records", n)
 	}
-	p.stage(t, p.first)
+	p.sapStageChunks(t, p.first)
 	sapRun(t, k, "sap-first")
-	noErr(t, "reset", p.stg.reset(ctx))
-	done, err := k.st.StagedProgress(ctx, k.apply("sap-second"))
+	noErr(t, "reset", p.stg.sapReset(ctx))
+	done, err := k.st.StagedProgress(ctx, k.sapApply("sap-second"))
 	noErr(t, "progress", err)
 	sealed, err := k.st.Head(ctx, k.kg.ID)
 	noErr(t, "head", err)
@@ -166,13 +163,13 @@ func TestSapAChunkWhoseCommitGotNoAnswerIsJudgedByTheHead(t *testing.T) {
 	k := p.staged
 	a, err := k.st.access(ctx, k.kg.ID)
 	noErr(t, "access", err)
-	start, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	start, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress", err)
 	var want graph.Head
 	var out graph.StagedProgress
 	noErr(t, "chunk", a.sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
 		var err error
-		out, want, err = k.st.stagedChunkIn(ctx, tx, a, k.apply("sap-run"), start)
+		out, want, err = k.st.stagedChunkIn(ctx, tx, a, k.sapApply("sap-run"), start)
 		return err
 	}))
 	lost := kernel.Errorf(pgconn.CodeOutcomeUnknown, "no answer to the COMMIT")
@@ -188,7 +185,7 @@ func TestSapAChunkWhoseCommitGotNoAnswerIsJudgedByTheHead(t *testing.T) {
 	if kernel.CodeOf(err) != pgconn.CodeConnectionLost {
 		t.Fatalf("a head that is not the one the chunk leaves: %v", err)
 	}
-	now, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	now, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress", err)
 	if now.NextChunk != 1 || now.State != graph.StagedOpen {
 		t.Fatalf("the question about the position after the doubt: %+v", now)
@@ -200,16 +197,13 @@ func TestSapAChunkWhoseCommitGotNoAnswerIsJudgedByTheHead(t *testing.T) {
 //
 // [REQ-723]
 func TestSapAChunkThatWasNotCommittedIsApplyAgain(t *testing.T) {
-	reg, err := model.LoadStandard()
-	noErr(t, "model", err)
-	truth := sapTruth(t, reg, 9, 500)
-	p := sapLoadBothInto(t, reg, truth, 120, v2oStore)
+	p := sapStagedInto(t, 120, v2oStore)
 	ctx := context.Background()
 	k := p.staged
-	start, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	start, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress", err)
 	p.arm()
-	_, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), start)
+	_, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), start)
 	wantCode(t, "a commit that never happened", err, pgconn.CodeConnectionLost)
 	h, err := k.st.Head(ctx, k.kg.ID)
 	noErr(t, "head", err)
@@ -219,7 +213,7 @@ func TestSapAChunkThatWasNotCommittedIsApplyAgain(t *testing.T) {
 	if n := sapCount(t, k, `SELECT count(*) FROM {object}`); n != 0 {
 		t.Fatalf("%d objects were left by the chunk that was not committed", n)
 	}
-	again, err := k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), start)
+	again, err := k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), start)
 	noErr(t, "the same chunk again", err)
 	if again.NextChunk != 1 || again.State != graph.StagedOpen {
 		t.Fatalf("after the repeat: %+v", again)
@@ -235,8 +229,8 @@ func TestSapRetiredObjectTakesItsLinksWithIt(t *testing.T) {
 	p := sapStaged(t)
 	ctx := context.Background()
 	sapRun(t, p.staged, "sap-1")
-	facts := sapFactsOf(p.rows.reg, p.first)
-	gone, links := facts.retired()
+	facts := sapFactsOf(p.staged.reg, p.first)
+	gone, links := facts.sapRetired()
 	if len(links) < 2 {
 		t.Fatalf("the object has %d links", len(links))
 	}
@@ -253,9 +247,9 @@ func TestSapRetiredObjectTakesItsLinksWithIt(t *testing.T) {
 			later.Links = append(later.Links, graph.LinkChange{Old: &l})
 		}
 	}
-	noErr(t, "reset", p.stg.reset(ctx))
-	noErr(t, "stage the retirement", p.stg.stage(ctx, retire))
-	noErr(t, "stage the link line that comes after it", p.stg.stage(ctx, later))
+	noErr(t, "reset", p.stg.sapReset(ctx))
+	noErr(t, "stage the retirement", p.stg.sapStage(ctx, retire))
+	noErr(t, "stage the link line that comes after it", p.stg.sapStage(ctx, later))
 	before := sapCount(t, p.staged, `SELECT count(*) FROM {link}`)
 	sapRun(t, p.staged, "sap-2")
 	no := p.stg.objNo[gone.String()]
@@ -278,10 +272,10 @@ func TestSapAbandonBetweenChunksUndoesKeysAndTheApplyCanStartAgain(t *testing.T)
 	p := sapStaged(t)
 	ctx := context.Background()
 	k := p.staged
-	prog, err := k.st.StagedProgress(ctx, k.apply("sap-run"))
+	prog, err := k.st.StagedProgress(ctx, k.sapApply("sap-run"))
 	noErr(t, "progress", err)
 	for i := 0; i < 3; i++ {
-		prog, err = k.st.ApplyStagedChunk(ctx, k.apply("sap-run"), prog)
+		prog, err = k.st.ApplyStagedChunk(ctx, k.sapApply("sap-run"), prog)
 		noErr(t, "chunk", err)
 	}
 	if sapCount(t, k, `SELECT count(*) FROM {object_key}`) == 0 || sapCount(t, k, `SELECT count(*) FROM {object}`) == 0 {

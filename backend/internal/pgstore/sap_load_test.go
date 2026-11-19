@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"sync"
 
 	"github.com/lib/pq"
 
@@ -19,27 +18,13 @@ import (
 // ids) from the applier of the product through a store that records the chunks it is given, and it gives them the
 // shape of the staged tables. No meaning of a row is made a second time here. Every name starts with sap.
 
-// sapRecorder is a store that passes every chunk on and keeps it.
-type sapRecorder struct {
-	graph.Store
-	mu     sync.Mutex
-	chunks []graph.ChunkWrite
-}
+// sapTape keeps the chunks that the rows path wrote, as the Store hands them over (RecordChunks).
+type sapTape struct{ chunks []graph.ChunkWrite }
 
-func (r *sapRecorder) ApplyChunk(ctx context.Context, w graph.ChunkWrite) error {
-	if err := r.Store.ApplyChunk(ctx, w); err != nil {
-		return err
-	}
-	r.mu.Lock()
-	r.chunks = append(r.chunks, w)
-	r.mu.Unlock()
-	return nil
-}
+func (r *sapTape) sapNote(w graph.ChunkWrite) { r.chunks = append(r.chunks, w) }
 
-// take gives the chunks that were recorded since the last call.
-func (r *sapRecorder) take() []graph.ChunkWrite {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+// sapTake gives the chunks that were kept since the last call.
+func (r *sapTape) sapTake() []graph.ChunkWrite {
 	out := r.chunks
 	r.chunks = nil
 	return out
@@ -73,8 +58,8 @@ func sapNewStager(ctx context.Context, st *Store, kg graph.KGID) (*sapStager, er
 	return &sapStager{st: st, a: a, objNo: map[string]int64{}, objType: map[string]int{}, linkNo: map[string]int64{}}, nil
 }
 
-// reset empties the staged tables and the difference (a new run) and starts the numbering of chunks and lines again.
-func (s *sapStager) reset(ctx context.Context) error {
+// sapReset empties the staged tables and the difference (a new run) and starts the numbering of chunks and lines again.
+func (s *sapStager) sapReset(ctx context.Context) error {
 	s.ord, s.chunk = 0, 0
 	return s.a.sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
 		_, err := tx.ExecContext(ctx, s.a.stagedSQL(`TRUNCATE {ingest_diff}, {stage_object}, {stage_link}, {stage_ident}, {stage_volatile}`))
@@ -82,8 +67,8 @@ func (s *sapStager) reset(ctx context.Context) error {
 	})
 }
 
-// numbers takes n numbers from a function of the database.
-func (s *sapStager) numbers(ctx context.Context, tx *sql.Tx, fn string, n int) ([]int64, error) {
+// sapNumbers takes n numbers from a function of the database.
+func (s *sapStager) sapNumbers(ctx context.Context, tx *sql.Tx, fn string, n int) ([]int64, error) {
 	rows, err := tx.QueryContext(ctx, `SELECT n FROM public.`+fn+`($1) AS t(n) ORDER BY n`, n)
 	if err != nil {
 		return nil, err
@@ -100,11 +85,11 @@ func (s *sapStager) numbers(ctx context.Context, tx *sql.Tx, fn string, n int) (
 	return out, rows.Err()
 }
 
-// stage writes the chunk as one chunk of the difference (and its staged rows), lines in the order of the kinds.
-func (s *sapStager) stage(ctx context.Context, w graph.ChunkWrite) error {
+// sapStage writes the chunk as one chunk of the difference (and its staged rows), lines in the order of the kinds.
+func (s *sapStager) sapStage(ctx context.Context, w graph.ChunkWrite) error {
 	return s.a.sh.tx(ctx, RoleApplier, false, func(tx *sql.Tx) error {
 		var lines []sapLine
-		steps := []func(context.Context, *sql.Tx, graph.ChunkWrite) ([]sapLine, error){s.objects, s.links, s.identifiers}
+		steps := []func(context.Context, *sql.Tx, graph.ChunkWrite) ([]sapLine, error){s.sapObjects, s.sapLinks, s.sapIdentifiers}
 		for _, step := range steps {
 			got, err := step(ctx, tx, w)
 			if err != nil {
@@ -112,18 +97,18 @@ func (s *sapStager) stage(ctx context.Context, w graph.ChunkWrite) error {
 			}
 			lines = append(lines, got...)
 		}
-		return s.writeLines(ctx, tx, lines)
+		return s.sapWriteLines(ctx, tx, lines)
 	})
 }
 
-func (s *sapStager) objects(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) ([]sapLine, error) {
+func (s *sapStager) sapObjects(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) ([]sapLine, error) {
 	var fresh int
 	for _, ch := range w.Objects {
 		if ch.Old == nil && ch.New != nil {
 			fresh++
 		}
 	}
-	nos, err := s.numbers(ctx, tx, "praxium_next_obj_nos", fresh)
+	nos, err := s.sapNumbers(ctx, tx, "praxium_next_obj_nos", fresh)
 	if err != nil {
 		return nil, err
 	}
@@ -168,7 +153,7 @@ func (s *sapStager) objects(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite)
 		if ch.Old != nil || ch.New == nil {
 			continue
 		}
-		k, err := s.keyLine(ch, s.objNo[ch.New.ID.String()])
+		k, err := s.sapKeyLine(ch, s.objNo[ch.New.ID.String()])
 		if err != nil {
 			return nil, err
 		}
@@ -189,9 +174,9 @@ func (s *sapStager) objects(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite)
 	return append(lines, keys...), nil
 }
 
-// keyLine is the line of the difference for the key of a new object: the type, the object that the key hangs from and
+// sapKeyLine is the line of the difference for the key of a new object: the type, the object that the key hangs from and
 // the hash of the shape of the key (the hash the identification index has).
-func (s *sapStager) keyLine(ch graph.ObjectChange, no int64) (*sapLine, error) {
+func (s *sapStager) sapKeyLine(ch graph.ObjectChange, no int64) (*sapLine, error) {
 	ctxRef, hash, _, ok, err := keySignature(ch.Key)
 	if err != nil || !ok {
 		return nil, err
@@ -208,14 +193,14 @@ func (s *sapStager) keyLine(ch graph.ObjectChange, no int64) (*sapLine, error) {
 		ref: ch.New.ID.String(), new: row[:], sig: hash}, nil
 }
 
-func (s *sapStager) links(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) ([]sapLine, error) {
+func (s *sapStager) sapLinks(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) ([]sapLine, error) {
 	fresh := 0
 	for _, ch := range w.Links {
 		if ch.New != nil && ch.Old == nil {
 			fresh++
 		}
 	}
-	nos, err := s.numbers(ctx, tx, "praxium_next_link_nos", fresh)
+	nos, err := s.sapNumbers(ctx, tx, "praxium_next_link_nos", fresh)
 	if err != nil {
 		return nil, err
 	}
@@ -264,7 +249,7 @@ func (s *sapStager) links(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) (
 	return lines, nil
 }
 
-func (s *sapStager) identifiers(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) ([]sapLine, error) {
+func (s *sapStager) sapIdentifiers(ctx context.Context, tx *sql.Tx, w graph.ChunkWrite) ([]sapLine, error) {
 	var lines []sapLine
 	var nos []int64
 	var schemes, values, scopes []string
@@ -289,8 +274,8 @@ func (s *sapStager) identifiers(ctx context.Context, tx *sql.Tx, w graph.ChunkWr
 	return lines, nil
 }
 
-// writeLines gives the lines of the chunk their order and writes them.
-func (s *sapStager) writeLines(ctx context.Context, tx *sql.Tx, lines []sapLine) error {
+// sapWriteLines gives the lines of the chunk their order and writes them.
+func (s *sapStager) sapWriteLines(ctx context.Context, tx *sql.Tx, lines []sapLine) error {
 	if len(lines) == 0 {
 		return nil
 	}
@@ -312,8 +297,8 @@ func (s *sapStager) writeLines(ctx context.Context, tx *sql.Tx, lines []sapLine)
 	return err
 }
 
-// volatile stages the volatile values of the chunks (the entry of prov each value makes).
-func (s *sapStager) volatile(ctx context.Context, w graph.ChunkWrite) error {
+// sapStageVolatile stages the volatile values of the chunks (the entry of prov each value makes).
+func (s *sapStager) sapStageVolatile(ctx context.Context, w graph.ChunkWrite) error {
 	if len(w.Volatile) == 0 {
 		return nil
 	}

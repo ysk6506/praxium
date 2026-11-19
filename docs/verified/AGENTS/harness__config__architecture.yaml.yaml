@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "22866326946878f3"
+hash: "10a3135d5486b93b"
 date: "2026-11-19"
-note: "architecture.yaml에 유닛 한 줄(adapter.httpsource)만 더해졌다. AGENTS.md는 유닛 목록을 싣지 않아 고칠 것이 없다"
+note: "architecture.yaml의 adapter.pgstore test_may_import에 core.query, adapter.devload, core.worldgen을 더한 것(ADR-0099)이 이 문서의 내용과 어긋나지 않음을 확인"
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"

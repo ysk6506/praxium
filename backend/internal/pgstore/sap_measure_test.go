@@ -5,7 +5,6 @@ import (
 	"context"
 	"database/sql"
 	"testing"
-	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/devload"
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -61,46 +60,51 @@ func BenchmarkSapFirstLoad(b *testing.B) {
 func sapMeasure(b *testing.B, reg *model.Registry, truth []byte) {
 	ctx := context.Background()
 	rowsStore, stagedStore := NewTestStore(b), NewTestStore(b)
-	rec := &sapRecorder{Store: rowsStore}
-	rows := sapOpen(b, rowsStore, reg, rec)
+	tape := &sapTape{}
+	rowsStore.RecordChunks(tape.sapNote)
+	rows := sapOpen(b, rowsStore, reg, rowsStore)
 	if err := rows.app.Release(ctx, rows.lease); err != nil {
 		b.Fatal(err)
 	}
-	w0, t0 := sapWAL(b, rows), time.Now()
-	if _, err := (devload.Loader{Store: rec, Reg: reg, Clock: rows.clock, IDs: kernel.NewRandomIDs(kernel.NewSeededRng(5))}).Load(ctx, rows.kg.ID, bytes.NewReader(truth)); err != nil {
+	w0 := sapWAL(b, rows)
+	b.ResetTimer()
+	if _, err := (devload.Loader{Store: rowsStore, Reg: reg, Clock: rows.clock, IDs: kernel.NewRandomIDs(kernel.NewSeededRng(5))}).Load(ctx, rows.kg.ID, bytes.NewReader(truth)); err != nil {
 		b.Fatal(err)
 	}
-	b.ReportMetric(time.Since(t0).Seconds(), "rows-path-s")
+	b.ReportMetric(b.Elapsed().Seconds(), "rows-path-s")
 	b.ReportMetric(float64(sapWAL(b, rows)-w0)/1e6, "rows-path-wal-MB")
 	staged := sapOpen(b, stagedStore, reg, stagedStore)
 	stg, err := sapNewStager(ctx, stagedStore, staged.kg.ID)
 	if err != nil {
 		b.Fatal(err)
 	}
-	chunks := rec.take()
-	w1, t1 := sapWAL(b, staged), time.Now()
+	chunks := tape.sapTake()
+	w1 := sapWAL(b, staged)
+	b.ResetTimer()
 	for _, c := range chunks {
-		if err := stg.stage(ctx, c); err != nil {
+		if err := stg.sapStage(ctx, c); err != nil {
 			b.Fatal(err)
 		}
-		if err := stg.volatile(ctx, c); err != nil {
+		if err := stg.sapStageVolatile(ctx, c); err != nil {
 			b.Fatal(err)
 		}
 	}
-	b.ReportMetric(time.Since(t1).Seconds(), "stage-s")
+	b.ReportMetric(b.Elapsed().Seconds(), "stage-s")
 	b.ReportMetric(float64(sapWAL(b, staged)-w1)/1e6, "stage-wal-MB")
-	w2, t2 := sapWAL(b, staged), time.Now()
-	p, err := staged.st.StagedProgress(ctx, staged.apply("sap-run"))
+	w2 := sapWAL(b, staged)
+	b.ResetTimer()
+	p, err := staged.st.StagedProgress(ctx, staged.sapApply("sap-run"))
 	for err == nil && (p.State == graph.StagedPending || p.State == graph.StagedOpen) {
-		p, err = staged.st.ApplyStagedChunk(ctx, staged.apply("sap-run"), p)
+		p, err = staged.st.ApplyStagedChunk(ctx, staged.sapApply("sap-run"), p)
 	}
 	if err != nil {
 		b.Fatal(err)
 	}
-	b.ReportMetric(time.Since(t2).Seconds(), "apply-s")
+	b.ReportMetric(b.Elapsed().Seconds(), "apply-s")
 	b.ReportMetric(float64(sapWAL(b, staged)-w2)/1e6, "apply-wal-MB")
 	b.ReportMetric(float64(p.ChunkCount), "chunks")
-	w3, t3 := sapWAL(b, staged), time.Now()
+	w3 := sapWAL(b, staged)
+	b.ResetTimer()
 	var after graph.StagedVolatileCursor
 	for {
 		step, err := staged.st.ApplyStagedVolatile(ctx, graph.StagedVolatile{KG: staged.kg.ID, Generation: staged.kg.Generation, Lease: staged.lease,
@@ -113,6 +117,6 @@ func sapMeasure(b *testing.B, reg *model.Registry, truth []byte) {
 		}
 		after = step.Next
 	}
-	b.ReportMetric(time.Since(t3).Seconds(), "volatile-s")
+	b.ReportMetric(b.Elapsed().Seconds(), "volatile-s")
 	b.ReportMetric(float64(sapWAL(b, staged)-w3)/1e6, "volatile-wal-MB")
 }
