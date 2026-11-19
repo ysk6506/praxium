@@ -115,7 +115,7 @@ jobs:
       # The quality table's coverage column is read from a record made here, from the coverage this job just measured
       # (docs/generated/coverage-record.json, not committed). Without it every coverage cell says "unknown".
       - name: Record the measured coverage
-        run: pnpm tsx harness/src/checks/quality.ts record > /dev/null
+        run: scripts/with-postgres.sh pnpm tsx harness/src/checks/quality.ts record > /dev/null
       - name: Quality grades of this change
         if: always()
         run: pnpm tsx harness/src/checks/quality.ts print >> "$GITHUB_STEP_SUMMARY"
