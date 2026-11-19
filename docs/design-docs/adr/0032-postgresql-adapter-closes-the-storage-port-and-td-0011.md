@@ -43,6 +43,8 @@ amended_by:
     what: 결정 10의 테스트 서버 PostgreSQL 16과 CI의 서비스 컨테이너 `postgres:16`(러너에 깐 18의 서버 프로그램과 `scripts/with-postgres.sh`로 바뀐다)
   - adr: "0083"
     what: 결정 1의 PostgreSQL 어댑터 한 유닛과 어댑터는 다른 어댑터를 import하지 않는다는 규칙, 결정 2의 lib/pq를 import하는 유닛, 결정 4의 마이그레이션 실행기와 파일이 있는 자리
+  - adr: "0085"
+    what: 결정 4의 좁히는 변경은 코드가 쓰지 않게 된 다음 버전에 한다는 규칙에 한 번뿐인 예외(옛 테이블을 바꿔 다는 변경에서 함께 지운다)
 ---
 # ADR-0032 PostgreSQL 어댑터가 스토리지 포트를 채운다
 

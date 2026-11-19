@@ -64,6 +64,8 @@ go:
     adapter.memstore: {path: backend/internal/memstore, may_import: [core.kernel, core.graph]}
     # The connection base of the PostgreSQL adapters (ADR-0083): the pool and its settings, the transaction helper with the limits of a role, the numbered migrations and their runner, the check of the link of a connection string, the helpers that give a test an empty database. It implements no port and knows neither the graph nor the model; the PostgreSQL adapters import it.
     adapter.pgconn: {path: backend/internal/pgconn, may_import: [core.kernel]}
+    # The plan of the tables of one KG in PostgreSQL (ADR-0085): a pure function from the model to an ordered list of statements and a manifest, and the difference of two manifests. It implements no port and knows neither the driver nor a database; adapter.pgstore runs the plan.
+    adapter.pgschema: {path: backend/internal/pgschema, may_import: [core.kernel, core.model]}
     # The PostgreSQL implementation of the storage port (ADR-0032) and the records of the built-in authentication. core.model is for the grade and basis types the rows carry; adapter.pgconn gives it the connection (ADR-0083). Its tests run the conformance suite against a real server.
     adapter.pgstore: {path: backend/internal/pgstore, may_import: [core.kernel, core.model, core.graph, adapter.pgconn], test_may_import: [adapter.graphcheck]}
     # The conformance suite is production code of its own (it cannot import "testing"), so it never imports the adapter it checks: only the test that runs it does (ADR-0028).
@@ -72,7 +74,7 @@ go:
     core.query:     {path: backend/internal/query, may_import: [core.kernel, core.model, core.graph]}
     # The ingestion pipeline of the vertical slice (ADR-0033): source and mapping definitions, the stages from parse to apply, the state between runs. The core imports no adapter: the bytes of a file come in as a capture, and its tests run on graph.ScratchStore.
     core.ingest:    {path: backend/internal/ingest, may_import: [core.kernel, core.model, core.graph]}
-    # Adapters sit outside the core. Adapters of different technologies never import each other: only the composition root joins them. The PostgreSQL adapters may import the shared parts that implement no port (adapter.pgconn, later the schema plan), and only those that their may_import names (ADR-0083).
+    # Adapters sit outside the core. Adapters of different technologies never import each other: only the composition root joins them. The PostgreSQL adapters may import the shared parts that implement no port (adapter.pgconn, adapter.pgschema), and only those that their may_import names (ADR-0083).
     # The file adapter: reads the bytes of a file into a capture; the operating system is reached through an opener the composition root gives (ADR-0033).
     adapter.filesource: {path: backend/internal/filesource, may_import: [core.kernel, core.ingest]}
     # The file journal of the built-in file store (ADR-0034): an append-only log and snapshots in one data folder, reached through a Disk interface that the composition root implements. It meets the in-memory store only through method signatures, never by import; its tests run the conformance suite on a store with this journal.

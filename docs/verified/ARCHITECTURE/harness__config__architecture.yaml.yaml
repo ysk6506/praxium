@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "8e472b1b7e1116da"
+hash: "e88908a5f6c10222"
 date: "2026-11-19"
-note: "ADR-0083과 대조해 유닛 표에 adapter.pgconn 행을 더하고 adapter.pgstore 행을 고치고, 모듈 표의 lib/pq 쓰는 단위와 어댑터끼리 import하지 않는다는 규칙의 말을 고쳤다."
+note: "architecture.yaml의 새 유닛 adapter.pgschema에 맞춰 유닛 표에 행을 더하고 어댑터 import 규칙의 문장에서 pgschema를 구체적인 공용 부품으로 고쳤다. ADR-0085"
 text_changed: true
-doc_hash: "a6651ca545994b09"
+doc_hash: "aa3bae8dab3421af"

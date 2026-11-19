@@ -41,12 +41,13 @@ KG를 PostgreSQL에 어떤 테이블로 저장하고, 모델이 바뀌면 그 �
 
 | 테이블 | 내용 |
 |---|---|
-| `object` | 등록부. `obj_no bigint`(DB 전체에서 하나뿐이고 다시 쓰지 않는 번호, 3.3절), `ref text`(지금의 해시 id. 밖에서 기억하는 참조), `type_no`, `name`, `min_grade`(속성들의 가장 약한 근거 등급), `seq_from` |
-| `object_state` | 모든 타입이 가진 상태 둘(`lifecycle_state`, `oper_state`)과 그 시각. 이력 없이 제자리에서 갱신하고 채움 비율(fillfactor)은 70 |
-| `t_<type_no>`(타입마다) | `obj_no`(기본키), `ref`, `name`, `min_grade`, **`doc jsonb`**, 내용 해시, `seq_from`. 채움 비율 85. 커스텀 속성도 `doc`에 들어가요 |
-| `s_<type_no>` | 공통 둘 말고 변동(`volatile`) 속성이 있는 타입에만 둬요. 그 속성의 컬럼과 시각 컬럼 |
-| `link` | `link_no`, `ref`, `type_no smallint`, `src`, `dst`, **`grade`**, **`basis`**(진짜 컬럼), `doc jsonb`(링크 속성), 내용 해시, `seq_from`. 인덱스는 `(src, type_no, dst)`와 `(dst, type_no, src)` |
-| `object_hist`, `link_hist` | 지금 형식 그대로(번호 키의 문서, `seq_from`, `seq_to`). 인덱스에 `(type_no, seq_to)`를 더해요 |
+| `object` | 등록부. `obj_no bigint`(DB 전체에서 하나뿐이고 다시 쓰지 않는 번호, 3.3절), `ref text`(지금의 해시 id. 밖에서 기억하는 참조), `type_no`, `name`, `min_grade`(속성들의 가장 약한 근거 등급), `seq_from`, `retired_seq`(물러난 변경 번호. 살아 있으면 비어 있어요), `first_key jsonb`(처음 본 키) |
+| `object_state` | 모든 타입이 가진 상태 둘(`lifecycle_state`, `oper_state`)과 그 시각, 값마다의 등급·근거·출처 `prov jsonb`. 이력 없이 제자리에서 갱신하고 채움 비율(fillfactor)은 70 |
+| `t_<type_no>`(타입마다) | `obj_no`(기본키), `ref`, `name`, `min_grade`, **`doc jsonb`**, `source_refs`(행 단위의 출처), 내용 해시와 행 합(`row_hash`. 그래프 해시의 합에 드는 그 행의 항), `seq_from`. 채움 비율 85. 커스텀 속성도 `doc`에 들어가요 |
+| `s_<type_no>` | 공통 둘 말고 변동(`volatile`) 속성이 있는 타입에만 둬요. 그 속성의 컬럼과 시각 컬럼, `prov jsonb` |
+| `link` | `link_no`, `ref`, `type_no smallint`, `src`, `dst`, **`grade`**, **`basis`**, `discriminator`(진짜 컬럼), `doc jsonb`(링크 속성), `source_refs`, 내용 해시와 행 합, `seq_from`. 인덱스는 `(src, type_no, dst)`와 `(dst, type_no, src)`, 그리고 id로 찾는 `ref`의 유일 인덱스 |
+| `object_hist`, `link_hist` | 닫힌 행을 모든 컬럼 그대로(번호 키의 문서, `seq_from`, `seq_to`) 옮겨요. 인덱스에 `(type_no, seq_to)`를 더하고, `link_hist`에는 id로 찾는 `(ref, seq_from)`을 더해요 |
+| `object_key` | 식별 색인. `(type_no, ctx_no, sig_hash)`가 기본키이고 `obj_no`, `bound_seq`(묶은 변경 번호)가 있어요. 한 번 묶은 키는 다른 객체로 옮기지 않아요. 포기는 그 번호의 줄을 지우고 복원은 지우지 않아요. 인덱스는 `obj_no`와 `bound_seq` |
 | `model_type`, `model_attribute`, `model_link_type`, `model_link_rule` | 모델 설명 테이블 넷. 저장 스키마에 테이블로 있고 질의 스키마에는 그 읽기 전용 뷰가 있어요([질의 스키마](query-schema.md) 7절) |
 | `change_batch`, `change_entry`, `light_change` | 변경 배치와 항목, 가벼운 변경(변동 속성만 바뀐 변경). 객체를 `obj_no`로 가리켜요 |
 | `object_identifier`, `identity_event` | 식별자와 식별 이벤트. 객체를 `obj_no`로 가리켜요 |
@@ -80,6 +81,16 @@ CREATE TABLE s_1.t_105 (
 - `obj_no`는 내용 해시에 넣지 않아요. 링크의 해시는 지금처럼 양 끝의 `ref`로 만들어요. 그래서 다시 만들어도 같은 해시가 나와요.
 - 사용자가 쓰는 조인 키는 `id`(= `obj_no`)이고, 에이전트가 기억하는 값은 `ref`예요([질의 스키마](query-schema.md) 3절). 폐기된 `ref`가 어느 `ref`로 이어졌는지는 식별 이벤트에 남아요(ADR-0074 5항).
 
+### 3.4 계획이 정한 모양 (ADR-0085)
+
+- 계획은 순수한 유닛 `adapter.pgschema`가 만들고(`Build`), 실행은 `pgstore`가 해요. 물리 이름은 번호로만 지어요(`t_105`, `s_105`, 컬럼 `a481`와 `a481_at`).
+- 상태 테이블 `object_state`의 컬럼은 **모든 타입이 가진 변동 속성**이에요(표준 모델에서는 둘). 이 집합이 바뀌면 더하는 변경이 아니라서 스키마 관리기가 거절해요.
+- 인덱스는 검색 집합(`SearchSet`. 처음에는 식별 키를 이루는 속성을 모델에서 계산해 내요)과 상태 컬럼과 위의 고정 인덱스뿐이에요. 목록과 맵 값에는 인덱스를 두지 않아요.
+- 식 통계는 표준 속성 전부에, 한 객체에 식 여덟까지 묶어요. 둘 이상이면 가장 흔한 조합(mcv)을 함께 둬요. 속성이 더해지면 새 속성만 새 객체로 만들어서 있던 객체는 그대로예요.
+- 변경 항목은 `entity_kind`(0 객체, 1 링크)와 `change_kind`(0 더함, 1 바뀜, 2 물러남)를 숫자로 두고 `entity_no`로 객체나 링크의 번호를 가리켜요.
+- **매니페스트**가 저장 스키마의 요약이에요(생성기 버전, 모델·번호·검색 집합의 해시, 타입마다의 속성). 상태(`ok`, `index_pending`, `stats_pending`)는 해시에 들지 않아요. 통계를 첫 적재 뒤에 만드는 KG가 어긋난 것으로 보이지 않게 하려는 거예요. `Diff`는 두 매니페스트에서 더하는 변경의 단계를 내고, 아니면 거절해요(5절의 표).
+- 준비 테이블의 접두어 `stage_`, `calc_`와 `ingest_diff`는 이름만 예약해요. 매니페스트가 아는 이름이에요.
+
 ## 4. 왜 이 모양인가 — 세 구성의 견줌
 
 같은 합성 데이터로 구성 셋을 만들어 쟀어요. 이 절의 수치는 모두 **측정**이고 조건은 이래요. 세계는 합성(생성기 `-seed 7 -scale 3300000`)으로 객체 1,166,114와 링크 2,080,287, 가장 큰 타입(가상 머신)은 127,514행이에요. PostgreSQL 19.0, CPU 2개, 메모리 8GB, `shared_buffers=1GB`, `work_mem=4MB`, `jit=off`예요. **쓰기 값은 `fsync`, `synchronous_commit`, `full_page_writes`를 끄고 `wal_level=minimal`로 쟀으므로 낙관적**이에요. 다른 작업이 같은 기계에서 가끔 돌아 1분 부하가 0.4~5.8로 흔들렸고, 값은 중앙값(3~5회)이에요. 캐시를 비운 값은 없어요. PostgreSQL 18에서는 돌리지 않았어요.
@@ -112,7 +123,7 @@ CREATE TABLE s_1.t_105 (
 
 ## 5. 스키마 관리기
 
-**스키마 관리기**는 모델(표준 모델과 조직 속성)을 받아 저장 스키마의 테이블, 인덱스, 통계와 질의 스키마의 뷰, 함수, 주석(`COMMENT`)을 만드는 코드예요. 모델을 받는 순수한 함수가 DDL 계획을 내고, 실행기가 그 계획을 DB에 적용해요. 모델이 타입 서넛짜리여도 돌아야 하므로 테스트는 작은 모델을 쓰고, 표준 모델 전체는 적합성 테스트와 스키마 테스트에서만 써요.
+**스키마 관리기**는 모델(표준 모델과 조직 속성)을 받아 저장 스키마의 테이블, 인덱스, 통계와 질의 스키마의 뷰, 함수, 주석(`COMMENT`)을 만드는 코드예요. 모델을 받는 순수한 함수(`adapter.pgschema`)가 DDL 계획과 매니페스트를 내고, 실행기(`adapter.pgstore`)가 그 계획을 DB에 적용해요. 두 매니페스트의 차이에서 더하는 변경의 단계를 내는 것도 순수한 함수예요(ADR-0085). 모델이 타입 서넛짜리여도 돌아야 하므로 테스트는 작은 모델을 쓰고, 표준 모델 전체는 적합성 테스트와 스키마 테스트에서만 써요.
 
 | 모델의 변경 | DDL | 영향 |
 |---|---|---|

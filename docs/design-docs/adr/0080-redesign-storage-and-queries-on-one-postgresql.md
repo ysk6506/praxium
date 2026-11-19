@@ -90,6 +90,9 @@ amends:
     what: 결정 2의 툴 목록(`kg_catalog`가 `kg_schema`로 바뀌고, `kg_reachable`이 더해지며, 저장한 질의마다 툴이 하나 더해진다)과 결정 2의 "설명문은 영어의 고정된 글"(내장 읽기 툴의 설명문만 그대로이고 저장한 질의의 툴 설명문은 사용자가 쓴 글 그대로다)과 결정 12의 툴 정의 계약 파일이 저장한 질의의 툴을 담는 방식
 amends_tests: []
 decision_hash: b28e6fc467b8467f
+amended_by:
+  - adr: "0085"
+    what: 결정 2의 저장 모양에 더해지는 컬럼(링크의 discriminator와 source_refs, 변동 값의 prov, 행 합, 등록부의 first_key)과 결정 3의 스키마 관리기(계획은 순수한 유닛, 실행은 pgstore. 매니페스트와 상태)와 결정 7의 한 트랜잭션 한도(옵션 둘, 0은 끔)
 ---
 # ADR-0080 저장과 질의를 PostgreSQL 하나 위에서 다시 설계한다
 

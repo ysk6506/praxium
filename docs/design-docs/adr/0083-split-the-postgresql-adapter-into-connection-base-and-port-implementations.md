@@ -37,6 +37,9 @@ amends_tests:
   - go:backend/internal/pgstore::TestInspectTLSReportsTheModeAndHidesTheString
 test_change_reason: 연결과 설정, 마이그레이션, 역할의 시간 한도, TLS 확인은 새 유닛 `adapter.pgconn`으로 옮기므로 잠금의 키(패키지 폴더)가 바뀐다. 아홉 테스트 가운데 다섯은 몸체와 쓰는 도우미가 글자까지 그대로라 옛 지문과 새 지문이 같다. 넷은 테스트 도우미가 `Store`에서 `Pool`로 바뀌어(또 하나는 `PollInterval` 단언이 `pgstore`의 새 테스트로 가서) 몸체가 조금 바뀌고, 단언은 하나도 줄지 않는다. 요구사항은 바뀌지 않았고 코드가 있는 자리만 바뀐다.
 decision_hash: 1e016c44298d0230
+amended_by:
+  - adr: "0085"
+    what: 결정 3과 결정 7의 공용 부품 목록에 pgschema를 더한다(계획이 뒤의 일에서 지금의 유닛이 된다)
 ---
 # ADR-0083 PostgreSQL 어댑터를 연결 기반과 포트의 구현으로 나눈다
 
