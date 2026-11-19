@@ -1,7 +1,7 @@
 doc: "docs/design-docs/query-execution.md"
 target: "docs/design-docs/adr/0080-redesign-storage-and-queries-on-one-postgresql.md"
-hash: "af4c3056bd06bc13"
+hash: "b28e6fc467b8467f"
 date: "2026-11-19"
-note: "ADR 용어집 표기(WORD003) 고침 뒤 다시 대조: 값과 수치는 그대로이고 낱말만 표준어로 바꿨다"
+note: "수정 3차(D24~D27, M1, M3, M4, 쓰기 풀 8) 뒤 ADR-0080/0081과 대조했다. 풀 수와 크기, 툴 여섯, 단계 번호, 기본값이 같다"
 text_changed: true
-doc_hash: "4ae76ef6c6902ac8"
+doc_hash: "0f2eedf1f3803397"
