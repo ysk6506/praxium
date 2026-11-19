@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "a22a91da7adf3b29"
+hash: "22866326946878f3"
 date: "2026-11-19"
-note: "main을 합친 뒤 다시 확인: 유닛 표에 adapter.egress와 adapter.pgcheck가 모두 있고 AGENTS.md의 내용은 그대로 맞다"
-text_changed: true
+note: "architecture.yaml에 유닛 한 줄(adapter.httpsource)만 더해졌다. AGENTS.md는 유닛 목록을 싣지 않아 고칠 것이 없다"
+text_changed: false
 doc_hash: "9b6002b7868d9dd0"
