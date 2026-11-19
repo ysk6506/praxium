@@ -20,14 +20,17 @@ type Policy struct {
 	// Self lists the address and port of this server's own API. An unspecified address (0.0.0.0 or ::) stands
 	// for every address of this machine, the loopback included. It also holds against AllowRanges.
 	Self []netip.AddrPort
-	// DenyPrivate also refuses the loopback and the private ranges (10/8, 172.16/12, 192.168/16, 100.64/10,
-	// 198.18/15, fc00::/7, fec0::/10), except the addresses in AllowRanges. It is the strict policy for a
-	// deployment whose sources are all public.
+	// DenyLoopback refuses the loopback (127.0.0.0/8, ::1), apart from the private ranges, except the addresses in
+	// AllowRanges. A server in a container, or next to services that listen on the loopback, should set it.
+	DenyLoopback bool
+	// DenyPrivate is the strict policy for a deployment whose sources are all public. It refuses the loopback and
+	// every range that is not public (10/8, 172.16/12, 192.168/16, 100.64/10, 198.18/15, fc00::/7, fec0::/10, the
+	// ranges for documentation, 192.88.99.0/24, 2001::/23 and 5f00::/16), except the addresses in AllowRanges.
 	DenyPrivate bool
-	// AllowRanges are the exceptions of DenyPrivate. They open only what DenyPrivate closed: a range of
-	// refusedRanges, Deny and Self stay refused whatever is listed here.
+	// AllowRanges are the exceptions of DenyLoopback and DenyPrivate. They open only what those two closed: a range
+	// of refusedRanges, Deny and Self stay refused whatever is listed here.
 	AllowRanges []netip.Prefix
-	// AllowInsecure lets a source be reached without TLS (http, or sslmode=disable of PostgreSQL) when the host is
+	// AllowInsecure lets a source be reached without TLS (http, or sslmode=disable of PostgreSQL) at an address that is
 	// not the loopback. It never lets a certificate go unverified: nothing does.
 	AllowInsecure bool
 }
@@ -55,17 +58,22 @@ var refusedRanges = concat(
 	rules("the address is multicast", "224.0.0.0/4", "ff00::/8"),
 	rules("the address is reserved", "240.0.0.0/4", "192.0.0.0/24", "100::/64"),
 	rules("the address is link-local", "169.254.0.0/16", "fe80::/10"),
-	rules("the address is of a cloud metadata service", "100.100.100.200/32", "168.63.129.16/32", "fd00:ec2::/32"),
+	rules("the address is of a cloud metadata service", "100.100.100.200/32", "168.63.129.16/32", "fd00:ec2::/32", "fd20:ce::254/128"),
 	rules("the address is of a tunnel mechanism", "2001::/32", "64:ff9b:1::/48"),
 )
 
-// privateRanges are refused only when the policy says DenyPrivate.
-var privateRanges = rules("the address is loopback or private",
-	"127.0.0.0/8", "::1/128", "10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16",
-	"100.64.0.0/10", "198.18.0.0/15", "fc00::/7", "fec0::/10")
+// loopbackRanges are refused when the policy says DenyLoopback or DenyPrivate.
+var loopbackRanges = rules("the address is loopback", "127.0.0.0/8", "::1/128")
 
-// embeddedRanges hold an IPv4 address in the last four bytes (the first three) or in bytes 2 to 5 (6to4). The
-// IPv4 address inside is judged as well as the IPv6 address around it.
+// privateRanges are refused only when the policy says DenyPrivate: the private ranges, and the ranges that no
+// public host has (documentation, the retired 6to4 relay anycast, the IETF protocol assignments).
+var privateRanges = rules("the address is private or not public",
+	"10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10", "198.18.0.0/15", "fc00::/7", "fec0::/10",
+	"192.0.2.0/24", "198.51.100.0/24", "203.0.113.0/24", "2001:db8::/32", "3fff::/20", "192.88.99.0/24", "2001::/23", "5f00::/16")
+
+// embeddedRanges hold an IPv4 address in the last four bytes (the first three, and ISATAP, whose interface
+// identifier is 0000:5efe or 0200:5efe) or in bytes 2 to 5 (6to4). The IPv4 address inside is judged as well as
+// the IPv6 address around it.
 var (
 	embeddedTail = rules("", "::/96", "64:ff9b::/96", "::ffff:0:0:0/96")
 	embedded6to4 = netip.MustParsePrefix("2002::/16")
@@ -97,6 +105,9 @@ func embedded(a netip.Addr) (netip.Addr, bool) {
 	if embedded6to4.Contains(a) {
 		return netip.AddrFrom4([4]byte{b[2], b[3], b[4], b[5]}), true
 	}
+	if b[8]&0xfd == 0 && b[9] == 0 && b[10] == 0x5e && b[11] == 0xfe {
+		return netip.AddrFrom4([4]byte{b[12], b[13], b[14], b[15]}), true
+	}
 	for _, r := range embeddedTail {
 		if r.prefix.Contains(a) {
 			return netip.AddrFrom4([4]byte{b[12], b[13], b[14], b[15]}), true
@@ -107,17 +118,18 @@ func embedded(a netip.Addr) (netip.Addr, bool) {
 
 // compiled is a Policy after its checks, in the form the dialer looks things up in.
 type compiled struct {
-	hosts       map[string]bool
-	ports       map[uint16]bool
-	deny        []netip.Prefix
-	allow       []netip.Prefix
-	self        []netip.AddrPort
-	denyPrivate bool
-	insecure    bool
+	hosts        map[string]bool
+	ports        map[uint16]bool
+	deny         []netip.Prefix
+	allow        []netip.Prefix
+	self         []netip.AddrPort
+	denyPrivate  bool
+	denyLoopback bool
+	insecure     bool
 }
 
 func compile(p Policy) (*compiled, error) {
-	c := &compiled{denyPrivate: p.DenyPrivate, insecure: p.AllowInsecure}
+	c := &compiled{denyPrivate: p.DenyPrivate, denyLoopback: p.DenyLoopback, insecure: p.AllowInsecure}
 	if len(p.Hosts) > 0 {
 		c.hosts = map[string]bool{}
 		for _, h := range p.Hosts {
@@ -236,8 +248,21 @@ func (c *compiled) judgeOne(ip netip.Addr, port uint16, locals func() ([]netip.A
 	if within(c.deny, ip) {
 		return "the address is on the deny list of the operator"
 	}
-	if c.denyPrivate && ruleReason(privateRanges, ip) != "" && !within(c.allow, ip) {
-		return "the address is loopback or private and the policy does not allow it"
+	if why := c.closedReason(ip); why != "" && !within(c.allow, ip) {
+		return why
+	}
+	return ""
+}
+
+// closedReason says why DenyLoopback or DenyPrivate closes the address, or returns "".
+func (c *compiled) closedReason(ip netip.Addr) string {
+	if c.denyLoopback || c.denyPrivate {
+		if why := ruleReason(loopbackRanges, ip); why != "" {
+			return why
+		}
+	}
+	if c.denyPrivate {
+		return ruleReason(privateRanges, ip)
 	}
 	return ""
 }

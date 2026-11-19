@@ -9,7 +9,7 @@ import (
 //go:embed *.go
 var scanSources embed.FS
 
-// [REQ-658]
+// [REQ-661]
 func TestTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 	forbidden := map[string]string{
 		"InsecureSkipVerify":    "a switch that turns the verification of a certificate off",
@@ -60,7 +60,7 @@ func TestTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestTheDialerConnectsToTheLiteralAddressItJudged(t *testing.T) {
 	data, err := scanSources.ReadFile("dialer.go")
 	if err != nil {

@@ -96,7 +96,7 @@ func dtKind(t *testing.T, err error) *Error {
 	return e
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestDialerConnectsToTheAddressItJudgedAndResolvesOnce(t *testing.T) {
 	// the second answer of the name is the metadata service: a rebinding name
 	res := &dtResolver{answers: map[string][][]netip.Addr{
@@ -123,7 +123,7 @@ func TestDialerConnectsToTheAddressItJudgedAndResolvesOnce(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestOneRefusedAddressRefusesTheWholeAnswer(t *testing.T) {
 	orders := [][]string{
 		{"93.184.216.34", "169.254.169.254"},
@@ -155,7 +155,7 @@ func TestOneRefusedAddressRefusesTheWholeAnswer(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestIPLiteralsAreJudgedWithoutResolving(t *testing.T) {
 	res := &dtResolver{}
 	d, seen := dtDialer(t, Config{Resolver: res}, nil)
@@ -186,7 +186,7 @@ func TestIPLiteralsAreJudgedWithoutResolving(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestAddressesThatAreNotHostAndPortAreRefused(t *testing.T) {
 	d, seen := dtDialer(t, Config{Resolver: &dtResolver{}}, nil)
 	for _, bad := range []string{
@@ -207,7 +207,7 @@ func TestAddressesThatAreNotHostAndPortAreRefused(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestHostAndPortListsKeepASourceOnItsOwnAddress(t *testing.T) {
 	res := &dtResolver{answers: map[string][][]netip.Addr{
 		"api.example.test":   {dtAddrs(t, "93.184.216.34")},
@@ -229,7 +229,7 @@ func TestHostAndPortListsKeepASourceOnItsOwnAddress(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestDialerKeepsToTheFamilyAskedFor(t *testing.T) {
 	res := &dtResolver{answers: map[string][][]netip.Addr{
 		"dual.example.test": {dtAddrs(t, "2606:4700::1111", "93.184.216.34", "::ffff:93.184.216.36")},
@@ -257,7 +257,7 @@ func TestDialerKeepsToTheFamilyAskedFor(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestEveryAddressFailingIsAConnectErrorThatHoldsNoDetail(t *testing.T) {
 	var all []string
 	failing := map[string]bool{}
@@ -281,7 +281,7 @@ func TestEveryAddressFailingIsAConnectErrorThatHoldsNoDetail(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestResolveFailuresAreResolveErrors(t *testing.T) {
 	cases := []struct {
 		name      string
@@ -306,7 +306,7 @@ func TestResolveFailuresAreResolveErrors(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestTimeLimitAndCancellationEndTheDial(t *testing.T) {
 	res := &dtResolver{block: true}
 	d, _ := dtDialer(t, Config{Resolver: res, DialTimeout: 20 * time.Millisecond}, nil)
@@ -327,7 +327,7 @@ func TestTimeLimitAndCancellationEndTheDial(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestCancellationDuringTheConnectIsNotAFailureOfTheSource(t *testing.T) {
 	res := &dtResolver{answers: map[string][][]netip.Addr{"c.example.test": {dtAddrs(t, "93.184.216.34", "93.184.216.35")}}}
 	d, err := New(Config{Resolver: res})
@@ -347,7 +347,7 @@ func TestCancellationDuringTheConnectIsNotAFailureOfTheSource(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestDialerConnectsToARealLoopbackListener(t *testing.T) {
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
@@ -403,7 +403,7 @@ func TestDialerConnectsToARealLoopbackListener(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestNewFillsTheDefaults(t *testing.T) {
 	d, err := New(Config{})
 	if err != nil {
@@ -423,7 +423,7 @@ func TestNewFillsTheDefaults(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestSelfEntryWithAnOpenAddressUsesTheInterfacesOfTheConfig(t *testing.T) {
 	res := &dtResolver{}
 	cfg := Config{

@@ -5,6 +5,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
+	"fmt"
 	"net"
 	"net/url"
 	"strings"
@@ -17,7 +18,7 @@ func (etTimeout) Error() string   { return "i/o timeout: secret-detail" }
 func (etTimeout) Timeout() bool   { return true }
 func (etTimeout) Temporary() bool { return true }
 
-// [REQ-658]
+// [REQ-661]
 func TestSanitizeNamesTheKindAndDropsTheDetail(t *testing.T) {
 	wrap := func(err error) error {
 		return &url.Error{Op: "Get", URL: "https://example.test/items?token=secret-detail", Err: err}
@@ -45,7 +46,7 @@ func TestSanitizeNamesTheKindAndDropsTheDetail(t *testing.T) {
 		{"anything", errors.New("secret-detail"), KindConnect, true},
 	}
 	for _, c := range cases {
-		e := Sanitize(c.err)
+		e := sanitize(c.err)
 		if e == nil || e.Kind != c.kind || e.Temporary() != c.temporary {
 			t.Errorf("%s: %+v", c.name, e)
 			continue
@@ -56,12 +57,12 @@ func TestSanitizeNamesTheKindAndDropsTheDetail(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestSanitizeKeepsTheContextErrorForErrorsIs(t *testing.T) {
 	if e := Sanitize(context.Canceled); !errors.Is(e, context.Canceled) || errors.Is(e, context.DeadlineExceeded) {
 		t.Errorf("canceled: %v", e)
 	}
-	if e := Sanitize(context.DeadlineExceeded); !errors.Is(e, context.DeadlineExceeded) || !e.Timeout() {
+	if e := sanitize(context.DeadlineExceeded); !errors.Is(e, context.DeadlineExceeded) || !e.Timeout() {
 		t.Errorf("deadline: %v", e)
 	}
 	if e := Sanitize(errors.New("x")); errors.Unwrap(e) != nil {
@@ -69,15 +70,27 @@ func TestSanitizeKeepsTheContextErrorForErrorsIs(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestSanitizeReturnsAnOwnErrorUnchangedAndNilForNil(t *testing.T) {
 	if Sanitize(nil) != nil {
 		t.Error("nil became an error")
 	}
+	var typedNil *Error
+	pass := func(err error) error { return Sanitize(err) }
+	if pass(nil) != nil || pass(typedNil) == nil {
+		t.Error("nil handling")
+	}
 	own := refused("example.test", "the port is not one the source may use")
 	wrapped := &url.Error{Op: "Get", URL: "https://example.test/?q=1", Err: own}
-	if got := Sanitize(wrapped); got != own {
+	if got := sanitize(wrapped); got != own {
 		t.Errorf("got %v", got)
+	}
+	merged := deniedAddress("example.test", "the address is in the private range 10.0.0.0/8")
+	if merged.Reason != reasonAddress || strings.Contains(merged.Error(), "10.0.0.0") {
+		t.Errorf("merged: %v", merged)
+	}
+	if !strings.Contains(merged.Detail(), "10.0.0.0/8") || strings.Contains(fmt.Sprintf("%v|%+v|%s", merged, merged, merged), "10.0.0.0") {
+		t.Errorf("detail %q", merged.Detail())
 	}
 	if own.Error() != "egress policy: the port is not one the source may use (host example.test)" {
 		t.Errorf("text %q", own.Error())
@@ -87,7 +100,7 @@ func TestSanitizeReturnsAnOwnErrorUnchangedAndNilForNil(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestWhichKindsMayPass(t *testing.T) {
 	temporary := map[Kind]bool{KindTimeout: true, KindConnect: true}
 	for _, k := range []Kind{KindPolicy, KindResolve, KindConnect, KindTLS, KindTimeout, KindCanceled, KindRedirect} {

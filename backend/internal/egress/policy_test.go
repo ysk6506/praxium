@@ -27,7 +27,7 @@ func pPolicy(t *testing.T, p Policy) *compiled {
 
 func pNoLocals() ([]netip.Addr, error) { return nil, nil }
 
-// [REQ-658]
+// [REQ-661]
 func TestDefaultPolicyAllowsPublicPrivateAndLoopbackAddresses(t *testing.T) {
 	c := pPolicy(t, Policy{})
 	allowed := []string{
@@ -43,7 +43,7 @@ func TestDefaultPolicyAllowsPublicPrivateAndLoopbackAddresses(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestEveryPolicyRefusesTheRangesOfTheDesign(t *testing.T) {
 	refusedWhatever := []string{
 		// unspecified and "this network"
@@ -72,7 +72,7 @@ func TestEveryPolicyRefusesTheRangesOfTheDesign(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestRefusalGivesAReasonWithoutTheAddress(t *testing.T) {
 	c := pPolicy(t, Policy{})
 	why := c.judge(pAddr(t, "169.254.169.254"), 80, pNoLocals)
@@ -81,7 +81,7 @@ func TestRefusalGivesAReasonWithoutTheAddress(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestDenyPrivateRefusesLoopbackAndPrivateAddressesExceptTheOnesAllowed(t *testing.T) {
 	c := pPolicy(t, Policy{DenyPrivate: true, AllowRanges: []netip.Prefix{
 		netip.MustParsePrefix("10.1.0.0/16"), netip.MustParsePrefix("::ffff:127.0.0.0/104"), netip.MustParsePrefix("fd00:5::/32"),
@@ -103,7 +103,7 @@ func TestDenyPrivateRefusesLoopbackAndPrivateAddressesExceptTheOnesAllowed(t *te
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestAllowRangesNeverOpenWhatTheOperatorOrThePolicyDenied(t *testing.T) {
 	all := []netip.Prefix{netip.MustParsePrefix("0.0.0.0/0"), netip.MustParsePrefix("::/0")}
 	c := pPolicy(t, Policy{
@@ -125,7 +125,7 @@ func TestAllowRangesNeverOpenWhatTheOperatorOrThePolicyDenied(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestDenyListWorksOnTheEmbeddedAddressToo(t *testing.T) {
 	c := pPolicy(t, Policy{Deny: []netip.Prefix{netip.MustParsePrefix("203.0.113.0/24"), netip.MustParsePrefix("2001:db8:ffff::/48")}})
 	for _, text := range []string{"203.0.113.9", "::ffff:203.0.113.9", "64:ff9b::cb00:7109", "2002:cb00:7109::1", "2001:db8:ffff::1"} {
@@ -138,7 +138,7 @@ func TestDenyListWorksOnTheEmbeddedAddressToo(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestServersOwnAddressIsRefusedOnItsPortOnly(t *testing.T) {
 	locals := func() ([]netip.Addr, error) {
 		return []netip.Addr{netip.MustParseAddr("10.0.0.5"), netip.MustParseAddr("::ffff:10.0.0.6")}, nil
@@ -165,7 +165,7 @@ func TestServersOwnAddressIsRefusedOnItsPortOnly(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestWhenTheLocalAddressesCannotBeListedAnOpenSelfEntryRefuses(t *testing.T) {
 	wide := pPolicy(t, Policy{Self: []netip.AddrPort{netip.MustParseAddrPort("[::]:8080")}})
 	failing := func() ([]netip.Addr, error) { return nil, errors.New("no interfaces") }
@@ -177,7 +177,7 @@ func TestWhenTheLocalAddressesCannotBeListedAnOpenSelfEntryRefuses(t *testing.T)
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestPolicyWithBadValuesIsRefused(t *testing.T) {
 	bad := map[string]Policy{
 		"host with a path":      {Hosts: []string{"a/b"}},
@@ -199,7 +199,7 @@ func TestPolicyWithBadValuesIsRefused(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestHostAndPortLists(t *testing.T) {
 	c := pPolicy(t, Policy{Hosts: []string{"API.Example.Test.", "10.0.0.5"}, Ports: []uint16{443, 8443}})
 	if c.checkHost("api.example.test") != "" || c.checkHost("10.0.0.5") != "" {
@@ -217,9 +217,67 @@ func TestHostAndPortLists(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestAnAddressThatIsNotValidIsRefused(t *testing.T) {
 	if pPolicy(t, Policy{}).judge(netip.Addr{}, 443, pNoLocals) == "" {
 		t.Error("the zero address is allowed")
+	}
+}
+
+// [REQ-661]
+func TestTheMetadataAddressOfGoogleOverIPv6IsRefused(t *testing.T) {
+	for _, text := range []string{"fd20:ce::254", "::ffff:169.254.169.254"} {
+		for _, p := range []Policy{{}, {DenyPrivate: true}} {
+			if why := pPolicy(t, p).judge(pAddr(t, text), 80, pNoLocals); why == "" {
+				t.Errorf("%s is allowed", text)
+			}
+		}
+	}
+}
+
+// [REQ-661]
+func TestIsatapAddressesAreJudgedByTheirIPv4Part(t *testing.T) {
+	for _, text := range []string{"2001:db8::5efe:a9fe:a9fe", "fe80::200:5efe:a9fe:a9fe", "2606:4700::5efe:a9fe:a9fe", "2606:4700::200:5efe:a9fe:a9fe"} {
+		if why := pPolicy(t, Policy{}).judge(pAddr(t, text), 80, pNoLocals); why == "" {
+			t.Errorf("%s is allowed", text)
+		}
+	}
+	if why := pPolicy(t, Policy{DenyPrivate: true}).judge(pAddr(t, "2606:4700::5efe:a00:1"), 80, pNoLocals); why == "" {
+		t.Error("a private IPv4 inside ISATAP is allowed under DenyPrivate")
+	}
+	if why := pPolicy(t, Policy{DenyPrivate: true}).judge(pAddr(t, "2606:4700::5efe:808:808"), 80, pNoLocals); why != "" {
+		t.Errorf("a public one is refused: %s", why)
+	}
+}
+
+// [REQ-661]
+func TestDenyPrivateAlsoRefusesTheDocumentationAndOtherSpecialRanges(t *testing.T) {
+	c := pPolicy(t, Policy{DenyPrivate: true})
+	for _, text := range []string{"192.0.2.1", "198.51.100.7", "203.0.113.9", "2001:db8::1", "3fff::1", "192.88.99.1", "2001:1::1", "2001:1ff::1", "5f00::1"} {
+		if why := c.judge(pAddr(t, text), 443, pNoLocals); why == "" {
+			t.Errorf("%s is allowed under DenyPrivate", text)
+		}
+	}
+	if why := pPolicy(t, Policy{}).judge(pAddr(t, "198.51.100.7"), 443, pNoLocals); why != "" {
+		t.Errorf("the default refuses it: %s", why)
+	}
+}
+
+// [REQ-661]
+func TestDenyLoopbackRefusesOnlyTheLoopback(t *testing.T) {
+	c := pPolicy(t, Policy{DenyLoopback: true})
+	for _, text := range []string{"127.0.0.1", "127.8.8.8", "::1", "::ffff:127.0.0.1", "64:ff9b::7f00:1"} {
+		if why := c.judge(pAddr(t, text), 443, pNoLocals); why == "" {
+			t.Errorf("%s is allowed", text)
+		}
+	}
+	for _, text := range []string{"10.0.0.1", "192.168.1.1", "8.8.8.8"} {
+		if why := c.judge(pAddr(t, text), 443, pNoLocals); why != "" {
+			t.Errorf("%s is refused: %s", text, why)
+		}
+	}
+	open := pPolicy(t, Policy{DenyLoopback: true, AllowRanges: []netip.Prefix{netip.MustParsePrefix("127.0.0.0/8")}})
+	if why := open.judge(pAddr(t, "127.0.0.1"), 443, pNoLocals); why != "" {
+		t.Errorf("AllowRanges does not open it: %s", why)
 	}
 }

@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "c6934df7fef444ca"
+hash: "72e4dce1d78b243f"
 date: "2026-11-19"
-note: "architecture.yaml에 유닛 adapter.egress 한 줄과 restricted_stdlib 두 줄이 더해졌다. AGENTS.md는 유닛 목록이나 restricted_stdlib 항목을 적지 않고 새 유닛 등록 절차만 말하므로 고칠 곳이 없다"
+note: "architecture.yaml에 낮은 층 연결 패키지(crypto/tls 등)를 cmd.praxium과 adapter.egress로만 제한하는 줄을 더했다. AGENTS.md의 규칙 설명과 어긋남 없음"
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"

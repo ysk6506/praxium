@@ -1,6 +1,8 @@
 package egress
 
 import (
+	"context"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -23,9 +25,30 @@ const (
 	maxHeaderBytes        = 1 << 20
 )
 
+// Request is a request of a source. The package gives its own types so that the adapter that sends it does not
+// import net/http and has no way to build a client, a transport or a request of its own.
+type Request struct {
+	// Method is "GET" when empty.
+	Method string
+	// URL is an absolute http or https URL. It is parsed and judged here: a URL with user information, an opaque
+	// part, no host, or a host that is not a plain host is refused.
+	URL    string
+	Header map[string][]string
+	Body   io.Reader
+}
+
+// Response is the answer of a source. The body is read once, and what goes wrong while reading it comes back as an
+// *Error (the standard library's text of a broken read holds the addresses of both ends).
+type Response struct {
+	Status int
+	Header map[string][]string
+	Body   io.ReadCloser
+}
+
 // Client is an HTTP client whose every connection goes through a Dialer. It reads no proxy from the
 // environment, verifies every certificate, sends no request to an address with user information, and returns
-// only *Error as an error, so that no URL reaches a message.
+// only *Error as an error (from the request and from reading the body), so that no URL and no address reaches a
+// message.
 type Client struct {
 	hc *http.Client
 }
@@ -53,14 +76,17 @@ func NewClient(d *Dialer, opt ClientOptions) (*Client, error) {
 		MaxIdleConns:           2,
 		MaxIdleConnsPerHost:    2,
 	}
-	g := guard{base: base, dialer: d}
-	hc := &http.Client{Transport: g, Timeout: timeout, CheckRedirect: redirectRule(opt.MaxRedirects)}
+	hc := &http.Client{Transport: guard{base: base}, Timeout: timeout, CheckRedirect: redirectRule(opt.MaxRedirects)}
 	return &Client{hc: hc}, nil
 }
 
 // Do sends the request. A 3xx response that the client does not follow is an error of the kind KindRedirect.
-func (c *Client) Do(req *http.Request) (*http.Response, error) {
-	resp, err := c.hc.Do(req)
+func (c *Client) Do(ctx context.Context, req Request) (*Response, error) {
+	hreq, err := build(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := c.hc.Do(hreq)
 	if err != nil {
 		if resp != nil {
 			_ = resp.Body.Close()
@@ -71,8 +97,43 @@ func (c *Client) Do(req *http.Request) (*http.Response, error) {
 		_ = resp.Body.Close()
 		return nil, &Error{Kind: KindRedirect, Reason: "the source answered with a redirect, which is not followed"}
 	}
-	return resp, nil
+	return &Response{Status: resp.StatusCode, Header: resp.Header.Clone(), Body: safeBody{resp.Body}}, nil
 }
+
+// build parses the URL itself and makes the request. It refuses what url.Parse reads in a way the judgement does not.
+func build(ctx context.Context, req Request) (*http.Request, error) {
+	u, err := url.Parse(req.URL)
+	if err != nil || u.Opaque != "" || u.User != nil || u.Host == "" {
+		return nil, refused("", "the address is not an absolute URL with a host and no user information")
+	}
+	method := req.Method
+	if method == "" {
+		method = http.MethodGet
+	}
+	hreq, err := http.NewRequestWithContext(ctx, method, u.String(), req.Body)
+	if err != nil {
+		return nil, refused("", "the request cannot be made")
+	}
+	for name, values := range req.Header {
+		for _, v := range values {
+			hreq.Header.Add(name, v)
+		}
+	}
+	return hreq, nil
+}
+
+// safeBody turns the errors of a read into *Error.
+type safeBody struct{ rc io.ReadCloser }
+
+func (b safeBody) Read(p []byte) (int, error) {
+	n, err := b.rc.Read(p)
+	if err != nil && err != io.EOF {
+		err = Sanitize(err)
+	}
+	return n, err
+}
+
+func (b safeBody) Close() error { return Sanitize(b.rc.Close()) }
 
 // CloseIdleConnections closes the connections that are kept for reuse.
 func (c *Client) CloseIdleConnections() { c.hc.CloseIdleConnections() }
@@ -94,16 +155,16 @@ func redirectRule(limit int) func(*http.Request, []*http.Request) error {
 }
 
 // guard refuses a request before it reaches the transport: a scheme other than http and https, user
-// information in the address, and plain http to a host that is not the loopback (unless the policy allows it).
+// information or an opaque part in the address, and a Host header that is not the host of the address. It marks an
+// http request as one without TLS, so that the dialer lets it go only to the loopback (see WithPlaintext).
 type guard struct {
-	base   http.RoundTripper
-	dialer *Dialer
+	base http.RoundTripper
 }
 
 func (g guard) RoundTrip(req *http.Request) (*http.Response, error) {
 	u := req.URL
-	if u == nil || u.User != nil || u.Host == "" {
-		return nil, refused("", "the address has no host or has user information")
+	if u == nil || u.User != nil || u.Host == "" || u.Opaque != "" {
+		return nil, refused("", "the address has no host, or has user information or an opaque part")
 	}
 	host, _, bad := NormalizeHost(u.Hostname())
 	if bad != "" {
@@ -115,9 +176,7 @@ func (g guard) RoundTrip(req *http.Request) (*http.Response, error) {
 	switch strings.ToLower(u.Scheme) {
 	case "https":
 	case "http":
-		if !g.dialer.PlaintextAllowed(host) {
-			return nil, refused(host, "plain http is allowed only to the loopback")
-		}
+		req = req.WithContext(WithPlaintext(req.Context()))
 	default:
 		return nil, refused(host, "only http and https are allowed")
 	}

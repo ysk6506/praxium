@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-// [REQ-658]
+// [REQ-661]
 func TestNormalizeHostAcceptsNamesAndPlainLiterals(t *testing.T) {
 	cases := map[string]string{
 		"Example.COM":           "example.com",
@@ -30,7 +30,7 @@ func TestNormalizeHostAcceptsNamesAndPlainLiterals(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestNormalizeHostGivesTheAddressOfALiteralOnly(t *testing.T) {
 	if _, ip, bad := NormalizeHost("10.1.2.3"); bad != "" || ip.String() != "10.1.2.3" {
 		t.Errorf("literal: %v %q", ip, bad)
@@ -43,7 +43,7 @@ func TestNormalizeHostGivesTheAddressOfALiteralOnly(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestNormalizeHostRefusesWhatIsNotAPlainHost(t *testing.T) {
 	long := strings.Repeat("a", 64) + ".test"
 	tooLong := strings.Repeat("abcdefghi.", 26) + "test"
@@ -64,7 +64,7 @@ func TestNormalizeHostRefusesWhatIsNotAPlainHost(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestParsePortReadsDigitsOnly(t *testing.T) {
 	good := map[string]uint16{"1": 1, "80": 80, "443": 443, "65535": 65535, "00080": 80}
 	for in, want := range good {

@@ -132,6 +132,16 @@ go:
     net: [cmd.praxium, adapter.http, adapter.egress]
     net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp, adapter.egress]
     net/rpc: [cmd.praxium]
+    # Packages that make a connection themselves, or hand one to the caller, without importing net: only the unit that makes the connections of the sources (and the composition root) may import them (ADR-0091).
+    crypto/tls: [cmd.praxium, adapter.egress]
+    net/textproto: [cmd.praxium, adapter.egress]
+    net/smtp: [cmd.praxium, adapter.egress]
+    net/rpc/jsonrpc: [cmd.praxium, adapter.egress]
+    net/http/httputil: [cmd.praxium, adapter.egress]
+    net/http/httptrace: [cmd.praxium, adapter.egress]
+    net/http/cgi: [cmd.praxium, adapter.egress]
+    net/http/fcgi: [cmd.praxium, adapter.egress]
+    log/syslog: [cmd.praxium, adapter.egress]
     syscall: [cmd.praxium]
   # The only files that may read the clock, system randomness and the environment (REQ-001).
   nondeterminism_allowed: [backend/internal/kernel/entropy.go]

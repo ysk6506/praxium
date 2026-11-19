@@ -19,7 +19,7 @@ func tlServer(t *testing.T, handler http.Handler) (*httptest.Server, string) {
 	return srv, string(pem.EncodeToMemory(block))
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestTLSConfigAlwaysVerifies(t *testing.T) {
 	_, caPEM := tlServer(t, http.NotFoundHandler())
 	for _, pemText := range []string{"", caPEM} {
@@ -36,7 +36,7 @@ func TestTLSConfigAlwaysVerifies(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestTLSConfigTrustsOnlyTheGivenAuthority(t *testing.T) {
 	srv, caPEM := tlServer(t, http.NotFoundHandler())
 	cfg, err := TLSConfig(caPEM)
@@ -52,7 +52,7 @@ func TestTLSConfigTrustsOnlyTheGivenAuthority(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt(t *testing.T) {
 	for _, bad := range []string{"not a pem secret-detail", "-----BEGIN CERTIFICATE-----\nAAAA\n-----END CERTIFICATE-----\n", "-----BEGIN PRIVATE KEY-----\nAAAA\n-----END PRIVATE KEY-----\n"} {
 		_, err := TLSConfig(bad)

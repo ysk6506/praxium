@@ -91,7 +91,7 @@ follows:
 }
 ```
 - 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있어요.
-- `sslmode`는 `verify-full`이나 `verify-ca`예요. 확인을 낮추는 값(`require`, `allow`, `prefer`)은 받지 않고, 암호화 없는 `disable`은 루프백이거나 `-allow-insecure-sources`일 때만 받아요(8절. 어댑터는 `Dialer.PlaintextAllowed`로 물어요). 이 값을 바꾸는 저장은 접속 변경이에요.
+- `sslmode`는 `verify-full`이나 `verify-ca`예요. 확인을 낮추는 값(`require`, `allow`, `prefer`)은 받지 않고, 암호화 없는 `disable`은 루프백이거나 `-allow-insecure-sources`일 때만 받아요(8절. 이름이 아니라 풀린 주소가 모두 루프백인지로 다이얼러가 정해요. 어댑터는 연결 맥락에 `egress.WithPlaintext`를 달아요). 이 값을 바꾸는 저장은 접속 변경이에요.
 - `table`이면 서버가 컬럼 목록으로 `SELECT`를 만들어요(그 데이터셋은 뒤에 `keyed_read` 지원 기능을 저절로 가져요). `sql`이면 사용자가 쓴 문장 하나예요(7.2).
 - **값을 문자열로 바꾸는 규칙.** 모든 값은 문자열이에요.
 
@@ -231,7 +231,7 @@ follows:
 
 `-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources` 하나이고 [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 플래그와 같은 방식(기본은 꺼짐)이에요. `-source-deny-hosts`는 거절 목록에 더하는 플래그예요. 이것은 ADR-0018 결정 9의 "소스별 예외, 승인, 기한"이 아니라 정의의 명시와 서버 플래그로 여는 방식이고 기한이 없어요.
 
-**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`와 `TLSConfig`를 여기서 받고 자기 연결을 따로 만들지 않아요. 아직 이 유닛을 부르는 어댑터와 조립부가 없어서 `-allow-insecure-sources`와 `-source-deny-hosts` 플래그는 예정이에요. 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) TLS 확인을 끄는 길이 없어요. (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이에요.
+**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`와 `TLSConfig`를 여기서 받고 자기 연결을 따로 만들지 않아요. 아직 이 유닛을 부르는 어댑터와 조립부가 없어서 `-allow-insecure-sources`와 `-source-deny-hosts` 플래그는 예정이에요. 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) TLS 확인을 끄는 길이 없어요. (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). HTTP 어댑터는 `net/http`를 import하지 않고 이 유닛의 `Request`와 `Response`(`Client.Do(ctx, Request)`)만 써요. 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이에요.
 
 ## 9. 한도
 숫자는 [기본값 표](defaults.md)에 "예정"으로 있어요. 넘으면 불완전한 수집이에요.

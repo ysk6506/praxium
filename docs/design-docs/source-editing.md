@@ -107,14 +107,14 @@ follows:
 | `POST /v1/definition-items:apply` | 여러 항목을 한 세트로 직접 적용(1.2) | `edit_definitions`(내용에 따라 `run_sources`) |
 | `POST /v1/definition-items:preview` | 서버가 가진 레코드로 계산만 하는 미리 보기(8절) | 읽기 |
 | `POST /v1/sources/{source_id}:check`, `:introspect` | 저장된 소스의 점검과 소스 탐색 | `inspect_sources` |
-| `POST /v1/sources:check`, `POST /v1/sources:introspect` | 저장하지 않은 정의, 또는 주소나 참조가 머리와 다른 정의로 | `run_sources` |
+| `POST /v1/sources:check`, `POST /v1/sources:introspect` | 저장하지 않은 정의, 또는 주소나 참조가 머리와 다른 정의로 | `edit_definitions`와 `run_sources` 둘 다 |
 | `POST /v1/sync-runs`, `GET /v1/sync-runs`, `GET /v1/sync-runs/{run_id}` | 시작(202), 목록, 기록 | `run_sources`, 읽기 |
 | `GET /v1/sync-runs/{run_id}/samples` | 실행의 문제 샘플 | `inspect_sources` |
 | `POST /v1/sync-runs/{run_id}:cancel`, `:confirm`, `:discard` | 취소, 확인, 버리기 | `run_sources`(확인과 버리기는 `confirm_guards`) |
 | `GET /v1/secrets`, `POST /v1/secrets`, `PATCH /v1/secrets/{secret_id}`(범위와 허용 주소 바꾸기), `POST /v1/secrets/{secret_id}/versions`, `POST /v1/secrets/{secret_id}/versions/{version}:retire`, `DELETE /v1/secrets/{secret_id}` | 시크릿. 시크릿 경로는 이 설계가 11단계에서 열기로 하므로 등록부의 `phase`와 `adr`을 그에 맞춰요 | `operator`, `admin` |
 
 - **작업 자원(`/v1/jobs`)은 이번에 열지 않아요.** 실행 자원이 진행과 취소를 겸하고, 점검, 소스 탐색, 미리 보기는 시간 한도가 있는 동기 요청이에요. 시간 한도를 넘기는 경우가 생기면 그때 정해요(미결).
-- 저장하지 않은 정의나 주소가 머리와 다른 정의로 접속하는 경로(`sources:check`, `sources:introspect`)와 시작, 취소는 `run_sources`예요. 저장된 소스의 점검과 소스 탐색은 `inspect_sources`예요. 소스 탐색의 샘플은 필드 이름이 `password`, `passwd`, `secret`, `token`, `api_key`, `apikey`, `authorization`, `credential`을 포함하면(대소문자 무시) 값을 가려서 보여요. `key` 한 낱말로는 가리지 않아요. 가린 샘플로 정의 미리 보기를 하면 가린 값이 그대로 쓰여요.
+- 저장하지 않은 정의나 주소가 머리와 다른 정의로 접속하는 경로(`sources:check`, `sources:introspect`)는 `edit_definitions`와 `run_sources`를 둘 다 가져야 하고(정의를 쓰는 사람이 시크릿 참조와 주소를 바꿔 확인하는 일이라 위 표의 새 소스와 같아요), 시작과 취소는 `run_sources`예요. 저장된 소스의 점검과 소스 탐색은 `inspect_sources`예요. 소스 탐색의 샘플은 필드 이름이 `password`, `passwd`, `secret`, `token`, `api_key`, `apikey`, `authorization`, `credential`을 포함하면(대소문자 무시) 값을 가려서 보여요. `key` 한 낱말로는 가리지 않아요. 가린 샘플로 정의 미리 보기를 하면 가린 값이 그대로 쓰여요.
 - 자원마다 `meta.allowed_actions`를 내요. 화면이 "역할이 없으면 보이지 않는다"를 서버의 판단으로 해요.
 - 시크릿의 등록 경로는 멱등 키 저장소에 본문 해시를 두지 않아요. 점검, 소스 탐색, 미리 보기의 응답(값의 샘플)은 보관하지 않아요.
 - 새 문제 코드: 수집을 쓸 수 없는 서버, 직접 적용이 꺼짐, 시크릿이 쓰이는 중, 값처럼 보이는 것, 수집이 이미 돌고 있음, 확인을 기다리는 실행이 있음(같은 소스만).

@@ -40,6 +40,9 @@ type Error struct {
 	Host      string
 	temporary bool
 	ctxErr    error
+	// detail is the finer reason of a refusal. It is for the operator's log only: Error() and the formatting verbs
+	// never show it, so a person who may only see the message cannot tell the classes of addresses apart.
+	detail string
 }
 
 // Error implements error.
@@ -70,17 +73,32 @@ func (e *Error) Temporary() bool {
 // caller's own cancellation from a failure of the source.
 func (e *Error) Unwrap() error { return e.ctxErr }
 
+// Detail is the finer reason of a policy refusal ("the address is link-local", "the address is on the deny list of
+// the operator"), or "". Use it only in the operator's log, never in a message that a user of the source reads.
+func (e *Error) Detail() string { return e.detail }
+
 func refused(host, reason string) *Error {
 	return &Error{Kind: KindPolicy, Reason: reason, Host: host}
 }
 
+// reasonAddress is the one text that a refused address gets, whatever class of address it is in.
+const reasonAddress = "the address is not allowed by the policy"
+
+func deniedAddress(host, detail string) *Error {
+	return &Error{Kind: KindPolicy, Reason: reasonAddress, Host: host, detail: detail}
+}
+
 // Sanitize turns any error of a request or a dial into an *Error. It removes what the standard library puts in
 // its errors: the URL (with its query) of a *url.Error, the address of a *net.OpError, the text of a certificate.
-// A nil error stays nil. An *Error comes back unchanged.
-func Sanitize(err error) *Error {
+// A nil error stays nil (a real nil error, not a typed one). An *Error comes back unchanged.
+func Sanitize(err error) error {
 	if err == nil {
 		return nil
 	}
+	return sanitize(err)
+}
+
+func sanitize(err error) *Error {
 	var own *Error
 	if errors.As(err, &own) {
 		return own

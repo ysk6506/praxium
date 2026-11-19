@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "c6934df7fef444ca"
+hash: "72e4dce1d78b243f"
 date: "2026-11-19"
-note: "architecture.yaml의 새 유닛 adapter.egress와 net, net/http 허용 두 줄을 유닛 표에 행으로 더했다(유닛 표와 import 규칙 문장은 그대로 맞는다)"
+note: "adapter.egress 행에 Client.Do(Request/Response) 인터페이스와 restricted_stdlib 확대를 반영함"
 text_changed: true
-doc_hash: "08aaff6b6897e20f"
+doc_hash: "582a22df1d4ac8d7"

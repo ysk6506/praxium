@@ -109,15 +109,19 @@ func (d *Dialer) DialContext(ctx context.Context, network, address string) (net.
 	return d.dialAny(ctx, host, filterFamily(addrs, want), port)
 }
 
-// PlaintextAllowed says whether a connection to host without TLS is allowed: the loopback always is, and any
-// other host only when the policy says AllowInsecure. The HTTP client asks it for http; the PostgreSQL adapter
-// asks it for sslmode=disable. A host that is not a valid host is not allowed.
-func (d *Dialer) PlaintextAllowed(host string) bool {
-	name, ip, bad := NormalizeHost(host)
-	if bad != "" {
-		return false
-	}
-	return d.policy.insecure || ip.IsLoopback() || name == "localhost"
+type plaintextKey struct{}
+
+// WithPlaintext marks the dials made with the returned context as dials of a connection without TLS (http, or
+// sslmode=disable of PostgreSQL). The dialer then connects only when every address of the answer is on the loopback,
+// or when the policy says AllowInsecure. The decision is made on the addresses that were resolved and judged, never
+// on the name: a name such as "localhost" that a resolver answers with another address does not pass.
+func WithPlaintext(ctx context.Context) context.Context {
+	return context.WithValue(ctx, plaintextKey{}, true)
+}
+
+func plaintext(ctx context.Context) bool {
+	v, _ := ctx.Value(plaintextKey{}).(bool)
+	return v
 }
 
 func wantFamily(network string) (string, error) {
@@ -159,7 +163,7 @@ func (d *Dialer) addresses(ctx context.Context, host string, ip netip.Addr, port
 	if !ip.IsValid() {
 		var err error
 		if addrs, err = d.resolver.LookupNetIP(ctx, "ip", host); err != nil {
-			e := Sanitize(err)
+			e := sanitize(err)
 			if e.Kind == KindConnect {
 				e = &Error{Kind: KindResolve, Reason: "the name did not resolve"}
 			}
@@ -172,7 +176,10 @@ func (d *Dialer) addresses(ctx context.Context, host string, ip netip.Addr, port
 	}
 	for _, a := range addrs {
 		if why := d.policy.judge(a, port, d.locals); why != "" {
-			return nil, refused(host, why)
+			return nil, deniedAddress(host, why)
+		}
+		if plaintext(ctx) && !d.policy.insecure && !canonical(a).IsLoopback() {
+			return nil, deniedAddress(host, "a connection without TLS is allowed only to the loopback")
 		}
 	}
 	return addrs, nil
@@ -219,7 +226,7 @@ func (d *Dialer) dialAny(ctx context.Context, host string, addrs []netip.Addr, p
 		}
 		last = err
 	}
-	e := Sanitize(last)
+	e := sanitize(last)
 	e.Host = host
 	return nil, e
 }

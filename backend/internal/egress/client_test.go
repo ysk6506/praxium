@@ -87,16 +87,12 @@ func ctClient(t *testing.T, names map[string]string, pol Policy, opt ClientOptio
 	return c, res
 }
 
-func ctGet(t *testing.T, c *Client, target string) (*http.Response, error) {
+func ctGet(t *testing.T, c *Client, target string) (*Response, error) {
 	t.Helper()
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, target, nil)
-	if err != nil {
-		t.Fatalf("request: %v", err)
-	}
-	return c.Do(req)
+	return c.Do(context.Background(), Request{URL: target})
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientReachesAHostOfAFakeResolverOverVerifiedTLS(t *testing.T) {
 	cert, caPEM := ctIssue(t, "api.example.test", 1, ctFrom, ctTo)
 	var gotHost string
@@ -116,7 +112,7 @@ func TestClientReachesAHostOfAFakeResolverOverVerifiedTLS(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientDoesNotTrustWhatItWasNotGiven(t *testing.T) {
 	cert, _ := ctIssue(t, "api.example.test", 1, ctFrom, ctTo)
 	_, otherPEM := ctIssue(t, "api.example.test", 2, ctFrom, ctTo)
@@ -135,7 +131,7 @@ func TestClientDoesNotTrustWhatItWasNotGiven(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientRefusesAnExpiredCertificateAndAnotherHostName(t *testing.T) {
 	old, oldPEM := ctIssue(t, "api.example.test", 3, time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2001, 1, 1, 0, 0, 0, 0, time.UTC))
 	port, _ := ctServe(t, old, http.NotFoundHandler())
@@ -153,7 +149,7 @@ func TestClientRefusesAnExpiredCertificateAndAnotherHostName(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientWithABadAuthorityTextIsNotMade(t *testing.T) {
 	d, err := New(Config{})
 	if err != nil {
@@ -164,7 +160,7 @@ func TestClientWithABadAuthorityTextIsNotMade(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientIgnoresTheProxyOfTheEnvironment(t *testing.T) {
 	t.Setenv("HTTP_PROXY", "http://127.0.0.1:1")
 	t.Setenv("HTTPS_PROXY", "http://127.0.0.1:1")
@@ -190,41 +186,49 @@ func TestClientIgnoresTheProxyOfTheEnvironment(t *testing.T) {
 	}
 }
 
-// [REQ-658]
-func TestPlainHTTPIsForTheLoopbackUnlessThePolicyAllowsIt(t *testing.T) {
+// [REQ-661]
+func TestPlainHTTPGoesOnlyToAnAddressOnTheLoopbackUnlessThePolicyAllowsIt(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 	t.Cleanup(srv.Close)
 	_, port, _ := net.SplitHostPort(srv.Listener.Addr().String())
-	names := map[string]string{"plain.example.test": "127.0.0.1", "localhost": "127.0.0.1"}
-	c, res := ctClient(t, names, Policy{}, ClientOptions{})
-	for _, ok := range []string{"http://127.0.0.1:" + port + "/", "http://localhost:" + port + "/", "http://LOCALHOST.:" + port + "/"} {
+	names := map[string]string{"plain.example.test": "127.0.0.1", "localhost": "127.0.0.1", "mapped.example.test": "::ffff:127.0.0.1"}
+	c, _ := ctClient(t, names, Policy{}, ClientOptions{})
+	for _, ok := range []string{"http://127.0.0.1:" + port + "/", "http://localhost:" + port + "/", "http://LOCALHOST.:" + port + "/", "http://plain.example.test:" + port + "/", "http://mapped.example.test:" + port + "/"} {
 		resp, err := ctGet(t, c, ok)
 		if err != nil {
 			t.Fatalf("%s: %v", ok, err)
 		}
 		_ = resp.Body.Close()
 	}
-	before := res.total()
-	if _, err := ctGet(t, c, "http://plain.example.test:"+port+"/?token=secret-detail"); dtKind(t, err).Kind != KindPolicy || strings.Contains(err.Error(), "secret-detail") {
-		t.Errorf("plain http to a name: %v", err)
+	// a resolver that answers "localhost" with another address does not get a plain connection
+	liar, lres := ctClient(t, map[string]string{"localhost": "10.9.9.9", "mixed.example.test": "127.0.0.1"}, Policy{}, ClientOptions{})
+	lres.answers["mixed.example.test"] = [][]netip.Addr{dtAddrs(t, "127.0.0.1", "10.9.9.9")}
+	for _, bad := range []string{"http://localhost:" + port + "/?token=secret-detail", "http://mixed.example.test:" + port + "/", "http://10.9.9.9:" + port + "/"} {
+		_, err := ctGet(t, liar, bad)
+		e := dtKind(t, err)
+		if e.Kind != KindPolicy || strings.Contains(err.Error(), "secret-detail") || (!strings.Contains(bad, "//10.9.9.9") && strings.Contains(err.Error(), "10.9.9.9")) || e.Reason != reasonAddress {
+			t.Errorf("%s: %v", bad, err)
+		}
+		if !strings.Contains(e.Detail(), "without TLS") {
+			t.Errorf("%s: detail %q", bad, e.Detail())
+		}
 	}
-	if res.total() != before {
-		t.Error("the name was resolved for a request that is refused")
-	}
-	open, _ := ctClient(t, names, Policy{AllowInsecure: true}, ClientOptions{})
-	resp, err := ctGet(t, open, "http://plain.example.test:"+port+"/")
+	// with the word of the operator it goes (the dialer is not asked about the loopback then)
+	open, _ := ctClient(t, map[string]string{"localhost": "127.0.0.1"}, Policy{AllowInsecure: true}, ClientOptions{})
+	resp, err := ctGet(t, open, "http://localhost:"+port+"/")
 	if err != nil {
 		t.Fatalf("allowed: %v", err)
 	}
 	_ = resp.Body.Close()
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientRefusesRequestsThatAreNotPlainAddresses(t *testing.T) {
 	c, res := ctClient(t, map[string]string{"x.example.test": "127.0.0.1"}, Policy{}, ClientOptions{})
 	for _, target := range []string{
 		"ftp://x.example.test/", "file:///etc/passwd", "gopher://x.example.test/",
 		"https://user:pass-detail@x.example.test/", "https://2130706433/", "https://0x7f.1/", "https:///path",
+		"https:opaque.example.test/abs", "//x.example.test/", "/path", "", "https://x.example.test:99999/", "https://[::1/",
 	} {
 		_, err := ctGet(t, c, target)
 		e := dtKind(t, err)
@@ -232,20 +236,12 @@ func TestClientRefusesRequestsThatAreNotPlainAddresses(t *testing.T) {
 			t.Errorf("%s: %v", target, err)
 		}
 	}
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, "https://x.example.test/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	req.Host = "internal.example.test"
-	if _, err := c.Do(req); dtKind(t, err).Kind != KindPolicy {
-		t.Errorf("a Host header of another host: %v", err)
-	}
 	if res.total() != 0 {
 		t.Error("a refused request reached the resolver")
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestClientDoesNotShowAnAddressOrAQueryOfARefusedHost(t *testing.T) {
 	c, _ := ctClient(t, map[string]string{"meta.example.test": "169.254.169.254"}, Policy{}, ClientOptions{})
 	_, err := ctGet(t, c, "https://meta.example.test/latest/meta-data?token=secret-detail")
@@ -275,7 +271,7 @@ func ctRedirectServer(t *testing.T) string {
 	return port
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestRedirectsAreNotFollowedByDefault(t *testing.T) {
 	port := ctRedirectServer(t)
 	c, _ := ctClient(t, nil, Policy{}, ClientOptions{})
@@ -285,7 +281,7 @@ func TestRedirectsAreNotFollowedByDefault(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestRedirectsToTheSameOriginAreFollowedUpToTheLimitAndNoFurther(t *testing.T) {
 	port := ctRedirectServer(t)
 	c, _ := ctClient(t, nil, Policy{}, ClientOptions{MaxRedirects: 2})
@@ -306,7 +302,7 @@ func TestRedirectsToTheSameOriginAreFollowedUpToTheLimitAndNoFurther(t *testing.
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestRequestTimeAndCancellationAreReported(t *testing.T) {
 	release := make(chan struct{})
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { <-release }))
@@ -319,18 +315,14 @@ func TestRequestTimeAndCancellationAreReported(t *testing.T) {
 	}
 	slow, _ := ctClient(t, nil, Policy{}, ClientOptions{})
 	ctx, cancel := context.WithCancel(context.Background())
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, srv.URL+"/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
 	cancel()
-	_, err = slow.Do(req)
+	_, err = slow.Do(ctx, Request{URL: srv.URL + "/"})
 	if e := dtKind(t, err); e.Kind != KindCanceled {
 		t.Errorf("cancel: %v", err)
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestDefaultClientTimeIsThirtySeconds(t *testing.T) {
 	c, _ := ctClient(t, nil, Policy{}, ClientOptions{})
 	if c.hc.Timeout != 30*time.Second {
@@ -338,7 +330,7 @@ func TestDefaultClientTimeIsThirtySeconds(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestSameOriginComparesSchemeHostAndPort(t *testing.T) {
 	must := func(s string) *url.URL {
 		u, err := url.Parse(s)
@@ -376,7 +368,7 @@ func TestSameOriginComparesSchemeHostAndPort(t *testing.T) {
 	}
 }
 
-// [REQ-658]
+// [REQ-661]
 func TestResolveSameOriginTakesOnlyTheOriginOfTheSource(t *testing.T) {
 	base, err := url.Parse("https://api.example.test/api/v2/servers?page=1")
 	if err != nil {
@@ -409,30 +401,5 @@ func TestResolveSameOriginTakesOnlyTheOriginOfTheSource(t *testing.T) {
 		if e := dtKind(t, err); e.Kind != KindPolicy || strings.Contains(err.Error(), "secret-detail") || strings.Contains(err.Error(), "evil") {
 			t.Errorf("%q: %v", in, err)
 		}
-	}
-}
-
-// [REQ-658]
-func TestPlaintextIsAllowedForTheLoopbackAndForTheOperatorsWordOnly(t *testing.T) {
-	strict, err := New(Config{})
-	if err != nil {
-		t.Fatal(err)
-	}
-	open, err := New(Config{Policy: Policy{AllowInsecure: true}})
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, host := range []string{"127.0.0.1", "127.8.8.8", "::1", "localhost", "LocalHost."} {
-		if !strict.PlaintextAllowed(host) {
-			t.Errorf("%s is refused without TLS", host)
-		}
-	}
-	for _, host := range []string{"db.example.test", "10.0.0.5", "8.8.8.8", "127.1", "a b", ""} {
-		if strict.PlaintextAllowed(host) {
-			t.Errorf("%s is allowed without TLS", host)
-		}
-	}
-	if !open.PlaintextAllowed("db.example.test") || !open.PlaintextAllowed("10.0.0.5") || open.PlaintextAllowed("127.1") {
-		t.Error("the policy that allows plaintext is not applied, or lets a bad host through")
 	}
 }

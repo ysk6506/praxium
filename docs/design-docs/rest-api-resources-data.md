@@ -58,7 +58,7 @@ POST /v1/type-similarity-checks
 | `/v1/sources`, `/v1/sources/{source_id}` | GET | 소스: `adapter`, `preset`, `collector`, `contacts`, `protection`, `expected_interval`, `status`(`active`, `paused`, `breaker_open`). 시크릿은 `credential_ref`(참조)만. 예정(ADR-0058): 데이터셋별 `capabilities`와 마지막 실행의 참조 `last_sync_run`을 더해요 | 읽기 | - | ingestion |
 | `/v1/sources/{source_id}:introspect` | POST | 소스를 탐색해요(어떤 테이블과 컬럼이 있나). 읽기 전용 요청만 전송해요. `branch_id`를 받아요 | 아래 시크릿 규칙 | 작업. 예정(ADR-0058): 첫 구현은 시간 한도가 있는 동기 요청이고 작업 자원은 쓰지 않아요 | ingestion 8.1 |
 | `/v1/sources/{source_id}:check` | POST | 점검(연결, 인증, 읽기 전용의 3단계를 확인해요). `branch_id`를 받아요 | 아래 시크릿 규칙 | 작업. 예정(ADR-0058): 첫 구현은 동기 요청 | ingestion 8.1 |
-| `/v1/sources:check`, `/v1/sources:introspect` | POST | **예정(ADR-0058).** 저장하지 않은 정의로 점검과 소스 탐색을 해요. 시간 한도가 있는 동기 요청이고 응답(값의 샘플)은 멱등 키 저장소에 보관하지 않아요 | `run_sources` | - | source-editing 4 |
+| `/v1/sources:check`, `/v1/sources:introspect` | POST | **예정(ADR-0058).** 저장하지 않은 정의로 점검과 소스 탐색을 해요. 시간 한도가 있는 동기 요청이고 응답(값의 샘플)은 멱등 키 저장소에 보관하지 않아요 | `edit_definitions`와 `run_sources` 둘 다 | - | source-editing 4 |
 | `/v1/sources/{source_id}/uploads`, `/v1/sources/{source_id}/upload-template` | POST, GET | 엑셀·CSV 소스의 파일 업로드와 컬럼 샘플 다운로드. 원본 레코드로 쌓여요. `branch_id`를 받아요 | 그 소스를 범위에 가진 `operator`나 `editor` | 작업 | ingestion 8.1 |
 | `/v1/sources/{source_id}:pause`, `:resume` | POST | 일시 정지(`reason`을 받아요)와 재개. 헬스 상태에 표시돼요 | `operator` | - | ingestion 5 |
 | `/v1/sources/{source_id}:push` | POST | 푸시 수집(이벤트 경로). [추가 기능의 경로](rest-api-resources-additions.md) 3절 | `ingester` | - | ingestion-extensions |
