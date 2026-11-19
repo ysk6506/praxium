@@ -147,10 +147,9 @@ follows:
 | `-secrets-key-file` | 마스터 키의 위치 | 설정 폴더 아래 `praxium/keys/<데이터 폴더의 식별자>.key`(자동. [ADR-0076](adr/0076-secret-store-assembly-key-file-and-command-line.md)) | 명시 | 명시 |
 | `-source-inbox` | 파일 소스가 읽는 입력 폴더 | 데이터 폴더 밖의 정해진 자리(위치는 미결, 입력 폴더 단계가 정해요) | 명시 | 명시 |
 | `-allow-insecure-sources` | `http` 소스 | 꺼짐(루프백은 됨) | 꺼짐 | 꺼짐 |
-| `-allow-unverified-source-tls` | TLS 확인을 끈 소스 | 꺼짐 | 꺼짐 | 꺼짐 |
 | `-source-deny-hosts` | 거절 목록에 더하기 | | | |
 
-모든 이름은 예정이에요. `-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources`와 `-allow-unverified-source-tls` 둘이에요. 운영 모드에서 화면(`-web`)의 기본값은 이 설계가 정하지 않아요([ADR-0069](adr/0069-screens-live-in-this-repo-and-stay-replaceable.md)). 마스터 키의 위치와 만드는 때는 [ADR-0076](adr/0076-secret-store-assembly-key-file-and-command-line.md)이 정했어요(데이터 폴더 밖의 사용자 설정 폴더 아래, 폴더 안의 `FOLDER_ID`가 이름이 되고, 시크릿을 처음 넣을 때 만들고, 설정 폴더를 얻지 못하는 환경에서는 키 파일을 명시하라는 오류로 답해요). `local`과 `api serve`가 뜰 때 저장소를 여는 것은 수집 서비스의 단계가 해요.
+모든 이름은 예정이에요. `-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources` 하나예요. TLS 확인을 끄는 플래그는 없어요([ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 운영 모드에서 화면(`-web`)의 기본값은 이 설계가 정하지 않아요([ADR-0069](adr/0069-screens-live-in-this-repo-and-stay-replaceable.md)). 마스터 키의 위치와 만드는 때는 [ADR-0076](adr/0076-secret-store-assembly-key-file-and-command-line.md)이 정했어요(데이터 폴더 밖의 사용자 설정 폴더 아래, 폴더 안의 `FOLDER_ID`가 이름이 되고, 시크릿을 처음 넣을 때 만들고, 설정 폴더를 얻지 못하는 환경에서는 키 파일을 명시하라는 오류로 답해요). `local`과 `api serve`가 뜰 때 저장소를 여는 것은 수집 서비스의 단계가 해요.
 
 ### 5.4 감사 로그
 인증 쪽의 `audit: true` 구조화 로그와 같은 방식이에요. 남기는 것: 시크릿의 등록, 새 버전, 폐기, 복호화해 쓴 일(누가 시켰나, 어느 소스, 어느 주소, 목적), 실행의 시작, 취소, 확인, 버리기, 정의의 저장, 소스를 새로 만들거나 접속을 바꾼 저장, 시크릿의 범위와 허용 주소의 변경.

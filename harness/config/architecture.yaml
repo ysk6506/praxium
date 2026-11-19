@@ -113,6 +113,8 @@ go:
     adapter.readcheck: {path: backend/internal/readcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.query, core.worldgen, adapter.memstore, adapter.devload]}
     # A package of tests only: the acceptance of the slice, which runs the generator's source views through the pipeline and compares the KG with the development load of the truth (ADR-0033).
     adapter.ingestcheck: {path: backend/internal/ingestcheck, may_import: [], test_may_import: [core.kernel, core.model, core.graph, core.worldgen, core.ingest, adapter.memstore, adapter.devload, adapter.filesource, adapter.xlsx]}
+    # The one place where the connections to a source leave the program (ADR-0091): the dialer that resolves a name itself, judges every address it resolved to and connects to the address it judged (no second resolving, no proxy, no way to skip the verification of a certificate), the HTTP client and the TLS settings built on it, and the errors that hold no address, query or sentence of the standard library. The source adapters take their connections from it; it knows no adapter and no port.
+    adapter.egress: {path: backend/internal/egress, may_import: [core.kernel]}
     cmd.praxium:    {path: backend/cmd/praxium, may_import: ["core.*", "adapter.*"]}
   # The one unit that assembles the program: it picks a role, wires the units and may end the process.
   composition_root: cmd.praxium
@@ -127,8 +129,8 @@ go:
     os/exec: [cmd.praxium]
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
-    net: [cmd.praxium, adapter.http]
-    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp]
+    net: [cmd.praxium, adapter.http, adapter.egress]
+    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp, adapter.egress]
     net/rpc: [cmd.praxium]
     syscall: [cmd.praxium]
   # The only files that may read the clock, system randomness and the environment (REQ-001).

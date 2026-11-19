@@ -308,7 +308,7 @@ allowed_requests:
 ## 11. 전송 구간
 ### 11.1 소스로 가는 연결
 - 암호화가 기본이고 소스의 인증서와 이름을 확인해요. 신뢰하는 인증 기관은 **조직의 인증 기관을 설정으로 받아요**(배포가 제공해요).
-- 소스마다 `tls`가 있어요: `verify`(기본 `true`)와 예외인 `verify_off`(`reason`, `approved_by`, `approved_at`, `expires_at`). **검증을 끄는 것은 소스별로 명시하는 예외예요.** 정의의 변경이라 이력이 남고, 헬스 상태에 경고로 표시되고, `tls_verify_disabled_sources`가 개수를 세요. 승인은 `admin`이 하고 기한이 있어요(기한이 지나면 검증이 다시 켜져요). 암호화 없이 접속하는 소스도 같은 예외예요.
+- **예정(ADR-0091)에서 바뀐다: 소스로 가는 연결에는 TLS 확인을 끄는 길이 없다. 아래의 `verify_off`와 `tls_verify_disabled_sources`는 만들지 않는다.** 소스마다 `tls`가 있어요: `verify`(기본 `true`)와 예외인 `verify_off`(`reason`, `approved_by`, `approved_at`, `expires_at`). **검증을 끄는 것은 소스별로 명시하는 예외예요.** 정의의 변경이라 이력이 남고, 헬스 상태에 경고로 표시되고, `tls_verify_disabled_sources`가 개수를 세요. 승인은 `admin`이 하고 기한이 있어요(기한이 지나면 검증이 다시 켜져요). 암호화 없이 접속하는 소스도 같은 예외예요.
 - 소스가 클라이언트 인증서를 요구하면 `certificate` 시크릿을 써요.
 
 ### 11.2 프락시움 내부

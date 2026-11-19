@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "72e378d0fcc2dbf9"
+hash: "c6934df7fef444ca"
 date: "2026-11-19"
-note: "architecture.yaml: adapter.pgstore may_import gets adapter.pgschema (ADR-0087); read the doc against it, ARCHITECTURE.md row updated, AGENTS.md needs no change"
+note: "architecture.yaml의 새 유닛 adapter.egress와 net, net/http 허용 두 줄을 유닛 표에 행으로 더했다(유닛 표와 import 규칙 문장은 그대로 맞는다)"
 text_changed: true
-doc_hash: "b5ff4aef8c889412"
+doc_hash: "08aaff6b6897e20f"
