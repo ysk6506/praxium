@@ -92,6 +92,10 @@ func checkFields(kind Kind, fields Fields) error {
 			return kernel.Errorf(kernel.CodeInvalidValue, "the field %q is longer than %d bytes", name, maxValueLen)
 		case !utf8.ValidString(v):
 			return kernel.Errorf(kernel.CodeInvalidValue, "the field %q is not valid UTF-8 text", name)
+		case strings.IndexByte(v, 0) >= 0:
+			// A text that ends at a NUL in the protocol of a source (the start packet of PostgreSQL is made of such texts)
+			// would put a field of its own into the packet.
+			return kernel.Errorf(kernel.CodeInvalidValue, "the field %q has a NUL character", name)
 		}
 	}
 	return nil

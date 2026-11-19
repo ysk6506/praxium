@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "77987225238fd4e1"
+hash: "55d4e840f9c6dd70"
 date: "2026-11-19"
-note: "유닛 행의 용어를 표준어(수신)로 고쳤다."
+note: "architecture.yaml에 adapter.pgingest 등록과 main의 변경이 합쳐졌다. 유닛 표의 pgingest 행은 그대로 맞다."
 text_changed: true
-doc_hash: "944a1762f8c06b0f"
+doc_hash: "05ff734eae828bd6"

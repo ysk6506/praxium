@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "77987225238fd4e1"
+hash: "55d4e840f9c6dd70"
 date: "2026-11-19"
-note: "architecture.yaml의 변경은 유닛 하나의 등록(adapter.pgingest)뿐이라 AGENTS.md의 규칙과 맞는다. 고칠 문장이 없다."
+note: "architecture.yaml의 변경은 유닛 등록이라 고칠 문장이 없다."
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"
