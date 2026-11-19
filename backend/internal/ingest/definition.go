@@ -221,6 +221,7 @@ func (s Source) normalize(c *collector, adapters []string) Source {
 		ds[i] = nd
 	}
 	s.Datasets = ds
+	s.checkSecretUse(c)
 	return s
 }
 
