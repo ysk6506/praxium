@@ -112,6 +112,32 @@ func KeyRowHash(typeNo int16, ctxNo int64, sigHash []byte) ([sha256.Size]byte, e
 	return sha256.Sum256(append(buf, sigHash...)), nil
 }
 
+// IdentRowHash is the new hash of a row of the kind identifier (and the old hash of one that is withdrawn): what the
+// identifier is, as a hash, so the digest covers the identifier that is written and a row of the difference can name it
+// without a column of its own. It is SHA-256 of the scheme, the value and the scope, each as its length in bytes
+// (4 bytes, big-endian) and then its bytes. IdentRowHashExpr is the same in SQL.
+func IdentRowHash(scheme, value, scope string) [sha256.Size]byte {
+	var buf []byte
+	for _, part := range []string{scheme, value, scope} {
+		buf = binary.BigEndian.AppendUint32(buf, uint32(len(part)))
+		buf = append(buf, part...)
+	}
+	return sha256.Sum256(buf)
+}
+
+// IdentRowHashExpr is IdentRowHash as an expression of SQL over the scheme, the value and the scope of the row
+// named by alias. The three columns are text, and the database is in UTF-8, so the bytes are those of the text.
+func IdentRowHashExpr(alias string) string {
+	p := ""
+	if alias != "" {
+		p = QuoteIdent(alias) + "."
+	}
+	part := func(col string) string {
+		return "int4send(octet_length(convert_to(" + p + col + ", 'UTF8'))) || convert_to(" + p + col + ", 'UTF8')"
+	}
+	return "sha256(" + part(ColScheme) + " || " + part(ColValue) + " || " + part(ColScope) + ")"
+}
+
 // DiffLineExpr is the line of a row of ingest_diff as an expression of SQL, for the row of the table that is
 // named by alias (an empty alias is the table in the statement).
 func DiffLineExpr(alias string) string {
@@ -142,4 +168,12 @@ const zeros64 = "000000000000000000000000000000000000000000000000000000000000000
 func ChunkDigestSQL(kgNo int64) string {
 	return "SELECT sha256(string_agg(" + DiffLineExpr("") + ", ''::bytea ORDER BY " + ColOrd + ")) FROM " +
 		TableRef(kgNo, TableIngestDiff) + " WHERE " + ColChunkNo + " = $1"
+}
+
+// ChunkDigestsSQL is the query that gives the digest of every chunk of ingest_diff of a KG before the chunk number
+// that is its first parameter, one row (chunk number, digest) for each, in the order of the chunks. A server that
+// takes an apply over from another one makes the chain of the chunks that are done from it (ChainDigest).
+func ChunkDigestsSQL(kgNo int64) string {
+	return "SELECT " + ColChunkNo + ", sha256(string_agg(" + DiffLineExpr("") + ", ''::bytea ORDER BY " + ColOrd + ")) FROM " +
+		TableRef(kgNo, TableIngestDiff) + " WHERE " + ColChunkNo + " < $1 GROUP BY " + ColChunkNo + " ORDER BY " + ColChunkNo
 }

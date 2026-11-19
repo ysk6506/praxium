@@ -209,7 +209,7 @@ object_hist 에서   seq_from <= S AND S < seq_to
 | KG 버전 ID | 도메인 구분 문자열, 앞 버전의 ID, 정의 세트의 해시, `input_digest`, 실행기의 의미 버전, 해시 규칙 버전 | 이 입력이 같으면 같다(7.5) |
 | 그래프 해시 | 모든 행 해시의 합 | 7.4 |
 
-`input_digest`의 체인은 `h(n) = SHA-256(h(n-1), ingest_seq, source_id, dataset_id, natural_key, content_hash)`예요(스케치). 소스를 다시 수집해 같은 내용이 오면 `content_hash`가 같아 새 변경이 되지 않아요. 서로 다른 입력이 같은 KG를 만들 수 있어서 `kg_version_id`와 `graph_hash`를 따로 두고, 확정할 때 그래프 해시가 앞 버전과 같으면 새 버전을 만들지 않아요.
+`input_digest`의 체인은 `h(n) = SHA-256(h(n-1), ingest_seq, source_id, dataset_id, natural_key, content_hash)`예요(스케치). 소스를 다시 수집해 같은 내용이 오면 `content_hash`가 같아 새 변경이 되지 않아요. 서로 다른 입력이 같은 KG를 만들 수 있어서 `kg_version_id`와 `graph_hash`를 따로 두고, 확정할 때 그래프 해시가 앞 버전과 같으면 새 버전을 만들지 않아요. 새 수집 흐름의 적용(준비 테이블 길, ADR-0099)에서는 `input_digest`가 원본 변경이 아니라 저장된 차이의 청크 다이제스트(꼬리표 `praxium.batch.v2`)를 이은 사슬이라, 버전 id는 "소스가 말한 것"이 아니라 "KG가 바뀐 것"의 사슬이에요. 행 단위 길(개발 적재, 적합성 사례)과 준비 테이블 길은 한 KG의 사슬에 섞여도 되고, 같은 입력에 두 길의 버전 id가 같다고 약속하지 않아요(같은 것은 상태 해시와 읽기의 답이에요).
 
 ### 7.2 정규 인코딩의 규칙
 
