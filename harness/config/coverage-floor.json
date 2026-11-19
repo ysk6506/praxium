@@ -17,6 +17,7 @@
   "go:adapter.memstore": 95.5,
   "go:adapter.pgconn": 94.5,
   "go:adapter.pgschema": 92,
+  "go:adapter.pgsource": 94.5,
   "go:adapter.pgstore": 91.5,
   "go:adapter.secretsfile": 98,
   "go:adapter.webui": 90,
