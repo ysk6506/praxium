@@ -49,7 +49,7 @@ func scanCatalog(sc scanner) (catalogRow, error) {
 // CreateKG implements graph.Catalog: the row of the list, the storage schema made from the model, and the control
 // rows of the KG (generation 1, an empty head, a lease row nobody holds), all in one transaction. A KG that was
 // not made leaves nothing behind.
-func (s *StoreV2) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
+func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
 		return graph.KG{}, kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
 	}
@@ -119,7 +119,7 @@ func createKGInTx(ctx context.Context, tx *sql.Tx, kg graph.KG, m SchemaModel) e
 
 // DeleteKG deletes a KG: its storage schema with everything in it, its state record and its row of the list, in
 // one transaction. A KG that is not there is graph.CodeKGNotFound. The number of the KG is not given again.
-func (s *StoreV2) DeleteKG(ctx context.Context, kg graph.KGID) error {
+func (s *Store) DeleteKG(ctx context.Context, kg graph.KGID) error {
 	sh, err := s.rt.locate(kg)
 	if err != nil {
 		return err
@@ -149,7 +149,7 @@ func (s *StoreV2) DeleteKG(ctx context.Context, kg graph.KGID) error {
 }
 
 // kgOf is the KG of a row of the list with the state and the generation of its head.
-func (s *StoreV2) kgOf(ctx context.Context, a *kgAccess) (graph.KG, error) {
+func (s *Store) kgOf(ctx context.Context, a *kgAccess) (graph.KG, error) {
 	var h kgHeadRow
 	err := a.sh.tx(ctx, RoleAPIRead, true, func(tx *sql.Tx) error {
 		var err error
@@ -164,7 +164,7 @@ func (s *StoreV2) kgOf(ctx context.Context, a *kgAccess) (graph.KG, error) {
 }
 
 // GetKG implements graph.Catalog: by id, by name, or "main" for the production KG, the first match by creation.
-func (s *StoreV2) GetKG(ctx context.Context, ref string) (graph.KG, error) {
+func (s *Store) GetKG(ctx context.Context, ref string) (graph.KG, error) {
 	for _, sh := range s.rt.all() {
 		var id string
 		err := sh.tx(ctx, RoleAPIRead, true, func(tx *sql.Tx) error {
@@ -191,7 +191,7 @@ func (s *StoreV2) GetKG(ctx context.Context, ref string) (graph.KG, error) {
 }
 
 // ListKGs implements graph.Catalog: the KGs in the order they were created.
-func (s *StoreV2) ListKGs(ctx context.Context) ([]graph.KG, error) {
+func (s *Store) ListKGs(ctx context.Context) ([]graph.KG, error) {
 	var out []graph.KG
 	for _, sh := range s.rt.all() {
 		var ids []graph.KGID
@@ -233,7 +233,7 @@ func (s *StoreV2) ListKGs(ctx context.Context) ([]graph.KG, error) {
 }
 
 // Generations implements graph.Catalog.
-func (s *StoreV2) Generations(ctx context.Context, id graph.KGID) ([]graph.GenerationEvent, error) {
+func (s *Store) Generations(ctx context.Context, id graph.KGID) ([]graph.GenerationEvent, error) {
 	a, err := s.access(ctx, id)
 	if err != nil {
 		return nil, err

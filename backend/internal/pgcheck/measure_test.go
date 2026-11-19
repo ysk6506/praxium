@@ -13,24 +13,14 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/worldgen"
 )
 
-// The measurements of the new storage beside the old one (ADR-0089): a development load of a generated world, an
-// unchanged load again, and the read of one object and of the links at one object. They are benchmarks:
+// The measurements of the storage (ADR-0089, ADR-0094): a development load of a generated world, an unchanged load
+// again, and the read of one object and of the links at one object. They are benchmarks:
 //
 //	go test ./internal/pgcheck -run '^$' -bench . -benchtime 1x
 var pgxSizes = []struct {
 	name  string
 	scale int64
 }{{"small", 500}, {"medium", 30000}, {"large", 280000}}
-
-type pgxStores struct {
-	name string
-	make func(testing.TB) graph.Store
-}
-
-var pgxKinds = []pgxStores{
-	{"old", func(tb testing.TB) graph.Store { return pgstore.NewTestStore(tb) }},
-	{"new", func(tb testing.TB) graph.Store { return pgstore.NewTestStoreV2With(tb, pgstore.LeaseClockCaller) }},
-}
 
 func pgxLoad(b *testing.B, reg *model.Registry, store graph.Store, kg graph.KGID, truth []byte) {
 	b.Helper()
@@ -54,25 +44,23 @@ func BenchmarkPgxLoad(b *testing.B) {
 			b.Fatal(err)
 		}
 		truth := files.Files[worldgen.TruthFile].Bytes()
-		for _, k := range pgxKinds {
-			b.Run(sz.name+"/"+k.name, func(b *testing.B) {
-				store := k.make(b)
-				clock := kernel.NewManualClock(pgxStart)
-				ids := kernel.NewRandomIDs(kernel.NewSeededRng(5))
-				kg, err := devload.NewKG(context.Background(), store, reg, ids, clock, "dev")
-				if err != nil {
-					b.Fatal(err)
-				}
-				b.Run("first", func(b *testing.B) {
-					pgxLoad(b, reg, store, kg.ID, truth)
-					b.ReportMetric(float64(m.Counts.Objects), "objects")
-				})
-				if sz.scale < 100000 {
-					b.Run("again", func(b *testing.B) { pgxLoad(b, reg, store, kg.ID, truth) })
-				}
-				pgxReads(b, store, kg.ID)
+		b.Run(sz.name, func(b *testing.B) {
+			store := pgstore.NewTestStore(b)
+			clock := kernel.NewManualClock(pgxStart)
+			ids := kernel.NewRandomIDs(kernel.NewSeededRng(5))
+			kg, err := devload.NewKG(context.Background(), store, reg, ids, clock, "dev")
+			if err != nil {
+				b.Fatal(err)
+			}
+			b.Run("first", func(b *testing.B) {
+				pgxLoad(b, reg, store, kg.ID, truth)
+				b.ReportMetric(float64(m.Counts.Objects), "objects")
 			})
-		}
+			if sz.scale < 100000 {
+				b.Run("again", func(b *testing.B) { pgxLoad(b, reg, store, kg.ID, truth) })
+			}
+			pgxReads(b, store, kg.ID)
+		})
 	}
 }
 

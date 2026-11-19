@@ -21,7 +21,7 @@ func NewTestStoreThatLosesACommit(tb TB) (store *Store, arm func()) {
 			return nil
 		}
 		var moved int
-		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM pg_stat_xact_user_tables WHERE relname = 'kg_head' AND n_tup_upd > 0`).Scan(&moved); err != nil || moved == 0 {
+		if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM pg_stat_xact_user_tables WHERE relname = 'head' AND n_tup_upd > 0`).Scan(&moved); err != nil || moved == 0 {
 			return err
 		}
 		armed.Store(false)
@@ -44,14 +44,18 @@ func NewTestStoreThatLosesACommit(tb TB) (store *Store, arm func()) {
 		})
 	}
 	pool = pgconn.NewTestPoolWith(tb, pgconn.Config{BeforeCommit: hook})
-	return newStore(singleRouter{&shard{pool: pool}}, defaultPollInterval), func() { armed.Store(true) }
+	models, err := StandardModels(false)
+	if err != nil {
+		tb.Fatalf("models: %v", err)
+	}
+	return &Store{rt: singleRouter{&shard{pool: pool}}, poll: defaultPollInterval, models: models, clock: LeaseClockCaller}, func() { armed.Store(true) }
 }
 
 // ResolveForTest runs the check of a write whose COMMIT got no answer.
 func (s *Store) ResolveForTest(ctx context.Context, kg graph.KGID, want graph.Head, err error) error {
-	sh, lerr := s.rt.locate(kg)
-	if lerr != nil {
-		return lerr
+	a, aerr := s.access(ctx, kg)
+	if aerr != nil {
+		return err
 	}
-	return sh.resolve(ctx, kg, want, err)
+	return s.resolve(ctx, a, want, err)
 }

@@ -12371,6 +12371,36 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestTheServerEndsTheAbandonOrRestoreAKGWasLeftInTheMiddleOfWhenItStarts": {
+   "kind": "test",
+   "hash": "88f15751563ddc68",
+   "asserts": 6,
+   "literals": [
+    "5f3fb1d1f457a996"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestTheServerStartsWithAWarningWhenTheWorkOfAKGCannotBeEnded": {
+   "kind": "test",
+   "hash": "26d0236b84428d26",
+   "asserts": 8,
+   "literals": [
+    "50cefb9036ec62a8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestTheStoreFlagsAreCheckedAndTheDSNNeverShows": {
    "kind": "test",
    "hash": "1b8f6fbdbc332413",
@@ -24901,6 +24931,21 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/pgcheck::TestPgrQueryReadsGiveTheSameRowsLinksAndPastStatesAsMemory": {
+   "kind": "test",
+   "hash": "d9007f73e0ac948d",
+   "asserts": 14,
+   "literals": [
+    "9cf2016fece27e14"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-258"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
   "go:backend/internal/pgcheck::TestPgxIngestionGivesTheSameGraphHashAsMemory": {
    "kind": "test",
    "hash": "1ba4af92c4e87358",
@@ -24933,10 +24978,10 @@
   },
   "go:backend/internal/pgconn::TestABuildThatKnowsAnOlderStorageFormatRefusesToStartAndSaysWhy": {
    "kind": "test",
-   "hash": "2eb142f39803e683",
+   "hash": "02c842f2a67d2e91",
    "asserts": 15,
    "literals": [
-    "9b8581e563aae36b"
+    "9ed24ddcc5a46d96"
    ],
    "precision": [],
    "skips": 0,
@@ -24944,7 +24989,7 @@
     "REQ-632"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0094-new-kg-storage-takes-the-place-of-the-old-tables.md"
   },
   "go:backend/internal/pgconn::TestACommitIsKnownOnlyWhenTheDriverOrTheServerSaysSo": {
    "kind": "test",
@@ -25003,6 +25048,36 @@
    "skips": 0,
    "reqs": [
     "REQ-555"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestADatabaseWithKGsInTheOldTablesIsRefusedAndLeftAsItWas": {
+   "kind": "test",
+   "hash": "92ec07a470edcf2f",
+   "asserts": 8,
+   "literals": [
+    "f2b9baa8189b3c4a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-632"
+   ],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestADatabaseWithTheOldTablesAndNoKGGoesOnAndTheTablesAreDropped": {
+   "kind": "test",
+   "hash": "720f78f3efd47e33",
+   "asserts": 8,
+   "literals": [
+    "0f6f79aad92856ef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-632"
    ],
    "added": "2026-11-19",
    "amended_by": null
@@ -25550,6 +25625,21 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTheStepThatDropsTheOldTablesStopsWhenAKGIsInThem": {
+   "kind": "test",
+   "hash": "0d1c42a461823cbd",
+   "asserts": 8,
+   "literals": [
+    "3e56d002d6bfb42d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-632"
+   ],
    "added": "2026-11-19",
    "amended_by": null
   },
@@ -26664,18 +26754,18 @@
   },
   "go:backend/internal/pgstore::TestADamagedSchemaFailsEveryOperationInsteadOfAnsweringWrongly": {
    "kind": "test",
-   "hash": "d22736031e968941",
-   "asserts": 11,
+   "hash": "2cb100bfc310a7fb",
+   "asserts": 17,
    "literals": [
-    "fca9d06447fa30ae"
+    "f1506a513599ffbc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-19",
+   "amended_by": "0094-new-kg-storage-takes-the-place-of-the-old-tables.md"
   },
   "go:backend/internal/pgstore::TestAMoreCompleteModelIsFollowedByAdditionsAndTheTablesThatHadRowsAreNotRewritten": {
    "kind": "test",
@@ -26707,7 +26797,7 @@
   },
   "go:backend/internal/pgstore::TestAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
    "kind": "test",
-   "hash": "a28eb4df6adb5a63",
+   "hash": "66e1032c282aba33",
    "asserts": 9,
    "literals": [
     "d549ea2016eae922"
@@ -26719,7 +26809,7 @@
     "REQ-557"
    ],
    "added": "2026-11-19",
-   "amended_by": null
+   "amended_by": "0094-new-kg-storage-takes-the-place-of-the-old-tables.md"
   },
   "go:backend/internal/pgstore::TestAnIndexThatCannotBeBuiltLeavesTheStateIndexPendingAndTheNextRunFinishesIt": {
    "kind": "test",
@@ -27033,6 +27123,58 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheAbandonThatWasCutIsEnded": {
+   "kind": "test",
+   "hash": "50639ff0126954fc",
+   "asserts": 10,
+   "literals": [
+    "b9ccbce5dc1e750f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheRestoreThatWasCutIsEndedAndTheKGIsOpenAgain": {
+   "kind": "test",
+   "hash": "77b641a1b3424ea0",
+   "asserts": 13,
+   "literals": [
+    "11ac05e80e780cd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestRsmALeaseOfAKGWithNoWorkHalfDoneIsGivenAtOnce": {
+   "kind": "test",
+   "hash": "afef8173375e0e6c",
+   "asserts": 5,
+   "literals": [
+    "42ea9c644b47dedb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestRsmTheServerEndsTheWorkOfEveryKGAndOneThatCannotBeEndedDoesNotStopTheOthers": {
+   "kind": "test",
+   "hash": "b8d041aa7af7921b",
+   "asserts": 17,
+   "literals": [
+    "6fd563788849e473"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-19",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestStatisticsThatCannotBeMadeAndATableThatIsInUseStopTheirRunWithAnError": {

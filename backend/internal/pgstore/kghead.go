@@ -150,7 +150,7 @@ type kgLease struct {
 }
 
 // nowExpr is the SQL of the time a lease is judged by: the database's, or the caller's as the parameter at index.
-func (s *StoreV2) nowExpr(index string) string {
+func (s *Store) nowExpr(index string) string {
 	if s.clock == LeaseClockCaller {
 		return index + "::timestamptz"
 	}
@@ -158,7 +158,7 @@ func (s *StoreV2) nowExpr(index string) string {
 }
 
 // loadLease reads the lease row and locks it as asked. now is the caller's time, used only with the caller's clock.
-func (s *StoreV2) loadLease(ctx context.Context, tx *sql.Tx, a *kgAccess, lock lockMode, now time.Time) (kgLease, error) {
+func (s *Store) loadLease(ctx context.Context, tx *sql.Tx, a *kgAccess, lock lockMode, now time.Time) (kgLease, error) {
 	query := `SELECT lease_owner, lease_until, attempt, semantic_version, COALESCE(lease_until > ` + s.nowExpr("$1") + `, false) FROM ` +
 		a.t(pgschema.TableLease) + ` WHERE id = 1` + string(lock)
 	var args []any
@@ -192,7 +192,7 @@ func (l kgLease) holds(want graph.Lease) error {
 // kgGuard is the check every write makes first, in this order: that no work is half done, the generation, the lease
 // (and that its engine is not older than the one that applied), then the head the write was planned against. It
 // returns the locked head.
-func (s *StoreV2) kgGuard(ctx context.Context, tx *sql.Tx, a *kgAccess, p planned) (kgHeadRow, error) {
+func (s *Store) kgGuard(ctx context.Context, tx *sql.Tx, a *kgAccess, p planned) (kgHeadRow, error) {
 	cur, err := loadKGHead(ctx, tx, a, true)
 	if err != nil {
 		return kgHeadRow{}, err
@@ -217,4 +217,56 @@ func (s *StoreV2) kgGuard(ctx context.Context, tx *sql.Tx, a *kgAccess, p planne
 		return kgHeadRow{}, kernel.Errorf(graph.CodeHeadMoved, "expected applied_seq %d, the head is at %d", p.expected, cur.head.AppliedSeq)
 	}
 	return cur, nil
+}
+
+// hashStateOf reads the three columns of a hash state.
+func hashStateOf(sum []byte, rows int64, parts []byte) (graph.HashState, error) {
+	s, err := sumFrom(sum)
+	if err != nil {
+		return graph.HashState{}, err
+	}
+	p, err := partsOf(parts)
+	if err != nil {
+		return graph.HashState{}, err
+	}
+	return graph.HashState{Sum: s, Rows: rows, Parts: p}, nil
+}
+
+// rollbackDoc is the stored form of the hash state before the first chunk of an open apply.
+type rollbackDoc struct {
+	Sum   string          `json:"s"`
+	Rows  int64           `json:"n"`
+	Parts json.RawMessage `json:"p"`
+}
+
+// rollbackJSON is the value of the rollback column: null, or the state as a document.
+func rollbackJSON(r *graph.HashState) (any, error) {
+	if r == nil {
+		return nil, nil
+	}
+	parts, err := partsJSON(r.Parts)
+	if err != nil {
+		return nil, err
+	}
+	raw, err := marshal(rollbackDoc{Sum: r.Sum.String(), Rows: r.Rows, Parts: parts})
+	return string(raw), err
+}
+
+func rollbackOf(raw []byte) (*graph.HashState, error) {
+	if raw == nil {
+		return nil, nil
+	}
+	var doc rollbackDoc
+	if err := unmarshal(raw, &doc); err != nil {
+		return nil, err
+	}
+	sum, err := sumOf(doc.Sum)
+	if err != nil {
+		return nil, err
+	}
+	parts, err := partsOf(doc.Parts)
+	if err != nil {
+		return nil, err
+	}
+	return &graph.HashState{Sum: sum, Rows: doc.Rows, Parts: parts}, nil
 }

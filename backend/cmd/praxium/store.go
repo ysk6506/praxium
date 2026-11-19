@@ -45,7 +45,12 @@ func openStoreLogged(ctx context.Context, o serveOptions, d wiring, log *slog.Lo
 		return memstore.New(), func() error { return nil }, nil
 	case storePostgres:
 		warnDBTLS(o, d, log)
-		return openPostgres(ctx, o, d)
+		st, closeStore, err := openPostgres(ctx, o, d)
+		if err != nil {
+			return nil, nil, err
+		}
+		resumeWork(ctx, st, log)
+		return st, closeStore, nil
 	case storeFile:
 		return openFile(o, log)
 	}
@@ -115,6 +120,28 @@ func openPostgres(ctx context.Context, o serveOptions, d wiring) (graph.Store, f
 		return nil, nil, err
 	}
 	return st, st.Close, nil
+}
+
+// workResumer is a store that can end the abandon or restore a server left half done (the PostgreSQL store).
+type workResumer interface {
+	ResumeAllWork(ctx context.Context) ([]graph.KGID, error)
+}
+
+// resumeWork ends the abandon or restore that a KG's head says a server left half done (ADR-0094): the KGs are
+// whole before the server answers. A KG whose work cannot be ended is a warning, not a reason to stay down; it stays
+// closed or refusing writes as its head says, and the next lease of it tries again.
+func resumeWork(ctx context.Context, st graph.Store, log *slog.Logger) {
+	r, ok := st.(workResumer)
+	if !ok {
+		return
+	}
+	resumed, err := r.ResumeAllWork(ctx)
+	for _, kg := range resumed {
+		log.Info("praxium ended the work a server left half done on a KG", slog.String("kg", kg.String()))
+	}
+	if err != nil {
+		log.Warn("praxium could not end the work half done on a KG", slog.String("error", err.Error()))
+	}
 }
 
 // lockHint says what to do about a data folder another process has open: stop that process. The folder holds one
