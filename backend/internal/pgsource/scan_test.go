@@ -1,0 +1,111 @@
+package pgsource
+
+import (
+	"embed"
+	"regexp"
+	"strings"
+	"testing"
+)
+
+//go:embed *.go
+var pgsSources embed.FS
+
+// pgsCode is the lines of a non-test source file that are not comments, with the file's name.
+func pgsCode(t *testing.T) map[string][]string {
+	t.Helper()
+	entries, err := pgsSources.ReadDir(".")
+	if err != nil {
+		t.Fatal(err)
+	}
+	out := map[string][]string{}
+	for _, e := range entries {
+		name := e.Name()
+		if strings.HasSuffix(name, "_test.go") {
+			continue
+		}
+		data, err := pgsSources.ReadFile(name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			if strings.HasPrefix(strings.TrimSpace(line), "//") {
+				continue
+			}
+			out[name] = append(out[name], line)
+		}
+	}
+	if len(out) < 10 {
+		t.Fatalf("only %d source files were read", len(out))
+	}
+	return out
+}
+
+// [REQ-487] [REQ-490] [REQ-659] [REQ-660]
+func TestPgsTheCodeHasNoWayAroundTheDefence(t *testing.T) {
+	code := pgsCode(t)
+	only := map[string]string{ // text -> the one file that may have it
+		".Reveal(":         "credential.go",
+		".QueryContext(":   "session.go",
+		".PrepareContext(": "session.go",
+		".ExecContext(":    "",
+		".Exec(":           "",
+		".Query(":          "",
+		".QueryRow":        "",
+		".Prepare(":        "",
+		"sql.OpenDB(":      "connect.go",
+		".Begin(":          "",
+		"BeginTx(":         "session.go",
+	}
+	forbidden := map[string]string{
+		"log.":                  "a log from the adapter (the Observer is the way to tell)",
+		"slog.":                 "a log from the adapter",
+		"fmt.Print":             "a print from the adapter",
+		"os.Std":                "a write to the standard streams",
+		"os.Getenv":             "a read of the environment",
+		"os.LookupEnv":          "a read of the environment",
+		"os.Environ":            "a read of the environment",
+		"sql.Open(":             "a connection that does not go through the dialer of egress",
+		"pq.Open":               "a connection that does not go through the dialer of egress",
+		"pq.NewConfig":          "a configuration read from the environment",
+		"pq.NewConnector(":      "a configuration read from a text and the environment",
+		"pq.DialOpen":           "a dial that is not the connector's",
+		"InsecureSkipVerify":    "a switch that turns the verification of a certificate off",
+		"VerifyPeerCertificate": "a hook that replaces the verification of a certificate",
+		"net.Dial":              "a dial that does not go through egress",
+		"net.Dialer":            "a dialer that is not egress's",
+		"crypto/tls":            "a TLS configuration of this package (egress makes it)",
+		"SSLModeRequire":        "a mode that does not verify",
+		"SSLModePrefer":         "a mode that does not verify",
+		"SSLModeVerifyCA":       "a mode that does not verify the name",
+		"SSLModeAllow":          "a mode that does not verify",
+	}
+	// Write statements and settings, as words of a statement (a word of Go, such as `Update`, is no match).
+	write := regexp.MustCompile(`"[^"]*\b(INSERT|UPDATE|DELETE|CREATE|DROP|TRUNCATE|ALTER|GRANT|COPY|LISTEN|NOTIFY|VACUUM|LOCK|CALL|DO|SET|RESET)\b[^"]*"`)
+	for name, lines := range code {
+		for _, line := range lines {
+			for text, file := range only {
+				if strings.Contains(line, text) && name != file {
+					t.Errorf("%s: %q is used outside %q", name, strings.TrimSpace(line), file)
+				}
+			}
+			for text, why := range forbidden {
+				if strings.Contains(line, text) {
+					t.Errorf("%s: %q is %s", name, strings.TrimSpace(line), why)
+				}
+			}
+			if m := write.FindString(line); m != "" && !strings.Contains(line, "set_config") {
+				t.Errorf("%s: %q looks like a statement that writes or changes a setting", name, strings.TrimSpace(line))
+			}
+		}
+	}
+	// The two places that must exist, so that the scan does not pass because it looks at nothing.
+	for _, c := range []struct{ file, text string }{{"credential.go", ".Reveal("}, {"session.go", ".PrepareContext("}, {"session.go", ".QueryContext("}, {"connect.go", "conn.Dialer("}, {"session.go", "ReadOnly: true"}} {
+		found := false
+		for _, line := range code[c.file] {
+			found = found || strings.Contains(line, c.text)
+		}
+		if !found {
+			t.Errorf("%s does not have %q", c.file, c.text)
+		}
+	}
+}
