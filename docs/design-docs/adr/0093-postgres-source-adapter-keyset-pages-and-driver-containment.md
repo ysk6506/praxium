@@ -22,6 +22,7 @@ amends:
   - adr: "0091"
     what: 다이얼러에 연결 추적 변종(전체 닫기, 바이트 예산, 모두 평문으로 보기)을 더한다. 뒤로 미룬 일의 PostgreSQL 연결 감싸개 함수는 이것으로 닫는다
 touches_protected:
+  - docs/design-docs/adr/0091-egress-defence-in-one-unit-adapter-egress.md
   - docs/product-specs/requirements-ingestion.md
   - harness/config/architecture.yaml
   - harness/config/coverage-floor.json
@@ -34,7 +35,7 @@ amends_tests:
   - go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence
   - go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged
 test_change_reason: 두 테스트는 egress의 소스 전체(go:embed *.go)를 읽어 방어를 우회하는 글자가 없는지 보므로, 결정 2의 추적 다이얼러(tracker.go)와 오류 종류 KindLimit이 더해지면 지문이 바뀐다. 테스트 파일은 한 글자도 바뀌지 않았고 단언과 기대 값도 그대로이며, 새 소스에서도 두 테스트가 통과한다
-decision_hash: 95dbedf3fd334f69
+decision_hash: cddcdd612c8264f7
 ---
 # ADR-0093 PostgreSQL 소스 어댑터
 
@@ -60,8 +61,8 @@ decision_hash: 95dbedf3fd334f69
 14. **오류**는 SQLSTATE와 egress의 종류로 `ingest.SourceError`가 된다(아래 표). 드라이버와 서버의 글은 내보내지 않는다. 읽는 쪽의 `ctx`가 끝났으면 `ctx.Err()`를 그대로 준다(취소하면 드라이버는 컨텍스트 오류가 아니라 57014를 주므로 컨텍스트를 먼저 본다). `Detail`(서버의 문장과 위치)은 42, 22, 0A류에만 붙고 요청한 사람만 본다. 1KiB로 자르고 제어 문자를 뺀다. TLS 실패는 드라이버 안에서 일어나 egress의 오류가 아니므로 `egress.Sanitize`로 읽어 `tls_rejected`로 가른다.
 15. **`Check`**는 첫 페이지을 실제로 읽고 `Steps`를 채운다: 시크릿, 이름과 연결, TLS, 인증, 문장, 키 컬럼, 첫 페이지. 실패한 단계에서 끝난다. 계정의 쓰기 권한 조사와 소스 탐색은 이 변경에 없다(REQ-490, REQ-489의 남은 부분).
 16. **요구사항.** 이 변경이 다 구현한 REQ-655와 어댑터 부분의 REQ-487, REQ-489, REQ-490에서 "예정"을 떼고, 어댑터가 구현한 부분을 새 번호 REQ-670(구현)으로, 남은 부분(쓰기 권한 점검, 소스 탐색, 샘플)을 REQ-671(예정)로 나눈다. 안전 검토가 더한 방어는 REQ-672에서 REQ-679까지다: 제어 문자(672), 연결 추적과 한도(673), 악의적인 서버(674), TLS의 분류(675), 미리 보기의 상한(676), 키 타입(677), `PQGO_DEBUG`(678), 오류 글의 한도와 `pg_catalog`(679).
-17. **테스트만 있는 유닛 `adapter.sourcecheck`**(`backend/internal/sourcecheck`). 악의적인 서버(테스트가 고른 바이트를 보내는 루프백의 가짜 PostgreSQL)와 TLS의 정상 경로(진짜 테스트 서버 앞의 TLS 종단 프록시)를 리포 안에서 시험하려면 소켓을 여는 테스트가 있어야 하는데, 제품 코드가 있는 유닛은 `net`과 `crypto/tls`를 import할 수 없다. 그래서 제품 코드가 없는 유닛(`doc.go`의 패키지 절뿐)에 두고 **그 테스트 파일 이름을 `restricted_stdlib`에 적는다**(유닛 이름이 아니라 `fakepg_test.go`, `tlsproxy_test.go` 파일 단위. 이 줄은 규칙을 풀어 주는 설계 결정이고 이 ADR이 이유다). 테스트만 있는 유닛을 하니스가 강제하는 방법은 `pgcheck`와 같다: `may_import: []`라 제품 코드는 아무것도 import하지 못하고, 테스트가 쓰는 유닛은 `test_may_import`에 적는다. 이 유닛을 import하는 유닛은 없다. 인증서는 테스트가 고정한 시드로 만들고(Ed25519, 시스템의 무작위나 `time.Now`를 쓰지 않고 2126년까지 유효) TLS 프록시는 SSLRequest에 `S`로 답해 종단하고 평문으로 진짜 서버에 넘긴다.
-18. **드라이버가 패닉해도 읽기 하나만 끝난다.** lib/pq에는 `recover`가 없고, 악의적인 서버는 음수 길이나 짧은 메시지로 패닉을 낼 수 있다. 드라이버를 부르는 곳은 `session.guard`/`catch`(코드에서 한 곳)가 감싸 패닉을 고정된 글의 `response_format` 오류로 바꾸고(패닉의 값은 글, 로그, `Detail` 어디에도 없다) 연결과 풀을 닫고 다시 쓰지 않는다. 닫는 호출도 같은 감싸개를 지나 연결이 죽었어도 실제로 닫는다(시험에서 이 결함을 찾았다). 드라이버는 **우리 고루틴에서만** 부른다: 연결은 `db.Conn(ctx)`로 하나를 붙잡고 있어서, `database/sql`의 연결을 여는 고루틴은 기다리는 호출자가 있을 때만 일하므로 `Connect`를 부르지 않는다. lib/pq의 취소(`watchCancel`→`cancel`)는 연결을 맺고 취소 요청을 쓰고 SSLRequest의 답 1바이트를 읽고 EOF까지 복사할 뿐이라 서버의 메시지를 해석하지 않는다. 그러나 `database/sql`의 `tx.awaitDone`과 `rows.awaitDone`은 컨텍스트가 끝나면 **그들의 고루틴**에서 드라이버의 `Rollback`과 `Close`를 부르고, 그 안에서 서버의 바이트를 해석할 수 있다(남는 위험). 응답이 모양에 맞지 않는 경우도 막는다: 키 하나가 배치를 채웠는데 그 키의 행이 없으면(원본이 달라졌다) 불완전한 수집으로 끝내고, 행의 열 수가 문장과 다르면, NULL 키를 센 결과가 없는 키 열 번호를 가리키면 `response_format`이다.
+17. **테스트만 있는 유닛 `adapter.sourcecheck`**(`backend/internal/sourcecheck`). 악의적인 서버(테스트가 고른 바이트를 보내는 루프백의 가짜 PostgreSQL)와 TLS의 정상 경로(진짜 테스트 서버 앞의 TLS 종단 프록시)를 리포 안에서 테스트하려면 소켓을 여는 테스트가 있어야 하는데, 제품 코드가 있는 유닛은 `net`과 `crypto/tls`를 import할 수 없다. 그래서 제품 코드가 없는 유닛(`doc.go`의 패키지 절뿐)에 두고 **그 테스트 파일 이름을 `restricted_stdlib`에 적는다**(유닛 이름이 아니라 `fakepg_test.go`, `tlsproxy_test.go` 파일 단위. 이 줄은 규칙을 풀어 주는 설계 결정이고 이 ADR이 이유다). 테스트만 있는 유닛을 하니스가 강제하는 방법은 `pgcheck`와 같다: `may_import: []`라 제품 코드는 아무것도 import하지 못하고, 테스트가 쓰는 유닛은 `test_may_import`에 적는다. 이 유닛을 import하는 유닛은 없다. 인증서는 테스트가 고정한 시드로 만들고(Ed25519, 시스템의 무작위나 `time.Now`를 쓰지 않고 2126년까지 유효) TLS 프록시는 SSLRequest에 `S`로 답해 종단하고 평문으로 진짜 서버에 넘긴다.
+18. **드라이버가 패닉해도 읽기 하나만 끝난다.** lib/pq에는 `recover`가 없고, 악의적인 서버는 음수 길이나 짧은 메시지로 패닉을 낼 수 있다. 드라이버를 부르는 곳은 `session.guard`/`catch`(코드에서 한 곳)가 감싸 패닉을 고정된 글의 `response_format` 오류로 바꾸고(패닉의 값은 글, 로그, `Detail` 어디에도 없다) 연결과 풀을 닫고 다시 쓰지 않는다. 닫는 호출도 같은 감싸개를 지나 연결이 죽었어도 실제로 닫는다(테스트에서 이 결함을 찾았다). 드라이버는 **우리 고루틴에서만** 부른다: 연결은 `db.Conn(ctx)`로 하나를 붙잡고 있어서, `database/sql`의 연결을 여는 고루틴은 기다리는 호출자가 있을 때만 일하므로 `Connect`를 부르지 않는다. lib/pq의 취소(`watchCancel`→`cancel`)는 연결을 맺고 취소 요청을 쓰고 SSLRequest의 답 1바이트를 읽고 EOF까지 복사할 뿐이라 서버의 메시지를 해석하지 않는다. 그러나 `database/sql`의 `tx.awaitDone`과 `rows.awaitDone`은 컨텍스트가 끝나면 **그들의 고루틴**에서 드라이버의 `Rollback`과 `Close`를 부르고, 그 안에서 서버의 바이트를 해석할 수 있다(남는 위험). 응답이 모양에 맞지 않는 경우도 막는다: 키 하나가 배치를 채웠는데 그 키의 행이 없으면(원본이 달라졌다) 불완전한 수집으로 끝내고, 행의 열 수가 문장과 다르면, NULL 키를 센 결과가 없는 키 열 번호를 가리키면 `response_format`이다.
 19. **제어 문자.** NUL은 시크릿 어느 필드에도 들 수 없다(`core.secrets`). 어댑터는 사용자 이름, 비밀번호, 호스트, 데이터베이스 이름에 NUL이나 제어 문자가 있으면 연결하지 않는다(시크릿의 값이면 `secret_unusable`, 정의의 값이면 정의 오류). 드라이버가 시작 패킷을 NUL로 끝나는 글로 쓰기 때문이다. 어댑터의 문장이 부르는 함수는 `pg_catalog.`를 붙여 쓴다(`search_path`로 바꿔 부를 수 없다. 연산자는 이렇게 못 하므로 남는 위험이다).
 20. **미리 보기의 상한.** 페이지당 행 수는 `ceil(MaxRows/MaxPages)`이고 전체는 `MaxRows`에서 끊으며, `WithDefaults`는 `MaxPages`를 20으로 자른다.
 21. **`PQGO_DEBUG`가 설정되어 있으면 서버가 시작하지 않는다.** 드라이버가 이 변수로 비밀번호와 읽은 행을 표준 오류에 쓰기 때문이다. `PG*` 변수를 막는 곳(`adapter.pgconn`의 `driverEnvNames`)에 더했고, 어댑터도 읽기 전에 한 번 더 막는다.
@@ -74,7 +75,7 @@ decision_hash: 95dbedf3fd334f69
 | `verify-full`이 쓸 만한가 | 아니다(홈 폴더의 `root.crt`). `require` 등은 `InsecureSkipVerify`. `pqgo-<키>`와 `RegisterTLSConfig`는 복제한 설정에 `MinVersion`, `ServerName`만 덮는다. 맞는 CA는 통과, 틀린 CA와 이름 불일치는 x509 오류(`tls`로 분류), TLS 없는 서버는 `pq.ErrSSLNotSupported` | 결정 3 |
 | `crypto/tls`가 필요한가 | 아니다(결과를 이름 짓지 않고 넘긴다) | egress 변경 없음 |
 | 드라이버의 패닉 | 음수 길이, 짧은 데이터 행, 모자란 열, 범위 밖의 열 번호는 패닉이거나 모양이 틀린 답이다. `recover`는 우리 쪽에만 있다 | 결정 18 |
-| 큰 길이 필드(0x7FFFFFF0) | 드라이버는 읽기 전에 `make([]byte, n)`을 한다(`recvMessage`). 주소 공간에 여유가 있으면 2GiB를 잡아도 쓰지 않은 쪽은 상주하지 않는다(실험: RSS 4MiB). 주소 공간을 1.5GiB로 제한한 자식 프로세스는 `fatal error: out of memory`로 죽고 이것은 `recover`로 잡히지 않는다. 길이만큼 쓴 만큼만 힙이 자란다(40MiB 행의 시험에서 힙이 40MiB 늘고 예산에서 끊었다) | 남는 위험. 시험도 드라이버 변경도 없다 |
+| 큰 길이 필드(0x7FFFFFF0) | 드라이버는 읽기 전에 `make([]byte, n)`을 한다(`recvMessage`). 주소 공간에 여유가 있으면 2GiB를 잡아도 쓰지 않은 쪽은 상주하지 않는다(실험: RSS 4MiB). 주소 공간을 1.5GiB로 제한한 자식 프로세스는 `fatal error: out of memory`로 죽고 이것은 `recover`로 잡히지 않는다. 길이만큼 쓴 만큼만 힙이 자란다(40MiB 행의 테스트에서 힙이 40MiB 늘고 예산에서 끊었다) | 남는 위험. 테스트도 드라이버 변경도 없다 |
 | 읽는 환경과 파일 | 손으로 채운 `Config`는 `PG*`와 서비스 파일을 읽지 않는다. 남는 것: `~/.pgpass`, `~/.postgresql/postgresql.crt`와 키(서버가 클라이언트 인증서를 받았다). 없는 파일 경로로 막으면 0개 | 결정 4. `adapter.pgconn`의 "PG* 변수가 있으면 시작하지 않는다"는 `NewConfig`용이라 필요 없다 |
 | 키 왕복 | 정수, `numeric`(1.0과 1.50, 20자리, NaN), 글자(유니코드, 따옴표, 역슬래시), `varchar`의 끝 공백, `bpchar`, `uuid`, 날짜(infinity, BC), 시각(마이크로초, infinity), 열거형, 두 컬럼 키가 모두 같은 다음 페이지를 준다 | 결정 9 |
 | NULL 키 | 첫 페이지에 조건이 없으면 NULL 행이 나온다 | 결정 11 |
@@ -144,7 +145,7 @@ decision_hash: 95dbedf3fd334f69
 
 ## 남는 위험
 
-- **TLS를 켠 실제 서버는 테스트하지 못했다.** TLS는 테스트 서버 앞의 종단 프록시(`adapter.sourcecheck`)로 시험한다: 맞는 CA는 행을 읽고, 틀린 CA와 이름 불일치는 `tls_rejected`이고, TLS를 내지 않는 서버에는 평문으로 물러서지 않는다. 서버 자신이 TLS를 켜는 일은 `with-postgres.sh`에 더하지 않았다.
+- **TLS를 켠 실제 서버는 테스트하지 못했다.** TLS는 테스트 서버 앞의 종단 프록시(`adapter.sourcecheck`)로 테스트한다: 맞는 CA는 행을 읽고, 틀린 CA와 이름 불일치는 `tls_rejected`이고, TLS를 내지 않는 서버에는 평문으로 물러서지 않는다. 서버 자신이 TLS를 켜는 일은 `with-postgres.sh`에 더하지 않았다.
 - **큰 길이 필드의 할당.** 악의적인 서버가 0x7FFFFFF0을 보내면 드라이버가 2GiB의 버퍼를 읽기 전에 잡는다. 주소 공간이나 메모리의 한도가 있는 호스트에서는 `fatal error: out of memory`로 프로세스가 죽는다(`recover`로 잡히지 않는다). 정직한 서버만 소스로 쓰거나 호스트의 한도를 넉넉히 두는 것이 지금의 경계이고, 드라이버를 바꾸지 않았다.
 - **행 하나의 크기.** 바이트 예산(결정 8)이 행 하나를 `4×페이지 한도 + 1MiB`에서 끊지만 드라이버는 그 행을 한 메시지로 메모리에 잡으므로 한 행이 그 크기까지는 메모리에 있다.
 - **SCRAM의 반복 횟수.** 서버가 매우 큰 반복 횟수를 주면 비밀번호 계산이 CPU를 오래 쓴다. 연결 시간(`connect_timeout`)이 끊지만 그동안 계산은 돈다(검토 P4).
@@ -169,7 +170,7 @@ decision_hash: 95dbedf3fd334f69
 - **제품 DB의 주소와 서버의 듣는 주소를 egress의 `Deny`에 자동으로 더하기**(검토 C3). 운영자가 `Deny`로 넣는다.
 - **동시 읽기와 속도의 한도.**
 - **실행의 고루틴마다 `recover`를 두기**(결정 18의 `awaitDone`이 닿는 곳).
-- **이어 읽기 토큰은 서버의 저장소에서만 받기.** 지금은 호출자가 주는 토큰을 검증해서 읽는다.
+- **이어 읽기 토큰은 서버의 저장소에서만 가져오기.** 지금은 호출자가 주는 토큰을 검증해서 읽는다.
 - **`SourceError.Err`를 로그에 남기지 않기.** 원인 오류가 글에 드러나지 않게 하는 일은 호출하는 쪽의 규칙이다.
 - **`go/ast`로 허용 목록을 훑는 검사**(검토 C1). 지금은 글 훑기 테스트가 지킨다.
 

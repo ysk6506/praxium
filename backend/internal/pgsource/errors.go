@@ -34,6 +34,14 @@ func classify(parent context.Context, err error) error {
 	if parent.Err() != nil {
 		return parent.Err()
 	}
+	if out := classifyTyped(err); out != nil {
+		return out
+	}
+	return classifyTransport(err)
+}
+
+// classifyTyped maps the errors that carry their own kind: the egress dialer's and the server's (SQLSTATE).
+func classifyTyped(err error) error {
 	var ee *egress.Error
 	if errors.As(err, &ee) {
 		return fromEgress(ee, err)
@@ -42,6 +50,11 @@ func classify(parent context.Context, err error) error {
 	if errors.As(err, &pe) {
 		return fromServer(pe, err)
 	}
+	return nil
+}
+
+// classifyTransport maps the errors of the connection and of the driver that have no kind of their own.
+func classifyTransport(err error) error {
 	if errors.Is(err, pq.ErrSSLNotSupported) {
 		return sourceErr(ingest.SrcTLSRejected, "the server does not offer TLS, and the source asks for it (sslmode verify-full)", err)
 	}
@@ -53,10 +66,14 @@ func classify(parent context.Context, err error) error {
 	if ee, ok := egress.Sanitize(err).(*egress.Error); ok && ee.Kind == egress.KindTLS {
 		return fromEgress(ee, err)
 	}
-	if errors.Is(err, driver.ErrBadConn) || errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || isNetwork(err) {
+	if isConnectionLost(err) {
 		return sourceErr(ingest.SrcConnectionLost, "the connection to the source broke", err)
 	}
 	return sourceErr(ingest.SrcInternal, "the read failed in a way the adapter does not know", err)
+}
+
+func isConnectionLost(err error) bool {
+	return errors.Is(err, driver.ErrBadConn) || errors.Is(err, io.EOF) || errors.Is(err, io.ErrUnexpectedEOF) || isNetwork(err)
 }
 
 func isNetwork(err error) bool {

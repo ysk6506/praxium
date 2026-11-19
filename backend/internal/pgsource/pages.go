@@ -58,7 +58,7 @@ func (f *flow) pages(ctx context.Context, opts ingest.PageOptions, skipNull bool
 	f.w = ingest.NewPageWriter(f.pl.ds, opts)
 	f.sess.budget = pageBudget(opts.MaxBytes)
 	after, resumed := decodeToken(opts.Resume, f.pl.fp, len(f.pl.keys))
-	if !resumed && !skipNull && !f.nullKeys(ctx) {
+	if !f.begin(ctx, resumed, skipNull) {
 		return
 	}
 	for {
@@ -71,23 +71,40 @@ func (f *flow) pages(ctx context.Context, opts ingest.PageOptions, skipNull bool
 			f.fail(ctx, err)
 			return
 		}
-		if res.changed || (len(res.rows) == 0 && !res.end) {
-			f.w.Finish(f.emit, ingest.Completeness{Reason: "the source changed while the dataset was read; the dataset is read up to the page before"})
-			return
-		}
-		if res.tooBig {
-			f.w.Finish(f.emit, ingest.Completeness{Reason: "more than " + itoa(opts.MaxRows) + " rows have one natural key, more than a page holds; the dataset is read up to that key"})
-			return
-		}
-		if !f.give(ctx, res.rows) {
-			return
-		}
-		if res.end {
-			f.w.Finish(f.emit, ingest.Completeness{Complete: true})
+		if !f.afterBatch(ctx, res, opts) {
 			return
 		}
 		after = res.rows[len(res.rows)-1].keys
 	}
+}
+
+// begin gives the rows without a natural key first, unless the read resumes from a token or passes them over.
+func (f *flow) begin(ctx context.Context, resumed, skipNull bool) bool {
+	if resumed || skipNull {
+		return true
+	}
+	return f.nullKeys(ctx)
+}
+
+// afterBatch puts the rows of a batch on the pages and tells whether the read goes on. A batch that ends the read, or
+// that cannot be trusted (the source changed, or one key holds more rows than a page), finishes the pages here.
+func (f *flow) afterBatch(ctx context.Context, res batchResult, opts ingest.PageOptions) bool {
+	if res.changed || (len(res.rows) == 0 && !res.end) {
+		f.w.Finish(f.emit, ingest.Completeness{Reason: "the source changed while the dataset was read; the dataset is read up to the page before"})
+		return false
+	}
+	if res.tooBig {
+		f.w.Finish(f.emit, ingest.Completeness{Reason: "more than " + itoa(opts.MaxRows) + " rows have one natural key, more than a page holds; the dataset is read up to that key"})
+		return false
+	}
+	if !f.give(ctx, res.rows) {
+		return false
+	}
+	if res.end {
+		f.w.Finish(f.emit, ingest.Completeness{Complete: true})
+		return false
+	}
+	return true
 }
 
 // next reads one batch in one transaction and tells the observer about it.
