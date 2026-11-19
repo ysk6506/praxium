@@ -19,6 +19,7 @@ touches_protected:
   - harness/config/architecture.yaml
   - docs/product-specs/requirements-ingestion.md
   - harness/config/test-lock.json
+  - docs/design-docs/adr/0095-ingestion-tables-in-the-schema-plan.md
 updates_docs:
   - ARCHITECTURE.md
   - docs/design-docs/ingestion-at-scale.md
