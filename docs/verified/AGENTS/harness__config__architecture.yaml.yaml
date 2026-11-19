@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "e88908a5f6c10222"
+hash: "72e378d0fcc2dbf9"
 date: "2026-11-19"
-note: "architecture.yaml에 유닛 adapter.pgschema(core.kernel, core.model만 import)를 더하고 어댑터 규칙의 주석을 고쳤다. AGENTS.md는 유닛 목록과 PostgreSQL 어댑터를 적지 않아 고칠 곳이 없었다"
+note: "architecture.yaml: adapter.pgstore may_import gets adapter.pgschema (ADR-0087); read the doc against it, ARCHITECTURE.md row updated, AGENTS.md needs no change"
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"

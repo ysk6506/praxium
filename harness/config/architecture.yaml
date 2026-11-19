@@ -66,8 +66,8 @@ go:
     adapter.pgconn: {path: backend/internal/pgconn, may_import: [core.kernel]}
     # The plan of the tables of one KG in PostgreSQL (ADR-0085): a pure function from the model to an ordered list of statements and a manifest, and the difference of two manifests. It implements no port and knows neither the driver nor a database; adapter.pgstore runs the plan.
     adapter.pgschema: {path: backend/internal/pgschema, may_import: [core.kernel, core.model]}
-    # The PostgreSQL implementation of the storage port (ADR-0032) and the records of the built-in authentication. core.model is for the grade and basis types the rows carry; adapter.pgconn gives it the connection (ADR-0083). Its tests run the conformance suite against a real server.
-    adapter.pgstore: {path: backend/internal/pgstore, may_import: [core.kernel, core.model, core.graph, adapter.pgconn], test_may_import: [adapter.graphcheck]}
+    # The PostgreSQL implementation of the storage port (ADR-0032) and the records of the built-in authentication. core.model is for the grade and basis types the rows carry; adapter.pgconn gives it the connection (ADR-0083); adapter.pgschema gives it the plan of the storage schema of a KG, which its schema executor runs (ADR-0087). Its tests run the conformance suite against a real server.
+    adapter.pgstore: {path: backend/internal/pgstore, may_import: [core.kernel, core.model, core.graph, adapter.pgconn, adapter.pgschema], test_may_import: [adapter.graphcheck]}
     # The conformance suite is production code of its own (it cannot import "testing"), so it never imports the adapter it checks: only the test that runs it does (ADR-0028).
     adapter.graphcheck: {path: backend/internal/graphcheck, may_import: [core.kernel, core.model, core.graph], test_may_import: [adapter.memstore]}
     # The first three closed queries over the storage port (ADR-0026). The core imports no adapter (ADR-0027): its tests run on graph.ScratchStore.
