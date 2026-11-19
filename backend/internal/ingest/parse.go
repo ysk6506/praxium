@@ -276,43 +276,11 @@ func (t *Table) jsonLine(d Dataset, line int, text []byte) {
 	fields := make(map[string]string, len(d.Columns))
 	for _, c := range d.Columns {
 		for _, p := range c.Paths {
-			if v, ok := pick(doc, strings.Split(p, ".")); ok {
+			if v, ok := pick(doc, segmentsOf(p)); ok {
 				fields[c.Name] = v
 				break
 			}
 		}
 	}
 	t.addRow(d, line, fields)
-}
-
-// pick follows a path of object names and array positions. A value that is not a scalar, or is null, is no value:
-// the second result is false.
-func pick(v any, path []string) (string, bool) {
-	for _, seg := range path {
-		switch x := v.(type) {
-		case map[string]any:
-			next, ok := x[seg]
-			if !ok {
-				return "", false
-			}
-			v = next
-		case []any:
-			i, err := strconv.Atoi(seg)
-			if err != nil || i < 0 || i >= len(x) {
-				return "", false
-			}
-			v = x[i]
-		default:
-			return "", false
-		}
-	}
-	switch x := v.(type) {
-	case string:
-		return x, x != ""
-	case json.Number:
-		return x.String(), true
-	case bool:
-		return strconv.FormatBool(x), true
-	}
-	return "", false
 }
