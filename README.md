@@ -219,7 +219,7 @@ pnpm install --frozen-lockfile
 scripts/build-with-web.sh dist/praxium
 ```
 
-검사는 `scripts/with-postgres.sh pnpm check`로 실행합니다. 일부 Go 테스트가 PostgreSQL 16을 쓰며, 이 스크립트가 일회용 서버를 띄웠다가 끝나면 지웁니다.
+검사는 `scripts/with-postgres.sh pnpm check`로 실행합니다. 일부 Go 테스트가 PostgreSQL 18을 쓰며, 이 스크립트가 일회용 서버를 띄웠다가 끝나면 지웁니다. 서버 프로그램이 PATH에 없으면 `PG_BIN`에 18의 `bin` 폴더를 주세요.
 
 ## 기여, 지원, 보안
 
