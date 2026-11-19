@@ -28,6 +28,9 @@ updates_docs:
 amends: []
 amends_tests: []
 decision_hash: bfb855537ef4cc22
+amended_by:
+  - adr: "0097"
+    what: 결정 5·6·8·9의 같은 응답 확인, 읽는 방식, 토큰 만들기와 남는 위험
 ---
 # ADR-0092 HTTP API 소스를 읽는 어댑터
 

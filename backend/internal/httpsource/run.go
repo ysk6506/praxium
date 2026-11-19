@@ -36,6 +36,10 @@ type run struct {
 	exchanges []ingest.Exchange
 	// firstOnly ends the read after the first response, for a check.
 	firstOnly bool
+	// open is the answer whose body was opened last, so that a read that ends in the middle of it lets go of it.
+	open *reply
+	// tokens is how many tokens of pages the read made, and cleaned how many texts had a value of a secret taken out.
+	tokens, cleaned int
 }
 
 // maxExchanges is the most exchanges a preview keeps.
@@ -90,28 +94,30 @@ func (r *Reader) admit(source string, ds ingest.Dataset) error {
 }
 
 func (rn *run) close() {
+	rn.open.closeBody()
 	rn.signer.close()
 	rn.doer.CloseIdleConnections()
 }
 
-// texts are the values of the secrets that are open, for the masks.
-func (rn *run) texts() []string { return rn.signer.mask.list() }
-
-// emit tells the observer what happened, with where it happened.
+// emit tells the observer what happened, with where it happened. The path may hold what the source put in an address it
+// gave, and the reason a sentence of the reader's: both have the values of the open secrets taken out.
 func (rn *run) emit(e ingest.Event) {
 	obs := rn.r.cfg.Observer
 	if obs == nil {
 		return
 	}
 	e.Source, e.Dataset, e.Host, e.Port = rn.set.id, rn.dsID, rn.host, rn.port
+	e.Path, _ = rn.signer.mask.clean(e.Path)
+	e.Reason, _ = rn.signer.mask.clean(e.Reason)
 	obs.Observe(e)
 }
 
-// record keeps an exchange for a preview.
+// record keeps an exchange for a preview, with the values of the open secrets taken out of every text of it.
 func (rn *run) record(p plan, rep *reply) {
 	if !rn.keep || len(rn.exchanges) >= maxExchanges {
 		return
 	}
 	rn.exchanges = append(rn.exchanges, ingest.Exchange{
-		Method: p.method, Path: p.url.Path, Query: p.shown, Status: rep.status, Headers: ingest.MaskHeaders(rep.header)})
+		Method: p.method, Path: rn.clean(p.url.Path), Query: rn.cleanNames(p.shown), Status: rep.status,
+		Headers: rn.cleanNames(ingest.MaskHeaders(rep.header))})
 }

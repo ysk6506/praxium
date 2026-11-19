@@ -68,10 +68,6 @@ func tokenAt(fp string, at pos, skip, base int) []byte {
 	return encodeToken(resumeToken{FP: fp, Page: at.page, Offset: at.offset, Cursor: at.cursor, Skip: skip, Base: base})
 }
 
-func tokenEnd(fp string, base int) []byte {
-	return encodeToken(resumeToken{FP: fp, Base: base, End: true})
-}
-
 // fingerprint names the parts of the definition a position depends on: where the requests go, what they ask, and how
 // the pages are told apart. The limits (max_pages) and the columns are not among them, so that changing those does not
 // throw a token away.

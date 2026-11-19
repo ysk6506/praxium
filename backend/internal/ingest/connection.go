@@ -58,6 +58,11 @@ const (
 	DefaultLockSeconds         = 5
 )
 
+// MaxResponseBytesLimit is the most a definition may set max_response_bytes to (ADR-0097). The adapter reads a response as
+// a stream, so the memory of a read does not depend on it; the limit bounds how long one response holds a connection and
+// how much a source may send.
+const MaxResponseBytesLimit = 256 << 20
+
 // SecretRef names a secret of the store; the definition holds the name and never the value. It is read where the
 // adapter builds its request, and only there.
 type SecretRef struct {
