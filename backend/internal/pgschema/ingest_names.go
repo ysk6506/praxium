@@ -77,6 +77,7 @@ const (
 	ColRowNo       = "row_no"
 	ColPlace       = "place"
 	ColFiltered    = "filtered"
+	ColHeld        = "held"
 	ColChangeKind  = "change_kind"
 	ColProblems    = "problems"
 	ColFeedNo      = "feed_no"
