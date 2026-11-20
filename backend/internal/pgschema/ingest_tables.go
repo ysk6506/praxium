@@ -24,10 +24,15 @@ const (
 	typeKeyText = `text COLLATE "C" NOT NULL`
 	typeHash16  = "bytea NOT NULL"
 	// typeHeld says that a key, an end or a claim belongs to a row that a rule filtered out (generator version 4).
-	typeHeld  = "boolean NOT NULL DEFAULT false"
-	typeSmall = "smallint NOT NULL"
-	typeBig   = "bigint NOT NULL"
-	typeInt   = "integer NOT NULL"
+	typeHeld = "boolean NOT NULL DEFAULT false"
+	// typeDefNo is the number of the definition (the feed or the link) a problem arose in; a problem of the record as a whole,
+	// such as a key that repeats in the batch, has none (generator version 5).
+	typeDefNo = "integer"
+	// typeExpired says that the time of a wait is up: the record is closed (unseen) or let go of (filtered).
+	typeExpired = "boolean NOT NULL DEFAULT false"
+	typeSmall   = "smallint NOT NULL"
+	typeBig     = "bigint NOT NULL"
+	typeInt     = "integer NOT NULL"
 )
 
 // ingestTableDefs are the tables of the ingestion at scale that every storage schema has: the permanent ones
@@ -52,7 +57,7 @@ func permanentIngestDefs() []tableDef {
 		}},
 		{Name: TableRecordWait, With: vacuumBig, Cols: []string{
 			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColKind, typeSmall),
-			col(ColRuns, typeInt), col(ColFirstAt, "timestamptz NOT NULL"),
+			col(ColRuns, typeInt), col(ColFirstAt, "timestamptz NOT NULL"), col(ColExpired, typeExpired),
 			"PRIMARY KEY (" + ColSrcNo + ", " + ColDatasetNo + ", " + ColKey + ", " + ColKind + ")",
 		}},
 		// What a record asked to find, and what it found. A target of NULL is not solved.
@@ -63,7 +68,7 @@ func permanentIngestDefs() []tableDef {
 			"PRIMARY KEY (" + strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey, ColRole, ColDefNo, ColSub}, ", ") + ")",
 		}},
 		{Name: TableRecordProblem, With: vacuumBig, Cols: []string{
-			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColDefNo, typeInt),
+			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColDefNo, typeDefNo),
 			col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
 		}},
 	}
@@ -117,6 +122,7 @@ func computeRecordDefs() []tableDef {
 			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText),
 			col(ColFields, "text[] NOT NULL"), col(ColRawHash, typeHash16), col(ColDeclRev, typeInt),
 			col(ColOpenedSeq, typeBig), col(ColFate, typeSmall), col(ColWhy, typeSmall),
+			col(ColPage, "integer"), col(ColRowNo, "integer"),
 		}},
 		{Name: TableCalcWait, Cols: []string{
 			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColKind, typeSmall),
@@ -186,7 +192,7 @@ func computeResultDefs() []tableDef {
 			"PRIMARY KEY (" + ColObjNo + ", " + ColScheme + ", " + ColValue + ", " + ColScope + ")",
 		}},
 		{Name: TableCalcProblem, Cols: []string{
-			col(ColRid, typeBig), col(ColDefNo, typeInt), col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
+			col(ColRid, typeBig), col(ColDefNo, typeDefNo), col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
 		}},
 		{Name: TableCalcRef, Cols: []string{
 			col(ColRid, typeBig), col(ColRole, typeSmall), col(ColDefNo, typeInt), col(ColSub, typeInt), col(ColLookupHash, "bytea"),
@@ -223,5 +229,14 @@ func ingestIndexDefs() []indexDef {
 		{Name: "record_problem_record", Table: TableRecordProblem, Expr: strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey}, ", ")},
 		{Name: "calc_record_key", Table: TableCalcRecord, Expr: strings.Join([]string{ColSrcNo, ColDatasetNo, ColKey}, ", "), Unique: true},
 		{Name: "ingest_diff_chunk", Table: TableIngestDiff, Expr: ColChunkNo + ", " + ColOrd},
+		// The comparison of the rows received with the raw records reads them in the order of (dataset, key), a range at a time, and
+		// takes the last row of a key by the place.
+		stageRecordKeyIndex(),
 	}
+}
+
+// stageRecordKeyIndex is the index the comparison of the rows received reads by (ADR-0102): the key in the order of the
+// raw records' key, then the place of the row. The source's partitions have it with the table.
+func stageRecordKeyIndex() indexDef {
+	return indexDef{Name: "stage_record_key", Table: TableStageRecord, Expr: strings.Join([]string{ColDatasetNo, ColKey, ColPage, ColRowNo}, ", ")}
 }

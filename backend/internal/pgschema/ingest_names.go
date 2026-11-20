@@ -158,6 +158,19 @@ const (
 	CalcWhyUnresolved int16 = 1
 	CalcWhyExpanded   int16 = 2
 
+	// The other reasons a record of the receiving is in the set of the run, which the comparison with what is kept (step 2)
+	// gives: the key is new, the record was waited for and is shown again, its wait for the absence is up (it is closed),
+	// its wait for the rule that filters it is up (it is let go of), or the key began or stopped to repeat in the batch.
+	CalcWhyNew        int16 = 3
+	CalcWhyReturned   int16 = 4
+	CalcWhyClosed     int16 = 5
+	CalcWhyReleased   int16 = 6
+	CalcWhyDuplicates int16 = 7
+
+	// CalcJobRawDiff is the job of the computing that compares the received rows with the raw records (step 2); the value
+	// of calc_job before any job is 0, and the part is the next bucket of the job.
+	CalcJobRawDiff int16 = 1
+
 	// The kinds of a row of ingest_diff, in the order the apply writes them: the objects (the registry, the type
 	// tables, the history, the retirement), the identification keys, the links, the identifiers.
 	DiffKindObject     int16 = 0

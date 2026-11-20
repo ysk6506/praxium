@@ -18,8 +18,9 @@ import (
 // dataset is read from its first page. A reader that can go on from a token is not asked to: the place that each page writes to
 // the run (ReceivePlace) is there for the step that will.
 //
-// The report of what every dataset gave (the pages, the records, whether it was read to its end, why not) is written to the
-// counts of the run under "receive", so that the next step can leave out a dataset that was not read to its end whole. The same
+// The report of what every dataset gave (the pages, the records, whether it was read to its end, why not, and the coverage the
+// last page said: complete, seen only or incomplete) is written to the counts of the run under "receive", so that the next step can
+// leave out a dataset that was not read to its end whole, and count a dataset that was read as what was seen without its absences. The same
 // fact is on the last page of such a dataset, as a problem of the page. A dataset that the reader did not give this time has
 // no line in the report: it was not received.
 //
@@ -135,6 +136,9 @@ type datasetCount struct {
 	Complete   bool           `json:"complete"`
 	Reason     string         `json:"reason,omitempty"`
 	NotRead    string         `json:"not_read,omitempty"`
+	// Coverage is how much of the dataset the next step may count (ingest.Coverage): complete, seen_only or incomplete. A dataset
+	// that gave no rows because its header changed is incomplete however its last page ended.
+	Coverage ingest.Coverage `json:"coverage"`
 }
 
 // saveCounts writes what the receiving did to the counts of the run, under "receive". The condition is the attempt.
@@ -143,7 +147,7 @@ func (s *Store) saveCounts(ctx context.Context, sink *Sink, rep ingest.IntakeRep
 	complete := true
 	for _, d := range rep.Datasets {
 		lines = append(lines, datasetCount{Dataset: d.Dataset, DatasetNo: sink.datasets[d.Dataset], Pages: d.Pages, Records: d.Records, Unreadable: d.Unreadable,
-			Skipped: sink.skipped[d.Dataset], Complete: d.Complete, Reason: d.Reason, NotRead: d.NotRead})
+			Skipped: sink.skipped[d.Dataset], Complete: d.Complete, Reason: d.Reason, NotRead: d.NotRead, Coverage: d.Coverage()})
 		complete = complete && d.Complete
 	}
 	text, err := json.Marshal(map[string]any{"receive": map[string]any{"datasets": lines, "complete": complete}})

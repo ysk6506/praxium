@@ -389,6 +389,7 @@ func TestIngestRunNamesAreAClosedSet(t *testing.T) {
 // [REQ-680]
 func TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheRowsReceivedAndNothingElse(t *testing.T) {
 	next := igtPlan(t).Manifest
+	next.GeneratorVersion = 4
 	old := next
 	old.GeneratorVersion = 3
 	delta, err := pgschema.Diff(old, next)
@@ -408,7 +409,7 @@ func TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheR
 			t.Errorf("unexpected step %+v", s)
 		}
 	}
-	if delta.Result.GeneratorVersion != pgschema.GeneratorVersion {
+	if delta.Result.GeneratorVersion != next.GeneratorVersion {
 		t.Errorf("the generator to keep is %d", delta.Result.GeneratorVersion)
 	}
 	for _, table := range []string{"stage_key", "stage_end", "stage_claim"} {
