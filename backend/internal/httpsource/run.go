@@ -54,7 +54,7 @@ func (r *Reader) begin(ctx context.Context, source string, ds ingest.Dataset, pu
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	sg, err := openSigner(ctx, r.cfg.Secrets, r.set, purpose)
+	sg, err := openSigner(ctx, r.cfg.Secrets, r.set, ds, purpose)
 	if err != nil {
 		return nil, err
 	}
@@ -107,8 +107,8 @@ func (rn *run) emit(e ingest.Event) {
 		return
 	}
 	e.Source, e.Dataset, e.Host, e.Port = rn.set.id, rn.dsID, rn.host, rn.port
-	e.Path, _ = rn.signer.mask.clean(e.Path)
-	e.Reason, _ = rn.signer.mask.clean(e.Reason)
+	e.Path, _ = rn.signer.wide.clean(e.Path)
+	e.Reason, _ = rn.signer.wide.clean(e.Reason)
 	obs.Observe(e)
 }
 

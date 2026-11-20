@@ -30,12 +30,12 @@ func hasBraceProblem(s string) bool {
 }
 
 // checkText records the error of a text of a request or a statement that has a single brace, or that has a placeholder
-// for a secret where none may be.
+// for a secret or for the token where none may be: only a whole value of a body is a place for one (ADR-0100).
 func (c *collector) checkText(source, pointer, field, s string) bool {
 	switch {
-	case strings.Contains(s, "{{credential."):
+	case hasPlaceholderInside(s):
 		c.add(ecAdElsewhere, pointer, Params{"source": source, "field": field},
-			"source %s: %s has a {{credential.…}}, which only a value of the body of the token request of the authentication may have", source, field)
+			"source %s: %s has a {{credential.…}} or {{auth.token}}, which only a whole value of a body may be (a header takes one through auth.headers, and an address takes none)", source, field)
 	case hasBraceProblem(s):
 		c.add(ecAdBraces, pointer, Params{"source": source, "field": field},
 			"source %s: %s has a { or a } that is not doubled; write {{ or }} for the brace itself (a variable is not defined yet)", source, field)

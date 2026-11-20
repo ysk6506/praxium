@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "25f3f33d09406a6f"
+hash: "51683ef37a94f323"
 date: "2026-11-19"
-note: "definition.go의 변경(HTTP와 PostgreSQL 소스의 필드 추가, ParseAdapterSource)과 대조했다. 이 안내서는 파일 흐름의 정의를 다루고 파일 흐름의 필드와 오류는 그대로다. JSON Lines의 경로 표기만 새 문법(labels[\"app.name\"])에 맞춰 고쳤다"
-text_changed: true
+note: "definition.go의 변경은 인증과 연결 정의(HTTP 소스)의 확장이고 이 안내가 다루는 파일 정의의 설명과 겹치지 않아 안내는 그대로 맞음을 확인"
+text_changed: false
 doc_hash: "f21717fb429aefb5"

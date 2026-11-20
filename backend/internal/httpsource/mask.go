@@ -57,7 +57,11 @@ func newReplacer(texts []string) *strings.Replacer {
 	if len(pairs) == 0 {
 		return nil
 	}
-	return strings.NewReplacer(pairs...)
+	r := strings.NewReplacer(pairs...)
+	// A replacer builds itself on its first use and keeps the texts it was given until then. Using it now means the texts are
+	// never lying in it for anything that prints the struct that holds it with reflection.
+	_ = r.Replace("")
+	return r
 }
 
 // clean takes the values of the secrets out of a text and tells whether there was any.
@@ -69,8 +73,19 @@ func (m maskSet) clean(text string) (string, bool) {
 	return out, out != text
 }
 
-// clean is a text of what the adapter gives out (a path, a header, a sentence) with the values of the open secrets taken out.
+// clean is a text of what the adapter gives out (a path, a header, a sentence) with the values of the open secrets taken out,
+// the user name and the client id among them: it is for the records of what happened, which a person reads.
 func (rn *run) clean(text string) string {
+	out, hit := rn.signer.wide.clean(text)
+	if hit {
+		rn.cleaned++
+	}
+	return out
+}
+
+// cleanRow is a text of a record the source gave with the values of the secret's own fields taken out, and those only
+// (ADR-0100): a row is data and its key is made of it, so a user name or a client id that the data has too must stay.
+func (rn *run) cleanRow(text string) string {
 	out, hit := rn.signer.mask.clean(text)
 	if hit {
 		rn.cleaned++
@@ -83,9 +98,9 @@ func (rn *run) clean(text string) string {
 func (rn *run) cleanValue(v any) any {
 	switch x := v.(type) {
 	case string:
-		return rn.clean(x)
+		return rn.cleanRow(x)
 	case json.Number:
-		if out := rn.clean(x.String()); out != x.String() {
+		if out := rn.cleanRow(x.String()); out != x.String() {
 			return out
 		}
 	case map[string]any:

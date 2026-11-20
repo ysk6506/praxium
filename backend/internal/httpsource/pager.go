@@ -100,7 +100,7 @@ func (g *pager) put(p *params, inBody bool, name, value string, fromSource bool)
 	if n, err := strconv.Atoi(value); err == nil && !fromSource {
 		p.body[name] = n
 	} else {
-		p.body[name] = value
+		p.body[name] = verbatim(value)
 	}
 }
 
