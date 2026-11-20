@@ -74,6 +74,37 @@ var changeClasses = map[string]string{
 	"Limits.MaxSharedStrings": classLimit, "Limits.MaxRowsPerDataset": classLimit,
 }
 
+// limitCompared lists the fields of classLimit that a comparison of "is it raised" exists for (connectionLimits, limitReasons,
+// paginationRaised). A field of classLimit that is not here has no such comparison, so it is read as classKept: any change
+// of it is a change of the connection, until the comparison is written and the field is put here.
+var limitCompared = map[string]bool{
+	"Source.Limits":                      true,
+	"Connection.TimeoutSeconds":          true,
+	"Connection.RequestsPerSecond":       true,
+	"Connection.MaxResponseBytes":        true,
+	"Connection.MaxRetryWaitSeconds":     true,
+	"Connection.ConnectTimeoutSeconds":   true,
+	"Connection.StatementTimeoutSeconds": true,
+	"Connection.LockTimeoutSeconds":      true,
+	"Pagination.Size":                    true,
+	"Pagination.MaxPages":                true,
+	"Limits.MaxUncompressedBytes":        true,
+	"Limits.MaxRowsPerSheet":             true,
+	"Limits.MaxColumnsPerSheet":          true,
+	"Limits.MaxCellChars":                true,
+	"Limits.MaxSharedStrings":            true,
+	"Limits.MaxRowsPerDataset":           true,
+}
+
+// changeClassOf is the class of a field for the comparison: a field of classLimit that has no comparison of a raise is classKept.
+func changeClassOf(key string) string {
+	c := changeClasses[key]
+	if c == classLimit && !limitCompared[key] {
+		return classKept
+	}
+	return c
+}
+
 // ClassifyChange tells whether going from the definition before to the definition after is a change of the connection or
 // of the mapping only. A source that is new is compared with an empty one (before is the zero Source, which has no id), and
 // a new source is always a change of the connection. Both definitions are given their defaults first, so that a field
@@ -138,7 +169,7 @@ func changeForm(s Source) Source {
 func clearClass(v any, typeName string, classes ...string) {
 	rv := reflect.ValueOf(v).Elem()
 	for i := 0; i < rv.NumField(); i++ {
-		if slices.Contains(classes, changeClasses[typeName+"."+rv.Type().Field(i).Name]) {
+		if slices.Contains(classes, changeClassOf(typeName+"."+rv.Type().Field(i).Name)) {
 			rv.Field(i).SetZero()
 		}
 	}

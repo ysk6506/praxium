@@ -480,10 +480,43 @@ func TestHxaEveryFieldOfADefinitionHasItsClassForTheChangeOfTheConnection(t *tes
 			t.Errorf("the table has %s, which is no field of a definition", key)
 		}
 	}
+	// Every field of classLimit has a comparison of a raise, and every field that has one is of classLimit.
+	for key, class := range changeClasses {
+		if class == classLimit && !limitCompared[key] {
+			t.Errorf("%s is a limit and no comparison of a raise is written for it; write one and put it in limitCompared", key)
+		}
+	}
+	for key := range limitCompared {
+		if changeClasses[key] != classLimit {
+			t.Errorf("%s has a comparison of a raise and is not of classLimit", key)
+		}
+	}
 	// The types that a field of the table points to are in the table too.
 	for _, key := range []string{"Source.Connection", "Connection.Auth", "Auth.Request", "Dataset.Request", "Dataset.Pagination", "Source.Limits"} {
 		if changeClasses[key] == "" {
 			t.Errorf("%s has no class", key)
 		}
+	}
+}
+
+// [REQ-745]
+// A field that is of classLimit and has no comparison of a raise is a change of the connection whatever is done to it: a
+// field of a later change that is called a limit and is not compared cannot be raised with the ability to edit alone.
+func TestHxaALimitThatHasNoComparisonOfARaiseIsAChangeOfTheConnection(t *testing.T) {
+	src, err := ParseAdapterSource(strings.NewReader(hxaDoc(hxaTokenAuth, "", `{"id":"ds_a","post_reads":true,"request":{"method":"POST","path":"/a","body":{"q":"x"}},"pagination":{"kind":"cursor","cursor_param":"c","cursor_in":"body","next_cursor_path":"next"},"natural_key":["a"],"columns":[{"name":"a"}]}`)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	after := changeForm(src)
+	pg := *after.Datasets[0].Pagination
+	pg.CursorParam = "q"
+	after.Datasets[0].Pagination = &pg
+	// CursorParam is not a limit; it is made one in the table, as a later change might do, with no comparison.
+	const key = "Pagination.CursorParam"
+	was := changeClasses[key]
+	changeClasses[key] = classLimit
+	defer func() { changeClasses[key] = was }()
+	if got := ClassifyChange(src, after); got.Kind != ChangeConnection {
+		t.Errorf("a limit with no comparison, changed: %s %v", got.Kind, got.Reasons)
 	}
 }

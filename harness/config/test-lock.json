@@ -20807,6 +20807,21 @@
    "added": "2026-11-20",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestHxaALimitThatHasNoComparisonOfARaiseIsAChangeOfTheConnection": {
+   "kind": "test",
+   "hash": "14ba64be3cf9a6cb",
+   "asserts": 2,
+   "literals": [
+    "7b2742a1feba0e8c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-745"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestHxaAPlaceholderNeedsWhatItStandsFor": {
    "kind": "test",
    "hash": "fc1f0409ab0d7c29",
@@ -20839,10 +20854,10 @@
   },
   "go:backend/internal/ingest::TestHxaEveryFieldOfADefinitionHasItsClassForTheChangeOfTheConnection": {
    "kind": "test",
-   "hash": "c9639505c53b2a14",
-   "asserts": 3,
+   "hash": "d2a9b518c6ab0035",
+   "asserts": 5,
    "literals": [
-    "01fc319710fb057e"
+    "85948f1e6fcf8930"
    ],
    "precision": [],
    "skips": 0,
