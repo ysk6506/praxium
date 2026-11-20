@@ -28977,10 +28977,10 @@
   },
   "go:backend/internal/pgstore::TestSapRetiredObjectTakesItsLinksWithIt": {
    "kind": "test",
-   "hash": "44459fd1f5196780",
+   "hash": "816059a34806986f",
    "asserts": 15,
    "literals": [
-    "2da77d4ede365940"
+    "e33335a762c12fb9"
    ],
    "precision": [],
    "skips": 0,
@@ -29007,10 +29007,10 @@
   },
   "go:backend/internal/pgstore::TestSapStagedApplyAndRowsPathGiveTheSameStateAndReads": {
    "kind": "test",
-   "hash": "2f6fb2d070fb56a7",
+   "hash": "d0ab8ab12b7e2d5f",
    "asserts": 19,
    "literals": [
-    "ff6914c6bbd20da1"
+    "e8d7159af3f76e17"
    ],
    "precision": [],
    "skips": 0,

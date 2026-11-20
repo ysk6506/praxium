@@ -4,7 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"maps"
 	"regexp"
+	"sort"
 	"testing"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -67,24 +69,52 @@ func (f sapFacts) sapLinkTypeID(no int) model.LinkTypeID {
 	return model.LinkTypeID{}
 }
 
-// sapChanged is the upsert of an object whose first string attribute and name are changed.
+// sapChanged is the upsert of an object whose first plain text attribute (by attribute number) and name are changed.
+// The attributes are visited in the order of their numbers, not of the map, so the same world always changes the same
+// attribute; and only an attribute whose value type is text and takes the changed value is picked (a time is text too).
 func (f sapFacts) sapChanged(t *testing.T) (graph.ObjectUpsert, graph.ObjectID) {
 	t.Helper()
 	for _, o := range f.objects {
-		for no, a := range o.New.Attrs {
-			if s, ok := a.Value.(string); ok && s != "" {
-				attrs := map[int]graph.Attr{}
-				for k, v := range o.New.Attrs {
-					attrs[k] = v
-				}
-				a.Value = s + "-sap"
-				attrs[no] = a
-				return graph.ObjectUpsert{Type: f.sapTypeID(o.New.TypeNo), Key: o.Key, Name: o.New.Name + " sap", Attrs: attrs, SourceRefs: o.New.SourceRefs}, o.New.ID
+		nos := make([]int, 0, len(o.New.Attrs))
+		for no := range o.New.Attrs {
+			nos = append(nos, no)
+		}
+		sort.Ints(nos)
+		for _, no := range nos {
+			a := o.New.Attrs[no]
+			changed, ok := f.sapChangedText(no, a.Value)
+			if !ok {
+				continue
 			}
+			attrs := maps.Clone(o.New.Attrs)
+			a.Value = changed
+			attrs[no] = a
+			return graph.ObjectUpsert{Type: f.sapTypeID(o.New.TypeNo), Key: o.Key, Name: o.New.Name + " sap", Attrs: attrs, SourceRefs: o.New.SourceRefs}, o.New.ID
 		}
 	}
-	t.Fatal("no object with a string attribute")
+	t.Fatal("no object with a plain text attribute")
 	return graph.ObjectUpsert{}, graph.ObjectID{}
+}
+
+// sapChangedText gives the changed value of a text attribute, if the attribute's value type is text and takes it.
+func (f sapFacts) sapChangedText(no int, value any) (string, bool) {
+	s, ok := value.(string)
+	if !ok || s == "" {
+		return "", false
+	}
+	p, ok := f.reg.PropertyByNo(no)
+	if !ok {
+		return "", false
+	}
+	vt, ok := f.reg.ValueType(p.Property.ValueType)
+	if !ok || vt.Base != model.BaseString {
+		return "", false
+	}
+	changed := s + "-sap"
+	if _, err := model.NormalizeValue(p.Property.ValueType, changed); err != nil {
+		return "", false
+	}
+	return changed, true
 }
 
 // sapRetired picks an object that ends a link and gives it with all its links, whoever made them.
