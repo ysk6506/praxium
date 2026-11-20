@@ -23,9 +23,11 @@ const (
 	typeSrc     = "integer NOT NULL"
 	typeKeyText = `text COLLATE "C" NOT NULL`
 	typeHash16  = "bytea NOT NULL"
-	typeSmall   = "smallint NOT NULL"
-	typeBig     = "bigint NOT NULL"
-	typeInt     = "integer NOT NULL"
+	// typeHeld says that a key, an end or a claim belongs to a row that a rule filtered out (generator version 4).
+	typeHeld  = "boolean NOT NULL DEFAULT false"
+	typeSmall = "smallint NOT NULL"
+	typeBig   = "bigint NOT NULL"
+	typeInt   = "integer NOT NULL"
 )
 
 // ingestTableDefs are the tables of the ingestion at scale that every storage schema has: the permanent ones
@@ -88,13 +90,13 @@ func receiveTableDefs() []tableDef {
 		})},
 		{Name: TableStageKey, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
 			col(ColFeedNo, typeInt), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall), col(ColSigHash, typeHash16),
-			col(ColCandRef, `text COLLATE "C"`), col(ColAncTypes, "smallint[]"), col(ColAncSigs, "bytea[]"),
+			col(ColCandRef, `text COLLATE "C"`), col(ColAncTypes, "smallint[]"), col(ColAncSigs, "bytea[]"), col(ColHeld, typeHeld),
 		})},
 		{Name: TableStageEnd, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
-			col(ColDefNo, typeInt), col(ColSide, typeSmall), col(ColLookupHash, typeHash16),
+			col(ColDefNo, typeInt), col(ColSide, typeSmall), col(ColLookupHash, typeHash16), col(ColHeld, typeHeld),
 		})},
 		{Name: TableStageClaim, PartitionBy: ColSrcNo, Cols: cat(row(), []string{
-			col(ColSchemeNo, typeInt), col(ColFeedNo, typeInt), col(ColValueHash, typeHash16), col(ColValue, "text NOT NULL"),
+			col(ColSchemeNo, typeInt), col(ColFeedNo, typeInt), col(ColValueHash, typeHash16), col(ColValue, "text NOT NULL"), col(ColHeld, typeHeld),
 		})},
 	}
 }

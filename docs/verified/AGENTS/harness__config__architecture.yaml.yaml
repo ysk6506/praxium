@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "d9021b175cb9ba6e"
+hash: "55d4e840f9c6dd70"
 date: "2026-11-19"
-note: "architecture.yaml에 테스트만 있는 유닛 adapter.sourcecheck와 restricted_stdlib의 파일 단위 줄이 더해졌다. AGENTS.md가 말하는 구조와 규칙은 그대로라 고칠 곳이 없음을 확인했다"
+note: "architecture.yaml의 변경은 유닛 등록이라 고칠 문장이 없다."
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"

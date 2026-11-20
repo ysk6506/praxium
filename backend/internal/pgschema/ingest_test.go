@@ -125,8 +125,9 @@ func TestIngestIndexesOfTheKeptTablesAreInThePlan(t *testing.T) {
 func TestIngestDiffFollowsTheStepFromTheGeneratorBeforeByAddingOnly(t *testing.T) {
 	plan := igtPlan(t)
 	next := plan.Manifest
+	next.GeneratorVersion = 3
 	old := next
-	old.GeneratorVersion = pgschema.GeneratorVersion - 1
+	old.GeneratorVersion = 2
 	delta, err := pgschema.Diff(old, next)
 	if err != nil {
 		t.Fatal(err)
@@ -149,7 +150,7 @@ func TestIngestDiffFollowsTheStepFromTheGeneratorBeforeByAddingOnly(t *testing.T
 	if !slices.Equal(tables, pgschema.IngestTables()) {
 		t.Errorf("the generator step makes %v, the ingestion tables are %v", tables, pgschema.IngestTables())
 	}
-	if delta.Result.GeneratorVersion != pgschema.GeneratorVersion {
+	if delta.Result.GeneratorVersion != next.GeneratorVersion {
 		t.Errorf("the manifest to keep has the generator %d", delta.Result.GeneratorVersion)
 	}
 	// every step is also in the plan of a new KG, with the same text.
@@ -382,5 +383,40 @@ func TestIngestRunNamesAreAClosedSet(t *testing.T) {
 			}
 			seen[c] = true
 		}
+	}
+}
+
+// [REQ-680]
+func TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheRowsReceivedAndNothingElse(t *testing.T) {
+	next := igtPlan(t).Manifest
+	old := next
+	old.GeneratorVersion = 3
+	delta, err := pgschema.Diff(old, next)
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"stage_key.held":   `ALTER TABLE "s_7"."stage_key" ADD COLUMN IF NOT EXISTS held boolean NOT NULL DEFAULT false`,
+		"stage_end.held":   `ALTER TABLE "s_7"."stage_end" ADD COLUMN IF NOT EXISTS held boolean NOT NULL DEFAULT false`,
+		"stage_claim.held": `ALTER TABLE "s_7"."stage_claim" ADD COLUMN IF NOT EXISTS held boolean NOT NULL DEFAULT false`,
+	}
+	if len(delta.Steps) != len(want) {
+		t.Fatalf("%d steps", len(delta.Steps))
+	}
+	for _, s := range delta.Steps {
+		if s.Phase != pgschema.InTx || s.What != pgschema.WhatColumn || want[s.Name] != s.SQL {
+			t.Errorf("unexpected step %+v", s)
+		}
+	}
+	if delta.Result.GeneratorVersion != pgschema.GeneratorVersion {
+		t.Errorf("the generator to keep is %d", delta.Result.GeneratorVersion)
+	}
+	for _, table := range []string{"stage_key", "stage_end", "stage_claim"} {
+		if !strings.Contains(stepSQL(igtPlan(t), table), "held boolean NOT NULL DEFAULT false") {
+			t.Errorf("a new KG has no column held in %s", table)
+		}
+	}
+	if strings.Contains(stepSQL(igtPlan(t), "stage_record"), "held") {
+		t.Error("the table of the records has a column held")
 	}
 }
