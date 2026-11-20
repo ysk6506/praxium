@@ -26626,7 +26626,7 @@
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestSapIdentRowHashExpressionNamesTheThreeColumns": {
@@ -26641,7 +26641,7 @@
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestSapIdentRowHashHasTheLengthOfEachTextInFront": {
@@ -26656,7 +26656,7 @@
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestSearchSetIsOrderFree": {
@@ -28361,7 +28361,7 @@
    "reqs": [
     "REQ-725"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapAbandonCutInTheMiddleStopsTheStagedApplyUntilItIsEnded": {
@@ -28376,7 +28376,7 @@
    "reqs": [
     "REQ-725"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapAChunkThatWasNotCommittedIsApplyAgain": {
@@ -28391,7 +28391,7 @@
    "reqs": [
     "REQ-723"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapAChunkWhoseCommitGotNoAnswerIsJudgedByTheHead": {
@@ -28406,7 +28406,7 @@
    "reqs": [
     "REQ-723"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapChunkDigestsOfSQLAreThoseOfGo": {
@@ -28421,7 +28421,7 @@
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapDamagedDifferenceFailsTheChainOfAnOpenApply": {
@@ -28436,7 +28436,7 @@
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapDamagedTablesFailTheStagedApplyWithAnErrorAndLeaveTheHeadAlone": {
@@ -28451,7 +28451,7 @@
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapDifferenceThatDoesNotStartAtItsFirstChunkIsRefused": {
@@ -28466,7 +28466,7 @@
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapEmptyDifferenceLeavesTheHeadAlone": {
@@ -28481,7 +28481,7 @@
    "reqs": [
     "REQ-722"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapLocksOfAChunkDoNotGrowWithItsRows": {
@@ -28496,7 +28496,7 @@
    "reqs": [
     "REQ-728"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapRetiredObjectTakesItsLinksWithIt": {
@@ -28511,7 +28511,7 @@
    "reqs": [
     "REQ-724"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapRowHashExpressionsGiveTheValuesOfTheGoFunctions": {
@@ -28526,7 +28526,7 @@
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapStagedApplyAndRowsPathGiveTheSameStateAndReads": {
@@ -28541,7 +28541,7 @@
    "reqs": [
     "REQ-720"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapStagedApplyGoesOnAfterACrashBetweenChunks": {
@@ -28556,7 +28556,7 @@
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapStagedApplyRefusesWhatIsNotTheCallers": {
@@ -28571,7 +28571,7 @@
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapStagedChunkOfAStalePositionIsRefused": {
@@ -28586,7 +28586,7 @@
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapStagedVolatileValueThatCannotBeWrittenIsRefused": {
@@ -28601,7 +28601,7 @@
    "reqs": [
     "REQ-727"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSapVolatileValuesGoInIntervalsAndAreWrittenOnlyWhenTheyDiffer": {
@@ -28616,7 +28616,7 @@
    "reqs": [
     "REQ-727"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSchemaStartupAdjustsAKGOfTheGeneratorBeforeAndOpensIt": {
