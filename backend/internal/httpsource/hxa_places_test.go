@@ -171,12 +171,12 @@ func TestHxaARequestSentAgainAfterA401CarriesTheNewToken(t *testing.T) {
 
 // [REQ-743]
 // A value of a secret or a token that cannot be a value of a header (a line break, a control character) is not sent: the
-// error is one of the twelve, no request is made for it and none is made again.
+// error is one of the twelve, no request is made for it and none is made again. (A NUL cannot be kept in a secret at all.)
 func TestHxaAValueThatCannotBeAHeaderIsNotSentAndNotRetried(t *testing.T) {
 	custom := `{"kind":"custom","credential":{"secret_id":"sec_bad"},"headers":[{"name":"X-K","from":"credential.token"}]}`
 	bearer := `{"kind":"bearer","credential":{"secret_id":"sec_bad"}}`
 	for name, auth := range map[string]string{"custom": custom, "bearer": bearer} {
-		for _, value := range []string{"abc\n", "abc\r\nX-Injected: 1", "ab\x00c", "ab\x7fc"} {
+		for _, value := range []string{"abc\n", "abc\r\nX-Injected: 1", "ab\x7fc", "ab\x01c"} {
 			g := hsNew(t, hsDoc(auth, "", "", ""), hsOne)
 			hxaAdd(t, g, "sec_bad", secrets.KindToken, map[string]string{"token": value})
 			_, err := g.hsRead(ingest.PageOptions{})
