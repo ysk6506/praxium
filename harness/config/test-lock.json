@@ -19986,7 +19986,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestASheetThatIsMissingIsAChangedShapeAndTheOtherDatasetIsStillRun": {
@@ -21379,7 +21379,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestSameInputSameObjectIDs": {
@@ -21424,7 +21424,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestSecondLinkThatBreaksCardinalityIsSetAside": {
@@ -26255,7 +26255,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeed": {
@@ -26270,7 +26270,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiAPageOfTenThousandRowsGoesInWithOneCopyOfEachTable": {
@@ -26285,7 +26285,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiAPageThatFailsHalfWayLeavesNothingNotEvenItsPlaceAndNoRowIsHalfWritten": {
@@ -26300,7 +26300,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiAPageWhoseRowOneTableRefusesLeavesNothingWhicheverTableItIsAndTheSinkGoesOn": {
@@ -26315,7 +26315,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiARecordIsNewChangedOrTheSameAndOnlyNewAndChangedOnesCarryCellsKeysEndsAndClaims": {
@@ -26330,7 +26330,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiArraysAreWrittenInTheTextFormPostgreSQLReads": {
@@ -26343,7 +26343,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiARunMovesOnlyAlongTheStagesAndTheGateOfTheKGHoldsOneRunAtWork": {
@@ -26358,7 +26358,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiASourceHasOneRunThatIsNotOver": {
@@ -26373,7 +26373,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiASourcePutToAKGHasItsRowsAndItsPartitionsAndPuttingItAgainChangesNothingButTheDatasetsItAdds": {
@@ -26388,7 +26388,7 @@
    "reqs": [
     "REQ-703"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiAWriteOfAnAttemptThatIsNotTheRunsIsRefusedAndChangesNothing": {
@@ -26403,7 +26403,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiAWriteOfAnOldAttemptAfterAnotherServerTookTheRunOverWritesNothing": {
@@ -26418,7 +26418,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiDeletingAKGTakesItsSourcesOffFirstWithTheirRunsAndAKGWithNoSourcesIsDeletedAsBefore": {
@@ -26433,7 +26433,7 @@
    "reqs": [
     "REQ-684"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiEveryCallWithAContextThatHasEndedFailsAndChangesNothing": {
@@ -26448,7 +26448,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiNothingOfThisUnitLeavesStateOnASessionAndOnlyTheCopyPreparesAStatement": {
@@ -26463,7 +26463,7 @@
    "reqs": [
     "REQ-559"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable": {
@@ -26478,7 +26478,7 @@
    "reqs": [
     "REQ-683"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiReceiveStoresEveryPageWithItsPlaceAndMovesTheRunToComputing": {
@@ -26493,7 +26493,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiReceivingAgainEmptiesTheSourcesPartitionAndBeginsAtTheFirstPageAndTheOtherSourcesAreLeftAlone": {
@@ -26508,7 +26508,7 @@
    "reqs": [
     "REQ-702"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiReceivingIsRefusedForAWrongPlanARunThatIsNotThereAndADatasetTheSourceWasNotPutWith": {
@@ -26523,7 +26523,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiTakingASourceOffDropsItsPartitionsAndRowsInChunksAndRefusesASourceWithARunThatIsNotOver": {
@@ -26538,7 +26538,7 @@
    "reqs": [
     "REQ-703"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiTheColumnsOfEachCopyAreTheColumnsOfItsTable": {
@@ -26553,7 +26553,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiTheNamesTheCoreAndTheSchemaGiveForStagesClassesAndProblemsAreTheSame": {
@@ -26568,7 +26568,7 @@
    "reqs": [
     "REQ-700"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiThePlaceOfARecordIsItsRangeOnTheSheetElseItsLineAndTheLinesPassedOverAreCounted": {
@@ -26583,7 +26583,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiTheProblemsOfARecordAreOnItsRowAndTheProblemsOfAPageOnTheRowMinusOneAndAnIncompleteDatasetIsToldToo": {
@@ -26598,7 +26598,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiTheRowsOfAPageAreTheRowsThePreparerGaveWithTheCellsAndTheKeysIntact": {
@@ -26613,7 +26613,7 @@
    "reqs": [
     "REQ-701"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiTheTokenOfAPageIsWrittenAsTextAndReadBack": {
@@ -26626,7 +26626,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestBuildMakesTheTablesOfASmallModel": {
@@ -26691,7 +26691,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": "0098-receiving-step-and-run-ledger-in-adapter-pgingest.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
@@ -26812,7 +26812,7 @@
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": "0098-receiving-step-and-run-ledger-in-adapter-pgingest.md"
   },
   "go:backend/internal/pgschema::TestIngestDiffRefusesAGeneratorItCannotFollowByAdding": {
@@ -26887,7 +26887,7 @@
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestIngestIndexesOfTheKeptTablesAreInThePlan": {
@@ -28429,7 +28429,7 @@
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestIdentifiersOfListsTheLiveIdentifiersOfOneObject": {
@@ -28672,7 +28672,7 @@
    "reqs": [
     "REQ-684"
    ],
-   "added": "2026-11-19",
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestPostgresStorePassesThePreviewSuite": {
