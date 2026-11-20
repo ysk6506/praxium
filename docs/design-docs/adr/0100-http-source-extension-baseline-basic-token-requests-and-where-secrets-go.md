@@ -23,10 +23,11 @@ amends:
   - adr: "0090"
     what: 토큰 요청 본문의 규칙을 데이터 요청 본문으로 넓힌 것, 인증의 종류 여섯, 정의 변경의 권한 분류
 amends_tests:
+  - go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace
   - go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
-test_change_reason: 두 테스트는 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 새 파일(body.go)과 바뀐 파일이 같은 규칙(값을 꺼내는 곳은 auth.go 한 곳, 요청을 만드는 곳은 request.go 한 곳, 금지한 글자와 import 없음)을 지키는 것을 새 지문으로 다시 기록한다.
-decision_hash: be7d865350dfd93d
+test_change_reason: 첫 테스트는 정의 오류 코드 네 개(auth.headers의 from 잘못, 시크릿 필드 섞임, custom이 보낼 것 없음, 토큰 사용 잘못)를 더하면서 사례 표 adpCases에 사례 다섯 개를 더하는 내용 변경이고, 빼거나 고친 사례와 단언은 없다. 나머지 둘은 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 새 파일(body.go)과 바뀐 파일이 같은 규칙(값을 꺼내는 곳은 auth.go 한 곳, 요청을 만드는 곳은 request.go 한 곳, 금지한 글자와 import 없음)을 지키는 것을 새 지문으로 다시 기록한다.
+decision_hash: 84eaa9508c5bc874
 ---
 # ADR-0100 HTTP 소스 확장의 기준 결정
 
@@ -41,13 +42,13 @@ HTTP 소스(ADR-0090, 0092, 0097)로 붙이려는 API 가운데 지금의 정의
 1. **E1. 토큰 요청의 Basic과 본문 토큰.** `token_request.request.credentials_in`은 `body`(기본)나 `basic`이다. `basic`이면 시크릿의 `username`과 `password`로 `Authorization: Basic`을 만들고 본문은 선택이다(본문 없는 POST). 사용자 이름에 `:`가 있으면 보내지 않는다(`secret_unusable`). 본문에 `{{credential.…}}`를 쓰면 정의 오류다. `token_from`은 `path`(기본)나 `body`다. `body`는 응답 본문 전체가 비어 있지 않은 JSON 글자 하나일 때만 받고 객체, 숫자, 빈 글자, null은 `response_format`이다. `token_path`와 `token_from: body`를 함께 쓰면 정의 오류이고, 둘 다 없으면 지금처럼 정의 오류다(잠긴 사례 그대로).
 2. **E3. 시크릿과 토큰이 요청에 들어가는 자리.**
    - 본문: JSON 글자 값 통째로 `{{credential.<필드>}}` 또는 `{{auth.token}}`. 값의 일부로는 안 된다. 어느 깊이든 되고 값은 JSON으로 인코딩된다. 토큰 요청 본문도 데이터 요청과 같은 JSON 트리 엔진 하나가 처리한다(중첩된 본문). 토큰 요청 안에서 `{{auth.token}}`은 정의 오류다.
-   - 헤더: 구조형 `auth.headers: [{name, from, prefix}]`(`from`은 `credential.<필드>`나 `token`). `connection.headers`와 데이터셋의 헤더는 지금처럼 비밀이 아닌 글자만이고, 자리표시가 든 값은 정의 오류다. 금지 헤더 목록은 `auth.headers`의 이름에도 적용하고(`Authorization`은 허용), 접근 로그에 남는 헤더(`User-Agent`, `Referer`, `Forwarded`, `Via`, `X-Request-Id`, `traceparent`, `X-Forwarded-*` 따위)는 이름으로 쓸 수 없다.
+   - 헤더: 구조형 `auth.headers: [{name, from, prefix}]`(`from`은 `credential.<필드>`나 `token`). `connection.headers`와 데이터셋의 헤더는 지금처럼 비밀이 아닌 글자만이고, 자리표시가 든 값은 정의 오류다. 금지 헤더 목록은 `auth.headers`의 이름에도 적용하고(`Authorization`은 허용), 접근 로그에 남는 헤더(`User-Agent`, `Referer`, `Forwarded`, `Via`, `X-Request-Id`, `traceparent`, `X-Amzn-Trace-Id`, `True-Client-IP`, `X-Forwarded-*` 따위)는 이름으로 쓸 수 없다. 이 접근 로그 목록은 `header` 종류의 `header`와 `token_request`의 `send_header`에도 건다(같은 키를 옛 필드로 로그에 남는 헤더에 싣는 길을 막는다). 금지 헤더 목록에 `Upgrade`, `TE`, `Keep-Alive`, `Trailer`, `Expect`를 더한다(연결을 바꾸거나 끝내고, HTTP/2 클라이언트가 거절해 헛된 재시도를 부른다). `Content-Type`은 막지 않는다(본문 형식을 요구하는 API가 있다). 허용 목록 방식은 쓰지 않는다(접두어 없는 업체 고유 헤더가 있다).
    - 질의와 경로(URL)에는 시크릿과 토큰을 넣을 수 없다(주소는 로그에 남는다).
    - `auth.kind: custom`은 자동으로 붙이는 헤더가 없고 `auth.headers`와 본문의 자리표시로만 시크릿을 쓴다. 토큰 요청의 `send`는 `header`(기본)나 `template`이다.
    - 보내기 전에 헤더로 가는 시크릿과 받은 토큰에 줄바꿈이나 제어 문자가 있으면 요청을 보내지 않고 다시 보내지도 않는다. 새 실행 오류 종류는 만들지 않고 기존 12종(`secret_unusable`, `response_format`)만 쓴다.
    - 소스가 준 값(다음 페이지 표지 따위)은 자리표시로 읽지 않고 그대로 보낸다(악의적인 서버가 시크릿을 끌어내는 길을 막는다).
-3. **가리기의 범위(결정 13).** 행(데이터와 자연 키)을 바꾸는 가리기는 비밀 필드(비밀번호, 토큰, 클라이언트 비밀, API 키)만 쓰고 8바이트 이상일 때만 한다. 사용자 이름과 `client_id`는 사건, 미리 보기, 오류에서만 가린다(4바이트 이상). 새로 생긴 꼴을 가릴 집합에 넣는다: Basic의 값 그대로와 `Basic ` 접두어를 붙인 것과 폼 인코딩된 꼴, `auth.headers`의 접두어를 붙인 값, 본문 자리표시로 들어간 값.
-4. **권한 분류(결정 2).** `core.ingest`의 순수 함수 `ClassifyChange(before, after)`가 두 정의를 견줘 접속 변경(`edit_definitions`와 `run_sources` 모두)인지 매핑만의 변경(`edit_definitions`)인지와 이유를 돌려준다. 접속 변경은 새 소스, 어댑터, 연결의 모든 필드(주소, 시크릿 참조, CA, 헤더, `auth` 전체, 호스트, 포트, 데이터베이스, TLS 방식), 기본보다 올린 한도(시간 제한, 초당 요청 수, 응답 크기, 재시도 대기, 페이지 수와 크기), `post_reads`와 POST 요청의 변경, 시크릿이나 토큰의 자리표시가 든 본문의 추가나 변경이다. 이 함수를 부르는 정의 저장소의 경로는 아직 없다. **정의 저장소가 저장할 때 이 함수를 부른다**(뒤의 작업). 이 PR은 함수와 테스트와 문서만 둔다. 같은 PR에서 `source-editing.md`의 점검 권한 문장을 하나로 맞췄다: 저장하지 않은 정의의 점검과 소스 탐색은 `edit_definitions`와 `run_sources` 모두(ADR-0091 결정 12).
+3. **가리기의 범위(결정 13).** 행(데이터와 자연 키)을 바꾸는 가리기는 비밀 필드(비밀번호, 토큰, 클라이언트 비밀, API 키)만 쓰고 8바이트 이상일 때만 한다. 사용자 이름과 `client_id`는 사건, 미리 보기의 교환 기록, 오류에서만 가린다(4바이트 이상. 미리 보기의 행은 행용 집합이라 사용자 이름과 8바이트보다 짧은 비밀 필드가 그대로 보인다). 가릴 집합은 읽는 데이터셋이 쓰는 필드가 아니라 열어 둔 시크릿의 모든 필드로 만든다(소스가 다른 데이터셋이 보낸 값을 돌려줄 수 있다). 쓰는 필드의 목록은 그 필드에 값이 있는지 확인하는 데만 쓴다. 본문으로 간 값은 JSON 글자 안의 꼴(어댑터의 인코더가 쓰는 `\u0026` 따위와 HTML을 그대로 두는 인코더의 꼴)도 가릴 집합에 든다. 이어 읽기 토큰의 시크릿 검사는 4바이트 이상의 집합으로 한다. 헤더로 갈 시크릿 값의 줄바꿈과 제어 문자는 시크릿을 열 때 먼저 본다(토큰 요청을 포함해 어떤 요청도 나가기 전). 새로 생긴 꼴을 가릴 집합에 넣는다: Basic의 값 그대로와 `Basic ` 접두어를 붙인 것과 폼 인코딩된 꼴, `auth.headers`의 접두어를 붙인 값, 본문 자리표시로 들어간 값.
+4. **권한 분류(결정 2).** `core.ingest`의 순수 함수 `ClassifyChange(before, after)`가 두 정의를 견줘 접속 변경(`edit_definitions`와 `run_sources` 모두)인지 매핑만의 변경(`edit_definitions`)인지와 이유를 돌려준다. **안전한 쪽을 기본으로 짠다**: 두 정의에 기본값을 채운 뒤, 매핑만의 변경이라고 적어 둔 필드(이름, 컬럼, 자연 키, 삭제 규칙, 읽는 곳의 경로, `GET` 데이터셋의 요청과 페이지, PostgreSQL 데이터셋이 읽는 것, 소스를 멈추는 일, 낮춘 한도)를 뺀 나머지가 다르면 접속 변경이다(이유 `other`). 그래서 정의에 필드가 더해지면 분류를 정할 때까지 접속 변경이고, 반사로 모든 필드가 분류표에 있는지 보는 테스트가 그때까지 실패한다. 접속 변경은 새 소스나 다른 `id`, 어댑터, `collector`, `version`, 연결의 모든 필드(주소, 시크릿 참조, CA, 헤더, `auth` 전체, 호스트, 포트, 데이터베이스, TLS 방식), 기본보다 올린 한도(시간 제한, 초당 요청 수, 응답 크기, 재시도 대기, 페이지 수와 크기, 파일 한도), 페이지 크기를 지운 것과 새 데이터셋의 1,000을 넘는 크기, `post_reads`와 POST 데이터셋의 요청과 페이지(본문에 쓰이는 `cursor_param`과 `size_param` 포함), 시크릿이나 토큰의 자리표시가 든 본문의 추가나 변경, 멈춘 소스를 다시 켜는 일이다. 이 함수를 부르는 정의 저장소의 경로는 아직 없다. **정의 저장소가 저장할 때 이 함수를 부른다**(뒤의 작업). 이 PR은 함수와 테스트와 문서만 둔다. 같은 PR에서 `source-editing.md`의 점검 권한 문장을 하나로 맞췄다: 저장하지 않은 정의의 점검과 소스 탐색은 `edit_definitions`와 `run_sources` 모두(ADR-0091 결정 12).
 
 ### 뒤의 PR이 구현하는 것(여기서는 결정만)
 
@@ -58,7 +59,7 @@ HTTP 소스(ADR-0090, 0092, 0097)로 붙이려는 API 가운데 지금의 정의
 9. **E6. 인증서 고정**(B1). `ca_pem`과 함께 쓸 수 없고, 고정을 바꾸는 정의 변경은 접속 변경이다. PostgreSQL에는 egress의 등록 함수를 쓰고(pgsource가 `*tls.Config`를 쥐지 않는다) egress의 우회 검사는 `tls.Config` 필드 허용 목록의 AST 단언으로 하며, pgsource의 우회 검사는 등록 함수만 허락하도록 내용을 바꾼다(그 ADR의 `amends_tests`).
 10. **E7. 앞 요청의 결과를 쓰는 자식 데이터셋**(C). 부모 값은 홑중괄호 변수 `{parent.x}`(경로 마디, 질의 값, 본문 값)로 읽고 겹중괄호 `{{`는 지금처럼 중괄호 글자 자체다(잠긴 `TestAdpDoubledBracesStandForTheBrace` 그대로). 부모 값을 먼저 끝까지 모은 뒤 자식을 요청한다(상한과 중복 제거, 넘으면 자식 요청 0건과 불완전). 404의 `on_not_found: skip`은 보인 것만이고 자식 요청의 5%와 3건을 넘으면 불완전이다. 경로는 `Path`와 `RawPath`로 한 번만 인코딩하고 부모 값은 ASCII 인쇄 가능 글자만이며 묶음 구분자가 든 값은 거절한다. 처음 한도(측정으로 고친다. 정의가 낮출 수 있고 서버 설정의 천장을 넘을 수 없다): 자식 데이터셋 하나의 요청 수 기본 2,000과 천장 50,000, 실행 하나의 전체 요청 천장 200,000, 데이터셋 시간 기본 30분과 천장 4시간, 실행 전체 시간 기본 2시간과 천장 6시간, 동시성 1, 묶음 기본 100과 최대 1,000, 부모 값 길이 256바이트, 주소 8 KiB, 본문 1 MiB, 미리 보기의 자식 요청 10건. 토큰 요청과 부모 다시 읽기를 포함한 모든 요청을 한도에 센다. 한도를 올리는 값은 접속 변경이다.
 11. **E8. 레코드 안의 배열을 행으로 펼치기**(A2). `records_path`에 `[*]`를 한 번 쓸 수 있고(두 번은 정의 오류), 원소 레코드에서 바깥 레코드의 값은 `^.`(한 단계 위)로 읽는다. 자연 키는 원소의 필드와 `^.`의 필드로 적고 배열 안의 번호는 키로 쓰지 않는다. 바깥 레코드에 배열이 없거나 null이면 원소 0개이되 그 데이터셋은 보인 것만이고(`missing_array: "empty"`를 고르면 원소 0개로 완전), 바깥 레코드가 하나 이상인데 모두에 배열이 없으면 불완전이다. 페이지 넘김, 짧은 페이지, 전체 수, 이어 읽기 토큰은 바깥 레코드로 센다. `[*]`와 `^.`는 `ParsePath`를 바꾸지 않고 별도 읽기 함수로 한다(잠긴 문법 테스트 그대로). 적용은 HTTP의 `json`과 `json_lines`, 파일의 JSON Lines이고 PostgreSQL은 `sql`로 한다.
-12. **오류 코드(결정 12).** 실행 중의 일은 기존 `SourceError` 12종과 고정 글만 쓴다. 새 정의 오류 코드는 잠긴 사례 표에 사례를 더하고 그 ADR의 `amends_tests`에 적는다(사례를 더할 뿐 빼거나 고치지 않는다). 이 PR은 새 정의 오류 코드를 만들지 않았고 기존 코드의 뜻을 넓혔으므로 그 표는 그대로다.
+12. **오류 코드(결정 12).** 실행 중의 일은 기존 `SourceError` 12종과 고정 글만 쓴다. 새 정의 오류 코드마다 잠긴 사례 표에 사례를 더하고 그 ADR의 `amends_tests`에 적는다(사례를 더할 뿐 빼거나 고치지 않는다). 이 PR은 네 코드를 더했다: `source.auth.header_source_invalid`(`auth.headers`의 `from`이 틀림), `source.auth.secret_fields_invalid`(종류가 섞이거나 그 인증에 없는 필드), `source.auth.sends_nothing`(`custom`이 보낼 것이 없음), `source.auth.token_use_invalid`(`token_from`과 `send`가 틀림, 토큰이 갈 곳이 없음). 그래서 `ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace`가 쓰는 사례 표 `adpCases`에 다섯 사례를 더했다(빼거나 고친 사례는 없다).
 
 ### 질문의 답 가운데 7절이 바꾸지 않은 것
 
@@ -84,14 +85,18 @@ HTTP 소스(ADR-0090, 0092, 0097)로 붙이려는 API 가운데 지금의 정의
 
 ## 호환의 변화(이 PR)
 
-- 요청 본문에 자리표시를 쓰는 정의가 새로 가능하다. 반대로 `connection.headers`의 값에 자리표시 글자가 든 정의와, 어디든 `{{auth.token}}` 글자가 그대로 든 정의는 이제 정의 오류다(자리표시의 자리를 한 문법으로 묶었다).
+- 요청 본문에 자리표시를 쓰는 정의가 새로 가능하다. 반대로 `connection.headers`의 값에 자리표시 글자가 든 정의와, `{{auth.token}}` 글자가 본문의 값 통째가 아닌 자리(주소, 이름, 값의 일부)에 든 정의는 이제 정의 오류다(자리표시의 자리를 한 문법으로 묶었다).
 - 토큰 요청의 본문은 글자 값의 평평한 맵에서 JSON 트리가 되었다(`form`은 여전히 글자 값의 평평한 맵만). `format`은 `basic`이고 본문이 없을 때 생략할 수 있다.
+- `header` 종류의 `header`와 `send_header`에도 접근 로그에 남는 헤더의 금지가 걸린다. 그런 이름을 쓰던 정의는 정의 오류가 된다. 금지 헤더 목록에 `Upgrade`, `TE`, `Keep-Alive`, `Trailer`, `Expect`가 늘어 `connection.headers`에 그것을 쓰던 정의도 오류가 된다.
+- 옛 `basic` 종류도 사용자 이름의 `:`를 거절한다(요청 0건, `secret_unusable`). 옛 `bearer`와 `header`의 줄바꿈이나 제어 문자가 든 시크릿은 연결 실패(세 번 다시 보냄)에서 `secret_unusable`(다시 보내지 않음)로 바뀐다.
+- 토큰 요청 본문의 이름(키)도 자리표시를 쓸 수 없고, `bearer`·`basic`·`header`의 본문이 그 종류의 시크릿에 없는 필드를 쓰면 정의 오류다.
+- `{{auth.token}}`이 든 글자는 `token_request` 소스의 POST 본문에서는 오류가 아니라 받은 토큰으로 바뀐다(옛 뜻은 글자 그대로). `prefix`, `send_prefix`, `auth.headers[].prefix`의 자리표시 글자는 오류가 아니고 글자로 나간다.
 - `ClassifyChange`는 아직 부르는 곳이 없다.
 
 ## 남는 위험과 미룬 것
 
 1. 정의를 편집할 수 있는 사람이 시크릿을 같은 출처 안에서 쓸 수 있는 길은 줄지 않았다. `auth.headers`와 본문 자리표시는 편집자가 시크릿이 가는 곳을 고르는 길이므로 접속 변경(이중 권한)으로 묶었다. 실제 묶임은 `ClassifyChange`를 부르는 정의 저장소가 들어와야 한다.
-2. 가리기는 값 그대로와 정해진 인코딩 꼴만 찾는다. 서버가 다른 변환(해시, 일부만 되돌림)으로 돌려주는 값은 못 찾는다. 8바이트보다 짧은 비밀 필드는 행에서 가리지 않는다(행의 값이 바뀌어 가짜 변경을 만드는 것을 피하는 값이고, 사건과 미리 보기와 오류에서는 4바이트부터 가린다).
+2. 가리기는 값 그대로와 정해진 인코딩 꼴(어댑터가 본문에 쓰는 JSON 글자의 꼴 포함)만 찾는다. 서버가 다른 변환(해시, 일부만 되돌림)으로 돌려주는 값은 못 찾는다. 8바이트보다 짧은 비밀 필드는 행에서 가리지 않는다(행의 값이 바뀌어 가짜 변경을 만드는 것을 피하는 값이고, 사건과 미리 보기의 교환 기록과 오류와 이어 읽기 토큰의 검사에서는 4바이트부터 가린다).
 3. 검토에서 나온 R9(정규식 합치기)와 OAuth2의 `basic_form` 같은 확장은 뒤로 미뤘다.
 
 ## 확인

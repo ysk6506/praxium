@@ -157,9 +157,30 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ing
 			return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret has no value in a field this authentication needs", nil)
 		}
 	}
+	if !s.headerValuesSafe() {
+		s.close()
+		return nil, unusable("a value of the secret that goes into a header has a line break or a control character, which a header cannot hold; nothing was sent")
+	}
 	s.fields = fields
 	s.setMasks()
 	return s, nil
+}
+
+// headerValuesSafe tells whether the values of the secret that go into a header can be a value of a header. It is asked
+// when the secret is opened, so that no request goes out (not even the one for the token) with a value that cannot be sent.
+func (s *signer) headerValuesSafe() bool {
+	switch s.auth.Kind {
+	case ingest.AuthBearer, ingest.AuthHeader:
+		if !headerSafe(s.field("token")) {
+			return false
+		}
+	}
+	for _, e := range s.auth.Headers {
+		if src, ok := ingest.ParseHeaderFrom(e.From); ok && !src.Token && !headerSafe(s.field(src.Field)) {
+			return false
+		}
+	}
+	return true
 }
 
 // setMasks makes the two sets of texts to take out, from the values of the secret.
@@ -184,7 +205,10 @@ func longEnough(texts []string, n int) []string {
 // made of them for the requests (maskForms makes the other shapes they may come back in). The secret ones are those of the
 // fields that are not a name: a user name or a client id is a name, kept apart because it is no secret.
 func (s *signer) maskTexts() (secret, names []string) {
-	for _, f := range s.fields {
+	// Every field of the secret is taken out, not only those this read uses: a source may hand back what another dataset
+	// sent (ADR-0100). The fields this read uses are the ones it needs to have a value in.
+	all, _ := secrets.FieldNames(s.opened.Kind())
+	for _, f := range all {
 		v := s.field(f)
 		if f == "username" {
 			names = append(names, v)
@@ -253,16 +277,6 @@ func headerSafe(v string) bool {
 	return !strings.ContainsFunc(v, func(r rune) bool { return r != '\t' && (unicode.IsControl(r) && r < 0x80) })
 }
 
-// setSafe puts a header whose value comes from the secret, and refuses a value that has a line break or a control character,
-// so that nothing is sent (and no retry is made) for a value that cannot be sent.
-func setSafe(h map[string][]string, name, value string) error {
-	if !headerSafe(value) {
-		return unusable("a value of the secret that goes into a header has a line break or a control character, which a header cannot hold; nothing was sent")
-	}
-	setHeader(h, name, value)
-	return nil
-}
-
 // apply puts the credentials into the headers of a request: the header the kind of authentication sends, and then the
 // entries of auth.headers (which win a name that is the same).
 func (s *signer) apply(h map[string][]string) error {
@@ -270,9 +284,7 @@ func (s *signer) apply(h map[string][]string) error {
 		return err
 	}
 	for _, e := range s.auth.Headers {
-		if err := s.applyEntry(h, e); err != nil {
-			return err
-		}
+		s.applyEntry(h, e)
 	}
 	return nil
 }
@@ -280,11 +292,11 @@ func (s *signer) apply(h map[string][]string) error {
 func (s *signer) applyKind(h map[string][]string) error {
 	switch s.auth.Kind {
 	case ingest.AuthBearer:
-		return setSafe(h, "Authorization", "Bearer "+s.field("token"))
+		setHeader(h, "Authorization", "Bearer "+s.field("token"))
 	case ingest.AuthBasic:
 		return s.setBasic(h)
 	case ingest.AuthHeader:
-		return setSafe(h, s.auth.Header, ingest.UnescapeBraces(s.auth.Prefix)+s.field("token"))
+		setHeader(h, s.auth.Header, ingest.UnescapeBraces(s.auth.Prefix)+s.field("token"))
 	case ingest.AuthTokenRequest:
 		if tok := s.token.text(); tok != "" && s.auth.Send != ingest.SendTemplate {
 			setHeader(h, s.sendHeader(), s.sendPrefix()+tok)
@@ -293,20 +305,19 @@ func (s *signer) applyKind(h map[string][]string) error {
 	return nil
 }
 
-// applyEntry puts one entry of auth.headers: the token it names (when there is one), or a field of the secret.
-func (s *signer) applyEntry(h map[string][]string, e ingest.SecretHeader) error {
+// applyEntry puts one entry of auth.headers: the token it names (when there is one), or a field of the secret. The values
+// were looked at when the secret was opened (headerValuesSafe) and the token when it was read.
+func (s *signer) applyEntry(h map[string][]string, e ingest.SecretHeader) {
 	src, ok := ingest.ParseHeaderFrom(e.From)
 	if !ok {
-		return nil
+		return
 	}
 	prefix := ingest.UnescapeBraces(e.Prefix)
-	if src.Token {
-		if tok := s.token.text(); tok != "" {
-			setHeader(h, e.Name, prefix+tok)
-		}
-		return nil
+	if !src.Token {
+		setHeader(h, e.Name, prefix+s.field(src.Field))
+	} else if tok := s.token.text(); tok != "" {
+		setHeader(h, e.Name, prefix+tok)
 	}
-	return setSafe(h, e.Name, prefix+s.field(src.Field))
 }
 
 // setBasic puts the Authorization header of the user name and the password. A user name with a colon cannot be told from
@@ -359,11 +370,7 @@ func (s *signer) valueOf(p ingest.Placeholder) (string, error) {
 	if s.opened == nil {
 		return "", unusable("a body has a placeholder of the secret, and the authentication has no secret")
 	}
-	v, ok := s.opened.Value(p.Field)
-	if !ok {
-		return "", unusable("a body names a field the secret does not have")
-	}
-	return v.Reveal(), nil
+	return s.field(p.Field), nil
 }
 
 // ensure gets a token for a token_request authentication that has none.

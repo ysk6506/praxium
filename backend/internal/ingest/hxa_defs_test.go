@@ -1,6 +1,8 @@
 package ingest
 
 import (
+	"encoding/json"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -143,17 +145,17 @@ func TestHxaAPlaceholderNeedsWhatItStandsFor(t *testing.T) {
 	hxaWant(t, "a credential with no authentication", hxaDoc("", "", credBody), elsewhere+" /datasets/0/request/body/k")
 	hxaWant(t, "a credential with the kind bearer", hxaDoc(`{"kind":"bearer","credential":{"secret_id":"k"}}`, "", credBody))
 	hxaWant(t, "the kind custom with a body that uses the secret", hxaDoc(`{"kind":"custom","credential":{"secret_id":"k"}}`, "", credBody))
-	hxaWant(t, "the kind custom that sends nothing", hxaDoc(`{"kind":"custom","credential":{"secret_id":"k"}}`, "", ""), "source.auth.field_missing /connection/auth/headers")
+	hxaWant(t, "the kind custom that sends nothing", hxaDoc(`{"kind":"custom","credential":{"secret_id":"k"}}`, "", ""), "source.auth.sends_nothing /connection/auth/headers")
 	hxaWant(t, "the kind custom with a header", hxaDoc(hxaCustom, "", ""))
 	hxaWant(t, "the kind custom with no secret", hxaDoc(`{"kind":"custom","headers":[{"name":"X-K","from":"credential.token"}]}`, "", ""), "source.auth.field_missing /connection/auth/credential")
 	hxaWant(t, "a token and a password in one secret", hxaDoc(`{"kind":"custom","credential":{"secret_id":"k"},"headers":[{"name":"X-K","from":"credential.token"},{"name":"X-U","from":"credential.username"}]}`, "", ""),
-		elsewhere+" /connection/auth")
+		"source.auth.secret_fields_invalid /connection/auth")
 	sendTemplate := strings.Replace(hxaTokenAuth, `"token_path":"token"`, `"token_path":"token","send":"template"`, 1)
-	hxaWant(t, "a token that goes nowhere", hxaDoc(sendTemplate, "", ""), "source.auth.token_request_invalid /connection/auth/send")
+	hxaWant(t, "a token that goes nowhere", hxaDoc(sendTemplate, "", ""), "source.auth.token_use_invalid /connection/auth/send")
 	hxaWant(t, "a token sent by a body", hxaDoc(sendTemplate, "", body))
 	hxaWant(t, "a token sent by a header", hxaDoc(strings.Replace(sendTemplate, `"send":"template"`, `"send":"template","headers":[{"name":"X-T","from":"token"}]`, 1), "", ""))
-	hxaWant(t, "a send that is none of the two", hxaDoc(strings.Replace(hxaTokenAuth, `"token_path":"token"`, `"token_path":"token","send":"later"`, 1), "", ""), "source.auth.token_request_invalid /connection/auth/send")
-	hxaWant(t, "send_header with a template", hxaDoc(strings.Replace(sendTemplate, `"send":"template"`, `"send":"template","send_header":"X-T"`, 1), "", body), "source.auth.token_request_invalid /connection/auth/send_header")
+	hxaWant(t, "a send that is none of the two", hxaDoc(strings.Replace(hxaTokenAuth, `"token_path":"token"`, `"token_path":"token","send":"later"`, 1), "", ""), "source.auth.token_use_invalid /connection/auth/send")
+	hxaWant(t, "send_header with a template", hxaDoc(strings.Replace(sendTemplate, `"send":"template"`, `"send":"template","send_header":"X-T"`, 1), "", body), "source.auth.token_use_invalid /connection/auth/send_header")
 	hxaWant(t, "a token request that asks for a token secret", hxaDoc(`{"kind":"token_request","credential":{"secret_id":"k"},"request":{"path":"/t","format":"json","body":{"key":"{{credential.token}}"}},"token_path":"token"}`, "", ""))
 }
 
@@ -177,9 +179,9 @@ func TestHxaTheHeadersOfTheAuthenticationAreNamedAndKeptOutOfLogs(t *testing.T) 
 		hxaWant(t, "a header that servers log: "+name, custom(entry(name, "credential.token", "")), forbidden)
 	}
 	hxaWant(t, "a name twice", custom(entry("X-K", "credential.token", "")+","+entry("x-k", "credential.token", "")), "source.connection.header_not_allowed /connection/auth/headers/1/name")
-	hxaWant(t, "a from that is none", custom(entry("X-K", "secret", "")), "source.connection.header_not_allowed /connection/auth/headers/0/from")
-	hxaWant(t, "a from with a name that is not one", custom(entry("X-K", "credential.Token", "")), "source.connection.header_not_allowed /connection/auth/headers/0/from")
-	hxaWant(t, "the token with the kind custom", custom(entry("X-K", "token", "")), "source.connection.header_not_allowed /connection/auth/headers/0/from")
+	hxaWant(t, "a from that is none", custom(entry("X-K", "secret", "")), "source.auth.header_source_invalid /connection/auth/headers/0/from")
+	hxaWant(t, "a from with a name that is not one", custom(entry("X-K", "credential.Token", "")), "source.auth.header_source_invalid /connection/auth/headers/0/from")
+	hxaWant(t, "the token with the kind custom", custom(entry("X-K", "token", "")), "source.auth.header_source_invalid /connection/auth/headers/0/from")
 	hxaWant(t, "a prefix with a line break", custom(`{"name":"X-K","from":"credential.token","prefix":"a\nb"}`), "source.connection.header_not_allowed /connection/auth/headers/0/prefix")
 	hxaWant(t, "a header of the token", hxaDoc(strings.Replace(hxaTokenAuth, `"token_path":"token"`, `"token_path":"token","headers":[`+entry("X-T", "token", "T ")+`]`, 1), "", ""))
 	var many []string
@@ -210,8 +212,8 @@ func TestHxaBasicCredentialsAndATokenThatIsTheWholeBody(t *testing.T) {
 		"source.auth.token_request_invalid /connection/auth/request/body/u")
 	hxaWant(t, "credentials_in that is none", hxaDoc(strings.Replace(session, `"basic"`, `"header"`, 1), "", ""), "source.auth.token_request_invalid /connection/auth/request/credentials_in")
 	hxaWant(t, "body and no format", hxaDoc(strings.Replace(session, `,"credentials_in":"basic"`, ``, 1), "", ""), "source.auth.token_request_invalid /connection/auth/request/format")
-	hxaWant(t, "token_from body with a token_path", hxaDoc(strings.Replace(session, `"token_from":"body"`, `"token_from":"body","token_path":"t"`, 1), "", ""), "source.auth.token_request_invalid /connection/auth/token_path")
-	hxaWant(t, "token_from that is none", hxaDoc(strings.Replace(session, `"body"`, `"headers"`, 1), "", ""), "source.auth.token_request_invalid /connection/auth/token_from")
+	hxaWant(t, "token_from body with a token_path", hxaDoc(strings.Replace(session, `"token_from":"body"`, `"token_from":"body","token_path":"t"`, 1), "", ""), "source.auth.token_use_invalid /connection/auth/token_path")
+	hxaWant(t, "token_from that is none", hxaDoc(strings.Replace(session, `"body"`, `"headers"`, 1), "", ""), "source.auth.token_use_invalid /connection/auth/token_from")
 	hxaWant(t, "no token_path and no token_from", hxaDoc(strings.Replace(session, `"token_from":"body",`, ``, 1), "", ""), "source.auth.field_missing /connection/auth/token_path")
 	hxaWant(t, "token_from path with a token_path", hxaDoc(strings.Replace(hxaTokenAuth, `"token_path":"token"`, `"token_path":"token","token_from":"path"`, 1), "", ""))
 	hxaWant(t, "token_from with the kind bearer", hxaDoc(`{"kind":"bearer","credential":{"secret_id":"k"},"token_from":"body"}`, "", ""), "source.auth.field_not_for_kind /connection/auth/token_from")
@@ -340,5 +342,148 @@ func TestHxaPlaceholdersAreReadInOnePlace(t *testing.T) {
 	basic := Auth{Kind: AuthTokenRequest, Request: &TokenRequest{CredentialsIn: CredentialsInBasic}}
 	if got := CredentialFields(basic, nil); strings.Join(got, ",") != "username,password" {
 		t.Errorf("%v", got)
+	}
+}
+
+// [REQ-741]
+// What the review of ADR-0100 found a definition could still carry: a header of the older fields that servers log, a header
+// that ends or moves the connection, a name of the body of the token request that is a placeholder, and a field the kind
+// of the authentication has no secret for.
+func TestHxaTheDefinitionRefusesWhatTheReviewFoundItAllowed(t *testing.T) {
+	logged := "source.connection.header_not_allowed /connection/auth/header"
+	for _, name := range []string{"User-Agent", "Referer", "X-Forwarded-For", "X-Amzn-Trace-Id", "True-Client-IP", "Baggage", "CF-Connecting-IP"} {
+		hxaWant(t, "kind header named "+name, hxaDoc(`{"kind":"header","credential":{"secret_id":"k"},"header":"`+name+`"}`, "", ""), logged)
+		send := strings.Replace(hxaTokenAuth, `"token_path":"token"`, `"token_path":"token","send_header":"`+name+`"`, 1)
+		hxaWant(t, "send_header named "+name, hxaDoc(send, "", ""), "source.connection.header_not_allowed /connection/auth/send_header")
+	}
+	for _, name := range []string{"Upgrade", "TE", "Keep-Alive", "Trailer", "Expect"} {
+		hxaWant(t, "header of the connection "+name, hxaDoc("", `,"headers":{"`+name+`":"x"}`, ""), "source.connection.header_not_allowed /connection/headers/"+name)
+		custom := `{"kind":"custom","credential":{"secret_id":"k"},"headers":[{"name":"` + name + `","from":"credential.token"}]}`
+		hxaWant(t, "auth header "+name, hxaDoc(custom, "", ""), "source.connection.header_not_allowed /connection/auth/headers/0/name")
+	}
+	hxaWant(t, "Content-Type may be written", hxaDoc("", `,"headers":{"Content-Type":"application/json-rpc"}`, ""))
+	hxaWant(t, "Content-Type of the authentication", hxaDoc(`{"kind":"custom","credential":{"secret_id":"k"},"headers":[{"name":"Content-Type","from":"credential.token"}]}`, "", ""))
+	named := strings.Replace(hxaTokenAuth, `"body":{"u":"{{credential.username}}"`, `"body":{"{{credential.password}}":"x","u":"{{credential.username}}"`, 1)
+	hxaWant(t, "a name that is a placeholder in the token request", hxaDoc(named, "", ""), "source.placeholder.not_allowed_here /connection/auth/request/body/{{credential.password}}")
+	nested := strings.Replace(hxaTokenAuth, `"body":{"u":"{{credential.username}}"`, `"body":{"a":{"{{auth.token}}":"x"},"u":"{{credential.username}}"`, 1)
+	hxaWant(t, "a name that is the token in a nested object", hxaDoc(nested, "", ""), "source.placeholder.not_allowed_here /connection/auth/request/body/a/{{auth.token}}")
+	kind := func(auth string) string { return hxaDoc(auth, "", hxaPostDataset(`{"k":"{{credential.username}}"}`)) }
+	hxaWant(t, "bearer with the field username", kind(`{"kind":"bearer","credential":{"secret_id":"k"}}`), "source.auth.secret_fields_invalid /connection/auth")
+	hxaWant(t, "basic with the field token", hxaDoc(`{"kind":"basic","credential":{"secret_id":"k"}}`, "", hxaPostDataset(`{"k":"{{credential.token}}"}`)), "source.auth.secret_fields_invalid /connection/auth")
+	hxaWant(t, "custom with a field no secret has", hxaDoc(`{"kind":"custom","credential":{"secret_id":"k"},"headers":[{"name":"X-K","from":"credential.apikey"}]}`, "", ""), "source.auth.secret_fields_invalid /connection/auth")
+	hxaWant(t, "basic with the fields username and password", hxaDoc(`{"kind":"basic","credential":{"secret_id":"k"}}`, "", hxaPostDataset(`{"k":"{{credential.password}}"}`)))
+}
+
+// [REQ-745]
+// What ClassifyChange took for a change of the mapping and the review showed is not: the collector, the id of the source, a
+// source that is started again, the version, the limits of the files, the pages of a dataset that POSTs, a page that loses
+// its size, a new dataset with a big page, and a definition that was not given its defaults.
+func TestHxaWhatIsNotKnownAsTheMappingIsAChangeOfTheConnection(t *testing.T) {
+	parse := func(doc string) Source {
+		src, err := ParseAdapterSource(strings.NewReader(doc))
+		if err != nil {
+			t.Fatalf("%v", err)
+		}
+		return src
+	}
+	base := parse(hxaDoc(hxaTokenAuth, "", ""))
+	post := parse(hxaDoc(hxaTokenAuth, "", `{"id":"ds_a","post_reads":true,"request":{"method":"POST","path":"/a","body":{"q":"x"}},"pagination":{"kind":"cursor","cursor_param":"c","cursor_in":"body","next_cursor_path":"next"},"natural_key":["a"],"columns":[{"name":"a"}]}`))
+	withPage := func(doc string) Source {
+		return parse(hxaDoc(hxaTokenAuth, "", doc))
+	}
+	cursor := func(extra string) Source {
+		return withPage(`{"id":"ds_a","request":{"path":"/a"},"pagination":{"kind":"cursor","cursor_param":"c","cursor_in":"query","next_cursor_path":"next"` + extra + `},"natural_key":["a"],"columns":[{"name":"a"}]}`)
+	}
+	edit := func(s Source, f func(*Source)) Source {
+		data, _ := json.Marshal(s)
+		var c Source
+		_ = json.Unmarshal(data, &c)
+		f(&c)
+		return c
+	}
+	two := 2
+	cases := []struct {
+		name          string
+		before, after Source
+		reason        string
+	}{
+		{"the collector", base, edit(base, func(s *Source) { s.Collector = "remote" }), "other"},
+		{"the id of the source", base, edit(base, func(s *Source) { s.ID = "src_other" }), "new_source"},
+		{"a source that is started again", edit(base, func(s *Source) { s.Disabled = true }), base, "enabled"},
+		{"the version of the document", base, edit(base, func(s *Source) { s.Version = &two }), "other"},
+		{"the limits of the files raised", base, edit(base, func(s *Source) { s.Limits = &Limits{MaxRowsPerDataset: 100_000_000} }), "limits.MaxRowsPerDataset"},
+		{"the cursor of a POST dataset", post, edit(post, func(s *Source) { s.Datasets[0].Pagination.CursorParam = "q" }), "datasets.ds_a.other"},
+		{"the size of a page in a POST body", post, edit(post, func(s *Source) { s.Datasets[0].Pagination.SizeParam = "q" }), "datasets.ds_a.other"},
+		{"a page that loses its size", cursor(`,"size_param":"limit","size":10`), cursor(""), "datasets.ds_a.pagination"},
+		{"a new GET dataset with a big page", base, edit(base, func(s *Source) {
+			s.Datasets = append(s.Datasets, Dataset{ID: "ds_b", Request: &Request{Path: "/b"}, NaturalKey: []string{"a"}, Columns: []Column{{Name: "a"}},
+				Pagination: &Pagination{Kind: PagePage, PageParam: "p", SizeParam: "s", Size: 10000, FirstPage: &two}})
+		}), "datasets.ds_b.pagination"},
+	}
+	for _, c := range cases {
+		got := ClassifyChange(c.before, c.after)
+		if got.Kind != ChangeConnection || !hxaHas(got.Reasons, c.reason) {
+			t.Errorf("%s: %s %v, want a change of the connection for %s", c.name, got.Kind, got.Reasons, c.reason)
+		}
+	}
+	// The mapping stays the mapping: a source that is stopped, a limit that is lowered, a page that is smaller, a new dataset with
+	// a usual page, the names of a dataset.
+	smaller := edit(base, func(s *Source) { s.Limits = &Limits{MaxRowsPerDataset: 10} })
+	for name, after := range map[string]Source{
+		"a source that is stopped": edit(base, func(s *Source) { s.Disabled = true }),
+		"a lower limit":            smaller,
+		"the name of a source":     edit(base, func(s *Source) { s.Name = "Another name" }),
+		"a new dataset with a page of 500": edit(base, func(s *Source) {
+			s.Datasets = append(s.Datasets, Dataset{ID: "ds_b", Request: &Request{Path: "/b"}, NaturalKey: []string{"a"}, Columns: []Column{{Name: "a"}},
+				Pagination: &Pagination{Kind: PagePage, PageParam: "p", SizeParam: "s", Size: 500, FirstPage: &two}})
+		}),
+	} {
+		if got := ClassifyChange(base, after); got.Kind != ChangeMapping {
+			t.Errorf("%s: %s %v", name, got.Kind, got.Reasons)
+		}
+	}
+	// A definition that was not given its defaults and the same one that was are the same definition.
+	raw := Source{ID: "src_x", Adapter: AdapterHTTP, Connection: &Connection{BaseURL: "https://x.example.test"}, Datasets: []Dataset{{ID: "ds_a", Request: &Request{Path: "/a"}}}}
+	if got := ClassifyChange(raw, parse(`{"id":"src_x","adapter":"http","connection":{"base_url":"https://x.example.test"},"datasets":[{"id":"ds_a","request":{"path":"/a"},"natural_key":["a"],"columns":[{"name":"a"}]}]}`)); hxaHas(got.Reasons, "connection.timeout_seconds") {
+		t.Errorf("a default that is written out: %v", got.Reasons)
+	}
+	rawAfter := raw
+	rawAfter.Datasets = []Dataset{{ID: "ds_a", Request: &Request{Path: "/a"}, Pagination: &Pagination{Kind: PagePage, PageParam: "p", SizeParam: "s", Size: 10000}}}
+	if got := ClassifyChange(raw, rawAfter); got.Kind != ChangeConnection {
+		t.Errorf("a big page in a definition that has no defaults: %+v", got)
+	}
+}
+
+// [REQ-745]
+// Every field of every type a definition is made of is in the table of ClassifyChange. A field that is added is a change of
+// the connection until someone puts it in the table, and this test fails until then.
+func TestHxaEveryFieldOfADefinitionHasItsClassForTheChangeOfTheConnection(t *testing.T) {
+	types := map[string]reflect.Type{
+		"Source": reflect.TypeOf(Source{}), "Connection": reflect.TypeOf(Connection{}), "Auth": reflect.TypeOf(Auth{}), "TokenRequest": reflect.TypeOf(TokenRequest{}),
+		"SecretHeader": reflect.TypeOf(SecretHeader{}), "SecretRef": reflect.TypeOf(SecretRef{}), "Dataset": reflect.TypeOf(Dataset{}), "Request": reflect.TypeOf(Request{}),
+		"Pagination": reflect.TypeOf(Pagination{}), "Limits": reflect.TypeOf(Limits{}),
+	}
+	seen := map[string]bool{}
+	for name, rt := range types {
+		for i := 0; i < rt.NumField(); i++ {
+			key := name + "." + rt.Field(i).Name
+			seen[key] = true
+			switch changeClasses[key] {
+			case classMapping, classLimit, classKept:
+			default:
+				t.Errorf("the field %s is not in the table of the classes of ClassifyChange; decide whether a change of it needs the ability to run sources", key)
+			}
+		}
+	}
+	for key := range changeClasses {
+		if !seen[key] {
+			t.Errorf("the table has %s, which is no field of a definition", key)
+		}
+	}
+	// The types that a field of the table points to are in the table too.
+	for _, key := range []string{"Source.Connection", "Connection.Auth", "Auth.Request", "Dataset.Request", "Dataset.Pagination", "Source.Limits"} {
+		if changeClasses[key] == "" {
+			t.Errorf("%s has no class", key)
+		}
 	}
 }

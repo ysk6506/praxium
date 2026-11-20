@@ -31,16 +31,41 @@ func (s Source) checkSecretUse(c *collector) {
 func (s Source) checkSecretNeeds(c *collector, a *Auth, u secretUse) {
 	switch {
 	case a.Kind == AuthCustom && u.uses == 0:
-		c.add(ecAdAuthMissing, ptr("connection", "auth", "headers"), Params{"source": s.ID, "kind": a.Kind, "field": "headers"},
+		c.add(ecAdSendsNothing, ptr("connection", "auth", "headers"), Params{"source": s.ID, "kind": a.Kind, "field": "headers"},
 			"source %s: the kind custom sends nothing by itself; it needs an entry of auth.headers or a placeholder in the body of a request", s.ID)
 	case a.Kind == AuthTokenRequest && a.Send == SendTemplate && !u.tokenUsed:
-		c.add(ecAdTokenReq, ptr("connection", "auth", "send"), Params{"source": s.ID, "field": "auth.send", "reason": "is template, and no entry of auth.headers and no body has the token, so the token goes nowhere"},
+		c.add(ecAdTokenUse, ptr("connection", "auth", "send"), Params{"source": s.ID, "field": "auth.send", "reason": "is template, and no entry of auth.headers and no body has the token, so the token goes nowhere"},
 			"source %s: auth.send is template, and no entry of auth.headers and no body has the token, so the token goes nowhere", s.ID)
 	}
-	if (a.Kind == AuthCustom || a.Kind == AuthTokenRequest) && mixesSecretKinds(u.fields) {
-		c.add(ecAdElsewhere, ptr("connection", "auth"), Params{"source": s.ID, "field": "auth"},
-			"source %s: the authentication asks for the token field and the fields username or password, which are of two kinds of secret; a secret has one kind", s.ID)
+	if reason := secretFieldsProblem(a.Kind, u.fields); reason != "" {
+		c.add(ecAdKindsMixed, ptr("connection", "auth"), Params{"source": s.ID, "field": "auth"}, "source %s: the authentication %s", s.ID, reason)
 	}
+}
+
+// secretFieldsProblem says why the fields a kind of authentication and the bodies ask the secret for cannot be those of one
+// secret, or "": a kind that reads one kind of secret asks for the fields of it; the kinds that give the fields by what they
+// write (custom, token_request) ask for the fields of one kind of secret and for no field that none has.
+func secretFieldsProblem(kind string, fields []string) string {
+	var allowed []string
+	switch kind {
+	case AuthBearer, AuthHeader:
+		allowed = []string{"token"}
+	case AuthBasic:
+		allowed = []string{"username", "password"}
+	case AuthCustom, AuthTokenRequest:
+		allowed = []string{"token", "username", "password"}
+	default:
+		return ""
+	}
+	for _, f := range fields {
+		if !containsString(allowed, f) {
+			return "asks for the field " + clip(f, idClipAt) + ", which the secret of this kind of authentication does not have"
+		}
+	}
+	if (kind == AuthCustom || kind == AuthTokenRequest) && mixesSecretKinds(fields) {
+		return "asks for the token field and the fields username or password, which are of two kinds of secret; a secret has one kind"
+	}
+	return ""
 }
 
 // secretUse is what the placeholders and the headers of an authentication use, counted while the bodies are walked.

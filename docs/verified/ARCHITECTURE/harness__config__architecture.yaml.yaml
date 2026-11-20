@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "55d4e840f9c6dd70"
-date: "2026-11-19"
-note: "architecture.yaml에 adapter.pgingest 등록과 main의 변경이 합쳐졌다. 유닛 표의 pgingest 행은 그대로 맞다."
+hash: "4c8e98ad60badf01"
+date: "2026-11-20"
+note: "병합: main의 adapter.pgingest 행(ADR-0098)과 이 브랜치의 adapter.pgstore 행(StagedApplier, test_may_import, ADR-0099)을 둘 다 남겼고 architecture.yaml과 맞음을 확인"
 text_changed: true
-doc_hash: "05ff734eae828bd6"
+doc_hash: "3ec77fcc008e9173"

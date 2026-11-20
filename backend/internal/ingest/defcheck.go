@@ -117,7 +117,10 @@ func isToken(s string) bool {
 // A header the product sets itself; the definition may not (sources-and-adapters.md 8).
 // The three that follow x-http-method-override make a server read a POST as another method (ADR-0097).
 var forbiddenHeaders = []string{"host", "cookie", "accept-encoding", "content-length", "transfer-encoding", "connection",
-	"x-http-method-override", "x-http-method", "x-method-override"}
+	"x-http-method-override", "x-http-method", "x-method-override",
+	// Headers that move or end the connection (and that the client of HTTP/2 refuses), or that give the framing of a body.
+	// Content-Type is not here: an API may ask for the type of its body (application/json-rpc).
+	"upgrade", "te", "keep-alive", "trailer", "expect"}
 
 // headerProblem says why a header may not be named in a definition, or "".
 func headerProblem(name string, allowAuthorization bool) string {

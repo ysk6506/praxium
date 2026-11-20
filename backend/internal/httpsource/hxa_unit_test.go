@@ -39,7 +39,7 @@ func TestHxaASignerWithoutASecretRefusesWhatNeedsOne(t *testing.T) {
 	}
 }
 
-func TestHxaWhatASecretIsAskedForIsTheUnionOfTheKindAndTheBody(t *testing.T) {
+func TestHxaTheFieldsThatMustHaveAValueAreTheUnionOfTheKindAndTheBody(t *testing.T) {
 	if got := unionOf([]string{"token"}, []string{"token", "other"}); len(got) != 2 || got[1] != "other" {
 		t.Errorf("the union of the fields repeated a field: %v", got)
 	}
@@ -56,7 +56,8 @@ func TestHxaWhatASecretIsAskedForIsTheUnionOfTheKindAndTheBody(t *testing.T) {
 
 func TestHxaAnEntryThatNamesNoSourceAddsNothing(t *testing.T) {
 	h := map[string][]string{}
-	if err := (&signer{}).applyEntry(h, ingest.SecretHeader{Name: "X-Key", From: "nowhere"}); err != nil || len(h) != 0 {
-		t.Errorf("an entry with an unknown source put a header: %v %v", h, err)
+	(&signer{}).applyEntry(h, ingest.SecretHeader{Name: "X-Key", From: "nowhere"})
+	if len(h) != 0 {
+		t.Errorf("an entry with an unknown source put a header: %v", h)
 	}
 }

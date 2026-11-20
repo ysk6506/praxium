@@ -68,7 +68,7 @@ func (a Auth) checkCredential(c *collector, id, at string) {
 func (a Auth) checkHeader(c *collector, id, at string) {
 	if a.Header == "" {
 		a.missing(c, id, at, "header")
-	} else if reason := headerProblem(a.Header, true); reason != "" {
+	} else if reason := firstText(headerProblem(a.Header, true), loggedHeaderProblem(a.Header)); reason != "" {
 		c.add(ecAdHeader, at+ptr("header"), Params{"source": id, "header": clip(a.Header, idClipAt), "reason": reason}, "source %s: the header %q %s", id, clip(a.Header, idClipAt), reason)
 	}
 	if reason := valueProblem(a.Prefix); reason != "" {
@@ -80,7 +80,7 @@ func (a Auth) checkTokenRequest(c *collector, id, at string) {
 	a.checkTokenFrom(c, id, at)
 	a.checkSend(c, id, at)
 	if a.SendHeader != "" {
-		if reason := headerProblem(a.SendHeader, true); reason != "" {
+		if reason := firstText(headerProblem(a.SendHeader, true), loggedHeaderProblem(a.SendHeader)); reason != "" {
 			c.add(ecAdHeader, at+ptr("send_header"), Params{"source": id, "header": clip(a.SendHeader, idClipAt), "reason": reason}, "source %s: the header %q %s", id, clip(a.SendHeader, idClipAt), reason)
 		}
 	}
@@ -100,7 +100,7 @@ func (a Auth) checkTokenRequest(c *collector, id, at string) {
 // path). A token request that names neither is refused, as it always was.
 func (a Auth) checkTokenFrom(c *collector, id, at string) {
 	bad := func(field, reason string) {
-		c.add(ecAdTokenReq, at+ptr(field), Params{"source": id, "field": "auth." + field, "reason": reason}, "source %s: auth.%s %s", id, field, reason)
+		c.add(ecAdTokenUse, at+ptr(field), Params{"source": id, "field": "auth." + field, "reason": reason}, "source %s: auth.%s %s", id, field, reason)
 	}
 	switch a.TokenFrom {
 	case "", TokenFromPath:
@@ -126,13 +126,23 @@ func (a Auth) checkSend(c *collector, id, at string) {
 	case SendTemplate:
 		for _, f := range []namedSet{{"send_header", a.SendHeader != ""}, {"send_prefix", a.SendPrefix != nil}} {
 			if f.set {
-				c.add(ecAdTokenReq, at+ptr(f.name), Params{"source": id, "field": "auth." + f.name, "reason": "is not read when send is template; the token goes where a placeholder or auth.headers puts it"},
+				c.add(ecAdTokenUse, at+ptr(f.name), Params{"source": id, "field": "auth." + f.name, "reason": "is not read when send is template; the token goes where a placeholder or auth.headers puts it"},
 					"source %s: auth.%s is not read when send is template", id, f.name)
 			}
 		}
 	default:
-		c.add(ecAdTokenReq, at+ptr("send"), Params{"source": id, "field": "auth.send", "reason": "is none of header and template"}, "source %s: auth.send is none of header and template", id)
+		c.add(ecAdTokenUse, at+ptr("send"), Params{"source": id, "field": "auth.send", "reason": "is none of header and template"}, "source %s: auth.send is none of header and template", id)
 	}
+}
+
+// firstText gives the first of the texts that is not empty.
+func firstText(texts ...string) string {
+	for _, t := range texts {
+		if t != "" {
+			return t
+		}
+	}
+	return ""
 }
 
 // maxAuthHeaders is the most headers auth.headers may name.
@@ -140,7 +150,18 @@ const maxAuthHeaders = 16
 
 // loggedHeaders are headers that a proxy or a server keeps in the log of its accesses, so that a secret put in one is
 // read by anyone who reads the log. The headers x-forwarded-* are the same (ADR-0100).
-var loggedHeaders = []string{"user-agent", "referer", "referrer", "forwarded", "via", "x-request-id", "x-correlation-id", "x-real-ip", "traceparent", "tracestate", "from", "origin"}
+var loggedHeaders = []string{"user-agent", "referer", "referrer", "forwarded", "via", "x-request-id", "x-correlation-id", "x-real-ip", "traceparent", "tracestate", "from", "origin",
+	"x-amzn-trace-id", "x-b3-traceid", "x-b3-spanid", "x-b3-parentspanid", "x-b3-sampled", "b3", "x-cloud-trace-context", "baggage", "true-client-ip", "x-client-ip", "cf-connecting-ip",
+	"x-original-url", "x-rewrite-url", "x-original-forwarded-for"}
+
+// loggedHeaderProblem says why a header may not carry a secret, because servers and proxies keep it in their logs, or "".
+func loggedHeaderProblem(name string) string {
+	lower := strings.ToLower(name)
+	if containsString(loggedHeaders, lower) || strings.HasPrefix(lower, "x-forwarded-") {
+		return "is a header that servers and proxies keep in their logs; a secret does not go in it"
+	}
+	return ""
+}
 
 // checkAuthHeaders checks the headers a value of the secret or the token goes in: a name the definition may write, one the
 // logs of a server do not keep, a place the value comes from, and the text before it.
@@ -152,14 +173,18 @@ func (a Auth) checkAuthHeaders(c *collector, id, at string) {
 	seen := map[string]bool{}
 	for i, h := range a.Headers {
 		bad := func(field, name, reason string) {
-			c.add(ecAdHeader, at+ptr("headers", i, field), Params{"source": id, "header": clip(name, idClipAt), "reason": reason}, "source %s: auth.headers %d, %s %q %s", id, i, field, clip(name, idClipAt), reason)
+			code := ecAdHeader
+			if field == "from" {
+				code = ecAdHeaderFrom
+			}
+			c.add(code, at+ptr("headers", i, field), Params{"source": id, "header": clip(name, idClipAt), "reason": reason}, "source %s: auth.headers %d, %s %q %s", id, i, field, clip(name, idClipAt), reason)
 		}
 		lower := strings.ToLower(h.Name)
 		reason := headerProblem(h.Name, true)
 		switch {
 		case reason != "":
-		case containsString(loggedHeaders, lower) || strings.HasPrefix(lower, "x-forwarded-"):
-			reason = "is a header that servers and proxies keep in their logs; a secret does not go in it"
+		case loggedHeaderProblem(h.Name) != "":
+			reason = loggedHeaderProblem(h.Name)
 		case seen[lower]:
 			reason = "is written twice, in two spellings"
 		}
@@ -210,6 +235,7 @@ func (r TokenRequest) check(c *collector, id, at string) {
 			bad("body", "has a value with no name")
 			continue
 		}
+		c.checkText(id, ptr("connection", "auth", "request", "body", k), "auth.request.body."+clip(k, idClipAt), k)
 		r.checkValue(c, id, []any{"body", k}, r.Body[k], basic, 0)
 	}
 }
@@ -257,6 +283,7 @@ func (r TokenRequest) checkNested(c *collector, id string, path []any, v any, ba
 					"source %s: auth.request.%s has a value with no name", id, dotted(path))
 				continue
 			}
+			c.checkText(id, ptr(append([]any{"connection", "auth", "request"}, append(append([]any{}, path...), k)...)...), "auth.request."+dotted(append(append([]any{}, path...), k)), k)
 			r.checkValue(c, id, append(append([]any{}, path...), k), x[k], basic, depth+1)
 		}
 	case []any:
