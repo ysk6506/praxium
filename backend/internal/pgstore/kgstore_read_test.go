@@ -112,11 +112,13 @@ func (w *v2rWorld) v2rSeed(t *testing.T) {
 		w.link.String(), w.linkNo, make([]byte, 32))
 	v2rExec(t, w.admin, `INSERT INTO `+tn("object_identifier")+` (obj_no, scheme, value, scope, seq_from, seq_to) VALUES (2,'serial','S1','',1,NULL),(2,'serial','OLD','',1,3)`)
 	v2rExec(t, w.admin, `UPDATE `+tn("head")+` SET applied_seq = 4, readable_through = 4, applied_through = 4`)
-	prov := `{"203":{"v":"on","g":"fact","b":"observed","s":"2025-01-01T00:00:00Z","r":"src"}}`
+	// the value is in the column of its attribute and prov says only how far it can be trusted (ADR-0101)
+	prov := `{"203":{"g":"fact","b":"observed","t":"2025-01-01T00:00:00Z","r":"src"}}`
+	col, at := pgschema.StateColumn(graph.AttrServerPower), pgschema.StateColumnAt(graph.AttrServerPower)
 	if _, ok := a.state[w.serverNo][graph.AttrServerPower]; ok {
-		v2rExec(t, w.admin, `INSERT INTO `+tn(pgschema.StateTable(w.serverNo))+` (obj_no, prov) VALUES (2, $1)`, prov)
+		v2rExec(t, w.admin, `INSERT INTO `+tn(pgschema.StateTable(w.serverNo))+` (obj_no, `+col+`, `+at+`, prov) VALUES (2, 'on', '2025-01-01T00:00:00Z', $1)`, prov)
 	} else {
-		v2rExec(t, w.admin, `INSERT INTO `+tn("object_state")+` (obj_no, type_no, prov) VALUES (2, $1, $2)`, w.serverNo, prov)
+		v2rExec(t, w.admin, `INSERT INTO `+tn("object_state")+` (obj_no, type_no, `+col+`, `+at+`, prov) VALUES (2, $1, 'on', '2025-01-01T00:00:00Z', $2)`, w.serverNo, prov)
 	}
 }
 

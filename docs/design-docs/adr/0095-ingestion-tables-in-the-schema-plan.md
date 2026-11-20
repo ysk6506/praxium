@@ -30,6 +30,8 @@ decision_hash: 4104eeeec0af9351
 amended_by:
   - adr: "0098"
     what: 결정 3과 4의 수신 테이블 세 곳에 held 열을 더하고 생성기 버전을 4로 올리는 것
+  - adr: "0101"
+    what: 결정 3의 `stage_volatile`의 `entry`가 `object_state`의 `prov`에 들어갈 항목이라는 것(값은 열로 가고 시각 키는 `t`다)
 ---
 # ADR-0095 새 수집 흐름의 테이블을 스키마 계획에 더한다
 

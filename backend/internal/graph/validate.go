@@ -201,7 +201,24 @@ func (v *validator) volatile(typ model.ObjectType, w VolatileWrite) error {
 	if !w.Grade.Valid() || !w.Basis.Valid() {
 		return invalid("volatile attribute %s needs an evidence grade and a basis", p.Name)
 	}
-	return v.value(p, w.Value, w.Grade)
+	if w.SeenAt != "" && !validTime(w.SeenAt) {
+		return invalid("volatile attribute %s: the time seen %q is not a time in UTC ending in Z", p.Name, w.SeenAt)
+	}
+	err := v.volatileKind(p, w.Value)
+	if err == nil {
+		err = v.value(p, w.Value, w.Grade)
+	}
+	return err
+}
+
+// volatileKind refuses a value that a column of the table of values cannot hold: a quantity there is a number, and a map (a
+// quantity with a unit in it) has no column. The unit is in the model.
+func (v *validator) volatileKind(p model.Property, val any) error {
+	vt, ok := v.reg.ValueType(p.ValueType)
+	if _, isMap := val.(map[string]any); ok && isMap && vt.Base == model.BaseQuantity {
+		return invalid("volatile attribute %s: a quantity is a number, the unit is in the model", p.Name)
+	}
+	return nil
 }
 
 // value checks a value against the value type of its property.
@@ -285,9 +302,13 @@ func inList(list []string, s string) bool {
 	return false
 }
 
+// validTime says whether a text is a time in the one form the store keeps (ADR-0101): UTC and ending in Z, with at most six
+// digits of a second (a database keeps microseconds) and no zero at the end of them, which is how time.RFC3339Nano writes a
+// time. A view reads the text with a function that wants this form and a column of a volatile value is read back in it, so a
+// text of another form (an offset, a fraction with a trailing zero) is a record that does not fit and is not stored.
 func validTime(s string) bool {
-	_, err := time.Parse(time.RFC3339, s)
-	return err == nil
+	t, err := time.Parse(time.RFC3339, s)
+	return err == nil && t.Nanosecond()%1000 == 0 && t.UTC().Format(time.RFC3339Nano) == s
 }
 
 // isNumber accepts an int64 or a decimal text: floats have no canonical form.

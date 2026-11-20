@@ -127,10 +127,26 @@ func readIndexes(ctx context.Context, sh *shard, schema string) (indexSet, error
 	return out, err
 }
 
-// reconcileSteps compares the indexes of the search set that the schema has with those its manifest names: the
-// ones that are missing are built (the steps come from pgschema.Diff, from the manifest without them to the
+// reconcileSteps compares the indexes of the search set and the name indexes of the types that the schema has with those its
+// manifest names: the ones that are missing are built (the steps come from pgschema.Diff, from the manifest without them to the
 // manifest), the ones that the manifest does not name are dropped. A schema that matches needs none.
 func reconcileSteps(m pgschema.Manifest, have indexSet) ([]pgschema.Step, error) {
+	steps, named, err := missingSearchSteps(m, have)
+	if err != nil {
+		return nil, err
+	}
+	for _, t := range m.Types {
+		for _, st := range pgschema.NameIndexSteps(pgschema.SchemaName(m.KGNo), t.TypeNo) {
+			if !have[st.Name] {
+				steps = append(steps, st)
+			}
+		}
+	}
+	return append(steps, extraSearchSteps(m, have, named)...), nil
+}
+
+// missingSearchSteps builds the search-set indexes that are not there or not valid, and gives the names the manifest has.
+func missingSearchSteps(m pgschema.Manifest, have indexSet) ([]pgschema.Step, map[string]bool, error) {
 	named := map[string]bool{}
 	without := m
 	without.Types = make([]pgschema.TypeSummary, len(m.Types))
@@ -148,14 +164,15 @@ func reconcileSteps(m pgschema.Manifest, have indexSet) ([]pgschema.Step, error)
 			}
 		}
 	}
-	var steps []pgschema.Step
-	if missing {
-		delta, err := pgschema.Diff(without, m)
-		if err != nil {
-			return nil, err
-		}
-		steps = delta.Steps
+	if !missing {
+		return nil, named, nil
 	}
+	delta, err := pgschema.Diff(without, m)
+	return delta.Steps, named, err
+}
+
+// extraSearchSteps drops the search-set indexes that the manifest does not name.
+func extraSearchSteps(m pgschema.Manifest, have indexSet, named map[string]bool) []pgschema.Step {
 	var extra []string
 	for name := range have {
 		if searchIndexName.MatchString(name) && !named[name] {
@@ -163,8 +180,9 @@ func reconcileSteps(m pgschema.Manifest, have indexSet) ([]pgschema.Step, error)
 		}
 	}
 	sort.Strings(extra)
+	var steps []pgschema.Step
 	for _, name := range extra {
 		steps = append(steps, pgschema.Step{Phase: pgschema.Concurrent, What: pgschema.WhatIndex, Name: name, SQL: dropIndex(pgschema.SchemaName(m.KGNo), name)})
 	}
-	return steps, nil
+	return steps
 }
