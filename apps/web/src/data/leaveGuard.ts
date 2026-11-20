@@ -7,6 +7,7 @@
  *   was going, `stay()` stays. A change of the same screen's query (a tab, a sort) is not leaving.
  */
 import { useEffect, useRef, useState } from "react";
+import { pathOf } from "./hash";
 import { replaceHash } from "./router";
 
 export interface PendingLeave {
@@ -22,8 +23,6 @@ export interface LeaveGuard {
   /** Set while the person has tried to leave and has not chosen yet; a dialog asks and calls `leave` or `stay`. */
   readonly pending: PendingLeave | undefined;
 }
-
-const pathOf = (hash: string): string => hash.replace(/^#/, "").split("?")[0] ?? "";
 
 /** Guard the screen while `dirty` is true (there are changes that are not saved). */
 export function useLeaveGuard(dirty: boolean): LeaveGuard {

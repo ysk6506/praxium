@@ -6,6 +6,7 @@
  * where the person arrived instead. A change of the query only (the tab, the sort, the page) is the same screen.
  */
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
+import { pathOf } from "./hash";
 import { type Route, routeHash } from "./router";
 import { lastChangeWasForward } from "./scroll";
 
@@ -34,8 +35,7 @@ export function fallbackTitle(route: Route): string {
 }
 
 /** The screen a route shows, without its query: two routes with the same key are one screen. */
-export const screenKey = (route: Route): string =>
-  routeHash(route).replace(/^#/, "").split("?")[0] ?? "";
+export const screenKey = (route: Route): string => pathOf(routeHash(route));
 
 type Report = (title: string | undefined) => void;
 const noReport: Report = () => undefined;
