@@ -24,6 +24,8 @@ decision_hash: c22d9b8d36b8803e
 amended_by:
   - adr: "0097"
     what: 헤더 금지 목록과 응답 크기 상한
+  - adr: "0100"
+    what: 토큰 요청 본문의 규칙을 데이터 요청 본문으로 넓힌 것, 인증의 종류 여섯, 정의 변경의 권한 분류
 ---
 # ADR-0090 HTTP와 PostgreSQL 소스 정의의 형식과 어댑터가 쓸 수집 부품
 

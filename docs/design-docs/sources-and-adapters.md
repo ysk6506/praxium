@@ -75,12 +75,19 @@ follows:
 | `bearer` | `credential` | `token` |
 | `basic` | `credential` | `password` |
 | `header` | `credential`, `header`(헤더 이름), `prefix`(토큰 앞의 글. 선택) | `token` |
-| `token_request` | `credential`, `request`(`path`, `format`, `body`), `token_path`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요) | `password` |
+| `token_request` | `credential`, `request`(`path`, `format`, `credentials_in`, `body`), `token_path`나 `token_from`, `send`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요), `headers` | 본문이 쓰는 필드가 정해요(`username`과 `password`, 또는 `token`). 아무것도 안 쓰면 `password` |
+| `custom` | `credential`, `headers` | 쓰는 필드가 정해요(`token` 하나, 또는 `username`과 `password`. 둘을 섞으면 정의 오류) |
 
-  `token_request`는 본문 형식(`json`이나 `form`)으로 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요. 토큰 주소는 `base_url`과 같은 호스트여야 해요. 다른 호스트의 토큰 주소(OAuth2의 대부분)는 안 돼요(10절).
+  `token_request`는 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요. 토큰 주소는 `base_url`과 같은 호스트여야 해요. 다른 호스트의 토큰 주소(OAuth2의 대부분)는 안 돼요(10절).
+  - **자격 증명의 자리.** `request.credentials_in`은 `body`(기본. 본문의 `{{credential.<필드>}}`)나 `basic`(시크릿의 `username`과 `password`로 `Authorization: Basic`을 만들어요. 본문은 선택이고 없으면 본문 없는 POST예요. 본문에 `{{credential.…}}`를 쓰면 정의 오류예요. 사용자 이름에 `:`가 있으면 보내지 않고 `secret_unusable`이에요). 본문은 `json`이면 JSON 트리(중첩된 객체와 배열, 숫자와 불리언)이고 `form`이면 글자 값의 평평한 맵이에요.
+  - **토큰의 자리.** `token_from`은 `path`(기본. `token_path`가 가리키는 곳)나 `body`(응답 본문 전체가 JSON 글자 하나. 객체, 숫자, 빈 글자, null은 `response_format`이에요. `token_path`와 함께 쓰면 정의 오류예요). `token_path`도 `token_from`도 없으면 지금처럼 정의 오류예요.
+  - **토큰을 보내는 법.** `send`는 `header`(기본. `send_header`와 `send_prefix`로)나 `template`(자동으로 붙이지 않고 `headers`의 `from: "token"`이나 본문의 `{{auth.token}}`이 쓰인 곳에서만. 쓰이는 곳이 없으면 정의 오류)예요.
+  - **`headers`(`custom`과 `token_request`).** `[{"name", "from", "prefix"}]`로 시크릿이나 토큰이 가는 헤더를 적어요. `from`은 `credential.<필드>`나 `token`(`token_request`만)이고 `prefix`는 값 앞의 글이에요(선택). 이름은 `connection.headers`와 같은 금지 목록을 지나고(`Authorization`은 써도 돼요), 서버와 프록시의 접근 로그에 남는 헤더(`User-Agent`, `Referer`, `Forwarded`, `Via`, `X-Request-Id`, `traceparent`, `X-Amzn-Trace-Id`, `Baggage`, `X-Forwarded-*`, `X-Real-IP`, `True-Client-IP`, `CF-Connecting-IP`, `From`, `Origin` 같은 것)와 서로 다른 철자의 같은 이름은 정의 오류예요. 같은 접근 로그 목록은 `header` 종류의 `header`와 `send_header`에도 걸려요. 열여섯 개까지예요. 이 헤더들은 종류가 보내는 헤더 뒤에 붙어서 같은 이름이면 이겨요.
+  - **`custom`.** 자동으로 붙이는 헤더가 없어요. `headers`나 본문의 `{{credential.<필드>}}`가 없으면 아무것도 보내지 않으므로 정의 오류예요.
+  - **보내기 전의 검사.** 헤더로 가는 시크릿과 받은 토큰의 값에 줄바꿈이나 제어 문자(탭은 빼고)가 있으면 요청을 보내지 않고 다시 보내지도 않아요. 시크릿의 값은 `secret_unusable`, 받은 토큰은 `response_format`이에요(새 오류 종류는 없어요). 본문으로 가는 값은 JSON으로 인코딩되어 따옴표, 역슬래시, `<`, 줄바꿈이 있어도 구조가 깨지지 않아요.
 - `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB, 정의에서 256 MiB까지), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
 - `ca_pem`은 **그 인증서만 신뢰해요**(시스템의 신뢰 목록을 대신해요). 인증서가 아닌 블록(개인 키 같은 것)이 있으면 정의 오류예요.
-- 플레이스홀더 `{{credential.<필드>}}`는 인증 설정의 값 자리에서만, 문자열 치환이 아니라 값 단위로 바뀌어요. 값이 정확히 플레이스홀더인 문자열 값만 바뀌어요. 주소(경로, 질의)에는 둘 수 없어요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 3절).
+- 자리표시 `{{credential.<필드>}}`와 `{{auth.token}}`은 요청 본문의 값 통째에서만 있어요(3.3). 주소(경로, 질의)에는 둘 수 없어요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 3절).
 - `pagination.kind`는 `none`, `page`, `offset`, `cursor`(표지를 싣는 자리를 `query`나 `body`로 적어요), `next_url`(본문의 다음 주소. 같은 출처만), `link_header`예요. 종류마다 읽는 필드가 달라요(구현됨, ADR-0090). 모든 종류에 `max_pages`(기본 1,000)가 있어요.
 
 | `pagination.kind` | 필드 | 멈추는 조건 |
@@ -162,7 +169,7 @@ follows:
 ## 3. 변수와 경로의 문법
 
 ### 3.1 변수
-요청 틀(`path`, `query`, `body`)과 SQL에서 `{이름}`은 변수 자리예요. **이번에 정해진 변수는 없으므로 `{`나 `}`가 든 값은 정의 오류예요.** 문자 그대로의 중괄호는 `{{`와 `}}`로 적어요. 증분의 표지, 키로 단건 읽기, 앞 요청의 결과가 나중에 이 자리에 들어와요. 지금 문법을 정해 두면 그때 옛 정의의 뜻이 바뀌지 않아요. (플레이스홀더 `{{credential.…}}`는 인증 설정의 값에만 있고 이 변수와 별개예요.)
+요청 틀(`path`, `query`, `body`)과 SQL에서 `{이름}`은 변수 자리예요. **이번에 정해진 변수는 없으므로 `{`나 `}`가 든 값은 정의 오류예요.** 문자 그대로의 중괄호는 `{{`와 `}}`로 적어요. 증분의 표지, 키로 단건 읽기, 앞 요청의 결과가 나중에 이 자리에 들어와요. 지금 문법을 정해 두면 그때 옛 정의의 뜻이 바뀌지 않아요. (비밀의 자리표시 `{{credential.…}}`와 `{{auth.token}}`는 이 변수와 별개이고 3.3이 정해요.)
 
 ### 3.2 컬럼 경로
 컬럼의 `paths`는 **대안의 목록**이라서 앞에서부터 처음 값이 있는 경로를 써요. 경로 하나는 점으로 내려가고(`location.rack`) 배열은 순번으로 가리켜요. 이름에 점이 든 키는 JSON에서 `"paths": ["labels[\"app.name\"]"]`처럼 경로 안에서 따옴표로 적어요.
@@ -178,6 +185,17 @@ follows:
 한 문법을 `core.ingest`의 `ParsePath`가 읽고, 컬럼 경로, `records_path`, `total_path`, `next_cursor_path`, `next_path`가 모두 그것을 써요(구현됨, ADR-0090). HTTP와 PostgreSQL의 정의에서 경로가 문법에 맞지 않으면 정의 오류이고, `[*]`와 `[?…]`는 `source.path.unsupported`예요. 파일의 JSON Lines 컬럼은 대괄호가 없는 경로를 지금처럼 점으로 나눠 읽고, 대괄호가 있는 경로는 이 문법으로 읽되 문법에 맞지 않으면 옛 방식 그대로 점으로 나눠 읽어요(옛 정의가 그대로 돌아요).
 
 값이 스칼라가 아니거나 null이면 값 없음이에요(지금 코드와 같아요). 순번은 소스가 순서를 보장하지 않으면 틀려요. 그 경우를 `[?이름=값]`이 풀 예정이에요.
+
+### 3.3 시크릿과 토큰의 자리표시
+시크릿의 값과 받은 토큰이 요청에 들어가는 자리는 정해져 있고 `core.ingest`의 한 문법(`ParsePlaceholder`)이 읽어요(ADR-0100).
+
+| 자리 | 쓰는 법 |
+|---|---|
+| 요청 본문(데이터 요청과 토큰 요청. 같은 JSON 트리 규칙) | 값 하나가 **통째로** `{{credential.<필드>}}`(필드는 `a`부터 `z`와 `_`)나 `{{auth.token}}`인 글자. 값의 일부로는 안 돼요. 어느 깊이든 되고 값은 JSON으로 인코딩돼요 |
+| 헤더 | `auth.headers`의 구조(2.2). `connection.headers`의 값은 지금처럼 비밀이 아닌 글자이고, 자리표시가 들면 정의 오류예요 |
+| 주소(경로, 질의), SQL, 이름(키) | 둘 수 없어요(정의 오류). 주소는 접근 로그에 남아요 |
+
+`{{auth.token}}`은 `token_request`에서만, `{{credential.<필드>}}`는 시크릿이 있는 인증에서만 쓸 수 있고, 토큰 요청 안에서는 토큰이 아직 없으므로 `{{auth.token}}`을 쓸 수 없어요. 글자 안에 이 글자가 들어 있으면(`Bearer {{auth.token}}`, `{{{{credential.x}}}}`) 정의 오류예요. 소스가 준 값(표지)은 자리표시로 읽지 않고 그대로 보내요.
 
 ## 4. 이름만 정해 둔 필드
 지금은 받지 않고(적으면 모르는 필드로 거절) 뒤에 같은 이름으로 들어와요.
@@ -253,7 +271,7 @@ follows:
 | 리디렉션 | 따르지 않아요(3xx는 오류). 다음 페이지의 주소(본문, `Link` 헤더)는 같은 출처일 때만 따라요 |
 | 실제 IP | **이름을 스스로 한 번 풀고, 풀린 모든 주소를 검사하고, 검사한 IP 글자로 연결해요**(다시 풀지 않아요. 이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 하나라도 거절 목록에 있으면 전체를 거절해요. 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`과 `0.0.0.0/8`, 멀티캐스트, 예약 대역과 브로드캐스트, IPv4가 든 IPv6(매핑, 호환, 번역, NAT64, 6to4)의 속 주소, 터널 주소(Teredo), 서버 자신의 API 주소. 서버 플래그(`-source-deny-hosts`)로 더해요. 사설 주소와 루프백은 기본으로 허용해요. 사설과 루프백을 막고 예외만 여는 엄격한 정책(`DenyPrivate`)도 있어요 |
 | 프록시 | 쓰지 않아요. 환경 변수를 읽지 않는 전송 계층을 새로 만들어요 |
-| 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`과 메서드를 바꾸는 `X-HTTP-Method-Override`, `X-HTTP-Method`, `X-Method-Override`를 쓸 수 없어요. 인증은 `auth`로만 해요 |
+| 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`과 메서드를 바꾸는 `X-HTTP-Method-Override`, `X-HTTP-Method`, `X-Method-Override`와 연결을 바꾸거나 끝내는 `Upgrade`, `TE`, `Keep-Alive`, `Trailer`, `Expect`를 쓸 수 없어요(`Content-Type`은 본문 형식을 요구하는 API가 있어 써도 돼요). 인증은 `auth`로만 해요. `auth.headers`의 이름도 같은 목록을 지나고(`Authorization`은 써도 돼요) 접근 로그에 남는 헤더(2.2)는 쓸 수 없어요 |
 | 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS는 1.2 이상이고 인증서와 이름을 언제나 확인해요. **확인을 끄는 길은 없어요**(ADR-0091이 ADR-0058의 `tls_verify: false`와 `-allow-unverified-source-tls`를 거두었어요) |
 | 오류 | 표준 라이브러리와 드라이버의 문장을 그대로 쓰지 않아요. 이름 풀이, 연결, TLS, 인증, 권한, 시간 초과, 응답 형식으로 분류해요. 토큰 발급 응답의 본문을 오류에 넣지 않아요 |
 | 로그 | 값을 래핑한 타입에서 꺼내는 자리는 어댑터의 요청 조립 한 곳이에요(테스트로 고정). 요청과 응답을 로그에 찍는 코드가 없어요 |
@@ -276,7 +294,9 @@ follows:
 | 경우 | 되나요 |
 |---|---|
 | 토큰을 헤더로 보내는 평평한 목록(페이지 번호, 오프셋, 전체 개수) | 돼요 |
-| 로그인 요청으로 토큰을 받는 API(본문이 JSON이나 폼, 같은 호스트) | 돼요 |
+| 로그인 요청으로 토큰을 받는 API(본문이 JSON이나 폼, 같은 호스트. 본문이 중첩된 JSON-RPC도) | 돼요 |
+| Basic 인증으로 로그인하고 응답 본문이 토큰 글자 하나인 API(세션 만들기 꼴) | 돼요(`credentials_in: basic`, `token_from: body`) |
+| 키를 헤더의 이름을 골라 보내거나(`auth.headers`) 요청 본문의 값으로 보내는 API | 돼요(`custom`, 본문의 `{{credential.<필드>}}`) |
 | 다음 페이지의 주소를 본문이나 `Link` 헤더로 주는 API(같은 출처) | 돼요 |
 | 삭제를 상태 값으로 알리는 소스 | 정제의 `filter`로 걸러서 닫아요(ADR-0052). 돼요 |
 | OAuth2 클라이언트 자격 증명(토큰 주소가 다른 호스트) | 안 돼요 |
