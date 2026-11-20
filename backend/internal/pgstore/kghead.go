@@ -189,6 +189,10 @@ func (l kgLease) holds(want graph.Lease) error {
 	return nil
 }
 
+// anyHead is the expected change number of a write that does not name one: it goes by the lease alone (the volatile
+// values of a staged apply are written one interval at a time by the holder of the lease, after the apply is done).
+const anyHead int64 = -1
+
 // kgGuard is the check every write makes first, in this order: that no work is half done, the generation, the lease
 // (and that its engine is not older than the one that applied), then the head the write was planned against. It
 // returns the locked head.
@@ -213,7 +217,7 @@ func (s *Store) kgGuard(ctx context.Context, tx *sql.Tx, a *kgAccess, p planned)
 	if p.lease.Semantic < cur.head.AppliedSemanticVersion {
 		return kgHeadRow{}, kernel.Errorf(graph.CodeSemanticTooLow, "engine %d is below the applied %d", p.lease.Semantic, cur.head.AppliedSemanticVersion)
 	}
-	if p.expected != cur.head.AppliedSeq {
+	if p.expected != anyHead && p.expected != cur.head.AppliedSeq {
 		return kgHeadRow{}, kernel.Errorf(graph.CodeHeadMoved, "expected applied_seq %d, the head is at %d", p.expected, cur.head.AppliedSeq)
 	}
 	return cur, nil

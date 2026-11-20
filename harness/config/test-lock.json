@@ -27060,6 +27060,51 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgschema::TestSapChunkDigestsQueryGroupsTheChunksBeforeTheOneItIsGiven": {
+   "kind": "test",
+   "hash": "1b2117c2f52d6204",
+   "asserts": 1,
+   "literals": [
+    "1666ee30950ef00c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-726"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestSapIdentRowHashExpressionNamesTheThreeColumns": {
+   "kind": "test",
+   "hash": "98a62106b5f0110c",
+   "asserts": 2,
+   "literals": [
+    "535e5a3bdc3ea752"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-726"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestSapIdentRowHashHasTheLengthOfEachTextInFront": {
+   "kind": "test",
+   "hash": "600a0121535e093e",
+   "asserts": 4,
+   "literals": [
+    "6578eed46f7b38d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-726"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
   "go:backend/internal/pgschema::TestSearchSetIsOrderFree": {
    "kind": "test",
    "hash": "16c05ba5bf319c11",
@@ -28779,6 +28824,276 @@
    "reqs": [],
    "added": "2026-11-19",
    "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
+  },
+  "go:backend/internal/pgstore::TestSapAbandonBetweenChunksUndoesKeysAndTheApplyCanStartAgain": {
+   "kind": "test",
+   "hash": "f3225b1c9d89438d",
+   "asserts": 19,
+   "literals": [
+    "98fcc52d5492e5e7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-725"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapAbandonCutInTheMiddleStopsTheStagedApplyUntilItIsEnded": {
+   "kind": "test",
+   "hash": "1a1d1e51fc4b4ab3",
+   "asserts": 5,
+   "literals": [
+    "66c32c64440af26b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-725"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapAChunkThatWasNotCommittedIsApplyAgain": {
+   "kind": "test",
+   "hash": "08d97b950d4008b4",
+   "asserts": 9,
+   "literals": [
+    "d36b9ef3e2a161a1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-723"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapAChunkWhoseCommitGotNoAnswerIsJudgedByTheHead": {
+   "kind": "test",
+   "hash": "5ef8c16e663b426d",
+   "asserts": 9,
+   "literals": [
+    "bf5ec3b7140c47a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-723"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapChunkDigestsOfSQLAreThoseOfGo": {
+   "kind": "test",
+   "hash": "a012cde8d817f028",
+   "asserts": 11,
+   "literals": [
+    "ca16b7a2b7d5ba98"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-726"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapDamagedDifferenceFailsTheChainOfAnOpenApply": {
+   "kind": "test",
+   "hash": "14b3f7028ea4c00e",
+   "asserts": 7,
+   "literals": [
+    "19479435a1867fd4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-721"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapDamagedTablesFailTheStagedApplyWithAnErrorAndLeaveTheHeadAlone": {
+   "kind": "test",
+   "hash": "015406e7bfc8373e",
+   "asserts": 15,
+   "literals": [
+    "1066f3c4307c6af2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-721"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapDifferenceThatDoesNotStartAtItsFirstChunkIsRefused": {
+   "kind": "test",
+   "hash": "5c0f953269d0ef91",
+   "asserts": 7,
+   "literals": [
+    "8a7ad2b4754a0e2c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-721"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapEmptyDifferenceLeavesTheHeadAlone": {
+   "kind": "test",
+   "hash": "08cd797368abd874",
+   "asserts": 17,
+   "literals": [
+    "3eeff62a7b1c5cfd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-722"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapLocksOfAChunkDoNotGrowWithItsRows": {
+   "kind": "test",
+   "hash": "98579e9cf2aec7c4",
+   "asserts": 6,
+   "literals": [
+    "809912231a19bb6b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-728"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapRetiredObjectTakesItsLinksWithIt": {
+   "kind": "test",
+   "hash": "816059a34806986f",
+   "asserts": 15,
+   "literals": [
+    "e33335a762c12fb9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-724"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapRowHashExpressionsGiveTheValuesOfTheGoFunctions": {
+   "kind": "test",
+   "hash": "35588d9f83042bfa",
+   "asserts": 6,
+   "literals": [
+    "fc01a2ad675c9fb8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-726"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapStagedApplyAndRowsPathGiveTheSameStateAndReads": {
+   "kind": "test",
+   "hash": "d0ab8ab12b7e2d5f",
+   "asserts": 19,
+   "literals": [
+    "e8d7159af3f76e17"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-720"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapStagedApplyGoesOnAfterACrashBetweenChunks": {
+   "kind": "test",
+   "hash": "e4d8d81d80fb9eb8",
+   "asserts": 15,
+   "literals": [
+    "f6e3c56bc5ca9737"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-721"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapStagedApplyRefusesWhatIsNotTheCallers": {
+   "kind": "test",
+   "hash": "142a44384ed5d9a3",
+   "asserts": 13,
+   "literals": [
+    "8cdb8253d88f1316"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-721"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapStagedChunkOfAStalePositionIsRefused": {
+   "kind": "test",
+   "hash": "1733963b5a2ec502",
+   "asserts": 7,
+   "literals": [
+    "6481dfb9ab8095db"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-721"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapStagedVolatileValueThatCannotBeWrittenIsRefused": {
+   "kind": "test",
+   "hash": "8c1e40d805004e99",
+   "asserts": 6,
+   "literals": [
+    "559e225799406ec7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-727"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSapVolatileValuesGoInIntervalsAndAreWrittenOnlyWhenTheyDiffer": {
+   "kind": "test",
+   "hash": "4c0f615448ea294b",
+   "asserts": 16,
+   "literals": [
+    "5e5ea95715d3e0d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-727"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
   },
   "go:backend/internal/pgstore::TestSchemaStartupAdjustsAKGOfTheGeneratorBeforeAndOpensIt": {
    "kind": "test",
