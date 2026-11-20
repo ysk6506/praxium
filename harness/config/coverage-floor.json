@@ -10,7 +10,7 @@
   "go:adapter.filesource": 98,
   "go:adapter.graphcheck": 95.5,
   "go:adapter.http": 93,
-  "go:adapter.httpsource": 97.5,
+  "go:adapter.httpsource": 98,
   "go:adapter.identitycheck": 97.5,
   "go:adapter.identityfile": 96,
   "go:adapter.mcp": 97,

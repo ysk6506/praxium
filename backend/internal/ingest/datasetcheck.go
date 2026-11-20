@@ -124,6 +124,9 @@ func (c *collector) checkBody(source, at string, v any) {
 			c.checkBody(source, at+ptr(i), e)
 		}
 	case string:
+		if _, ok := ParsePlaceholder(x); ok {
+			return // a whole value; whether the authentication gives what it stands for is checked with the source
+		}
 		c.checkText(source, at, "request.body", x)
 	}
 }

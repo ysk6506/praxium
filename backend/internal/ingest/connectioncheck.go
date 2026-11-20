@@ -214,6 +214,9 @@ func (cn Connection) checkHeaders(c *collector, id string) {
 		if reason == "" {
 			reason = valueProblem(cn.Headers[name])
 		}
+		if reason == "" && hasPlaceholderInside(cn.Headers[name]) {
+			reason = "has a {{credential.…}} or {{auth.token}}; a header of the connection is a text, and a secret goes in a header through auth.headers"
+		}
 		seen[strings.ToLower(name)] = true
 		if reason != "" {
 			c.add(ecAdHeader, ptr("connection", "headers", name), Params{"source": id, "header": clip(name, idClipAt), "reason": reason},
