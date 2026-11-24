@@ -1,0 +1,4 @@
+doc: "docs/design-docs/glossary.md"
+date: "2026-11-21"
+note: "용어 표를 코드(model/enums.go의 층 9+system, 링크 의미 11, 채널 6, 근거 4, access/roles.go의 역할 8)와 수집·저장 설계 문서(절 번호, 테이블 이름)에 대조했다. 청크와 변경 배치의 뜻이 낡아 고쳤다. held_items는 다른 곳에 근거가 없고 노출 두 용어는 ADR-0078 뒤의 위치가 미정이라 보고만 했다"
+doc_hash: "1a6ee0a66a7aa2fb"

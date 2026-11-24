@@ -1,0 +1,4 @@
+doc: "docs/design-docs/definitions.md"
+date: "2026-11-20"
+note: "구현 범위 표와 type_overlay 행을 core.definitions, model/overlay*.go, cmd/praxium model*·api.go와 대조하고 링크를 확인했다. 상태 이름, ov. 접두어, pr.org., 번호 100000, 받는 필드와 거절하는 필드, PostgreSQL 서버는 표준 모델만이라는 것이 코드와 맞았다. 틀린 곳 없음"
+doc_hash: "d7bda80975b31a5b"
