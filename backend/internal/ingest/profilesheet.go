@@ -1,6 +1,7 @@
 package ingest
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 
@@ -156,25 +157,26 @@ func blankIn(r *SheetRow, c1, c2 int) bool {
 	return true
 }
 
-// sheetGrid gives the cells of a sheet by their place, and the merged ranges by the rows they cover.
+// sheetGrid gives the cells of a sheet by their place, and the merged ranges that cover a place. The ranges are kept once, sorted by
+// their first row, and not copied to every row they cover: a range of fifty thousand rows is one entry.
 type sheetGrid struct {
 	sh     *Sheet
 	rows   map[int]*SheetRow
-	merges map[int][]Merge
+	last   int   // the number of the last row that has a cell: a range is cut there
+	byRow1 []int // the indexes of sh.Merges, in the order of their first row (the order of the sheet among equals)
 }
 
 func newGrid(sh *Sheet) *sheetGrid {
-	g := &sheetGrid{sh: sh, rows: make(map[int]*SheetRow, len(sh.Rows)), merges: map[int][]Merge{}}
-	last := 0
+	g := &sheetGrid{sh: sh, rows: make(map[int]*SheetRow, len(sh.Rows))}
 	for i := range sh.Rows {
 		g.rows[sh.Rows[i].Number] = &sh.Rows[i]
-		last = sh.Rows[i].Number
+		g.last = sh.Rows[i].Number
 	}
-	for _, m := range sh.Merges {
-		for r := m.Row1; r <= m.Row2 && r <= last; r++ {
-			g.merges[r] = append(g.merges[r], m)
-		}
+	g.byRow1 = make([]int, len(sh.Merges))
+	for i := range g.byRow1 {
+		g.byRow1[i] = i
 	}
+	sort.SliceStable(g.byRow1, func(a, b int) bool { return sh.Merges[g.byRow1[a]].Row1 < sh.Merges[g.byRow1[b]].Row1 })
 	return g
 }
 
@@ -199,14 +201,24 @@ func (g *sheetGrid) cellAt(row, col int) (Cell, bool) {
 	return Cell{}, false
 }
 
-// originCell is the first cell of the merged range that covers a place, when the place is covered and is not that cell.
+// originCell is the first cell of the merged range that covers a place, when the place is covered and is not that cell. Of the ranges
+// that cover it, the first in the order of the sheet counts.
 func (g *sheetGrid) originCell(row, col int) (Cell, bool) {
-	for _, m := range g.merges[row] {
-		if col >= m.Col1 && col <= m.Col2 && (row != m.Row1 || col != m.Col1) {
-			return g.cellAt(m.Row1, m.Col1)
+	if row > g.last {
+		return Cell{}, false
+	}
+	end := sort.Search(len(g.byRow1), func(i int) bool { return g.sh.Merges[g.byRow1[i]].Row1 > row })
+	best := -1
+	for _, i := range g.byRow1[:end] {
+		m := g.sh.Merges[i]
+		if (best < 0 || i < best) && row <= m.Row2 && col >= m.Col1 && col <= m.Col2 && (row != m.Row1 || col != m.Col1) {
+			best = i
 		}
 	}
-	return Cell{}, false
+	if best < 0 {
+		return Cell{}, false
+	}
+	return g.cellAt(g.sh.Merges[best].Row1, g.sh.Merges[best].Col1)
 }
 
 // own is the normalized text of the cell the file has at a place, for a header name (headerCells).
