@@ -9356,6 +9356,26 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "backend/internal/xlsx/testdata/xs_read_hand.json::<data>": {
+   "kind": "data",
+   "hash": "6cd8229018ad4329",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "backend/internal/xlsx/testdata/xs_read_random.json::<data>": {
+   "kind": "data",
+   "hash": "23493209cd731a7d",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-24",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestACSVInALocalCodePageStopsInspectAndRunWithWhatToDo": {
    "kind": "test",
    "hash": "ad269658e54f17b9",
@@ -15035,7 +15055,7 @@
   },
   "go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins": {
    "kind": "test",
-   "hash": "3e51b02be05692e3",
+   "hash": "eb8d547e4c7810a4",
    "asserts": 16,
    "literals": [
     "5187ec0968c7476d"
@@ -15440,7 +15460,7 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "dc5e495d5d79e802",
+   "hash": "61b5d08c507fcf03",
    "asserts": 6,
    "literals": [
     "c584953f77926789"
@@ -15455,7 +15475,7 @@
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "90abab743ed41a9d",
+   "hash": "429e71cbb1e17aec",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"
@@ -23202,6 +23222,36 @@
    "skips": 0,
    "reqs": [
     "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsTheGridFindsTheFirstRangeThatCoversAPlaceAndNoneBeyondTheLastRow": {
+   "kind": "test",
+   "hash": "3d41bdec0003a25d",
+   "asserts": 1,
+   "literals": [
+    "a819bd5a422fa56d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-810"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsTheGridOfAManyRowsManyRangesSheetIsReadInSmallMemory": {
+   "kind": "test",
+   "hash": "4a73f7fd63cbc6c9",
+   "asserts": 2,
+   "literals": [
+    "8c9a3e8e4317bdab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-810"
    ],
    "added": "2026-11-24",
    "amended_by": null
@@ -34002,6 +34052,217 @@
     "REQ-285"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsAnErrorOfThePlaceTheBytesComeFromIsNotSaidToBeAnErrorOfTheFile": {
+   "kind": "test",
+   "hash": "595b5ac5bbe13634",
+   "asserts": 4,
+   "literals": [
+    "c3478f8dfb3245fe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-809"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsASheetHasALimitOnItsColumnEntriesAndItsMergedRanges": {
+   "kind": "test",
+   "hash": "e8657576a9d79650",
+   "asserts": 2,
+   "literals": [
+    "6081ce78fc45ae95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-808"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsEveryListHasALimitThatIsReadAtItsValueAndRefusedOverIt": {
+   "kind": "test",
+   "hash": "7450e414b259e15c",
+   "asserts": 2,
+   "literals": [
+    "fec3d2042817eb0f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-808"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsEveryTextOfAListHasALengthThatIsReadAtItsValueAndRefusedOverIt": {
+   "kind": "test",
+   "hash": "efbab3e3febe6075",
+   "asserts": 2,
+   "literals": [
+    "5fb95d965b65e715"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-808"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsFilesThatMakeALongListAreRefusedInSmallMemory": {
+   "kind": "test",
+   "hash": "1bb9c5a84a3f4691",
+   "asserts": 2,
+   "literals": [
+    "455044dc2976f7bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-808"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsFilesThatMakeTheDecoderGatherWithoutABoundAreRefusedInSmallMemory": {
+   "kind": "test",
+   "hash": "99a30221ff9f2085",
+   "asserts": 2,
+   "literals": [
+    "029bb4a1d23150a0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-807",
+    "REQ-808"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsGuardKeepsWhatItSaidWhenReadAgainAndGivesNothingAfter": {
+   "kind": "test",
+   "hash": "27cf74301c4b9949",
+   "asserts": 2,
+   "literals": [
+    "ff138e0bc6d96542"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-807"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsReadWorkbookAnswersAsTheCodeBeforeTheRowParserDid": {
+   "kind": "test",
+   "hash": "ac9db7cd9298bee4",
+   "asserts": 7,
+   "literals": [
+    "01b87e9c59bd23e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-805"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsReadWorkbookAnswersAsTheCodeBeforeTheRowParserDidForGeneratedFiles": {
+   "kind": "test",
+   "hash": "0ee921d5225c55ea",
+   "asserts": 2,
+   "literals": [
+    "61696d52c9158971"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-805"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsRowsAndCellsThatAreNotInOrderAreRefusedWithThePlaceNamed": {
+   "kind": "test",
+   "hash": "c83a68b37e28e1c8",
+   "asserts": 1,
+   "literals": [
+    "d9e0a504be5ecd1e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-806"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsRowsThatHaveNoValueAreNotPartOfTheOrder": {
+   "kind": "test",
+   "hash": "04501b9df517c404",
+   "asserts": 2,
+   "literals": [
+    "7a67a7990ad5edaa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-806"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsTheTextOfACellIsBoundedWhileItIsGatheredFromPieces": {
+   "kind": "test",
+   "hash": "a36bc7bd90dd2b40",
+   "asserts": 4,
+   "literals": [
+    "becea4ff6630750f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-808"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsXMLOfTheRightShapeIsReadThroughTheGuard": {
+   "kind": "test",
+   "hash": "e856da645d1e92a3",
+   "asserts": 1,
+   "literals": [
+    "416d984cc7d21c89"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-807"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/xlsx::TestXsXMLThatTheDecoderWouldGatherWithoutABoundIsRefused": {
+   "kind": "test",
+   "hash": "142839cc99cdbc50",
+   "asserts": 1,
+   "literals": [
+    "0e219e31a3acbd8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-807"
+   ],
+   "added": "2026-11-24",
    "amended_by": null
   },
   "harness/src/checks/api-assembled.test.ts::<import:30102eeb>": {

@@ -38,7 +38,7 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
   - go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions
 test_change_reason: 앞의 둘은 TLS 확인을 건너뛰는 글자(InsecureSkipVerify)를 egress의 고정 설정 한 곳에만 허락하는 것으로 검사를 바꾼다. egress 쪽은 금지 글자 목록에서 빠지는 것이 InsecureSkipVerify와 VerifyConnection뿐이고 이 둘은 pin.go에 정확히 한 번씩만 있어야 하는 검사로 옮기며 KeyLogWriter와 EncryptedClientHello를 금지 목록에 더하고, 필드 허용 목록의 AST 단언은 새 파일의 테스트가 맡으므로 합치면 이전보다 엄격하거나 같고, pgsource 쪽은 *tls.Config를 쥐거나 만드는 길을 egress의 등록 함수 호출 하나만 남기고 막으므로 엄격하거나 같다. 바꾼 검사가 우회 파일을 실제로 거절하는 것은 새 테스트 TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins가 따로 확인한다. 셋째는 정의 오류 코드 source.connection.tls_pins_invalid를 더하면서 사례 표 adpCases에 사례 세 개를 더하는 내용 변경이고, 빼거나 고친 사례와 단언은 없다. 나머지 넷은 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드(pin.go, probe.go 같은 새 파일과 바뀐 파일)가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 바뀐 코드가 같은 규칙을 지키는 것을 새 지문으로 다시 기록한다.
-decision_hash: 7379f6abc606f886
+decision_hash: c77a3002a4b06b8f
 ---
 # ADR-0105 HTTP 소스 확장 — 평문 허용 범위와 인증서 고정
 
@@ -86,7 +86,7 @@ ADR-0100이 정한 HTTP 소스 확장 가운데 E5(평문 HTTP의 허용 목록)
 
 - **처음 지문을 믿는 문제**: 점검이 보여 주는 지문을 서버 관리자에게 받은 값과 맞춰 보지 않고 고정하면 그 순간 중간자의 키를 고정하게 된다. 문서가 맞춰 보라고 안내한다.
 - **만료를 보지 않는다**: 고정한 인증서는 만료돼도 연결된다. 점검의 안내로만 알린다.
-- **고정을 잃으면 소스가 멈춘다**: 키를 바꾼 서버에는 고정을 먼저 더해 둬야 한다(여덟 개까지 받는 까닭).
+- **고정을 잃으면 소스가 멈춘다**: 키를 바꾼 서버에는 고정을 먼저 더해 둬야 한다(여덟 개까지 받는 이유).
 - **키가 새면 막지 못한다**: 고정한 인증서의 개인 키를 가진 쪽은 통과한다.
 - **인증서 요약의 노출 범위**: 요구 사항(R17)은 요약을 접속 변경 권한이 있는 사람에게만 보이라고 한다. 점검 API가 아직 없어 강제하지 못하고, 이 ADR과 문서에 전제로 적어 둔다. API를 만드는 PR이 확인해야 한다.
 - **플랫폼 전체의 평문 안내와 플래그 연결이 아직 없다**: 서버 조립 때 한다.

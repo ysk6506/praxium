@@ -137,37 +137,15 @@ type compiled struct {
 
 func compile(p Policy) (*compiled, error) {
 	c := &compiled{denyPrivate: p.DenyPrivate, denyLoopback: p.DenyLoopback}
-	if len(p.Hosts) > 0 {
-		c.hosts = map[string]bool{}
-		for _, h := range p.Hosts {
-			name, _, bad := NormalizeHost(h)
-			if bad != "" {
-				return nil, kernel.Errorf(kernel.CodeInvalidValue, "egress: a host of the policy is not valid: %s", bad)
-			}
-			c.hosts[name] = true
-		}
-	}
-	if len(p.Ports) > 0 {
-		c.ports = map[uint16]bool{}
-		for _, port := range p.Ports {
-			if port == 0 {
-				return nil, kernel.Errorf(kernel.CodeInvalidValue, "egress: port 0 is not a port of the policy")
-			}
-			c.ports[port] = true
-		}
+	if err := c.compileNames(p); err != nil {
+		return nil, err
 	}
 	var err error
 	if c.deny, err = prefixes("Deny", p.Deny); err != nil {
 		return nil, err
 	}
-	if p.AllowInsecure && len(p.PlaintextRanges) > 0 {
-		return nil, kernel.Errorf(kernel.CodeInvalidValue, "egress: AllowInsecure and PlaintextRanges are two ways to say the same thing and are not given together")
-	}
-	if c.plain, err = prefixes("PlaintextRanges", p.PlaintextRanges); err != nil {
+	if err := c.compilePlain(p); err != nil {
 		return nil, err
-	}
-	if p.AllowInsecure {
-		c.plain = []netip.Prefix{netip.MustParsePrefix("0.0.0.0/0"), netip.MustParsePrefix("::/0")}
 	}
 	if c.allow, err = prefixes("AllowRanges", p.AllowRanges); err != nil {
 		return nil, err
@@ -179,6 +157,45 @@ func compile(p Policy) (*compiled, error) {
 		c.self = append(c.self, netip.AddrPortFrom(canonical(s.Addr()), s.Port()))
 	}
 	return c, nil
+}
+
+// compileNames fills the sets of hosts and ports.
+func (c *compiled) compileNames(p Policy) error {
+	if len(p.Hosts) > 0 {
+		c.hosts = map[string]bool{}
+		for _, h := range p.Hosts {
+			name, _, bad := NormalizeHost(h)
+			if bad != "" {
+				return kernel.Errorf(kernel.CodeInvalidValue, "egress: a host of the policy is not valid: %s", bad)
+			}
+			c.hosts[name] = true
+		}
+	}
+	if len(p.Ports) > 0 {
+		c.ports = map[uint16]bool{}
+		for _, port := range p.Ports {
+			if port == 0 {
+				return kernel.Errorf(kernel.CodeInvalidValue, "egress: port 0 is not a port of the policy")
+			}
+			c.ports[port] = true
+		}
+	}
+	return nil
+}
+
+// compilePlain fills the ranges a connection without TLS may go to.
+func (c *compiled) compilePlain(p Policy) error {
+	if p.AllowInsecure && len(p.PlaintextRanges) > 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "egress: AllowInsecure and PlaintextRanges are two ways to say the same thing and are not given together")
+	}
+	var err error
+	if c.plain, err = prefixes("PlaintextRanges", p.PlaintextRanges); err != nil {
+		return err
+	}
+	if p.AllowInsecure {
+		c.plain = []netip.Prefix{netip.MustParsePrefix("0.0.0.0/0"), netip.MustParsePrefix("::/0")}
+	}
+	return nil
 }
 
 // prefixes validates ranges and writes an IPv4-mapped range as the IPv4 range, which is the form addresses are

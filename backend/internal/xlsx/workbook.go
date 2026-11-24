@@ -29,21 +29,46 @@ func eofOrError(err error) error {
 	return err
 }
 
-func xmlDecoder(r io.Reader) *xml.Decoder { return xml.NewDecoder(r) }
+// xmlDecoder reads the XML of a part through the guard that bounds its tokens and its depth (xmlguard.go).
+func xmlDecoder(part string, r io.Reader) *xml.Decoder { return xml.NewDecoder(newXMLGuard(part, r)) }
 
 // parseRels reads a relationships part.
-func parseRels(r io.Reader) (map[string]relationship, error) {
-	dec := xmlDecoder(r)
+func parseRels(part string, r io.Reader) (map[string]relationship, error) {
+	dec := xmlDecoder(part, r)
 	rels := map[string]relationship{}
+	seen := 0
 	for {
 		tok, err := dec.Token()
 		if err != nil {
 			return rels, eofOrError(err)
 		}
-		if e, ok := tok.(xml.StartElement); ok && e.Name.Local == "Relationship" {
-			rels[attr(e, "Id")] = relationship{target: attr(e, "Target"), typ: attr(e, "Type"), external: strings.EqualFold(attr(e, "TargetMode"), "External")}
+		e, ok := tok.(xml.StartElement)
+		if !ok || e.Name.Local != "Relationship" {
+			continue
+		}
+		if seen++; seen > maxRelationships {
+			return nil, fixedLimit("max_relationships", maxRelationships, "by the part "+part)
+		}
+		rel := relationship{target: attr(e, "Target"), typ: attr(e, "Type"), external: strings.EqualFold(attr(e, "TargetMode"), "External")}
+		id := attr(e, "Id")
+		if err := firstError(
+			checkLen("max_relationship_id_bytes", maxRelIDBytes, id, "a relationship of the part "+part),
+			checkLen("max_relationship_type_bytes", maxRelTypeBytes, rel.typ, "a relationship of the part "+part),
+			checkLen("max_relationship_target_bytes", maxRelTargetBytes, rel.target, "a relationship of the part "+part)); err != nil {
+			return nil, err
+		}
+		rels[id] = rel
+	}
+}
+
+// firstError is the first of the errors that is not nil.
+func firstError(errs ...error) error {
+	for _, err := range errs {
+		if err != nil {
+			return err
 		}
 	}
+	return nil
 }
 
 // sheetEntry is a sheet as the workbook part lists it.
@@ -54,8 +79,8 @@ type sheetEntry struct {
 }
 
 // parseWorkbookPart reads the list of sheets and the date system of the workbook part.
-func parseWorkbookPart(r io.Reader) (sheets []sheetEntry, date1904 bool, err error) {
-	dec := xmlDecoder(r)
+func parseWorkbookPart(part string, r io.Reader) (sheets []sheetEntry, date1904 bool, err error) {
+	dec := xmlDecoder(part, r)
 	for {
 		tok, err := dec.Token()
 		if err != nil {
@@ -69,9 +94,26 @@ func parseWorkbookPart(r io.Reader) (sheets []sheetEntry, date1904 bool, err err
 		case "workbookPr":
 			date1904 = isTrue(attr(e, "date1904"))
 		case "sheet":
-			sheets = append(sheets, sheetEntry{name: attr(e, "name"), state: attr(e, "state"), rid: ridOf(e)})
+			entry, err := sheetEntryOf(e, len(sheets))
+			if err != nil {
+				return nil, false, err
+			}
+			sheets = append(sheets, entry)
 		}
 	}
+}
+
+// sheetEntryOf reads a sheet of the list: the lists and the texts in them are within their limits.
+func sheetEntryOf(e xml.StartElement, have int) (sheetEntry, error) {
+	if have >= maxSheets {
+		return sheetEntry{}, fixedLimit("max_sheets", maxSheets, "by the list of sheets of the workbook")
+	}
+	entry := sheetEntry{name: attr(e, "name"), state: attr(e, "state"), rid: ridOf(e)}
+	err := firstError(
+		checkLen("max_sheet_name_bytes", maxSheetNameBytes, entry.name, "a sheet name"),
+		checkLen("max_sheet_state_bytes", maxSheetStateBytes, entry.state, "the state of a sheet"),
+		checkLen("max_relationship_id_bytes", maxRelIDBytes, entry.rid, "the relationship of a sheet"))
+	return entry, err
 }
 
 // ridOf is the relationship id of a sheet element: the r:id attribute, in whatever prefix the writer chose.
@@ -109,7 +151,7 @@ func (p *pkg) workbook() (*ingest.Workbook, error) {
 	if err != nil {
 		return nil, err
 	}
-	entries, date1904, err := parseWorkbookPart(rc)
+	entries, date1904, err := parseWorkbookPart(main, rc)
 	rc.Close()
 	if err != nil {
 		return nil, damaged(main, err)
@@ -146,7 +188,7 @@ func (p *pkg) mainPart() (string, error) {
 		if err != nil {
 			return "", err
 		}
-		rels, err := parseRels(rc)
+		rels, err := parseRels(f.Name, rc)
 		rc.Close()
 		if err != nil {
 			return "", damaged(f.Name, err)
@@ -184,7 +226,7 @@ func (p *pkg) context(rels map[string]relationship, date1904 bool) (sheetContext
 			if err != nil {
 				return ctx, err
 			}
-			ctx.strings, err = readSharedStrings(xmlDecoder(rc), p.lim.MaxSharedStrings, p.lim.MaxCellChars)
+			ctx.strings, err = readSharedStrings(xmlDecoder(f.Name, rc), p.lim.MaxSharedStrings, p.lim.MaxCellChars)
 			rc.Close()
 			if err != nil {
 				return ctx, damaged(f.Name, err)
@@ -197,7 +239,7 @@ func (p *pkg) context(rels map[string]relationship, date1904 bool) (sheetContext
 			if err != nil {
 				return ctx, err
 			}
-			ctx.kinds, err = dateKinds(xmlDecoder(rc))
+			ctx.kinds, err = dateKinds(xmlDecoder(f.Name, rc))
 			rc.Close()
 			if err != nil {
 				return ctx, damaged(f.Name, err)
