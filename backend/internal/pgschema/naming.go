@@ -96,6 +96,13 @@ func StateColumnAt(attrNo int) string { return "a" + strconv.Itoa(attrNo) + "_at
 // SearchIndex is the name of the index on the value of an attribute in the table of a type.
 func SearchIndex(typeNo, attrNo int) string { return TypeTable(typeNo) + "_a" + strconv.Itoa(attrNo) }
 
+// NameIndex is the name of the index that finds the objects of a type by the exact name.
+func NameIndex(typeNo int) string { return TypeTable(typeNo) + "_name" }
+
+// NameIndexFold is the name of the index that finds the objects of a type by the start of the name, upper and lower
+// case taken as one.
+func NameIndexFold(typeNo int) string { return TypeTable(typeNo) + "_name_ci" }
+
 // StatsName is the name of a statistics object of a type; first is the lowest attribute number in it.
 func StatsName(typeNo, first int) string { return TypeTable(typeNo) + "_st_" + strconv.Itoa(first) }
 
