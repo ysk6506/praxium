@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "docs/design-docs/ingestion.md"
-hash: "8e22a1ee28bb9c31"
-date: "2026-11-20"
-note: "엑셀 시트 읽기 규칙(합친 머리글 확장, 같은 행 번호 shape_changed)을 ADR-0103에 맞춰 반영했고, workbook.go(Cell.Skipped/Blank)와 ingestion.md 변경 후 본문과 대조해 확인함"
+hash: "6156b8e71b2cde65"
+date: "2026-11-24"
+note: "엑셀 한도 문단에 고정 한도와 행 순서 거절을 ADR-0104에 맞춰 더했고, ingestion.md의 안전 한도와 구현 문장과 대조해 확인함"
 text_changed: true
-doc_hash: "6e1bc6519dd65aac"
+doc_hash: "06592884ef5fe37a"
