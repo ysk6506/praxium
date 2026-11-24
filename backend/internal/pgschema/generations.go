@@ -96,11 +96,11 @@ func NameIndexSteps(schema string, typeNo int) []Step {
 
 // rawDiffSteps is what generator version 6 adds for the comparison of the received rows with the raw records (ADR-0102): a
 // wait that says its time is up, the place of the row a record of the computation was read from, and a problem that may have no
-// definition, and the index of the rows received by key. A schema made by this build has them already, so each step is made to be run twice.
+// definition, and the index of the rows received by key. A schema made by this build has them already, so each step is made to be run twice, and a schema that has no such table (a KG that was not made with the ingestion tables) is left as it is.
 func rawDiffSteps(schema string) []Step {
 	alter := func(table, column, what string) Step {
 		return Step{Phase: InTx, What: WhatColumn, Name: table + "." + column,
-			SQL: "ALTER TABLE " + Qualified(schema, table) + " " + what}
+			SQL: "ALTER TABLE IF EXISTS " + Qualified(schema, table) + " " + what}
 	}
 	return []Step{
 		alter(TableRecordWait, ColExpired, "ADD COLUMN IF NOT EXISTS "+ColExpired+" "+typeExpired),
@@ -109,6 +109,7 @@ func rawDiffSteps(schema string) []Step {
 		alter(TableRecordProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
 		alter(TableCalcProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
 		{Phase: InTx, What: WhatIndex, Name: "stage_record_key",
-			SQL: "CREATE INDEX IF NOT EXISTS " + QuoteIdent("stage_record_key") + " ON " + Qualified(schema, TableStageRecord) + " (" + stageRecordKeyIndex().Expr + ")"},
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableStageRecord) + "') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS " + QuoteIdent("stage_record_key") +
+				" ON " + Qualified(schema, TableStageRecord) + " (" + stageRecordKeyIndex().Expr + "); END IF; END $$"},
 	}
 }

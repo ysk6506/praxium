@@ -17,13 +17,13 @@ func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsTh
 		t.Fatal(err)
 	}
 	want := map[string]string{
-		"record_wait.expired":   `ALTER TABLE "s_7"."record_wait" ADD COLUMN IF NOT EXISTS expired boolean NOT NULL DEFAULT false`,
-		"calc_record.page":      `ALTER TABLE "s_7"."calc_record" ADD COLUMN IF NOT EXISTS page integer`,
-		"calc_record.row_no":    `ALTER TABLE "s_7"."calc_record" ADD COLUMN IF NOT EXISTS row_no integer`,
-		"record_problem.def_no": `ALTER TABLE "s_7"."record_problem" ALTER COLUMN def_no DROP NOT NULL`,
-		"calc_problem.def_no":   `ALTER TABLE "s_7"."calc_problem" ALTER COLUMN def_no DROP NOT NULL`,
+		"record_wait.expired":   `ALTER TABLE IF EXISTS "s_7"."record_wait" ADD COLUMN IF NOT EXISTS expired boolean NOT NULL DEFAULT false`,
+		"calc_record.page":      `ALTER TABLE IF EXISTS "s_7"."calc_record" ADD COLUMN IF NOT EXISTS page integer`,
+		"calc_record.row_no":    `ALTER TABLE IF EXISTS "s_7"."calc_record" ADD COLUMN IF NOT EXISTS row_no integer`,
+		"record_problem.def_no": `ALTER TABLE IF EXISTS "s_7"."record_problem" ALTER COLUMN def_no DROP NOT NULL`,
+		"calc_problem.def_no":   `ALTER TABLE IF EXISTS "s_7"."calc_problem" ALTER COLUMN def_no DROP NOT NULL`,
 	}
-	want["stage_record_key"] = `CREATE INDEX IF NOT EXISTS "stage_record_key" ON "s_7"."stage_record" (dataset_no, key, page, row_no)`
+	want["stage_record_key"] = `DO $$ BEGIN IF to_regclass('"s_7"."stage_record"') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS "stage_record_key" ON "s_7"."stage_record" (dataset_no, key, page, row_no); END IF; END $$`
 	if len(delta.Steps) != len(want) {
 		t.Fatalf("%d steps", len(delta.Steps))
 	}
