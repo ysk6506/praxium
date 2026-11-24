@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "docs/design-docs/ingestion.md"
-hash: "6b371736dfe881b2"
-date: "2026-11-19"
-note: "ingestion.md에 예정(ADR-0086) 표시만 더해졌다. 현재 동작을 설명하는 이 안내서는 바뀔 곳이 없다"
+hash: "8e22a1ee28bb9c31"
+date: "2026-11-20"
+note: "엑셀 시트 읽기 규칙(합친 머리글 확장, 같은 행 번호 shape_changed)을 ADR-0103에 맞춰 반영했고, workbook.go(Cell.Skipped/Blank)와 ingestion.md 변경 후 본문과 대조해 확인함"
 text_changed: true
-doc_hash: "76b4ed66afd1f142"
+doc_hash: "6e1bc6519dd65aac"
