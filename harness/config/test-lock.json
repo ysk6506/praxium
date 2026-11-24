@@ -27378,6 +27378,21 @@
    "added": "2026-11-24",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestRdfACallWithACanceledContextIsRefusedByEveryStepOfTheComparison": {
+   "kind": "test",
+   "hash": "7bed296dde78a642",
+   "asserts": 9,
+   "literals": [
+    "2789d9701ef4c9e9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-780"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCountsNothingAndADatasetThatNeverRetiresWaitsForNothing": {
    "kind": "test",
    "hash": "117f22c5af496823",
@@ -27414,6 +27429,21 @@
    "asserts": 17,
    "literals": [
     "6d6b1ea451c4211a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-782"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRdfAStepThatTheDatabaseRefusesIsToldAndTheBucketLeavesNothing": {
+   "kind": "test",
+   "hash": "42c9484aa643048c",
+   "asserts": 11,
+   "literals": [
+    "63b2b01b1bb89e22"
    ],
    "precision": [],
    "skips": 0,

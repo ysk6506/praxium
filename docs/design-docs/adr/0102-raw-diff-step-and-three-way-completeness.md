@@ -11,6 +11,7 @@ enforced_by:
   - backend/internal/pgingest/rdf_receive_test.go
   - backend/internal/pgingest/rdf_parity_test.go
   - backend/internal/pgingest/rdf_plan_test.go
+  - backend/internal/pgingest/rdf_faults_test.go
   - backend/internal/ingest/rawdiff_rdf_test.go
   - backend/internal/pgschema/rdf_generation_test.go
   - backend/internal/pgstore/rdf_generation_test.go
