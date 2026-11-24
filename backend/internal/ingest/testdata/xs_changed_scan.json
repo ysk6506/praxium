@@ -1,0 +1,34 @@
+[
+  {
+    "name": "a header merged past the last column that has a cell names every column it covers",
+    "header": ["Asset", "Notes"],
+    "extra": ["Notes", "Notes", "Notes"],
+    "rows": 2
+  },
+  {
+    "name": "a merged header is cut at the last column a cell may have",
+    "header": ["Asset", "Notes"],
+    "extra_count": 1023,
+    "rows": 1
+  },
+  {
+    "name": "rows out of order are an unusable sheet",
+    "reason": "the workbook is damaged: the rows of sheet \"S\" are not in order (row 2 after row 3)",
+    "rows": 0
+  },
+  {
+    "name": "two rows with the same number are an unusable sheet",
+    "reason": "the workbook is damaged: the rows of sheet \"S\" are not in order (row 2 after row 2)",
+    "rows": 0
+  },
+  {
+    "name": "cells out of order in a row are an unusable sheet",
+    "reason": "the workbook is damaged: the cells of row 2 of sheet \"S\" are not in order (column A after column B)",
+    "rows": 0
+  },
+  {
+    "name": "a header that spans many columns over a header of many names is over what a scan keeps",
+    "reason": "the workbook is over the safety limit max_kept_bytes (8388608) by sheet \"S\": its header and its merged cells hold more text than a read keeps; this limit is fixed",
+    "rows": 0
+  }
+]

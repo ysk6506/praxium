@@ -209,6 +209,12 @@ func reportExtra(rep *Report, ds Dataset, extra []string) {
 		return
 	}
 	for i, h := range extra {
+		if i >= maxProblemSamples {
+			// The report lists no more than that many problems, so what a problem past them says is never read: it is counted
+			// and its reason is not written (a header that spans a thousand columns has a long name a thousand times).
+			rep.problem(Problem{Kind: ProblemExtraColumn, Dataset: ds.ID})
+			continue
+		}
 		reason := "the header has a column no dataset column reads: " + h
 		if i == 0 {
 			reason += extraHint
