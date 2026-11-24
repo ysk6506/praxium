@@ -227,7 +227,7 @@ func (c *chunkBuilder) writeVolatile(ctx context.Context, writes []VolatileWrite
 		if err != nil {
 			return err
 		}
-		mark, err := ValueMark(w.Value)
+		mark, err := c.markOf(ctx, w)
 		if err != nil {
 			return err
 		}

@@ -3,12 +3,14 @@ package pgstore
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"testing"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
@@ -206,5 +208,108 @@ func TestSvmAnIndexThatAnAdjustmentLeftInvalidIsBuiltAgainByTheNextRun(t *testin
 		if n := sxInt(t, admin, `SELECT count(*) FROM pg_indexes WHERE schemaname = $1 AND indexname = $2`, schema, name); n != 1 {
 			t.Errorf("the index %s is not there after the run", name)
 		}
+	}
+}
+
+// A KG of this generator whose indexes were not all built (a run was stopped in the middle) is finished by the start of a server, through
+// AdjustOldSchemas, which is the path that a server takes.
+// [REQ-763]
+func TestSvmTheStartOfAServerFinishesTheIndexesOfAKGThatIsOfThisGeneratorButNotSettled(t *testing.T) {
+	ctx := context.Background()
+	st, admin := igtOpenStandard(t)
+	kg, schema := ssuOldKG(t, st, admin, 73)
+	if _, err := st.AdjustStorageSchema(ctx, kg, sxStandard(t, true)); err != nil {
+		t.Fatal(err)
+	}
+	rec, err := st.StorageSchema(ctx, kg)
+	noErr(t, "record", err)
+	if rec.GeneratorVersion != pgschema.GeneratorVersion {
+		t.Fatalf("the KG is at the generator %d", rec.GeneratorVersion)
+	}
+	ty := rec.Manifest.Types[0].TypeNo
+	fold := pgschema.Qualified(schema, pgschema.NameIndexFold(ty))
+	sxRun(t, admin, `UPDATE pg_index SET indisvalid = false WHERE indexrelid = '`+fold+`'::regclass`)
+	sxRun(t, admin, `DROP INDEX `+pgschema.Qualified(schema, pgschema.NameIndex(ty)))
+	sxRun(t, admin, `UPDATE kg_schema_state SET state = 'index_pending' WHERE kg_id = $1`, kg.String())
+	done, err := st.AdjustOldSchemas(ctx)
+	noErr(t, "start", err)
+	if len(done) != 1 || !done[0].Adjusted {
+		t.Fatalf("the start did nothing about the KG: %+v", done)
+	}
+	if n := sxInvalid(t, admin, schema); n != 0 {
+		t.Errorf("%d indexes are still invalid", n)
+	}
+	for _, name := range []string{pgschema.NameIndex(ty), pgschema.NameIndexFold(ty)} {
+		if n := sxInt(t, admin, `SELECT count(*) FROM pg_indexes WHERE schemaname = $1 AND indexname = $2`, schema, name); n != 1 {
+			t.Errorf("the index %s is not there after the start", name)
+		}
+	}
+	if state := sxInt(t, admin, `SELECT count(*) FROM kg_schema_state WHERE kg_id = $1 AND state = 'ok'`, kg.String()); state != 1 {
+		t.Error("the state is not ok after the start")
+	}
+	again, err := st.AdjustOldSchemas(ctx)
+	if noErr(t, "start again", err); len(again) != 0 {
+		t.Errorf("a settled KG was handled again: %+v", again)
+	}
+}
+
+// A build that finds the storage schema made by another generator than its own refuses to write (ADR-0101), and forgets what it knew.
+// [REQ-763]
+func TestSvmAWriteIsRefusedWhenAnotherBuildAdjustedTheSchemaToAnotherGenerator(t *testing.T) {
+	r := v2wRigOf(t, graph.Options{})
+	r.v2wApply(t, graph.Batch{Objects: []graph.ObjectUpsert{r.fx.Server("SN-000000", "M1")}})
+	sxRun(t, r.admin, `UPDATE kg_schema_state SET generator_version = generator_version + 1 WHERE kg_id = $1`, r.kg.ID.String())
+	_, err := r.app.Apply(r.ctx, r.kg.ID, r.lease, graph.Batch{Objects: []graph.ObjectUpsert{r.fx.Server("SN-000001", "M1")}})
+	if kernel.CodeOf(err) != CodeSchemaMismatch {
+		t.Fatalf("the write after another build adjusted the schema: %v", err)
+	}
+}
+
+// A value whose attribute has no column is not thrown away: the KG is not adjusted and says so; a time seen that is no time stays in prov
+// and leaves the column of the time null; the empty time and reference of an old entry are not carried over.
+// [REQ-763]
+func TestSvmTheAdjustmentKeepsWhatHasNoColumnAndTakesOldTimesAndEmptiesAsTheyAre(t *testing.T) {
+	ctx := context.Background()
+	st, admin := igtOpenStandard(t)
+	kg, schema := ssuOldKG(t, st, admin, 74)
+	rec, err := st.StorageSchema(ctx, kg)
+	noErr(t, "record", err)
+	sxRun(t, admin, `UPDATE kg_schema_state SET generator_version = 4, manifest = jsonb_set(manifest, '{generator_version}', '4') WHERE kg_id = $1`, kg.String())
+	for _, ty := range rec.Manifest.Types {
+		for _, n := range []string{pgschema.NameIndex(ty.TypeNo), pgschema.NameIndexFold(ty.TypeNo)} {
+			sxRun(t, admin, `DROP INDEX `+pgschema.Qualified(schema, n))
+		}
+	}
+	enum := svmFind(rec)[model.BaseEnum]
+	svmOldRow(t, admin, schema, enum, 701, `{"v":"down","g":"fact","b":"observed","s":"not a time","r":""}`)
+	common := pgschema.Qualified(schema, pgschema.TableObjectState)
+	sxRun(t, admin, `INSERT INTO `+common+` (obj_no, type_no, prov) VALUES (702, 1, '{"999999":{"v":"precious","g":"fact","b":"observed"}}')`)
+	if _, err := st.AdjustOldSchemas(ctx); err == nil || !strings.Contains(err.Error(), "999999") {
+		t.Fatalf("a value with no column was adjusted away, or the reason is not given: %v", err)
+	}
+	if got := ssuGenerator(t, st, kg); got != 4 {
+		t.Fatalf("the generator is %d after a refused adjustment", got)
+	}
+	if n := sxInt(t, admin, `SELECT count(*) FROM `+common+` WHERE obj_no = 702 AND prov->'999999'->>'v' = 'precious'`); n != 1 {
+		t.Error("the value with no column was lost")
+	}
+	sxRun(t, admin, `DELETE FROM `+common+` WHERE obj_no = 702`)
+	if done, err := st.AdjustOldSchemas(ctx); err != nil || len(done) != 1 || !done[0].Adjusted {
+		t.Fatalf("the adjustment: %+v, %v", done, err)
+	}
+	table := pgschema.Qualified(schema, enum.table)
+	col, at := pgschema.StateColumn(enum.attrNo), pgschema.StateColumnAt(enum.attrNo)
+	var value sql.NullString
+	var atNull bool
+	var prov string
+	noErr(t, "row", admin.QueryRow(`SELECT `+col+`, `+at+` IS NULL, prov::text FROM `+table+` WHERE obj_no = 701`).Scan(&value, &atNull, &prov))
+	if value.String != "down" || !atNull {
+		t.Errorf("the value %q and the time null %v", value.String, atNull)
+	}
+	var entry map[string]map[string]any
+	noErr(t, "prov", json.Unmarshal([]byte(prov), &entry))
+	e := entry[strconv.Itoa(enum.attrNo)]
+	if e["t"] != "not a time" || len(e) != 3 || e["g"] != "fact" || e["b"] != "observed" {
+		t.Errorf("the entry is %v: it keeps the text of the time, and no empty reference", e)
 	}
 }

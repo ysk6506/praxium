@@ -39,7 +39,7 @@ func moveValuesSteps(schema string, old Manifest) ([]Step, error) {
 // moveValuesStep is the statement that moves the values of one table of values. All the expressions read the row as it
 // was, so the columns and the new prov are made from the same old prov.
 func moveValuesStep(schema, table string, cols []Column) (Step, error) {
-	var set []string
+	var set, keys []string
 	for _, c := range cols {
 		val, err := Expr("t.prov", c.AttrNo, c.Kind)
 		if err != nil {
@@ -50,7 +50,10 @@ func moveValuesStep(schema, table string, cols []Column) (Step, error) {
 		}
 		has := "jsonb_exists(t.prov->" + quoteKey(c.AttrNo) + ", 'v')"
 		col, at := StateColumn(c.AttrNo), StateColumnAt(c.AttrNo)
-		seen := TimeFunc + "(NULLIF(t.prov->" + quoteKey(c.AttrNo) + "->>'s', ''))"
+		// the time seen is a time only when it is written as one; any other text stays in prov (as t) and the column of the time is null
+		raw := "t.prov->" + quoteKey(c.AttrNo) + "->>'s'"
+		seen := "CASE WHEN " + raw + " ~ '" + oldTimeText + "' THEN " + TimeFunc + "(" + raw + ") END"
+		keys = append(keys, quoteKey(c.AttrNo))
 		set = append(set,
 			col+" = CASE WHEN "+has+" THEN "+val+" ELSE t."+col+" END",
 			at+" = CASE WHEN "+has+" THEN "+seen+" ELSE t."+at+" END")
@@ -58,12 +61,19 @@ func moveValuesStep(schema, table string, cols []Column) (Step, error) {
 	if len(set) == 0 {
 		return Step{}, kernel.Errorf(kernel.CodeInvalidValue, "the table %s has no volatile attribute", table)
 	}
-	entry := "(x.value - 'v' - 's') || CASE WHEN jsonb_exists(x.value, 's') THEN jsonb_build_object('t', x.value->'s') ELSE '{}'::jsonb END"
-	set = append(set, "prov = (SELECT COALESCE(jsonb_object_agg(x.key, CASE WHEN jsonb_typeof(x.value) = 'object' THEN "+entry+
-		" ELSE x.value END), '{}'::jsonb) FROM jsonb_each(t.prov) AS x)")
+	// an entry with a value whose attribute has no column is a value that would be lost: the statement fails (the cast of the text
+	// below) and the KG stays as it is, refused, with the attribute number in the message
+	lost := "to_jsonb(('the value of the attribute ' || x.key || ' has no column in " + table + "')::int)"
+	keep := func(k string) string { return "CASE WHEN x.value->>'" + k + "' = '' THEN '" + k + "' ELSE '' END" }
+	entry := "(x.value - 'v' - 's' - " + keep("r") + ") || CASE WHEN COALESCE(x.value->>'s', '') <> '' THEN jsonb_build_object('t', x.value->'s') ELSE '{}'::jsonb END"
+	set = append(set, "prov = (SELECT COALESCE(jsonb_object_agg(x.key, CASE WHEN jsonb_typeof(x.value) <> 'object' THEN x.value"+
+		" WHEN x.key NOT IN ("+strings.Join(keys, ", ")+") AND jsonb_exists(x.value, 'v') THEN "+lost+" ELSE "+entry+" END), '{}'::jsonb) FROM jsonb_each(t.prov) AS x)")
 	sql := "UPDATE " + Qualified(schema, table) + " AS t SET " + strings.Join(set, ", ") +
 		" WHERE EXISTS (SELECT 1 FROM jsonb_each(t.prov) AS y WHERE jsonb_typeof(y.value) = 'object' AND (jsonb_exists(y.value, 'v') OR jsonb_exists(y.value, 's')))"
 	return Step{Phase: InTx, What: WhatData, Name: table, SQL: sql}, nil
 }
+
+// oldTimeText is the form of a time that a function of the time reads (a date and a time of the day with a zone, the year not 0000).
+const oldTimeText = `^(?!0000)[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$`
 
 func quoteKey(attrNo int) string { return "'" + strconv.Itoa(attrNo) + "'" }

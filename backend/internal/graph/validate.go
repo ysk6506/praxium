@@ -3,7 +3,6 @@ package graph
 import (
 	"math"
 	"strconv"
-	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
@@ -82,6 +81,9 @@ func (v *validator) object(u ObjectUpsert) (model.ObjectType, ObjectID, error) {
 	}
 	if u.Name == "" {
 		return typ, ObjectID{}, invalid("an object of type %s has no name", typ.Name)
+	}
+	if len(u.Name) > MaxNameBytes {
+		return typ, ObjectID{}, invalid("the name of an object of type %s is %d bytes: at most %d", typ.Name, len(u.Name), MaxNameBytes)
 	}
 	if err := v.key(typ, u.Key); err != nil {
 		return typ, ObjectID{}, err
@@ -251,6 +253,13 @@ func checkBase(base model.BaseKind, p model.Property, val any) error {
 	if !fitsBase(base, p, val) {
 		return invalid("attribute %s: the value does not fit value type %s", p.Name, base)
 	}
+	if base == model.BaseNumber || base == model.BaseQuantity {
+		if _, isMap := val.(map[string]any); !isMap {
+			if err := NumberFits(base, val); err != nil {
+				return invalid("attribute %s: %v", p.Name, err)
+			}
+		}
+	}
 	return nil
 }
 
@@ -302,14 +311,8 @@ func inList(list []string, s string) bool {
 	return false
 }
 
-// validTime says whether a text is a time in the one form the store keeps (ADR-0101): UTC and ending in Z, with at most six
-// digits of a second (a database keeps microseconds) and no zero at the end of them, which is how time.RFC3339Nano writes a
-// time. A view reads the text with a function that wants this form and a column of a volatile value is read back in it, so a
-// text of another form (an offset, a fraction with a trailing zero) is a record that does not fit and is not stored.
-func validTime(s string) bool {
-	t, err := time.Parse(time.RFC3339, s)
-	return err == nil && t.Nanosecond()%1000 == 0 && t.UTC().Format(time.RFC3339Nano) == s
-}
+// validTime says whether a text is a time in the one form the store keeps (ADR-0101, TimeFits).
+func validTime(s string) bool { return TimeFits(s) == nil }
 
 // isNumber accepts an int64 or a decimal text: floats have no canonical form.
 func isNumber(val any) bool {

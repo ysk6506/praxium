@@ -2,11 +2,15 @@ package pgstore
 
 import (
 	"database/sql"
+	"errors"
+	"math"
 	"sort"
 	"strconv"
+	"strings"
 
 	"github.com/lib/pq"
 
+	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
@@ -118,7 +122,9 @@ func valueFrom(kind model.BaseKind, text sql.NullString) (any, error) {
 		return n, nil
 	case model.BaseBoolean:
 		return text.String == "true", nil
-	case model.BaseNumber, model.BaseQuantity:
+	case model.BaseNumber:
+		return numberFrom(text.String)
+	case model.BaseQuantity:
 		if n, err := strconv.ParseInt(text.String, 10, 64); err == nil {
 			return n, nil
 		}
@@ -127,6 +133,22 @@ func valueFrom(kind model.BaseKind, text sql.NullString) (any, error) {
 		return decodeValue([]byte(text.String))
 	}
 	return text.String, nil
+}
+
+// numberFrom is the value of a column of the type double precision: a whole number up to 2^53 comes as an integer, any other as
+// its shortest decimal text without a power of ten (below 1e21; a larger one keeps it, as it has no shorter form).
+func numberFrom(text string) (any, error) {
+	f, err := strconv.ParseFloat(text, 64)
+	if err != nil {
+		return nil, kernel.Wrap(kernel.CodeInternal, err, "a stored number is damaged")
+	}
+	if f == math.Trunc(f) && math.Abs(f) <= 1<<53 {
+		return int64(f), nil
+	}
+	if math.Abs(f) < 1e21 {
+		return strconv.FormatFloat(f, 'f', -1, 64), nil
+	}
+	return strconv.FormatFloat(f, 'g', -1, 64), nil
 }
 
 // valueKind is the kind of the value of an attribute in the table of values that has it, and whether the attribute is in the
@@ -196,6 +218,7 @@ func (c *kgChunk) writeValues(table string, common bool, attrNo int, kind model.
 		c.exec("write volatile values", `INSERT INTO `+t+` `+cols+` SELECT `+sel+` FROM unnest($1::bigint[], $2::bigint[], $3::text[], $4::boolean[], $5::jsonb[])
 			AS u(obj_no, type_no, v, has, doc) ON CONFLICT (obj_no) DO UPDATE SET `+col+` = EXCLUDED.`+col+`, `+at+` = EXCLUDED.`+at+`, prov = `+t+`.prov || EXCLUDED.prov`,
 			pq.Array(arr.nos), pq.Array(arr.types), pq.Array(arr.vals), pq.Array(arr.has), pq.Array(arr.docs))
+		c.err = unfitValue(c.err, attrNo)
 	})
 }
 
@@ -238,4 +261,14 @@ func (a *kgAccess) groupValues(items []volatileItem) ([]valueGroup, error) {
 		out = append(out, *byKey[k])
 	}
 	return out, nil
+}
+
+// unfitValue turns the refusal of the database of a value that its column cannot take (the class 22 of the codes, data exception) into
+// a problem of the batch. The check of the graph is the gate that keeps such a value out, so this is the net under it.
+func unfitValue(err error, attrNo int) error {
+	var pe *pq.Error
+	if err != nil && errors.As(err, &pe) && strings.HasPrefix(string(pe.Code), "22") {
+		return kernel.Wrap(graph.CodeBatchInvalid, err, "a value of the attribute "+strconv.Itoa(attrNo)+" does not fit the column of its kind")
+	}
+	return err
 }

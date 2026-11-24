@@ -35,7 +35,7 @@ func formKeys(fp *feedPlan, reg *model.Registry, row Row) (formed []formedKey, w
 				break
 			}
 			v, err := model.NormalizeValue(kp.vt, cell)
-			if err != nil || v == "" {
+			if err != nil || v == "" || len(v) > graph.MaxNameBytes {
 				why = append(why, "key "+k.name+": column "+kp.column+" has the value "+strconv.Quote(cell)+", which does not fit its value type")
 				ok = false
 				break

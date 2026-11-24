@@ -71,5 +71,19 @@ func numberKey(kind model.BaseKind, v any) (string, bool) {
 	if err != nil {
 		return "", false
 	}
+	if f == 0 {
+		f = 0 // minus zero is zero
+	}
 	return strconv.FormatFloat(f, 'g', -1, 64), true
+}
+
+// markOf is the mark of the value of a write that goes into the light line of the change: of the number it is for a number or a
+// quantity (so that 5 and "5.0" have one mark, as they are one value), of the value as it came for any other.
+func (c *chunkBuilder) markOf(ctx context.Context, w VolatileWrite) (string, error) {
+	if kind, ok := c.numberKind(ctx, w); ok {
+		if key, ok := numberKey(kind, w.Value); ok {
+			return ValueMark(key)
+		}
+	}
+	return ValueMark(w.Value)
 }

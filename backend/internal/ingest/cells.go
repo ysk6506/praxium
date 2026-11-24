@@ -5,6 +5,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
 )
@@ -15,6 +16,9 @@ import (
 // does not stop the whole batch.
 func convertCell(s valueSpec, text string) (any, error) {
 	text = utcTime(s, dateAsTime(s, text))
+	if s.prop.Name == "name" && len(text) > graph.MaxNameBytes {
+		return nil, kernel.Errorf(kernel.CodeInvalidValue, "a name of %d bytes is too long: at most %d", len(text), graph.MaxNameBytes)
+	}
 	v, err := convertBase(s, text)
 	if err != nil {
 		return nil, err
@@ -72,8 +76,8 @@ func convertBase(s valueSpec, text string) (any, error) {
 		}
 		return trimmed == "true", nil
 	case model.BaseNumber, model.BaseQuantity:
-		if _, err := strconv.ParseFloat(trimmed, 64); err != nil {
-			return nil, kernel.Errorf(kernel.CodeInvalidValue, "%q is not a number", text)
+		if err := graph.NumberFits(s.base, trimmed); err != nil {
+			return nil, err // the one gate of the graph: a value that the store cannot keep as it is is a problem of this cell
 		}
 		return trimmed, nil
 	case model.BaseTime, model.BaseEnum:
@@ -85,9 +89,7 @@ func convertBase(s valueSpec, text string) (any, error) {
 // checkText checks the kinds whose value is the text itself.
 func checkText(s valueSpec, text string) error {
 	if s.base == model.BaseTime {
-		if _, err := time.Parse(time.RFC3339, text); err != nil {
-			return kernel.Errorf(kernel.CodeInvalidValue, "%q is not a time of the form 2006-01-02T15:04:05Z", text)
-		}
+		return graph.TimeFits(text)
 	} else if p := s.prop; len(p.EnumValues) > 0 && !contains(p.EnumValues, text) {
 		return kernel.Errorf(kernel.CodeInvalidValue, "%q is none of the values %v of %s", text, p.EnumValues, p.Name)
 	}

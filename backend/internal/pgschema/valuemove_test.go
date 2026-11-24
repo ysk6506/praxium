@@ -63,7 +63,7 @@ func TestVmAKGOfGeneratorFourIsFollowedToFiveByMovingTheValuesAndBuildingTheName
 	state := stepOf(delta.Steps, "object_state")
 	for _, part := range []string{
 		`a4 = CASE WHEN jsonb_exists(t.prov->'4', 'v') THEN (t.prov->'4'->>'v') ELSE t.a4 END`,
-		`a7_at = CASE WHEN jsonb_exists(t.prov->'7', 'v') THEN public.praxium_ts(NULLIF(t.prov->'7'->>'s', '')) ELSE t.a7_at END`,
+		`THEN public.praxium_ts(t.prov->'7'->>'s') END ELSE t.a7_at END`,
 		`jsonb_build_object('t', x.value->'s')`,
 		`WHERE EXISTS (SELECT 1 FROM jsonb_each(t.prov) AS y WHERE jsonb_typeof(y.value) = 'object' AND (jsonb_exists(y.value, 'v') OR jsonb_exists(y.value, 's')))`,
 	} {

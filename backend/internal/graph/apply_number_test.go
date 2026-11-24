@@ -20,6 +20,8 @@ func TestNumkeyANumberIsTheSameNumberInEveryFormItIsWritten(t *testing.T) {
 		{model.BaseNumber, "5.0", int64(5), true},
 		{model.BaseNumber, "0.10", "0.1", true},
 		{model.BaseNumber, "0.1", "0.2", false},
+		{model.BaseNumber, "-0", "0", true},
+		{model.BaseQuantity, "-0", "0", true},
 	} {
 		x, okX := numberKey(c.kind, c.a)
 		y, okY := numberKey(c.kind, c.b)

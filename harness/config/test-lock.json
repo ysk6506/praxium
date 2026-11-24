@@ -15885,6 +15885,37 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/graph::TestGateTheNameOfAnObjectIsAtMostTheBytesTheNameIndexesAllow": {
+   "kind": "test",
+   "hash": "a960f43d6f25144e",
+   "asserts": 3,
+   "literals": [
+    "bc4033dd8a6fca5a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-761"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestGateWhatTheStoreCannotKeepAsItIsIsRefusedForANumberAQuantityAndATime": {
+   "kind": "test",
+   "hash": "8444aa3dbf676247",
+   "asserts": 2,
+   "literals": [
+    "e19daa9597a438b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-760",
+    "REQ-762"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
   "go:backend/internal/graph::TestHashStateKeepsPartsAndCleansUp": {
    "kind": "test",
    "hash": "cd6929f94321f419",
@@ -15952,10 +15983,10 @@
   },
   "go:backend/internal/graph::TestNumkeyANumberIsTheSameNumberInEveryFormItIsWritten": {
    "kind": "test",
-   "hash": "92bee57f22d86e92",
+   "hash": "c140e673a5550b62",
    "asserts": 2,
    "literals": [
-    "730769cd8789daeb"
+    "c174afc04fab37c7"
    ],
    "precision": [],
    "skips": 0,
@@ -20790,6 +20821,22 @@
     "REQ-263"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestGatecellAValueTheStoreCannotKeepIsAProblemOfItsCell": {
+   "kind": "test",
+   "hash": "a0614cd64b17d86c",
+   "asserts": 3,
+   "literals": [
+    "d05be814bb2000b2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-760",
+    "REQ-762"
+   ],
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHeaderOfTwoRowsIsJoinedAndMergedGroupsSpanTheirColumns": {
@@ -27907,10 +27954,10 @@
   },
   "go:backend/internal/pgschema::TestVmAKGOfGeneratorFourIsFollowedToFiveByMovingTheValuesAndBuildingTheNameIndexesAfterwards": {
    "kind": "test",
-   "hash": "9f24e9737cce935a",
+   "hash": "387b1ba5c1e8cf2e",
    "asserts": 9,
    "literals": [
-    "20ff8129c80cdb24"
+    "6f9cf1906ee7236d"
    ],
    "precision": [],
    "skips": 0,
@@ -30066,6 +30113,51 @@
    "added": "2026-11-24",
    "amended_by": null
   },
+  "go:backend/internal/pgstore::TestSvmAWriteIsRefusedWhenAnotherBuildAdjustedTheSchemaToAnotherGenerator": {
+   "kind": "test",
+   "hash": "a34d909d7b42f641",
+   "asserts": 4,
+   "literals": [
+    "c7b31d17e4998793"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-763"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSvmTheAdjustmentKeepsWhatHasNoColumnAndTakesOldTimesAndEmptiesAsTheyAre": {
+   "kind": "test",
+   "hash": "48c6fa897a7b14d2",
+   "asserts": 18,
+   "literals": [
+    "7bb8407b263e0fdb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-763"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestSvmTheStartOfAServerFinishesTheIndexesOfAKGThatIsOfThisGeneratorButNotSettled": {
+   "kind": "test",
+   "hash": "d830eb35049c4983",
+   "asserts": 19,
+   "literals": [
+    "3412c5848a0734b0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-763"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestTestDatabasesNeedTheServerAndNeverSkip": {
    "kind": "test",
    "hash": "d85cdb87d3f45f56",
@@ -30714,6 +30806,38 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestVgateARefusedValueIsAProblemOfTheBatchAndALongestNameIsKept": {
+   "kind": "test",
+   "hash": "471a8799997b4af5",
+   "asserts": 6,
+   "literals": [
+    "25ae0a28105dc646"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-761",
+    "REQ-762"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestVgateWhatTheGateLetsThroughComesBackFromTheColumnAsItWent": {
+   "kind": "test",
+   "hash": "ceb72486f5f29b64",
+   "asserts": 8,
+   "literals": [
+    "80e9b09d1cf4c336"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-760",
+    "REQ-762"
+   ],
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead": {
