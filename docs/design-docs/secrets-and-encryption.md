@@ -269,6 +269,8 @@ GET /v1/secrets/sec_41   → {"data": {"secret_id": "sec_41", "current_version":
 
 **시크릿을 복호화하는 작업(소스 탐색, 점검, 미리 보기, 트라이얼 수집)의 권한.** 메인 브랜치의 소스 정의 그대로이면 그 소스를 범위에 가진 `editor`도 수행해요. 브랜치가 접속하는 주소(`endpoints`)를 바꿨으면 그 소스의 `operator`여야 해요. 제안을 만들 수 있다는 것만으로 바뀐 주소에 다른 소스의 키를 쓰지 못해요. 그때도 주소는 `allowed_hosts` 안이어야 해요(6절). 시크릿은 정의가 아니라서 제안과 승인을 거치지 않고 입력해요.
 
+**허용 주소는 전송 방식을 보지 않아요.** `allowed_hosts`는 호스트와 포트이고 `https`인지 `http`인지는 보지 않아요. 같은 포트이면 `https://host`를 `http://host:443`으로 바꾼 정의에도 시크릿이 열려요. 평문으로 나가는 것을 막는 곳은 연결 순간의 다이얼러이고, 풀린 주소가 모두 루프백이거나 운영자의 `-source-plaintext-ranges`(IP와 CIDR 목록) 안일 때만 평문 접속을 맺어요. 그 소스는 점검에 `source.plaintext_transport` 알림이 붙어요(ADR-0105). 시크릿의 주소마다 평문 허락을 따로 두는 것은 시크릿 형식이 바뀌는 일이라 뒤로 미뤘어요. 그래서 평문 허용 범위는 넓은 대역보다 소스 주소 하나(`/32`)로 두기를 권해요.
+
 ### 9.2 감사 로그에 남는 것
 ADR-0012의 감사 로그 필드(`audit_id`, `occurred_at`, `actor_kind`, `actor_id`, `action`, `target_kind`, `target_id`, `outcome`, `request_id`, `detail`)를 그대로 써요. `target_kind`는 `secret`, `target_id`는 `secret_id`예요. 값은 어디에도 없어요.
 

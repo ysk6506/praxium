@@ -112,9 +112,10 @@ func (d *Dialer) DialContext(ctx context.Context, network, address string) (net.
 type plaintextKey struct{}
 
 // WithPlaintext marks the dials made with the returned context as dials of a connection without TLS (http, or
-// sslmode=disable of PostgreSQL). The dialer then connects only when every address of the answer is on the loopback,
-// or when the policy says AllowInsecure. The decision is made on the addresses that were resolved and judged, never
-// on the name: a name such as "localhost" that a resolver answers with another address does not pass.
+// sslmode=disable of PostgreSQL). The dialer then connects only when every address of the answer is on the loopback or in
+// the plaintext ranges of the policy (PlaintextRanges, or AllowInsecure for every address). The decision is made on the
+// addresses that were resolved and judged, never on the name: a name such as "localhost" that a resolver answers with
+// another address does not pass.
 func WithPlaintext(ctx context.Context) context.Context {
 	return context.WithValue(ctx, plaintextKey{}, true)
 }
@@ -178,8 +179,8 @@ func (d *Dialer) addresses(ctx context.Context, host string, ip netip.Addr, port
 		if why := d.policy.judge(a, port, d.locals); why != "" {
 			return nil, deniedAddress(host, why)
 		}
-		if plaintext(ctx) && !d.policy.insecure && !canonical(a).IsLoopback() {
-			return nil, deniedAddress(host, "a connection without TLS is allowed only to the loopback")
+		if plaintext(ctx) && !d.policy.plaintextAllowed(a) {
+			return nil, deniedAddress(host, "a connection without TLS is allowed only to the loopback and the plaintext ranges of the operator")
 		}
 	}
 	return addrs, nil

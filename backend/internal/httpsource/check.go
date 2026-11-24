@@ -5,6 +5,7 @@ import (
 	"errors"
 	"strconv"
 
+	"github.com/ysk6506/praxium/backend/internal/egress"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/secrets"
 )
@@ -29,7 +30,12 @@ var stepMessages = map[string]string{
 // Check reads the first response of the dataset for real, so that it tells what the setting and the access give and not
 // only that a connection opens. It tells it item by item: the secret, the connection, the credentials, the first answer
 // and the place of the records. It sends the first request only (and the one that asks for a token, if there is one).
-func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) ingest.CheckResult {
+//
+// The result carries the notes of the source (the data goes without TLS, a pinned certificate is accepted whatever its
+// dates are). When the certificate of the server was the reason the check failed, it carries what the server presented,
+// found by one more handshake that sends no request (ADR-0105).
+func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) (res ingest.CheckResult) {
+	defer func() { res.Notes = r.set.notes() }()
 	rn, err := r.begin(ctx, source, ds, secrets.PurposeCheck)
 	if err != nil {
 		return checkFailure(&progress{}, r.set.needsSecret(), false, err)
@@ -38,7 +44,9 @@ func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) in
 	rn.firstOnly = true
 	rows, end, err := rn.firstPage(ctx, ds)
 	if err != nil {
-		return checkFailure(&rn.prog, r.set.needsSecret(), true, err)
+		res = checkFailure(&rn.prog, r.set.needsSecret(), true, err)
+		res.Cert = rn.presentedCertificate(ctx, err)
+		return res
 	}
 	steps := checkSteps(&rn.prog, r.set.needsSecret(), true, nil)
 	if end != nil && !end.Complete && end.Reason != reasonFirstOnly {
@@ -116,4 +124,30 @@ func checkSteps(p *progress, secret, opened bool, failure *ingest.CheckStep) []i
 		}
 	}
 	return steps
+}
+
+// certProber is what a client may be able to do besides sending requests: show the certificate of its server. *egress.Client
+// does; the Doer interface does not ask for it, so that a client that cannot is still a Doer.
+type certProber interface {
+	ProbeCert(ctx context.Context, rawURL string) (*egress.CertSummary, error)
+}
+
+// presentedCertificate is the certificate the server presented, when the check failed because of the certificate of the
+// server (not trusted, not for the name, not one of the pins): one more handshake to the same host and port that ends
+// before any request is sent. It is nil for any other failure and when the server cannot be asked.
+func (rn *run) presentedCertificate(ctx context.Context, failure error) *ingest.CertSummary {
+	se, ok := ingest.SourceErrorOf(failure)
+	if !ok || se.Kind != ingest.SrcTLSRejected {
+		return nil
+	}
+	prober, ok := rn.doer.(certProber)
+	if !ok {
+		return nil
+	}
+	sum, err := prober.ProbeCert(ctx, rn.origin.String())
+	if err != nil || sum == nil {
+		return nil
+	}
+	return &ingest.CertSummary{Subject: sum.Subject, Issuer: sum.Issuer, SANs: sum.SANs, SANsMore: sum.SANsMore,
+		NotBefore: sum.NotBefore, NotAfter: sum.NotAfter, SPKISHA256: sum.SPKISHA256}
 }

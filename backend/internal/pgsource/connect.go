@@ -35,6 +35,7 @@ type settings struct {
 	database  string
 	disable   bool
 	caPEM     string
+	pins      []string
 	connect   time.Duration
 	statement time.Duration
 	lock      time.Duration
@@ -42,6 +43,9 @@ type settings struct {
 
 func settingsOf(cn *ingest.Connection) settings {
 	s := settings{host: cn.Host, port: cn.Port, database: cn.Database, disable: cn.SSLMode == ingest.SSLDisable, caPEM: cn.CAPEM}
+	if cn.TLS != nil {
+		s.pins = cn.TLS.Pins
+	}
 	if s.port == 0 {
 		s.port = ingest.DefaultPostgresPort
 	}
@@ -126,20 +130,19 @@ func (r *Reader) open(ctx context.Context, purpose secrets.Purpose) (*session, e
 	return sess, nil
 }
 
-// useTLS registers the TLS settings of egress (TLS 1.2 or later, the certificate and the host name always verified, only
-// the certificates of ca_pem trusted when it is given) under the name of this read, and makes the connection ask for
-// exactly those. The driver's own modes are never used: require, prefer and verify-ca turn the verification off, and
-// verify-full reads root.crt of the home folder.
+// useTLS has egress make the TLS settings (TLS 1.2 or later; the certificate and the host name always verified, only the
+// certificates of ca_pem trusted when it is given; or, when the definition has pins, the public key of the certificate
+// checked against them in place of all that) and register them in the driver under the name of this read, and makes the
+// connection ask for exactly those. This package never holds the settings: the driver's registration function is handed to
+// egress, which gives nothing back but the way to take them out again (ADR-0105). The driver's own modes are never used:
+// require, prefer and verify-ca turn the verification off, and verify-full reads root.crt of the home folder.
 func (s *session) useTLS(cfg *pq.Config) error {
-	tlsCfg, err := egress.TLSConfig(s.st.caPEM)
+	key := "praxium-source-" + strconv.FormatUint(tlsKeys.Add(1), 10)
+	unregister, err := egress.RegisterPostgresTLS(pq.RegisterTLSConfig, key, s.st.caPEM, s.st.pins)
 	if err != nil {
 		return classify(context.Background(), err)
 	}
-	key := "praxium-source-" + strconv.FormatUint(tlsKeys.Add(1), 10)
-	if err := pq.RegisterTLSConfig(key, tlsCfg); err != nil {
-		return sourceErr(ingest.SrcInternal, "the TLS settings could not be registered", err)
-	}
-	s.unregister = func() { _ = pq.RegisterTLSConfig(key, nil) }
+	s.unregister = unregister
 	cfg.SSLMode = pq.SSLMode("pqgo-" + key)
 	return nil
 }

@@ -46,6 +46,7 @@ var (
 	ecAdPort         = regAdapter("source.connection.port_invalid", inv, "The port is not between 1 and 65535.", "source,port")
 	ecAdSSLMode      = regAdapter("source.connection.sslmode_invalid", inv, "The sslmode is not one of the two.", "source,sslmode,supported")
 	ecAdCAPEM        = regAdapter("source.connection.ca_pem_invalid", inv, "The ca_pem is not one or more certificates in PEM form.", "source,reason")
+	ecAdTLSPins      = regAdapter("source.connection.tls_pins_invalid", inv, "The pins of tls are not one to eight public key hashes in the form sha256/<base64>, or they are given together with ca_pem or for a connection without TLS.", "source,reason")
 	ecAdRange        = regAdapter("source.connection.value_out_of_range", inv, "A number of the connection is outside the range it may have.", "source,field,value,min,max")
 	ecAdHeader       = regAdapter("source.connection.header_not_allowed", inv, "A header of the connection or of the authentication is not a valid name, is one the product sets itself or that servers log, or has a bad value or a bad source.", "source,header,reason")
 	ecAdAuthKind     = regAdapter("source.auth.kind_unsupported", unsp, "The kind of the authentication is not one of the six.", "source,kind,supported")

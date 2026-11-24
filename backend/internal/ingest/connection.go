@@ -90,6 +90,9 @@ type Connection struct {
 	// CAPEM is the certificate or certificates that sign the server's: the only ones trusted when it is given, in place
 	// of the system's. HTTP and PostgreSQL both have it.
 	CAPEM string `json:"ca_pem,omitempty"`
+	// TLS names the certificates of the server that are accepted in place of verifying its chain, its name and its dates
+	// (ADR-0105). HTTP and PostgreSQL both have it; it is not given together with CAPEM or without TLS.
+	TLS *ConnectionTLS `json:"tls,omitempty"`
 	// TimeoutSeconds is how long one request may take.
 	TimeoutSeconds    int               `json:"timeout_seconds,omitempty"`
 	RequestsPerSecond float64           `json:"requests_per_second,omitempty"`
@@ -109,6 +112,19 @@ type Connection struct {
 	ConnectTimeoutSeconds   int        `json:"connect_timeout_seconds,omitempty"`
 	StatementTimeoutSeconds int        `json:"statement_timeout_seconds,omitempty"`
 	LockTimeoutSeconds      int        `json:"lock_timeout_seconds,omitempty"`
+}
+
+// MaxTLSPins is how many pins a connection may name: several, so that a key can be replaced without a gap.
+const MaxTLSPins = 8
+
+// ConnectionTLS is what a connection says about the certificate of its server beyond the default (verify it against the
+// system's authorities, or against ca_pem).
+type ConnectionTLS struct {
+	// Pins are the public keys of the certificates the server may present, each as "sha256/" and the base64 of the SHA-256 of
+	// the SubjectPublicKeyInfo of the certificate. With a pin the chain, the name and the dates of the certificate are not
+	// looked at: only whether its public key is one of the pins. It is to be used for a server whose certificate cannot be
+	// verified (a self-signed one, a name that does not match), and it holds although the certificate has expired.
+	Pins []string `json:"pins,omitempty"`
 }
 
 // Auth is how an HTTP source is signed in to. Kind says which of the other fields are read: bearer and header send a

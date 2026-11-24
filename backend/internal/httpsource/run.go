@@ -68,9 +68,9 @@ func (r *Reader) begin(ctx context.Context, source string, ds ingest.Dataset, pu
 	if rn.maxPages <= 0 {
 		rn.maxPages = ingest.DefaultMaxPages
 	}
-	doer, err := r.cfg.Connect(egress.ClientOptions{CAPEM: r.set.caPEM, Timeout: r.set.timeout})
+	doer, err := r.cfg.Connect(egress.ClientOptions{CAPEM: r.set.caPEM, Pins: r.set.pins, Timeout: r.set.timeout})
 	if err != nil {
-		err = rn.fail(ingest.SrcTLSRejected, "the certificate authority of the source could not be used (ca_pem)", err)
+		err = rn.fail(ingest.SrcTLSRejected, "the certificate settings of the source could not be used (ca_pem or tls.pins)", err)
 		sg.close()
 		return nil, err
 	}

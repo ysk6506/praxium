@@ -27,7 +27,7 @@ type Tracker struct {
 // TrackerConfig says how a Tracker behaves.
 type TrackerConfig struct {
 	// Plaintext marks every dial as one without TLS: the dial is made only when every address of the answer is on the
-	// loopback, or when the policy says AllowInsecure. Use it for sslmode=disable and nowhere else.
+	// loopback or in the plaintext ranges of the policy. Use it for sslmode=disable and nowhere else.
 	Plaintext bool
 	// Budget is the number of bytes the connections may read in the first window, until Window is called.
 	Budget int64

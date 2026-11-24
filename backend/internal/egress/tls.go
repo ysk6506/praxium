@@ -10,15 +10,43 @@ import (
 // authorities is used. With a caPEM only the certificates in it are trusted, and the list of the system is not
 // (a private authority of one source is not trusted for the others, and a public one is not trusted for it).
 // The error does not hold the PEM text.
+//
+// A source whose certificate cannot be verified is not given a way to skip it here: it names the keys it accepts
+// (pins), and the settings for that are made in pin.go, from the pins and from nothing else.
 func TLSConfig(caPEM string) (*tls.Config, error) {
-	cfg := &tls.Config{MinVersion: tls.VersionTLS12}
-	if caPEM == "" {
-		return cfg, nil
+	var pool *x509.CertPool
+	if caPEM != "" {
+		pool = x509.NewCertPool()
+		if !pool.AppendCertsFromPEM([]byte(caPEM)) {
+			return nil, &Error{Kind: KindTLS, Reason: "ca_pem holds no certificate that can be read"}
+		}
 	}
-	pool := x509.NewCertPool()
-	if !pool.AppendCertsFromPEM([]byte(caPEM)) {
-		return nil, &Error{Kind: KindTLS, Reason: "ca_pem holds no certificate that can be read"}
+	return &tls.Config{MinVersion: tls.VersionTLS12, RootCAs: pool}, nil
+}
+
+// RegisterPostgresTLS makes the TLS settings of a PostgreSQL connection (verified against caPEM, or pinned when pins are
+// given; the two are not used together) and hands them to register under key, which is the function the driver has for
+// it. The caller never holds the settings, so it has no way to change them. The returned function takes them out of the
+// driver's list again.
+func RegisterPostgresTLS(register func(key string, cfg *tls.Config) error, key, caPEM string, pins []string) (unregister func(), err error) {
+	cfg, err := connectionTLS(caPEM, pins)
+	if err != nil {
+		return nil, err
 	}
-	cfg.RootCAs = pool
-	return cfg, nil
+	if err := register(key, cfg); err != nil {
+		return nil, &Error{Kind: KindTLS, Reason: "the TLS settings could not be registered with the driver"}
+	}
+	return func() { _ = register(key, nil) }, nil
+}
+
+// connectionTLS is the settings of a connection: pinned when there are pins, verified (against caPEM when it is given)
+// when there are not. Pins and a certificate authority are not used together: the pins replace the verification.
+func connectionTLS(caPEM string, pins []string) (*tls.Config, error) {
+	if len(pins) == 0 {
+		return TLSConfig(caPEM)
+	}
+	if caPEM != "" {
+		return nil, &Error{Kind: KindTLS, Reason: "ca_pem and tls.pins are not used together"}
+	}
+	return pinnedConfig(pins)
 }
