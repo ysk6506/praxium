@@ -10,15 +10,16 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
-// provEntry is what a volatile value keeps in the prov column of its row besides the typed copy: the exact value
-// (a typed column cannot hold every value without loss), the grade, the basis, the time the source saw it and the
-// reference. The key of the entry is the attribute number.
+// provEntry is one staged volatile value (the entry column of stage_volatile): the value as the source gave it, the grade, the
+// basis, the time the source saw it and the reference. The staged entry has the value because it is not stored as it is: the
+// value goes into the column of its attribute and what is said about it into prov (provDoc), and the keys are the ones that
+// the document of an object uses (v, g, b, t, r).
 type provEntry struct {
 	Value any    `json:"v"`
 	Grade string `json:"g"`
 	Basis string `json:"b"`
-	Seen  string `json:"s"`
-	Ref   string `json:"r"`
+	Seen  string `json:"t,omitempty"`
+	Ref   string `json:"r,omitempty"`
 }
 
 // liveAt is the objects of a registry answer that have a row valid in the state.
@@ -50,29 +51,29 @@ func (sn *kgSnapshot) fetchRows(ctx context.Context, tx *sql.Tx, reg []regEntry,
 	return out, nil
 }
 
-// volatileOf reads the value of one volatile attribute of an object from the table that has it: the common one or
-// the one of the type.
+// volatileOf reads the value of one volatile attribute of an object from the table that has it (the common one or the one
+// of the type): the value from its column and what is said about it from its entry in prov. An object with no entry for the
+// attribute has no value of it, whatever the column holds.
 func (sn *kgSnapshot) volatileOf(ctx context.Context, tx *sql.Tx, e regEntry, id graph.ObjectID, attrNo int) (graph.VolatileRow, bool, error) {
-	table := pgschema.TableObjectState
-	if _, ok := sn.a.common[attrNo]; !ok {
-		if _, ok := sn.a.state[e.typeNo][attrNo]; !ok {
-			return graph.VolatileRow{}, false, nil
-		}
-		table = pgschema.StateTable(e.typeNo)
+	kind, common, ok := sn.a.valueKind(e.typeNo, attrNo)
+	if !ok {
+		return graph.VolatileRow{}, false, nil
 	}
-	var raw []byte
-	err := tx.QueryRowContext(ctx, `SELECT prov -> $2 FROM `+sn.a.t(table)+` WHERE obj_no = $1`, e.objNo, strconv.Itoa(attrNo)).Scan(&raw)
-	if isNoRows(err) || (err == nil && len(raw) == 0) {
+	var text sql.NullString
+	var entry []byte
+	err := tx.QueryRowContext(ctx, `SELECT `+valueRead(kind, pgschema.StateColumn(attrNo))+`, prov -> $2 FROM `+sn.a.t(valueTable(common, e.typeNo))+` WHERE obj_no = $1`,
+		e.objNo, strconv.Itoa(attrNo)).Scan(&text, &entry)
+	if isNoRows(err) || (err == nil && len(entry) == 0) {
 		return graph.VolatileRow{}, false, nil
 	}
 	if err != nil {
 		return graph.VolatileRow{}, false, dbErr(err, "read a volatile value")
 	}
-	var p provEntry
-	if err := unmarshal(raw, &p); err != nil {
+	var p provDoc
+	if err := unmarshal(entry, &p); err != nil {
 		return graph.VolatileRow{}, false, err
 	}
-	v, err := plainValue(p.Value)
+	v, err := valueFrom(kind, text)
 	if err != nil {
 		return graph.VolatileRow{}, false, err
 	}

@@ -31,7 +31,7 @@ func Diff(old, next Manifest) (Delta, error) {
 		return Delta{}, notAdditive("the manifests are of two KGs (%d and %d)", old.KGNo, next.KGNo)
 	}
 	schema := SchemaName(next.KGNo)
-	fixed, err := fixedAdditions(schema, old.GeneratorVersion, next.GeneratorVersion)
+	fixed, err := fixedAdditions(schema, old, next.GeneratorVersion)
 	if err != nil {
 		return Delta{}, err
 	}
@@ -42,7 +42,7 @@ func Diff(old, next Manifest) (Delta, error) {
 	for _, t := range old.Types {
 		oldTypes[t.TypeNo] = t
 	}
-	tx, concurrent := fixed, []Step(nil)
+	tx, concurrent := splitFixed(fixed)
 	result := next
 	result.State = StateOK
 	result.Types = nil
@@ -195,4 +195,16 @@ func searchChanges(schema string, ot, nt TypeSummary) ([]Step, error) {
 		}
 	}
 	return steps, nil
+}
+
+// splitFixed cuts the steps of the generator into the ones that run in the transaction and the ones that run after it.
+func splitFixed(steps []Step) (tx, concurrent []Step) {
+	for _, st := range steps {
+		if st.Phase == Concurrent {
+			concurrent = append(concurrent, st)
+		} else {
+			tx = append(tx, st)
+		}
+	}
+	return tx, concurrent
 }
