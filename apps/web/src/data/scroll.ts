@@ -5,6 +5,7 @@
  * A change of the query only (the tab, the search, the sort) keeps the position: the person is on the same screen.
  */
 import { parseEntryMode } from "./entry";
+import { pathOf } from "./hash";
 
 export interface ScrollWindow {
   readonly scrollY: number;
@@ -21,8 +22,6 @@ const INTENT_MS = 100;
 /** How often and how long a restore waits for the content to grow tall enough. */
 const RETRY_MS = 50;
 const RETRY_TIMES = 40;
-
-const pathOf = (hash: string): string => hash.replace(/^#/, "").split("?")[0] ?? "";
 
 interface HashChange {
   readonly oldURL: string;

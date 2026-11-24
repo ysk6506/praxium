@@ -3,6 +3,7 @@
  * one static file and the server needs no route for it. Pure functions to read and write it, one hook to follow it.
  */
 import { useCallback, useEffect, useSyncExternalStore } from "react";
+import { pathOf, queryOf } from "./hash";
 import { forwardNavigation } from "./scroll";
 
 export type ObjectTab = "attributes" | "identifiers" | "neighbors" | "evidence";
@@ -76,9 +77,6 @@ export function routeHash(route: Route): string {
     }
   }
 }
-
-const queryOf = (hash: string): string => hash.replace(/^#/, "").split("?")[1] ?? "";
-const pathOf = (hash: string): string => hash.replace(/^#/, "").split("?")[0] ?? "";
 
 /** The query of an address hash, the part after `?`. */
 export const hashParams = (hash: string): URLSearchParams => new URLSearchParams(queryOf(hash));
