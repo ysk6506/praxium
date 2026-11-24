@@ -9,7 +9,7 @@ import (
 // a setting, an index) is a new version; a schema made by an older version is not followed by a newer one
 // without a decision of its own. Version 3 adds the tables of the ingestion at scale (ADR-0095): Diff follows
 // the step from 2 to 3 by making them. Version 4 adds the column held to the tables of the keys, ends and claims that were
-// received (ADR-0098): Diff follows the step from 3 to 4 by adding it (generations.go). Version 5 is the version of another change (ADR-0101); Diff follows it as a step that adds nothing here. Version 6 adds, for the comparison of the received
+// received (ADR-0098): Diff follows the step from 3 to 4 by adding it (generations.go). Version 5 adds the name indexes of the tables of the types and moves the volatile values out of prov into their columns (ADR-0101): Diff follows the step from 4 to 5. Version 6 adds, for the comparison of the received
 // rows with the raw records (ADR-0102), the column expired of the waits, the place of the row (page, row_no) of a record of the
 // computation, a problem that has no definition and the index of the rows received by key: Diff follows the step from 5 to 6.
 const GeneratorVersion = 6
@@ -140,6 +140,9 @@ func newTypeSteps(schema string, ts typeShape, search SearchSet) (typeSteps, err
 			return out, err
 		}
 		out.tables = append(out.tables, Step{Phase: InTx, What: WhatTable, Name: def.Name, SQL: def.sql(schema)})
+	}
+	for _, d := range typeIndexDefs(ts.TypeNo) {
+		out.indexes = append(out.indexes, Step{Phase: InTx, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, false)})
 	}
 	for _, attrNo := range searchedOf(search, ts.TypeNo) {
 		col, _ := findColumn(ts.Docs, attrNo)

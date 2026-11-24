@@ -58,13 +58,25 @@ func TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix(t *testi
 	old := next
 	old.GeneratorVersion = 3
 	delta, err := pgschema.Diff(old, next)
-	if err != nil || len(delta.Steps) != 9 {
-		t.Fatalf("%d steps, %v", len(delta.Steps), err)
+	if err != nil {
+		t.Fatal(err)
 	}
-	for i, name := range []string{"stage_key.held", "stage_end.held", "stage_claim.held", "record_wait.expired"} {
-		if delta.Steps[i].Name != name {
-			t.Errorf("step %d is %s, not %s", i, delta.Steps[i].Name, name)
+	var names []string
+	for _, s := range delta.Steps {
+		if s.Phase == pgschema.InTx {
+			names = append(names, s.Name)
 		}
+	}
+	// the steps of four, then those of five (which move the values), then the six of this change, in one transaction
+	want := []string{"stage_key.held", "stage_end.held", "stage_claim.held"}
+	for i, name := range want {
+		if i >= len(names) || names[i] != name {
+			t.Fatalf("step %d is not %s: %v", i, name, names)
+		}
+	}
+	tail := []string{"record_wait.expired", "calc_record.page", "calc_record.row_no", "record_problem.def_no", "calc_problem.def_no", "stage_record_key"}
+	if len(names) < len(tail) || strings.Join(names[len(names)-len(tail):], "|") != strings.Join(tail, "|") {
+		t.Errorf("the steps of six are not last of the steps of a transaction: %v", names)
 	}
 	same := next
 	if d, err := pgschema.Diff(same, next); err != nil || len(d.Steps) != 0 {

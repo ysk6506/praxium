@@ -54,7 +54,7 @@ func (s *Store) adjustOldOne(ctx context.Context, kg graph.KGID) (*SchemaStartup
 	if err != nil {
 		return nil, err
 	}
-	if rec.GeneratorVersion >= pgschema.GeneratorVersion {
+	if !needsAdjusting(rec) {
 		return nil, nil
 	}
 	defer s.forget(kg)
@@ -80,4 +80,17 @@ func (s *Store) adjustOldOne(ctx context.Context, kg graph.KGID) (*SchemaStartup
 		return left(fmt.Sprintf("another run holds the schema: %v", err))
 	}
 	return nil, err
+}
+
+// needsAdjusting says whether a record is of an older generator, or of this one with the indexes not all built (the state is not ok: a
+// run was stopped in the middle, and the server finishes it). A KG of a newer generator is left alone, and one whose statistics are still
+// to be made waits for them (FinishStorageStats).
+func needsAdjusting(rec SchemaRecord) bool {
+	switch {
+	case rec.GeneratorVersion < pgschema.GeneratorVersion:
+		return true
+	case rec.GeneratorVersion > pgschema.GeneratorVersion:
+		return false
+	}
+	return rec.State != string(pgschema.StateOK) && rec.State != string(pgschema.StateStatsPending)
 }

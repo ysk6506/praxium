@@ -34,8 +34,10 @@ amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
   - go:backend/internal/pgschema::TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheRowsReceivedAndNothingElse
   - go:backend/internal/pgingest::TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable
-test_change_reason: 생성기 버전이 4에서 6이 되어 버전 단언의 값이 바뀌고, 3에서 최신까지의 단계를 확인하던 테스트는 이제 3에서 4의 단계를 명시해 같은 단언을 한다. 5에서 6의 단계는 새 테스트가 확인한다. 원본을 떼는 트랜잭션의 잠금 수는 받은 행의 인덱스 하나만큼 늘어 한도 100을 101로 넘으므로 한도를 110으로 올린다(소스마다 한정된 수라는 뜻은 그대로다). 단언은 줄지 않았다.
-decision_hash: b787134d2c8b1507
+  - go:backend/internal/pgschema::TestVmAKGOfGeneratorFourIsFollowedToFiveByMovingTheValuesAndBuildingTheNameIndexesAfterwards
+  - go:backend/internal/pgschema::TestVmAKGOfGeneratorThreeIsFollowedThroughFourToFiveInOrder
+test_change_reason: 생성기 버전이 5에서 6이 되어 버전 단언의 값이 바뀌고, 3에서 최신까지의 단계를 확인하던 테스트 셋은 이제 목표 버전(4 또는 5)을 명시해 같은 단언을 한다. 5에서 6의 단계는 새 테스트가 확인한다. 원본을 떼는 트랜잭션의 잠금 수는 받은 행의 인덱스 하나만큼 늘어 한도 100을 101로 넘으므로 한도를 110으로 올린다(소스마다 한정된 수라는 뜻은 그대로다). 단언은 줄지 않았다.
+decision_hash: ccaf90479e7d0f04
 ---
 # ADR-0102 새 수집 흐름의 2단계(원본 차이)와 세 갈래 완전성
 
@@ -86,7 +88,7 @@ ADR-0086이 새 수집 흐름의 2단계(원본 차이)를 "받은 행과 이미
    - 어댑터가 마지막 페이지(`End`)에서 내고, 수신(`Intake`)이 데이터셋마다 실행 기록의 수(`counts.receive.datasets[].coverage`)에 적는다. 읽지 못한 부분이 있는 데이터셋은 불완전이다. 이 값이 없는 옛 기록은 `complete` 플래그로 읽는다.
    - 2단계에서 완전한 데이터셋만 안 보임을 센다. 본 것만이면 보인 키는 평소대로 새로 옴, 바뀜, 돌아옴을 가리고 안 보임은 세지 않으며 이미 있는 기다림은 그대로 둔다. 불완전이거나 수신이 주지 않은 데이터셋은 통째로 뺀다(바뀐 행도 반영하지 않고 기다림도 그대로다). 삭제 규칙이 `none`인 데이터셋은 안 보임을 세기만 하고 끝내지 않는다. 본 것만을 내는 어댑터는 이 변경에 없다.
 
-6. **스키마는 생성기 버전 6으로 더한다.** 버전 5는 다른 변경(ADR-0101)이 쓴다. 이 빌드에는 그 단계가 아직 없어서 `generations.go`에 아무것도 더하지 않는 단계(`noSteps`)를 두고, 그 변경을 합칠 때 그 단계로 바꾼다. 모두 `ADD COLUMN IF NOT EXISTS`와 `DROP NOT NULL`이라 데이터를 잃지 않는다.
+6. **스키마는 생성기 버전 6으로 더한다.** 버전 5는 ADR-0101이 썼고(값을 열로 옮기고 이름 인덱스를 만든다), 이 변경의 단계는 그 위에 더한다. 5의 단계는 그대로 두고 6의 단계(`rawDiffSteps`)만 `generations.go`에 더했다. 모두 `ADD COLUMN IF NOT EXISTS`와 `DROP NOT NULL`이라 데이터를 잃지 않는다.
    - `record_wait.expired`(`boolean NOT NULL DEFAULT false`)와 `calc_wait.expired`: 기다림이 끝났다는 표시를 따로 둔다. 걸러짐이 풀린 뒤 다음 실행이 또 풀지 않게 하는 상태다.
    - `calc_record.page`, `calc_record.row_no`: 이긴 행의 자리.
    - `record_problem.def_no`, `calc_problem.def_no`를 NULL 허용으로: 반복된 키의 문제는 정의에 속하지 않는다.

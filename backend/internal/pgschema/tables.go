@@ -350,6 +350,18 @@ func fixedIndexDefs(common []Column) []indexDef {
 	)
 }
 
+// typeIndexDefs are the indexes every table of a type has besides its key: one for the exact name (name = $1, and the
+// order of the names) and one for the start of the name with upper and lower case taken as one (lower(name) LIKE
+// 'ab%', also lower(name) = 'ab'), which needs the pattern operators because the collation of the database is not
+// C. The reference is not here: the registry (object) finds an object by its reference and says its type, so a table
+// of a type is read by number (ADR-0101).
+func typeIndexDefs(typeNo int) []indexDef {
+	return []indexDef{
+		{Name: NameIndex(typeNo), Table: TypeTable(typeNo), Expr: "name"},
+		{Name: NameIndexFold(typeNo), Table: TypeTable(typeNo), Expr: "lower(name) text_pattern_ops"},
+	}
+}
+
 // searchIndexDef is the index of one searched attribute of a type.
 func searchIndexDef(typeNo int, col Column) (indexDef, error) {
 	if !Indexable(col.Kind) {
