@@ -9,6 +9,9 @@ enforced_by:
   - backend/internal/pgstore/schema_values_test.go
   - backend/internal/pgschema/valuemove_test.go
   - backend/internal/graph/validate_utc_test.go
+  - backend/internal/graph/apply_number_test.go
+  - backend/internal/ingest/utctime_test.go
+  - backend/internal/pgstore/numberform_test.go
 touches_protected:
   - docs/design-docs/adr/0085-new-kg-storage-implementation-decisions-and-the-schema-plan-unit.md
   - docs/design-docs/adr/0089-new-kg-storage-the-kg-stands-on-its-own-schema.md
@@ -64,7 +67,7 @@ amends_tests:
   - go:backend/internal/pgstore::TestV2wRestoreClosesTheKGUntilItEndsAndAnInterruptedOneIsResumed
   - go:backend/internal/pgstore::TestV2wTheSettingsOfTheTablesAreInForce
 test_change_reason: 변동 값의 진실을 prov에서 값 열로 옮기고(REQ-760) 이름 인덱스와 시각 형식을 더하면서(REQ-761, REQ-762) 생성기 버전이 5가 되어 버전과 단계 목록의 단언 값이 바뀐다. 값이 바뀌는 것만 바꿨고 옛 단계를 확인하던 단언은 남겼다. 값을 직접 심던 테스트용 시드 한 곳이 값 열에 값을 넣게 바뀌어 그것을 쓰는 테스트의 지문이 바뀌었고 단언은 그대로다.
-decision_hash: 1b60da1e178a3732
+decision_hash: be073035a39291fb
 ---
 # ADR-0101 질의 스키마의 설계에 저장의 모양을 맞춘다 — 변동 값은 값 열 하나, 이름 인덱스, 시각 값의 형식, 생성기 버전 5
 
@@ -85,6 +88,8 @@ ADR-0089는 변동 값의 정확한 값을 `prov`에 두고 타입 있는 컬럼
 7. **옛 모양의 데이터(`prov`에 값이 든 행)는 맞추는 단계가 옮긴다.** 문장 하나가 한 행을 읽은 그대로 열(`a<번호>`, `a<번호>_at`)에 값과 시각을 쓰고(`Expr`와 같은 식으로 JSON의 `v`를 열의 형으로 바꾼다), `prov`의 항목에서 `v`를 빼고 `s`를 `t`로 바꾼다. `v`나 `s`가 든 항목이 하나라도 있는 행만 고치고(이미 옮긴 행은 건드리지 않아 다시 돌려도 같다), 항목이 없는 행과 새 모양의 행은 그대로다. 열의 형으로 바꿀 수 없는 옛 값(수량 맵, 오프셋 있는 시각)이 있으면 문장이 실패하고 그 KG는 맞춰지지 않은 채 D19로 거절된 상태로 남는다(`AdjustOldSchemas`가 KG마다 이유를 알린다). 값을 버리고 계속하지 않는다.
 8. **인덱스가 반쯤 만들어진 채 멈춘 KG의 끝내기.** 옛 KG가 맞춰지는 도중에 멈추면 기록은 `index_pending`이고 매니페스트는 이미 5다. 그래서 다음 실행이 `Diff`의 단계 없이도 끝낼 수 있게, 온라인 단계의 정합(`reconcileSteps`)이 매니페스트의 모든 타입의 이름 인덱스 둘이 있고 유효한지 보고 모자란 것을 만든다.
 9. **부모 타입의 테이블**(REQ-764). 객체는 자기 타입의 테이블에만 들고 부모 타입의 테이블은 만들어지지만 비어 있다. 테스트가 표준 모델의 `PowerRedundancyGroup`(부모 `RedundancyGroup`)의 객체를 적용해 확인하고, 모든 타입에서 테이블의 행 수가 등록부의 그 타입 객체 수와 같음을 본다. 표를 줄이는 변경은 하지 않았다. 부모 타입의 뷰가 자식 뷰의 `UNION ALL`이어야 중복 없이 모든 객체를 낸다는 사실은 질의 스키마의 구현(B3-1)이 쓴다.
+10. **시각은 수집의 가장자리에서 UTC로 맞춘다**(REQ-762). 저장 쪽 검사는 그대로 두고, 오프셋이 있는 시각(`+09:00`)을 보내는 소스가 레코드의 문제로 빠지지 않게 `ingest`의 셀 변환(`cells.go`의 `utcTime`)이 RFC 3339로 읽힌 시각을 UTC의 정규 글(`time.RFC3339Nano`, 마이크로초까지)로 바꿔 넘긴다. 같은 순간이 다른 글로 와도 같은 값이어서 해시와 같은 값 판단이 흔들리지 않는다. 날짜만 있는 칸은 지금처럼 자정 UTC다. 시각을 만드는 다른 곳(개발 적재, 세계 생성, `pgsource`, 수집의 관측 시각)은 이미 UTC의 정규 글이라 바꾸지 않았다.
+11. **수의 같은 값 판단은 값으로 한다**(REQ-566). 행 단위 경로도 수(`number`)와 수량(`quantity`)을 값으로 견준다(`graph/apply_number.go`: 수량은 정확한 분수, 수는 가장 가까운 float의 가장 짧은 글). 같은 수가 `"1.10"`, `"1.1"`, `5`, `"5.0"`처럼 다른 글로 거듭 와도 두 번째부터는 쓰지 않고 변경 번호도 쓰지 않는다. 준비 테이블 경로가 SQL로 하던 것과 같은 결과다.
 
 ## 확인한 사실
 
@@ -100,7 +105,7 @@ ADR-0089는 변동 값의 정확한 값을 `prov`에 두고 타입 있는 컬럼
 | 시각 | `timestamptz` | `2030-01-01T00:00:00Z`, `...00.5Z`, `...00.123456Z` | 같음 |
 | 목록, 맵 | `jsonb` | 같음 | 같음 |
 
-열이 가진 것은 값이지 쓴 글자가 아니라서 형태가 하나로 모이는 곳이 있다: 정수로 읽히는 수는 정수로 돌아온다(`"5"`로 보낸 수도 `5`로 읽힌다). 수(`number`)는 `double precision`이라 소수 글자는 가장 짧은 십진 글(`"1.10"`은 `"1.1"`)로 돌아온다. 수량은 `numeric`이라 소수점 아래 자릿수를 지킨다. 행 단위 길에서 이런 값을 같은 글자로 계속 쓰면 읽은 값과 쓴 값의 표지가 달라 매번 쓴 것으로 센다(값이 같아도 변경 번호가 하나 늘 수 있다). 표준 모델에서 이 경우는 변동 속성 중 수 4개와 수량 8개다. 필요하면 수의 열을 `numeric`으로 바꾸는 것이 길이지만 질의 스키마 설계(`storage-shape.md` 6절)가 `double precision`을 말해서 바꾸지 않았다.
+열이 가진 것은 값이지 쓴 글자가 아니라서 형태가 하나로 모이는 곳이 있다: 정수로 읽히는 수는 정수로 돌아온다(`"5"`로 보낸 수도 `5`로 읽힌다). 수(`number`)는 `double precision`이라 소수 글자는 가장 짧은 십진 글(`"1.10"`은 `"1.1"`)로 돌아온다. 수량은 `numeric`이라 소수점 아래 자릿수를 지킨다. 같은 수가 다른 글로 와도 같은 값으로 견주므로(결정 11) 다시 써지지 않는다. 필요하면 수의 열을 `numeric`으로 바꾸는 것이 길이지만 질의 스키마 설계(`storage-shape.md` 6절)가 `double precision`을 말해서 바꾸지 않았다.
 
 **인덱스와 `EXPLAIN`**(`TestTixTheNameIndexesAnswerTheExactNameAndTheStartOfTheNameWithoutCase`, 3만 행, `ANALYZE` 뒤, 정렬 규칙 `C.UTF-8`):
 
@@ -144,6 +149,6 @@ ADR-0089는 변동 값의 정확한 값을 `prov`에 두고 타입 있는 컬럼
 - 질의 스키마의 뷰(B3-1)는 변동 값을 값 열에서, 시각을 `praxium_ts`로, 부모 타입을 자식 뷰의 `UNION ALL`로 읽을 수 있다.
 - 읽는 쪽(`kgread_misc.go`의 `volatileOf`)은 값을 열에서 읽고 `prov`에서 등급, 근거, 시각, 출처를 읽는다. 값이 열에 맞지 않으면 쓰기가 오류를 낸다.
 - 옛 KG(생성기 버전 4 이하)는 서버가 시작할 때 맞춘다. 열로 바꿀 수 없는 옛 값이 있는 KG는 맞춰지지 않고 이유와 함께 거절된다.
-- 시각 형식이 좁아져서 오프셋이 있는 시각을 보내던 소스는 그 레코드가 문제로 가고 저장되지 않는다. 수집 쪽(`ingest`)의 시각 검사는 이 변경이 건드리지 않았다(RFC 3339로 읽히면 받으므로 적용 단계에서 거절된다). 수집이 값을 UTC로 바꿔 보내게 하는 것은 수집 쪽의 몫이다.
+- 시각 형식이 좁아져서 오프셋이 있는 시각은 수집의 셀 변환이 UTC로 바꿔 저장에 보낸다(결정 10). 수집을 거치지 않고 적용기에 바로 오는 다른 모양의 시각은 그 레코드가 문제로 가고 저장되지 않는다.
 - `stage_volatile.entry`의 시각 키가 `t`로 바뀌었다. 이 테이블을 채우는 코드가 만들어질 때 `t`를 써야 한다.
 - 잠긴 테스트가 바뀐 것은 이 ADR의 `amends_tests`에 있다: 버전 단언(`TestControlReservesThePartitionPrefix` 4에서 5), 새 타입의 단계 목록(`TestDiffFollowsAdditions`에 이름 인덱스 둘), 이전 버전의 단계만 보던 테스트(`TestIngestHeldDiffFromGeneratorThree...`는 다음 버전을 4로 고정해 같은 단언을 그대로 하고 5의 단계는 새 테스트이 본다), 그리고 값을 직접 심는 시드 한 곳(`v2rSeed`)이 값 열에 값을 넣게 바뀌어 지문이 바뀐 테스트들(단언은 그대로).

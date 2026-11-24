@@ -15920,6 +15920,36 @@
    "added": "2026-11-13",
    "amended_by": "0028-close-the-gaps-the-audit-found-in-the-checks.md"
   },
+  "go:backend/internal/graph::TestNumkeyANumberIsTheSameNumberInEveryFormItIsWritten": {
+   "kind": "test",
+   "hash": "92bee57f22d86e92",
+   "asserts": 2,
+   "literals": [
+    "730769cd8789daeb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-760"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
+  "go:backend/internal/graph::TestNumkeyTheSameNumberInAnotherFormMakesNoChangeAndAnotherNumberDoes": {
+   "kind": "test",
+   "hash": "1f9b83d5b68ba475",
+   "asserts": 9,
+   "literals": [
+    "224061859156bf6e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-760"
+   ],
+   "added": "2026-11-20",
+   "amended_by": null
+  },
   "go:backend/internal/graph::TestObjectValidationAgainstTheRegistry": {
    "kind": "test",
    "hash": "72e95704b23ad4b3",
@@ -21987,6 +22017,21 @@
     "REQ-400"
    ],
    "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestUtcCellATimeWithAnOffsetBecomesTheTimeInUtcAndTheSameInstantIsTheSameValue": {
+   "kind": "test",
+   "hash": "01d7707f7c5e4a94",
+   "asserts": 2,
+   "literals": [
+    "072d7fdea7c644dc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-762"
+   ],
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestUTF16WithoutAByteOrderMarkIsRecognisedByItsNulBytes": {
@@ -28809,6 +28854,21 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestNumformTheSameNumberInAnotherFormIsTheSameValueInTheRowPathToo": {
+   "kind": "test",
+   "hash": "034744345f830d84",
+   "asserts": 9,
+   "literals": [
+    "62a6605418d7518b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-760"
+   ],
+   "added": "2026-11-20",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestOpenFailuresDoNotShowThePassword": {

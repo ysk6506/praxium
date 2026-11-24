@@ -14,7 +14,7 @@ import (
 // The value is checked the way the graph checks it, so a bad cell is found here, in the row it belongs to, and
 // does not stop the whole batch.
 func convertCell(s valueSpec, text string) (any, error) {
-	text = dateAsTime(s, text)
+	text = utcTime(s, dateAsTime(s, text))
 	v, err := convertBase(s, text)
 	if err != nil {
 		return nil, err
@@ -39,6 +39,20 @@ func dateAsTime(s valueSpec, text string) string {
 		return text
 	}
 	return trimmed + "T00:00:00Z"
+}
+
+// utcTime gives a time that has an offset (2026-03-14T18:30:00+09:00) the one form the graph takes, UTC ending in Z (ADR-0101),
+// so that the same instant is the same value whatever way a source writes it. The time is kept to the microsecond, which is
+// all the store holds. A text that is no time, or no time of a property that is a time, is as it was and is refused later.
+func utcTime(s valueSpec, text string) string {
+	if s.base != model.BaseTime {
+		return text
+	}
+	t, err := time.Parse(time.RFC3339, text)
+	if err != nil {
+		return text
+	}
+	return t.UTC().Truncate(time.Microsecond).Format(time.RFC3339Nano)
 }
 
 // convertBase checks a cell by its base kind. It returns the value for the kinds that have a Go value of their own and

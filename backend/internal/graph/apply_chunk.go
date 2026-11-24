@@ -232,11 +232,11 @@ func (c *chunkBuilder) writeVolatile(ctx context.Context, writes []VolatileWrite
 			return err
 		}
 		if found {
-			curMark, err := ValueMark(cur.Value)
+			same, err := c.sameValue(ctx, w, cur.Value)
 			if err != nil {
 				return err
 			}
-			if curMark == mark && cur.Grade == w.Grade && cur.Basis == w.Basis {
+			if same && cur.Grade == w.Grade && cur.Basis == w.Basis {
 				continue
 			}
 		}
