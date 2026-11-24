@@ -3,7 +3,6 @@ package graph
 import (
 	"math"
 	"strconv"
-	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
@@ -82,6 +81,9 @@ func (v *validator) object(u ObjectUpsert) (model.ObjectType, ObjectID, error) {
 	}
 	if u.Name == "" {
 		return typ, ObjectID{}, invalid("an object of type %s has no name", typ.Name)
+	}
+	if len(u.Name) > MaxNameBytes {
+		return typ, ObjectID{}, invalid("the name of an object of type %s is %d bytes: at most %d", typ.Name, len(u.Name), MaxNameBytes)
 	}
 	if err := v.key(typ, u.Key); err != nil {
 		return typ, ObjectID{}, err
@@ -201,7 +203,24 @@ func (v *validator) volatile(typ model.ObjectType, w VolatileWrite) error {
 	if !w.Grade.Valid() || !w.Basis.Valid() {
 		return invalid("volatile attribute %s needs an evidence grade and a basis", p.Name)
 	}
-	return v.value(p, w.Value, w.Grade)
+	if w.SeenAt != "" && !validTime(w.SeenAt) {
+		return invalid("volatile attribute %s: the time seen %q is not a time in UTC ending in Z", p.Name, w.SeenAt)
+	}
+	err := v.volatileKind(p, w.Value)
+	if err == nil {
+		err = v.value(p, w.Value, w.Grade)
+	}
+	return err
+}
+
+// volatileKind refuses a value that a column of the table of values cannot hold: a quantity there is a number, and a map (a
+// quantity with a unit in it) has no column. The unit is in the model.
+func (v *validator) volatileKind(p model.Property, val any) error {
+	vt, ok := v.reg.ValueType(p.ValueType)
+	if _, isMap := val.(map[string]any); ok && isMap && vt.Base == model.BaseQuantity {
+		return invalid("volatile attribute %s: a quantity is a number, the unit is in the model", p.Name)
+	}
+	return nil
 }
 
 // value checks a value against the value type of its property.
@@ -233,6 +252,13 @@ func (v *validator) value(p model.Property, val any, grade model.Grade) error {
 func checkBase(base model.BaseKind, p model.Property, val any) error {
 	if !fitsBase(base, p, val) {
 		return invalid("attribute %s: the value does not fit value type %s", p.Name, base)
+	}
+	if base == model.BaseNumber || base == model.BaseQuantity {
+		if _, isMap := val.(map[string]any); !isMap {
+			if err := NumberFits(base, val); err != nil {
+				return invalid("attribute %s: %v", p.Name, err)
+			}
+		}
 	}
 	return nil
 }
@@ -285,10 +311,8 @@ func inList(list []string, s string) bool {
 	return false
 }
 
-func validTime(s string) bool {
-	_, err := time.Parse(time.RFC3339, s)
-	return err == nil
-}
+// validTime says whether a text is a time in the one form the store keeps (ADR-0101, TimeFits).
+func validTime(s string) bool { return TimeFits(s) == nil }
 
 // isNumber accepts an int64 or a decimal text: floats have no canonical form.
 func isNumber(val any) bool {

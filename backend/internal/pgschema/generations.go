@@ -3,18 +3,21 @@ package pgschema
 // generatorAdditions are what a generator version added to the fixed tables of a storage schema: the steps that
 // make them in a schema that an older version made. A version that changed a table that was already there, or
 // took one away, has no entry, and a schema of an older version is not followed past it (Diff refuses it).
-var generatorAdditions = map[int]func(schema string) []Step{
-	3: ingestSteps,
-	4: heldSteps,
+var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, error){
+	3: func(schema string, _ Manifest) ([]Step, error) { return ingestSteps(schema), nil },
+	4: func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
+	5: valueSteps,
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
 // build that no release carries.
 const oldestFollowed = 2
 
-// fixedAdditions is the steps that bring the fixed tables of a schema of the generator version from up to the
-// version to, which may not be past the one this build has. The same version needs none.
-func fixedAdditions(schema string, from, to int) ([]Step, error) {
+// fixedAdditions is the steps that bring a schema described by old up to the generator version to, which may not be
+// past the one this build has. The same version needs none. A step may need what the schema has (the types of old), so
+// the steps of a version are made from the manifest of the schema as it was.
+func fixedAdditions(schema string, old Manifest, to int) ([]Step, error) {
+	from := old.GeneratorVersion
 	if from == to {
 		return nil, nil
 	}
@@ -27,7 +30,11 @@ func fixedAdditions(schema string, from, to int) ([]Step, error) {
 		if !ok {
 			return nil, notAdditive("the generator version %d changed what the version %d made", v, v-1)
 		}
-		steps = append(steps, add(schema)...)
+		made, err := add(schema, old)
+		if err != nil {
+			return nil, err
+		}
+		steps = append(steps, made...)
 	}
 	return steps, nil
 }
@@ -55,6 +62,33 @@ func heldSteps(schema string) []Step {
 	for _, t := range heldTables() {
 		steps = append(steps, Step{Phase: InTx, What: WhatColumn, Name: t + "." + ColHeld,
 			SQL: "ALTER TABLE " + Qualified(schema, t) + " ADD COLUMN IF NOT EXISTS " + ColHeld + " " + typeHeld})
+	}
+	return steps
+}
+
+// valueSteps is what version 5 adds to a schema of version 4 (ADR-0101): the name indexes of the tables of the types, built
+// outside the transaction, and for each table of values one statement that moves the values that the older write kept in prov
+// into their columns and takes them (and the old key of the time) out of prov. The statement leaves a row that has no entry with
+// a value as it is, so a row that was moved is not moved again.
+func valueSteps(schema string, old Manifest) ([]Step, error) {
+	var steps []Step
+	moved, err := moveValuesSteps(schema, old)
+	if err != nil {
+		return nil, err
+	}
+	steps = append(steps, moved...)
+	for _, t := range old.Types {
+		steps = append(steps, NameIndexSteps(schema, t.TypeNo)...)
+	}
+	return steps, nil
+}
+
+// NameIndexSteps are the steps that build the name indexes of the table of a type that has rows, outside a transaction
+// and without blocking the writers; an index that is there is left as it is.
+func NameIndexSteps(schema string, typeNo int) []Step {
+	var steps []Step
+	for _, d := range typeIndexDefs(typeNo) {
+		steps = append(steps, Step{Phase: Concurrent, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, true)})
 	}
 	return steps
 }

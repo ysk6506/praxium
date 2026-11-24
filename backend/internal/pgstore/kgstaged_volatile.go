@@ -19,7 +19,7 @@ import (
 // value whose value, grade and basis are what is kept is not written, so an interval that is done again changes
 // nothing and uses no change number.
 
-// stagedValue is one staged volatile value: the object, its type, the attribute and the entry of the prov document.
+// stagedValue is one staged volatile value: the object, its type, the attribute and the entry the source gave (provEntry).
 type stagedValue struct {
 	objNo  int64
 	typeNo int
@@ -125,121 +125,79 @@ func readStaged(ctx context.Context, tx *sql.Tx, a *kgAccess, v graph.StagedVola
 	return values, err
 }
 
-// table is the table of values that has the attribute of a staged value: the common one or the one of its type.
-func (sv stagedValue) table(a *kgAccess) (kgProvTarget, error) {
-	if _, common := a.common[sv.attrNo]; common {
-		return kgProvTarget{pgschema.TableObjectState, sv.typeNo}, nil
-	}
-	if _, own := a.state[sv.typeNo][sv.attrNo]; !own {
-		return kgProvTarget{}, kernel.Errorf(kernel.CodeInvalidValue, "the attribute %d of the type %d has no table of values", sv.attrNo, sv.typeNo)
-	}
-	return kgProvTarget{pgschema.StateTable(sv.typeNo), sv.typeNo}, nil
+// item is the staged value on its way into a table of values.
+func (sv stagedValue) item() volatileItem {
+	return volatileItem{objNo: sv.objNo, typeNo: sv.typeNo, attrNo: sv.attrNo, value: sv.entry.Value,
+		doc: provDoc{Grade: sv.entry.Grade, Basis: sv.entry.Basis, Seen: sv.entry.Seen, Ref: sv.entry.Ref}}
 }
 
-// keptProv is the prov documents of the rows that hold the values of the interval, by table and object number.
-type keptProv map[kgProvTarget]map[int64]map[string]provEntry
-
-// keptOf reads the prov documents of the objects of the interval from the tables that hold their values.
-func keptOf(ctx context.Context, tx *sql.Tx, a *kgAccess, values []stagedValue) (keptProv, error) {
-	byTable := map[kgProvTarget][]int64{}
-	for _, sv := range values {
-		t, err := sv.table(a)
-		if err != nil {
-			return nil, err
-		}
-		byTable[t] = append(byTable[t], sv.objNo)
-	}
-	kept := keptProv{}
-	for t, nos := range byTable {
-		kept[t] = map[int64]map[string]provEntry{}
-		rows, err := tx.QueryContext(ctx, `SELECT obj_no, prov FROM `+a.t(t.table)+` WHERE obj_no = ANY($1)`, pq.Array(nos))
-		if err != nil {
-			return nil, dbErr(err, "read the kept volatile values")
-		}
-		err = scanProv(rows, kept[t])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return kept, nil
-}
-
-func scanProv(rows *sql.Rows, into map[int64]map[string]provEntry) error {
-	defer func() { _ = rows.Close() }()
-	for rows.Next() {
-		var no int64
-		var doc []byte
-		if err := rows.Scan(&no, &doc); err != nil {
-			return dbErr(err, "read the kept volatile values")
-		}
-		var m map[string]provEntry
-		if err := unmarshal(doc, &m); err != nil {
-			return err
-		}
-		into[no] = m
-	}
-	return dbErr(rows.Err(), "read the kept volatile values")
-}
-
-// sameAsKept reports whether the kept entry has the value, the grade and the basis of the staged value: the
-// comparison of the apply by rows (the mark of the value, the grade, the basis).
-func sameAsKept(old provEntry, sv stagedValue) (bool, error) {
-	val, err := plainValue(old.Value)
-	if err != nil {
-		return false, err
-	}
-	mark, err := graph.ValueMark(val)
-	return err == nil && mark == sv.mark && old.Grade == sv.entry.Grade && old.Basis == sv.entry.Basis, err
-}
-
-// differing keeps the values of the interval that are not what is kept: the value, the grade or the basis differs,
-// or there is no kept value.
+// differing keeps the values of the interval that are not what is kept: no kept entry for the attribute, or the kept value (the
+// column), grade or basis differs. The comparison is made in the type of the column, so a value that is the same number in
+// another form (5 and "5.0") is the same value and is not written again; it is made by the database, a column at a time.
 func differing(ctx context.Context, tx *sql.Tx, a *kgAccess, values []stagedValue) ([]stagedValue, error) {
-	kept, err := keptOf(ctx, tx, a, values)
+	items := make([]volatileItem, len(values))
+	for i, sv := range values {
+		items[i] = sv.item()
+	}
+	groups, err := a.groupValues(items)
 	if err != nil {
 		return nil, err
 	}
+	changed := map[[2]int64]bool{}
+	for _, g := range groups {
+		nos, err := differingOf(ctx, tx, a, g)
+		if err != nil {
+			return nil, err
+		}
+		for _, no := range nos {
+			changed[[2]int64{no, int64(g.attrNo)}] = true
+		}
+	}
 	var out []stagedValue
 	for _, sv := range values {
-		t, _ := sv.table(a)
-		if old, ok := kept[t][sv.objNo][strconv.Itoa(sv.attrNo)]; ok {
-			same, err := sameAsKept(old, sv)
-			if err != nil {
-				return nil, err
-			}
-			if same {
-				continue
-			}
+		if changed[[2]int64{sv.objNo, int64(sv.attrNo)}] {
+			out = append(out, sv)
 		}
-		out = append(out, sv)
 	}
 	return out, nil
 }
 
-// writeStaged writes the values that differ into the prov documents of their rows (merged into what is there), and
-// the light change lines of them under the change number of the interval.
+// differingOf is the numbers of the objects of the group whose kept value, grade or basis is not the one of the group.
+func differingOf(ctx context.Context, tx *sql.Tx, a *kgAccess, g valueGroup) ([]int64, error) {
+	val, err := valueCast(g.kind, "u.v")
+	if err != nil {
+		return nil, err
+	}
+	var arr valueArrays
+	var grades, bases []string
+	for _, it := range g.items {
+		if err := arr.add(g.kind, it); err != nil {
+			return nil, err
+		}
+		grades, bases = append(grades, it.doc.Grade), append(bases, it.doc.Basis)
+	}
+	col, key := pgschema.StateColumn(g.attrNo), strconv.Itoa(g.attrNo)
+	return collect(ctx, tx, func(sc scanner) (int64, error) {
+		var no int64
+		return no, sc.Scan(&no)
+	}, "read the kept volatile values", `SELECT u.obj_no FROM unnest($1::bigint[], $2::text[], $3::boolean[], $4::text[], $5::text[]) AS u(obj_no, v, has, g, b)
+		LEFT JOIN `+a.t(g.table)+` t ON t.obj_no = u.obj_no
+		WHERE t.obj_no IS NULL OR NOT jsonb_exists(t.prov, '`+key+`') OR t.`+col+` IS DISTINCT FROM (CASE WHEN u.has THEN `+val+` END)
+			OR t.prov->'`+key+`'->>'g' IS DISTINCT FROM u.g OR t.prov->'`+key+`'->>'b' IS DISTINCT FROM u.b`,
+		pq.Array(arr.nos), pq.Array(arr.vals), pq.Array(arr.has), pq.Array(grades), pq.Array(bases))
+}
+
+// writeStaged writes the values that differ into the columns of their attributes and the entries of prov (merged into what is
+// there), and the light change lines of them under the change number of the interval.
 func writeStaged(c *kgChunk, values []stagedValue) {
-	provs := map[kgProvTarget]map[int64]map[string]provEntry{}
+	items := make([]volatileItem, len(values))
 	var nos, attrs []int64
 	var marks []string
-	for _, sv := range values {
-		t, err := sv.table(c.a)
-		if err != nil {
-			c.fail(err)
-			return
-		}
-		if provs[t] == nil {
-			provs[t] = map[int64]map[string]provEntry{}
-		}
-		if provs[t][sv.objNo] == nil {
-			provs[t][sv.objNo] = map[string]provEntry{}
-		}
-		provs[t][sv.objNo][strconv.Itoa(sv.attrNo)] = sv.entry
+	for i, sv := range values {
+		items[i] = sv.item()
 		nos, attrs, marks = append(nos, sv.objNo), append(attrs, int64(sv.attrNo)), append(marks, sv.mark)
 	}
-	for t, byObj := range provs {
-		c.writeProv(t.table, t.typeNo, t.table == pgschema.TableObjectState, byObj)
-	}
+	c.writeItems(items)
 	slices(len(nos), func(lo, hi int) {
 		c.exec("write light changes", `INSERT INTO `+c.a.t(pgschema.TableLightChange)+` (change_seq, obj_no, attr_no, value_mark)
 			SELECT $1, u.obj_no, u.attr_no, u.value_mark FROM unnest($2::bigint[], $3::bigint[], $4::text[]) AS u(obj_no, attr_no, value_mark)
