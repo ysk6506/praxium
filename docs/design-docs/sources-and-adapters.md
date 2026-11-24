@@ -75,10 +75,12 @@ follows:
 | `bearer` | `credential` | `token` |
 | `basic` | `credential` | `password` |
 | `header` | `credential`, `header`(헤더 이름), `prefix`(토큰 앞의 글. 선택) | `token` |
-| `token_request` | `credential`, `request`(`path`, `format`, `credentials_in`, `body`), `token_path`나 `token_from`, `send`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요), `headers` | 본문이 쓰는 필드가 정해요(`username`과 `password`, 또는 `token`). 아무것도 안 쓰면 `password` |
+| `token_request` | `credential`, `request`(`path`이나 `url`, `ca_pem`, `headers`, `format`, `credentials_in`, `body`), `token_path`나 `token_from`, `expires_in_path`, `send`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요), `headers` | 본문이 쓰는 필드가 정해요(`username`과 `password`, 또는 `token`). 아무것도 안 쓰면 `password` |
 | `custom` | `credential`, `headers` | 쓰는 필드가 정해요(`token` 하나, 또는 `username`과 `password`. 둘을 섞으면 정의 오류) |
 
-  `token_request`는 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요. 토큰 주소는 `base_url`과 같은 호스트여야 해요. 다른 호스트의 토큰 주소(OAuth2의 대부분)는 안 돼요(10절).
+  `token_request`는 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요(한 읽기에서 최대 3번까지이고, 넘으면 `auth_failed`예요. 옛 토큰은 토큰 서버로 보내지 않아요).
+  - **토큰 주소(ADR-0106).** `request.path`(`base_url` 아래 경로)나 `request.url`(절대 주소) 가운데 하나만 적어요. `url`이 `base_url`과 다른 출처(스킴, 호스트, 포트)이면 다른 호스트의 인증 서버예요(OAuth2의 `client_credentials` 같은 것). 이때 자격 증명(시크릿)은 토큰 서버로만, 받은 토큰은 API(`base_url`의 출처)로만 가요. API 쪽 요청에는 `{{credential.<필드>}}`와 `credential.*`를 읽는 `auth.headers`를 쓸 수 없고(정의 오류, 실행 때도 한 번 더 막아요), `connection.headers`는 토큰 서버로 가지 않아요. 토큰 요청만의 헤더는 `request.headers`(글자 값)에 적어요. 토큰 서버의 인증 기관은 `request.ca_pem`에 적고(다른 출처의 `url`에서만), API의 `connection.ca_pem`은 토큰 서버에 쓰지 않아요. 같은 출처의 `url`은 `path`와 같게 다뤄요(`ca_pem`은 정의 오류). 토큰 서버는 다른 요청과 같은 egress 검사(정책, 실제 IP, 리디렉션 거절)를 모두 지나요. 시크릿의 `allowed_hosts`에 토큰 서버의 호스트와 포트가 없으면 요청을 하나도 보내지 않아요(`secret_unusable`). 토큰 요청도 `max_pages`가 세는 읽기의 요청에 들어가요.
+  - **수명.** `expires_in_path`에 응답 안의 수명(초, 숫자나 숫자만 든 글) 경로를 적으면 만료 전에 다시 받아요. 수명은 30초와 24시간 사이로 맞추고, 끝나기 10분의 1(최대 30초) 전에 새로 받아요. 값이 없거나 숫자가 아니면 소스가 거절할 때까지 써요(`token_from: body`와 함께는 정의 오류). 토큰은 16 KiB까지예요.
   - **자격 증명의 자리.** `request.credentials_in`은 `body`(기본. 본문의 `{{credential.<필드>}}`)나 `basic`(시크릿의 `username`과 `password`로 `Authorization: Basic`을 만들어요. 본문은 선택이고 없으면 본문 없는 POST예요. 본문에 `{{credential.…}}`를 쓰면 정의 오류예요. 사용자 이름에 `:`가 있으면 보내지 않고 `secret_unusable`이에요). 본문은 `json`이면 JSON 트리(중첩된 객체와 배열, 숫자와 불리언)이고 `form`이면 글자 값의 평평한 맵이에요.
   - **토큰의 자리.** `token_from`은 `path`(기본. `token_path`가 가리키는 곳)나 `body`(응답 본문 전체가 JSON 글자 하나. 객체, 숫자, 빈 글자, null은 `response_format`이에요. `token_path`와 함께 쓰면 정의 오류예요). `token_path`도 `token_from`도 없으면 지금처럼 정의 오류예요.
   - **토큰을 보내는 법.** `send`는 `header`(기본. `send_header`와 `send_prefix`로)나 `template`(자동으로 붙이지 않고 `headers`의 `from: "token"`이나 본문의 `{{auth.token}}`이 쓰인 곳에서만. 쓰이는 곳이 없으면 정의 오류)예요.
@@ -294,7 +296,8 @@ follows:
 | 경우 | 되나요 |
 |---|---|
 | 토큰을 헤더로 보내는 평평한 목록(페이지 번호, 오프셋, 전체 개수) | 돼요 |
-| 로그인 요청으로 토큰을 받는 API(본문이 JSON이나 폼, 같은 호스트. 본문이 중첩된 JSON-RPC도) | 돼요 |
+| 로그인 요청으로 토큰을 받는 API(본문이 JSON이나 폼. 본문이 중첩된 JSON-RPC도) | 돼요 |
+| 다른 호스트의 인증 서버에서 토큰을 받는 API(OAuth2 `client_credentials`의 폼, `client_secret_post`와 `client_secret_basic`) | 돼요(`request.url`. 시크릿이 두 호스트를 허용해야 해요) |
 | Basic 인증으로 로그인하고 응답 본문이 토큰 글자 하나인 API(세션 만들기 꼴) | 돼요(`credentials_in: basic`, `token_from: body`) |
 | 키를 헤더의 이름을 골라 보내거나(`auth.headers`) 요청 본문의 값으로 보내는 API | 돼요(`custom`, 본문의 `{{credential.<필드>}}`) |
 | 다음 페이지의 주소를 본문이나 `Link` 헤더로 주는 API(같은 출처) | 돼요 |

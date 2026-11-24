@@ -27,6 +27,26 @@ type settings struct {
 	headers  map[string]string
 	caPEM    string
 	auth     ingest.Auth
+	token    tokenSettings
+}
+
+// tokenSettings are where the token is asked for when the definition says it with a whole address (auth.request.url) and
+// what is the token request's own. The origin of that address is the token host's; it is another one than the API's when
+// cross is set, and the credentials then go to it and the token to the API (ADR-0106).
+type tokenSettings struct {
+	// url says that the address is given as a whole; path is its path, and scheme, host and port its origin.
+	url     bool
+	scheme  string
+	host    string
+	port    int
+	path    string
+	rawPath string
+	// cross says that the origin is not the one of base_url.
+	cross bool
+	// caPEM is the certificate authority of the token host, for the cross origin only; headers are the headers of the token
+	// request.
+	caPEM   string
+	headers map[string]string
 }
 
 func readSettings(def ingest.Source) (settings, error) {
@@ -57,7 +77,39 @@ func readSettings(def ingest.Source) (settings, error) {
 	if cn.Auth != nil {
 		s.auth = *cn.Auth
 	}
+	if err := s.readToken(); err != nil {
+		return settings{}, err
+	}
 	return s, nil
+}
+
+// readToken reads where the token is asked for: the headers of the token request, and the address when it is a whole one. The
+// host is normalized the way the host of base_url is, so that two spellings of one host are one origin (and are told apart
+// from another host).
+func (s *settings) readToken() error {
+	tr := s.auth.Request
+	if s.auth.Kind != ingest.AuthTokenRequest || tr == nil {
+		return nil
+	}
+	s.token.headers = tr.Headers
+	if tr.URL == "" {
+		return nil
+	}
+	u, err := url.Parse(tr.URL)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" || u.User != nil {
+		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url is not an http or https address", s.id)
+	}
+	host, _, bad := egress.NormalizeHost(u.Hostname())
+	if bad != "" {
+		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url has a host that is not allowed", s.id)
+	}
+	t := tokenSettings{url: true, scheme: u.Scheme, host: host, port: portOf(u), path: u.Path, rawPath: u.RawPath, headers: tr.Headers}
+	t.cross = t.scheme != s.scheme || t.host != s.host || t.port != s.port
+	if t.cross {
+		t.caPEM = tr.CAPEM
+	}
+	s.token = t
+	return nil
 }
 
 func portOf(u *url.URL) int {
@@ -84,14 +136,26 @@ func intOr(n, def int) int {
 // origin is the address requests go to: the scheme, the host and the port, and the path of the base address. The host
 // is the one the secret was opened for when there is one (ADR-0071 decision 5: what was checked is what is connected to).
 func (s settings) origin(host string, port int) *url.URL {
+	return originAt(s.scheme, host, port, s.basePath)
+}
+
+// tokenOrigin is the address the token is asked for at when it is another origin than the API's: the host the secret was
+// opened for at the port it was opened for, and the path of auth.request.url.
+func (s settings) tokenOrigin(host string, port int) *url.URL {
+	u := originAt(s.token.scheme, host, port, s.token.path)
+	u.RawPath = s.token.rawPath
+	return u
+}
+
+func originAt(scheme, host string, port int, path string) *url.URL {
 	h := host
 	if strings.Contains(h, ":") {
 		h = "[" + h + "]"
 	}
-	if !(s.scheme == "https" && port == 443) && !(s.scheme == "http" && port == 80) {
+	if !(scheme == "https" && port == 443) && !(scheme == "http" && port == 80) {
 		h += ":" + strconv.Itoa(port)
 	}
-	return &url.URL{Scheme: s.scheme, Host: h, Path: s.basePath}
+	return &url.URL{Scheme: scheme, Host: h, Path: path}
 }
 
 func (s settings) needsSecret() bool {

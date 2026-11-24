@@ -76,7 +76,7 @@ func (rn *run) read(ctx context.Context, ds ingest.Dataset, opts ingest.PageOpti
 
 func (l *loop) run() {
 	for {
-		if l.requests >= l.rn.maxPages {
+		if l.requests+l.rn.tokenRequests >= l.rn.maxPages {
 			l.finish(ingest.Completeness{Reason: "the source has more than " + strconv.Itoa(l.rn.maxPages) + " pages (max_pages), the most one read fetches; the rest was not read"})
 			return
 		}

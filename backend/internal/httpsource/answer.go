@@ -38,9 +38,12 @@ func (rn *run) data(ctx context.Context, ds ingest.Dataset, at pos) (*answer, er
 		if err == nil {
 			return &answer{rn: rn, ds: ds, p: p, rep: rep, attempt: attempt}, nil
 		}
-		if !errors.Is(err, errUnauthorized) || !rn.signer.refreshable() || refreshed {
+		// A token the source refuses is asked for once more, for this request and at most maxTokenRefreshes times in the read: a
+		// source that refuses every other token would otherwise be asked for tokens as often as for data (ADR-0106).
+		if !errors.Is(err, errUnauthorized) || !rn.signer.refreshable() || refreshed || rn.refreshes >= maxTokenRefreshes {
 			return nil, err
 		}
+		rn.refreshes++
 		rn.signer.drop()
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/url"
 	"strings"
+	"time"
 	"unicode"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
@@ -67,9 +68,16 @@ func (maskSet) MarshalText() ([]byte, error) { return []byte(secrets.Redacted), 
 type signer struct {
 	auth   ingest.Auth
 	opened *secrets.Opened
-	token  secretText
-	mask   maskSet
-	wide   maskSet
+	// tokenOpened is the same secret opened for the host of the token request, when that is not the API's (cross): the
+	// credentials of the token request are taken from it and from nothing else, and the requests of the API are signed with
+	// the token and with no value of the secret. Without cross it is nil and opened serves both.
+	tokenOpened *secrets.Opened
+	cross       bool
+	token       secretText
+	// expires is when the token is asked for again, from the lifetime the answer gave; zero for a token that has none.
+	expires time.Time
+	mask    maskSet
+	wide    maskSet
 	// fields are the fields of the secret this read asked for, and body the body of the request for data, whose
 	// placeholders they come from.
 	fields []string
@@ -145,16 +153,28 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ing
 		return nil, openError(ctx, err)
 	}
 	s.opened = opened
-	kind, known, fields := needs(set, ds)
-	if known && opened.Kind() != kind {
-		s.close()
-		return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret is not of the kind this authentication needs ("+string(kind)+")", nil)
-	}
-	for _, f := range fields {
-		v, ok := opened.Value(f)
-		if !ok || v.Reveal() == "" {
+	if set.token.cross {
+		// The secret is opened a second time for the host of the token request. The store decides, at the one place where it
+		// decides, whether the secret may be used for that address too (ADR-0106); when it may not, no request has been made.
+		s.cross = true
+		s.tokenOpened, err = opener.Open(ctx, set.auth.Credential.SecretID, secrets.Use{SourceID: set.id, Host: set.token.host, Port: set.token.port, Purpose: purpose})
+		if err != nil {
 			s.close()
-			return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret has no value in a field this authentication needs", nil)
+			return nil, openError(ctx, err)
+		}
+	}
+	kind, known, fields := needs(set, ds)
+	for _, o := range s.openeds() {
+		if known && o.Kind() != kind {
+			s.close()
+			return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret is not of the kind this authentication needs ("+string(kind)+")", nil)
+		}
+		for _, f := range fields {
+			v, ok := o.Value(f)
+			if !ok || v.Reveal() == "" {
+				s.close()
+				return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret has no value in a field this authentication needs", nil)
+			}
 		}
 	}
 	if !s.headerValuesSafe() {
@@ -206,27 +226,19 @@ func longEnough(texts []string, n int) []string {
 // fields that are not a name: a user name or a client id is a name, kept apart because it is no secret.
 func (s *signer) maskTexts() (secret, names []string) {
 	// Every field of the secret is taken out, not only those this read uses: a source may hand back what another dataset
-	// sent (ADR-0100). The fields this read uses are the ones it needs to have a value in.
-	all, _ := secrets.FieldNames(s.opened.Kind())
-	for _, f := range all {
-		v := s.field(f)
-		if f == "username" {
-			names = append(names, v)
-		} else {
-			secret = append(secret, v)
+	// sent (ADR-0100). The fields this read uses are the ones it needs to have a value in. The secret opened for the host of
+	// the token request is the same secret, taken out as well (it may be another version).
+	for _, o := range s.openeds() {
+		all, _ := secrets.FieldNames(o.Kind())
+		for _, f := range all {
+			v := fieldOf(o, f)
+			if f == "username" {
+				names = append(names, v)
+			} else {
+				secret = append(secret, v)
+			}
 		}
-	}
-	switch s.auth.Kind {
-	case ingest.AuthBearer:
-		secret = append(secret, "Bearer "+s.field("token"))
-	case ingest.AuthHeader:
-		secret = append(secret, ingest.UnescapeBraces(s.auth.Prefix)+s.field("token"))
-	case ingest.AuthBasic:
-		secret = append(secret, s.basicValue(), "Basic "+s.basicValue(), s.basicFormValue(), "Basic "+s.basicFormValue())
-	case ingest.AuthTokenRequest:
-		if s.basicRequest() {
-			secret = append(secret, s.basicValue(), "Basic "+s.basicValue(), s.basicFormValue(), "Basic "+s.basicFormValue())
-		}
+		secret = append(secret, s.kindTexts(o)...)
 	}
 	for _, h := range s.auth.Headers {
 		if src, ok := ingest.ParseHeaderFrom(h.From); ok && !src.Token {
@@ -236,26 +248,66 @@ func (s *signer) maskTexts() (secret, names []string) {
 	return secret, names
 }
 
-func (s *signer) field(name string) string {
-	if s.opened == nil {
+// kindTexts are the values the adapter makes of an opened secret for the requests of its kind of authentication.
+func (s *signer) kindTexts(o *secrets.Opened) []string {
+	basic := []string{basicValueOf(o), "Basic " + basicValueOf(o), basicFormValueOf(o), "Basic " + basicFormValueOf(o)}
+	switch s.auth.Kind {
+	case ingest.AuthBearer:
+		return []string{"Bearer " + fieldOf(o, "token")}
+	case ingest.AuthHeader:
+		return []string{ingest.UnescapeBraces(s.auth.Prefix) + fieldOf(o, "token")}
+	case ingest.AuthBasic:
+		return basic
+	case ingest.AuthTokenRequest:
+		if s.basicRequest() {
+			return basic
+		}
+	}
+	return nil
+}
+
+// openeds lists the opened secrets of the read: the one of the API's address, and the one of the token host's when that is
+// another.
+func (s *signer) openeds() []*secrets.Opened {
+	out := []*secrets.Opened{s.opened}
+	if s.tokenOpened != nil {
+		out = append(out, s.tokenOpened)
+	}
+	return out
+}
+
+func (s *signer) field(name string) string { return fieldOf(s.opened, name) }
+
+// fieldOf is the value of a field of an opened secret, or the empty text for a field it has not (and for no secret).
+func fieldOf(o *secrets.Opened, name string) string {
+	if o == nil {
 		return ""
 	}
-	v, _ := s.opened.Value(name)
+	v, _ := o.Value(name)
 	return v.Reveal()
 }
 
-func (s *signer) basicValue() string {
-	return base64.StdEncoding.EncodeToString([]byte(s.field("username") + ":" + s.field("password")))
+func basicValueOf(o *secrets.Opened) string {
+	return base64.StdEncoding.EncodeToString([]byte(fieldOf(o, "username") + ":" + fieldOf(o, "password")))
 }
 
-// basicFormValue is the value of a Basic header as the OAuth 2.0 client authentication writes it (RFC 6749 2.3.1): the
+// basicFormValueOf is the value of a Basic header as the OAuth 2.0 client authentication writes it (RFC 6749 2.3.1): the
 // two texts escaped as a form before they are joined. A server may hand it back in this shape, so it is taken out too.
-func (s *signer) basicFormValue() string {
-	return base64.StdEncoding.EncodeToString([]byte(url.QueryEscape(s.field("username")) + ":" + url.QueryEscape(s.field("password"))))
+func basicFormValueOf(o *secrets.Opened) string {
+	return base64.StdEncoding.EncodeToString([]byte(url.QueryEscape(fieldOf(o, "username")) + ":" + url.QueryEscape(fieldOf(o, "password"))))
 }
 
 func (s *signer) basicRequest() bool {
 	return s.auth.Request != nil && s.auth.Request.CredentialsIn == ingest.CredentialsInBasic
+}
+
+// tokenSecret is the secret the credentials of the token request are taken from: the one opened for the token host when it is
+// another host, and the one of the API's address otherwise.
+func (s *signer) tokenSecret() *secrets.Opened {
+	if s.tokenOpened != nil {
+		return s.tokenOpened
+	}
+	return s.opened
 }
 
 // address is the host and the port the secret was opened for; the requests go there.
@@ -264,6 +316,14 @@ func (s *signer) address() (secrets.Address, bool) {
 		return secrets.Address{}, false
 	}
 	return s.opened.Address(), true
+}
+
+// tokenAddress is the host and the port the secret was opened for the token request at, when that is not the API's.
+func (s *signer) tokenAddress() (secrets.Address, bool) {
+	if s.tokenOpened == nil {
+		return secrets.Address{}, false
+	}
+	return s.tokenOpened.Address(), true
 }
 
 // unusable is the error of a value of the secret that cannot go where it is asked to go. The request is not sent.
@@ -281,6 +341,9 @@ func headerSafe(v string) bool {
 // entries of auth.headers (which win a name that is the same).
 func (s *signer) apply(h map[string][]string) error {
 	if err := s.applyKind(h); err != nil {
+		return err
+	}
+	if err := s.noSecretForTheAPI(); err != nil {
 		return err
 	}
 	for _, e := range s.auth.Headers {
@@ -305,6 +368,21 @@ func (s *signer) applyKind(h map[string][]string) error {
 	return nil
 }
 
+// noSecretForTheAPI refuses what the definition check does not let in, once more where a request is made: when the token is
+// asked for at another host than the API, a value of the secret goes to the token host only, and a request of the API has the
+// token and nothing of the secret. Nothing is sent.
+func (s *signer) noSecretForTheAPI() error {
+	if !s.cross {
+		return nil
+	}
+	for _, e := range s.auth.Headers {
+		if src, ok := ingest.ParseHeaderFrom(e.From); ok && !src.Token {
+			return unusable("a header of the authentication has a value of the secret, and the token is asked for at another host than the API; the secret goes to that host only, and nothing was sent")
+		}
+	}
+	return nil
+}
+
 // applyEntry puts one entry of auth.headers: the token it names (when there is one), or a field of the secret. The values
 // were looked at when the secret was opened (headerValuesSafe) and the token when it was read.
 func (s *signer) applyEntry(h map[string][]string, e ingest.SecretHeader) {
@@ -322,11 +400,17 @@ func (s *signer) applyEntry(h map[string][]string, e ingest.SecretHeader) {
 
 // setBasic puts the Authorization header of the user name and the password. A user name with a colon cannot be told from
 // the colon that ends it (RFC 7617), so it is refused and nothing is sent.
-func (s *signer) setBasic(h map[string][]string) error {
-	if strings.Contains(s.field("username"), ":") {
+func (s *signer) setBasic(h map[string][]string) error { return setBasicOf(h, s.opened) }
+
+// setTokenBasic is setBasic for the token request: the user name and the password are those of the secret opened for the
+// token host.
+func (s *signer) setTokenBasic(h map[string][]string) error { return setBasicOf(h, s.tokenSecret()) }
+
+func setBasicOf(h map[string][]string, o *secrets.Opened) error {
+	if strings.Contains(fieldOf(o, "username"), ":") {
 		return unusable("the user name of the secret has a colon, which a Basic header cannot carry; nothing was sent")
 	}
-	setHeader(h, "Authorization", "Basic "+s.basicValue())
+	setHeader(h, "Authorization", "Basic "+basicValueOf(o))
 	return nil
 }
 
@@ -351,18 +435,37 @@ func (s *signer) needsToken() bool {
 }
 
 // drop forgets the token, so that the next request asks for another.
-func (s *signer) drop() { s.token = secretText{} }
+func (s *signer) drop() {
+	s.token = secretText{}
+	s.expires = time.Time{}
+}
+
+// dropIfDue forgets a token that holds no longer (the lifetime the source gave is up).
+func (s *signer) dropIfDue(now time.Time) {
+	if !s.expires.IsZero() && !now.Before(s.expires) {
+		s.drop()
+	}
+}
 
 func (s *signer) close() {
 	s.drop()
 	s.opened.Close()
+	s.tokenOpened.Close()
 }
 
-// valueOf gives what a placeholder stands for: a field of the secret or the token the source gave.
-func (s *signer) valueOf(p ingest.Placeholder) (string, error) {
+// valueOf gives what a placeholder stands for in a request of the API: a field of the secret or the token the source gave.
+func (s *signer) valueOf(p ingest.Placeholder) (string, error) { return s.valueIn(p, false) }
+
+// valueIn is valueOf for a request that is the token request or not. The token request has the credentials, from the secret
+// opened for its host, and no token (the old one goes nowhere, and the new one does not exist yet); a request of the API has
+// the token, and the credentials only when the token host is the API's host.
+func (s *signer) valueIn(p ingest.Placeholder, forToken bool) (string, error) {
 	if p.Token {
 		tok := s.token.text()
-		if tok == "" {
+		switch {
+		case forToken:
+			return "", ingest.NewSourceError(ingest.SrcInternal, "the token request asks for a token, and the token is what it asks for", nil)
+		case tok == "":
 			return "", ingest.NewSourceError(ingest.SrcInternal, "a body asks for the token before the source gave one", nil)
 		}
 		return tok, nil
@@ -370,71 +473,13 @@ func (s *signer) valueOf(p ingest.Placeholder) (string, error) {
 	if s.opened == nil {
 		return "", unusable("a body has a placeholder of the secret, and the authentication has no secret")
 	}
+	if s.cross && !forToken {
+		return "", unusable("a body of a request of the API has a placeholder of the secret, and the token is asked for at another host; the secret goes to that host only, and nothing was sent")
+	}
+	if forToken {
+		return fieldOf(s.tokenSecret(), p.Field), nil
+	}
 	return s.field(p.Field), nil
-}
-
-// ensure gets a token for a token_request authentication that has none.
-func (s *signer) ensure(ctx context.Context, rn *run) error {
-	if !s.needsToken() {
-		return nil
-	}
-	tr := s.auth.Request
-	u := *rn.origin
-	u.Path += tr.Path
-	p := plan{method: ingest.MethodPost, url: &u, token: true, basic: s.basicRequest(), form: tr.Format == "form", tmpl: tr.Body}
-	if p.tmpl == nil && !(p.basic && tr.Format == "") {
-		p.tmpl = map[string]any{}
-	}
-	rep, err := rn.exchange(ctx, p)
-	if err != nil {
-		return err
-	}
-	data, err := rn.smallBody(ctx, p, rep, tokenAnswerMax)
-	if err != nil {
-		return err
-	}
-	tok, err := s.tokenOf(rn, data)
-	if err != nil {
-		return err
-	}
-	s.token = holdText(tok)
-	s.addMasked(tok, s.sendPrefix()+tok)
-	for _, h := range s.auth.Headers {
-		if src, ok := ingest.ParseHeaderFrom(h.From); ok && src.Token {
-			s.addMasked(ingest.UnescapeBraces(h.Prefix) + tok)
-		}
-	}
-	rn.prog.authenticated = true
-	return nil
-}
-
-// tokenOf reads the token from the answer: at token_path, or the whole body as a JSON text (token_from body, which is
-// not an object, a number or an empty text). A token with a line break or a control character is refused: a header could
-// not hold it, and nothing is sent with it.
-func (s *signer) tokenOf(rn *run, data []byte) (string, error) {
-	doc, err := decodeJSON(data)
-	if err != nil {
-		return "", rn.fail(ingest.SrcResponseFormat, "the answer to the token request is not JSON", nil)
-	}
-	tok, ok := "", false
-	if s.auth.TokenFrom == ingest.TokenFromBody {
-		tok, ok = doc.(string)
-		if !ok || tok == "" {
-			return "", rn.fail(ingest.SrcResponseFormat, "the answer to the token request is not a JSON text with a token in it (token_from is body)", nil)
-		}
-	} else {
-		path, perr := ingest.ParsePath(s.auth.TokenPath)
-		if perr == nil {
-			tok, ok = path.Pick(doc)
-		}
-		if !ok {
-			return "", rn.fail(ingest.SrcResponseFormat, "the answer to the token request has no token at token_path", nil)
-		}
-	}
-	if !headerSafe(tok) {
-		return "", rn.fail(ingest.SrcResponseFormat, "the token the source gave has a line break or a control character, which a header cannot hold", nil)
-	}
-	return tok, nil
 }
 
 // addMasked adds texts to take out of what is given out: to the rows when they are long enough, and always to the records

@@ -24,6 +24,10 @@ type plan struct {
 	// set), and not retried.
 	token bool
 	basic bool
+	// host and port are where the request goes when that is not the API's origin (the token request to another host); they are
+	// empty for the requests of the API.
+	host string
+	port int
 	// shown lists the query as a person may see it in a record of the exchange: the names, and the values that are the
 	// definition's own.
 	shown []ingest.NameValue
@@ -142,8 +146,16 @@ func serverQuery(u *url.URL) []ingest.NameValue {
 // the definition puts it (a line break in a header, a field the secret does not have).
 func (rn *run) build(p plan) (egress.Request, error) {
 	h := map[string][]string{}
-	for name, value := range rn.set.headers {
-		h[name] = []string{unescape(value)}
+	if !(p.token && rn.crossToken) {
+		// The headers of the connection are the API's (a key of a tenant, a version); another host is not sent them.
+		for name, value := range rn.set.headers {
+			h[name] = []string{unescape(value)}
+		}
+	}
+	if p.token {
+		for name, value := range rn.set.token.headers {
+			setHeader(h, name, unescape(value))
+		}
 	}
 	if !hasHeader(h, "Accept") {
 		h["Accept"] = []string{"application/json"}
@@ -161,7 +173,7 @@ func (rn *run) build(p plan) (egress.Request, error) {
 			return egress.Request{}, err
 		}
 	case p.basic:
-		if err := rn.signer.setBasic(h); err != nil {
+		if err := rn.signer.setTokenBasic(h); err != nil {
 			return egress.Request{}, err
 		}
 	}
