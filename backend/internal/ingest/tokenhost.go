@@ -62,9 +62,21 @@ func tokenURLProblem(raw string) string {
 		return "has a { or a }"
 	}
 	u, err := url.Parse(raw)
-	switch {
-	case err != nil || u.Opaque != "":
+	if err != nil || u.Opaque != "" {
 		return "is not an address"
+	}
+	if reason := tokenURLPartsProblem(u); reason != "" {
+		return reason
+	}
+	if reason := requestPathProblem(u.Path); reason != "" {
+		return "has a path that " + reason
+	}
+	return ""
+}
+
+// tokenURLPartsProblem says what is wrong with the scheme, host, user, query and port of the address of a token request.
+func tokenURLPartsProblem(u *url.URL) string {
+	switch {
 	case u.Scheme != "http" && u.Scheme != "https":
 		return "has to begin with http:// or https://"
 	case u.Hostname() == "":
@@ -75,9 +87,6 @@ func tokenURLProblem(raw string) string {
 		return "has a query or a fragment; the token request has a path and nothing else"
 	case !portOK(u.Port()):
 		return "has a port that is not from 1 to 65535"
-	}
-	if reason := requestPathProblem(u.Path); reason != "" {
-		return "has a path that " + reason
 	}
 	return ""
 }

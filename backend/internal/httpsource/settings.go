@@ -95,21 +95,30 @@ func (s *settings) readToken() error {
 	if tr.URL == "" {
 		return nil
 	}
+	t, err := s.tokenAddress(tr)
+	if err != nil {
+		return err
+	}
+	s.token = t
+	return nil
+}
+
+// tokenAddress reads the whole address of the token request.
+func (s *settings) tokenAddress(tr *ingest.TokenRequest) (tokenSettings, error) {
 	u, err := url.Parse(tr.URL)
 	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" || u.User != nil {
-		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url is not an http or https address", s.id)
+		return tokenSettings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url is not an http or https address", s.id)
 	}
 	host, _, bad := egress.NormalizeHost(u.Hostname())
 	if bad != "" {
-		return kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url has a host that is not allowed", s.id)
+		return tokenSettings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url has a host that is not allowed", s.id)
 	}
 	t := tokenSettings{url: true, scheme: u.Scheme, host: host, port: portOf(u), path: u.Path, rawPath: u.RawPath, headers: tr.Headers}
 	t.cross = t.scheme != s.scheme || t.host != s.host || t.port != s.port
 	if t.cross {
 		t.caPEM = tr.CAPEM
 	}
-	s.token = t
-	return nil
+	return t, nil
 }
 
 func portOf(u *url.URL) int {

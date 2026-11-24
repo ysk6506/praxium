@@ -22,7 +22,7 @@
   "go:adapter.pgstore": 92.5,
   "go:adapter.secretsfile": 98,
   "go:adapter.webui": 90,
-  "go:adapter.xlsx": 95,
+  "go:adapter.xlsx": 97.5,
   "go:cmd.praxium": 95.5,
   "go:core.access": 96,
   "go:core.contract": 91.5,

@@ -145,9 +145,30 @@ func serverQuery(u *url.URL) []ingest.NameValue {
 // uses the two methods GET and POST. It fails, with nothing made, when a value of the secret or the token cannot go where
 // the definition puts it (a line break in a header, a field the secret does not have).
 func (rn *run) build(p plan) (egress.Request, error) {
+	h := rn.plainHeaders(p)
+	body, ctype, err := rn.signer.bodyOf(p)
+	if err != nil {
+		return egress.Request{}, err
+	}
+	if ctype != "" {
+		setHeader(h, "Content-Type", ctype)
+	}
+	if err := rn.sign(p, h); err != nil {
+		return egress.Request{}, err
+	}
+	req := egress.Request{Method: ingest.MethodGet, URL: p.url.String(), Header: h}
+	if p.method == ingest.MethodPost {
+		req.Method = ingest.MethodPost
+		req.Body = bytes.NewReader(body)
+	}
+	return req, nil
+}
+
+// plainHeaders are the headers of a request that are no secret: the connection's, which another host is not sent, and the
+// token request's own.
+func (rn *run) plainHeaders(p plan) map[string][]string {
 	h := map[string][]string{}
 	if !(p.token && rn.crossToken) {
-		// The headers of the connection are the API's (a key of a tenant, a version); another host is not sent them.
 		for name, value := range rn.set.headers {
 			h[name] = []string{unescape(value)}
 		}
@@ -160,29 +181,19 @@ func (rn *run) build(p plan) (egress.Request, error) {
 	if !hasHeader(h, "Accept") {
 		h["Accept"] = []string{"application/json"}
 	}
-	body, ctype, err := rn.signer.bodyOf(p)
-	if err != nil {
-		return egress.Request{}, err
-	}
-	if ctype != "" {
-		setHeader(h, "Content-Type", ctype)
-	}
+	return h
+}
+
+// sign puts the credentials of the kind of authentication on the headers of a request of the API, or the Basic header on a
+// token request that asks for it.
+func (rn *run) sign(p plan, h map[string][]string) error {
 	switch {
 	case !p.token:
-		if err := rn.signer.apply(h); err != nil {
-			return egress.Request{}, err
-		}
+		return rn.signer.apply(h)
 	case p.basic:
-		if err := rn.signer.setTokenBasic(h); err != nil {
-			return egress.Request{}, err
-		}
+		return rn.signer.setTokenBasic(h)
 	}
-	req := egress.Request{Method: ingest.MethodGet, URL: p.url.String(), Header: h}
-	if p.method == ingest.MethodPost {
-		req.Method = ingest.MethodPost
-		req.Body = bytes.NewReader(body)
-	}
-	return req, nil
+	return nil
 }
 
 func hasHeader(h map[string][]string, name string) bool {
