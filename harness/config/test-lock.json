@@ -9206,6 +9206,36 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "backend/internal/ingest/testdata/xs_changed_scan.json::<data>": {
+   "kind": "data",
+   "hash": "66f0db09a80f3256",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "backend/internal/ingest/testdata/xs_scan_hand.json::<data>": {
+   "kind": "data",
+   "hash": "21fca2266941559e",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "backend/internal/ingest/testdata/xs_scan_random.json::<data>": {
+   "kind": "data",
+   "hash": "e6faa3fcb8b5efd3",
+   "asserts": 0,
+   "literals": [],
+   "precision": [],
+   "skips": 0,
+   "added": "2026-11-24",
+   "amended_by": null
+  },
   "backend/internal/ingestcheck/testdata/mapping.json::<data>": {
    "kind": "data",
    "hash": "0ba361b7ea872e05",
@@ -22445,6 +22475,221 @@
     "REQ-435"
    ],
    "added": "2026-11-15",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsACellThatIsNotGivenItsTextIsJudgedByWhatTheReaderSaidOfIt": {
+   "kind": "test",
+   "hash": "d62df8d785a47455",
+   "asserts": 1,
+   "literals": [
+    "005f2d10b807e7bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-803"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsADatasetWithoutSheetOptionsReadsTheFirstSheetWithTheHeaderInRowOne": {
+   "kind": "test",
+   "hash": "9c3c2eaf52d19003",
+   "asserts": 1,
+   "literals": [
+    "dd2a2ebad591ff9b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsAHeaderMergedOverAHugeRangeIsReadInTheMemoryOfAFewNames": {
+   "kind": "test",
+   "hash": "51a326860b17b19f",
+   "asserts": 2,
+   "literals": [
+    "f2d812d373000ec2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-801"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsAHeaderTakesNoTextFromACellThatHasNoValue": {
+   "kind": "test",
+   "hash": "351f9c63076c5dbe",
+   "asserts": 2,
+   "literals": [
+    "157532d469e97a48"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsAHeaderThatJoinsALongMergedTextWithManyNamesIsRefusedInSmallMemory": {
+   "kind": "test",
+   "hash": "93f145a0d92eb793",
+   "asserts": 2,
+   "literals": [
+    "7a1e9f55deda8ff4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-801",
+    "REQ-804"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScanChangesTheAnswerWhereTheAdrSays": {
+   "kind": "test",
+   "hash": "51d01b092357f78d",
+   "asserts": 8,
+   "literals": [
+    "9dcfa9245ed5afe7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800",
+    "REQ-801",
+    "REQ-802",
+    "REQ-804"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScannerGivesTheRecordOfEachRowAndSaysWhenTheDataIsOver": {
+   "kind": "test",
+   "hash": "577f6bc8e6ab4386",
+   "asserts": 9,
+   "literals": [
+    "35c8f41327b689e6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScannerRefusesAHeaderOverWhatItKeepsAtTheFirstDataRowOrTheEnd": {
+   "kind": "test",
+   "hash": "0ed39f2702cafe8b",
+   "asserts": 5,
+   "literals": [
+    "85b8ce4cd33682a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-804"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScannerSetsTheHeaderAtTheEndOfASheetWithoutData": {
+   "kind": "test",
+   "hash": "b61f431e566e1ed3",
+   "asserts": 5,
+   "literals": [
+    "2493e7fc391b7c6d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScannerStaysFailedAfterAnError": {
+   "kind": "test",
+   "hash": "080187ab44460046",
+   "asserts": 3,
+   "literals": [
+    "09ffff3cca6dd816"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-802"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScanReadsTheGeneratedSheetsAsTheCodeBeforeIt": {
+   "kind": "test",
+   "hash": "428313dfd564aa41",
+   "asserts": 6,
+   "literals": [
+    "5009d7a1ea2b78a7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800",
+    "REQ-803"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsScanReadsTheHandWrittenSheetsAsTheCodeBeforeIt": {
+   "kind": "test",
+   "hash": "23dc4fadf76b3893",
+   "asserts": 7,
+   "literals": [
+    "abf0b251d28abb1d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsTheProfileOfASheetNamesAMergedHeaderLikeTheScanner": {
+   "kind": "test",
+   "hash": "2638c5557922be10",
+   "asserts": 1,
+   "literals": [
+    "67e77d48e1799fa5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-800"
+   ],
+   "added": "2026-11-24",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestXsWhatAScanKeepsIsBoundedAndGivenBack": {
+   "kind": "test",
+   "hash": "cff869a661d3fa21",
+   "asserts": 4,
+   "literals": [
+    "62bd83d08f60466d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-804"
+   ],
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/ingestcheck::TestBadRowsAreReportedAndTheRestIsApplied": {

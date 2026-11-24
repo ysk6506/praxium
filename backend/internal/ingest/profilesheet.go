@@ -111,11 +111,10 @@ func allDistinctText(cells []Cell) bool {
 // that has a value is a column, named by its header or by its place when the header has no name.
 func profileSheet(sh *Sheet, headerRow, headerRows, sample int) TableProfile {
 	g := newGrid(sh)
-	scan := &sheetScan{o: SheetOptions{HeaderRow: headerRow, HeaderRows: headerRows, MergedCells: MergeFirstOnly}, g: g}
 	_, c1, _, c2 := sh.UsedRange()
 	tab := &grid{name: sh.Name, sampleSize: sample}
 	for col := c1; col <= c2; col++ {
-		name := scan.headerName(col)
+		name := headerName(g, headerRow, headerRow+headerRows-1, col)
 		if name == "" {
 			name = "(column " + ColumnName(col) + ")"
 		}
@@ -150,9 +149,86 @@ func profileCell(c Cell) pcell {
 
 func blankIn(r *SheetRow, c1, c2 int) bool {
 	for _, c := range r.Cells {
-		if c.Col >= c1 && c.Col <= c2 && (c.Kind != CellText || strings.TrimSpace(c.Text) != "") {
+		if c.Col >= c1 && c.Col <= c2 && !c.blank() {
 			return false
 		}
 	}
 	return true
+}
+
+// sheetGrid gives the cells of a sheet by their place, and the merged ranges by the rows they cover.
+type sheetGrid struct {
+	sh     *Sheet
+	rows   map[int]*SheetRow
+	merges map[int][]Merge
+}
+
+func newGrid(sh *Sheet) *sheetGrid {
+	g := &sheetGrid{sh: sh, rows: make(map[int]*SheetRow, len(sh.Rows)), merges: map[int][]Merge{}}
+	last := 0
+	for i := range sh.Rows {
+		g.rows[sh.Rows[i].Number] = &sh.Rows[i]
+		last = sh.Rows[i].Number
+	}
+	for _, m := range sh.Merges {
+		for r := m.Row1; r <= m.Row2 && r <= last; r++ {
+			g.merges[r] = append(g.merges[r], m)
+		}
+	}
+	return g
+}
+
+// cellAt is the cell the file has at a place.
+func (g *sheetGrid) cellAt(row, col int) (Cell, bool) {
+	r := g.rows[row]
+	if r == nil {
+		return Cell{}, false
+	}
+	lo, hi := 0, len(r.Cells)
+	for lo < hi {
+		mid := (lo + hi) / 2
+		if r.Cells[mid].Col < col {
+			lo = mid + 1
+		} else {
+			hi = mid
+		}
+	}
+	if lo < len(r.Cells) && r.Cells[lo].Col == col {
+		return r.Cells[lo], true
+	}
+	return Cell{}, false
+}
+
+// originCell is the first cell of the merged range that covers a place, when the place is covered and is not that cell.
+func (g *sheetGrid) originCell(row, col int) (Cell, bool) {
+	for _, m := range g.merges[row] {
+		if col >= m.Col1 && col <= m.Col2 && (row != m.Row1 || col != m.Col1) {
+			return g.cellAt(m.Row1, m.Col1)
+		}
+	}
+	return Cell{}, false
+}
+
+// own is the normalized text of the cell the file has at a place, for a header name (headerCells).
+func (g *sheetGrid) own(row, col int) (string, bool) {
+	c, ok := g.cellAt(row, col)
+	return headerText(c), ok
+}
+
+// origin is the normalized text that the merged range covering a place gives it.
+func (g *sheetGrid) origin(row, col int) string {
+	c, ok := g.originCell(row, col)
+	if !ok {
+		return ""
+	}
+	return headerText(c)
+}
+
+// headerText is the normalized text of a cell as a part of a header name: a cell that shows an error, or a formula that has no
+// stored value, has none.
+func headerText(c Cell) string {
+	if c.Kind == CellError || c.NoValue {
+		return ""
+	}
+	return NormalizeHeader(c.Text)
 }
