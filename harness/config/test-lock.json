@@ -18757,10 +18757,10 @@
   },
   "go:backend/internal/httpsource::TestHxcEachHostHasItsOwnCertificateAuthority": {
    "kind": "test",
-   "hash": "012b5b458d4f2c96",
-   "asserts": 12,
+   "hash": "445f56133b86f93b",
+   "asserts": 10,
    "literals": [
-    "f120f54e97cf45d3"
+    "d818c37b27681647"
    ],
    "precision": [],
    "skips": 0,
@@ -18770,12 +18770,12 @@
    "added": "2026-11-24",
    "amended_by": null
   },
-  "go:backend/internal/httpsource::TestHxcRealTLSARedirectOfTheTokenHostIsNotFollowed": {
+  "go:backend/internal/httpsource::TestHxcRealEgressACertificateAuthorityThatCannotBeUsedForTheTokenHostIsRefused": {
    "kind": "test",
-   "hash": "6d7503e80b575405",
-   "asserts": 2,
+   "hash": "a4d095df18e6471c",
+   "asserts": 4,
    "literals": [
-    "013813aebde6622f"
+    "487e0e6da806da96"
    ],
    "precision": [],
    "skips": 0,
@@ -18785,12 +18785,12 @@
    "added": "2026-11-24",
    "amended_by": null
   },
-  "go:backend/internal/httpsource::TestHxcRealTLSATokenRequestWithoutTLSToAnAddressThatIsNotTheLoopbackIsRefused": {
+  "go:backend/internal/httpsource::TestHxcRealEgressATokenRequestWithoutTLSToAnAddressThatIsNotTheLoopbackIsRefused": {
    "kind": "test",
-   "hash": "b2beb3a53b6b4052",
+   "hash": "2c8f16f041dd2353",
    "asserts": 3,
    "literals": [
-    "72fca15cf825262c"
+    "1280822465cf36f0"
    ],
    "precision": [],
    "skips": 0,
@@ -18800,42 +18800,12 @@
    "added": "2026-11-24",
    "amended_by": null
   },
-  "go:backend/internal/httpsource::TestHxcRealTLSEachHostIsTrustedByItsOwnAuthority": {
+  "go:backend/internal/httpsource::TestHxcRealEgressThePolicyJudgesTheTokenHostToo": {
    "kind": "test",
-   "hash": "1acfd88f5332cbcd",
-   "asserts": 2,
+   "hash": "d3203638dea89130",
+   "asserts": 9,
    "literals": [
-    "c9101b3da90cde2e"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-844"
-   ],
-   "added": "2026-11-24",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcRealTLSTheAuthorityOfTheAPIDoesNotTrustTheTokenHost": {
-   "kind": "test",
-   "hash": "5424998b446b891b",
-   "asserts": 5,
-   "literals": [
-    "eaef6cb34b993c34"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-844"
-   ],
-   "added": "2026-11-24",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcRealTLSThePolicyJudgesTheTokenHostToo": {
-   "kind": "test",
-   "hash": "f18a534610ae3484",
-   "asserts": 6,
-   "literals": [
-    "10cb89ebb0032bff"
+    "9feeb6ee1e062ff0"
    ],
    "precision": [],
    "skips": 0,
@@ -19160,7 +19130,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "efece6c77e548aac",
+   "hash": "7d33e70fb27bb42b",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -19265,7 +19235,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "542e0f6ce2fb9baf",
+   "hash": "f52975ac92d2bf89",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"

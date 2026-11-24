@@ -422,8 +422,7 @@ func TestHxcACheckTellsTheTokenRequestAsAnItemOfItsOwn(t *testing.T) {
 // auth.request.ca_pem, and the clients are made with those; a token host that gives none is trusted by the system's
 // authorities and not by the API's. The timeout of the connection is the timeout of both.
 func TestHxcEachHostHasItsOwnCertificateAuthority(t *testing.T) {
-	apiCA, _ := hxcAuthority(t, "api ca", hxcAPIHost)
-	idpCA, _ := hxcAuthority(t, "idp ca", hxcIdpHost)
+	apiCA, idpCA := hxcCert+"\n", hxcCert
 	quoted := func(pem string) string { b, _ := json.Marshal(pem); return string(b) }
 	both := strings.Replace(hxcOAuthPost, `"format":"form"`, `"ca_pem":`+quoted(idpCA)+`,"format":"form"`, 1)
 	g := hxcNew(t, hxcDoc(both, `,"timeout_seconds":7,"ca_pem":`+quoted(apiCA), ""), hxcHosts, "3600")
@@ -568,3 +567,7 @@ func TestHxcTheClientOfTheTokenHostLivesAsLongAsTheRead(t *testing.T) {
 		t.Errorf("%d tokens for three reads", g.hxcIssued)
 	}
 }
+
+// hxcCert is a throwaway certificate (no one holds its key) that stands for the authority of a host; the API's is the same with
+// a line break after it, so that the two are told apart.
+const hxcCert = "-----BEGIN CERTIFICATE-----\nMIIBhTCCASugAwIBAgIURtGaGZSb7VAVHQQp7STkhcncoR8wCgYIKoZIzj0EAwIw\nFzEVMBMGA1UEAwwMZXhhbXBsZS50ZXN0MCAXDTI2MTExOTEwMjEyN1oYDzIxMjYx\nMDI2MTAyMTI3WjAXMRUwEwYDVQQDDAxleGFtcGxlLnRlc3QwWTATBgcqhkjOPQIB\nBggqhkjOPQMBBwNCAASCdORDNqElggutE2cVqCCOTZ44AGGGM7ACcNJtJstRWgLZ\njCOmhbFMo01h2e0j2AL6MazLrO2T6jji4af51UPho1MwUTAdBgNVHQ4EFgQUVXuy\nfSxGvyMsczWPNhux+3ufAVAwHwYDVR0jBBgwFoAUVXuyfSxGvyMsczWPNhux+3uf\nAVAwDwYDVR0TAQH/BAUwAwEB/zAKBggqhkjOPQQDAgNIADBFAiEAo/VQIH+m9EXV\nQiZCDGBFQCvCy5hLs3tw573C7HWM7aQCIH6ZkOZqpPiLzlSDmQtrce0tjz0n/oWp\nLxeolirs3Vs/\n-----END CERTIFICATE-----"

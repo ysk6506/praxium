@@ -2,16 +2,7 @@ package httpsource
 
 import (
 	"context"
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
-	"crypto/tls"
-	"crypto/x509"
-	"crypto/x509/pkix"
-	"encoding/pem"
 	"fmt"
-	"math/big"
-	"net"
 	"strings"
 	"testing"
 	"time"
@@ -187,35 +178,3 @@ func hxcDoc(auth, conn, dataset string) string {
 }
 
 func hxcPostDataset(body string) string { return strings.Replace(hxcPost, "%s", body, 1) }
-
-// hxcAuthority makes a certificate authority and the certificate of a server of some names signed by it, with a key of its
-// own. The dates are fixed, so that the rig does not read the clock.
-func hxcAuthority(t *testing.T, name string, hosts ...string) (caPEM string, leaf tls.Certificate) {
-	t.Helper()
-	notBefore, notAfter := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC), time.Date(2100, 1, 1, 0, 0, 0, 0, time.UTC)
-	caKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		t.Fatal(err)
-	}
-	caTmpl := &x509.Certificate{SerialNumber: big.NewInt(1), Subject: pkix.Name{CommonName: name}, NotBefore: notBefore, NotAfter: notAfter,
-		IsCA: true, BasicConstraintsValid: true, KeyUsage: x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature}
-	caDER, err := x509.CreateCertificate(rand.Reader, caTmpl, caTmpl, &caKey.PublicKey, caKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ca, err := x509.ParseCertificate(caDER)
-	if err != nil {
-		t.Fatal(err)
-	}
-	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		t.Fatal(err)
-	}
-	tmpl := &x509.Certificate{SerialNumber: big.NewInt(2), Subject: pkix.Name{CommonName: hosts[0]}, NotBefore: notBefore, NotAfter: notAfter,
-		DNSNames: hosts, IPAddresses: []net.IP{net.ParseIP("127.0.0.1")}, KeyUsage: x509.KeyUsageDigitalSignature, ExtKeyUsage: []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}}
-	der, err := x509.CreateCertificate(rand.Reader, tmpl, ca, &key.PublicKey, caKey)
-	if err != nil {
-		t.Fatal(err)
-	}
-	return string(pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: caDER})), tls.Certificate{Certificate: [][]byte{der}, PrivateKey: key}
-}
