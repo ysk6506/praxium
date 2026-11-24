@@ -118,7 +118,7 @@ ins_rec AS (
   FROM starts v
   LEFT JOIN LATERAL (
     SELECT k.fields, k.raw_hash, k.decl_rev, k.opened_seq, k.fate FROM {raw} k
-    WHERE k.src_no = $1 AND k.dataset_no = v.dataset_no AND k.key = v.key AND v.why NOT IN ({w_new}, {w_changed})
+    WHERE k.src_no = $1 AND {in_range_k} AND k.dataset_no = v.dataset_no AND k.key = v.key AND v.why NOT IN ({w_new}, {w_changed})
   ) r ON true
   RETURNING rid, dataset_no, key
 ),
@@ -215,6 +215,7 @@ func rawDiffSQL(kgNo, srcNo int64) string {
 		"{calc_wait}", ref(pgschema.TableCalcWait),
 		"{in_range_s}", rangeTest("s."),
 		"{in_range_r}", rangeTest("r."),
+		"{in_range_k}", rangeTest("k."),
 		"{in_range_x}", rangeTest("x."),
 		"{in_range}", rangeTest(""),
 		"{unseen}", num(pgschema.WaitUnseen),

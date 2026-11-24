@@ -16,6 +16,8 @@ enforced_by:
   - backend/internal/pgstore/rdf_generation_test.go
 touches_protected:
   - harness/config/test-lock.json
+  - docs/design-docs/adr/0095-ingestion-tables-in-the-schema-plan.md
+  - docs/design-docs/adr/0098-receiving-step-and-run-ledger-in-adapter-pgingest.md
   - docs/product-specs/requirements-ingestion.md
 updates_docs:
   - ARCHITECTURE.md
@@ -32,7 +34,7 @@ amends_tests:
   - go:backend/internal/pgschema::TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheRowsReceivedAndNothingElse
   - go:backend/internal/pgingest::TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable
 test_change_reason: 생성기 버전이 4에서 6이 되어 버전 단언의 값이 바뀌고, 3에서 최신까지의 단계를 확인하던 테스트는 이제 3에서 4의 단계를 명시해 같은 단언을 한다. 5에서 6의 단계는 새 테스트가 확인한다. 원본을 떼는 트랜잭션의 잠금 수는 받은 행의 인덱스 하나만큼 늘어 한도 100을 101로 넘으므로 한도를 110으로 올린다(소스마다 한정된 수라는 뜻은 그대로다). 단언은 줄지 않았다.
-decision_hash: b4e456d424bfca5a
+decision_hash: b787134d2c8b1507
 ---
 # ADR-0102 새 수집 흐름의 2단계(원본 차이)와 세 갈래 완전성
 
@@ -60,7 +62,7 @@ ADR-0086이 새 수집 흐름의 2단계(원본 차이)를 "받은 행과 이미
    - 버킷 크기는 `BucketRows`(기본 `DefaultRawDiffBucketRows` = 100,000)다. 한 버킷은 임대(60초)의 3분의 1인 20초 안이어야 하고 기본값은 측정(아래)으로 정한 시작 값이다. 버킷이 만드는 것은 버킷 크기와 상관없다(테스트가 크기 5, 2, 1로 확인한다).
    - 이유와 값: 인덱스는 기존 것을 쓴다(`raw_record`와 `record_wait`의 기본키). `stage_record`에는 없어서 생성기 버전 6의 단계로 `stage_record_key` (데이터셋 번호, 키, 페이지, 행 번호)를 더한다. 저장 공간은 받은 행마다 인덱스 항목 하나(키 글자와 숫자 셋)가 늘고, 수신은 소스마다 `TRUNCATE`하고 다시 받으므로 인덱스도 함께 비워진다. 수신의 `COPY`는 인덱스를 갱신하는 만큼 느려진다(이 변경에서는 측정하지 않았다).
 
-3. **3단계가 읽는 자리(출력 슬롯)**는 `calc_record`, `calc_problem`, `calc_wait`다. 값에 부호나 특별한 문자열을 싣지 않는다.
+3. **3단계가 읽는 출력 슬롯**은 `calc_record`, `calc_problem`, `calc_wait`다. 값에 부호나 특별한 문자열을 싣지 않는다.
 
    | 운명 | `calc_record` | 그 밖 |
    |---|---|---|
@@ -107,10 +109,10 @@ ADR-0086이 새 수집 흐름의 2단계(원본 차이)를 "받은 행과 이미
 
 | 레코드 | 2단계 전체 | 버킷 수 | 가장 긴 버킷 |
 |---|---|---|---|
-| 100,000 | 0.36초 | 1 | 0.37초 |
-| 1,000,000 | 5.8초 | 10 | 0.98초 |
+| 100,000 | 0.51초 | 1 | 0.50초 |
+| 1,000,000 | 4.5초 | 10 | 0.70초 |
 
-가장 긴 버킷도 한도(20초)의 20분의 1이어서 기본 크기를 그대로 둔다. 처음 짠 문장은 같은 조인을 중첩 루프로 계획해서 버킷 크기의 제곱에 비례했다(5,000행 버킷이 0.6초). 버킷의 트랜잭션에서 중첩 루프를 끄고(`SET LOCAL enable_nestloop = off`) 해시 조인으로 바꾸어 고쳤고, 계획의 꼴(범위 스캔, 조인이 버린 쌍의 수)을 테스트가 확인한다.
+가장 긴 버킷도 한도(20초)의 20분의 1이어서 기본 크기를 그대로 둔다. 처음 짠 문장은 같은 조인을 중첩 루프로 계획해서 버킷 크기의 제곱에 비례했다(5,000행 버킷이 0.6초). 버킷의 트랜잭션에서 중첩 루프를 끄고(`SET LOCAL enable_nestloop = off`) 해시 조인으로 바꾸고(원본 레코드를 찾는 조인도 버킷의 범위로 좁힌다) 고쳤고, 계획의 꼴(범위 스캔, 조인이 버린 쌍의 수)을 테스트가 확인한다.
 
 ## 알려진 한계
 
