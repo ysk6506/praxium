@@ -63,8 +63,15 @@ func rdfScanned(t *testing.T, n, size int) (map[string]float64, string) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if _, err := tx.ExecContext(s.e.ctx, bucketSettingSQL); err != nil {
+		t.Fatal(err)
+	}
 	return rdfPlanRows(t, tx, "EXPLAIN (ANALYZE, COSTS OFF, TIMING OFF, FORMAT JSON) "+rawDiffSQL(b.kgNo, b.srcNo), args)
 }
+
+// rdfJoinWork is the key of the rows that the joins of the plan compared and threw away (a join that compares each row of one side with
+// each row of the other makes it the square of the size of a bucket).
+const rdfJoinWork = "~joins"
 
 // rdfPlanRows runs an EXPLAIN and gives the rows read by the scan nodes of each table (by the name of the table, with the loops
 // counted), and the plan as text of "node on table" lines.
@@ -81,6 +88,9 @@ func rdfPlanRows(t *testing.T, tx *sql.Tx, query string, args []any) (map[string
 	rows, lines := map[string]float64{}, []string{}
 	var walk func(node map[string]any)
 	walk = func(node map[string]any) {
+		if removed, ok := node["Rows Removed by Join Filter"].(float64); ok {
+			rows[rdfJoinWork] += removed
+		}
 		if name, ok := node["Relation Name"].(string); ok {
 			actual, _ := node["Actual Rows"].(float64)
 			loops, _ := node["Actual Loops"].(float64)
@@ -110,6 +120,12 @@ func TestRdfABucketReadsTheIndexRangeItCoversAndNotTheWholeTableAndWhatItReadsDo
 	small, plan := rdfScanned(t, 20_000, size)
 	large, _ := rdfScanned(t, 60_000, size)
 	for table, read := range small {
+		if table == rdfJoinWork {
+			if read > 2*size {
+				t.Errorf("the joins of a bucket of %d rows compared %v pairs of rows that did not match:\n%s", size, read, plan)
+			}
+			continue
+		}
 		if table == "source_dataset" { // the datasets of the source: a few rows
 			continue
 		}

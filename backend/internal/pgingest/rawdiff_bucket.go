@@ -119,11 +119,21 @@ func bucketArgs(b bucketRun) ([]any, error) {
 		ingest.UnseenSpan.Seconds(), ingest.UnseenRuns}, nil
 }
 
+// bucketSettingSQL is set in the transaction of a bucket (it ends with it). The statement joins the rows of the range with each
+// other by key (the rows received, the raw records, the waits, the problems). The planner counts a CTE as a few rows, so it joins
+// them by a nested loop that compares each row of one with each row of the other, which costs the square of the size of a bucket (a
+// bucket of 5000 rows took a second, and one of 100000 would take hours). By a hash or a merge a join costs what its rows cost.
+// What must be a nested loop (the look up of the raw record of a record by its key) is one still.
+const bucketSettingSQL = "SET LOCAL enable_nestloop = off"
+
 // execBucket runs the statement of the bucket and gives the counts of every dataset of the state, in its order.
 func execBucket(ctx context.Context, tx *sql.Tx, b bucketRun) ([]ingest.RawDiffCounts, error) {
 	args, err := bucketArgs(b)
 	if err != nil {
 		return nil, err
+	}
+	if _, err := tx.ExecContext(ctx, bucketSettingSQL); err != nil {
+		return nil, dbErr(err, "set the plan of the bucket")
 	}
 	rows, err := tx.QueryContext(ctx, rawDiffSQL(b.kgNo, b.srcNo), args...)
 	if err != nil {
