@@ -1,9 +1,7 @@
 package pgstore
 
 import (
-	"encoding/json"
 	"sort"
-	"strconv"
 
 	"github.com/lib/pq"
 
@@ -44,102 +42,47 @@ type kgVolatileKey struct {
 	attr   int
 }
 
-// volatile writes the current values into the table of values that has the attribute (the common one or the one of
-// the type) as entries of prov, merged into what is there; of two values for one key in a chunk the later one stays.
-// It never touches the table of the type's rows: a change of values alone is not a change of the object.
+// volatile writes the current values into the columns of the table of values that has the attribute (the common one or the one
+// of the type), and what is said about each into its entry of prov, merged into what is there; of two values for one key in a
+// chunk the later one stays. It never touches the table of the type's rows: a change of values alone is not a change of the
+// object.
 func (c *kgChunk) volatile(rows []graph.VolatileRow) {
 	last := map[kgVolatileKey]graph.VolatileRow{}
 	for _, r := range rows {
 		last[kgVolatileKey{r.Object, r.AttrNo}] = r
 	}
-	provs := map[kgProvTarget]map[int64]map[string]provEntry{}
-	for k, r := range last {
-		t, e, err := c.provTarget(k)
-		if err == nil {
-			err = addProv(provs, t, e.objNo, k.attr, r)
-		}
-		if err != nil {
-			c.fail(err)
+	keys := make([]kgVolatileKey, 0, len(last))
+	for k := range last {
+		keys = append(keys, k)
+	}
+	sort.Slice(keys, func(i, j int) bool {
+		a, b := c.objNo(keys[i].object), c.objNo(keys[j].object)
+		return a < b || (a == b && keys[i].attr < keys[j].attr)
+	})
+	items := make([]volatileItem, 0, len(keys))
+	for _, k := range keys {
+		r := last[k]
+		e, ok := c.reg[k.object.String()]
+		if !ok {
+			c.fail(kernel.Errorf(graph.CodeHeadMoved, "the object %s is not in the registry of the KG", k.object))
 			return
 		}
+		items = append(items, volatileItem{objNo: e.objNo, typeNo: e.typeNo, attrNo: k.attr, value: r.Value,
+			doc: provDoc{Grade: string(r.Grade), Basis: string(r.Basis), Seen: r.SeenAt, Ref: r.Ref}})
 	}
-	targets := make([]kgProvTarget, 0, len(provs))
-	for t := range provs {
-		targets = append(targets, t)
-	}
-	sort.Slice(targets, func(i, j int) bool {
-		return targets[i].table < targets[j].table || (targets[i].table == targets[j].table && targets[i].typeNo < targets[j].typeNo)
-	})
-	for _, t := range targets {
-		c.writeProv(t.table, t.typeNo, t.table == pgschema.TableObjectState, provs[t])
-	}
+	c.writeItems(items)
 }
 
-// kgProvTarget is one table of values: the common one or the one of a type.
-type kgProvTarget struct {
-	table  string
-	typeNo int
-}
-
-// provTarget finds the table of values that has the attribute of the key, and the registry entry of its object.
-func (c *kgChunk) provTarget(k kgVolatileKey) (kgProvTarget, regEntry, error) {
-	e, ok := c.reg[k.object.String()]
-	if !ok {
-		return kgProvTarget{}, e, kernel.Errorf(graph.CodeHeadMoved, "the object %s is not in the registry of the KG", k.object)
-	}
-	if _, common := c.a.common[k.attr]; common {
-		return kgProvTarget{pgschema.TableObjectState, e.typeNo}, e, nil
-	}
-	if _, own := c.a.state[e.typeNo][k.attr]; !own {
-		return kgProvTarget{}, e, kernel.Errorf(kernel.CodeInvalidValue, "the attribute %d of %s has no table of values", k.attr, k.object)
-	}
-	return kgProvTarget{pgschema.StateTable(e.typeNo), e.typeNo}, e, nil
-}
-
-// addProv puts the prov entry of one value in the entries of its table.
-func addProv(provs map[kgProvTarget]map[int64]map[string]provEntry, t kgProvTarget, objNo int64, attr int, r graph.VolatileRow) error {
-	raw, err := encodeValue(r.Value)
+// writeItems writes the volatile values, a column at a time.
+func (c *kgChunk) writeItems(items []volatileItem) {
+	groups, err := c.a.groupValues(items)
 	if err != nil {
-		return err
+		c.fail(err)
+		return
 	}
-	if provs[t] == nil {
-		provs[t] = map[int64]map[string]provEntry{}
+	for _, g := range groups {
+		c.writeValues(g.table, g.common, g.attrNo, g.kind, g.items)
 	}
-	if provs[t][objNo] == nil {
-		provs[t][objNo] = map[string]provEntry{}
-	}
-	provs[t][objNo][strconv.Itoa(attr)] = provEntry{Value: json.RawMessage(raw), Grade: string(r.Grade), Basis: string(r.Basis), Seen: r.SeenAt, Ref: r.Ref}
-	return nil
-}
-
-// writeProv upserts the prov entries of the objects of one table of values.
-func (c *kgChunk) writeProv(table string, typeNo int, common bool, byObj map[int64]map[string]provEntry) {
-	nos := make([]int64, 0, len(byObj))
-	for no := range byObj {
-		nos = append(nos, no)
-	}
-	sort.Slice(nos, func(i, j int) bool { return nos[i] < nos[j] })
-	slices(len(nos), func(lo, hi int) {
-		var docs []string
-		var types []int64
-		for _, no := range nos[lo:hi] {
-			raw, err := marshal(byObj[no])
-			if err != nil {
-				c.fail(err)
-				return
-			}
-			docs, types = append(docs, string(raw)), append(types, int64(typeNo))
-		}
-		if common {
-			c.exec("write volatile values", `INSERT INTO `+c.a.t(table)+` (obj_no, type_no, prov)
-				SELECT u.obj_no, u.type_no, u.prov::jsonb FROM unnest($1::bigint[], $2::bigint[], $3::text[]) AS u(obj_no, type_no, prov)
-				ON CONFLICT (obj_no) DO UPDATE SET prov = `+c.a.t(table)+`.prov || EXCLUDED.prov`, pq.Array(nos[lo:hi]), pq.Array(types), pq.Array(docs))
-			return
-		}
-		c.exec("write volatile values", `INSERT INTO `+c.a.t(table)+` (obj_no, prov)
-			SELECT u.obj_no, u.prov::jsonb FROM unnest($1::bigint[], $2::text[]) AS u(obj_no, prov)
-			ON CONFLICT (obj_no) DO UPDATE SET prov = `+c.a.t(table)+`.prov || EXCLUDED.prov`, pq.Array(nos[lo:hi]), pq.Array(docs))
-	})
 }
 
 // light writes the lines of the light change line, the later of two lines for one key winning.

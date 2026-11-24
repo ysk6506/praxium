@@ -197,6 +197,9 @@ const anyHead int64 = -1
 // (and that its engine is not older than the one that applied), then the head the write was planned against. It
 // returns the locked head.
 func (s *Store) kgGuard(ctx context.Context, tx *sql.Tx, a *kgAccess, p planned) (kgHeadRow, error) {
+	if err := s.generatorStill(ctx, tx, a); err != nil {
+		return kgHeadRow{}, err
+	}
 	cur, err := loadKGHead(ctx, tx, a, true)
 	if err != nil {
 		return kgHeadRow{}, err
@@ -221,6 +224,25 @@ func (s *Store) kgGuard(ctx context.Context, tx *sql.Tx, a *kgAccess, p planned)
 		return kgHeadRow{}, kernel.Errorf(graph.CodeHeadMoved, "expected applied_seq %d, the head is at %d", p.expected, cur.head.AppliedSeq)
 	}
 	return cur, nil
+}
+
+// generatorStill refuses a write when the storage schema of the KG now was made by another generator than this build's: a
+// run of another build adjusted it after this server cached what it knew, and a write in the form of the other generator would
+// put values where the readers of the schema do not look. The server forgets what it cached and the write is retried
+// after the server is restarted on the same build (ADR-0101).
+func (s *Store) generatorStill(ctx context.Context, tx *sql.Tx, a *kgAccess) error {
+	var gen int
+	err := tx.QueryRowContext(ctx, `SELECT generator_version FROM kg_schema_state WHERE kg_id = $1`, a.id.String()).Scan(&gen)
+	if err != nil {
+		return dbErr(err, "read the generator of the storage schema")
+	}
+	if gen == pgschema.GeneratorVersion {
+		return nil
+	}
+	s.forget(a.id)
+	rec := a.rec
+	rec.GeneratorVersion = gen
+	return CheckSchemaMatch(rec, a.model)
 }
 
 // hashStateOf reads the three columns of a hash state.

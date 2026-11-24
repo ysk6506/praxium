@@ -58,7 +58,7 @@ func TestDiffFollowsAdditions(t *testing.T) {
 			d.ObjectTypes = append(d.ObjectTypes, objType(t, "ot.site", 3, "Site", []string{"tr.common"},
 				prop(t, "pr.site.code", "code", 30, "vt.string", model.ChangeSlow),
 				prop(t, "pr.site.load", "load", 31, "vt.number", model.ChangeDynamic)))
-		}, want: []string{"tx table t_3", "tx table s_3", "tx statistics t_3_st_1"}},
+		}, want: []string{"tx table t_3", "tx table s_3", "tx index t_3_name", "tx index t_3_name_ci", "tx statistics t_3_st_1"}},
 		{name: "a document attribute adds statistics and no column", change: func(d *model.Definitions) {
 			p := typeOf(d, "ot.rack")
 			p.Properties = append(p.Properties, prop(t, "pr.rack.floor", "floor", 21, "vt.integer", model.ChangeSlow))
