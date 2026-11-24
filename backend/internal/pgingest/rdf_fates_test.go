@@ -16,7 +16,7 @@ var rdfNow = rdfT0.Add(48*time.Hour + 30*time.Minute + 500*time.Millisecond)
 func rdfSeedFates(t *testing.T, s *rdfSetup) {
 	t.Helper()
 	const ds = "ds_places"
-	s.raw(t,
+	s.rdfPutRaw(t,
 		rdfRaw{ds, "same", "v1", pgschema.FateUsed}, rdfRaw{ds, "changed", "v1", pgschema.FateUsed},
 		rdfRaw{ds, "gone1", "v1", pgschema.FateUsed},      // not shown for the first time
 		rdfRaw{ds, "gone2", "v1", pgschema.FateUsed},      // not shown for the third time, and the first was long ago
@@ -28,7 +28,7 @@ func rdfSeedFates(t *testing.T, s *rdfSetup) {
 		rdfRaw{ds, "dup", "v1", pgschema.FateUsed},        // has two rows now
 		rdfRaw{ds, "undup", "v1", pgschema.FateUsed},      // had two rows and has one
 	)
-	s.waits(t,
+	s.rdfPutWaits(t,
 		rdfWaitRow{ds, "gone2", pgschema.WaitUnseen, 2, rdfT0.Add(2 * time.Hour), false},
 		rdfWaitRow{ds, "gone3", pgschema.WaitUnseen, 2, rdfT0.Add(40 * time.Hour), false},
 		rdfWaitRow{ds, "back", pgschema.WaitUnseen, 1, rdfT0.Add(40 * time.Hour), false},
@@ -37,8 +37,8 @@ func rdfSeedFates(t *testing.T, s *rdfSetup) {
 		rdfWaitRow{ds, "unheld", pgschema.WaitFiltered, 1, rdfT0.Add(2 * time.Hour), false},
 		rdfWaitRow{ds, "gone1", pgschema.WaitFiltered, 1, rdfT0.Add(2 * time.Hour), false},
 	)
-	s.e.exec(t, `INSERT INTO "s_`+itoa(s.ref.KGNo)+`".record_problem (src_no, dataset_no, key, def_no, field, kind, reason) VALUES ($1, $2, 'undup', NULL, '', 'duplicate_key', 'an old one')`, s.ref.SrcNo, s.no(ds))
-	s.stage(t,
+	s.e.exec(t, `INSERT INTO "s_`+rdfItoa(s.ref.KGNo)+`".record_problem (src_no, dataset_no, key, def_no, field, kind, reason) VALUES ($1, $2, 'undup', NULL, '', 'duplicate_key', 'an old one')`, s.ref.SrcNo, s.rdfNo(ds))
+	s.rdfPutStage(t,
 		rdfStaged{ds, 0, 0, "same", "v1", pgschema.ReceiveSame, false},
 		rdfStaged{ds, 0, 1, "changed", "v2", pgschema.ReceiveChanged, false},
 		rdfStaged{ds, 0, 2, "new", "v1", pgschema.ReceiveNew, false},
@@ -54,18 +54,18 @@ func rdfSeedFates(t *testing.T, s *rdfSetup) {
 		rdfStaged{ds, 2, 4, "twice", "v3", pgschema.ReceiveNew, false},
 	)
 	// the row of the problems of a page is no record
-	s.e.exec(t, `INSERT INTO `+pgiTable(s.ref, pgschema.TableStageRecord)+` (src_no, dataset_no, page, row_no, key, change_kind, problems) VALUES ($1, $2, 0, -1, '', 2, '[]')`, s.ref.SrcNo, s.no(ds))
+	s.e.exec(t, `INSERT INTO `+pgiTable(s.ref, pgschema.TableStageRecord)+` (src_no, dataset_no, page, row_no, key, change_kind, problems) VALUES ($1, $2, 0, -1, '', 2, '[]')`, s.ref.SrcNo, s.rdfNo(ds))
 }
 
-func itoa(n int64) string { return strconv.FormatInt(n, 10) }
+func rdfItoa(n int64) string { return strconv.FormatInt(n, 10) }
 
 // [REQ-780]
 func TestRdfEveryFateOfAKeyIsToldAndTheWaitsAreCountedAtTheTimeOfTheRun(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
 	rdfSeedFates(t, s)
-	l := s.computing(t, "server-a", map[string]ingest.Coverage{"ds_places": ingest.CoverageComplete, "ds_servers": ingest.CoverageComplete})
-	rep := s.run(t, l, s.start(rdfNow, 0))
-	recs := rdfByKey(s.records(t), "ds_places")
+	l := s.rdfComputing(t, "server-a", map[string]ingest.Coverage{"ds_places": ingest.CoverageComplete, "ds_servers": ingest.CoverageComplete})
+	rep := s.rdfRun(t, l, s.rdfStart(rdfNow, 0))
+	recs := rdfByKey(s.rdfRecords(t), "ds_places")
 	want := map[string]struct {
 		why  int16
 		page string
@@ -105,7 +105,7 @@ func TestRdfEveryFateOfAKeyIsToldAndTheWaitsAreCountedAtTheTimeOfTheRun(t *testi
 		t.Errorf("%+v", counts)
 	}
 	rdfCheckFateWaits(t, s)
-	probs := s.e.count(t, `SELECT count(*) FROM "s_`+itoa(s.ref.KGNo)+`".calc_problem WHERE def_no IS NULL AND kind = 'duplicate_key'`)
+	probs := s.e.count(t, `SELECT count(*) FROM "s_`+rdfItoa(s.ref.KGNo)+`".calc_problem WHERE def_no IS NULL AND kind = 'duplicate_key'`)
 	if probs != 2 {
 		t.Errorf("a key that is repeated in the batch has the problem once: %d", probs)
 	}
@@ -113,7 +113,7 @@ func TestRdfEveryFateOfAKeyIsToldAndTheWaitsAreCountedAtTheTimeOfTheRun(t *testi
 
 func rdfCheckFateWaits(t *testing.T, s *rdfSetup) {
 	t.Helper()
-	got := rdfWaitsByKey(s.calcWaits(t), "ds_places")
+	got := rdfWaitsByKey(s.rdfCalcWaits(t), "ds_places")
 	truncated := rdfNow.Truncate(time.Second)
 	type w struct {
 		kind    int16

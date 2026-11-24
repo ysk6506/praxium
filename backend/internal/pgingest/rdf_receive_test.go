@@ -58,7 +58,7 @@ func TestRdfTheComparisonReadsTheCoverageOfTheReceivingFromTheCountsAndTakesTheO
 	if err := s.e.st.AdvanceRun(s.e.ctx, l, ingest.RunReceiving, ingest.RunComputing); err != nil {
 		t.Fatal(err)
 	}
-	plan, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.start(rdfNow, 0))
+	plan, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.rdfStart(rdfNow, 0))
 	if err != nil {
 		t.Fatal(err)
 	}

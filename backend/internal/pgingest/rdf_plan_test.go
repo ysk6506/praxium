@@ -15,7 +15,7 @@ import (
 // rdfLoadMany keeps n raw records, receives all of them (one in ten changed) and waits for one in a hundred, in the first dataset.
 func rdfLoadMany(t *testing.T, s *rdfSetup, n int) {
 	t.Helper()
-	no := s.no("ds_places")
+	no := s.rdfNo("ds_places")
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO %s (src_no, dataset_no, key, raw_hash, fields, decl_rev, opened_seq, fate)
 		SELECT $1, $2, 'k' || i, sha256(convert_to('v1-' || i, 'UTF8')), ARRAY['v1-' || i], 1, 1, 0 FROM generate_series(1, $3::int) i`, pgiTable(s.ref, pgschema.TableRawRecord)), s.ref.SrcNo, no, n)
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO %s (src_no, dataset_no, page, row_no, key, place, filtered, change_kind, raw_hash, fields)
@@ -33,8 +33,8 @@ func rdfScanned(t *testing.T, n, size int) (map[string]float64, string) {
 	t.Helper()
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
 	rdfLoadMany(t, s, n)
-	l := s.computing(t, "server-a", map[string]ingest.Coverage{"ds_places": ingest.CoverageComplete})
-	if _, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.start(rdfT0, size)); err != nil {
+	l := s.rdfComputing(t, "server-a", map[string]ingest.Coverage{"ds_places": ingest.CoverageComplete})
+	if _, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.rdfStart(rdfT0, size)); err != nil {
 		t.Fatal(err)
 	}
 	for part := 0; part < 2; part++ {

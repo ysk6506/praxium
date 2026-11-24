@@ -17,14 +17,14 @@ func rdfSeedModes(t *testing.T, s *rdfSetup) {
 		places, servers, vms = "ds_places", "ds_servers", "ds_vms"
 	)
 	old := rdfT0
-	s.raw(t,
+	s.rdfPutRaw(t,
 		rdfRaw{places, "s1", "a", pgschema.FateUsed}, rdfRaw{places, "s2", "a", pgschema.FateUsed}, rdfRaw{places, "s3", "a", pgschema.FateUsed},
 		rdfRaw{places, "s4", "a", pgschema.FateFiltered}, rdfRaw{places, "s5", "a", pgschema.FateUsed},
 		rdfRaw{servers, "x1", "a", pgschema.FateUsed},
 		rdfRaw{vms, "v1", "a", pgschema.FateUsed}, rdfRaw{vms, "v2", "a", pgschema.FateUsed}, rdfRaw{vms, "v3", "a", pgschema.FateUsed},
 		rdfRaw{vms, "v4", "a", pgschema.FateFiltered},
 	)
-	s.waits(t,
+	s.rdfPutWaits(t,
 		rdfWaitRow{places, "s2", pgschema.WaitUnseen, 2, old, false},
 		rdfWaitRow{places, "s3", pgschema.WaitFiltered, 4, old, false},
 		rdfWaitRow{places, "s4", pgschema.WaitFiltered, 2, old, false},
@@ -33,7 +33,7 @@ func rdfSeedModes(t *testing.T, s *rdfSetup) {
 		rdfWaitRow{vms, "v3", pgschema.WaitFiltered, 2, old, false},
 		rdfWaitRow{vms, "v4", pgschema.WaitFiltered, 5, old, false},
 	)
-	s.stage(t,
+	s.rdfPutStage(t,
 		rdfStaged{places, 0, 0, "s1", "a", pgschema.ReceiveSame, false}, rdfStaged{places, 0, 1, "s4", "a", pgschema.ReceiveSame, true},
 		rdfStaged{places, 0, 2, "s5", "b", pgschema.ReceiveChanged, false}, rdfStaged{places, 0, 3, "s6", "a", pgschema.ReceiveNew, false},
 		rdfStaged{servers, 0, 0, "x1", "b", pgschema.ReceiveChanged, false}, rdfStaged{servers, 0, 1, "x2", "a", pgschema.ReceiveNew, false},
@@ -45,9 +45,9 @@ func rdfSeedModes(t *testing.T, s *rdfSetup) {
 func TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCountsNothingAndADatasetThatNeverRetiresWaitsForNothing(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
 	rdfSeedModes(t, s)
-	l := s.computing(t, "server-a", map[string]ingest.Coverage{"ds_places": ingest.CoverageSeenOnly, "ds_servers": ingest.CoverageIncomplete, "ds_vms": ingest.CoverageComplete})
-	rep := s.run(t, l, s.start(rdfNow, 0, "ds_vms"))
-	recs := s.records(t)
+	l := s.rdfComputing(t, "server-a", map[string]ingest.Coverage{"ds_places": ingest.CoverageSeenOnly, "ds_servers": ingest.CoverageIncomplete, "ds_vms": ingest.CoverageComplete})
+	rep := s.rdfRun(t, l, s.rdfStart(rdfNow, 0, "ds_vms"))
+	recs := s.rdfRecords(t)
 	got := map[string]int16{}
 	for _, r := range recs {
 		got[r.Dataset+"/"+r.Key] = r.Why
@@ -58,7 +58,7 @@ func TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCount
 	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("the records: %v, want %v", got, want)
 	}
-	waits := s.calcWaits(t)
+	waits := s.rdfCalcWaits(t)
 	type w struct {
 		dataset, key string
 		kind         int16
@@ -98,17 +98,17 @@ func TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCount
 // [REQ-781]
 func TestRdfADatasetTheReceivingDidNotGiveIsLeftOutWhole(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
-	s.raw(t, rdfRaw{"ds_places", "p1", "a", pgschema.FateUsed})
-	s.waits(t, rdfWaitRow{"ds_places", "p1", pgschema.WaitUnseen, 2, rdfT0, false})
-	l := s.computing(t, "server-a", map[string]ingest.Coverage{"ds_servers": ingest.CoverageComplete})
-	st := s.start(rdfNow, 0)
+	s.rdfPutRaw(t, rdfRaw{"ds_places", "p1", "a", pgschema.FateUsed})
+	s.rdfPutWaits(t, rdfWaitRow{"ds_places", "p1", pgschema.WaitUnseen, 2, rdfT0, false})
+	l := s.rdfComputing(t, "server-a", map[string]ingest.Coverage{"ds_servers": ingest.CoverageComplete})
+	st := s.rdfStart(rdfNow, 0)
 	plan, err := s.e.st.BeginRawDiff(s.e.ctx, l, st)
 	if err != nil || len(plan.Datasets) != 3 || plan.Datasets[0].Coverage != ingest.CoverageIncomplete {
 		t.Fatalf("%+v %v", plan, err)
 	}
-	s.run(t, l, st)
-	if ws := s.calcWaits(t); len(ws) != 1 || ws[0].Runs != 2 || len(s.records(t)) != 0 {
-		t.Errorf("a dataset that was not received is left as it is: %+v %+v", ws, s.records(t))
+	s.rdfRun(t, l, st)
+	if ws := s.rdfCalcWaits(t); len(ws) != 1 || ws[0].Runs != 2 || len(s.rdfRecords(t)) != 0 {
+		t.Errorf("a dataset that was not received is left as it is: %+v %+v", ws, s.rdfRecords(t))
 	}
 }
 
@@ -116,7 +116,7 @@ func TestRdfADatasetTheReceivingDidNotGiveIsLeftOutWhole(t *testing.T) {
 func TestRdfTheComparisonDoesNotBeginForARunThatIsNotComputingOrForAnotherAttempt(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
 	l := s.e.open(t, s.kg, s.plan.Source.ID, "server-a")
-	if _, err := ingest.RunRawDiff(s.e.ctx, s.e.st, l, s.start(rdfNow, 0)); !pgiCodeIs(err, ingest.CodeRunStage) {
+	if _, err := ingest.RunRawDiff(s.e.ctx, s.e.st, l, s.rdfStart(rdfNow, 0)); !pgiCodeIs(err, ingest.CodeRunStage) {
 		t.Fatalf("a run that is still receiving: %v", err)
 	}
 	s.e.exec(t, `UPDATE sync_run SET counts = '{"receive":{"datasets":[]}}' WHERE run_no = $1`, l.No)
@@ -128,10 +128,10 @@ func TestRdfTheComparisonDoesNotBeginForARunThatIsNotComputingOrForAnotherAttemp
 	}
 	late := l
 	late.Attempt++
-	if _, err := s.e.st.BeginRawDiff(s.e.ctx, late, s.start(rdfNow, 0)); !pgiCodeIs(err, ingest.CodeRunLeaseLost) {
+	if _, err := s.e.st.BeginRawDiff(s.e.ctx, late, s.rdfStart(rdfNow, 0)); !pgiCodeIs(err, ingest.CodeRunLeaseLost) {
 		t.Fatalf("another attempt: %v", err)
 	}
-	bad := s.start(rdfNow, 0)
+	bad := s.rdfStart(rdfNow, 0)
 	bad.Datasets = append(bad.Datasets, ingest.RawDiffDataset{Dataset: "ds_nope"})
 	if _, err := s.e.st.BeginRawDiff(s.e.ctx, l, bad); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Fatalf("a dataset the source does not have: %v", err)
@@ -139,7 +139,7 @@ func TestRdfTheComparisonDoesNotBeginForARunThatIsNotComputingOrForAnotherAttemp
 	if _, err := s.e.st.BeginRawDiff(s.e.ctx, l, ingest.RawDiffStart{}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Fatalf("no time: %v", err)
 	}
-	if _, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.start(rdfNow, 0)); err != nil {
+	if _, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.rdfStart(rdfNow, 0)); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := s.e.st.DiffRawBucket(s.e.ctx, l, 1); !pgiCodeIs(err, ingest.CodeRunStage) {

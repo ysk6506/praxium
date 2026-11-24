@@ -30,6 +30,8 @@ decision_hash: 4104eeeec0af9351
 amended_by:
   - adr: "0098"
     what: 결정 3과 4의 수신 테이블 세 곳에 held 열을 더하고 생성기 버전을 4로 올리는 것
+  - adr: "0102"
+    what: 결정 3과 4의 `record_wait`, `calc_record`, `record_problem`, `calc_problem`에 열을 더하거나 NULL을 허용하고, `stage_record`에 인덱스를 더하고, 생성기 버전을 6으로 올리는 것
 ---
 # ADR-0095 새 수집 흐름의 테이블을 스키마 계획에 더한다
 

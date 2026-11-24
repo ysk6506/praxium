@@ -69,17 +69,17 @@ type rdfWaitRow struct {
 	expired bool
 }
 
-func (s *rdfSetup) no(dataset string) int64 { return s.ref.Datasets[dataset] }
+func (s *rdfSetup) rdfNo(dataset string) int64 { return s.ref.Datasets[dataset] }
 
-func (s *rdfSetup) raw(t *testing.T, rows ...rdfRaw) {
+func (s *rdfSetup) rdfPutRaw(t *testing.T, rows ...rdfRaw) {
 	t.Helper()
 	for _, r := range rows {
 		s.e.exec(t, fmt.Sprintf(`INSERT INTO %s (src_no, dataset_no, key, raw_hash, fields, decl_rev, opened_seq, fate) VALUES ($1, $2, $3, $4, $5, 1, 100, $6)`,
-			pgiTable(s.ref, pgschema.TableRawRecord)), s.ref.SrcNo, s.no(r.dataset), r.key, rdfHash(r.content), textArray([]string{r.content}), r.fate)
+			pgiTable(s.ref, pgschema.TableRawRecord)), s.ref.SrcNo, s.rdfNo(r.dataset), r.key, rdfHash(r.content), textArray([]string{r.content}), r.fate)
 	}
 }
 
-func (s *rdfSetup) stage(t *testing.T, rows ...rdfStaged) {
+func (s *rdfSetup) rdfPutStage(t *testing.T, rows ...rdfStaged) {
 	t.Helper()
 	for _, r := range rows {
 		var hash, fields any
@@ -87,20 +87,20 @@ func (s *rdfSetup) stage(t *testing.T, rows ...rdfStaged) {
 			hash, fields = rdfHash(r.content), textArray([]string{r.content})
 		}
 		s.e.exec(t, fmt.Sprintf(`INSERT INTO %s (src_no, dataset_no, page, row_no, key, place, filtered, change_kind, raw_hash, fields) VALUES ($1, $2, $3, $4, $5, '', $6, $7, $8, $9)`,
-			pgiTable(s.ref, pgschema.TableStageRecord)), s.ref.SrcNo, s.no(r.dataset), r.page, r.row, r.key, r.filtered, r.kind, hash, fields)
+			pgiTable(s.ref, pgschema.TableStageRecord)), s.ref.SrcNo, s.rdfNo(r.dataset), r.page, r.row, r.key, r.filtered, r.kind, hash, fields)
 	}
 }
 
-func (s *rdfSetup) waits(t *testing.T, rows ...rdfWaitRow) {
+func (s *rdfSetup) rdfPutWaits(t *testing.T, rows ...rdfWaitRow) {
 	t.Helper()
 	for _, r := range rows {
 		s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".record_wait (src_no, dataset_no, key, kind, runs, first_at, expired) VALUES ($1, $2, $3, $4, $5, $6, $7)`, s.ref.KGNo),
-			s.ref.SrcNo, s.no(r.dataset), r.key, r.kind, r.runs, r.first, r.expired)
+			s.ref.SrcNo, s.rdfNo(r.dataset), r.key, r.kind, r.runs, r.first, r.expired)
 	}
 }
 
 // computing opens a run of the source, says what the receiving made of each dataset and moves the run to computing.
-func (s *rdfSetup) computing(t *testing.T, owner string, cover map[string]ingest.Coverage) ingest.RunLease {
+func (s *rdfSetup) rdfComputing(t *testing.T, owner string, cover map[string]ingest.Coverage) ingest.RunLease {
 	t.Helper()
 	l := s.e.open(t, s.kg, s.plan.Source.ID, owner)
 	names := make([]string, 0, len(cover))
@@ -110,7 +110,7 @@ func (s *rdfSetup) computing(t *testing.T, owner string, cover map[string]ingest
 	sort.Strings(names)
 	var lines []string
 	for _, name := range names {
-		lines = append(lines, fmt.Sprintf(`{"dataset":%q,"dataset_no":%d,"complete":%t,"coverage":%q}`, name, s.no(name), cover[name] == ingest.CoverageComplete, cover[name]))
+		lines = append(lines, fmt.Sprintf(`{"dataset":%q,"dataset_no":%d,"complete":%t,"coverage":%q}`, name, s.rdfNo(name), cover[name] == ingest.CoverageComplete, cover[name]))
 	}
 	s.e.exec(t, `UPDATE sync_run SET counts = counts || $2::jsonb WHERE run_no = $1`, l.No, `{"receive":{"datasets":[`+strings.Join(lines, ",")+`]}}`)
 	if err := s.e.st.AdvanceRun(s.e.ctx, l, ingest.RunReceiving, ingest.RunComputing); err != nil {
@@ -120,7 +120,7 @@ func (s *rdfSetup) computing(t *testing.T, owner string, cover map[string]ingest
 }
 
 // rdfStart is the start of the comparison at a time, with every dataset of the plan retiring unless it is named in keep.
-func (s *rdfSetup) start(at time.Time, bucketRows int, keep ...string) ingest.RawDiffStart {
+func (s *rdfSetup) rdfStart(at time.Time, bucketRows int, keep ...string) ingest.RawDiffStart {
 	st := ingest.RawDiffStart{Now: at, BucketRows: bucketRows}
 	for _, d := range s.plan.Source.Datasets {
 		st.Datasets = append(st.Datasets, ingest.RawDiffDataset{Dataset: d.ID, Retire: !strings.Contains(strings.Join(keep, ","), d.ID)})
@@ -140,7 +140,7 @@ type rdfRecord struct {
 	Row     string
 }
 
-func (s *rdfSetup) records(t *testing.T) []rdfRecord {
+func (s *rdfSetup) rdfRecords(t *testing.T) []rdfRecord {
 	t.Helper()
 	rows, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT d.dataset_id, c.key, c.why, c.fields::text, c.fate, c.opened_seq, coalesce(c.page::text, '-'), coalesce(c.row_no::text, '-')
 		FROM "s_%d".calc_record c JOIN source_dataset d ON d.dataset_no = c.dataset_no ORDER BY d.dataset_id, c.key`, s.ref.KGNo))
@@ -172,7 +172,7 @@ type rdfWaitOut struct {
 	Expired bool
 }
 
-func (s *rdfSetup) calcWaits(t *testing.T) []rdfWaitOut {
+func (s *rdfSetup) rdfCalcWaits(t *testing.T) []rdfWaitOut {
 	t.Helper()
 	rows, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT d.dataset_id, c.key, c.kind, c.runs, c.first_at, c.expired
 		FROM "s_%d".calc_wait c JOIN source_dataset d ON d.dataset_no = c.dataset_no ORDER BY d.dataset_id, c.key, c.kind`, s.ref.KGNo))
@@ -217,7 +217,7 @@ func rdfWaitsByKey(ws []rdfWaitOut, dataset string) map[string][]rdfWaitOut {
 }
 
 // rdfRun runs the whole comparison and fails the test on an error.
-func (s *rdfSetup) run(t *testing.T, l ingest.RunLease, st ingest.RawDiffStart) ingest.RawDiffReport {
+func (s *rdfSetup) rdfRun(t *testing.T, l ingest.RunLease, st ingest.RawDiffStart) ingest.RawDiffReport {
 	t.Helper()
 	rep, err := ingest.RunRawDiff(s.e.ctx, s.e.st, l, st)
 	if err != nil {
@@ -229,7 +229,7 @@ func (s *rdfSetup) run(t *testing.T, l ingest.RunLease, st ingest.RawDiffStart) 
 // settle does to the raw records and the waits what the cleaning will do with what the comparison made (ADR-0102 decision 4): a
 // record the run opened is written over its raw record, a record that was closed is deleted, and the waits of the source are written
 // over by those of the run except the absences that closed a record. Then the run ends and the staged rows are emptied.
-func (s *rdfSetup) settle(t *testing.T, l ingest.RunLease) {
+func (s *rdfSetup) rdfSettle(t *testing.T, l ingest.RunLease) {
 	t.Helper()
 	k := s.ref.KGNo
 	raw := pgiTable(s.ref, pgschema.TableRawRecord)

@@ -32,7 +32,7 @@ amends_tests:
   - go:backend/internal/pgschema::TestIngestHeldDiffFromGeneratorThreeAddsTheColumnHeldToTheThreeTablesOfTheRowsReceivedAndNothingElse
   - go:backend/internal/pgingest::TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable
 test_change_reason: 생성기 버전이 4에서 6이 되어 버전 단언의 값이 바뀌고, 3에서 최신까지의 단계를 확인하던 테스트는 이제 3에서 4의 단계를 명시해 같은 단언을 한다. 5에서 6의 단계는 새 테스트가 확인한다. 원본을 떼는 트랜잭션의 잠금 수는 받은 행의 인덱스 하나만큼 늘어 한도 100을 101로 넘으므로 한도를 110으로 올린다(소스마다 한정된 수라는 뜻은 그대로다). 단언은 줄지 않았다.
-decision_hash: pending
+decision_hash: b4e456d424bfca5a
 ---
 # ADR-0102 새 수집 흐름의 2단계(원본 차이)와 세 갈래 완전성
 
@@ -103,7 +103,14 @@ ADR-0086이 새 수집 흐름의 2단계(원본 차이)를 "받은 행과 이미
 
 ## 측정
 
-(측정 결과를 여기에 적는다.)
+벤치마크 `BenchmarkRdfRawDiff`(`go test ./internal/pgingest -run '^$' -bench RdfRawDiff -benchtime 1x`)로 한 번 쟀다. 데이터는 DB 안에서 `generate_series`로 만든다. 소스가 레코드 n개를 가지고, 받은 행은 그중 99%이고(1%는 안 보임), 10%가 바뀌었다. 기본 버킷 크기(100,000)다. 2코어 컨테이너의 PostgreSQL 18, 다른 부하가 없는 때의 값이고 어림으로만 읽는다.
+
+| 레코드 | 2단계 전체 | 버킷 수 | 가장 긴 버킷 |
+|---|---|---|---|
+| 100,000 | 0.36초 | 1 | 0.37초 |
+| 1,000,000 | 5.8초 | 10 | 0.98초 |
+
+가장 긴 버킷도 한도(20초)의 20분의 1이어서 기본 크기를 그대로 둔다. 처음 짠 문장은 같은 조인을 중첩 루프로 계획해서 버킷 크기의 제곱에 비례했다(5,000행 버킷이 0.6초). 버킷의 트랜잭션에서 중첩 루프를 끄고(`SET LOCAL enable_nestloop = off`) 해시 조인으로 바꾸어 고쳤고, 계획의 꼴(범위 스캔, 조인이 버린 쌍의 수)을 테스트가 확인한다.
 
 ## 알려진 한계
 

@@ -46,14 +46,14 @@ type rdfStep struct {
 	podsCut  bool
 }
 
-func (s rdfStep) rows(dataset string) []string {
+func (s rdfStep) rdfRows(dataset string) []string {
 	if dataset == "ds_racks" {
 		return s.racks
 	}
 	return s.pods
 }
 
-func (s rdfStep) cut(dataset string) bool {
+func (s rdfStep) rdfCut(dataset string) bool {
 	if dataset == "ds_racks" {
 		return s.racksCut
 	}
@@ -74,12 +74,12 @@ func rdfCSV(rows []string) string {
 type rdfFetcher struct{ on *rdfStep }
 
 func (f *rdfFetcher) Fetch(_ context.Context, _ string, ds ingest.Dataset) (ingest.Capture, error) {
-	rows := f.on.rows(ds.ID)
+	rows := f.on.rdfRows(ds.ID)
 	if rows == nil {
 		return ingest.Capture{}, kernel.Errorf(kernel.CodeNotFound, "not given")
 	}
 	text := rdfCSV(rows)
-	if f.on.cut(ds.ID) {
+	if f.on.rdfCut(ds.ID) {
 		return ingest.Capture{Dataset: ds.ID, Data: []byte(text), Hash: kernel.HashBytes([]byte(text)).String(), Complete: false, Reason: "cut"}, nil
 	}
 	return ingest.Capture{Dataset: ds.ID, Data: []byte(text), Hash: kernel.HashBytes([]byte(text)).String(), Complete: true}, nil
@@ -133,7 +133,7 @@ func rdfNewParity(t *testing.T) *rdfParity {
 }
 
 // step runs both sides on one step and holds them to each other.
-func (p *rdfParity) step(n int, st rdfStep) {
+func (p *rdfParity) rdfStepOn(n int, st rdfStep) {
 	p.t.Helper()
 	at := rdfT0.Add(time.Duration(st.hour) * time.Hour)
 	p.fetch.on = &st
@@ -142,20 +142,20 @@ func (p *rdfParity) step(n int, st rdfStep) {
 	if err != nil {
 		p.t.Fatalf("step %d: the old run: %v", n, err)
 	}
-	rep := p.newRun(n, st, at)
+	rep := p.rdfNewRun(n, st, at)
 	for _, ds := range []string{"ds_racks", "ds_pods"} {
-		p.compareDataset(n, ds, st, oldRep, rep)
+		p.rdfCompareDataset(n, ds, st, oldRep, rep)
 	}
-	p.compareAlive(n)
+	p.rdfCompareAlive(n)
 }
 
 // newRun receives the step the way the receiving does, runs the comparison at the time of the step and does what the cleaning will.
-func (p *rdfParity) newRun(n int, st rdfStep, at time.Time) ingest.RawDiffReport {
+func (p *rdfParity) rdfNewRun(n int, st rdfStep, at time.Time) ingest.RawDiffReport {
 	p.t.Helper()
 	s := p.s
 	texts := pgiTexts{}
 	for _, ds := range []string{"ds_racks", "ds_pods"} {
-		if rows := st.rows(ds); rows != nil {
+		if rows := st.rdfRows(ds); rows != nil {
 			texts[ds] = rdfCSV(rows)
 		}
 	}
@@ -164,7 +164,7 @@ func (p *rdfParity) newRun(n int, st rdfStep, at time.Time) ingest.RawDiffReport
 		p.t.Fatalf("step %d: %v", n, err)
 	}
 	for _, ds := range []string{"ds_racks", "ds_pods"} {
-		if st.cut(ds) {
+		if st.rdfCut(ds) {
 			s.e.exec(p.t, `UPDATE sync_run SET counts = jsonb_set(counts, '{receive,datasets}', (SELECT jsonb_agg(CASE WHEN d->>'dataset' = $2 THEN d || '{"coverage":"incomplete","complete":false}' ELSE d END)
 				FROM jsonb_array_elements(counts->'receive'->'datasets') d)) WHERE run_no = $1`, l.No, ds)
 		}
@@ -173,17 +173,17 @@ func (p *rdfParity) newRun(n int, st rdfStep, at time.Time) ingest.RawDiffReport
 	for _, d := range s.plan.Source.Datasets {
 		start.Datasets = append(start.Datasets, ingest.RawDiffDataset{Dataset: d.ID, Retire: d.Deletion == ingest.DeletionAbsentInFull})
 	}
-	rep := s.run(p.t, l, start)
-	p.track(st, s.records(p.t), s.calcWaits(p.t))
-	s.settle(p.t, l)
+	rep := s.rdfRun(p.t, l, start)
+	p.rdfTrack(st, s.rdfRecords(p.t), s.rdfCalcWaits(p.t))
+	s.rdfSettle(p.t, l)
 	return rep
 }
 
 // track follows which objects the comparison leaves alive: a shown row that is not filtered makes its object, a shown row that is
 // filtered keeps the object that is there until the wait is up, and a record that is closed takes its object away.
-func (p *rdfParity) track(st rdfStep, recs []rdfRecord, waits []rdfWaitOut) {
+func (p *rdfParity) rdfTrack(st rdfStep, recs []rdfRecord, waits []rdfWaitOut) {
 	for _, ds := range []string{"ds_racks", "ds_pods"} {
-		if st.rows(ds) == nil || st.cut(ds) {
+		if st.rdfRows(ds) == nil || st.rdfCut(ds) {
 			continue
 		}
 		expired := map[string]bool{}
@@ -192,7 +192,7 @@ func (p *rdfParity) track(st rdfStep, recs []rdfRecord, waits []rdfWaitOut) {
 				expired[w.Key] = w.Expired
 			}
 		}
-		for _, row := range st.rows(ds) {
+		for _, row := range st.rdfRows(ds) {
 			f := strings.Split(row, "/")
 			key := ds + "/" + f[0]
 			if f[1] == "on" {
@@ -209,7 +209,7 @@ func (p *rdfParity) track(st rdfStep, recs []rdfRecord, waits []rdfWaitOut) {
 	}
 }
 
-func (p *rdfParity) compareDataset(n int, ds string, st rdfStep, oldRep ingest.Report, rep ingest.RawDiffReport) {
+func (p *rdfParity) rdfCompareDataset(n int, ds string, st rdfStep, oldRep ingest.Report, rep ingest.RawDiffReport) {
 	p.t.Helper()
 	s := p.s
 	state, err := p.states.Load(context.Background(), p.plan.Source.ID)
@@ -231,7 +231,7 @@ func (p *rdfParity) compareDataset(n int, ds string, st rdfStep, oldRep ingest.R
 		}
 	}
 	sort.Strings(wantKeys)
-	rows, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT key FROM %s WHERE dataset_no = $1 ORDER BY key`, pgiTable(s.ref, pgschema.TableRawRecord)), s.no(ds))
+	rows, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT key FROM %s WHERE dataset_no = $1 ORDER BY key`, pgiTable(s.ref, pgschema.TableRawRecord)), s.rdfNo(ds))
 	if err != nil {
 		p.t.Fatal(err)
 	}
@@ -249,7 +249,7 @@ func (p *rdfParity) compareDataset(n int, ds string, st rdfStep, oldRep ingest.R
 	}
 	for kind, want := range map[int16]map[string]string{pgschema.WaitUnseen: wantUnseen, pgschema.WaitFiltered: wantFiltered} {
 		got := map[string]string{}
-		ws, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT key, runs, first_at FROM "s_%d".record_wait WHERE dataset_no = $1 AND kind = $2`, s.ref.KGNo), s.no(ds), kind)
+		ws, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT key, runs, first_at FROM "s_%d".record_wait WHERE dataset_no = $1 AND kind = $2`, s.ref.KGNo), s.rdfNo(ds), kind)
 		if err != nil {
 			p.t.Fatal(err)
 		}
@@ -267,11 +267,11 @@ func (p *rdfParity) compareDataset(n int, ds string, st rdfStep, oldRep ingest.R
 			p.t.Errorf("step %d, %s, wait kind %d: %v, the old pipeline counts %v", n, ds, kind, got, want)
 		}
 	}
-	p.compareCounts(n, ds, oldRep, rep)
+	p.rdfCompareCounts(n, ds, oldRep, rep)
 	p.checks++
 }
 
-func (p *rdfParity) compareCounts(n int, ds string, oldRep ingest.Report, rep ingest.RawDiffReport) {
+func (p *rdfParity) rdfCompareCounts(n int, ds string, oldRep ingest.Report, rep ingest.RawDiffReport) {
 	p.t.Helper()
 	var old ingest.RawChanges
 	for _, d := range oldRep.Datasets {
@@ -291,7 +291,7 @@ func (p *rdfParity) compareCounts(n int, ds string, oldRep ingest.Report, rep in
 }
 
 // compareAlive holds the objects the old pipeline leaves alive to those the comparison leaves alive.
-func (p *rdfParity) compareAlive(n int) {
+func (p *rdfParity) rdfCompareAlive(n int) {
 	p.t.Helper()
 	snap, err := p.runner.Store.Snapshot(context.Background(), graph.ReadPoint{KG: p.kg.ID, Kind: graph.ReadLatest})
 	if err != nil {
@@ -350,7 +350,7 @@ func TestRdfTheComparisonGivesTheRawRecordsTheWaitsTheCountsAndTheLiveObjectsThe
 	p := rdfNewParity(t)
 	steps := rdfParitySteps()
 	for n, st := range steps {
-		p.step(n, st)
+		p.rdfStepOn(n, st)
 	}
 	if p.checks != 2*len(steps) {
 		t.Fatalf("%d comparisons for %d steps", p.checks, len(steps))
