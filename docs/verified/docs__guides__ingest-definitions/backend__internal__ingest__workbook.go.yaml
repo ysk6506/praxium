@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/workbook.go"
-hash: "b14934fa043ff230"
-date: "2026-11-16"
-note: "ADR-0070: 정의의 오류가 여럿이면 모두 나오고 위치와 코드를 가진다는 절을 더했고, 문장과 필드 설명은 코드(definition.go, mapping.go, sheetopts.go, refine.go, workbook.go)와 대조해 그대로 맞다"
+hash: "89d147706ad3e1fc"
+date: "2026-11-20"
+note: "엑셀 시트 읽기 규칙(합친 머리글 확장, 같은 행 번호 shape_changed)을 ADR-0103에 맞춰 반영했고, workbook.go(Cell.Skipped/Blank)와 ingestion.md 변경 후 본문과 대조해 확인함"
 text_changed: true
-doc_hash: "f47f691169bdc959"
+doc_hash: "6e1bc6519dd65aac"

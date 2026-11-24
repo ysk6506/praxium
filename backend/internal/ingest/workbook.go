@@ -37,6 +37,21 @@ type Cell struct {
 	Formula bool
 	// NoValue is true when a formula has no stored value (the file was never calculated): the text is empty.
 	NoValue bool
+	// Skipped is true when a reader that builds the text of the cells it is asked for only did not build this one: the cell
+	// holds a value and nothing else of it is known but Blank (ADR-0103). A reader that gives every cell leaves it false.
+	Skipped bool
+	// Blank says, for a Skipped cell, what the rule of a blank cell says of it: a text of white space only, or a formula with
+	// no stored value. Such a cell does not make a row a data row. A cell that is not Skipped is judged by its text.
+	Blank bool
+}
+
+// blank tells whether the cell counts for nothing in a row: a text of white space only, or a formula with no stored value
+// (it is a text with no text). A cell of any other kind, an error included, is a value.
+func (c Cell) blank() bool {
+	if c.Skipped {
+		return c.Blank
+	}
+	return c.Kind == CellText && strings.TrimSpace(c.Text) == ""
 }
 
 // SheetRow is the cells of one row that have a value, in the order of the columns.

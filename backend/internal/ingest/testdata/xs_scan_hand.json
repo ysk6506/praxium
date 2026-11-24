@@ -1,0 +1,1470 @@
+{
+  "cases": [
+    {
+      "name": "plain",
+      "table": {
+        "Rows": [
+          {
+            "Key": "10001",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "10001",
+              "name": "web-01",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "10002",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "10002",
+              "name": "web-02",
+              "zone": "B"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "title above the header",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 6,
+            "Where": "S!A6:C6",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "B"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 3,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "blank_row": 1
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "blank rows in the middle and white space",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 5,
+            "Where": "S!A5:C5",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "B"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 9,
+            "Where": "S!A9:C9",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": "C"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "blank_row": 5
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "error and formula cells",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": ""
+            },
+            "Issues": [
+              {
+                "Kind": "cell_error",
+                "Where": "S!C2",
+                "Row": 2,
+                "Reason": "the cell of column zone shows the error #N/A"
+              }
+            ]
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "",
+              "zone": "B"
+            },
+            "Issues": [
+              {
+                "Kind": "formula_without_value",
+                "Where": "S!B3",
+                "Row": 3,
+                "Reason": "the cell of column name is a formula the file stored no value for (it was never calculated)"
+              }
+            ]
+          }
+        ],
+        "Unreadable": [
+          {
+            "Line": 4,
+            "Where": "S!A4",
+            "Reason": "missing_natural_key",
+            "Column": "asset",
+            "AllEmpty": true
+          },
+          {
+            "Line": 5,
+            "Where": "S!A5",
+            "Reason": "missing_natural_key",
+            "Column": "asset",
+            "AllEmpty": true
+          }
+        ],
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": [
+          {
+            "Kind": "cell_error",
+            "Where": "S!C2",
+            "Row": 2,
+            "Reason": "the cell of column zone shows the error #N/A"
+          },
+          {
+            "Kind": "formula_without_value",
+            "Where": "S!B3",
+            "Row": 3,
+            "Reason": "the cell of column name is a formula the file stored no value for (it was never calculated)"
+          },
+          {
+            "Kind": "cell_error",
+            "Where": "S!A4",
+            "Row": 4,
+            "Reason": "the cell of column asset shows the error #REF!"
+          },
+          {
+            "Kind": "formula_without_value",
+            "Where": "S!A5",
+            "Row": 5,
+            "Reason": "the cell of column asset is a formula the file stored no value for (it was never calculated)"
+          }
+        ],
+        "OverRows": false
+      }
+    },
+    {
+      "name": "hidden rows are read",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "B"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 1,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "hidden rows are skipped",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "blank_row": 1,
+          "hidden_row": 1
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "hidden columns that are read",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 2,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a range of the data",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "B"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": "C"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a range that starts at the second column",
+      "table": {
+        "Rows": [
+          {
+            "Key": "a",
+            "Line": 2,
+            "Where": "S!B2:D2",
+            "Fields": {
+              "name": "a",
+              "rack": "R1",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "b",
+            "Line": 4,
+            "Where": "S!B4:D4",
+            "Fields": {
+              "name": "b",
+              "rack": "R2",
+              "zone": "B"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Name", "Zone", "Rack"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "blank_row": 1
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the data ends after blank rows",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "after_end": 4,
+          "blank_row": 2
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the data ends and what follows is only white space",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "after_end": 1,
+          "blank_row": 1
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "merged values are first only",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": ""
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": ""
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "merged values are filled",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a merge whose first cell has no value",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": ""
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "B"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": ""
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a merge whose first cell is an error or has no stored value",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": ""
+            },
+            "Issues": [
+              {
+                "Kind": "cell_error",
+                "Where": "S!C2",
+                "Row": 2,
+                "Reason": "the cell of column zone shows the error #N/A"
+              }
+            ]
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": ""
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 5,
+            "Where": "S!A5:C5",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": ""
+            },
+            "Issues": [
+              {
+                "Kind": "formula_without_value",
+                "Where": "S!C5",
+                "Row": 5,
+                "Reason": "the cell of column zone is a formula the file stored no value for (it was never calculated)"
+              }
+            ]
+          },
+          {
+            "Key": "4",
+            "Line": 6,
+            "Where": "S!A6:C6",
+            "Fields": {
+              "asset": "4",
+              "name": "d",
+              "zone": ""
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "blank_row": 1
+        },
+        "CellIssues": [
+          {
+            "Kind": "cell_error",
+            "Where": "S!C2",
+            "Row": 2,
+            "Reason": "the cell of column zone shows the error #N/A"
+          },
+          {
+            "Kind": "formula_without_value",
+            "Where": "S!C5",
+            "Row": 5,
+            "Reason": "the cell of column zone is a formula the file stored no value for (it was never calculated)"
+          }
+        ],
+        "OverRows": false
+      }
+    },
+    {
+      "name": "overlapping merges: the first in order decides",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": "a"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "3",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "3",
+              "name": "c",
+              "zone": "Z"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a merge in the key column",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "1",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "1",
+              "name": "b",
+              "zone": "B"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "1",
+            "Line": 4,
+            "Where": "S!A4:C4",
+            "Fields": {
+              "asset": "1",
+              "name": "c",
+              "zone": "C"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a header in two rows with a merged group",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "cpu": "8",
+              "id": "1",
+              "ram": "32"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["ID", "Spec CPU", "Spec RAM"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a header merged over three columns inside the used range",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:A2",
+            "Fields": {
+              "asset": "1"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2",
+            "Line": 3,
+            "Where": "S!A3:A3",
+            "Fields": {
+              "asset": "2"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": ["Notes", "Notes", "Notes"],
+        "Reason": "",
+        "Header": ["Asset", "Notes"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a header merged over rows",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset"],
+        "Extra": ["Asset Asset"],
+        "Reason": "",
+        "Header": ["Asset Asset", "Place Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a missing column",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["name"],
+        "Extra": ["Nom"],
+        "Reason": "",
+        "Header": ["Asset", "Nom", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "an optional column that is not there and extra columns",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:B2",
+            "Fields": {
+              "asset": "1",
+              "name": "a"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": ["Rack", "Note", "Rack"],
+        "Reason": "",
+        "Header": ["Asset", "Name", "Rack", "Note", "Rack"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a header with line breaks and white space",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["name"],
+        "Extra": ["Name of the asset"],
+        "Reason": "",
+        "Header": ["Asset", "Name of the asset", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the sheet is named and is not there",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset", "name"],
+        "Extra": null,
+        "Reason": "the workbook has no sheet \"Nope\" (it has \"S\")",
+        "Header": null,
+        "HeaderRow": 0,
+        "Hint": "",
+        "Sheet": "",
+        "SheetState": "",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": null,
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the sheet number is too big",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset", "name"],
+        "Extra": null,
+        "Reason": "the workbook has no sheet number 3 (it has \"S\")",
+        "Header": null,
+        "HeaderRow": 0,
+        "Hint": "",
+        "Sheet": "",
+        "SheetState": "",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": null,
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the sheet is a chart",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset", "name"],
+        "Extra": null,
+        "Reason": "sheet \"Chart\" is not a worksheet of cells (a chart sheet, for one)",
+        "Header": null,
+        "HeaderRow": 0,
+        "Hint": "",
+        "Sheet": "",
+        "SheetState": "",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": null,
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the sheet is hidden and has no rows",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset", "name"],
+        "Extra": null,
+        "Reason": "",
+        "Header": null,
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "Empty",
+        "SheetState": "hidden",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a sheet with only a header",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a header row below the last row has no merge",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset", "name"],
+        "Extra": null,
+        "Reason": "",
+        "Header": null,
+        "HeaderRow": 5,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "rows without a key are passed over when the dataset says so",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "Total",
+            "Line": 5,
+            "Where": "S!A5:C5",
+            "Fields": {
+              "asset": "Total",
+              "name": "",
+              "zone": ""
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "no_key": 2
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a natural key of two columns",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1\u001fa",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "2\u001fb",
+            "Line": 5,
+            "Where": "S!A5:C5",
+            "Fields": {
+              "asset": "2",
+              "name": "b",
+              "zone": ""
+            },
+            "Issues": [
+              {
+                "Kind": "cell_error",
+                "Where": "S!C5",
+                "Row": 5,
+                "Reason": "the cell of column zone shows the error #N/A"
+              }
+            ]
+          }
+        ],
+        "Unreadable": [
+          {
+            "Line": 3,
+            "Where": "S!B3",
+            "Reason": "missing_natural_key",
+            "Column": "name",
+            "AllEmpty": false
+          },
+          {
+            "Line": 4,
+            "Where": "S!A4",
+            "Reason": "missing_natural_key",
+            "Column": "asset",
+            "AllEmpty": true
+          }
+        ],
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": [
+          {
+            "Kind": "cell_error",
+            "Where": "S!C5",
+            "Row": 5,
+            "Reason": "the cell of column zone shows the error #N/A"
+          }
+        ],
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a sheet that is the second of the workbook, named",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "Racks!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "Racks",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "dates and numbers keep their text",
+      "table": {
+        "Rows": [
+          {
+            "Key": "10001",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "10001",
+              "name": "2026-03-14",
+              "zone": "1.5"
+            },
+            "Issues": null
+          },
+          {
+            "Key": "10002",
+            "Line": 3,
+            "Where": "S!A3:C3",
+            "Fields": {
+              "asset": "10002",
+              "name": "2026-03-15",
+              "zone": "2"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "rows with no cell between the data",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {
+          "after_end": 1,
+          "blank_row": 3
+        },
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the header has no name at all",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": ["asset", "name"],
+        "Extra": null,
+        "Reason": "",
+        "Header": null,
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "a range that ends before the first data row",
+      "table": {
+        "Rows": [
+          {
+            "Key": "1",
+            "Line": 2,
+            "Where": "S!A2:C2",
+            "Fields": {
+              "asset": "1",
+              "name": "a",
+              "zone": "A"
+            },
+            "Issues": null
+          }
+        ],
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    },
+    {
+      "name": "the first row of the data is beyond the end of the range",
+      "table": {
+        "Rows": null,
+        "Unreadable": null,
+        "Missing": null,
+        "Extra": null,
+        "Reason": "",
+        "Header": ["Asset", "Name", "Zone"],
+        "HeaderRow": 1,
+        "Hint": "",
+        "Sheet": "S",
+        "SheetState": "visible",
+        "HiddenRowsRead": 0,
+        "HiddenColsRead": 0,
+        "Skipped": {},
+        "CellIssues": null,
+        "OverRows": false
+      }
+    }
+  ],
+  "commit": "d1df3c0"
+}
