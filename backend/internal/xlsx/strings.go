@@ -48,6 +48,17 @@ func appendBounded(b *strings.Builder, t xml.CharData, maxChars int) error {
 	return nil
 }
 
+// startOfText follows the start of an element of a rich text: whether the characters that come are text, and how deep in a phonetic hint.
+func startOfText(name string, inText bool, depthPhonetic int) (bool, int) {
+	switch name {
+	case "rPh":
+		return inText, depthPhonetic + 1
+	case "t":
+		return depthPhonetic == 0, depthPhonetic
+	}
+	return inText, depthPhonetic
+}
+
 // richText reads the text of an element that holds <t> and runs (<r><t>) up to the end of the element named end.
 func richText(dec *xml.Decoder, end string, maxChars int) (string, error) {
 	var b strings.Builder
@@ -59,12 +70,7 @@ func richText(dec *xml.Decoder, end string, maxChars int) (string, error) {
 		}
 		switch t := tok.(type) {
 		case xml.StartElement:
-			switch t.Name.Local {
-			case "rPh":
-				depthPhonetic++
-			case "t":
-				inText = depthPhonetic == 0
-			}
+			inText, depthPhonetic = startOfText(t.Name.Local, inText, depthPhonetic)
 		case xml.CharData:
 			if inText {
 				if err := appendBounded(&b, t, maxChars); err != nil {
