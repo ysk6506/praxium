@@ -15932,7 +15932,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/graph::TestNumkeyTheSameNumberInAnotherFormMakesNoChangeAndAnotherNumberDoes": {
@@ -15947,7 +15947,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/graph::TestObjectValidationAgainstTheRegistry": {
@@ -16188,7 +16188,7 @@
    "reqs": [
     "REQ-762"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/graph::TestUtcTimeAValueOfTheKindTimeIsInTheOneFormOfTheStoreOrItIsARecordThatDoesNotFit": {
@@ -16204,7 +16204,7 @@
     "REQ-564",
     "REQ-762"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/graph::TestUtcTimeTheTimeASourceSawIsOfThatFormToo": {
@@ -16219,7 +16219,7 @@
    "reqs": [
     "REQ-762"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/graph::TestVerifyFindsAHashThatDoesNotMatchTheRows": {
@@ -22430,7 +22430,7 @@
    "reqs": [
     "REQ-762"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestUTF16WithoutAByteOrderMarkIsRecognisedByItsNulBytes": {
@@ -27181,7 +27181,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
@@ -27220,7 +27220,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgschema::TestDiffKeepsTheGroupsOfTheStatisticsThatExist": {
@@ -27377,7 +27377,7 @@
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgschema::TestIngestIndexesOfTheKeptTablesAreInThePlan": {
@@ -27672,7 +27672,7 @@
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestVmAKGOfGeneratorThreeIsFollowedThroughFourToFiveInOrder": {
@@ -27687,7 +27687,7 @@
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestVmATypeThatIsNewInTheDiffGetsItsIndexesWithItsTableAndTheOldTypesGetThemAfterwards": {
@@ -27702,7 +27702,7 @@
    "reqs": [
     "REQ-761"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestVmAValueThatHasNoColumnKindStopsTheFollowRatherThanMovingItWrong": {
@@ -27717,7 +27717,7 @@
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestVmEveryTableOfATypeHasTheTwoNameIndexesAndNoIndexOnTheReference": {
@@ -27732,7 +27732,7 @@
    "reqs": [
     "REQ-761"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgsource::TestPgfAConnectionThatCannotStartInItsTimeIsATimeout": {
@@ -29267,7 +29267,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestOpenFailuresDoNotShowThePassword": {
@@ -29363,7 +29363,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheRestoreThatWasCutIsEndedAndTheKGIsOpenAgain": {
@@ -29376,7 +29376,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseOfAKGWithNoWorkHalfDoneIsGivenAtOnce": {
@@ -29389,7 +29389,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestRsmTheServerEndsTheWorkOfEveryKGAndOneThatCannotBeEndedDoesNotStopTheOthers": {
@@ -29402,7 +29402,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestSapAbandonBetweenChunksUndoesKeysAndTheApplyCanStartAgain": {
@@ -29803,7 +29803,7 @@
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestSvmAnIndexThatAnAdjustmentLeftInvalidIsBuiltAgainByTheNextRun": {
@@ -29818,7 +29818,7 @@
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestTestDatabasesNeedTheServerAndNeverSkip": {
@@ -29936,7 +29936,7 @@
    "reqs": [
     "REQ-764"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestTixTheNameIndexesAnswerTheExactNameAndTheStartOfTheNameWithoutCase": {
@@ -29951,7 +29951,7 @@
    "reqs": [
     "REQ-761"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestV2cCodecsOfGradesAndKeys": {
@@ -29977,7 +29977,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2cLeaseIsTakenRenewedAndReleasedByTheDatabaseClock": {
@@ -29990,7 +29990,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2cLeaseRunsOutByTheClockOfTheCallerWhenTheStoreIsAskedTo": {
@@ -30003,7 +30003,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2cResolveDecidesAnUnknownCommitByTheHead": {
@@ -30016,7 +30016,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2dEveryOperationFailsOnAClosedPool": {
@@ -30029,7 +30029,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2dReadsFailOnRowsThatHoldWhatTheStoreDidNotWrite": {
@@ -30042,7 +30042,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2dReadsFailWhenATableTheyNeedIsMissing": {
@@ -30055,7 +30055,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2eALeaseAndAHeadThatAreDamagedFail": {
@@ -30068,7 +30068,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2eAServerThatHoldsAnotherModelRefusesTheKG": {
@@ -30081,7 +30081,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2eReadPointsAndVersions": {
@@ -30094,7 +30094,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel": {
@@ -30107,7 +30107,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2eTheTestStoreMakesKGsAndTheCatalogFindsThemByIdNameAndMain": {
@@ -30133,7 +30133,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2mAnUnknownOutcomeOfTheStartOfAWorkIsDecidedByTheHead": {
@@ -30146,7 +30146,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2mASealThatIsNotReadyOrDoesNotFollowIsRefused": {
@@ -30159,7 +30159,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2mWritesAndFeedsFailWhenATableIsGone": {
@@ -30172,7 +30172,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2oAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
@@ -30198,7 +30198,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2rReadsLinksIdentifiersAndVolatileValues": {
@@ -30211,7 +30211,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2rReadsTheNewestAndThePastStates": {
@@ -30224,7 +30224,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2rRefusesReadsThatCannotBeAnswered": {
@@ -30237,7 +30237,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2sOpenWithoutModelsHoldsTheStandardModelWithItsStatistics": {
@@ -30301,7 +30301,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wAChangeOfValuesAloneDoesNotTouchTheRowsOfTheObjectAndTheRowsAreWrittenInOrder": {
@@ -30314,7 +30314,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wARefThatCameBackWithAnotherTypeIsRefused": {
@@ -30327,7 +30327,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wARetiredObjectComesBackWithTheSameNumberAndTheKeyStaysBound": {
@@ -30340,7 +30340,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wAWriteIsRefusedWhenTheSchemaWasMadeFromAnotherModel": {
@@ -30353,7 +30353,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wBulkReadsGiveWhatReadsOneAtATimeGive": {
@@ -30366,7 +30366,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wRestoreClosesTheKGUntilItEndsAndAnInterruptedOneIsResumed": {
@@ -30379,7 +30379,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestV2wTheSettingsOfTheTablesAreInForce": {
@@ -30392,7 +30392,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
   },
   "go:backend/internal/pgstore::TestVcolAnUnknownValueIsAnEntryWithAnEmptyColumn": {
@@ -30407,7 +30407,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestVcolEveryKindOfValueGoesThroughItsColumnAndComesBack": {
@@ -30422,7 +30422,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestVcolTheStagedApplyComparesTheColumnAndTheGradeAndTheBasis": {
@@ -30437,7 +30437,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestVcolTheWriterPutsTheValueInItsColumnAndTheReaderGivesItBack": {
@@ -30452,7 +30452,7 @@
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-20",
+   "added": "2026-11-24",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestVersionsCarryTheirPartsAndRestoreDropsTheLaterOnes": {
