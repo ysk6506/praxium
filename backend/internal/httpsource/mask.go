@@ -39,8 +39,29 @@ func maskForms(values []string) []string {
 		add(base64.RawStdEncoding.EncodeToString(b))
 		add(base64.URLEncoding.EncodeToString(b))
 		add(base64.RawURLEncoding.EncodeToString(b))
+		for _, j := range jsonTexts(v) {
+			add(j)
+		}
 	}
 	sort.SliceStable(out, func(i, j int) bool { return len(out[i]) > len(out[j]) })
+	return out
+}
+
+// jsonTexts are the shapes a value takes inside a JSON text: the way the encoder of the bodies writes it (the quotes, the
+// backslash, the control characters and the characters of HTML as \uXXXX escapes) and the way an encoder that leaves the
+// characters of HTML as they are writes it. A server that hands back the body it was sent gives it in one of these.
+func jsonTexts(v string) []string {
+	var out []string
+	for _, escapeHTML := range []bool{true, false} {
+		var b strings.Builder
+		enc := json.NewEncoder(&b)
+		enc.SetEscapeHTML(escapeHTML)
+		_ = enc.Encode(v) // a text always encodes
+		t := strings.TrimSuffix(b.String(), "\n")
+		if len(t) >= 2 {
+			out = append(out, t[1:len(t)-1])
+		}
+	}
 	return out
 }
 
@@ -57,7 +78,11 @@ func newReplacer(texts []string) *strings.Replacer {
 	if len(pairs) == 0 {
 		return nil
 	}
-	return strings.NewReplacer(pairs...)
+	r := strings.NewReplacer(pairs...)
+	// A replacer builds itself on its first use and keeps the texts it was given until then. Using it now means the texts are
+	// never lying in it for anything that prints the struct that holds it with reflection.
+	_ = r.Replace("")
+	return r
 }
 
 // clean takes the values of the secrets out of a text and tells whether there was any.
@@ -69,8 +94,19 @@ func (m maskSet) clean(text string) (string, bool) {
 	return out, out != text
 }
 
-// clean is a text of what the adapter gives out (a path, a header, a sentence) with the values of the open secrets taken out.
+// clean is a text of what the adapter gives out (a path, a header, a sentence) with the values of the open secrets taken out,
+// the user name and the client id among them: it is for the records of what happened, which a person reads.
 func (rn *run) clean(text string) string {
+	out, hit := rn.signer.wide.clean(text)
+	if hit {
+		rn.cleaned++
+	}
+	return out
+}
+
+// cleanRow is a text of a record the source gave with the values of the secret's own fields taken out, and those only
+// (ADR-0100): a row is data and its key is made of it, so a user name or a client id that the data has too must stay.
+func (rn *run) cleanRow(text string) string {
 	out, hit := rn.signer.mask.clean(text)
 	if hit {
 		rn.cleaned++
@@ -83,9 +119,9 @@ func (rn *run) clean(text string) string {
 func (rn *run) cleanValue(v any) any {
 	switch x := v.(type) {
 	case string:
-		return rn.clean(x)
+		return rn.cleanRow(x)
 	case json.Number:
-		if out := rn.clean(x.String()); out != x.String() {
+		if out := rn.cleanRow(x.String()); out != x.String() {
 			return out
 		}
 	case map[string]any:
@@ -120,8 +156,8 @@ const tokenLeft ingest.EventKind = "token_left"
 // it there, and the token would carry it into the storage. The page goes without a token and a read that goes on from
 // it starts again from the first page (ADR-0097). One event says so, in words that hold no value.
 func (rn *run) safeToken(tok []byte, cursor string) []byte {
-	if _, hit := rn.signer.mask.clean(cursor); !hit {
-		if _, hit = rn.signer.mask.clean(string(tok)); !hit {
+	if _, hit := rn.signer.wide.clean(cursor); !hit {
+		if _, hit = rn.signer.wide.clean(string(tok)); !hit {
 			return tok
 		}
 	}

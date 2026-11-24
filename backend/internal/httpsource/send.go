@@ -138,8 +138,12 @@ func isHugeNumber(v string, err error) bool {
 func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	clock := rn.r.cfg.Clock
 	started := clock.Now()
+	req, err := rn.build(p)
+	if err != nil {
+		return nil, err
+	}
 	rn.emit(ingest.Event{Kind: ingest.EventRequest, Method: p.method, Path: p.url.Path, Attempt: attempt + 1})
-	resp, err := rn.doer.Do(ctx, rn.build(p))
+	resp, err := rn.doer.Do(ctx, req)
 	if err != nil {
 		return nil, rn.transportError(ctx, err)
 	}

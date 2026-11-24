@@ -17,6 +17,19 @@ const (
 	AuthBasic        = "basic"
 	AuthHeader       = "header"
 	AuthTokenRequest = "token_request"
+	// AuthCustom sends nothing by itself: the secret goes only where the definition puts it (auth.headers and the
+	// placeholders of a body).
+	AuthCustom = "custom"
+)
+
+// Where the credentials of a token request go, where the token is read from, and how a token is sent.
+const (
+	CredentialsInBody  = "body"
+	CredentialsInBasic = "basic"
+	TokenFromPath      = "path"
+	TokenFromBody      = "body"
+	SendHeader         = "header"
+	SendTemplate       = "template"
 )
 
 // The kinds of the pagination of an HTTP dataset.
@@ -99,29 +112,49 @@ type Connection struct {
 }
 
 // Auth is how an HTTP source is signed in to. Kind says which of the other fields are read: bearer and header send a
-// token secret, basic sends a password secret, token_request asks for a token with a password secret first.
+// token secret, basic sends a password secret, token_request asks for a token with a secret first, and custom sends
+// nothing by itself.
 type Auth struct {
 	Kind       string     `json:"kind"`
 	Credential *SecretRef `json:"credential,omitempty"`
 	// Header and Prefix are for the kind header: the name of the header and the text before the token.
 	Header string `json:"header,omitempty"`
 	Prefix string `json:"prefix,omitempty"`
-	// Request, TokenPath, SendHeader and SendPrefix are for the kind token_request.
-	Request    *TokenRequest `json:"request,omitempty"`
-	TokenPath  string        `json:"token_path,omitempty"`
-	SendHeader string        `json:"send_header,omitempty"`
+	// Request, TokenPath, TokenFrom, Send, SendHeader and SendPrefix are for the kind token_request.
+	Request   *TokenRequest `json:"request,omitempty"`
+	TokenPath string        `json:"token_path,omitempty"`
+	// TokenFrom is where the token is in the answer: at TokenPath (path, the default) or the whole body, which is a JSON
+	// text (body).
+	TokenFrom string `json:"token_from,omitempty"`
+	// Send is how the token goes on the requests for data: in the header SendHeader names (header, the default), or
+	// only where a placeholder or Headers puts it (template).
+	Send       string `json:"send,omitempty"`
+	SendHeader string `json:"send_header,omitempty"`
 	// SendPrefix is the text before the token in the header it is sent in; it is "Bearer " when it is not given and
 	// may be given as the empty text.
 	SendPrefix *string `json:"send_prefix,omitempty"`
+	// Headers are the headers a value of the secret or the token goes in, besides the one the kind sends: for the kinds
+	// custom and token_request.
+	Headers []SecretHeader `json:"headers,omitempty"`
 }
 
-// TokenRequest is the request that gives a token: a POST to a path of the same host, in the format json or form. A
-// value of the body that is exactly {{credential.<field>}} is replaced by that field of the secret, as a value and never
-// as a part of a text.
+// SecretHeader is a header a secret or the token is sent in: its name, where its value comes from (credential.<field> or
+// token) and the text before the value.
+type SecretHeader struct {
+	Name   string `json:"name"`
+	From   string `json:"from"`
+	Prefix string `json:"prefix,omitempty"`
+}
+
+// TokenRequest is the request that gives a token: a POST to a path of the same host. The credentials go in the body
+// (CredentialsIn body, the default: the body is a JSON tree or, as a form, a flat map, and a value that is exactly
+// {{credential.<field>}} is replaced by that field of the secret, as a value and never as a part of a text) or in an
+// Authorization: Basic header (basic: the request may have no body).
 type TokenRequest struct {
-	Path   string            `json:"path"`
-	Format string            `json:"format"`
-	Body   map[string]string `json:"body,omitempty"`
+	Path          string         `json:"path"`
+	Format        string         `json:"format,omitempty"`
+	CredentialsIn string         `json:"credentials_in,omitempty"`
+	Body          map[string]any `json:"body,omitempty"`
 }
 
 // Request is the request an HTTP dataset reads with: the method (GET unless the dataset says it reads with POST), the

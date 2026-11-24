@@ -2,7 +2,6 @@ package httpsource
 
 import (
 	"bytes"
-	"encoding/json"
 	"net/url"
 	"sort"
 	"strings"
@@ -16,10 +15,15 @@ import (
 type plan struct {
 	method string
 	url    *url.URL
-	body   []byte
-	ctype  string
-	// token marks the request that asks for a token: it is signed in with nothing, and not retried.
+	// tmpl is the body as a tree with its placeholders not put in yet (nil for no body), and form says it is sent as a form
+	// and not as JSON. The body is made when the request is built, so that a request sent again after the token was
+	// asked for once more carries the new one.
+	tmpl map[string]any
+	form bool
+	// token marks the request that asks for a token: it is signed in with nothing (but the Basic header, when basic is
+	// set), and not retried.
 	token bool
+	basic bool
 	// shown lists the query as a person may see it in a record of the exchange: the names, and the values that are the
 	// definition's own.
 	shown []ingest.NameValue
@@ -37,6 +41,10 @@ type params struct {
 }
 
 func unescape(s string) string { return ingest.UnescapeBraces(s) }
+
+// verbatim is a text of a body that the source gave (a cursor): it is sent as it is, and no placeholder or doubled brace
+// of it is read.
+type verbatim string
 
 // newParams starts from what the definition wrote, with the braces that stand for themselves written as themselves.
 func newParams(req *ingest.Request) *params {
@@ -66,13 +74,14 @@ func shownValue(name, value string, fromSource bool) ingest.NameValue {
 	return ingest.NameValue{Name: name, Value: value}
 }
 
-// copyBody copies a body of the definition, with the braces unescaped, so that the request may add to the copy.
+// copyBody copies a body of the definition as it is written, so that the request may add to the copy. The placeholders and
+// the doubled braces are read when the request is built (signer.fill).
 func copyBody(v any) any {
 	switch x := v.(type) {
 	case map[string]any:
 		out := make(map[string]any, len(x))
 		for k, e := range x {
-			out[unescape(k)] = copyBody(e)
+			out[k] = copyBody(e)
 		}
 		return out
 	case []any:
@@ -81,8 +90,6 @@ func copyBody(v any) any {
 			out[i] = copyBody(e)
 		}
 		return out
-	case string:
-		return unescape(x)
 	}
 	return v
 }
@@ -108,11 +115,7 @@ func (rn *run) dataPlan(ds ingest.Dataset, at pos) (plan, error) {
 		pl.url = &u
 	}
 	if pl.method == ingest.MethodPost && p.body != nil {
-		body, err := json.Marshal(p.body)
-		if err != nil {
-			return plan{}, rn.fail(ingest.SrcInternal, "the body of the request could not be made", nil)
-		}
-		pl.body, pl.ctype = body, "application/json"
+		pl.tmpl = p.body
 	}
 	return pl, nil
 }
@@ -134,8 +137,10 @@ func serverQuery(u *url.URL) []ingest.NameValue {
 }
 
 // build makes the request of the egress package from a plan: the headers of the connection, what the request accepts and
-// sends, and the credentials. It is the one place where a request is made, and it uses the two methods GET and POST.
-func (rn *run) build(p plan) egress.Request {
+// sends, and the credentials, with the body made from its template. It is the one place where a request is made, and it
+// uses the two methods GET and POST. It fails, with nothing made, when a value of the secret or the token cannot go where
+// the definition puts it (a line break in a header, a field the secret does not have).
+func (rn *run) build(p plan) (egress.Request, error) {
 	h := map[string][]string{}
 	for name, value := range rn.set.headers {
 		h[name] = []string{unescape(value)}
@@ -143,18 +148,29 @@ func (rn *run) build(p plan) egress.Request {
 	if !hasHeader(h, "Accept") {
 		h["Accept"] = []string{"application/json"}
 	}
-	if p.ctype != "" {
-		setHeader(h, "Content-Type", p.ctype)
+	body, ctype, err := rn.signer.bodyOf(p)
+	if err != nil {
+		return egress.Request{}, err
 	}
-	if !p.token {
-		rn.signer.apply(h)
+	if ctype != "" {
+		setHeader(h, "Content-Type", ctype)
+	}
+	switch {
+	case !p.token:
+		if err := rn.signer.apply(h); err != nil {
+			return egress.Request{}, err
+		}
+	case p.basic:
+		if err := rn.signer.setBasic(h); err != nil {
+			return egress.Request{}, err
+		}
 	}
 	req := egress.Request{Method: ingest.MethodGet, URL: p.url.String(), Header: h}
 	if p.method == ingest.MethodPost {
 		req.Method = ingest.MethodPost
-		req.Body = bytes.NewReader(p.body)
+		req.Body = bytes.NewReader(body)
 	}
-	return req
+	return req, nil
 }
 
 func hasHeader(h map[string][]string, name string) bool {
