@@ -44,6 +44,9 @@ amends_tests:
   - go:backend/internal/egress::TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt
 test_change_reason: 앞의 둘은 TLS 확인을 건너뛰는 글자(InsecureSkipVerify)를 egress의 고정 설정 한 곳에만 허락하는 것으로 검사를 바꾼다. egress 쪽은 금지 글자 목록에서 빠지는 것이 InsecureSkipVerify와 VerifyConnection뿐이고 이 둘은 pin.go에 정확히 한 번씩만 있어야 하는 검사로 옮기며 KeyLogWriter와 EncryptedClientHello를 금지 목록에 더하고, 필드 허용 목록의 AST 단언은 새 파일의 테스트가 맡으므로 합치면 이전보다 엄격하거나 같고, pgsource 쪽은 *tls.Config를 쥐거나 만드는 길을 egress의 등록 함수 호출 하나만 남기고 막으므로 엄격하거나 같다. 바꾼 검사가 우회 파일을 실제로 거절하는 것은 새 테스트 TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins가 따로 확인한다. 셋째는 정의 오류 코드 source.connection.tls_pins_invalid를 더하면서 사례 표 adpCases에 사례 세 개를 더하는 내용 변경이고, 빼거나 고친 사례와 단언은 없다. 나머지 넷은 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드(pin.go, probe.go 같은 새 파일과 바뀐 파일)가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 바뀐 코드가 같은 규칙을 지키는 것을 새 지문으로 다시 기록한다. 마지막 셋(TestTLSConfig로 시작하는 egress의 세 테스트)은 독립 검토(L6)에 따라 egress.TLSConfig를 비공개 tlsConfig로 바꾸면서 테스트가 함수를 부르는 이름만 바뀌는 내용 변경이다. 단언은 한 글자도 바뀌지 않았고 오류 문구의 글자도 그대로이다. 이 변경으로 egress 밖에서는 *tls.Config를 손에 쥘 수 없다.
 decision_hash: a122d58193ae55ce
+amended_by:
+  - adr: "0110"
+    what: 우회 검사에 허용 import 목록(egress)과 SSLMode·pq.Config 규칙(pgsource)을 더함
 ---
 # ADR-0105 HTTP 소스 확장 — 평문 허용 범위와 인증서 고정
 

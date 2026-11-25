@@ -15160,10 +15160,10 @@
   },
   "go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins": {
    "kind": "test",
-   "hash": "ec1fb0a220e9802e",
+   "hash": "b502add37b11e0ed",
    "asserts": 3,
    "literals": [
-    "24f87f1eef59a205"
+    "bac67964fac1dcd1"
    ],
    "precision": [],
    "skips": 0,
@@ -15205,10 +15205,10 @@
   },
   "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsForTheWaysAround": {
    "kind": "test",
-   "hash": "8895c540709d661e",
+   "hash": "696d83bd3bf4b7b3",
    "asserts": 5,
    "literals": [
-    "bed0acac56943cf7"
+    "2c10186e329f5f3d"
    ],
    "precision": [],
    "skips": 0,
@@ -15220,10 +15220,10 @@
   },
   "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsWhenAPlaceIsGone": {
    "kind": "test",
-   "hash": "1aefc38df7d6bab2",
+   "hash": "213e28745b1d7fe1",
    "asserts": 4,
    "literals": [
-    "3263e9dbbc97f7eb"
+    "dfcd334173b643b3"
    ],
    "precision": [],
    "skips": 0,
@@ -15670,7 +15670,7 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "7bf82668ccafb3d4",
+   "hash": "1fb98838405a8ffe",
    "asserts": 6,
    "literals": [
     "c584953f77926789"
@@ -15685,7 +15685,7 @@
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "0f194c673e03d7f5",
+   "hash": "1f3c77bb1ee8b97c",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"
@@ -30804,10 +30804,10 @@
   },
   "go:backend/internal/pgsource::TestPgsHxbTheOnlyWayToTheTLSSettingsIsTheRegistrationOfEgress": {
    "kind": "test",
-   "hash": "55867004cddd34c6",
+   "hash": "92de003284c971c2",
    "asserts": 3,
    "literals": [
-    "eeae75afbcbdd38f"
+    "136fb1e67407cd70"
    ],
    "precision": [],
    "skips": 0,
@@ -30816,7 +30816,7 @@
     "REQ-660"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsHxbThePinnedFailureIsWordedAsOne": {
    "kind": "test",
@@ -30835,10 +30835,10 @@
   },
   "go:backend/internal/pgsource::TestPgsHxbTheScanFailsForTheWaysAround": {
    "kind": "test",
-   "hash": "07538cc25be67479",
+   "hash": "1d788ebd6bc0802c",
    "asserts": 8,
    "literals": [
-    "e7b4b3d2d15e2ff1"
+    "024f27bbdd387bef"
    ],
    "precision": [],
    "skips": 0,
@@ -30846,7 +30846,7 @@
     "REQ-659"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsKeepsRowsOfOneKeyOnOnePage": {
    "kind": "test",
@@ -31265,7 +31265,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "9e18d4361a743d0f",
+   "hash": "ca1da89320b1b945",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -31276,7 +31276,7 @@
     "REQ-679"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsStatementsQuoteNamesAndTakeValuesAsArguments": {
    "kind": "test",
@@ -31359,7 +31359,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "bc367477e5e1b8f4",
+   "hash": "a3293917b6ca6b22",
    "asserts": 5,
    "literals": [
     "83ddf40c2eb59700"
@@ -31373,7 +31373,7 @@
     "REQ-660"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsTLSModeAgainstAServerWithoutTLSRefusesAndDoesNotFallBack": {
    "kind": "test",
