@@ -36,6 +36,9 @@ amends_tests:
   - go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged
 test_change_reason: 두 테스트는 egress의 소스 전체(go:embed *.go)를 읽어 방어를 우회하는 글자가 없는지 보므로, 결정 2의 추적 다이얼러(tracker.go)와 오류 종류 KindLimit이 더해지면 지문이 바뀐다. 테스트 파일은 한 글자도 바뀌지 않았고 단언과 기대 값도 그대로이며, 새 소스에서도 두 테스트가 통과한다
 decision_hash: cddcdd612c8264f7
+amended_by:
+  - adr: "0105"
+    what: PostgreSQL 소스의 TLS 설정을 egress의 등록 함수 하나로만 만들도록 한 것, 점검이 인증서 요약과 평문 안내를 돌려주는 것
 ---
 # ADR-0093 PostgreSQL 소스 어댑터
 

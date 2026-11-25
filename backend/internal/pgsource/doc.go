@@ -10,7 +10,7 @@
 // vacuum from running.
 //
 // Where the connection goes is decided by adapter.egress alone: the driver is given its dialer (names are resolved and
-// judged there), and its TLS settings come from egress.TLSConfig. The driver reads nothing from the environment: no
+// judged there), and its TLS settings are made by egress (RegisterPostgresTLS) and never held here. The driver reads nothing from the environment: no
 // PG variable, no service file, no .pgpass and no certificate of the home folder reaches a connection, because the
 // connection is made from a configuration that is filled in here and never from a connection string. The password is
 // read from the opened secret in one place (credential.go), is used when the connection is made, and is in no error,

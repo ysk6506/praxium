@@ -26,6 +26,7 @@ type settings struct {
 	maxWait  time.Duration
 	headers  map[string]string
 	caPEM    string
+	pins     []string
 	auth     ingest.Auth
 	token    tokenSettings
 }
@@ -64,6 +65,9 @@ func readSettings(def ingest.Source) (settings, error) {
 		maxBytes: intOr(cn.MaxResponseBytes, ingest.DefaultMaxResponseBytes),
 		maxWait:  secondsOr(cn.MaxRetryWaitSeconds, ingest.DefaultMaxRetryWaitSeconds),
 		headers:  cn.Headers, caPEM: cn.CAPEM, auth: ingest.Auth{Kind: ingest.AuthNone},
+	}
+	if cn.TLS != nil {
+		s.pins = cn.TLS.Pins
 	}
 	rps := cn.RequestsPerSecond
 	if rps <= 0 {
@@ -181,4 +185,20 @@ func originAt(scheme, host string, port int, path string) *url.URL {
 
 func (s settings) needsSecret() bool {
 	return s.auth.Kind != ingest.AuthNone && s.auth.Kind != ""
+}
+
+// notes are what a check says about the source besides how it went: that nothing is encrypted, and that a pin takes a
+// certificate whatever its dates are.
+func (s settings) notes() []ingest.CheckNote {
+	var out []ingest.CheckNote
+	if s.scheme == "http" {
+		out = append(out, ingest.CheckNote{Code: ingest.NotePlaintext, Message: "the credentials and the data of this source cross the network without encryption (http)"})
+	} else if s.token.url && s.token.scheme == "http" {
+		// The API is encrypted, but the request that asks for the token carries the secret of the source (ADR-0105).
+		out = append(out, ingest.CheckNote{Code: ingest.NotePlaintext, Message: "the secret of this source crosses the network without encryption in the request for the token (http)"})
+	}
+	if len(s.pins) > 0 {
+		out = append(out, ingest.CheckNote{Code: ingest.NotePinExpiry, Message: "the certificate of the server is accepted by its public key alone: its dates, its name and its chain are not looked at, so an expired certificate is accepted"})
+	}
+	return out
 }

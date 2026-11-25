@@ -23,7 +23,7 @@ func tlServer(t *testing.T, handler http.Handler) (*httptest.Server, string) {
 func TestTLSConfigAlwaysVerifies(t *testing.T) {
 	_, caPEM := tlServer(t, http.NotFoundHandler())
 	for _, pemText := range []string{"", caPEM} {
-		cfg, err := TLSConfig(pemText)
+		cfg, err := tlsConfig(pemText)
 		if err != nil {
 			t.Fatalf("TLSConfig: %v", err)
 		}
@@ -39,7 +39,7 @@ func TestTLSConfigAlwaysVerifies(t *testing.T) {
 // [REQ-661]
 func TestTLSConfigTrustsOnlyTheGivenAuthority(t *testing.T) {
 	srv, caPEM := tlServer(t, http.NotFoundHandler())
-	cfg, err := TLSConfig(caPEM)
+	cfg, err := tlsConfig(caPEM)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func TestTLSConfigTrustsOnlyTheGivenAuthority(t *testing.T) {
 // [REQ-661]
 func TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt(t *testing.T) {
 	for _, bad := range []string{"not a pem secret-detail", "-----BEGIN CERTIFICATE-----\nAAAA\n-----END CERTIFICATE-----\n", "-----BEGIN PRIVATE KEY-----\nAAAA\n-----END PRIVATE KEY-----\n"} {
-		_, err := TLSConfig(bad)
+		_, err := tlsConfig(bad)
 		var e *Error
 		if err == nil || !asError(err, &e) || e.Kind != KindTLS {
 			t.Errorf("TLSConfig(%q) = %v", bad, err)

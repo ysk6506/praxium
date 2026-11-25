@@ -94,7 +94,7 @@ func (s *session) connect(ctx context.Context) error {
 	if err != nil && ctx.Err() == nil && cctx.Err() != nil {
 		return sourceErr(ingest.SrcTimeout, "the source did not answer within the time of the connection", nil)
 	}
-	return classify(ctx, err)
+	return classifyPinned(ctx, err, s.st.pins)
 }
 
 // closeLater closes every connection of the read a little after the context ends (cancelled or out of time), whatever

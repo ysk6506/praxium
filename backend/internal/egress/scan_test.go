@@ -12,9 +12,9 @@ var scanSources embed.FS
 // [REQ-661]
 func TestTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 	forbidden := map[string]string{
-		"InsecureSkipVerify":    "a switch that turns the verification of a certificate off",
 		"VerifyPeerCertificate": "a hook that replaces the verification of a certificate",
-		"VerifyConnection":      "a hook that replaces the verification of a certificate",
+		"KeyLogWriter":          "a log of the keys of every connection",
+		"EncryptedClientHello":  "a setting that makes the handshake skip the hook of the verification",
 		"ProxyFromEnvironment":  "a proxy read from the environment",
 		"ProxyURL":              "a proxy",
 		"\"syscall\"":           "the syscall package (the connect hook of net.Dialer)",
@@ -29,6 +29,14 @@ func TestTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 		"log.Print":             "a log from the package",
 		"fmt.Print":             "a print from the package",
 	}
+	// The two words that turn the verification of a certificate off and put a check in its place are in one file, pin.go, and
+	// there once each (ADR-0105). Where in that file, and in what shape, is checked on the syntax tree by
+	// TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins.
+	pinOnly := map[string]string{
+		"InsecureSkipVerify": "a switch that turns the verification of a certificate off",
+		"VerifyConnection":   "a hook that replaces the verification of a certificate",
+	}
+	seenInPin := map[string]int{}
 	entries, err := scanSources.ReadDir(".")
 	if err != nil {
 		t.Fatal(err)
@@ -53,6 +61,20 @@ func TestTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 					t.Errorf("%s: %q is %s", name, strings.TrimSpace(line), why)
 				}
 			}
+			for word, why := range pinOnly {
+				if !strings.Contains(line, word) {
+					continue
+				}
+				if name != "pin.go" {
+					t.Errorf("%s: %q is %s, and only pin.go may have it", name, strings.TrimSpace(line), why)
+				}
+				seenInPin[word]++
+			}
+		}
+	}
+	for word := range pinOnly {
+		if seenInPin[word] != 1 {
+			t.Errorf("%s is in %d lines of code of pin.go, and has to be in exactly one", word, seenInPin[word])
 		}
 	}
 	if checked < 6 {
