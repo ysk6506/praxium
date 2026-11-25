@@ -16952,6 +16952,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/hookin::TestHkaABodyThatGrowsPastTheRoomOfTheBodiesIsRefusedWhereItGrows": {
+   "kind": "test",
+   "hash": "23aa51fcd5c878a3",
+   "asserts": 6,
+   "literals": [
+    "4bf566ce1a435c8a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/hookin::TestHkaABodyWithANumberThatIsTooBigForAFloatIsStillJSON": {
    "kind": "test",
    "hash": "65bbfd916847a697",
@@ -16988,6 +17003,21 @@
    "asserts": 7,
    "literals": [
     "1f27604e0ea8364c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaADeadlineThatCannotBeMovedAfterTheFirstByteEndsTheCall": {
+   "kind": "test",
+   "hash": "6e97f8ea5d337056",
+   "asserts": 2,
+   "literals": [
+    "fedeea8db1378bcb"
    ],
    "precision": [],
    "skips": 0,
