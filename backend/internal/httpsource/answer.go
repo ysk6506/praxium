@@ -97,7 +97,7 @@ func (a *answer) empty() *walked {
 // read reads the body once and says what the answer was.
 func (a *answer) read(ctx context.Context, skip int, each func(it item) bool) (*walked, error) {
 	rn := a.rn
-	w, err := walkRecords(a.rep.rc, rn.set.maxBytes, recordSpec{path: a.ds.RecordsPath, maxElements: a.ds.ElementLimit(), caps: rn.pager.reads(), skip: skip}, each)
+	w, err := walkRecords(a.rep.rc, rn.set.maxBytes, recordSpec{path: a.ds.RecordsPath, maxElements: a.ds.ElementLimit(), caps: rn.pager.reads(), skip: skip, single: a.ds.IsChild()}, each)
 	if w.valid {
 		rn.prog.responded = true
 	}

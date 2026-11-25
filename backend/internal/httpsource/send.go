@@ -138,12 +138,15 @@ func isHugeNumber(v string, err error) bool {
 func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	clock := rn.r.cfg.Clock
 	started := clock.Now()
+	if err := rn.charge(); err != nil {
+		return nil, err
+	}
 	req, err := rn.build(p)
 	if err != nil {
 		return nil, err
 	}
 	rn.where = rn.destination(p)
-	rn.emit(ingest.Event{Kind: ingest.EventRequest, Method: p.method, Path: p.url.Path, Attempt: attempt + 1})
+	rn.emit(ingest.Event{Kind: ingest.EventRequest, Method: p.method, Path: p.logPath(), Attempt: attempt + 1})
 	resp, err := rn.doerFor(p).Do(ctx, req)
 	if err != nil {
 		return nil, rn.ofTokenRequest(p, rn.transportError(ctx, err))
@@ -167,7 +170,7 @@ func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 
 // after tells the observer and the preview that an answer came, when its body has been read.
 func (rn *run) after(p plan, rep *reply, size int) {
-	rn.emit(ingest.Event{Kind: ingest.EventResponse, Method: p.method, Path: p.url.Path, Status: rep.status, Bytes: size,
+	rn.emit(ingest.Event{Kind: ingest.EventResponse, Method: p.method, Path: p.logPath(), Status: rep.status, Bytes: size,
 		ElapsedMillis: rn.r.cfg.Clock.Now().Sub(rep.started).Milliseconds()})
 	rn.record(p, rep)
 }

@@ -72,6 +72,12 @@ type Dataset struct {
 	// of a file of JSON lines.
 	MissingArray string `json:"missing_array,omitempty"`
 	MaxElements  int    `json:"max_elements,omitempty"`
+	// Collect false makes the dataset a helper: it is read only to give values to a dataset that has it as its Parent, and has no
+	// columns, no key and no rows. Parent says which dataset gives the values the request asks with, and OnNotFound skip that a 404
+	// for one value is passed over (ADR-0111). They are fields of a dataset of an HTTP source.
+	Collect    *bool   `json:"collect,omitempty"`
+	Parent     *Parent `json:"parent,omitempty"`
+	OnNotFound string  `json:"on_not_found,omitempty"`
 	// Table and SQL say what a dataset of a PostgreSQL source reads: a table or view, or one statement; and
 	// KeyCollation is the collation the natural key is ordered by, when it is not the column's own (sources-and-adapters.md 2.3).
 	Table        string `json:"table,omitempty"`
@@ -232,6 +238,7 @@ func (s Source) normalize(c *collector, adapters []string, adapterFlow bool) Sou
 		ds[i] = nd
 	}
 	s.Datasets = ds
+	s.checkParents(c)
 	s.checkSecretUse(c)
 	return s
 }
@@ -256,12 +263,41 @@ func (d Dataset) normalize(c *collector, source, adapter string, i int) Dataset 
 	if d.ReceiveMode == "" {
 		d.ReceiveMode = "snapshot"
 	}
-	if d.Deletion == "" {
-		d.Deletion = DeletionAbsentInFull
+	helper := d.Helper()
+	if helper {
+		d.checkHelper(c, source, at)
 	}
+	d.Deletion = d.deletionOrDefault(helper)
 	d.checkAdapterFields(c, source, adapter, at)
 	parserOK := d.checkSupported(c, at, where, adapter)
-	cols := d.checkColumns(c, at, where)
+	var cols []string
+	if !helper {
+		cols = d.checkColumns(c, at, where)
+	}
+	d = d.checkPlaces(c, source, adapter, at)
+	if parserOK {
+		d.Sheet = d.Sheet.normalize(c, at+ptr("sheet"), d, where)
+		d.Delimiter = normalizedDelimiterTo(c, at+ptr("delimiter"), d.Delimiter, d.Parser, d.ID, where)
+	}
+	if len(d.Columns) > 0 && !helper {
+		d.checkNaturalKey(c, at, cols, where)
+	}
+	return d
+}
+
+// deletionOrDefault is the deletion rule of a dataset: a dataset that is only read for its values deletes nothing.
+func (d Dataset) deletionOrDefault(helper bool) string {
+	switch {
+	case helper:
+		return DeletionNone
+	case d.Deletion == "":
+		return DeletionAbsentInFull
+	}
+	return d.Deletion
+}
+
+// checkPlaces checks the records_path and the paths of the columns of the datasets that read JSON records.
+func (d Dataset) checkPlaces(c *collector, source, adapter, at string) Dataset {
 	if adapter == AdapterHTTP || adapter == AdapterPostgres {
 		d = d.checkRecords(c, source, adapter, at)
 		d.checkColumnPaths(c, source, at)
@@ -270,14 +306,18 @@ func (d Dataset) normalize(c *collector, source, adapter string, i int) Dataset 
 		d.checkRecordsPath(c, source, at)
 		d.checkColumnPaths(c, source, at)
 	}
-	if parserOK {
-		d.Sheet = d.Sheet.normalize(c, at+ptr("sheet"), d, where)
-		d.Delimiter = normalizedDelimiterTo(c, at+ptr("delimiter"), d.Delimiter, d.Parser, d.ID, where)
-	}
-	if len(d.Columns) > 0 {
-		d.checkNaturalKey(c, at, cols, where)
-	}
 	return d
+}
+
+// checkHelper says what a dataset that is only read for its values may not have: the fields that make rows.
+func (d Dataset) checkHelper(c *collector, source, at string) {
+	for _, f := range []namedSet{{"columns", len(d.Columns) > 0}, {"natural_key", len(d.NaturalKey) > 0}, {"deletion", d.Deletion != ""},
+		{"ignore_rows_without_key", d.IgnoreRowsWithoutKey}} {
+		if f.set {
+			c.add(ecAdCollectHelperMapped, at+ptr(f.name), Params{"source": source, "dataset": d.ID, "field": f.name},
+				"source %s, dataset %s: a dataset with collect false is read only for its values, and has no %s", source, d.ID, f.name)
+		}
+	}
 }
 
 // checkSupported refuses what this build does not have. It tells whether the parser is one of the build's.

@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "c4e3953d46c5f562"
+hash: "6b919ab1b8a518c8"
 date: "2026-11-25"
-note: "definition.go의 정의 검사를 고쳤다(ADR-0109 N5: 자연 키 컬럼은 첫 읽는 경로로 정하고, 파일 JSON Lines의 ^.는 [*] 없이도 같은 정의 오류로 잡는다). 이 문서는 records_path와 ^.의 규칙을 적지 않아 어긋나는 곳이 없다."
+note: "ADR-0111은 HTTP 소스의 자식 데이터셋만 더했고 파일 소스 정의의 필드와 동작은 바뀌지 않았다. definition.go는 normalize를 나눈 리팩터링만 더했다"
 text_changed: false
 doc_hash: "06592884ef5fe37a"

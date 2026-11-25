@@ -10,7 +10,8 @@ import (
 
 // checkAdapterFields tells each field of the dataset that belongs to another adapter than the source's.
 func (d Dataset) checkAdapterFields(c *collector, source, adapter, at string) {
-	http := []namedSet{{"request", d.Request != nil}, {"pagination", d.Pagination != nil}, {"post_reads", d.PostReads}, {"response_format", d.ResponseFormat != ""}}
+	http := []namedSet{{"request", d.Request != nil}, {"pagination", d.Pagination != nil}, {"post_reads", d.PostReads}, {"response_format", d.ResponseFormat != ""},
+		{"collect", d.Collect != nil}, {"parent", d.Parent != nil}, {"on_not_found", d.OnNotFound != ""}}
 	records := []namedSet{{"records_path", d.RecordsPath != ""}, {"missing_array", d.MissingArray != ""}, {"max_elements", d.MaxElements != 0}}
 	pg := []namedSet{{"table", d.Table != ""}, {"sql", d.SQL != ""}, {"key_collation", d.KeyCollation != ""}}
 	file := []namedSet{{"delimiter", d.Delimiter != ""}, {"sheet", d.Sheet != nil}, {"ignore_undeclared_columns", d.IgnoreUndeclaredColumns}}
@@ -63,12 +64,16 @@ func (d Dataset) checkColumnPaths(c *collector, source, at string) {
 }
 
 func (d Dataset) checkHTTP(c *collector, source, at string) Dataset {
+	d = d.checkParentBlock(c, source, at)
+	c.dataset, c.pv = d.ID, d.newParentVars()
 	if d.Request == nil {
 		c.add(ecAdRequest, at+ptr("request"), Params{"source": source, "dataset": d.ID}, "source %s, dataset %s: a dataset of an http source needs a request", source, d.ID)
 	} else {
 		r := d.Request.normalize(c, source, d, at+ptr("request"))
 		d.Request = &r
 	}
+	d.checkParentUsed(c, source, at)
+	c.dataset, c.pv = "", nil
 	d.checkRecordsPath(c, source, at)
 	p := Pagination{Kind: PageNone}
 	if d.Pagination != nil {
@@ -99,7 +104,7 @@ func (r Request) normalize(c *collector, source string, d Dataset, at string) Re
 		c.add(ecAdReqPath, at+ptr("path"), Params{"source": source, "dataset": d.ID, "field": "request.path", "reason": reason},
 			"source %s, dataset %s: request.path %s", source, d.ID, reason)
 	} else {
-		c.checkText(source, at+ptr("path"), "request.path", r.Path)
+		c.checkTextP(source, at+ptr("path"), "request.path", r.Path, placePath)
 	}
 	names := make([]string, 0, len(r.Query))
 	for k := range r.Query {
@@ -108,7 +113,7 @@ func (r Request) normalize(c *collector, source string, d Dataset, at string) Re
 	sort.Strings(names)
 	for _, k := range names {
 		c.checkText(source, at+ptr("query", k), "request.query", k)
-		c.checkText(source, at+ptr("query", k), "request.query."+clip(k, idClipAt), r.Query[k])
+		c.checkTextP(source, at+ptr("query", k), "request.query."+clip(k, idClipAt), r.Query[k], placeQuery)
 	}
 	c.checkBody(source, at+ptr("body"), r.Body)
 	return r
@@ -135,7 +140,7 @@ func (c *collector) checkBody(source, at string, v any) {
 		if _, ok := ParsePlaceholder(x); ok {
 			return // a whole value; whether the authentication gives what it stands for is checked with the source
 		}
-		c.checkText(source, at, "request.body", x)
+		c.checkTextP(source, at, "request.body", x, placeBody)
 	}
 }
 

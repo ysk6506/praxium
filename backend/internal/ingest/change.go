@@ -69,6 +69,9 @@ var changeClasses = map[string]string{
 	// How a response is read (json or json_lines), what a record with no array is, and how many elements one record may have (ADR-0109).
 	// The first two say where the records are and how what is seen is told; the third is a limit, and a limit that is raised is not the mapping.
 	"Dataset.ResponseFormat": classMapping, "Dataset.MissingArray": classMapping, "Dataset.MaxElements": classLimit,
+	// Which dataset gives the values a request asks with, whether a dataset is only read for them, and what a 404 for one of them is,
+	// decide what is asked of the source: they are kept. A limit of the parent block that is lowered is not (parentFolded, below).
+	"Dataset.Collect": classKept, "Dataset.Parent": classKept, "Dataset.OnNotFound": classKept,
 	"Request.Method": classKept, "Request.Path": classKept, "Request.Query": classKept, "Request.Body": classKept,
 	"Pagination.Kind": classKept, "Pagination.PageParam": classKept, "Pagination.OffsetParam": classKept, "Pagination.SizeParam": classKept, "Pagination.Size": classLimit,
 	"Pagination.FirstPage": classKept, "Pagination.TotalPath": classKept, "Pagination.CursorParam": classKept, "Pagination.CursorIn": classKept,
@@ -347,6 +350,13 @@ func datasetReasons(before, after Dataset) []string {
 		before.ID = after.ID
 	}
 	out := postReasons(name, before, after)
+	if existed && before.Parent != nil && after.Parent != nil {
+		var raised bool
+		after, raised = parentFolded(before, after)
+		if raised {
+			out = append(out, name+".parent_limits")
+		}
+	}
 	if paginationRaised(before.Pagination, after.Pagination, existed) {
 		out = append(out, name+".pagination")
 	}
@@ -358,6 +368,23 @@ func datasetReasons(before, after Dataset) []string {
 		out = append(out, name+".other")
 	}
 	return out
+}
+
+// parentFolded is the dataset after with the limits of its parent block set to before's, so that
+// a change that only lowers them is a change of the mapping, and it says whether one of them went up (the number of requests,
+// the time, the size of a batch). The two have the block, and both are given their defaults.
+func parentFolded(before, after Dataset) (Dataset, bool) {
+	b, a := before.Parent, *after.Parent
+	raised := a.MaxRequests > b.MaxRequests || a.MaxSeconds > b.MaxSeconds
+	a.MaxRequests, a.MaxSeconds = b.MaxRequests, b.MaxSeconds
+	if a.Batch != nil && b.Batch != nil {
+		x := *a.Batch
+		raised = raised || x.Size > b.Batch.Size
+		x.Size = b.Batch.Size
+		a.Batch = &x
+	}
+	after.Parent = &a
+	return after, raised
 }
 
 // postReasons names what makes a dataset that reads with POST, or has a body with a placeholder, a change of the connection.

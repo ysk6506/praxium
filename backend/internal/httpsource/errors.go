@@ -82,7 +82,11 @@ func (rn *run) statusError(status int) *ingest.SourceError {
 	case status >= 500:
 		return rn.fail(ingest.SrcSourceBusy, "the source failed or is busy ("+code+")", nil)
 	}
-	return rn.fail(ingest.SrcRequestRejected, "the source answered "+code+" to the request; the request, its path or its parameters may be wrong", nil)
+	var cause error
+	if status == 404 {
+		cause = errNotFound
+	}
+	return rn.fail(ingest.SrcRequestRejected, "the source answered "+code+" to the request; the request, its path or its parameters may be wrong", cause)
 }
 
 // openError says what a failure to open a secret is: the secret may not be used for this source and address, or is not

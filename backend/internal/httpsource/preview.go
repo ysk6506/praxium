@@ -43,6 +43,9 @@ func (r *Reader) Preview(ctx context.Context, source string, ds ingest.Dataset, 
 		return ingest.Preview{}, failed
 	}
 	out.Exchanges = rn.exchanges
+	if ds.IsChild() {
+		out.Note = notePreviewNote
+	}
 	out.Masked = out.Masked || rn.cleaned > 0
 	return out, nil
 }
