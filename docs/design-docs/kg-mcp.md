@@ -246,7 +246,7 @@ REST에서 달라지는 것은 이것 하나예요. 본문이 JSON 객체가 아
 | 툴 등록부 | `mcpapi` 안의 전송과 분리된 패키지나 파일 | 같은 유닛 | 이름, 설명, 입력·출력 스키마, 실행 함수. 전송을 모르고 "주체, 이름, 원본 인자 → 중립 결과(글 블록, 구조화 값, 오류 표시)"의 모양이에요 |
 
 - 지금 `httpapi`는 `core.identity`를 import하지 않고 `core.access`의 포트(`Authenticator`)만 써요. 공통 유닛도 같아요. `kg_whoami`의 만료일은 `Subject`에 없고 `access.Directory`에서 읽어야 해요. 개발용 인증기(`local`)에는 `Directory`가 없어서 이때는 만료일을 비워요.
-- `clientKey`는 `net.SplitHostPort`를 쓰고 `net`은 `cmd.praxium`과 `adapter.http`만 쓸 수 있어요. 주소를 구하는 일(`X-Forwarded-For` 읽기 포함)은 어댑터에 남기고 결과(문자열 하나)만 공통 유닛에 넘겨요. 그러면 `-behind-proxy`의 규칙이 두 어댑터에 생기므로 한 곳에서 읽는 작은 함수를 어느 쪽 유닛이 가질지 구현 때 정해요.
+- 호출자의 주소는 `kernel.CallerKey`(ADR-0112)가 한 곳에서 읽어요. `-behind-proxy`일 때는 `X-Forwarded-For`의 모든 줄을 이은 목록의 마지막 항목이고, 없거나 주소가 아니면 연결 주소예요. 실패 제한의 키는 IPv6를 /64로 세고, 감사 줄에는 온전한 주소가 남아요. REST와 MCP가 같은 함수를 써요.
 - 인증·한도·기록은 전송 밖의 미들웨어나 공통 유닛에 두어 전송을 바꿔도 남게 해요.
 - `/mcp`는 같은 프로세스, 같은 포트에서 조립 지점(`cmd.praxium`)이 `adapter.mcp`의 핸들러를 서버에 끼워 줘요. `adapter.http`는 `adapter.mcp`를 import하지 않아요. 조립 지점은 `httpapi.Config.Mounts`로 핸들러를 끼워요(추적 ID, 접근 로그, 패닉 복구 안쪽이고 REST의 본문 검사 앞이에요). `/mcp`와 `/.well-known/` 아래 전체가 웹 화면보다 먼저 이 핸들러로 가요.
 

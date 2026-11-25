@@ -54,6 +54,8 @@ decision_hash: cccb82d2b99096cc
 amended_by:
   - adr: "0080"
     what: 결정 6의 메모리와 파일 구현과 결정 7의 시작 조건(`-store memory`가 기본이고 `-store file` 또는 `postgres`를 고른다. 저장 종류는 PostgreSQL만 남는다)
+  - adr: "0112"
+    what: 프록시 뒤 호출자 주소는 모든 X-Forwarded-For 줄의 마지막 항목이고, 실패 제한의 키는 IPv6를 /64로 센다
 ---
 # ADR-0044 내장 인증 — 접근 토큰, 첫 관리자의 부트스트랩, 운영 모드의 시작 조건
 
