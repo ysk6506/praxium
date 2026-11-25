@@ -118,6 +118,12 @@ func idnPlaceRows(n int, withNew bool, tag func(i int) string) string {
 // alias of its rack) and one in a hundred new, and gives what the second run read and how long it took.
 func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, time.Duration, ingest.IdentifyCounts) {
 	t.Helper()
+	return idnScaledWith(t, n, size, explain, idnPlaceRows)
+}
+
+// idnScaledWith is idnScaled with the rows of the source made by rows (the records, whether the second run has the new ones, the tag).
+func idnScaledWith(t *testing.T, n, size int, explain bool, rows func(int, bool, func(int) string) string) (map[string]*idnRead, time.Duration, ingest.IdentifyCounts) {
+	t.Helper()
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, idnMapping))
 	texts := func(rows string) pgiTexts {
 		return pgiTexts{"ds_places": rows, "ds_servers": pgiServers[:strings.Index(pgiServers, "\n")+1], "ds_vms": ""}
@@ -147,7 +153,7 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 			t.Log(clock.idnReport())
 		}()
 	}
-	l1, _ := run(idnPlaceRows(n, false, func(i int) string { return "T" + strconv.Itoa(i) }), rdfT0)
+	l1, _ := run(rows(n, false, func(i int) string { return "T" + strconv.Itoa(i) }), rdfT0)
 	mark := idnNow.Now()
 	idnApply(s, t)
 	t.Logf("apply: %v", idnNow.Now().Sub(mark))
@@ -169,8 +175,44 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		return "T" + strconv.Itoa(i)
 	}
 	start := idnNow.Now()
-	_, counts := run(idnPlaceRows(n, true, tag), rdfT0.Add(time.Hour))
+	_, counts := run(rows(n, true, tag), rdfT0.Add(time.Hour))
 	return plans.most, idnNow.Now().Sub(start), counts
+}
+
+// idnCheckReads holds what a unit of the second run read, in a source of 30000 records, to what the same unit read in one of 10000.
+func idnCheckReads(t *testing.T, small, large map[string]*idnRead, most, growth float64) {
+	t.Helper()
+	var whats []string
+	for what := range large {
+		whats = append(whats, what)
+	}
+	sort.Strings(whats)
+	for _, what := range whats {
+		read := large[what]
+		for table, n := range read.rows {
+			// a unit reads, for each of its records, the keys of five feeds and the parents of each (up to four): 40 rows a record
+			if n > most {
+				t.Errorf("%s reads %v rows of %s, more than the %v a unit may read", what, n, table, most)
+			}
+			if before, ok := small[what]; ok && n > growth*before.rows[table]+50 {
+				t.Errorf("%s reads %v rows of %s in a source of 30000 records and %v in one of 10000", what, n, table, before.rows[table])
+			}
+		}
+		whole := map[string]bool{}
+		for _, scan := range read.scans {
+			if table, ok := strings.CutPrefix(scan, "Seq Scan on "); ok && read.rows[table] > most && !whole[table] {
+				whole[table] = true
+				t.Errorf("%s reads the whole of %s", what, table)
+			}
+		}
+		if testing.Verbose() {
+			var before map[string]float64
+			if p, ok := small[what]; ok {
+				before = p.rows
+			}
+			t.Logf("%s: rows read by a unit, source of 30000 records %v, of 10000 records %v", what, read.rows, before)
+		}
+	}
 }
 
 // [REQ-883]
@@ -181,39 +223,44 @@ func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItD
 	if counts.NewObjects == 0 || len(small) < 10 {
 		t.Fatalf("%d statements, %+v", len(small), counts)
 	}
-	var whats []string
-	for what := range large {
-		whats = append(whats, what)
+	idnCheckReads(t, small, large, 40*size, 1.5)
+	// the statements Go reads with (the questions, the records that have no key) are seen by the same hook, and read by the same bounds
+	if _, ok := large["read the questions"]; !ok {
+		t.Errorf("the hook did not see the read of the questions: %d statements", len(large))
 	}
-	sort.Strings(whats)
-	for _, what := range whats {
-		read := large[what]
-		for table, n := range read.rows {
-			// a unit reads, for each of its records, the keys of five feeds and the parents of each (up to four): 40 rows a record
-			if n > 40*size {
-				t.Errorf("%s reads %v rows of %s for a unit of %d", what, n, table, size)
-			}
-			if before, ok := small[what]; ok && n > 1.5*before.rows[table]+50 {
-				t.Errorf("%s reads %v rows of %s in a source of 30000 records and %v in one of 10000", what, n, table, before.rows[table])
-			}
-		}
-		whole := map[string]bool{}
-		for _, scan := range read.scans {
-			if table, ok := strings.CutPrefix(scan, "Seq Scan on "); ok && read.rows[table] > 40*size && !whole[table] {
-				whole[table] = true
-				t.Errorf("%s reads the whole of %s", what, table)
-			}
-		}
+}
+
+// idnHotRows is the rows of n records that are all in one room of one floor of one building (one place all of them share), a rack and a
+// tag of its own for each.
+func idnHotRows(n int, withNew bool, tag func(i int) string) string {
+	var b strings.Builder
+	b.WriteString(idnSite)
+	rows := n
+	if withNew {
+		rows = n + n/100
 	}
-	if testing.Verbose() {
-		for _, what := range whats {
-			var before map[string]float64
-			if p, ok := small[what]; ok {
-				before = p.rows
-			}
-			t.Logf("%s: rows read by a unit, source of 30000 records %v, of 10000 records %v", what, large[what].rows, before)
+	for i, made := 0, 0; made < rows; i++ {
+		if !withNew && i%101 == 100 {
+			continue
 		}
+		made++
+		fmt.Fprintf(&b, "%d,HQ,B0,F0,R0,K%d,%s\n", i, i, tag(i))
 	}
+	return b.String()
+}
+
+// [REQ-883]
+func TestIdnWhenEveryRecordIsInTheSamePlaceAUnitReadsOfTheRegistryWhatItDidWhenTheyWereInManyAndNoMore(t *testing.T) {
+	const size = 100
+	small, _, _ := idnScaledWith(t, 10_000, size, true, idnHotRows)
+	large, _, counts := idnScaledWith(t, 30_000, size, true, idnHotRows)
+	if counts.NewObjects == 0 || len(small) < 10 {
+		t.Fatalf("%d statements, %+v", len(small), counts)
+	}
+	// the records that are new or changed all have the place in common, so they are one group (a tenth of the source) and a unit reads
+	// the group: what it reads grows with that group, three times for three times the source, and is not more than a few times its pairs
+	// (the known limit of ADR-0108)
+	idnCheckReads(t, small, large, 8*30_000/10, 3.5)
 }
 
 // [REQ-883]

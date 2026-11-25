@@ -89,6 +89,11 @@ func (r *identRun) slot(ctx context.Context, tx *sql.Tx) error {
 		ready = "bool_or(c IS NOT NULL)"
 	}
 	id := strconv.Itoa(int(roleIdentity))
+	if st.LeftKeys && st.Round > 1 {
+		if err := r.leaveNeighbors(ctx, tx, hi); err != nil {
+			return err
+		}
+	}
 	// whether a pair is ready is told by a window over its keys and not by a join with them: a join of the two is the one the server may
 	// take as a loop of the one over the other when it expects few rows, which is the square of the unit
 	n, err := r.exec(ctx, tx, "make the slots", r.q("WITH {feeds}, ks AS (SELECT k.rid, rc.src_no, k.feed_no, k.key_ord, k.type_no, k.sig_hash, "+ctxSQL+" AS c FROM {key} k"+
@@ -163,5 +168,28 @@ func (r *identRun) nextRound(ctx context.Context, tx *sql.Tx) error {
 	if st.Round > st.Rounds {
 		return r.toLookup()
 	}
+	return nil
+}
+
+// leaveNeighbors leaves, in a round after the one that left some groups, the pairs that have a key one of the pairs left has: they
+// are in the same group as the pairs left, and the next run binds them together. A pair is left when one of its keys, whose parent is
+// found, is the key of a slot of an earlier round whose pair is left (a probe of the slots of each earlier round, which are at most
+// sixteen). The pairs it leaves have no slot of their own, so the pairs that share a key with them only are not found by this: that is
+// the limit of one run (ADR-0108).
+func (r *identRun) leaveNeighbors(ctx context.Context, tx *sql.Tx, hi int64) error {
+	st := r.st
+	id := strconv.Itoa(int(roleIdentity))
+	n, err := r.exec(ctx, tx, "leave the pairs that share a key with the groups left", r.q("WITH {feeds}, q AS (SELECT DISTINCT k.rid, k.feed_no FROM {key} k"+
+		probe("x.src_no", "{rec}", "rc", "x.rid = k.rid")+" JOIN feeds f ON f.src_no = rc.src_no AND f.feed_no = k.feed_no AND f.creates"+chainSQL()+
+		absent("{bind}", "hb", "x.rid = k.rid AND x.feed_no = k.feed_no")+absent("{ref}", "hr", "x.rid = k.rid AND x.def_no = k.feed_no AND x.role = "+id)+
+		" CROSS JOIN LATERAL generate_series(1, {R} - 1) pr(r)"+
+		probe("1", "{slot}", "t", "x.round_no = pr.r AND x.type_no = k.type_no AND x.ctx_no = "+ctxSQL+" AND x.sig_hash = k.sig_hash AND EXISTS (SELECT 1 FROM {ref} z "+
+			"WHERE z.rid = x.rid AND z.role = "+id+" AND z.def_no = x.feed_no)")+
+		" WHERE NOT k.held AND k.rid > $1 AND k.rid <= $2 AND hb.hit IS NULL AND hr.hit IS NULL AND "+ctxSQL+" IS NOT NULL) "+refUnresolved("q")), st.Cur, hi)
+	if err != nil {
+		return err
+	}
+	st.Counts.Unsettled += n
+	st.Counts.Unresolved += n
 	return nil
 }

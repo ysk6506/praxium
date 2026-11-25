@@ -27,7 +27,7 @@ func IdentifyFeedsOf(plans map[int64]*Plan) []IdentifyFeed {
 func (p *Plan) IdentifyFeeds(srcNo int64) []IdentifyFeed {
 	out := make([]IdentifyFeed, 0, len(p.feeds))
 	for _, fp := range p.feeds {
-		f := IdentifyFeed{SrcNo: srcNo, Feed: fp.index, TypeNo: fp.typ.TypeNo, Creates: fp.feed.CreatesObjects}
+		f := IdentifyFeed{SrcNo: srcNo, Feed: fp.index, TypeNo: fp.typ.TypeNo, Creates: fp.feed.CreatesObjects, NameCol: p.nameCell(fp)}
 		for ord := range fp.keys {
 			f.Keys = append(f.Keys, IdentifyKey{Ord: ord, ModelOrd: fp.keys[ord].modelOrd})
 		}
@@ -35,6 +35,25 @@ func (p *Plan) IdentifyFeeds(srcNo int64) []IdentifyFeed {
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].Feed < out[j].Feed })
 	return out
+}
+
+// nameCell is the place, among the cells of a record of the dataset of the feed, of the cell the attribute name is read from: -1 when
+// the feed gives no name or reads a dataset that a refinement makes (its columns are not the cells of the record).
+func (p *Plan) nameCell(fp *feedPlan) int {
+	if fp.nameCol == "" {
+		return -1
+	}
+	for _, ds := range p.Source.Datasets {
+		if ds.ID != fp.feed.Dataset {
+			continue
+		}
+		for i, c := range ds.Columns {
+			if c.Name == fp.nameCol {
+				return i
+			}
+		}
+	}
+	return -1
 }
 
 // PlanKeys is the KeyMaker that reads the cells of a record by the plan of its source: the same preparation the receiving does, so

@@ -11,7 +11,7 @@ import (
 
 // idnPipelineWith is idnPipeline with the size of the pages the receiving cuts and the limits of the identification given (0 is the
 // default of each).
-func idnPipelineWith(s *rdfSetup, t *testing.T, texts pgiTexts, at time.Time, pageRows, size, turns, rounds int) (ingest.RunLease, ingest.IdentifyCounts) {
+func idnPipelineWith(s *rdfSetup, t *testing.T, texts pgiTexts, at time.Time, pageRows, size, turns, rounds, settle int) (ingest.RunLease, ingest.IdentifyCounts) {
 	t.Helper()
 	l := s.e.open(t, s.kg, s.plan.Source.ID, "server-a")
 	if _, err := s.e.st.Receive(s.e.ctx, l, ingest.Intake{Reader: texts, Plan: s.plan, Options: ingest.PageOptions{MaxRows: pageRows}}); err != nil {
@@ -22,7 +22,7 @@ func idnPipelineWith(s *rdfSetup, t *testing.T, texts pgiTexts, at time.Time, pa
 	}
 	keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
 	start := idnStart(s, size, 1)
-	start.Turns, start.Rounds = turns, rounds
+	start.Turns, start.Rounds, start.SettleMax = turns, rounds, settle
 	counts, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, start, keys)
 	if err != nil {
 		t.Fatal(err)
@@ -70,11 +70,11 @@ func idnTurns(s *rdfSetup, t *testing.T) int {
 }
 
 // [REQ-882]
-func TestIdnAChainOfRecordsLongerThanTheTurnsOfTheDefaultIsOneObjectAndTheTurnsItTakesGrowWithTheLogarithmOfItsLength(t *testing.T) {
+func TestIdnAChainOfRecordsLongerThanTheTurnsOfTheDefaultIsOneObjectAndTheTurnsItTakesGrowMoreSlowlyThanItsLength(t *testing.T) {
 	turns := map[int]int{}
 	for _, n := range []int{27, 110, 440} {
 		s := rdfNew(t, pgiPlan(t, idnServerSource, idnServerMapping))
-		_, counts := idnPipelineWith(s, t, idnServers(idnChain("r", n, n/2)...), rdfT0, 2, 0, 0, 0)
+		_, counts := idnPipelineWith(s, t, idnServers(idnChain("r", n, n/2)...), rdfT0, 2, 0, 0, 0, 0)
 		objs := idnObjectsOf(s, t)
 		if len(objs) != 1 || counts.NewObjects != 1 || counts.Unsettled != 0 || counts.Unresolved != 0 {
 			t.Fatalf("a chain of %d records is %d objects: %+v", n, len(objs), counts)
@@ -91,9 +91,9 @@ func TestIdnAChainOfRecordsLongerThanTheTurnsOfTheDefaultIsOneObjectAndTheTurnsI
 // [REQ-882]
 func TestIdnARoundWhoseSearchIsStoppedByItsLimitBindsNoGroupThatIsNotWholeAndLeavesTheRecordsOfItUnresolvedAndCounted(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, idnServerSource, idnServerMapping))
-	// a chain of 60 records, which two turns do not follow to its end, and three records that share their keys, which they do
+	// a chain of 60 records, which two turns do not follow to its end (and Go is let hold one pair, so it does not end it either), and three records that share their keys, which they do
 	rows := append(idnChain("c", 60, 30), "s1,snS1,Zorvane,uS1", "s2,snS1,Zorvane,uS2", "s3,snS3,Zorvane,uS2")
-	_, counts := idnPipelineWith(s, t, idnServers(rows...), rdfT0, 2, 0, 2, 0)
+	_, counts := idnPipelineWith(s, t, idnServers(rows...), rdfT0, 2, 0, 2, 0, 1)
 	objs := idnObjectsOf(s, t)
 	if counts.Unsettled != 60 || counts.Unresolved != 60 || counts.NewObjects != 1 || len(objs) != 1 {
 		t.Fatalf("%+v, %d objects: %v", counts, len(objs), objs)
@@ -119,7 +119,7 @@ func TestIdnTheSameChainWithTheLimitOfTheTurnsRaisedIsOneObjectAndMakesTheSameOb
 	var want string
 	for n, order := range []func([]string) []string{func(r []string) []string { return r }, idnReversed, func(r []string) []string { return idnRotated(r, 17) }} {
 		s := rdfNew(t, pgiPlan(t, idnServerSource, idnServerMapping))
-		_, counts := idnPipelineWith(s, t, idnServers(order(idnChain("c", 60, 30))...), rdfT0, 2+n, 7, 0, 0)
+		_, counts := idnPipelineWith(s, t, idnServers(order(idnChain("c", 60, 30))...), rdfT0, 2+n, 7, 0, 0, 0)
 		if counts.NewObjects != 1 || counts.Unsettled != 0 {
 			t.Fatalf("%+v", counts)
 		}

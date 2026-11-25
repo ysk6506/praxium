@@ -42,6 +42,8 @@ func idnParitySteps() []idnParityStep {
 		{rows: []string{"A,sn1,Zorvane,u1b", "B,sn2,Zorvane,u2", "C,sn3,Zorvane,u3", "D,sn4,Zorvane,u4", "E,sn1,Zorvane,u9", "F,snN,Zorvane,uN", "G,snN2,Zorvane,uN"}, groups: 1},
 		{rows: []string{"A,sn1,Zorvane,u1b", "B,sn2,Zorvane,u2", "C,sn3,Zorvane,u3", "D,sn4,Zorvane,u4", "E,sn1,Zorvane,u9", "F,snN,Zorvane,uN", "G,snN2,Zorvane,uN", "H,sn5,Zorvane,u5"}, exact: true, groups: 1},
 		{rows: []string{"A,sn1,Zorvane,u1b", "B,sn2,Zorvane,u2", "C,sn3,Zorvane,u3", "D,sn4,Zorvane,u4", "E,sn1,Zorvane,u9", "F,snN,Zorvane,uN", "G,snN2,Zorvane,uN", "H,sn5,Zorvane,u5", "J,sn2,Zorvane,u3"}, exact: true, groups: 0},
+		// every record takes the uuid of a placeholder: one group of several objects, each record the object it is
+		{rows: []string{"A,sn1,Zorvane,PH", "B,sn2,Zorvane,PH", "C,sn3,Zorvane,PH", "D,sn4,Zorvane,PH", "E,sn1,Zorvane,PH", "F,snN,Zorvane,PH", "G,snN2,Zorvane,PH", "H,sn5,Zorvane,PH", "J,sn2,Zorvane,PH"}, exact: true, groups: 0},
 	}
 }
 

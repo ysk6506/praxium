@@ -56,6 +56,14 @@ func (d *idnFake) PutRebuilt(_ context.Context, _ RunLease, _ int, rows []Rebuil
 	return d.idnDo("put")
 }
 
+func (d *idnFake) SettleRead(_ context.Context, _ RunLease, _ int64) (SettlePage, error) {
+	return SettlePage{Done: true}, nil
+}
+
+func (d *idnFake) PutSettled(_ context.Context, _ RunLease, _ []SettledPair, _ SettleEnd) error {
+	return d.idnDo("settled")
+}
+
 func (d *idnFake) AskPage(_ context.Context, _ RunLease) ([]AskRow, error) {
 	return []AskRow{{Round: 1, Label: 5}, {Round: 1, Label: 6}}, nil
 }

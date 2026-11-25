@@ -30,15 +30,17 @@ func refUnresolved(from string) string {
 
 // groupsSQL are the groups that have no key the index knows, each with the key that names its object: the first of the model's keys
 // of the type, then the smaller signature, and, when the records give the same key, the record whose dataset and natural key come
-// first (the number of a record is the order the run met them in, which changes from one run to the next, so it names nothing). It
-// needs ps.
+// first (the number of a record is the order the run met them in, which changes from one run to the next, so it names nothing). A
+// key that has a context is the one of a record that gives the object a name, when there is one: a record whose cell for the name is
+// empty would not make the object (a name is what an object is made with). It needs ps.
 const groupsSQL = "g AS (SELECT label FROM ps GROUP BY label HAVING bool_and(found_no IS NULL)), " +
 	"w AS (SELECT DISTINCT ON (ps.label) ps.label, ps.rid, ps.feed_no, ps.key_ord, ps.type_no, ps.ctx_no, k.cand_ref, (k.anc_types IS NOT NULL) AS has_ctx " +
 	"FROM g JOIN ps ON ps.label = g.label" +
 	" CROSS JOIN LATERAL (SELECT x.cand_ref, x.anc_types FROM {key} x WHERE x.rid = ps.rid AND x.feed_no = ps.feed_no AND x.key_ord = ps.key_ord LIMIT 1) k" +
 	" JOIN kord ko ON ko.src_no = ps.src_no AND ko.feed_no = ps.feed_no AND ko.key_ord = ps.key_ord" +
-	" CROSS JOIN LATERAL (SELECT x.dataset_no, x.key FROM {rec} x WHERE x.rid = ps.rid LIMIT 1) wc " +
-	"ORDER BY ps.label, ko.model_ord, ps.sig_hash, wc.dataset_no, wc.key COLLATE \"C\", ps.feed_no, ps.key_ord)"
+	" JOIN feeds fe ON fe.src_no = ps.src_no AND fe.feed_no = ps.feed_no" +
+	" CROSS JOIN LATERAL (SELECT x.dataset_no, x.key, x.fields FROM {rec} x WHERE x.rid = ps.rid LIMIT 1) wc " +
+	"ORDER BY ps.label, (k.anc_types IS NOT NULL AND NOT (fe.name_col >= 0 AND btrim(COALESCE(wc.fields[fe.name_col + 1], '')) <> '')), ko.model_ord, ps.sig_hash, wc.dataset_no, wc.key COLLATE \"C\", ps.feed_no, ps.key_ord)"
 
 // makeSQL gives numbers to the objects of ex (label, rid, feed_no, key_ord, type_no, ref, reg: the number the registry has for the
 // ref, or NULL), gives every pair of the groups its object (mb), and writes the new objects to calc_newobj: the rows it changes are the
@@ -120,9 +122,11 @@ func (r *identRun) decideRange(ctx context.Context, tx *sql.Tx, lo, hi int64) er
 		leave := unitStep{"leave the records of the groups that are not whole", "WITH " + unsettledSQL + "up AS (SELECT DISTINCT s.rid, s.feed_no FROM bad" +
 			scan("x.pid", "{label}", "l", "x.round_no = {R} AND x.iter = {F} AND x.label = bad.label") +
 			probe("x.rid, x.feed_no", "{slot}", "s", "x.round_no = {R} AND x.pid = l.pid") + ") " + refUnresolved("up"), []*int{&c.Unsettled, &c.Unresolved}, false}
+		before := c.Unsettled
 		if err := r.run(ctx, tx, leave, lo, hi); err != nil {
 			return err
 		}
+		r.st.LeftKeys = r.st.LeftKeys || c.Unsettled > before
 	}
 	for _, s := range r.decideSteps(pairsSQL(r.st.Unsettled)) {
 		if err := r.run(ctx, tx, s, lo, hi); err != nil {
@@ -155,13 +159,18 @@ func (r *identRun) decideSteps(pl string) []unitStep {
 			bindOf("s", "b") + " GROUP BY s.label) " +
 			"INSERT INTO {bind} (rid, feed_no, key_ord, obj_no, is_new, round_no) SELECT s.rid, s.feed_no, min(s.key_ord), gb.obj, false, {R} FROM ps s " +
 			"JOIN gb ON gb.label = s.label AND gb.c = 1" + unboundOf("s", "hx") + " WHERE hx.hit IS NULL GROUP BY s.rid, s.feed_no, gb.obj", nil, false},
-		// in a group of several objects a record is the object that the records it shares a key with are, when they are one
+		// in a group of several objects a record is the object that the records it shares a key with are, when they are one: each key is
+		// looked at once (how many objects the pairs that have it are bound to), and a pair takes what its keys say
 		{"bind the records of a group of several objects", "WITH " + pl + ", gm AS (SELECT s.label FROM ps s" + bindOf("s", "b") +
-			" GROUP BY s.label HAVING count(DISTINCT b.obj_no) > 1) " +
+			" GROUP BY s.label HAVING count(DISTINCT b.obj_no) > 1), " +
+			"gk AS (SELECT DISTINCT s.type_no, s.ctx_no, s.sig_hash FROM ps s JOIN gm ON gm.label = s.label), " +
+			"kt AS (SELECT gk.type_no, gk.ctx_no, gk.sig_hash, count(DISTINCT b.obj_no) AS c, min(b.obj_no) AS obj FROM gk" +
+			scan("x.rid, x.feed_no", "{slot}", "t", "x.round_no = {R} AND x.type_no = gk.type_no AND x.ctx_no = gk.ctx_no AND x.sig_hash = gk.sig_hash") +
+			bindOf("t", "b") + " GROUP BY gk.type_no, gk.ctx_no, gk.sig_hash) " +
 			"INSERT INTO {bind} (rid, feed_no, key_ord, obj_no, is_new, round_no) " +
-			"SELECT s.rid, s.feed_no, min(s.key_ord), min(b.obj_no), false, {R} FROM ps s JOIN gm ON gm.label = s.label" +
-			scan("x.rid, x.feed_no", "{slot}", "s2", "x.round_no = {R} AND x.type_no = s.type_no AND x.ctx_no = s.ctx_no AND x.sig_hash = s.sig_hash AND x.pid <> s.pid") +
-			bindOf("s2", "b") + unboundOf("s", "hx") + " WHERE hx.hit IS NULL GROUP BY s.rid, s.feed_no HAVING count(DISTINCT b.obj_no) = 1", nil, false},
+			"SELECT s.rid, s.feed_no, min(s.key_ord), min(kt.obj), false, {R} FROM ps s JOIN gm ON gm.label = s.label" + unboundOf("s", "hx") +
+			" JOIN kt ON kt.type_no = s.type_no AND kt.ctx_no = s.ctx_no AND kt.sig_hash = s.sig_hash WHERE hx.hit IS NULL " +
+			"GROUP BY s.rid, s.feed_no HAVING max(kt.c) = 1 AND count(DISTINCT kt.obj) = 1", nil, false},
 		{"bind the new keys", r.newKeysSQL(pl), []*int{&c.NewKeys, &c.Dropped}, true},
 		{"leave the records that are not bound", r.unboundSQL(pl), []*int{&c.Unresolved}, false},
 	}

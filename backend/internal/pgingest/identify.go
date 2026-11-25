@@ -30,6 +30,8 @@ const (
 	phaseSlot    = "slot"    // a round: the keys whose parents are found
 	phaseKLabels = "klabels" // a round: the label of each key at a turn of the search for the groups
 	phaseLabels  = "labels"  // a round: the groups of records that share a key
+	phaseSettle  = "settle"  // a round: Go ends the search for the groups that its turns did not end
+	phaseCopy    = "copy"    // a round: the labels of the groups that were whole go to the turn Go wrote
 	phaseDecide  = "decide"  // a round: the object of every group
 	phaseAsk     = "ask"     // a round: the ids of the new objects that have a parent, from Go
 	phaseLookup  = "lookup"  // the records that only find an object
@@ -56,12 +58,16 @@ type identState struct {
 	Round  int    `json:"round"`
 	Turn   int    `json:"turn"`
 	// Relaxed says that the round takes the records that have a key whose parent is not found, with the keys they can give.
-	Relaxed    bool                  `json:"relaxed"`
-	RoundSlots int                   `json:"round_slots"`
-	Changed    int                   `json:"changed"`
-	Unsettled  bool                  `json:"unsettled"`
-	AskLeft    int                   `json:"ask_left"`
-	Counts     ingest.IdentifyCounts `json:"counts"`
+	Relaxed    bool `json:"relaxed"`
+	RoundSlots int  `json:"round_slots"`
+	Changed    int  `json:"changed"`
+	Unsettled  bool `json:"unsettled"`
+	// LeftKeys says that a round left some groups, so the rounds after it look for the pairs that share a key with them.
+	LeftKeys bool `json:"left_keys"`
+	// Skipped says that Go did not end the search for the groups of the round because they were more than it holds.
+	Skipped bool                  `json:"skipped"`
+	AskLeft int                   `json:"ask_left"`
+	Counts  ingest.IdentifyCounts `json:"counts"`
 }
 
 type identDataset struct {
@@ -76,6 +82,8 @@ func (s *identState) need() ingest.IdentifyNeed {
 		return ingest.NeedRebuild
 	case phaseAsk:
 		return ingest.NeedAsk
+	case phaseSettle:
+		return ingest.NeedSettle
 	}
 	return ingest.NeedNothing
 }
@@ -95,7 +103,7 @@ func (r *identRun) t(table string) string { return pgschema.TableRef(r.kgNo, tab
 // feedSQL are the literals of the feeds that the statements of the identification use: the feeds that make objects, and the order of
 // the keys of the model, for the feeds of every source whose plan was given (a feed is by the source and its number).
 func (r *identRun) feedSQL() string {
-	var srcs, nos, creates, ks, kf, ko, km []string
+	var srcs, nos, creates, names, ks, kf, ko, km []string
 	feeds := append([]ingest.IdentifyFeed(nil), r.st.Feeds...)
 	sort.Slice(feeds, func(i, j int) bool {
 		if feeds[i].SrcNo != feeds[j].SrcNo {
@@ -105,13 +113,15 @@ func (r *identRun) feedSQL() string {
 	})
 	for _, f := range feeds {
 		srcs, nos, creates = append(srcs, strconv.FormatInt(f.SrcNo, 10)), append(nos, strconv.Itoa(f.Feed)), append(creates, strconv.FormatBool(f.Creates))
+		names = append(names, strconv.Itoa(f.NameCol))
 		for _, k := range f.Keys {
 			ks, kf = append(ks, strconv.FormatInt(f.SrcNo, 10)), append(kf, strconv.Itoa(f.Feed))
 			ko, km = append(ko, strconv.Itoa(k.Ord)), append(km, strconv.Itoa(k.ModelOrd))
 		}
 	}
 	arr := func(items []string, typ string) string { return "'{" + strings.Join(items, ",") + "}'::" + typ + "[]" }
-	return "feeds AS (SELECT src_no, feed_no, creates FROM unnest(" + arr(srcs, "int") + ", " + arr(nos, "int") + ", " + arr(creates, "boolean") + ") AS f(src_no, feed_no, creates)), " +
+	return "feeds AS (SELECT src_no, feed_no, creates, name_col FROM unnest(" + arr(srcs, "int") + ", " + arr(nos, "int") + ", " + arr(creates, "boolean") + ", " + arr(names, "int") +
+		") AS f(src_no, feed_no, creates, name_col)), " +
 		"kord AS (SELECT src_no, feed_no, key_ord, model_ord FROM unnest(" + arr(ks, "int") + ", " + arr(kf, "int") + ", " + arr(ko, "int") + ", " + arr(km, "int") +
 		") AS k(src_no, feed_no, key_ord, model_ord))"
 }
@@ -335,6 +345,8 @@ func (r *identRun) unit(ctx context.Context, tx *sql.Tx) error {
 		return r.keyLabels(ctx, tx)
 	case phaseLabels:
 		return r.labels(ctx, tx)
+	case phaseCopy:
+		return r.copyLabels(ctx, tx)
 	case phaseDecide:
 		return r.decide(ctx, tx)
 	case phaseLookup:

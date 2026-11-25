@@ -147,9 +147,11 @@ func (s *Store) RebuildPage(ctx context.Context, lease ingest.RunLease) (ingest.
 			return kernel.Errorf(ingest.CodeRunStage, "the identification of the run %d is at %s, not at the keys of Go", lease.No, r.st.Phase)
 		}
 		page.Unit = int(r.st.Cur)
-		rows, err := tx.QueryContext(ctx, "SELECT c.rid, c.src_no, d.dataset_id, c.key, c.fields FROM "+r.t(pgschema.TableCalcRecord)+" c JOIN "+
-			pgschema.TableSourceDataset+" d ON d.dataset_no = c.dataset_no AND d.decl_rev = c.decl_rev WHERE c.rid > $1 AND c.rid <= $2 AND c.fields IS NOT NULL AND c.page IS NULL AND NOT "+notIdentified("c")+
-			" ORDER BY c.rid", r.st.Cur, r.st.Cur+int64(r.st.Size))
+		query := "SELECT c.rid, c.src_no, d.dataset_id, c.key, c.fields FROM " + r.t(pgschema.TableCalcRecord) + " c JOIN " +
+			pgschema.TableSourceDataset + " d ON d.dataset_no = c.dataset_no AND d.decl_rev = c.decl_rev WHERE c.rid > $1 AND c.rid <= $2 AND c.fields IS NOT NULL AND c.page IS NULL AND NOT " + notIdentified("c") +
+			" ORDER BY c.rid"
+		r.saw(tx, "read the records that have no key", query, r.st.Cur, r.st.Cur+int64(r.st.Size))
+		rows, err := tx.QueryContext(ctx, query, r.st.Cur, r.st.Cur+int64(r.st.Size))
 		if err != nil {
 			return dbErr(err, "read the records that have no key")
 		}

@@ -23,9 +23,11 @@ func (s *Store) AskPage(ctx context.Context, lease ingest.RunLease) ([]ingest.As
 		if r.st.Phase != phaseAsk {
 			return kernel.Errorf(ingest.CodeRunStage, "the identification of the run %d is at %s, not at the new objects that have a parent", lease.No, r.st.Phase)
 		}
-		rows, err := tx.QueryContext(ctx, r.q("SELECT a.label, a.rid, c.src_no, d.dataset_id, c.key, c.fields, a.feed_no, a.key_ord, a.parent_ref FROM {ask} a "+
-			"JOIN {rec} c ON c.rid = a.rid JOIN "+pgschema.TableSourceDataset+" d ON d.dataset_no = c.dataset_no WHERE a.round_no = {R} AND NOT a.answer "+
-			"AND a.label > $2 ORDER BY a.label LIMIT $1"), r.st.Size, r.st.Cur)
+		query := r.q("SELECT a.label, a.rid, c.src_no, d.dataset_id, c.key, c.fields, a.feed_no, a.key_ord, a.parent_ref FROM {ask} a " +
+			"JOIN {rec} c ON c.rid = a.rid JOIN " + pgschema.TableSourceDataset + " d ON d.dataset_no = c.dataset_no WHERE a.round_no = {R} AND NOT a.answer " +
+			"AND a.label > $2 ORDER BY a.label LIMIT $1")
+		r.saw(tx, "read the questions", query, r.st.Size, r.st.Cur)
+		rows, err := tx.QueryContext(ctx, query, r.st.Size, r.st.Cur)
 		if err != nil {
 			return dbErr(err, "read the questions")
 		}

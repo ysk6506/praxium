@@ -17,8 +17,12 @@ const (
 	// DefaultIdentifyRounds is how many rounds a run goes through before the records whose parents are still not found are left.
 	DefaultIdentifyRounds = 16
 	// DefaultIdentifyTurns is how many turns the search for the groups of one round takes before the groups that are not known to be
-	// whole are left unresolved. A turn follows a chain of keys by jumps, so the turns it takes grow with the logarithm of the chain.
+	// whole are left unresolved. A turn follows a chain of keys by jumps, so the turns fall, but they depend on the diameter of the group; what the turns do not end Go ends (SettleMax).
 	DefaultIdentifyTurns = 40
+	// DefaultSettlePairs is the most pairs of a record and a feed that Go holds in memory to end the search for the groups that the turns
+	// did not end. A pair is a number and its keys (about 200 bytes of memory with its share of the tables of the union), so 200,000
+	// pairs are about 40 MB and the work takes less than a second (ADR-0108). Above it the groups are left, as before.
+	DefaultSettlePairs = 200_000
 	// DefaultIdentifyPages is how many pages of the rows received a unit copies the keys of.
 	DefaultIdentifyPages = 8
 	// MaxIdentifyFeeds is how many feeds a mapping may have for the step: a record and a feed are one number (record * 1024 + feed).
@@ -42,6 +46,9 @@ type IdentifyFeed struct {
 	TypeNo int
 	// Creates says that a record of the feed may make an object. A feed that does not only finds the objects there are.
 	Creates bool
+	// NameCol is the place of the cell the name of the object is read from among the cells of a record, or -1 when it is not known
+	// (the feed gives no name, or reads a dataset a refinement makes).
+	NameCol int
 	Keys    []IdentifyKey
 }
 
@@ -56,6 +63,8 @@ type IdentifyStart struct {
 	Pages      int
 	Rounds     int
 	Turns      int
+	// SettleMax is the most pairs Go ends the search for the groups of a round for (0 is DefaultSettlePairs).
+	SettleMax int
 }
 
 // Validate checks what the step cannot begin without.
@@ -71,7 +80,7 @@ func (s IdentifyStart) Validate() error {
 			return kernel.Errorf(kernel.CodeInvalidValue, "the identification takes feeds numbered 0 to %d, not %d", MaxIdentifyFeeds-1, f.Feed)
 		case seen[feedAt{f.SrcNo, f.Feed}]:
 			return kernel.Errorf(kernel.CodeInvalidValue, "the feed %d of the source %d is named twice", f.Feed, f.SrcNo)
-		case s.BucketRows < 0 || s.Pages < 0 || s.Rounds < 0 || s.Turns < 0:
+		case s.BucketRows < 0 || s.Pages < 0 || s.Rounds < 0 || s.Turns < 0 || s.SettleMax < 0:
 			return kernel.Errorf(kernel.CodeInvalidValue, "the sizes and the limits of the identification are not negative")
 		}
 		seen[feedAt{f.SrcNo, f.Feed}] = true
@@ -88,6 +97,9 @@ const (
 	NeedNothing IdentifyNeed = ""
 	NeedRebuild IdentifyNeed = "rebuild"
 	NeedAsk     IdentifyNeed = "ask"
+	// NeedSettle is the end of a search for the groups that its turns did not end: Go reads the pairs of the groups that are not whole
+	// and tells which of them are one group.
+	NeedSettle IdentifyNeed = "settle"
 )
 
 // IdentifyPlace is where the identification of a run stands.
@@ -151,6 +163,34 @@ type Answer struct {
 	Missing bool
 }
 
+// SettlePair is a pair of a record and a feed that is in a group the turns did not end, with the keys it has (each as one text).
+type SettlePair struct {
+	Pid  int64
+	Keys []string
+}
+
+// SettlePage is a page of the pairs of the groups that are not whole, the groups with their labels in a range of the labels: Next is
+// where to go on from, Done says there is no more, and Written is the last pair whose label a run that was stopped wrote already.
+type SettlePage struct {
+	Pairs   []SettlePair
+	Next    int64
+	Done    bool
+	Written int64
+}
+
+// SettledPair is the label a group of pairs got: the smallest pair of the group.
+type SettledPair struct {
+	Pid   int64
+	Label int64
+}
+
+// SettleEnd says how a page of settled pairs ends the work: Last is the last page, and Skipped says that Go wrote none because the
+// pairs were more than it holds (the groups are left, as when no end is looked for).
+type SettleEnd struct {
+	Last    bool
+	Skipped bool
+}
+
 // IdentifyCounts is what the identification did, in the numbers a report shows.
 type IdentifyCounts struct {
 	Seeded     int `json:"seeded"`
@@ -183,6 +223,8 @@ type Identifier interface {
 	IdentifyStep(ctx context.Context, lease RunLease) error
 	RebuildPage(ctx context.Context, lease RunLease) (RebuildPage, error)
 	PutRebuilt(ctx context.Context, lease RunLease, unit int, rows []RebuiltRow) error
+	SettleRead(ctx context.Context, lease RunLease, after int64) (SettlePage, error)
+	PutSettled(ctx context.Context, lease RunLease, rows []SettledPair, end SettleEnd) error
 	AskPage(ctx context.Context, lease RunLease) ([]AskRow, error)
 	PutAnswers(ctx context.Context, lease RunLease, answers []Answer) error
 	IdentifyReport(ctx context.Context, no int64) (IdentifyCounts, error)
@@ -224,13 +266,13 @@ func RunIdentify(ctx context.Context, d Identifier, lease RunLease, start Identi
 		if place.Done() {
 			return d.IdentifyReport(ctx, lease.No)
 		}
-		if err := doUnit(ctx, d, lease, place.Need, keys); err != nil {
+		if err := doUnit(ctx, d, lease, place.Need, keys, start); err != nil {
 			return IdentifyCounts{}, err
 		}
 	}
 }
 
-func doUnit(ctx context.Context, d Identifier, lease RunLease, need IdentifyNeed, keys KeyMaker) error {
+func doUnit(ctx context.Context, d Identifier, lease RunLease, need IdentifyNeed, keys KeyMaker, start IdentifyStart) error {
 	switch need {
 	case NeedRebuild:
 		page, err := d.RebuildPage(ctx, lease)
@@ -242,6 +284,8 @@ func doUnit(ctx context.Context, d Identifier, lease RunLease, need IdentifyNeed
 			return err
 		}
 		return d.PutRebuilt(ctx, lease, page.Unit, rows)
+	case NeedSettle:
+		return settleGroups(ctx, d, lease, start.SettleMax)
 	case NeedAsk:
 		asks, err := d.AskPage(ctx, lease)
 		if err != nil {

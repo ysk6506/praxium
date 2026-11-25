@@ -43,8 +43,12 @@ func (r *identRun) labels(ctx context.Context, tx *sql.Tx) error {
 		st.Turn, st.Changed = st.Turn+1, 0
 		st.Phase, st.Cur, st.Cur2, st.CurKey = phaseKLabels, -1, 0, ""
 		return r.analyze(ctx, tx, pgschema.TableCalcLabel)
+	case st.Changed > 0:
+		// the turns did not end the search: Go ends it for the groups that are not whole
+		st.Phase, st.Cur, st.Cur2, st.Skipped = phaseSettle, 0, 0, false
+		return nil
 	default:
-		st.Unsettled = st.Changed > 0
+		st.Unsettled = false
 		st.Phase, st.Cur = phaseDecide, 0
 		return r.analyze(ctx, tx, pgschema.TableCalcLabel, pgschema.TableCalcBind)
 	}
@@ -60,8 +64,15 @@ func (r *identRun) labelPairs(ctx context.Context, tx *sql.Tx, hi int64) error {
 	}
 	// the label a pair gets is the smallest label of its keys, and then the label that group had at the turn before (the label of a pair
 	// is the number of a pair of the same group, so it is a place to jump to): a group that is a chain of keys is followed by the
-	// jumps, so the turns it takes grow with the length of the chain's logarithm and not with the length of the chain
+	// jumps, so the turns it takes fall, but they depend on the diameter of the group (Go ends what they do not)
 	last := "j" + strconv.Itoa(labelJumps)
+	// the labels of the turn before the last one are not read again: a unit takes them away for its range, so that a round keeps at most
+	// two labels of each pair
+	if st.Turn >= 2 {
+		if _, err := r.exec(ctx, tx, "take away the labels that are not read again", r.q("DELETE FROM {label} WHERE round_no = {R} AND iter = $3 AND pid > $1 AND pid <= $2"), st.Cur, hi, st.Turn-2); err != nil {
+			return err
+		}
+	}
 	changed, err := r.scanInt(ctx, tx, "label the pairs", r.q("WITH nl AS (SELECT s.pid, min(k.label) AS label FROM {slot} s"+
 		probe("x.label", "{klabel}", "k", "x.round_no = {R} AND x.iter = $3 AND x.type_no = s.type_no AND x.ctx_no = s.ctx_no AND x.sig_hash = s.sig_hash")+
 		" WHERE s.round_no = {R} AND s.pid > $1 AND s.pid <= $2 GROUP BY s.pid), "+
