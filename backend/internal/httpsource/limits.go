@@ -128,6 +128,23 @@ func (rn *run) charge() error {
 	return nil
 }
 
+// chargeChild counts a request of the child against what a preview (ten) and a check (one) may send, whatever the size of a unit and
+// the number of its pages; the requests of the parent and for a token are not counted. It is called before charge.
+func (rn *run) chargeChild(p plan) error {
+	if rn.unit == nil || p.token || (!rn.keep && !rn.firstOnly) {
+		return nil
+	}
+	most, what := previewChildRequests, "preview"
+	if rn.firstOnly {
+		most, what = checkChildRequests, "check"
+	}
+	if rn.sentOfChild >= most {
+		return &limitError{"a " + what + " sends at most " + strconv.Itoa(most) + " requests of a dataset that has a parent"}
+	}
+	rn.sentOfChild++
+	return nil
+}
+
 // limitOf finds a limit error inside err.
 func limitOf(err error) (*limitError, bool) {
 	var le *limitError

@@ -38,9 +38,17 @@ type kid struct {
 	u        *unit
 	// total is the values of the parent, those used and those passed over; invalid is how many were passed over before a request
 	// (a value the product does not send), skipped how many after a 404 (on_not_found skip); unmatched how many of a batch were not
-	// in the answer; sent how many requests of the child were sent.
-	total, invalid, skipped, unmatched, sent int
-	parentNote                               string
+	// in the answer; unread how many answers that were one object made no row (the object had no natural key, as an error that is
+	// answered with a 200 has none), which are values of the parent that were not read, as a 404 passed over is.
+	total, invalid, skipped, unmatched, unread int
+	parentNote                                 string
+}
+
+// read notes an answer that is one object and made no row.
+func (k *kid) read(it item, t ingest.Table) {
+	if k != nil && it.whole && len(t.Rows) == 0 {
+		k.unread++
+	}
 }
 
 // matched notes the value a record of the answer of a batch is for.
@@ -56,6 +64,10 @@ func (k *kid) matched(it item) {
 // notFound is what a 404 for the unit is: passed over when the definition says skip (never for a batch), else the dataset is not
 // complete.
 func (k *kid) notFound(l *loop) {
+	if l.rn.firstOnly { // a check read one value, and its 404 is a path that may be wrong, whatever the definition says of a 404
+		l.fail(l.rn.fail(ingest.SrcRequestRejected, "the detail of the first value of the parent answered 404; check the path of the request (on_not_found skip passes over a value that is gone, and a check has no other value to try)", nil))
+		return
+	}
 	if k.ds.OnNotFound == ingest.OnNotFoundSkip && !k.u.batch {
 		k.skipped++
 		l.unitDone = true
@@ -70,7 +82,6 @@ func (k *kid) notFound(l *loop) {
 
 // unitEnded counts the values of a batch that no record of the answer was for.
 func (k *kid) unitEnded() {
-	k.sent++
 	if !k.u.batch || !k.hasMatch {
 		return
 	}
@@ -90,15 +101,16 @@ func (k *kid) end(l *loop) ingest.Completeness {
 	if !end.Complete && !end.SeenOnly {
 		return end
 	}
-	if over := k.invalid + k.skipped; over > 3 && over*20 > k.total {
-		return ingest.Completeness{Reason: strconv.Itoa(over) + " of " + strconv.Itoa(k.total) + " values of the parent were passed over (a 404 with on_not_found skip, or a value that is not sent: source.parent_value_invalid), which is more than 5% and more than 3, so the path or the rights may be wrong"}
+	over := k.invalid + k.skipped + k.unread
+	if over > 3 && over*20 > k.total {
+		return ingest.Completeness{Reason: strconv.Itoa(over) + " of " + strconv.Itoa(k.total) + " distinct values of the parent were not read (a 404 with on_not_found skip, a value that is not sent: source.parent_value_invalid, or an answer with no natural key), which is more than 5% and more than 3, so the path or the rights may be wrong"}
 	}
 	var notes []string
 	if end.SeenOnly {
 		notes = append(notes, end.Reason)
 	}
-	if over := k.invalid + k.skipped; over > 0 {
-		notes = append(notes, strconv.Itoa(over)+" values of the parent were passed over (a 404 with on_not_found skip, or source.parent_value_invalid), so what they have was not seen")
+	if over > 0 {
+		notes = append(notes, strconv.Itoa(over)+" values of the parent were not read (a 404 with on_not_found skip, source.parent_value_invalid, or an answer with no natural key), so what they have was not seen")
 	}
 	if k.unmatched > 0 {
 		notes = append(notes, strconv.Itoa(k.unmatched)+" values of a batch had no record in the answer, so what they have was not seen")
@@ -161,10 +173,6 @@ func (rn *run) readUnits(l *loop, vals []string, size int, sep string) {
 	ds, k := l.ds, l.kid
 	names := sortedValueNames(ds)
 	for _, chunk := range rn.chunks(ds, vals, size) {
-		if rn.keep && k.sent >= previewChildRequests {
-			l.finish(ingest.Completeness{Reason: "a preview makes at most " + strconv.Itoa(previewChildRequests) + " requests of a dataset that has a parent"})
-			return
-		}
 		k.u = &unit{names: names, rows: decodeRows(chunk), batch: ds.Parent.Batch != nil, sep: sep, seen: map[string]bool{}}
 		rn.unit = k.u
 		l.startUnit()
@@ -272,7 +280,7 @@ func (rn *run) chunks(ds ingest.Dataset, vals []string, size int) [][]string {
 	var cur []string
 	used := 0
 	for _, v := range vals {
-		cost := 3*len(v) + 8 // a value escaped, in a text or in a body, and what joins it
+		cost := 6*len(v) + 8 // a value escaped (3 times as long in an address, 6 in a body where JSON writes < > & as <), and what joins it
 		if len(cur) > 0 && (len(cur) >= size || used+cost > room) {
 			out, cur, used = append(out, cur), nil, 0
 		}

@@ -230,7 +230,7 @@ func (l *loop) seenOnly() (ingest.Completeness, bool) {
 		return ingest.Completeness{SeenOnly: true, Reason: "the answer has no value at all: an export with no record and one that was not sent cannot be told apart, so nothing is taken as seen"}, true
 	case l.cut:
 		return ingest.Completeness{SeenOnly: true, Reason: "the answer ended with no mark of its end, or broke, so the lines that were read to their end are what was seen"}, true
-	case l.recs > 0 && l.rows == 0 && (l.lines || l.ds.OpensArray()):
+	case l.recs > 0 && l.rows == 0 && (l.lines || l.ds.OpensArray() || l.kid != nil):
 		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.recs) + " records were read and none made a row (all were passed over, as a row with no natural key is when the definition says so), so the answer may not be what the definition reads"}, true
 	}
 	return ingest.Completeness{}, false
@@ -250,6 +250,7 @@ func (l *loop) feed(it item, end *respEnd) bool {
 		return false
 	}
 	l.kid.matched(it)
+	l.kid.read(it, table)
 	var after func() []byte
 	if l.rn.pager.resumable() && !l.lines && l.kid == nil {
 		after = l.mint // a child dataset gives no token: a read of it starts again from its first value (ADR-0111)

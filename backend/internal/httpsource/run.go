@@ -61,6 +61,8 @@ type run struct {
 	// a dataset that has no parent; child.go).
 	child *childBudget
 	unit  *unit
+	// sentOfChild is how many requests of the child (its pages, and a request sent again) a preview or a check sent.
+	sentOfChild int
 }
 
 // maxExchanges is the most exchanges a preview keeps.

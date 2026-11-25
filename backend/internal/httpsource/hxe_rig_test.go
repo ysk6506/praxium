@@ -36,6 +36,8 @@ type hxeServer struct {
 	seen    []hsRequest
 	open    int
 	openAt  []int
+	// bytesRead is how many bytes of bodies the client took from the source.
+	bytesRead int
 }
 
 type hxeClient struct{ s *hxeServer }
@@ -51,7 +53,9 @@ func (b *hxeBody) Read(p []byte) (int, error) {
 	if b.s.timeout > 0 && b.s.clock.Now().Sub(b.begun) > b.s.timeout {
 		return 0, &egress.Error{Kind: egress.KindTimeout, Reason: "the time limit of the request passed while the body was read"}
 	}
-	return b.r.Read(p)
+	n, err := b.r.Read(p)
+	b.s.bytesRead += n
+	return n, err
 }
 
 func (b *hxeBody) Close() error {

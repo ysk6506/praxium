@@ -15,7 +15,8 @@ func (w *walker) object(start int64) error {
 			return err
 		}
 		obj[key] = v
-		w.win.floor = int(w.dec.InputOffset())
+		// The floor is not moved while the object is read: the window refuses to give more than a record may be (and its slack) from
+		// where the object began, so that an object with very many keys is cut at the size of a record and not read to its end.
 	}
 	if _, err := w.dec.Token(); err != nil {
 		return err
@@ -26,7 +27,7 @@ func (w *walker) object(start int64) error {
 	}
 	more := true
 	if w.skip == 0 {
-		more = w.each(item{rec: obj, index: 0, last: true})
+		more = w.each(item{rec: obj, index: 0, last: true, whole: true})
 	}
 	if !more {
 		w.out.stopped = true

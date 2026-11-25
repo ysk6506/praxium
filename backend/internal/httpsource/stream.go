@@ -60,6 +60,7 @@ type item struct {
 	elem       int
 	last       bool
 	expanded   bool
+	whole      bool // the record is the whole answer of a request of a child (the detail of one value of the parent)
 	// missing and outers are how many records of the response, up to this one, had no array (missing) and had their array looked
 	// for (outers); the token of a read that goes on from here carries them (ADR-0109).
 	missing, outers int

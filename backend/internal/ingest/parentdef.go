@@ -316,6 +316,7 @@ func (d Dataset) checkBatch(c *collector, source, at string, p *Parent) {
 // is no child, that no dataset is its own parent, and that the paths of the values read a record of the parent. It is the check
 // that needs more than one dataset, so it is made when all of them are read.
 func (s Source) checkParents(c *collector) {
+	s.checkHeaderVars(c)
 	byID := map[string]int{}
 	for i, d := range s.Datasets {
 		byID[d.ID] = i
@@ -338,6 +339,38 @@ func (s Source) checkParents(c *collector) {
 			c.add(ecAdParentDepth, at, params, "source %s: the parent %s of dataset %s has a parent of its own; one level is read", s.ID, d.Parent.Dataset, d.ID)
 		default:
 			s.checkParentPaths(c, i, s.Datasets[j])
+		}
+	}
+}
+
+// checkHeaderVars refuses a {parent.<name>} in the value of a header: a header is sent as the definition wrote it, never with the
+// values of a parent, so the text would go to the source as it is.
+func (s Source) checkHeaderVars(c *collector) {
+	if s.Connection == nil {
+		return
+	}
+	check := func(at, field, text string) {
+		if strings.Contains(text, "{parent.") {
+			c.add(ecAdParentTemplatePlace, at, Params{"source": s.ID, "dataset": "", "field": field, "reason": "a header is sent as it is written and has no value of a parent"},
+				"source %s: %s has a {parent.<name>}; a header never has the values of a parent", s.ID, field)
+		}
+	}
+	names := make([]string, 0, len(s.Connection.Headers))
+	for k := range s.Connection.Headers {
+		names = append(names, k)
+	}
+	sort.Strings(names)
+	for _, k := range names {
+		check(ptr("connection", "headers", k), "connection.headers."+clip(k, idClipAt), s.Connection.Headers[k])
+	}
+	if a := s.Connection.Auth; a != nil && a.Request != nil {
+		hs := make([]string, 0, len(a.Request.Headers))
+		for k := range a.Request.Headers {
+			hs = append(hs, k)
+		}
+		sort.Strings(hs)
+		for _, k := range hs {
+			check(ptr("connection", "auth", "request", "headers", k), "connection.auth.request.headers."+clip(k, idClipAt), a.Request.Headers[k])
 		}
 	}
 }

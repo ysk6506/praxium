@@ -59,3 +59,20 @@ func TestHxeAParentBlockThatSaysNothingAndABodyThatMixesAreDefinitionErrors(t *t
 		t.Errorf("a body that mixes: %v", codes)
 	}
 }
+
+// [REQ-910]
+// A header never has the values of a parent: the text would go to the source as it is written.
+func TestHxeAHeaderThatHasAVariableOfAParentIsADefinitionError(t *testing.T) {
+	doc := adpKid(t, adpHelper, `"parent":{"dataset":"ds_ids","values":{"id":"id"}},`, "/s/{parent.id}")
+	bad := adpSwap(t, doc, `"headers":{"Accept":"application/json"}`, `"headers":{"X-Host":"{parent.id}"}`)
+	if codes := hxeCodes(t, bad); !strings.Contains(strings.Join(codes, ";"), "source.parent_template_place /connection/headers/X-Host") {
+		t.Errorf("a header: %v", codes)
+	}
+	badToken := adpSwap(t, doc, `"request":{"path":"/auth/token","format":"json",`, `"request":{"path":"/auth/token","headers":{"X-Host":"{parent.id}"},"format":"json",`)
+	if codes := hxeCodes(t, badToken); !strings.Contains(strings.Join(codes, ";"), "/connection/auth/request/headers/X-Host") {
+		t.Errorf("a header of the token request: %v", codes)
+	}
+	if codes := hxeCodes(t, doc); len(codes) != 0 {
+		t.Errorf("the definition that is right: %v", codes)
+	}
+}

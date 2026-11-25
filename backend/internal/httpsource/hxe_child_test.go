@@ -70,7 +70,7 @@ func TestHxeAValueInThePathIsEscapedOnce(t *testing.T) {
 // A value that could be read as another place, or as more than one value, is not sent: no request is made for it, and the dataset is
 // read as what was seen. The value is in no event.
 func TestHxeAValueThatCouldBeAnotherPlaceIsNotSent(t *testing.T) {
-	bad := []string{"..", ".", "a/b", "%2f", "%2F", "a%2eb", "a\\b", "x\u0001y", "．．", strings.Repeat("a", 257), "ä", "x\ty"}
+	bad := []string{"..", ".", "a/b", "%2f", "%2F", "a%2eb", "a\\b", "x\u0001y", "．．", strings.Repeat("a", 257), "ä", "x\ty", " ..", ".. ", "..;", ".;", "..;x", " a"}
 	for _, b := range bad {
 		ids := []string{b}
 		for i := 0; i < 39; i++ {
@@ -82,7 +82,7 @@ func TestHxeAValueThatCouldBeAnotherPlaceIsNotSent(t *testing.T) {
 			t.Fatalf("%q: %v", b, err)
 		}
 		end := hxeEnd(t, pages)
-		if end.Complete || !end.SeenOnly || !strings.Contains(end.Reason, "passed over") {
+		if end.Complete || !end.SeenOnly || !strings.Contains(end.Reason, "were not read") {
 			t.Errorf("%q: the end %+v", b, end)
 		}
 		if len(g.srv.seen) != 40 || len(hxeIDsOf(pages)) != 39 {
@@ -134,7 +134,7 @@ func TestHxeA404IsNotCompleteUnlessSkippedAndTooManySkippedIsNotComplete(t *test
 		reasonHave string
 	}{
 		{"default", "", []string{"v05"}, false, false, 5, "child_not_found"},
-		{"skip, one of forty", `"on_not_found":"skip",`, []string{"v05"}, false, true, 39, "passed over"},
+		{"skip, one of forty", `"on_not_found":"skip",`, []string{"v05"}, false, true, 39, "were not read"},
 		{"skip, four of forty", `"on_not_found":"skip",`, []string{"v05", "v06", "v07", "v08"}, false, false, 0, "more than 5%"},
 		{"no 404", `"on_not_found":"skip",`, nil, true, false, 40, ""},
 	} {
@@ -299,7 +299,7 @@ func TestHxeABatchInTheQueryIsJoinedAndKeptUnderTheLimitOfTheAddress(t *testing.
 			t.Errorf("an address of %d bytes", len(r.hsURL))
 		}
 	}
-	if end := hxeEnd(t, pages); end.Complete || !end.SeenOnly || !strings.Contains(end.Reason, "passed over") {
+	if end := hxeEnd(t, pages); end.Complete || !end.SeenOnly || !strings.Contains(end.Reason, "were not read") {
 		t.Errorf("the value with the separator in it: %+v", end)
 	}
 }

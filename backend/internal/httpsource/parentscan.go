@@ -25,6 +25,12 @@ type scan struct {
 	partial          bool
 }
 
+// parentValueOverhead is what a value of a parent costs besides its bytes, counted for each value so that the limit of bytes is the
+// memory held and not only the text: the text is held once and named twice (as the key of the map that drops repeats and in the
+// slice that keeps the order), each with a header of 16 bytes, and the entry of the map costs about 64 bytes more (its buckets and
+// its flags), so 2*16 for the headers and 64 for the entry.
+const parentValueOverhead = 96
+
 var intText = regexp.MustCompile(`^-?[0-9]+$`)
 
 // pickTyped reads a value of a record of the parent: a text that is not empty, or an integer (digits, with a sign). Anything else
@@ -51,15 +57,24 @@ func pickTyped(cp ingest.ColumnPath, rec, outer any) (string, bool, bool) {
 // path, a query or a body could read as more than one value or another place (a step that goes up, a slash, a backslash, an
 // escaped one of those, the separator of a batch).
 func validParentText(s, sep string) bool {
-	if s == "" || len(s) > ingest.ParentValueMax || s == "." || s == ".." {
+	if s == "" || len(s) > ingest.ParentValueMax || s != strings.TrimSpace(s) {
 		return false
 	}
+	// A step that goes up is not sent however a server reads what is after a ';' (a parameter of the path).
+	if head, _, _ := strings.Cut(s, ";"); head == "." || head == ".." {
+		return false
+	}
+	return printableStep(s) && !encodedSeparator(s) && (sep == "" || !strings.Contains(s, sep))
+}
+
+// printableStep tells whether a text is printable ASCII with no slash and no backslash, so that it is one step of a path.
+func printableStep(s string) bool {
 	for i := 0; i < len(s); i++ {
 		if c := s[i]; c < 0x20 || c > 0x7e || c == '/' || c == '\\' {
 			return false
 		}
 	}
-	return !encodedSeparator(s) && (sep == "" || !strings.Contains(s, sep))
+	return true
 }
 
 // encodedSeparator tells whether a text has the percent-encoded form of a slash, a dot or a backslash.
@@ -119,13 +134,13 @@ func (rn *run) scanParent(ctx context.Context, ds, parent ingest.Dataset, sep st
 		if _, dup := sc.seen[key]; dup {
 			return true
 		}
-		if need == 0 && (len(sc.vals) >= caps || sc.bytes+len(key) > rn.r.ceil.ParentBytes) {
+		if need == 0 && (len(sc.vals) >= caps || sc.bytes+len(key)+parentValueOverhead > rn.r.ceil.ParentBytes) {
 			sc.reason = "the parent has more distinct values than " + strconv.Itoa(caps) + " (parent.max_requests times the size of a batch, at most " + strconv.Itoa(rn.r.ceil.ParentValues) + ") or more than " + strconv.Itoa(rn.r.ceil.ParentBytes) + " bytes of them, so no request of the dataset was made"
 			return false
 		}
 		sc.seen[key] = struct{}{}
 		sc.vals = append(sc.vals, key)
-		sc.bytes += len(key)
+		sc.bytes += len(key) + parentValueOverhead
 		rn.r.bud.notePeak(len(sc.vals))
 		if need > 0 && len(sc.vals) >= need {
 			sc.partial = true

@@ -138,6 +138,9 @@ func isHugeNumber(v string, err error) bool {
 func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	clock := rn.r.cfg.Clock
 	started := clock.Now()
+	if err := rn.chargeChild(p); err != nil {
+		return nil, err
+	}
 	if err := rn.charge(); err != nil {
 		return nil, err
 	}
@@ -161,7 +164,7 @@ func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	if resp.Status < 200 || resp.Status > 299 {
 		_ = resp.Body.Close()
 		rn.after(p, rep, 0)
-		return rep, rn.ofTokenRequest(p, rn.statusError(resp.Status))
+		return rep, rn.ofTokenRequest(p, rn.statusError(resp.Status, p.token))
 	}
 	rep.rc = resp.Body
 	rn.open = rep

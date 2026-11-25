@@ -68,7 +68,7 @@ func (rn *run) pageValueError(ctx context.Context, err error) error {
 }
 
 // statusError says what a status that is not a success is. The body of such an answer is never read.
-func (rn *run) statusError(status int) *ingest.SourceError {
+func (rn *run) statusError(status int, token bool) *ingest.SourceError {
 	code := strconv.Itoa(status)
 	switch {
 	case status == 401:
@@ -83,7 +83,7 @@ func (rn *run) statusError(status int) *ingest.SourceError {
 		return rn.fail(ingest.SrcSourceBusy, "the source failed or is busy ("+code+")", nil)
 	}
 	var cause error
-	if status == 404 {
+	if status == 404 && !token { // the 404 of the request for a token is no value that is gone: no token was given
 		cause = errNotFound
 	}
 	return rn.fail(ingest.SrcRequestRejected, "the source answered "+code+" to the request; the request, its path or its parameters may be wrong", cause)
