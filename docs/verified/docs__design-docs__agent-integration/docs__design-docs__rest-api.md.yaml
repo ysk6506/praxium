@@ -1,7 +1,7 @@
 doc: "docs/design-docs/agent-integration.md"
 target: "docs/design-docs/rest-api.md"
-hash: "dbb3b86f121ab241"
-date: "2026-11-18"
-note: "ADR-0080/0081 검토 반영 2차 뒤 결정 본문과 대조했다. 풀 수, 도구 수, 단계 번호, 기본값이 같다"
+hash: "6df6d6aaca7ebdb4"
+date: "2026-11-25"
+note: "rest-api.md의 변경은 문제 코드 표에 웹훅 코드 넷을 더한 것뿐이라 에이전트 연동 설명과 무관함"
 text_changed: true
 doc_hash: "f960ec969a4deb8a"

@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "c4e3953d46c5f562"
+hash: "87c34bef85fb92cf"
 date: "2026-11-25"
-note: "definition.go의 정의 검사를 고쳤다(ADR-0109 N5: 자연 키 컬럼은 첫 읽는 경로로 정하고, 파일 JSON Lines의 ^.는 [*] 없이도 같은 정의 오류로 잡는다). 이 문서는 records_path와 ^.의 규칙을 적지 않아 어긋나는 곳이 없다."
-text_changed: false
-doc_hash: "06592884ef5fe37a"
+note: "definition.go에 Source.Webhooks가 더해져 최상위 필드 표에 webhooks 행을 더했고(ADR-0107), 같은 파일의 ADR-0109 정의 검사 변경은 이 문서와 어긋나지 않음"
+text_changed: true
+doc_hash: "36fbebf41adaa5b5"

@@ -1,10 +1,9 @@
 package httpapi
 
 import (
-	"net"
 	"strconv"
-	"strings"
 
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/kgread"
 )
 
@@ -60,19 +59,8 @@ func (c *call) failProblem(p *kgread.Problem) {
 	c.fail(p.Code, p.Params, errs...)
 }
 
-// clientKey is where the caller comes from: the address of the connection, or behind a proxy that the operator
-// declared, the last address the proxy appended to X-Forwarded-For (the one a caller cannot forge).
+// clientKey is where the caller comes from, the key of the limiter and of the audit line: the rule of the kernel, which
+// reads every line of X-Forwarded-For behind a proxy that the operator declared (the last item, the one the proxy wrote).
 func (c *call) clientKey() string {
-	if c.s.trustProxy {
-		if parts := strings.Split(c.r.Header.Get("X-Forwarded-For"), ","); len(parts) > 0 {
-			if last := strings.TrimSpace(parts[len(parts)-1]); last != "" {
-				return last
-			}
-		}
-	}
-	host, _, err := net.SplitHostPort(c.r.RemoteAddr)
-	if err != nil {
-		host = c.r.RemoteAddr
-	}
-	return host
+	return kernel.CallerKey(c.r.RemoteAddr, c.r.Header.Values("X-Forwarded-For"), c.s.trustProxy)
 }

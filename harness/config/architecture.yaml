@@ -105,6 +105,8 @@ go:
     adapter.http:   {path: backend/internal/httpapi, may_import: [core.kernel, core.model, core.contract, core.access, core.graph, core.query, core.kgread]}
     # The MCP adapter of the read-only KG interface (ADR-0068): POST /mcp, the JSON-RPC layer, the handling of the protocol versions, the checks of origin and token, the registry of tools. It carries and judges nothing of the KG: the token, the filter and the codes are core.kgread's. It never imports adapter.http; the composition root mounts its handler on the server.
     adapter.mcp:    {path: backend/internal/mcpapi, may_import: [core.kernel, core.contract, core.access, core.kgread]}
+    # The entrance of the receiving webhooks (ADR-0107): POST /v1/sources/{source_id}/webhooks/{webhook_id}:receive, the proof of the caller (a signature or a token), the limits of the entrance, and the mark of a signal. It reaches the webhooks through the Directory and the SignalSink it is given and the secrets only through core.secrets' Verifier, and nothing before the caller is proven reaches a database. It never imports adapter.http; the composition root mounts its handler on the server. Its tests mount it on the real server to check the access log and the not-found answer.
+    adapter.hookin: {path: backend/internal/hookin, may_import: [core.kernel, core.contract, core.secrets, core.ingest], test_may_import: [adapter.http, core.model]}
     adapter.cli:    {path: backend/internal/cli, may_import: [core.kernel]}
     # The built web UI (ADR-0035): the files of apps/web embedded in the program. It imports nothing; the backend builds and tests without the real build (a placeholder page is committed).
     adapter.webui:  {path: backend/internal/webui, may_import: []}
@@ -140,7 +142,7 @@ go:
     os/signal: [cmd.praxium]
     os/user: [cmd.praxium]
     net: [cmd.praxium, adapter.http, adapter.egress, backend/internal/sourcecheck/fakepg_test.go, backend/internal/sourcecheck/tlsproxy_test.go, backend/internal/sourcecheck/httptls_test.go]
-    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp, adapter.egress, backend/internal/sourcecheck/httptls_test.go]
+    net/http: [cmd.praxium, adapter.http, adapter.cli, adapter.mcp, adapter.egress, adapter.hookin, backend/internal/sourcecheck/httptls_test.go]
     net/rpc: [cmd.praxium]
     # Packages that make a connection themselves, or hand one to the caller, without importing net: only the unit that makes the connections of the sources (and the composition root) may import them (ADR-0091).
     crypto/tls: [cmd.praxium, adapter.egress, backend/internal/sourcecheck/tlsproxy_test.go, backend/internal/sourcecheck/httptls_test.go]

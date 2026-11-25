@@ -1,0 +1,4 @@
+doc: "docs/design-docs/kg-model.md"
+date: "2026-11-25"
+note: "ADR-0007, ADR-0025, model의 enums·meaning·valuetypes, 표준 모델 데이터 파일, graph/hash.go와 줄마다 대조했다. 틀린 곳 넷(해시의 번호와 id, 그룹의 mode와 threshold_kind, replace_component의 disruption, fqdn 정규화의 범위)을 고쳤다"
+doc_hash: "27251a605f48218a"

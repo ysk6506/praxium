@@ -49,6 +49,7 @@ praxium local -data-dir data                # 결과를 웹 UI와 API로 본다
 | `name` | 아니오 | | 사람이 읽는 설명. 동작에 영향이 없다 |
 | `collector` | 아니오 | `in_product` | 지금은 값을 검사하지도 쓰지도 않는다 |
 | `limits` | 아니오 | 2.7의 기본값 | 파일의 안전 한도(엑셀의 크기와 시트 한도, CSV와 JSON Lines의 행 수) |
+| `webhooks` | 아니오 | | 다른 제품이 부르는 받는 웹훅(`id`, `kind`, `auth`, `allow_ips`, `limits`). 파일 어댑터의 소스는 둘 수 없다(`source.webhook.not_for_adapter`). 모양과 규칙은 [소스와 어댑터](../design-docs/sources-and-adapters.md) 2.6 |
 
 ### 2.2 데이터셋
 

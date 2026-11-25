@@ -170,6 +170,9 @@ amends_tests:
   - go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace
 test_change_reason: 단언은 바꾸지 않았다. 지문이 바뀐 이유는 셋이다. (1) 새 hxd_rig_test.go의 가짜 타입이 Do, Read, Close, CloseIdleConnections 메서드를 정의하는데 잠금 도구가 이름으로 도달 범위를 셈하므로 이 메서드를 부르는 옛 rig의 httpsource 테스트들의 지문이 바뀐다. (2) go:embed로 패키지의 .go 파일을 읽어 글자를 검사하는 테스트 7개(egress 5개와 httpsource 2개)는 egress/client.go와 새 테스트 파일이 지문에 든다. (3) 잠긴 사례 표 adpCases에 새 오류 코드의 사례 3개를 더했다(ingest 1개).
 decision_hash: 0f1d1ce96be2beb3
+amended_by:
+  - adr: "0112"
+    what: 알려진 한계 두 문장의 바로잡기와 REQ-909의 파일 쪽 규칙
 ---
 # ADR-0109 HTTP 소스의 줄마다 JSON 응답과 레코드 안의 배열 펼치기
 

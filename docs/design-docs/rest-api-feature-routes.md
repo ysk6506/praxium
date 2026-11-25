@@ -67,6 +67,7 @@ follows:
 | 타입 기준 조회와 빈 속성의 후보 | `GET /v1/object-types/{type_id}/feed-table`, `GET /v1/object-types/{type_id}/feed-candidates` |
 | 샘플 문서로 파서 후보와 트리 확인 | `POST /v1/parsers:probe` |
 | 푸시 수집(`ingester`) | `POST /v1/sources/{source_id}:push` |
+| 받는 웹훅(소스가 "바뀌었으니 다시 읽어라"는 신호를 보냄. 웹훅 자체 인증이라 사용자 토큰과 역할을 쓰지 않음. 예정, ADR-0107) | `POST /v1/sources/{source_id}/webhooks/{webhook_id}:receive` |
 | 수집 엔벨로프(`ingester`) | `POST /v1/ingest/envelopes`, `GET /v1/collectors` |
 | 수집기를 등록하고 토큰 교체하기 | `ingester` 서비스 계정의 경로(`GET /v1/system-accounts`). 수집기 전용 생성 경로는 없음 |
 | 실행, 단계별 건수, 샘플, 재실행 | `GET /v1/sync-runs`, `GET /v1/sync-runs/{run_id}/stages`, `GET /v1/sync-runs/{run_id}/samples`, `POST /v1/sync-runs/{run_id}/replays` |
