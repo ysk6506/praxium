@@ -182,90 +182,123 @@ func (s *Store) PutRebuilt(ctx context.Context, lease ingest.RunLease, unit int,
 	})
 }
 
-// putKeys writes the keys, the ends and the claims Go made, by COPY.
-func (r *identRun) putKeys(ctx context.Context, tx *sql.Tx, rows []ingest.RebuiltRow) error {
-	var keys, ends, claims *copier
-	open := func(c **copier, table string, cols []string) error {
-		if *c != nil {
-			return nil
-		}
-		made, err := openCopyTable(ctx, tx, r.kgNo, table, cols)
+// identCopies are the three COPYs of the keys, the ends and the claims Go made, each opened when its first row comes.
+type identCopies struct {
+	ctx    context.Context
+	tx     *sql.Tx
+	kgNo   int64
+	schema map[string]int
+	keys   *copier
+	ends   *copier
+	claims *copier
+}
+
+func (c *identCopies) open(into **copier, table string, cols []string) (*copier, error) {
+	if *into == nil {
+		made, err := openCopyTable(c.ctx, c.tx, c.kgNo, table, cols)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		*c = made
-		return nil
+		*into = made
 	}
-	abort := func() {
-		for _, c := range []*copier{keys, ends, claims} {
-			if c != nil {
-				c.abort()
+	return *into, nil
+}
+
+func (c *identCopies) abort() {
+	for _, one := range []*copier{c.keys, c.ends, c.claims} {
+		if one != nil {
+			one.abort()
+		}
+	}
+}
+
+func (c *identCopies) finish() error {
+	for _, one := range []*copier{c.keys, c.ends, c.claims} {
+		if one != nil {
+			if err := one.finish(); err != nil {
+				return err
 			}
 		}
 	}
+	return nil
+}
+
+// addKey sends a key with the types and signatures of its parents.
+func (c *identCopies) addKey(rid int64, k ingest.StageKey, parents []ingest.StageParent) error {
+	cp, err := c.open(&c.keys, pgschema.TableCalcKey, []string{pgschema.ColRid, pgschema.ColFeedNo, pgschema.ColKeyOrd, pgschema.ColTypeNo, pgschema.ColSigHash,
+		pgschema.ColCandRef, pgschema.ColAncTypes, pgschema.ColAncSigs, pgschema.ColHeld})
+	if err != nil {
+		return err
+	}
+	var types []int
+	var sigs [][]byte
+	for _, p := range parents {
+		types, sigs = append(types, p.TypeNo), append(sigs, append([]byte(nil), p.SigHash[:]...))
+	}
+	var cand, at, as any
+	if k.Cand != "" {
+		cand = k.Cand
+	}
+	if len(types) > 0 {
+		at, as = smallArray(types), bytesArray(sigs)
+	}
+	return cp.add(rid, int64(k.Feed), int64(k.Ord), int64(k.TypeNo), k.SigHash[:], cand, at, as, k.Held)
+}
+
+func (c *identCopies) addEnd(rid int64, e ingest.StageEnd) error {
+	cp, err := c.open(&c.ends, pgschema.TableCalcEnd, []string{pgschema.ColRid, pgschema.ColDefNo, pgschema.ColSide, pgschema.ColLookupHash, pgschema.ColHeld})
+	if err != nil {
+		return err
+	}
+	side := pgschema.RefRoleLinkFrom
+	if e.Side == "to" {
+		side = pgschema.RefRoleLinkTo
+	}
+	return cp.add(rid, int64(e.Def), int64(side), e.LookupHash[:], e.Held)
+}
+
+func (c *identCopies) addClaim(rid int64, cl ingest.StageClaim) error {
+	scheme, ok := c.schema[cl.Scheme]
+	if !ok {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the identifier scheme %q has no number", cl.Scheme)
+	}
+	cp, err := c.open(&c.claims, pgschema.TableCalcClaim, []string{pgschema.ColRid, pgschema.ColSchemeNo, pgschema.ColFeedNo, pgschema.ColValueHash, pgschema.ColValue, pgschema.ColHeld})
+	if err != nil {
+		return err
+	}
+	return cp.add(rid, int64(scheme), int64(cl.Feed), cl.ValueHash[:], cl.Value, cl.Held)
+}
+
+// putKeys writes the keys, the ends and the claims Go made, by COPY.
+func (r *identRun) putKeys(ctx context.Context, tx *sql.Tx, rows []ingest.RebuiltRow) error {
+	c := &identCopies{ctx: ctx, tx: tx, kgNo: r.kgNo, schema: r.st.Schemes}
 	for _, row := range rows {
 		parents := map[[2]int][]ingest.StageParent{}
 		for _, p := range row.Parents {
 			parents[[2]int{p.Feed, p.Ord}] = append(parents[[2]int{p.Feed, p.Ord}], p)
 		}
-		for _, k := range row.Keys {
-			if err := open(&keys, pgschema.TableCalcKey, []string{pgschema.ColRid, pgschema.ColFeedNo, pgschema.ColKeyOrd, pgschema.ColTypeNo, pgschema.ColSigHash,
-				pgschema.ColCandRef, pgschema.ColAncTypes, pgschema.ColAncSigs, pgschema.ColHeld}); err != nil {
-				abort()
-				return err
-			}
-			var types []int
-			var sigs [][]byte
-			for _, p := range parents[[2]int{k.Feed, k.Ord}] {
-				types, sigs = append(types, p.TypeNo), append(sigs, append([]byte(nil), p.SigHash[:]...))
-			}
-			var cand, at, as any
-			if k.Cand != "" {
-				cand = k.Cand
-			}
-			if len(types) > 0 {
-				at, as = smallArray(types), bytesArray(sigs)
-			}
-			if err := keys.add(row.Rid, int64(k.Feed), int64(k.Ord), int64(k.TypeNo), k.SigHash[:], cand, at, as, k.Held); err != nil {
-				abort()
-				return err
-			}
-		}
-		for _, e := range row.Ends {
-			if err := open(&ends, pgschema.TableCalcEnd, []string{pgschema.ColRid, pgschema.ColDefNo, pgschema.ColSide, pgschema.ColLookupHash, pgschema.ColHeld}); err != nil {
-				abort()
-				return err
-			}
-			side := pgschema.RefRoleLinkFrom
-			if e.Side == "to" {
-				side = pgschema.RefRoleLinkTo
-			}
-			if err := ends.add(row.Rid, int64(e.Def), int64(side), e.LookupHash[:], e.Held); err != nil {
-				abort()
-				return err
-			}
-		}
-		for _, c := range row.Claims {
-			scheme, ok := r.st.Schemes[c.Scheme]
-			if !ok {
-				abort()
-				return kernel.Errorf(kernel.CodeInvalidValue, "the identifier scheme %q has no number", c.Scheme)
-			}
-			if err := open(&claims, pgschema.TableCalcClaim, []string{pgschema.ColRid, pgschema.ColSchemeNo, pgschema.ColFeedNo, pgschema.ColValueHash, pgschema.ColValue, pgschema.ColHeld}); err != nil {
-				abort()
-				return err
-			}
-			if err := claims.add(row.Rid, int64(scheme), int64(c.Feed), c.ValueHash[:], c.Value, c.Held); err != nil {
-				abort()
-				return err
-			}
+		if err := c.addRow(row, parents); err != nil {
+			c.abort()
+			return err
 		}
 	}
-	for _, c := range []*copier{keys, ends, claims} {
-		if c != nil {
-			if err := c.finish(); err != nil {
-				return err
-			}
+	return c.finish()
+}
+
+func (c *identCopies) addRow(row ingest.RebuiltRow, parents map[[2]int][]ingest.StageParent) error {
+	for _, k := range row.Keys {
+		if err := c.addKey(row.Rid, k, parents[[2]int{k.Feed, k.Ord}]); err != nil {
+			return err
+		}
+	}
+	for _, e := range row.Ends {
+		if err := c.addEnd(row.Rid, e); err != nil {
+			return err
+		}
+	}
+	for _, cl := range row.Claims {
+		if err := c.addClaim(row.Rid, cl); err != nil {
+			return err
 		}
 	}
 	return nil
