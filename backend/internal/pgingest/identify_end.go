@@ -48,8 +48,10 @@ func (r *identRun) claims(ctx context.Context, tx *sql.Tx) error {
 	st := r.st
 	var no sql.NullInt64
 	var hash sql.NullString
-	err := tx.QueryRowContext(ctx, r.q("SELECT scheme_no, encode(value_hash, 'hex') FROM {claim} WHERE (scheme_no, value_hash) > ($1, decode($2, 'hex')) "+
-		"ORDER BY scheme_no, value_hash OFFSET $3 LIMIT 1"), st.Cur2, st.CurKey, st.Size).Scan(&no, &hash)
+	endQuery := r.q("SELECT scheme_no, encode(value_hash, 'hex') FROM {claim} WHERE (scheme_no, value_hash) > ($1, decode($2, 'hex')) " +
+		"ORDER BY scheme_no, value_hash OFFSET $3 LIMIT 1")
+	identSaw(tx, "claims end", endQuery, st.Cur2, st.CurKey, st.Size)
+	err := tx.QueryRowContext(ctx, endQuery, st.Cur2, st.CurKey, st.Size).Scan(&no, &hash)
 	last := isNoRows(err)
 	if err != nil && !last {
 		return dbErr(err, "find the end of the unit")

@@ -20,7 +20,7 @@ import (
 // q writes the names of the tables and the numbers of the unit into a statement.
 func (r *identRun) q(query string) string {
 	pairs := []string{
-		"{slot}", r.t(pgschema.TableCalcSlot), "{label}", r.t(pgschema.TableCalcLabel), "{bind}", r.t(pgschema.TableCalcBind),
+		"{slot}", r.t(pgschema.TableCalcSlot), "{label}", r.t(pgschema.TableCalcLabel), "{klabel}", r.t(pgschema.TableCalcKLabel), "{bind}", r.t(pgschema.TableCalcBind),
 		"{key}", r.t(pgschema.TableCalcKey), "{newkey}", r.t(pgschema.TableCalcNewKey), "{dropped}", r.t(pgschema.TableCalcDropped),
 		"{newobj}", r.t(pgschema.TableCalcNewObj), "{ask}", r.t(pgschema.TableCalcAsk), "{ref}", r.t(pgschema.TableCalcRef),
 		"{prob}", r.t(pgschema.TableCalcProblem), "{obj}", r.t(pgschema.TableObject), "{okey}", r.t(pgschema.TableObjectKey),
@@ -66,7 +66,7 @@ const ctxSQL = "(CASE WHEN d.n = 0 THEN 0 WHEN d.n > 4 THEN NULL ELSE l1.o END)"
 func (r *identRun) slot(ctx context.Context, tx *sql.Tx) error {
 	st := r.st
 	if st.Cur >= st.MaxRid || st.Round > st.Rounds {
-		return r.endSlots()
+		return r.endSlots(ctx, tx)
 	}
 	hi := st.Cur + int64(st.Size)
 	ready := "bool_and(c IS NOT NULL)"
@@ -93,7 +93,7 @@ func (r *identRun) slot(ctx context.Context, tx *sql.Tx) error {
 
 // endSlots is the end of the slots of a round: a round that made none is tried again with what it can take, and then the rounds are
 // over; a round that made some goes on to the groups.
-func (r *identRun) endSlots() error {
+func (r *identRun) endSlots(ctx context.Context, tx *sql.Tx) error {
 	st := r.st
 	switch {
 	case st.Round > st.Rounds:
@@ -105,6 +105,28 @@ func (r *identRun) endSlots() error {
 	default:
 		st.Phase, st.Cur, st.Turn, st.Changed = phaseLabels, 0, 0, 0
 		st.Counts.Rounds = st.Round
+		return r.analyze(ctx, tx, pgschema.TableCalcSlot, pgschema.TableCalcBind)
+	}
+	return nil
+}
+
+// analyzeStage measures the rows the receiving staged for the source of the run.
+func (r *identRun) analyzeStage(ctx context.Context, tx *sql.Tx) error {
+	for _, table := range []string{pgschema.TableStageKey, pgschema.TableStageEnd, pgschema.TableStageClaim} {
+		if _, err := tx.ExecContext(ctx, "ANALYZE "+r.t(pgschema.SourcePartition(table, r.srcNo))); err != nil {
+			return dbErr(err, "measure the rows the receiving staged")
+		}
+	}
+	return nil
+}
+
+// analyze gives the planner the sizes of tables the run has just filled: a table that is only inserted into is not looked at by the
+// server in time, and a plan made on a size that is not there reads the whole of a table for each unit.
+func (r *identRun) analyze(ctx context.Context, tx *sql.Tx, tables ...string) error {
+	for _, table := range tables {
+		if _, err := tx.ExecContext(ctx, "ANALYZE "+r.t(table)); err != nil {
+			return dbErr(err, "measure the tables of the run")
+		}
 	}
 	return nil
 }
@@ -120,7 +142,9 @@ func (r *identRun) toLookup() error {
 func (r *identRun) labels(ctx context.Context, tx *sql.Tx) error {
 	st := r.st
 	var end sql.NullInt64
-	err := tx.QueryRowContext(ctx, r.q("SELECT pid FROM {slot} WHERE round_no = {R} AND pid > $1 ORDER BY pid OFFSET $2 LIMIT 1"), st.Cur, st.Size).Scan(&end)
+	endQuery := r.q("SELECT pid FROM {slot} WHERE round_no = {R} AND pid > $1 ORDER BY pid OFFSET $2 LIMIT 1")
+	identSaw(tx, "labels end", endQuery, st.Cur, st.Size)
+	err := tx.QueryRowContext(ctx, endQuery, st.Cur, st.Size).Scan(&end)
 	last := isNoRows(err)
 	if err != nil && !last {
 		return dbErr(err, "find the end of the unit")
@@ -135,9 +159,8 @@ func (r *identRun) labels(ctx context.Context, tx *sql.Tx) error {
 			return err
 		}
 	} else {
-		changed, err := scanInt(ctx, tx, "label the pairs", r.q("WITH nl AS (SELECT s.pid, min(l2.label) AS label FROM {slot} s "+
-			"JOIN {slot} s2 ON s2.round_no = s.round_no AND s2.type_no = s.type_no AND s2.ctx_no = s.ctx_no AND s2.sig_hash = s.sig_hash "+
-			"JOIN {label} l2 ON l2.round_no = {R} AND l2.iter = $3 - 1 AND l2.pid = s2.pid "+
+		changed, err := scanInt(ctx, tx, "label the pairs", r.q("WITH nl AS (SELECT s.pid, min(k.label) AS label FROM {slot} s "+
+			"JOIN {klabel} k ON k.round_no = {R} AND k.iter = $3 AND k.type_no = s.type_no AND k.ctx_no = s.ctx_no AND k.sig_hash = s.sig_hash "+
 			"WHERE s.round_no = {R} AND s.pid > $1 AND s.pid <= $2 GROUP BY s.pid), "+
 			"ins AS (INSERT INTO {label} (round_no, iter, pid, label) SELECT {R}, $3, pid, label FROM nl RETURNING pid, label) "+
 			"SELECT count(*) FROM ins i JOIN {label} p ON p.round_no = {R} AND p.iter = $3 - 1 AND p.pid = i.pid WHERE p.label <> i.label"), st.Cur, hi, st.Turn)
@@ -154,10 +177,46 @@ func (r *identRun) labels(ctx context.Context, tx *sql.Tx) error {
 	switch {
 	case st.Turn == 0 || (st.Changed > 0 && st.Turn < st.Turns):
 		st.Turn, st.Changed = st.Turn+1, 0
+		st.Phase, st.Cur, st.Cur2, st.CurKey = phaseKLabels, -1, 0, ""
+		return r.analyze(ctx, tx, pgschema.TableCalcLabel)
 	default:
 		st.Unsettled = st.Changed > 0
 		st.Phase, st.Cur = phaseDecide, 0
+		return r.analyze(ctx, tx, pgschema.TableCalcLabel, pgschema.TableCalcBind)
 	}
+}
+
+// keyLabels is the first step of a turn: the label of each key of a range of keys, the smallest label the records that have the key got
+// at the turn before. A unit is the keys from the last one done to one that is size slots on, with all the slots of the keys in it.
+func (r *identRun) keyLabels(ctx context.Context, tx *sql.Tx) error {
+	st := r.st
+	var no, ctxNo sql.NullInt64
+	var hash sql.NullString
+	endQuery := r.q("SELECT type_no, ctx_no, encode(sig_hash, 'hex') FROM {slot} WHERE round_no = {R} AND (type_no, ctx_no, sig_hash) > ($1, $2, decode($3, 'hex')) " +
+		"ORDER BY type_no, ctx_no, sig_hash OFFSET $4 LIMIT 1")
+	identSaw(tx, "keys end", endQuery, st.Cur, st.Cur2, st.CurKey, st.Size)
+	err := tx.QueryRowContext(ctx, endQuery, st.Cur, st.Cur2, st.CurKey, st.Size).Scan(&no, &ctxNo, &hash)
+	last := isNoRows(err)
+	if err != nil && !last {
+		return dbErr(err, "find the end of the unit")
+	}
+	cond := "(s.type_no, s.ctx_no, s.sig_hash) > ($1, $2, decode($3, 'hex'))"
+	args := []any{st.Cur, st.Cur2, st.CurKey, st.Turn}
+	if !last {
+		cond += " AND (s.type_no, s.ctx_no, s.sig_hash) <= ($5, $6, decode($7, 'hex'))"
+		args = append(args, no.Int64, ctxNo.Int64, hash.String)
+	}
+	if _, err := exec(ctx, tx, "label the keys", r.q("INSERT INTO {klabel} (round_no, iter, type_no, ctx_no, sig_hash, label) "+
+		"SELECT {R}, $4, s.type_no, s.ctx_no, s.sig_hash, min(l.label) FROM {slot} s "+
+		"JOIN {label} l ON l.round_no = {R} AND l.iter = $4 - 1 AND l.pid = s.pid WHERE s.round_no = {R} AND "+cond+
+		" GROUP BY s.type_no, s.ctx_no, s.sig_hash"), args...); err != nil {
+		return err
+	}
+	if last {
+		st.Phase, st.Cur, st.Cur2, st.CurKey = phaseLabels, 0, 0, ""
+		return r.analyze(ctx, tx, pgschema.TableCalcKLabel)
+	}
+	st.Cur, st.Cur2, st.CurKey = no.Int64, ctxNo.Int64, hash.String
 	return nil
 }
 
@@ -193,7 +252,9 @@ const makeSQL = "numbered AS (SELECT label, row_number() OVER (ORDER BY ref) AS 
 func (r *identRun) decide(ctx context.Context, tx *sql.Tx) error {
 	st := r.st
 	var end sql.NullInt64
-	err := tx.QueryRowContext(ctx, r.q("SELECT label FROM {label} WHERE round_no = {R} AND iter = {F} AND label > $1 ORDER BY label OFFSET $2 LIMIT 1"), st.Cur, st.Size).Scan(&end)
+	endQuery := r.q("SELECT label FROM {label} WHERE round_no = {R} AND iter = {F} AND label > $1 ORDER BY label OFFSET $2 LIMIT 1")
+	identSaw(tx, "decide end", endQuery, st.Cur, st.Size)
+	err := tx.QueryRowContext(ctx, endQuery, st.Cur, st.Size).Scan(&end)
 	last := isNoRows(err)
 	if err != nil && !last {
 		return dbErr(err, "find the end of the unit")
@@ -246,8 +307,10 @@ func (r *identRun) decideRange(ctx context.Context, tx *sql.Tx, lo, hi int64) er
 			"JOIN pl ON pl.pid = s.pid JOIN gb ON gb.label = pl.label AND gb.c = 1 WHERE s.round_no = {R} " +
 			"AND NOT EXISTS (SELECT 1 FROM {bind} x WHERE x.rid = s.rid AND x.feed_no = s.feed_no) GROUP BY s.rid, s.feed_no, gb.obj"},
 		// in a group of several objects a record is the object that the records it shares a key with are, when they are one
-		{"bind the records of a group of several objects", "WITH " + pl + " INSERT INTO {bind} (rid, feed_no, key_ord, obj_no, is_new, round_no) " +
-			"SELECT s.rid, s.feed_no, min(s.key_ord), min(b.obj_no), false, {R} FROM {slot} s JOIN pl ON pl.pid = s.pid " +
+		{"bind the records of a group of several objects", "WITH " + pl + ", gm AS (SELECT pl.label FROM pl JOIN {slot} s ON s.round_no = {R} AND s.pid = pl.pid " +
+			"JOIN {bind} b ON b.rid = s.rid AND b.feed_no = s.feed_no GROUP BY pl.label HAVING count(DISTINCT b.obj_no) > 1) " +
+			"INSERT INTO {bind} (rid, feed_no, key_ord, obj_no, is_new, round_no) " +
+			"SELECT s.rid, s.feed_no, min(s.key_ord), min(b.obj_no), false, {R} FROM {slot} s JOIN pl ON pl.pid = s.pid JOIN gm ON gm.label = pl.label " +
 			"JOIN {slot} s2 ON s2.round_no = {R} AND s2.type_no = s.type_no AND s2.ctx_no = s.ctx_no AND s2.sig_hash = s.sig_hash AND s2.pid <> s.pid " +
 			"JOIN {bind} b ON b.rid = s2.rid AND b.feed_no = s2.feed_no WHERE s.round_no = {R} " +
 			"AND NOT EXISTS (SELECT 1 FROM {bind} x WHERE x.rid = s.rid AND x.feed_no = s.feed_no) GROUP BY s.rid, s.feed_no HAVING count(DISTINCT b.obj_no) = 1"},
@@ -341,9 +404,6 @@ func (s *Store) PutAnswers(ctx context.Context, lease ingest.RunLease, answers [
 		st := r.st
 		if st.Phase != phaseAsk {
 			return kernel.Errorf(ingest.CodeRunStage, "the identification of the run %d is at %s, not at the new objects that have a parent", lease.No, st.Phase)
-		}
-		if _, err := tx.ExecContext(ctx, "SET LOCAL enable_nestloop = off"); err != nil {
-			return dbErr(err, "set the plan of the unit")
 		}
 		var labels, refs, missing []string
 		for _, a := range answers {

@@ -27,6 +27,7 @@ const (
 	phaseKeys    = "keys"    // the keys, ends and claims of the rows received go to the computation
 	phaseRebuild = "rebuild" // Go makes the keys of the records that have none from their cells
 	phaseSlot    = "slot"    // a round: the keys whose parents are found
+	phaseKLabels = "klabels" // a round: the label of each key at a turn of the search for the groups
 	phaseLabels  = "labels"  // a round: the groups of records that share a key
 	phaseDecide  = "decide"  // a round: the object of every group
 	phaseAsk     = "ask"     // a round: the ids of the new objects that have a parent, from Go
@@ -255,9 +256,6 @@ func (s *Store) IdentifyStep(ctx context.Context, lease ingest.RunLease) error {
 		if need := r.st.need(); need != ingest.NeedNothing || r.st.Phase == phaseDone {
 			return kernel.Errorf(ingest.CodeRunStage, "the identification of the run %d is at %s, which is not a unit the database does alone", lease.No, r.st.Phase)
 		}
-		if _, err := tx.ExecContext(ctx, "SET LOCAL enable_nestloop = off"); err != nil {
-			return dbErr(err, "set the plan of the unit")
-		}
 		if err := r.unit(ctx, tx); err != nil {
 			return fmt.Errorf("%s: %w", r.st.Phase, err)
 		}
@@ -274,6 +272,8 @@ func (r *identRun) unit(ctx context.Context, tx *sql.Tx) error {
 		return r.copyKeys(ctx, tx)
 	case phaseSlot:
 		return r.slot(ctx, tx)
+	case phaseKLabels:
+		return r.keyLabels(ctx, tx)
 	case phaseLabels:
 		return r.labels(ctx, tx)
 	case phaseDecide:
@@ -288,8 +288,20 @@ func (r *identRun) unit(ctx context.Context, tx *sql.Tx) error {
 	return kernel.Errorf(kernel.CodeInternal, "the identification has no unit for %q", r.st.Phase)
 }
 
+// identSeen is a hook of the tests: it is told each statement of a unit, in the transaction of the unit, before it runs (the tests of
+// the plans ask the server how it will run it). It is nil in the code that runs.
+var identSeen func(tx *sql.Tx, what, query string, args []any)
+
+// identSaw tells the hook of the tests a statement.
+func identSaw(tx *sql.Tx, what, query string, args ...any) {
+	if identSeen != nil {
+		identSeen(tx, what, query, args)
+	}
+}
+
 // exec runs a statement of a unit and says how many rows it changed.
 func exec(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int, error) {
+	identSaw(tx, what, query, args...)
 	res, err := tx.ExecContext(ctx, query, args...)
 	if err != nil {
 		return 0, dbErr(err, what)
@@ -300,6 +312,7 @@ func exec(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int
 
 // scanInt runs a statement that gives one number.
 func scanInt(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int64, error) {
+	identSaw(tx, what, query, args...)
 	var n sql.NullInt64
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(&n); err != nil {
 		return 0, dbErr(err, what)

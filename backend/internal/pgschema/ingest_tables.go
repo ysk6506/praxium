@@ -181,6 +181,12 @@ func identifyTableDefs() []tableDef {
 		{Name: TableCalcLabel, Cols: []string{
 			col(ColRound, typeSmall), col(ColIter, typeSmall), col(ColPid, typeBig), col(ColLabel, typeBig),
 		}},
+		// The label of a key in a round, at each turn: the smallest label of the records that have the key. A turn is two steps (the
+		// keys, then the records), so that a key that many records share is read once and not once for each of them.
+		{Name: TableCalcKLabel, Cols: []string{
+			col(ColRound, typeSmall), col(ColIter, typeSmall), col(ColTypeNo, typeSmall), col(ColCtxNo, "bigint NOT NULL DEFAULT 0"),
+			col(ColSigHash, typeHash16), col(ColLabel, typeBig),
+		}},
 		// A new group whose object has a context key: what Go needs to make its id, and what Go answers (ref, or that it has no name).
 		{Name: TableCalcAsk, Cols: []string{
 			col(ColRound, typeSmall), col(ColLabel, typeBig), col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColKeyOrd, typeSmall),
@@ -290,6 +296,7 @@ func identifyIndexDefs() []indexDef {
 		{Name: "calc_slot_pid", Table: TableCalcSlot, Expr: ColRound + ", " + ColPid},
 		{Name: "calc_slot_key", Table: TableCalcSlot, Expr: strings.Join([]string{ColRound, ColTypeNo, ColCtxNo, ColSigHash}, ", ")},
 		{Name: "calc_label_pid", Table: TableCalcLabel, Unique: true, Expr: strings.Join([]string{ColRound, ColIter, ColPid}, ", "), Include: ColLabel},
+		{Name: "calc_klabel_key", Table: TableCalcKLabel, Unique: true, Expr: strings.Join([]string{ColRound, ColIter, ColTypeNo, ColCtxNo, ColSigHash}, ", "), Include: ColLabel},
 		{Name: "calc_label_label", Table: TableCalcLabel, Expr: strings.Join([]string{ColRound, ColIter, ColLabel}, ", ")},
 		{Name: "calc_newobj_ref", Table: TableCalcNewObj, Unique: true, Expr: ColRef},
 		{Name: "calc_ref_pair", Table: TableCalcRef, Expr: ColRid + ", " + ColRole},

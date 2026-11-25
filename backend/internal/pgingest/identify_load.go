@@ -30,9 +30,10 @@ func (r *identRun) seed(ctx context.Context, tx *sql.Tx) error {
 		src, ds sql.NullInt64
 		key     sql.NullString
 	}
-	err := tx.QueryRowContext(ctx, "SELECT src_no, dataset_no, key FROM "+ref+" WHERE state <> "+strconv.Itoa(int(pgschema.RefResolved))+
-		" AND (src_no, dataset_no, key) > ($1, $2, $3) ORDER BY src_no, dataset_no, key OFFSET $4 LIMIT 1", st.Cur, st.Cur2, st.CurKey, st.Size).
-		Scan(&end.src, &end.ds, &end.key)
+	endQuery := "SELECT src_no, dataset_no, key FROM " + ref + " WHERE state <> " + strconv.Itoa(int(pgschema.RefResolved)) +
+		" AND (src_no, dataset_no, key) > ($1, $2, $3) ORDER BY src_no, dataset_no, key OFFSET $4 LIMIT 1"
+	identSaw(tx, "seed end", endQuery, st.Cur, st.Cur2, st.CurKey, st.Size)
+	err := tx.QueryRowContext(ctx, endQuery, st.Cur, st.Cur2, st.CurKey, st.Size).Scan(&end.src, &end.ds, &end.key)
 	last := isNoRows(err)
 	if err != nil && !last {
 		return dbErr(err, "find the end of the unit")
@@ -55,7 +56,12 @@ func (r *identRun) seed(ctx context.Context, tx *sql.Tx) error {
 	st.Counts.Seeded += n
 	if last {
 		st.Phase, st.Cur, st.Cur2, st.CurKey = phaseKeys, 0, 0, ""
-		return nil
+		// the receiving wrote the rows of the run a moment ago and the server has not measured them: a plan made without it joins the
+		// whole of one side with the whole of the other for each unit
+		if err := r.analyze(ctx, tx, pgschema.TableCalcRecord); err != nil {
+			return err
+		}
+		return r.analyzeStage(ctx, tx)
 	}
 	st.Cur, st.Cur2, st.CurKey = end.src.Int64, end.ds.Int64, end.key.String
 	return nil
@@ -168,6 +174,9 @@ func (s *Store) PutRebuilt(ctx context.Context, lease ingest.RunLease, unit int,
 		st.Cur += int64(st.Size)
 		if st.Cur >= st.MaxRid {
 			st.Phase, st.Cur, st.Cur2, st.Round, st.Turn = phaseSlot, 0, 0, 1, 0
+			if err := r.analyze(ctx, tx, pgschema.TableCalcRecord, pgschema.TableCalcKey, pgschema.TableCalcEnd, pgschema.TableCalcClaim); err != nil {
+				return err
+			}
 		}
 		return writeIdent(ctx, tx, lease, st, false)
 	})

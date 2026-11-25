@@ -32,6 +32,7 @@ const (
 	TableCalcObject  = "calc_object"
 	TableCalcSlot    = "calc_slot"
 	TableCalcLabel   = "calc_label"
+	TableCalcKLabel  = "calc_klabel"
 	TableCalcAsk     = "calc_ask"
 	TableCalcNewObj  = "calc_newobj"
 	TableStageObject = "stage_object"
@@ -287,7 +288,7 @@ func SourcePartition(table string, srcNo int64) string {
 func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
-		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcAsk, TableCalcNewObj, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
+		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
 		TableCalcProblem, TableCalcRef, TableIngestDiff,
 	}
 }
