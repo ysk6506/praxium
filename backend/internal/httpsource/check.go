@@ -13,6 +13,7 @@ import (
 // The items of a check, in the order they are tried. Each is a closed phrase of this reader's.
 const (
 	StepSecret    = "secret"
+	StepToken     = "token_request"
 	StepConnect   = "connect"
 	StepSignIn    = "sign_in"
 	StepResponse  = "first_response"
@@ -21,6 +22,7 @@ const (
 
 var stepMessages = map[string]string{
 	StepSecret:    "the secret was opened for this source and address",
+	StepToken:     "the authentication host gave a token",
 	StepConnect:   "the name was resolved and the source answered",
 	StepSignIn:    "the source accepted the credentials",
 	StepResponse:  "the first answer was a success and was JSON",
@@ -105,6 +107,7 @@ func checkSteps(p *progress, secret, opened bool, failure *ingest.CheckStep) []i
 		skip bool
 	}{
 		{StepSecret, opened, !secret},
+		{StepToken, p.tokenAnswered, !p.crossToken},
 		{StepConnect, p.connected, false},
 		{StepSignIn, p.authenticated, false},
 		{StepResponse, p.responded, false},

@@ -142,12 +142,15 @@ func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	if err != nil {
 		return nil, err
 	}
+	rn.where = rn.destination(p)
 	rn.emit(ingest.Event{Kind: ingest.EventRequest, Method: p.method, Path: p.url.Path, Attempt: attempt + 1})
-	resp, err := rn.doer.Do(ctx, req)
+	resp, err := rn.doerFor(p).Do(ctx, req)
 	if err != nil {
-		return nil, rn.transportError(ctx, err)
+		return nil, rn.ofTokenRequest(p, rn.transportError(ctx, err))
 	}
-	rn.prog.connected = true
+	if !(p.token && rn.crossToken) {
+		rn.prog.connected = true
+	}
 	if !p.token && resp.Status != 401 && resp.Status != 403 {
 		rn.prog.authenticated = true
 	}
@@ -155,7 +158,7 @@ func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	if resp.Status < 200 || resp.Status > 299 {
 		_ = resp.Body.Close()
 		rn.after(p, rep, 0)
-		return rep, rn.statusError(resp.Status)
+		return rep, rn.ofTokenRequest(p, rn.statusError(resp.Status))
 	}
 	rep.rc = resp.Body
 	rn.open = rep

@@ -104,3 +104,18 @@ func transientError(err error) bool {
 	se, ok := ingest.SourceErrorOf(err)
 	return ok && se.Class == ingest.CheckTransient
 }
+
+// ofTokenRequest says in the words of an error that it is the token request's when that request goes to another host than the
+// API's: the host that failed is not the one the read is about, and a person reading "the certificate was refused" has to know
+// which of the two it was. The kind, the class and what is under the error stay as they were.
+func (rn *run) ofTokenRequest(p plan, err error) error {
+	se, ok := ingest.SourceErrorOf(err)
+	if !ok || !p.token || !rn.crossToken {
+		return err
+	}
+	out := ingest.NewSourceError(se.Kind, rn.clean("the token request to the authentication host: "+se.Message), se.Err)
+	if se.Detail != "" {
+		out = out.WithDetail(se.Detail)
+	}
+	return out
+}

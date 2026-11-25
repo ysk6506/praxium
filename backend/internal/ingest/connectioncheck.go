@@ -7,7 +7,6 @@ import (
 	"encoding/pem"
 	"net/netip"
 	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -257,29 +256,7 @@ func caProblem(text string) string {
 }
 
 func (cn Connection) checkHeaders(c *collector, id string) {
-	names := make([]string, 0, len(cn.Headers))
-	for name := range cn.Headers {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	seen := map[string]bool{}
-	for _, name := range names {
-		reason := headerProblem(name, false)
-		if reason == "" && seen[strings.ToLower(name)] {
-			reason = "is written twice, in two spellings"
-		}
-		if reason == "" {
-			reason = valueProblem(cn.Headers[name])
-		}
-		if reason == "" && hasPlaceholderInside(cn.Headers[name]) {
-			reason = "has a {{credential.…}} or {{auth.token}}; a header of the connection is a text, and a secret goes in a header through auth.headers"
-		}
-		seen[strings.ToLower(name)] = true
-		if reason != "" {
-			c.add(ecAdHeader, ptr("connection", "headers", name), Params{"source": id, "header": clip(name, idClipAt), "reason": reason},
-				"source %s: the header %q %s", id, clip(name, idClipAt), reason)
-		}
-	}
+	checkHeaderTexts(c, id, []any{"connection", "headers"}, cn.Headers)
 }
 
 func (cn *Connection) normalizePostgres(c *collector, id string) {

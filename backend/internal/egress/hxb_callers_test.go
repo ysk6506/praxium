@@ -1,12 +1,14 @@
 package egress
 
 import (
+	"crypto/tls"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"io/fs"
 	"maps"
 	"path/filepath"
+	"reflect"
 	"slices"
 	"strings"
 	"testing"
@@ -116,5 +118,51 @@ func TestHxbTheScanOfTheRegistrationFailsForAnotherPackage(t *testing.T) {
 	delete(files, "internal/pgsource/connect.go")
 	if len(hxbCallerViolations(files)) == 0 {
 		t.Error("the scan passes without connect.go")
+	}
+}
+
+// [REQ-823] The list of the fields of tls.Config that the scan of pgsource names (that unit may not import crypto/tls, so it
+// writes the names down) is the list of the fields of the type: this test reads the list from that file with the parser and
+// compares it with the fields the type has, so that a field that a later Go version adds fails here until it is added there.
+func TestHxbThePgsourceListOfTLSFieldsIsTheListOfTheType(t *testing.T) {
+	f, err := parser.ParseFile(token.NewFileSet(), filepath.Join("..", "pgsource", "hxb_scan_test.go"), nil, parser.SkipObjectResolution)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var listed []string
+	for _, d := range f.Decls {
+		gd, ok := d.(*ast.GenDecl)
+		if !ok {
+			continue
+		}
+		for _, sp := range gd.Specs {
+			vs, ok := sp.(*ast.ValueSpec)
+			if !ok || len(vs.Names) != 1 || vs.Names[0].Name != "pgsHxbTLSFields" || len(vs.Values) != 1 {
+				continue
+			}
+			lit, ok := vs.Values[0].(*ast.CompositeLit)
+			if !ok {
+				t.Fatal("pgsHxbTLSFields is not a list written out")
+			}
+			for _, el := range lit.Elts {
+				b, ok := el.(*ast.BasicLit)
+				if !ok {
+					t.Fatal("pgsHxbTLSFields holds something that is not a text")
+				}
+				listed = append(listed, strings.Trim(b.Value, `"`))
+			}
+		}
+	}
+	rt := reflect.TypeOf(tls.Config{})
+	var actual []string
+	for i := 0; i < rt.NumField(); i++ {
+		if rt.Field(i).IsExported() {
+			actual = append(actual, rt.Field(i).Name)
+		}
+	}
+	slices.Sort(listed)
+	slices.Sort(actual)
+	if len(listed) == 0 || !slices.Equal(listed, actual) {
+		t.Errorf("pgsource names %v and tls.Config has %v", listed, actual)
 	}
 }

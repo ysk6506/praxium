@@ -24,6 +24,10 @@ type plan struct {
 	// set), and not retried.
 	token bool
 	basic bool
+	// host and port are where the request goes when that is not the API's origin (the token request to another host); they are
+	// empty for the requests of the API.
+	host string
+	port int
 	// shown lists the query as a person may see it in a record of the exchange: the names, and the values that are the
 	// definition's own.
 	shown []ingest.NameValue
@@ -141,13 +145,7 @@ func serverQuery(u *url.URL) []ingest.NameValue {
 // uses the two methods GET and POST. It fails, with nothing made, when a value of the secret or the token cannot go where
 // the definition puts it (a line break in a header, a field the secret does not have).
 func (rn *run) build(p plan) (egress.Request, error) {
-	h := map[string][]string{}
-	for name, value := range rn.set.headers {
-		h[name] = []string{unescape(value)}
-	}
-	if !hasHeader(h, "Accept") {
-		h["Accept"] = []string{"application/json"}
-	}
+	h := rn.plainHeaders(p)
 	body, ctype, err := rn.signer.bodyOf(p)
 	if err != nil {
 		return egress.Request{}, err
@@ -155,15 +153,8 @@ func (rn *run) build(p plan) (egress.Request, error) {
 	if ctype != "" {
 		setHeader(h, "Content-Type", ctype)
 	}
-	switch {
-	case !p.token:
-		if err := rn.signer.apply(h); err != nil {
-			return egress.Request{}, err
-		}
-	case p.basic:
-		if err := rn.signer.setBasic(h); err != nil {
-			return egress.Request{}, err
-		}
+	if err := rn.sign(p, h); err != nil {
+		return egress.Request{}, err
 	}
 	req := egress.Request{Method: ingest.MethodGet, URL: p.url.String(), Header: h}
 	if p.method == ingest.MethodPost {
@@ -171,6 +162,38 @@ func (rn *run) build(p plan) (egress.Request, error) {
 		req.Body = bytes.NewReader(body)
 	}
 	return req, nil
+}
+
+// plainHeaders are the headers of a request that are no secret: the connection's, which another host is not sent, and the
+// token request's own.
+func (rn *run) plainHeaders(p plan) map[string][]string {
+	h := map[string][]string{}
+	if !(p.token && rn.crossToken) {
+		for name, value := range rn.set.headers {
+			h[name] = []string{unescape(value)}
+		}
+	}
+	if p.token {
+		for name, value := range rn.set.token.headers {
+			setHeader(h, name, unescape(value))
+		}
+	}
+	if !hasHeader(h, "Accept") {
+		h["Accept"] = []string{"application/json"}
+	}
+	return h
+}
+
+// sign puts the credentials of the kind of authentication on the headers of a request of the API, or the Basic header on a
+// token request that asks for it.
+func (rn *run) sign(p plan, h map[string][]string) error {
+	switch {
+	case !p.token:
+		return rn.signer.apply(h)
+	case p.basic:
+		return rn.signer.setTokenBasic(h)
+	}
+	return nil
 }
 
 func hasHeader(h map[string][]string, name string) bool {

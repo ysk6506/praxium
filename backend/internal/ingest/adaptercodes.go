@@ -53,7 +53,7 @@ var (
 	ecAdAuthMissing  = regAdapter("source.auth.field_missing", inv, "A field the kind of the authentication needs is not given.", "source,kind,field")
 	ecAdAuthNot      = regAdapter("source.auth.field_not_for_kind", inv, "A field of the authentication is not read by its kind.", "source,kind,field")
 	ecAdSecretID     = regAdapter("source.credential.secret_id_invalid", inv, "The id of a secret does not follow the grammar of an id.", "source,field,id,pattern,max_length")
-	ecAdTokenReq     = regAdapter("source.auth.token_request_invalid", inv, "The request that gives a token, or how its token is read and sent, has a path, a format, a body or a value that is not valid.", "source,field,reason")
+	ecAdTokenReq     = regAdapter("source.auth.token_request_invalid", inv, "The request that gives a token, or how its token is read and sent, has a path or address, a certificate authority, headers, a format, a body or a value that is not valid.", "source,field,reason")
 	ecAdHeaderFrom   = regAdapter("source.auth.header_source_invalid", inv, "An entry of the headers of the authentication does not say where its value comes from as token or credential.<field>, or takes the token from a kind that has none.", "source,header,reason")
 	ecAdKindsMixed   = regAdapter("source.auth.secret_fields_invalid", inv, "The authentication and the bodies ask for fields that are of two kinds of secret, or a field the kind of the authentication does not have.", "source,field")
 	ecAdSendsNothing = regAdapter("source.auth.sends_nothing", inv, "The kind custom sends nothing by itself and no entry of its headers and no body has a value of the secret to send.", "source,kind,field")

@@ -54,8 +54,8 @@ var changeClasses = map[string]string{
 	"Connection.ConnectTimeoutSeconds": classLimit, "Connection.StatementTimeoutSeconds": classLimit, "Connection.LockTimeoutSeconds": classLimit,
 
 	"Auth.Kind": classKept, "Auth.Credential": classKept, "Auth.Header": classKept, "Auth.Prefix": classKept, "Auth.Request": classKept, "Auth.TokenPath": classKept,
-	"Auth.TokenFrom": classKept, "Auth.Send": classKept, "Auth.SendHeader": classKept, "Auth.SendPrefix": classKept, "Auth.Headers": classKept,
-	"TokenRequest.Path": classKept, "TokenRequest.Format": classKept, "TokenRequest.CredentialsIn": classKept, "TokenRequest.Body": classKept,
+	"Auth.TokenFrom": classKept, "Auth.ExpiresInPath": classKept, "Auth.Send": classKept, "Auth.SendHeader": classKept, "Auth.SendPrefix": classKept, "Auth.Headers": classKept,
+	"TokenRequest.Path": classKept, "TokenRequest.URL": classKept, "TokenRequest.CAPEM": classKept, "TokenRequest.Headers": classKept, "TokenRequest.Format": classKept, "TokenRequest.CredentialsIn": classKept, "TokenRequest.Body": classKept,
 	"SecretHeader.Name": classKept, "SecretHeader.From": classKept, "SecretHeader.Prefix": classKept,
 	"SecretRef.SecretID": classKept,
 
