@@ -107,8 +107,10 @@ func TestHkaTheFileOfTheSourcesIsNotTouchedByTheWebhooksAndHasOnlyTheFormOfAlway
 			t.Fatal("a webhook command changed secrets.json")
 		}
 	}
-	if !slices.Equal(disk.Names(), []string{FileName, WebhookFileName}) {
-		t.Errorf("the data folder holds %v", disk.Names())
+	names := disk.Names()
+	slices.Sort(names)
+	if !slices.Equal(names, []string{FileName, WebhookFileName}) {
+		t.Errorf("the data folder holds %v", names)
 	}
 	var head struct {
 		Format  string `json:"format"`

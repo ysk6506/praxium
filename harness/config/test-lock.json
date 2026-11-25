@@ -35907,7 +35907,7 @@
   },
   "go:backend/internal/secretsfile::TestHkaTheFileOfTheSourcesIsNotTouchedByTheWebhooksAndHasOnlyTheFormOfAlwaysAndNoKindOfAWebhook": {
    "kind": "test",
-   "hash": "18ffed0763d75900",
+   "hash": "671be8c9663d525a",
    "asserts": 13,
    "literals": [
     "34ae0b5b8535b12c"
