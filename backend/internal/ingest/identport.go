@@ -16,9 +16,9 @@ import (
 const (
 	// DefaultIdentifyRounds is how many rounds a run goes through before the records whose parents are still not found are left.
 	DefaultIdentifyRounds = 16
-	// DefaultIdentifyTurns is how many turns the search for the groups of one round takes before a group that has not settled is
-	// left as a conflict.
-	DefaultIdentifyTurns = 20
+	// DefaultIdentifyTurns is how many turns the search for the groups of one round takes before the groups that are not known to be
+	// whole are left unresolved. A turn follows a chain of keys by jumps, so the turns it takes grow with the logarithm of the chain.
+	DefaultIdentifyTurns = 40
 	// DefaultIdentifyPages is how many pages of the rows received a unit copies the keys of.
 	DefaultIdentifyPages = 8
 	// MaxIdentifyFeeds is how many feeds a mapping may have for the step: a record and a feed are one number (record * 1024 + feed).
@@ -32,9 +32,12 @@ type IdentifyKey struct {
 	ModelOrd int
 }
 
-// IdentifyFeed is what the identification needs to know of a feed that the rows received do not say.
+// IdentifyFeed is what the identification needs to know of a feed that the rows received do not say. The number of a feed is its
+// place in the mapping of its source, so the table of the feeds is by source and feed: a record is read by the feeds of its own source.
 type IdentifyFeed struct {
-	Feed int
+	// SrcNo is the number of the source whose mapping the feed is of.
+	SrcNo int64
+	Feed  int
 	// TypeNo is the number of the object type of the feed.
 	TypeNo int
 	// Creates says that a record of the feed may make an object. A feed that does not only finds the objects there are.
@@ -42,7 +45,9 @@ type IdentifyFeed struct {
 	Keys    []IdentifyKey
 }
 
-// IdentifyStart is what begins the identification: the feeds, the limits and the sizes of a unit (0 is the default).
+// IdentifyStart is what begins the identification: the feeds, the limits and the sizes of a unit (0 is the default). The feeds are the
+// ones of every source whose plan is given, the source of the run first of them: a record that was left unresolved by another run is
+// identified by the feeds of its own source, and a source whose plan is not given is not touched.
 type IdentifyStart struct {
 	Feeds []IdentifyFeed
 	// Schemes are the numbers the rows received name the identifier schemes by, and the names the identifiers are kept by.
@@ -55,17 +60,21 @@ type IdentifyStart struct {
 
 // Validate checks what the step cannot begin without.
 func (s IdentifyStart) Validate() error {
-	seen := map[int]bool{}
+	type feedAt struct {
+		src  int64
+		feed int
+	}
+	seen := map[feedAt]bool{}
 	for _, f := range s.Feeds {
 		switch {
 		case f.Feed < 0 || f.Feed >= MaxIdentifyFeeds:
 			return kernel.Errorf(kernel.CodeInvalidValue, "the identification takes feeds numbered 0 to %d, not %d", MaxIdentifyFeeds-1, f.Feed)
-		case seen[f.Feed]:
-			return kernel.Errorf(kernel.CodeInvalidValue, "the feed %d is named twice", f.Feed)
+		case seen[feedAt{f.SrcNo, f.Feed}]:
+			return kernel.Errorf(kernel.CodeInvalidValue, "the feed %d of the source %d is named twice", f.Feed, f.SrcNo)
 		case s.BucketRows < 0 || s.Pages < 0 || s.Rounds < 0 || s.Turns < 0:
 			return kernel.Errorf(kernel.CodeInvalidValue, "the sizes and the limits of the identification are not negative")
 		}
-		seen[f.Feed] = true
+		seen[feedAt{f.SrcNo, f.Feed}] = true
 	}
 	return nil
 }
@@ -152,6 +161,11 @@ type IdentifyCounts struct {
 	NewObjects int `json:"new_objects"`
 	NewKeys    int `json:"new_keys"`
 	Dropped    int `json:"dropped"`
+	// Left is how many records of the references that are not solved were not looked at, because no plan was given for their source.
+	Left int `json:"left"`
+	// Unsettled is how many pairs of a record and a feed a round did not bind, because the search for their groups was stopped by its
+	// limit before it was done: they are left as references that are not solved.
+	Unsettled  int `json:"unsettled"`
 	Unresolved int `json:"unresolved"`
 	Lost       int `json:"lost_claims"`
 }

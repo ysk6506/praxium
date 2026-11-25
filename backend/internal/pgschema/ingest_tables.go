@@ -173,9 +173,9 @@ func computeKeyDefs() []tableDef {
 func identifyTableDefs() []tableDef {
 	return []tableDef{
 		// A key of a record that is ready in a round: its parent found, so its place in the index is known. pid is the record and the
-		// feed in one number (rid * 1024 + feed_no). found_no is the object the index has for the key, if any.
+		// feed in one number (rid * 1024 + feed_no); src_no is the source of the record, whose mapping the feed is of. found_no is the object the index has for the key, if any.
 		{Name: TableCalcSlot, Cols: []string{
-			col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColPid, typeBig), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall),
+			col(ColRid, typeBig), col(ColSrcNo, typeSrc), col(ColFeedNo, typeInt), col(ColPid, typeBig), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall),
 			col(ColCtxNo, "bigint NOT NULL DEFAULT 0"), col(ColSigHash, typeHash16), col(ColRound, typeSmall), col(ColFoundNo, "bigint"),
 		}},
 		// The label of a record and feed in a round, at each turn of the search for the groups: the smallest pid of the group so far.

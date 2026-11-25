@@ -10,7 +10,7 @@ import (
 // [REQ-881]
 func TestIdnThePlanGivesTheFeedsAndMakesTheKeysAgainFromTheCellsOfARecord(t *testing.T) {
 	r := loaded(t)
-	feeds := r.plan.IdentifyFeeds()
+	feeds := r.plan.IdentifyFeeds(1)
 	if len(feeds) == 0 {
 		t.Fatal("no feed")
 	}
@@ -42,7 +42,7 @@ func TestIdnTheIdOfAnObjectIsTheOneTheKeyGivesAndARowWithNoKeyOrNoNameIsMissing(
 	r := loaded(t)
 	keys := NewPlanKeys(map[int64]*Plan{1: r.plan})
 	var feed int
-	for _, f := range r.plan.IdentifyFeeds() {
+	for _, f := range r.plan.IdentifyFeeds(1) {
 		if f.Creates {
 			feed = f.Feed
 			break
@@ -81,5 +81,34 @@ func TestIdnTheIdOfAnObjectIsTheOneTheKeyGivesAndARowWithNoKeyOrNoNameIsMissing(
 	empty.Fields = []string{"", "rack-a", "42"}
 	if got, err := keys.Answer(empty); err != nil || !got.Missing {
 		t.Errorf("a row with no key: %+v %v", got, err)
+	}
+}
+
+// [REQ-881]
+func TestIdnTheFeedsOfTheSourcesOfAKGAreInTheOrderOfTheirNumbersAndAFeedNumberMayBeInTwoSourcesButNotTwiceInOne(t *testing.T) {
+	r := loaded(t)
+	all := IdentifyFeedsOf(map[int64]*Plan{7: r.plan, 3: r.plan})
+	one := r.plan.IdentifyFeeds(3)
+	if len(all) != 2*len(one) || len(one) == 0 {
+		t.Fatalf("%d feeds for two sources of %d", len(all), len(one))
+	}
+	for i, f := range all {
+		if want := int64(3); i >= len(one) {
+			want = 7
+			if f.SrcNo != want {
+				t.Errorf("feed %d is of the source %d", i, f.SrcNo)
+			}
+		} else if f.SrcNo != want {
+			t.Errorf("feed %d is of the source %d", i, f.SrcNo)
+		}
+	}
+	if err := (IdentifyStart{Feeds: all}).Validate(); err != nil {
+		t.Errorf("the same feed numbers in two sources: %v", err)
+	}
+	if err := (IdentifyStart{Feeds: append(all, one[0])}).Validate(); err == nil {
+		t.Error("a feed of a source named twice")
+	}
+	if IdentifyFeedsOf(nil) != nil {
+		t.Error("no plan, some feeds")
 	}
 }

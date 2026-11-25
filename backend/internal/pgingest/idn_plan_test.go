@@ -94,12 +94,22 @@ func (p *idnPlans) idnHook(tx *sql.Tx, what, query string, args []any) {
 	old.scans = append(old.scans, read.scans...)
 }
 
-// idnPlaceRows is the rows of the places of n records: five sites' worth of buildings, floors and rooms, a rack and a tag for each.
-func idnPlaceRows(n, from int, tag func(i int) string) string {
+// idnPlaceRows is the rows of the places of n records: a site for every two thousand records and a building for every thousand, floors and rooms, a rack and a tag for each.
+func idnPlaceRows(n int, withNew bool, tag func(i int) string) string {
 	var b strings.Builder
 	b.WriteString(idnSite)
-	for i := from; i < n; i++ {
-		fmt.Fprintf(&b, "%d,S%d,B%d,F%d,R%d,K%d,%s\n", i, i/20000, i/2000, i/500, i/100, i, tag(i))
+	rows := n
+	if withNew {
+		rows = n + n/100
+	}
+	// the records that are new in the second run are one in a hundred and one of the places they are in, so that no place has more of
+	// them the larger the source is
+	for i, made := 0, 0; made < rows; i++ {
+		if !withNew && i%101 == 100 {
+			continue
+		}
+		made++
+		fmt.Fprintf(&b, "%d,S%d,B%d,F%d,R%d,K%d,%s\n", i, i/2000, i/1000, i/500, i/100, i, tag(i))
 	}
 	return b.String()
 }
@@ -131,13 +141,13 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 	}
 	if !explain {
 		clock := &idnClock{spent: map[string]time.Duration{}, plans: map[string]string{}}
-		identSeen = clock.idnHook
+		s.e.st.identSeen = clock.idnHook
 		defer func() {
-			identSeen = nil
+			s.e.st.identSeen = nil
 			t.Log(clock.idnReport())
 		}()
 	}
-	l1, _ := run(idnPlaceRows(n, 0, func(i int) string { return "T" + strconv.Itoa(i) }), rdfT0)
+	l1, _ := run(idnPlaceRows(n, false, func(i int) string { return "T" + strconv.Itoa(i) }), rdfT0)
 	mark := idnNow.Now()
 	idnApply(s, t)
 	t.Logf("apply: %v", idnNow.Now().Sub(mark))
@@ -149,8 +159,8 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 	t.Logf("vacuum: %v", idnNow.Now().Sub(mark))
 	plans := &idnPlans{most: map[string]*idnRead{}}
 	if explain {
-		identSeen = plans.idnHook
-		defer func() { identSeen = nil }()
+		s.e.st.identSeen = plans.idnHook
+		defer func() { s.e.st.identSeen = nil }()
 	}
 	tag := func(i int) string {
 		if i%10 == 0 {
@@ -159,25 +169,13 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		return "T" + strconv.Itoa(i)
 	}
 	start := idnNow.Now()
-	_, counts := run(idnPlaceRows(n+n/100, 0, tag), rdfT0.Add(time.Hour))
+	_, counts := run(idnPlaceRows(n, true, tag), rdfT0.Add(time.Hour))
 	return plans.most, idnNow.Now().Sub(start), counts
-}
-
-// idnRegistry are the relations that grow with what the KG and the source have kept and not with the run: what a unit reads of them is
-// what its own range asks for. The working tables of the run (calc_*) are the size of the run, and a plan that reads the whole of a small
-// one for a unit is the plan the server rightly takes: the measurement below shows what a source of a million records costs.
-func idnIsRegistry(table string) bool {
-	for _, p := range []string{"object", "object_key", "object_identifier", "record_ref", "raw_record"} {
-		if table == p || strings.HasPrefix(table, p+"_p") {
-			return true
-		}
-	}
-	return false
 }
 
 // [REQ-883]
 func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource(t *testing.T) {
-	const size = 500
+	const size = 100
 	small, _, _ := idnScaled(t, 10_000, size, true)
 	large, _, counts := idnScaled(t, 30_000, size, true)
 	if counts.NewObjects == 0 || len(small) < 10 {
@@ -191,10 +189,7 @@ func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItD
 	for _, what := range whats {
 		read := large[what]
 		for table, n := range read.rows {
-			if !idnIsRegistry(table) {
-				continue
-			}
-			// a unit of 500 records reads, for each of them, the keys of five feeds and the parents of each (up to four): 40 rows a record
+			// a unit reads, for each of its records, the keys of five feeds and the parents of each (up to four): 40 rows a record
 			if n > 40*size {
 				t.Errorf("%s reads %v rows of %s for a unit of %d", what, n, table, size)
 			}
@@ -202,15 +197,21 @@ func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItD
 				t.Errorf("%s reads %v rows of %s in a source of 30000 records and %v in one of 10000", what, n, table, before.rows[table])
 			}
 		}
+		whole := map[string]bool{}
 		for _, scan := range read.scans {
-			if table, ok := strings.CutPrefix(scan, "Seq Scan on "); ok && idnIsRegistry(table) && read.rows[table] > 40*size {
+			if table, ok := strings.CutPrefix(scan, "Seq Scan on "); ok && read.rows[table] > 40*size && !whole[table] {
+				whole[table] = true
 				t.Errorf("%s reads the whole of %s", what, table)
 			}
 		}
 	}
 	if testing.Verbose() {
 		for _, what := range whats {
-			t.Logf("%s: %v", what, large[what].rows)
+			var before map[string]float64
+			if p, ok := small[what]; ok {
+				before = p.rows
+			}
+			t.Logf("%s: rows read by a unit, source of 30000 records %v, of 10000 records %v", what, large[what].rows, before)
 		}
 	}
 }

@@ -15,7 +15,7 @@ import (
 
 // idnStart is the start of the identification of the plan, with the sizes of a unit given (0 is the default).
 func idnStart(s *rdfSetup, size, pages int) ingest.IdentifyStart {
-	return ingest.IdentifyStart{Feeds: s.plan.IdentifyFeeds(), Schemes: s.plan.SchemeNumbers(), BucketRows: size, Pages: pages}
+	return ingest.IdentifyStart{Feeds: s.plan.IdentifyFeeds(s.ref.SrcNo), Schemes: s.plan.SchemeNumbers(), BucketRows: size, Pages: pages}
 }
 
 // idnPipeline receives the datasets, compares them with the raw records and identifies the records of the run.

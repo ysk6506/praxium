@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"slices"
 	"sort"
 	"strconv"
 	"strings"
@@ -85,26 +86,48 @@ type identRun struct {
 	srcNo int64
 	runNo int64
 	st    *identState
+	seen  identObserver
 }
 
 // t is the name of a table of the KG of the run.
 func (r *identRun) t(table string) string { return pgschema.TableRef(r.kgNo, table) }
 
 // feedSQL are the literals of the feeds that the statements of the identification use: the feeds that make objects, and the order of
-// the keys of the model.
+// the keys of the model, for the feeds of every source whose plan was given (a feed is by the source and its number).
 func (r *identRun) feedSQL() string {
-	var nos, creates, kf, ko, km []string
+	var srcs, nos, creates, ks, kf, ko, km []string
 	feeds := append([]ingest.IdentifyFeed(nil), r.st.Feeds...)
-	sort.Slice(feeds, func(i, j int) bool { return feeds[i].Feed < feeds[j].Feed })
+	sort.Slice(feeds, func(i, j int) bool {
+		if feeds[i].SrcNo != feeds[j].SrcNo {
+			return feeds[i].SrcNo < feeds[j].SrcNo
+		}
+		return feeds[i].Feed < feeds[j].Feed
+	})
 	for _, f := range feeds {
-		nos, creates = append(nos, strconv.Itoa(f.Feed)), append(creates, strconv.FormatBool(f.Creates))
+		srcs, nos, creates = append(srcs, strconv.FormatInt(f.SrcNo, 10)), append(nos, strconv.Itoa(f.Feed)), append(creates, strconv.FormatBool(f.Creates))
 		for _, k := range f.Keys {
-			kf, ko, km = append(kf, strconv.Itoa(f.Feed)), append(ko, strconv.Itoa(k.Ord)), append(km, strconv.Itoa(k.ModelOrd))
+			ks, kf = append(ks, strconv.FormatInt(f.SrcNo, 10)), append(kf, strconv.Itoa(f.Feed))
+			ko, km = append(ko, strconv.Itoa(k.Ord)), append(km, strconv.Itoa(k.ModelOrd))
 		}
 	}
 	arr := func(items []string, typ string) string { return "'{" + strings.Join(items, ",") + "}'::" + typ + "[]" }
-	return "feeds AS (SELECT feed_no, creates FROM unnest(" + arr(nos, "int") + ", " + arr(creates, "boolean") + ") AS f(feed_no, creates)), " +
-		"kord AS (SELECT feed_no, key_ord, model_ord FROM unnest(" + arr(kf, "int") + ", " + arr(ko, "int") + ", " + arr(km, "int") + ") AS k(feed_no, key_ord, model_ord))"
+	return "feeds AS (SELECT src_no, feed_no, creates FROM unnest(" + arr(srcs, "int") + ", " + arr(nos, "int") + ", " + arr(creates, "boolean") + ") AS f(src_no, feed_no, creates)), " +
+		"kord AS (SELECT src_no, feed_no, key_ord, model_ord FROM unnest(" + arr(ks, "int") + ", " + arr(kf, "int") + ", " + arr(ko, "int") + ", " + arr(km, "int") +
+		") AS k(src_no, feed_no, key_ord, model_ord))"
+}
+
+// planSources is the sources whose plan was given, as the literal of an array of their numbers.
+func (r *identRun) planSources() string {
+	seen := map[int64]bool{}
+	var nos []string
+	for _, f := range r.st.Feeds {
+		if !seen[f.SrcNo] {
+			seen[f.SrcNo] = true
+			nos = append(nos, strconv.FormatInt(f.SrcNo, 10))
+		}
+	}
+	sort.Strings(nos)
+	return "'{" + strings.Join(nos, ",") + "}'::int[]"
 }
 
 // BeginIdentify starts the identification: see ingest.Identifier.
@@ -124,7 +147,16 @@ func (s *Store) BeginIdentify(ctx context.Context, lease ingest.RunLease, start 
 		if err := ownsCalc(ctx, tx, kgNo, lease.No); err != nil {
 			return err
 		}
+		if !slices.ContainsFunc(start.Feeds, func(f ingest.IdentifyFeed) bool { return f.SrcNo == run.srcNo }) {
+			return kernel.Errorf(kernel.CodeInvalidValue, "the identification of the run %d is given no feed of its own source %d", lease.No, run.srcNo)
+		}
+		if run.job == pgschema.CalcJobIdentify {
+			return kernel.Errorf(ingest.CodeRunStage, "the identification of the run %d has begun already", lease.No)
+		}
 		var rd struct {
+			RawDiff struct {
+				Done bool `json:"done"`
+			} `json:"raw_diff"`
 			Receive struct {
 				Datasets []struct {
 					DatasetNo int64 `json:"dataset_no"`
@@ -134,6 +166,9 @@ func (s *Store) BeginIdentify(ctx context.Context, lease ingest.RunLease, start 
 		}
 		if err := json.Unmarshal(run.counts, &rd); err != nil {
 			return kernel.Wrap(kernel.CodeInternal, err, "read the counts of the run")
+		}
+		if run.job != pgschema.CalcJobRawDiff || !rd.RawDiff.Done {
+			return kernel.Errorf(ingest.CodeRunStage, "the comparison of the run %d is not done, so its records cannot be identified", lease.No)
 		}
 		st := identState{Feeds: start.Feeds, Schemes: start.Schemes, Size: orInt(start.BucketRows, ingest.DefaultRawDiffBucketRows),
 			Pages: orInt(start.Pages, ingest.DefaultIdentifyPages), Rounds: orInt(start.Rounds, ingest.DefaultIdentifyRounds),
@@ -177,7 +212,7 @@ func writeIdent(ctx context.Context, tx *sql.Tx, l ingest.RunLease, st *identSta
 }
 
 // loadIdent reads the place of the run in the transaction and checks that the identification has begun.
-func loadIdent(ctx context.Context, tx *sql.Tx, lease ingest.RunLease) (*identRun, error) {
+func (s *Store) loadIdent(ctx context.Context, tx *sql.Tx, lease ingest.RunLease) (*identRun, error) {
 	run, err := readRun(ctx, tx, lease, true)
 	if err != nil {
 		return nil, err
@@ -196,7 +231,7 @@ func loadIdent(ctx context.Context, tx *sql.Tx, lease ingest.RunLease) (*identRu
 	if err := ownsCalc(ctx, tx, kgNo, lease.No); err != nil {
 		return nil, err
 	}
-	return &identRun{kgNo: kgNo, srcNo: run.srcNo, runNo: lease.No, st: &st}, nil
+	return &identRun{kgNo: kgNo, srcNo: run.srcNo, runNo: lease.No, st: &st, seen: s.identSeen}, nil
 }
 
 // ownsCalc says that the tables of the computation are the run's: the comparison of the step before wrote its number there, and a
@@ -273,7 +308,7 @@ func (s *Store) IdentifyReport(ctx context.Context, no int64) (ingest.IdentifyCo
 // IdentifyStep does the unit the place says: see ingest.Identifier.
 func (s *Store) IdentifyStep(ctx context.Context, lease ingest.RunLease) error {
 	return s.tx(ctx, roleBulk, func(tx *sql.Tx) error {
-		r, err := loadIdent(ctx, tx, lease)
+		r, err := s.loadIdent(ctx, tx, lease)
 		if err != nil {
 			return err
 		}
@@ -312,20 +347,21 @@ func (r *identRun) unit(ctx context.Context, tx *sql.Tx) error {
 	return kernel.Errorf(kernel.CodeInternal, "the identification has no unit for %q", r.st.Phase)
 }
 
-// identSeen is a hook of the tests: it is told each statement of a unit, in the transaction of the unit, before it runs (the tests of
-// the plans ask the server how it will run it). It is nil in the code that runs.
-var identSeen func(tx *sql.Tx, what, query string, args []any)
+// identObserver is a hook of the tests: it is told each statement of a unit, in the transaction of the unit, before it runs (the tests
+// of the plans ask the server how it will run it). It belongs to a Store, so tests that run side by side do not meet; the code that
+// runs leaves it nil.
+type identObserver func(tx *sql.Tx, what, query string, args []any)
 
-// identSaw tells the hook of the tests a statement.
-func identSaw(tx *sql.Tx, what, query string, args ...any) {
-	if identSeen != nil {
-		identSeen(tx, what, query, args)
+// saw tells the hook of the tests a statement.
+func (r *identRun) saw(tx *sql.Tx, what, query string, args ...any) {
+	if r.seen != nil {
+		r.seen(tx, what, query, args)
 	}
 }
 
 // exec runs a statement of a unit and says how many rows it changed.
-func exec(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int, error) {
-	identSaw(tx, what, query, args...)
+func (r *identRun) exec(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int, error) {
+	r.saw(tx, what, query, args...)
 	res, err := tx.ExecContext(ctx, query, args...)
 	if err != nil {
 		return 0, dbErr(err, what)
@@ -334,9 +370,19 @@ func exec(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int
 	return int(n), nil
 }
 
+// scanTwo runs a statement that gives two numbers.
+func (r *identRun) scanTwo(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int, int, error) {
+	r.saw(tx, what, query, args...)
+	var a, b sql.NullInt64
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(&a, &b); err != nil {
+		return 0, 0, dbErr(err, what)
+	}
+	return int(a.Int64), int(b.Int64), nil
+}
+
 // scanInt runs a statement that gives one number.
-func scanInt(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int64, error) {
-	identSaw(tx, what, query, args...)
+func (r *identRun) scanInt(ctx context.Context, tx *sql.Tx, what, query string, args ...any) (int64, error) {
+	r.saw(tx, what, query, args...)
 	var n sql.NullInt64
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(&n); err != nil {
 		return 0, dbErr(err, what)

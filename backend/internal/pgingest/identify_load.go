@@ -32,7 +32,7 @@ func (r *identRun) seed(ctx context.Context, tx *sql.Tx) error {
 	}
 	endQuery := "SELECT src_no, dataset_no, key FROM " + ref + " WHERE state <> " + strconv.Itoa(int(pgschema.RefResolved)) +
 		" AND (src_no, dataset_no, key) > ($1, $2, $3) ORDER BY src_no, dataset_no, key OFFSET $4 LIMIT 1"
-	identSaw(tx, "seed end", endQuery, st.Cur, st.Cur2, st.CurKey, st.Size)
+	r.saw(tx, "seed end", endQuery, st.Cur, st.Cur2, st.CurKey, st.Size)
 	err := tx.QueryRowContext(ctx, endQuery, st.Cur, st.Cur2, st.CurKey, st.Size).Scan(&end.src, &end.ds, &end.key)
 	last := isNoRows(err)
 	if err != nil && !last {
@@ -45,8 +45,10 @@ func (r *identRun) seed(ctx context.Context, tx *sql.Tx) error {
 		args = append(args, end.src.Int64, end.ds.Int64, end.key.String)
 	}
 	raw, rec := r.t(pgschema.TableRawRecord), r.t(pgschema.TableCalcRecord)
-	n, err := exec(ctx, tx, "add the records that are not solved", "WITH u AS (SELECT DISTINCT src_no, dataset_no, key FROM "+ref+" WHERE state <> "+
-		strconv.Itoa(int(pgschema.RefResolved))+" AND "+cond+") INSERT INTO "+rec+" (src_no, dataset_no, key, fields, raw_hash, decl_rev, opened_seq, fate, why) "+
+	open := "state <> " + strconv.Itoa(int(pgschema.RefResolved))
+	srcs := r.planSources()
+	n, err := r.exec(ctx, tx, "add the records that are not solved", "WITH u AS (SELECT DISTINCT src_no, dataset_no, key FROM "+ref+" WHERE "+open+
+		" AND src_no = ANY("+srcs+") AND "+cond+") INSERT INTO "+rec+" (src_no, dataset_no, key, fields, raw_hash, decl_rev, opened_seq, fate, why) "+
 		"SELECT w.src_no, w.dataset_no, w.key, w.fields, w.raw_hash, w.decl_rev, w.opened_seq, w.fate, "+strconv.Itoa(int(whyUnresolved))+
 		" FROM u JOIN "+raw+" w ON w.src_no = u.src_no AND w.dataset_no = u.dataset_no AND w.key = u.key JOIN "+pgschema.TableSourceDataset+
 		" d ON d.dataset_no = w.dataset_no AND d.decl_rev = w.decl_rev ON CONFLICT (src_no, dataset_no, key) DO NOTHING", args...)
@@ -54,6 +56,13 @@ func (r *identRun) seed(ctx context.Context, tx *sql.Tx) error {
 		return err
 	}
 	st.Counts.Seeded += n
+	// the records of a source whose plan is not given are not looked at: they are told, so that they are not lost without a word
+	left, err := r.scanInt(ctx, tx, "count the records of the sources that have no plan", "SELECT count(*) FROM (SELECT DISTINCT src_no, dataset_no, key FROM "+ref+
+		" WHERE "+open+" AND NOT src_no = ANY("+srcs+") AND "+cond+") x", args...)
+	if err != nil {
+		return err
+	}
+	st.Counts.Left += int(left)
 	if last {
 		st.Phase, st.Cur, st.Cur2, st.CurKey = phaseKeys, 0, 0, ""
 		// the receiving wrote the rows of the run a moment ago and the server has not measured them: a plan made without it joins the
@@ -78,7 +87,8 @@ func (r *identRun) copyKeys(ctx context.Context, tx *sql.Tx) error {
 	d := st.Datasets[st.Cur]
 	hi := st.Cur2 + int64(st.Pages)
 	src := strconv.FormatInt(r.srcNo, 10)
-	join := " JOIN " + r.t(pgschema.TableCalcRecord) + " c ON c.src_no = " + src + " AND c.dataset_no = k.dataset_no AND c.page = k.page AND c.row_no = k.row_no" +
+	// each row received finds the record made of it by one probe of the index of the places of the rows
+	join := scan("x.rid", r.t(pgschema.TableCalcRecord), "c", "x.src_no = "+src+" AND x.dataset_no = k.dataset_no AND x.page = k.page AND x.row_no = k.row_no") +
 		" WHERE k.dataset_no = $1 AND k.page >= $2 AND k.page < $3"
 	part := func(table string) string { return r.t(pgschema.SourcePartition(table, r.srcNo)) }
 	steps := []struct{ what, query string }{
@@ -90,7 +100,7 @@ func (r *identRun) copyKeys(ctx context.Context, tx *sql.Tx) error {
 			"SELECT c.rid, k.scheme_no, k.feed_no, k.value_hash, k.value, k.held FROM " + part(pgschema.TableStageClaim) + " k" + join},
 	}
 	for _, s := range steps {
-		if _, err := exec(ctx, tx, s.what, s.query, d.DatasetNo, st.Cur2, hi); err != nil {
+		if _, err := r.exec(ctx, tx, s.what, s.query, d.DatasetNo, st.Cur2, hi); err != nil {
 			return err
 		}
 	}
@@ -104,7 +114,7 @@ func (r *identRun) copyKeys(ctx context.Context, tx *sql.Tx) error {
 
 // endKeys is the end of the copy: the records are all in, so the largest number of one fixes the range the later phases go through.
 func (r *identRun) endKeys(ctx context.Context, tx *sql.Tx) error {
-	max, err := scanInt(ctx, tx, "read the last record", "SELECT max(rid) FROM "+r.t(pgschema.TableCalcRecord))
+	max, err := r.scanInt(ctx, tx, "read the last record", "SELECT max(rid) FROM "+r.t(pgschema.TableCalcRecord))
 	if err != nil {
 		return err
 	}
@@ -113,12 +123,23 @@ func (r *identRun) endKeys(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
-// RebuildPage gives the records of the unit that have no key: see ingest.Identifier. A record that the comparison closed has no cells
-// and none is made of it.
+// notIdentified says that a record of the computation takes no part in the identification: the comparison closed it (its wait for the
+// absence is up) or let it go (its wait for the rule that filters it is up), which is to say that it no longer holds up an object. It
+// makes no object and binds no key; what its object loses of it is the work of the steps after this one (ADR-0108). The record that
+// repeats a key is not one of them: the later row of the key is the record, and it is identified as any record is, as the code that
+// was there did.
+func notIdentified(alias string) string {
+	return alias + "." + pgschema.ColWhy + " IN (" + strconv.Itoa(int(pgschema.CalcWhyClosed)) + ", " + strconv.Itoa(int(pgschema.CalcWhyReleased)) + ")"
+}
+
+// RebuildPage gives the records of the unit that have no key: see ingest.Identifier. They are the records that were not read from the
+// rows received (the ones whose references were not solved, the ones shown again, the ones whose repeating began or ended), since the
+// keys, the ends and the claims of a row received are copied with it, whether it gave any or not; and a record that takes no part in
+// the identification is not one of them.
 func (s *Store) RebuildPage(ctx context.Context, lease ingest.RunLease) (ingest.RebuildPage, error) {
 	page := ingest.RebuildPage{}
 	err := s.tx(ctx, roleBulk, func(tx *sql.Tx) error {
-		r, err := loadIdent(ctx, tx, lease)
+		r, err := s.loadIdent(ctx, tx, lease)
 		if err != nil {
 			return err
 		}
@@ -127,8 +148,8 @@ func (s *Store) RebuildPage(ctx context.Context, lease ingest.RunLease) (ingest.
 		}
 		page.Unit = int(r.st.Cur)
 		rows, err := tx.QueryContext(ctx, "SELECT c.rid, c.src_no, d.dataset_id, c.key, c.fields FROM "+r.t(pgschema.TableCalcRecord)+" c JOIN "+
-			pgschema.TableSourceDataset+" d ON d.dataset_no = c.dataset_no AND d.decl_rev = c.decl_rev WHERE c.rid > $1 AND c.rid <= $2 AND c.fields IS NOT NULL "+
-			"AND NOT EXISTS (SELECT 1 FROM "+r.t(pgschema.TableCalcKey)+" k WHERE k.rid = c.rid) ORDER BY c.rid", r.st.Cur, r.st.Cur+int64(r.st.Size))
+			pgschema.TableSourceDataset+" d ON d.dataset_no = c.dataset_no AND d.decl_rev = c.decl_rev WHERE c.rid > $1 AND c.rid <= $2 AND c.fields IS NOT NULL AND c.page IS NULL AND NOT "+notIdentified("c")+
+			" ORDER BY c.rid", r.st.Cur, r.st.Cur+int64(r.st.Size))
 		if err != nil {
 			return dbErr(err, "read the records that have no key")
 		}
@@ -152,7 +173,7 @@ func (s *Store) RebuildPage(ctx context.Context, lease ingest.RunLease) (ingest.
 // PutRebuilt takes the keys Go made and moves to the next unit: see ingest.Identifier.
 func (s *Store) PutRebuilt(ctx context.Context, lease ingest.RunLease, unit int, rows []ingest.RebuiltRow) error {
 	return s.tx(ctx, roleBulk, func(tx *sql.Tx) error {
-		r, err := loadIdent(ctx, tx, lease)
+		r, err := s.loadIdent(ctx, tx, lease)
 		if err != nil {
 			return err
 		}
@@ -163,9 +184,9 @@ func (s *Store) PutRebuilt(ctx context.Context, lease ingest.RunLease, unit int,
 		if err := r.putKeys(ctx, tx, rows); err != nil {
 			return err
 		}
-		skipped, err := scanInt(ctx, tx, "count the records left out", "SELECT count(*) FROM "+r.t(pgschema.TableCalcRecord)+" c JOIN "+pgschema.TableSourceDataset+
-			" d ON d.dataset_no = c.dataset_no AND d.decl_rev <> c.decl_rev WHERE c.rid > $1 AND c.rid <= $2 AND c.fields IS NOT NULL AND c.why <> "+
-			strconv.Itoa(int(pgschema.CalcWhyNew))+" AND c.why <> "+strconv.Itoa(int(pgschema.CalcWhyChanged)), st.Cur, st.Cur+int64(st.Size))
+		skipped, err := r.scanInt(ctx, tx, "count the records left out", "SELECT count(*) FROM "+r.t(pgschema.TableCalcRecord)+" c JOIN "+pgschema.TableSourceDataset+
+			" d ON d.dataset_no = c.dataset_no WHERE c.rid > $1 AND c.rid <= $2 AND c.fields IS NOT NULL AND ("+notIdentified("c")+" OR (d.decl_rev <> c.decl_rev AND c.why <> "+
+			strconv.Itoa(int(pgschema.CalcWhyNew))+" AND c.why <> "+strconv.Itoa(int(pgschema.CalcWhyChanged))+"))", st.Cur, st.Cur+int64(st.Size))
 		if err != nil {
 			return err
 		}

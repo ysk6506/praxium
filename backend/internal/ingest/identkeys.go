@@ -8,12 +8,26 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
-// IdentifyFeeds says what the identification needs of every feed of the plan, by the number the rows received give the feed (the
-// place of the feed in the mapping).
-func (p *Plan) IdentifyFeeds() []IdentifyFeed {
+// IdentifyFeedsOf says what the identification needs of the feeds of the plans of the sources of a KG, by the number of the source.
+func IdentifyFeedsOf(plans map[int64]*Plan) []IdentifyFeed {
+	var srcs []int64
+	for src := range plans {
+		srcs = append(srcs, src)
+	}
+	sort.Slice(srcs, func(i, j int) bool { return srcs[i] < srcs[j] })
+	var out []IdentifyFeed
+	for _, src := range srcs {
+		out = append(out, plans[src].IdentifyFeeds(src)...)
+	}
+	return out
+}
+
+// IdentifyFeeds says what the identification needs of every feed of the plan of the source numbered srcNo, by the number the rows
+// received give the feed (the place of the feed in the mapping).
+func (p *Plan) IdentifyFeeds(srcNo int64) []IdentifyFeed {
 	out := make([]IdentifyFeed, 0, len(p.feeds))
 	for _, fp := range p.feeds {
-		f := IdentifyFeed{Feed: fp.index, TypeNo: fp.typ.TypeNo, Creates: fp.feed.CreatesObjects}
+		f := IdentifyFeed{SrcNo: srcNo, Feed: fp.index, TypeNo: fp.typ.TypeNo, Creates: fp.feed.CreatesObjects}
 		for ord := range fp.keys {
 			f.Keys = append(f.Keys, IdentifyKey{Ord: ord, ModelOrd: fp.keys[ord].modelOrd})
 		}

@@ -46,8 +46,8 @@ func TestIdnEveryStatementOfAUnitThatFailsLeavesTheRunWhereItWasAndTheRunGoesOnT
 	l := idnReceived(s, t, texts, 1)
 	keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
 	poison := &idnPoison{done: map[string]bool{}}
-	identSeen = poison.idnPoisonAt
-	defer func() { identSeen = nil }()
+	s.e.st.identSeen = poison.idnPoisonAt
+	defer func() { s.e.st.identSeen = nil }()
 	var counts ingest.IdentifyCounts
 	failed := 0
 	for i := 0; i < 2000; i++ {
@@ -76,8 +76,8 @@ func TestIdnEveryStatementOfTheClaimsAndOfTheLookupThatFailsIsReportedAndTheNext
 		"D,sn4,Zorvane,aa:aa:aa:aa:aa:09,on", "H,snH,Zorvane,aa:aa:aa:aa:aa:08,off"))
 	keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
 	poison := &idnPoison{done: map[string]bool{}}
-	identSeen = poison.idnPoisonAt
-	defer func() { identSeen = nil }()
+	s.e.st.identSeen = poison.idnPoisonAt
+	defer func() { s.e.st.identSeen = nil }()
 	var counts ingest.IdentifyCounts
 	for i := 0; i < 2000; i++ {
 		c, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, idnStart(s, 2, 1), keys)

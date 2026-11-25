@@ -23,21 +23,23 @@ func (r *identRun) lookup(ctx context.Context, tx *sql.Tx) error {
 	}
 	hi := st.Cur + int64(st.Size)
 	none := strconv.Itoa(int(roleIdentity))
-	query := "WITH {feeds}, ks AS (SELECT k.rid, k.feed_no, k.key_ord, k.held, f.creates, " + ctxSQL + " AS c, d.n, " +
-		"(SELECT 1) AS x FROM {key} k JOIN feeds f ON f.feed_no = k.feed_no" + chainSQL() + " WHERE k.rid > $1 AND k.rid <= $2 AND (NOT f.creates OR k.held) " +
-		"AND NOT EXISTS (SELECT 1 FROM {bind} b WHERE b.rid = k.rid AND b.feed_no = k.feed_no) " +
-		"AND NOT EXISTS (SELECT 1 FROM {ref} z WHERE z.rid = k.rid AND z.def_no = k.feed_no AND z.role = " + none + ")), " +
-		"fk AS (SELECT ks.*, " + lookupSQL("kk.type_no", "ks.c", "kk.sig_hash") + " AS found FROM ks JOIN {key} kk ON kk.rid = ks.rid AND kk.feed_no = ks.feed_no AND kk.key_ord = ks.key_ord WHERE ks.c IS NOT NULL), " +
+	query := "WITH {feeds}, ks AS (SELECT k.rid, k.feed_no, k.key_ord, k.type_no, k.sig_hash, k.held, f.creates, " + ctxSQL + " AS c FROM {key} k" +
+		probe("x.src_no", "{rec}", "rc", "x.rid = k.rid") + " JOIN feeds f ON f.src_no = rc.src_no AND f.feed_no = k.feed_no" + chainSQL() +
+		absent("{bind}", "hb", "x.rid = k.rid AND x.feed_no = k.feed_no") + absent("{ref}", "hr", "x.rid = k.rid AND x.def_no = k.feed_no AND x.role = "+none) +
+		" WHERE k.rid > $1 AND k.rid <= $2 AND (NOT f.creates OR k.held) AND hb.hit IS NULL AND hr.hit IS NULL), " +
+		"fk AS (SELECT ks.*, CASE WHEN ks.c IS NOT NULL THEN " + lookupSQL("ks.type_no", "ks.c", "ks.sig_hash") + " END AS found FROM ks), " +
 		"b AS (SELECT DISTINCT ON (rid, feed_no) rid, feed_no, key_ord, found FROM fk WHERE found IS NOT NULL ORDER BY rid, feed_no, key_ord), " +
 		"ib AS (INSERT INTO {bind} (rid, feed_no, key_ord, obj_no, is_new, round_no) SELECT rid, feed_no, key_ord, found, false, 0 FROM b RETURNING 1), " +
-		"u AS (SELECT rid, feed_no, bool_or(held) AS held, bool_or(creates) AS creates FROM ks GROUP BY rid, feed_no), " +
-		"nb AS (SELECT u.* FROM u WHERE NOT EXISTS (SELECT 1 FROM b WHERE b.rid = u.rid AND b.feed_no = u.feed_no)), " +
+		"nb AS (SELECT rid, feed_no, bool_or(held) AS held, bool_or(creates) AS creates FROM fk GROUP BY rid, feed_no HAVING bool_or(found IS NOT NULL) = false), " +
 		"ir AS (INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT rid, " + none + ", feed_no, 0, NULL, NULL, " +
-		"CASE WHEN held THEN " + strconv.Itoa(int(pgschema.RefHeld)) + " ELSE " + strconv.Itoa(int(pgschema.RefUnresolved)) + " END, false FROM nb RETURNING 1) " +
-		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', '" + pgschema.ProblemOrphanValue + "', 'no object of the type has this identity' FROM nb WHERE NOT held AND NOT creates"
-	if _, err := exec(ctx, tx, "find the objects of the records that make none", r.q(query), st.Cur, hi); err != nil {
+		"CASE WHEN held THEN " + strconv.Itoa(int(pgschema.RefHeld)) + " ELSE " + strconv.Itoa(int(pgschema.RefUnresolved)) + " END, false FROM nb RETURNING 1), " +
+		"ip AS (INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', '" + pgschema.ProblemOrphanValue + "', 'no object of the type has this identity' FROM nb WHERE NOT held AND NOT creates RETURNING 1) " +
+		"SELECT count(*) FROM ir"
+	n, err := r.scanInt(ctx, tx, "find the objects of the records that make none", r.q(query), st.Cur, hi)
+	if err != nil {
 		return err
 	}
+	st.Counts.Unresolved += int(n)
 	st.Cur = hi
 	return nil
 }
@@ -50,7 +52,7 @@ func (r *identRun) claims(ctx context.Context, tx *sql.Tx) error {
 	var hash sql.NullString
 	endQuery := r.q("SELECT scheme_no, encode(value_hash, 'hex') FROM {claim} WHERE (scheme_no, value_hash) > ($1, decode($2, 'hex')) " +
 		"ORDER BY scheme_no, value_hash OFFSET $3 LIMIT 1")
-	identSaw(tx, "claims end", endQuery, st.Cur2, st.CurKey, st.Size)
+	r.saw(tx, "claims end", endQuery, st.Cur2, st.CurKey, st.Size)
 	err := tx.QueryRowContext(ctx, endQuery, st.Cur2, st.CurKey, st.Size).Scan(&no, &hash)
 	last := isNoRows(err)
 	if err != nil && !last {
@@ -62,9 +64,11 @@ func (r *identRun) claims(ctx context.Context, tx *sql.Tx) error {
 		cond += " AND (c.scheme_no, c.value_hash) <= ($3, decode($4, 'hex'))"
 		args = append(args, no.Int64, hash.String)
 	}
-	if _, err := exec(ctx, tx, "decide the identifiers", r.q(r.claimsSQL(cond)), args...); err != nil {
+	lost, err := r.exec(ctx, tx, "decide the identifiers", r.q(r.claimsSQL(cond)), args...)
+	if err != nil {
 		return err
 	}
+	st.Counts.Lost += lost
 	if last {
 		st.Phase, st.Cur = phaseFinish, 0
 		return nil
@@ -85,8 +89,8 @@ func (r *identRun) claimsSQL(cond string) string {
 		names[i] = `"` + strings.ReplaceAll(name, `"`, `\"`) + `"`
 	}
 	sch := "sch AS (SELECT name, no FROM unnest('{" + strings.Join(names, ",") + "}'::text[], '{" + strings.Join(nos, ",") + "}'::int[]) AS s(name, no))"
-	return "WITH " + sch + ", cl AS (SELECT c.scheme_no, c.value_hash, c.value, c.rid, c.feed_no, b.obj_no FROM {claim} c JOIN {bind} b ON b.rid = c.rid AND b.feed_no = c.feed_no " +
-		"WHERE NOT c.held AND " + cond + "), " +
+	return "WITH " + sch + ", cl AS (SELECT c.scheme_no, c.value_hash, c.value, c.rid, c.feed_no, b.obj_no FROM {claim} c" +
+		probe("x.obj_no", "{bind}", "b", "x.rid = c.rid AND x.feed_no = c.feed_no") + " WHERE NOT c.held AND " + cond + "), " +
 		"cand AS (SELECT scheme_no, value_hash, value, obj_no FROM cl GROUP BY scheme_no, value_hash, value, obj_no), " +
 		"hold AS (SELECT cd.scheme_no, cd.value_hash, h.obj_no FROM (SELECT DISTINCT scheme_no, value_hash, value FROM cand) cd JOIN sch ON sch.no = cd.scheme_no " +
 		"JOIN {ident} h ON h.scheme = sch.name AND h.value = cd.value AND h.seq_to IS NULL " +
@@ -94,7 +98,8 @@ func (r *identRun) claimsSQL(cond string) string {
 		"OR EXISTS (SELECT 1 FROM " + r.t(pgschema.TableRecordRef) + " x WHERE x.role = " + strconv.Itoa(int(pgschema.RefRoleClaim)) + " AND x.def_no = cd.scheme_no AND x.lookup_hash = cd.value_hash " +
 		"AND x.target_no = h.obj_no AND x.state = " + strconv.Itoa(int(pgschema.RefResolved)) + " AND NOT EXISTS (SELECT 1 FROM {rec} cr WHERE cr.src_no = x.src_no AND cr.dataset_no = x.dataset_no AND cr.key = x.key))), " +
 		"win AS (SELECT DISTINCT ON (scheme_no, value_hash) scheme_no, value_hash, obj_no FROM (SELECT scheme_no, value_hash, obj_no, 0 AS ord, ''::text AS oref FROM hold " +
-		"UNION ALL SELECT cd.scheme_no, cd.value_hash, cd.obj_no, 1, COALESCE(o.ref, n.ref) FROM cand cd LEFT JOIN {obj} o ON o.obj_no = cd.obj_no LEFT JOIN {newobj} n ON n.obj_no = cd.obj_no) z " +
+		"UNION ALL SELECT cd.scheme_no, cd.value_hash, cd.obj_no, 1, COALESCE(o.ref, n.ref) FROM cand cd" +
+		maybe("x.ref", "{obj}", "o", "x.obj_no = cd.obj_no") + maybe("x.ref", "{newobj}", "n", "x.obj_no = cd.obj_no") + ") z " +
 		"ORDER BY scheme_no, value_hash, ord, oref COLLATE \"C\"), " +
 		"ins AS (INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT cl.rid, " + strconv.Itoa(int(pgschema.RefRoleClaim)) + ", cl.scheme_no, cl.feed_no, cl.value_hash, cl.obj_no, " +
 		"CASE WHEN cl.obj_no = win.obj_no THEN " + strconv.Itoa(int(pgschema.RefResolved)) + " ELSE " + strconv.Itoa(int(pgschema.RefLostClaim)) + " END, false " +
@@ -103,54 +108,36 @@ func (r *identRun) claimsSQL(cond string) string {
 }
 
 // finish ends the identification, a range of the records at a time: the records that no key could bind are references that are not
-// solved, the records that are bound are references that are, and the objects they are bound to are the objects of the run.
+// solved, the records that are bound are references that are, and the objects they are bound to are the objects of the run. What it
+// does adds up what the identification made, for the report.
 func (r *identRun) finish(ctx context.Context, tx *sql.Tx) error {
 	st := r.st
 	if st.Cur >= st.MaxRid {
-		return r.count(ctx, tx)
+		st.Phase = phaseDone
+		return nil
 	}
 	hi := st.Cur + int64(st.Size)
 	id := strconv.Itoa(int(roleIdentity))
-	steps := []string{
-		"WITH {feeds}, p AS (SELECT k.rid, k.feed_no, bool_or(k.anc_types IS NOT NULL) AS ctx FROM {key} k JOIN feeds f ON f.feed_no = k.feed_no AND f.creates WHERE NOT k.held AND k.rid > $1 AND k.rid <= $2 " +
-			"AND NOT EXISTS (SELECT 1 FROM {bind} b WHERE b.rid = k.rid AND b.feed_no = k.feed_no) AND NOT EXISTS (SELECT 1 FROM {ref} z WHERE z.rid = k.rid AND z.def_no = k.feed_no AND z.role = " + id + ") " +
-			"GROUP BY k.rid, k.feed_no), r AS (INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT rid, " + id + ", feed_no, 0, NULL, NULL, " +
-			strconv.Itoa(int(pgschema.RefUnresolved)) + ", false FROM p RETURNING 1) INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', " +
+	steps := []unitStep{
+		{"end the identification", "WITH {feeds}, p AS (SELECT k.rid, k.feed_no, bool_or(k.anc_types IS NOT NULL) AS ctx FROM {key} k" + probe("x.src_no", "{rec}", "rc", "x.rid = k.rid") +
+			" JOIN feeds f ON f.src_no = rc.src_no AND f.feed_no = k.feed_no AND f.creates" +
+			absent("{bind}", "hb", "x.rid = k.rid AND x.feed_no = k.feed_no") + absent("{ref}", "hr", "x.rid = k.rid AND x.def_no = k.feed_no AND x.role = "+id) +
+			" WHERE NOT k.held AND k.rid > $1 AND k.rid <= $2 AND hb.hit IS NULL AND hr.hit IS NULL GROUP BY k.rid, k.feed_no), " +
+			"r AS (" + refUnresolved("p") + " RETURNING 1) INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', " +
 			"CASE WHEN ctx THEN '" + pgschema.ProblemContextParent + "' ELSE '" + pgschema.ProblemIdentityConflict + "' END, " +
 			"CASE WHEN ctx THEN 'the parent of this record is not found, so its key cannot be told' ELSE 'no key of this record could be bound to an object' END FROM p",
-		"INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT rid, " + id + ", feed_no, 0, NULL, obj_no, " +
-			strconv.Itoa(int(pgschema.RefResolved)) + ", false FROM {bind} WHERE rid > $1 AND rid <= $2",
-		"INSERT INTO {objrun} (obj_no, why) SELECT DISTINCT obj_no, " + strconv.Itoa(int(pgschema.ObjectWhyIdentified)) + " FROM {bind} WHERE rid > $1 AND rid <= $2 ON CONFLICT DO NOTHING",
+			[]*int{&st.Counts.Unresolved}, false},
+		{"end the identification", "INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT rid, " + id + ", feed_no, 0, NULL, obj_no, " +
+			strconv.Itoa(int(pgschema.RefResolved)) + ", false FROM {bind} WHERE rid > $1 AND rid <= $2", []*int{&st.Counts.Bound}, false},
+		{"end the identification", "INSERT INTO {objrun} (obj_no, why) SELECT DISTINCT obj_no, " + strconv.Itoa(int(pgschema.ObjectWhyIdentified)) +
+			" FROM {bind} WHERE rid > $1 AND rid <= $2 ON CONFLICT DO NOTHING", nil, false},
 	}
 	for _, s := range steps {
-		if _, err := exec(ctx, tx, "end the identification", strings.ReplaceAll(r.q(s), "{objrun}", r.t(pgschema.TableCalcObject)), st.Cur, hi); err != nil {
+		s.query = strings.ReplaceAll(s.query, "{objrun}", r.t(pgschema.TableCalcObject))
+		if err := r.run(ctx, tx, s, st.Cur, hi); err != nil {
 			return err
 		}
 	}
 	st.Cur = hi
-	return nil
-}
-
-// count adds up what the identification made, for the report, and ends it.
-func (r *identRun) count(ctx context.Context, tx *sql.Tx) error {
-	c := &r.st.Counts
-	for _, f := range []struct {
-		to    *int
-		query string
-	}{
-		{&c.Bound, "SELECT count(*) FROM {bind}"},
-		{&c.NewObjects, "SELECT count(*) FROM {newobj}"},
-		{&c.NewKeys, "SELECT count(*) FROM {newkey}"},
-		{&c.Dropped, "SELECT count(*) FROM {dropped}"},
-		{&c.Unresolved, "SELECT count(*) FROM {ref} WHERE role = " + strconv.Itoa(int(roleIdentity)) + " AND state <> " + strconv.Itoa(int(pgschema.RefResolved))},
-		{&c.Lost, "SELECT count(*) FROM {ref} WHERE role = " + strconv.Itoa(int(pgschema.RefRoleClaim)) + " AND state = " + strconv.Itoa(int(pgschema.RefLostClaim))},
-	} {
-		n, err := scanInt(ctx, tx, "count what the identification made", r.q(f.query))
-		if err != nil {
-			return err
-		}
-		*f.to = int(n)
-	}
-	r.st.Phase = phaseDone
 	return nil
 }
