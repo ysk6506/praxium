@@ -43,6 +43,11 @@ type Response struct {
 	Status int
 	Header map[string][]string
 	Body   io.ReadCloser
+	// Ended says that the end of the body is marked by the protocol: a length that is read in full, the last chunk, the end
+	// of an HTTP/2 stream or the trailer of a compressed body. A body that is read to its end without such a mark may have
+	// been cut where a connection closed, and the reader of a body that is made of lines (one record each) cannot tell by
+	// the body whether it was.
+	Ended bool
 }
 
 // Client is an HTTP client whose every connection goes through a Dialer. It reads no proxy from the
@@ -97,7 +102,21 @@ func (c *Client) Do(ctx context.Context, req Request) (*Response, error) {
 		_ = resp.Body.Close()
 		return nil, &Error{Kind: KindRedirect, Reason: "the source answered with a redirect, which is not followed"}
 	}
-	return &Response{Status: resp.StatusCode, Header: resp.Header.Clone(), Body: safeBody{resp.Body}}, nil
+	return &Response{Status: resp.StatusCode, Header: resp.Header.Clone(), Body: safeBody{resp.Body}, Ended: endMarked(resp)}, nil
+}
+
+// endMarked says whether the protocol marks the end of the body of a response: a length, the chunked coding, HTTP/2, or a
+// body that the transport unpacked (its trailer is a mark).
+func endMarked(resp *http.Response) bool {
+	if resp.ContentLength >= 0 || resp.Uncompressed || resp.ProtoMajor >= 2 {
+		return true
+	}
+	for _, te := range resp.TransferEncoding {
+		if strings.EqualFold(te, "chunked") {
+			return true
+		}
+	}
+	return false
 }
 
 // build parses the URL itself and makes the request. It refuses what url.Parse reads in a way the judgement does not.

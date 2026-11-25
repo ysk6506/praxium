@@ -64,6 +64,14 @@ type Dataset struct {
 	RecordsPath string      `json:"records_path,omitempty"`
 	Pagination  *Pagination `json:"pagination,omitempty"`
 	PostReads   bool        `json:"post_reads,omitempty"`
+	// ResponseFormat is how the response is read: json (one JSON value, the default) or json_lines (JSON values one after the
+	// other, a record each, as an export that is streamed gives them). It is a field of a dataset of an HTTP source.
+	ResponseFormat string `json:"response_format,omitempty"`
+	// MissingArray and MaxElements belong to a records_path that opens an array inside each record ([*]): what a record that
+	// has no array (or null) is, and the most elements one record may have. They are fields of a dataset of an HTTP source and
+	// of a file of JSON lines.
+	MissingArray string `json:"missing_array,omitempty"`
+	MaxElements  int    `json:"max_elements,omitempty"`
 	// Table and SQL say what a dataset of a PostgreSQL source reads: a table or view, or one statement; and
 	// KeyCollation is the collation the natural key is ordered by, when it is not the column's own (sources-and-adapters.md 2.3).
 	Table        string `json:"table,omitempty"`
@@ -182,6 +190,7 @@ func (s Source) normalized(adapters []string) (Source, error) {
 }
 
 func (s Source) normalize(c *collector, adapters []string) Source {
+	c.adapterFlow = len(adapters) > len(fileOnly)
 	c.checkVersion(s.Version, "source definition")
 	if s.ID == "" {
 		c.add(ecSrcIDMissing, ptr("id"), nil, "a source needs an id")
@@ -254,6 +263,12 @@ func (d Dataset) normalize(c *collector, source, adapter string, i int) Dataset 
 	if adapter == AdapterHTTP || adapter == AdapterPostgres {
 		d = d.checkRecords(c, source, adapter, at)
 		d.checkColumnPaths(c, source, at)
+	}
+	if d.readsRecordsPath(c, adapter) {
+		d.checkRecordsPath(c, source, at)
+		if d.opensArray() {
+			d.checkColumnPaths(c, source, at)
+		}
 	}
 	if parserOK {
 		d.Sheet = d.Sheet.normalize(c, at+ptr("sheet"), d, where)

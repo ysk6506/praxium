@@ -45,7 +45,20 @@ var (
 	errTwice       = &formatError{"records_path leads to the records twice in the answer"}
 	errTooDeep     = &formatError{"the answer nests deeper than " + strconv.Itoa(maxDepth) + " levels outside its records"}
 	errRecordsPath = &formatError{"records_path is not a path"}
+	errArrayKind   = &formatError{"a record has a value that is not an array where records_path opens an array in it"}
 )
+
+// item is a record given to the one who reads the answer. For a records_path with [*] it is an element of the array of a
+// record, rec being the element and outer the record it is in; otherwise rec is the record. index is the place of the record
+// (the outer one) in the answer, elem the place of the element in its array, and last says that no element of the same record
+// comes after it, so that a read that goes on from here starts at the next record.
+type item struct {
+	rec, outer any
+	index      int
+	elem       int
+	last       bool
+	expanded   bool
+}
 
 // window is the reader the decoder reads the body through. It hashes what it gives (the same answer twice is found by it),
 // counts it against the limit, and refuses to let the decoder hold more than one record.
@@ -91,6 +104,11 @@ type walked struct {
 	// valid says the answer was JSON as far as it was read, found says the records were found, and stopped that the one
 	// who was given the records left the loop, so the answer was not read to its end.
 	valid, found, stopped bool
+	// missing is how many records had no array (or null) where the records_path opens one, and cut says that the body ended without
+	// a mark of its end or broke, so that what was given is what was seen (a body of JSON lines; lines.go).
+	missing int
+	cut     bool
+	srcErr  error
 }
 
 // frame is an open object or array of the document the walker is in.
@@ -105,10 +123,12 @@ type frame struct {
 type walker struct {
 	dec    *json.Decoder
 	win    *window
+	rp     ingest.RecordsPath
 	recs   ingest.Path
+	limit  int
 	caps   []ingest.Path
 	skip   int
-	each   func(rec any, index int) bool
+	each   func(it item) bool
 	out    walked
 	stack  []frame
 	done   bool
@@ -117,24 +137,35 @@ type walker struct {
 
 // walk reads the body of an answer: the records go to each one at a time, from the one at place skip on (the ones before
 // were given by an answer that broke), and the places the pagination reads are kept. each tells whether to go on.
-func walk(body io.Reader, limit int, recordsPath string, caps []ingest.Path, skip int, each func(rec any, index int) bool) (*walked, error) {
-	var recs ingest.Path
-	if recordsPath != "" {
-		p, err := ingest.ParsePath(recordsPath)
-		if err != nil {
-			return &walked{}, errRecordsPath
-		}
-		recs = p
+func walk(body io.Reader, limit int, recordsPath string, caps []ingest.Path, skip int, each func(it item) bool) (*walked, error) {
+	return walkRecords(body, limit, recordSpec{path: recordsPath, maxElements: ingest.DefaultMaxElements, caps: caps, skip: skip}, each)
+}
+
+// recordSpec is what walkRecords reads: the records_path, the most elements of a record, the places the pagination reads, and
+// the records to leave out at the front.
+type recordSpec struct {
+	path        string
+	maxElements int
+	caps        []ingest.Path
+	skip        int
+}
+
+// walkRecords is walk with the most elements one record may have (for a records_path that opens an array in each record).
+func walkRecords(body io.Reader, limit int, spec recordSpec, each func(it item) bool) (*walked, error) {
+	caps, skip, maxElements := spec.caps, spec.skip, spec.maxElements
+	rp, err := ingest.ParseRecordsPath(spec.path)
+	if err != nil {
+		return &walked{}, errRecordsPath
 	}
 	win := &window{src: body, sum: sha256.New(), limit: limit}
 	dec := json.NewDecoder(win)
 	dec.UseNumber()
-	w := &walker{dec: dec, win: win, recs: recs, caps: caps, skip: skip, each: each, out: walked{doc: map[string]any{}}}
-	w.depths = append(w.depths, len(recs))
+	w := &walker{dec: dec, win: win, rp: rp, recs: rp.Outer, limit: maxElements, caps: caps, skip: skip, each: each, out: walked{doc: map[string]any{}}}
+	w.depths = append(w.depths, len(w.recs))
 	for _, c := range caps {
 		w.depths = append(w.depths, len(c))
 	}
-	err := w.run()
+	err = w.run()
 	copy(w.out.sum[:], win.sum.Sum(nil))
 	w.out.bytes = win.read
 	switch {
@@ -373,7 +404,37 @@ func (w *walker) record(idx int) (bool, error) {
 		return true, nil
 	}
 	w.keepFrom(idx, rec)
-	return w.each(rec, idx), nil
+	if !w.rp.Expand {
+		return w.each(item{rec: rec, index: idx, last: true}), nil
+	}
+	return w.elements(idx, rec)
+}
+
+// elements gives the elements of the array a record has to each, one at a time (see giveElements).
+func (w *walker) elements(idx int, outer any) (bool, error) {
+	return giveElements(w.rp, outer, idx, w.limit, &w.out.missing, w.each)
+}
+
+// giveElements gives the elements of the array the record outer has at the place records_path opens one to each. A record that has
+// no array (or null) gives none and is counted in missing; a value that is no array, or more elements than the limit, is a failure
+// of the shape of the answer. It tells whether to go on.
+func giveElements(rp ingest.RecordsPath, outer any, idx, limit int, missing *int, each func(it item) bool) (bool, error) {
+	elems, state := rp.Elements(outer)
+	switch {
+	case state == ingest.ArrayMissing:
+		*missing++
+		return true, nil
+	case state == ingest.ArrayWrongKind:
+		return false, errArrayKind
+	case len(elems) > limit:
+		return false, &formatError{"a record has more than " + strconv.Itoa(limit) + " elements in the array records_path opens (max_elements)"}
+	}
+	for j, el := range elems {
+		if !each(item{rec: el, outer: outer, index: idx, elem: j, last: j == len(elems)-1, expanded: true}) {
+			return false, nil
+		}
+	}
+	return true, nil
 }
 
 // keepFrom keeps the values the pagination reads that are inside the record at idx (a path that goes down through the

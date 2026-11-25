@@ -21,6 +21,8 @@ type answer struct {
 	p       plan
 	rep     *reply
 	attempt int
+	// missing is how many records of the attempts that broke had no array where records_path opens one (they are not read again).
+	missing int
 }
 
 // data sends the request for a position and gives the answer of a success, with the body not read yet. A token that the
@@ -52,22 +54,24 @@ func (rn *run) data(ctx context.Context, ds ingest.Dataset, at pos) (*answer, er
 // what the pagination reads. When the body breaks while it is read, a GET is sent again and the records that were given are
 // passed over in the answer to it, as the ones a token says were given are. each tells whether to go on; if it does not,
 // the answer is not read to its end (walked.stopped).
-func (a *answer) records(ctx context.Context, skip int, each func(rec any, index int) bool) (*walked, error) {
+func (a *answer) records(ctx context.Context, skip int, each func(it item) bool) (*walked, error) {
 	rn := a.rn
+	if a.ds.JSONLines() {
+		return a.lines(ctx, each)
+	}
 	if !jsonType(a.rep.header) {
 		a.rep.closeBody()
 		return nil, rn.fail(ingest.SrcResponseFormat, "the source answered with something that is not JSON", nil)
 	}
 	if a.rep.status == 204 {
-		a.rep.closeBody()
-		rn.after(a.p, a.rep, 0)
-		rn.prog.responded, rn.prog.recordsFound = true, true
-		return &walked{reply: a.rep, doc: map[string]any{}, valid: true, found: true}, nil
+		return a.empty(), nil
 	}
 	given := skip
-	counted := func(rec any, i int) bool {
-		given = i + 1
-		return each(rec, i)
+	counted := func(it item) bool {
+		if it.last {
+			given = it.index + 1
+		}
+		return each(it)
 	}
 	for {
 		w, err := a.read(ctx, given, counted)
@@ -80,10 +84,18 @@ func (a *answer) records(ctx context.Context, skip int, each func(rec any, index
 	}
 }
 
+// empty is the answer of a status that has no body (204): no record, and nothing wrong.
+func (a *answer) empty() *walked {
+	a.rep.closeBody()
+	a.rn.after(a.p, a.rep, 0)
+	a.rn.prog.responded, a.rn.prog.recordsFound = true, true
+	return &walked{reply: a.rep, doc: map[string]any{}, valid: true, found: true}
+}
+
 // read reads the body once and says what the answer was.
-func (a *answer) read(ctx context.Context, skip int, each func(rec any, index int) bool) (*walked, error) {
+func (a *answer) read(ctx context.Context, skip int, each func(it item) bool) (*walked, error) {
 	rn := a.rn
-	w, err := walk(a.rep.rc, rn.set.maxBytes, a.ds.RecordsPath, rn.pager.reads(), skip, each)
+	w, err := walkRecords(a.rep.rc, rn.set.maxBytes, recordSpec{path: a.ds.RecordsPath, maxElements: a.ds.ElementLimit(), caps: rn.pager.reads(), skip: skip}, each)
 	if w.valid {
 		rn.prog.responded = true
 	}
@@ -92,11 +104,13 @@ func (a *answer) read(ctx context.Context, skip int, each func(rec any, index in
 	}
 	w.reply = a.rep
 	if err != nil {
+		a.missing += w.missing
 		a.rep.closeBody()
 		return nil, rn.answerError(ctx, err)
 	}
 	a.rep.closeBody()
 	rn.after(a.p, a.rep, w.bytes)
+	w.missing += a.missing
 	return w, nil
 }
 

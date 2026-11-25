@@ -27,12 +27,13 @@ type RowBuilder struct {
 
 type builderColumn struct {
 	name  string
-	paths []Path
+	paths []ColumnPath
 }
 
 // NewRowBuilder reads the paths of the dataset's columns. It refuses a path the grammar does not read.
 func NewRowBuilder(ds Dataset) (*RowBuilder, error) {
 	b := &RowBuilder{ds: ds, cols: make([]builderColumn, 0, len(ds.Columns))}
+	outer := ds.opensArray()
 	for _, c := range ds.Columns {
 		paths := c.Paths
 		if len(paths) == 0 {
@@ -40,7 +41,7 @@ func NewRowBuilder(ds Dataset) (*RowBuilder, error) {
 		}
 		col := builderColumn{name: c.Name}
 		for _, text := range paths {
-			p, err := ParsePath(text)
+			p, err := ParseColumnPath(text, outer)
 			var pe *PathError
 			if errors.As(err, &pe) {
 				return nil, kernel.Errorf(kernel.CodeInvalidValue, "dataset %s, column %s: the path %q %s", ds.ID, c.Name, clip(text, idClipAt), pe.Reason)
@@ -56,6 +57,12 @@ func NewRowBuilder(ds Dataset) (*RowBuilder, error) {
 // problem list shows (the place of the record in the page or the response) and where says the same in words ("page 3,
 // record 12") when a number does not.
 func (b *RowBuilder) Record(rec any, line int, where string) Table {
+	return b.Element(nil, rec, line, where)
+}
+
+// Element is Record for a record that is an element of an array inside another record (a records_path with [*]): outer is the
+// record the element is in, which a path that begins with ^ reads.
+func (b *RowBuilder) Element(outer, rec any, line int, where string) Table {
 	var t Table
 	doc, ok := rec.(map[string]any)
 	if !ok {
@@ -65,7 +72,7 @@ func (b *RowBuilder) Record(rec any, line int, where string) Table {
 	fields := make(map[string]string, len(b.cols))
 	for _, c := range b.cols {
 		for _, p := range c.paths {
-			if v, ok := p.Pick(doc); ok {
+			if v, ok := p.Pick(doc, outer); ok {
 				fields[c.name] = v
 				break
 			}

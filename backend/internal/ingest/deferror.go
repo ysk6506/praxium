@@ -81,6 +81,9 @@ type collector struct {
 	doc     string
 	list    []DefinitionError
 	omitted int
+	// adapterFlow says that the document is read for the flow of the adapters (ParseAdapterSource): a file of JSON lines may
+	// have a records_path there, and the flow of the files of the command line does not read one.
+	adapterFlow bool
 }
 
 func newCollector(doc string) *collector { return &collector{doc: doc} }

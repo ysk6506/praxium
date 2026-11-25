@@ -10,17 +10,21 @@ import (
 
 // checkAdapterFields tells each field of the dataset that belongs to another adapter than the source's.
 func (d Dataset) checkAdapterFields(c *collector, source, adapter, at string) {
-	http := []namedSet{{"request", d.Request != nil}, {"records_path", d.RecordsPath != ""}, {"pagination", d.Pagination != nil}, {"post_reads", d.PostReads}}
+	http := []namedSet{{"request", d.Request != nil}, {"pagination", d.Pagination != nil}, {"post_reads", d.PostReads}, {"response_format", d.ResponseFormat != ""}}
+	records := []namedSet{{"records_path", d.RecordsPath != ""}, {"missing_array", d.MissingArray != ""}, {"max_elements", d.MaxElements != 0}}
 	pg := []namedSet{{"table", d.Table != ""}, {"sql", d.SQL != ""}, {"key_collation", d.KeyCollation != ""}}
 	file := []namedSet{{"delimiter", d.Delimiter != ""}, {"sheet", d.Sheet != nil}, {"ignore_undeclared_columns", d.IgnoreUndeclaredColumns}}
 	var other []namedSet
 	switch adapter {
 	case AdapterFile:
 		other = append(http, pg...)
+		if !d.readsRecordsPath(c, adapter) {
+			other = append(other, records...)
+		}
 	case AdapterHTTP:
 		other = append(pg, file...)
 	case AdapterPostgres:
-		other = append(http, file...)
+		other = append(append(http, records...), file...)
 	}
 	for _, f := range other {
 		if f.set {
@@ -46,9 +50,11 @@ func (d Dataset) checkRecords(c *collector, source, adapter, at string) Dataset 
 
 // checkColumnPaths checks the paths of the columns by the grammar of a path into a record.
 func (d Dataset) checkColumnPaths(c *collector, source, at string) {
+	outer := d.opensArray()
 	for i, col := range d.Columns {
 		for j, p := range col.Paths {
-			c.checkPath(source, d.ID, at+ptr("columns", i, "paths", j), "column "+clip(col.Name, idClipAt)+" path", p)
+			_, err := ParseColumnPath(p, outer)
+			c.pathProblem(source, d.ID, at+ptr("columns", i, "paths", j), "column "+clip(col.Name, idClipAt)+" path", p, err)
 		}
 	}
 }
@@ -60,14 +66,13 @@ func (d Dataset) checkHTTP(c *collector, source, at string) Dataset {
 		r := d.Request.normalize(c, source, d, at+ptr("request"))
 		d.Request = &r
 	}
-	if d.RecordsPath != "" {
-		c.checkPath(source, d.ID, at+ptr("records_path"), "records_path", d.RecordsPath)
-	}
+	d.checkRecordsPath(c, source, at)
 	p := Pagination{Kind: PageNone}
 	if d.Pagination != nil {
 		p = *d.Pagination
 	}
 	d.Pagination = p.normalize(c, source, d, at+ptr("pagination"))
+	d.checkResponseFormat(c, source, at)
 	return d
 }
 

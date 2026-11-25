@@ -54,11 +54,11 @@ follows:
 | `connection`의 주소, 스킴, 포트, 시크릿 참조, TLS 설정을 바꾼다 | 둘 다 |
 | **`connection.auth` 전체**(종류, 토큰 요청의 경로와 본문, `credentials_in`, `token_from`, `send`, 보내는 헤더와 `headers`)를 바꾼다 | 둘 다 |
 | `connection.headers`와 `ca_pem`을 바꾼다 | 둘 다 |
-| 한도를 기본보다 올리는 값(`timeout_seconds`, `requests_per_second`, `max_response_bytes`, `max_retry_wait_seconds`, 페이지의 `max_pages`와 `size`)을 올린다 | 둘 다(낮추는 것은 `edit_definitions`만) |
+| 한도를 기본보다 올리는 값(`timeout_seconds`, `requests_per_second`, `max_response_bytes`, `max_retry_wait_seconds`, 페이지의 `max_pages`와 `size`, 레코드 하나의 원소 수 `max_elements`)을 올린다 | 둘 다(낮추는 것은 `edit_definitions`만) |
 | `post_reads`를 켠다, 또는 `post_reads`가 켜진 데이터셋의 요청(메서드, 경로, 본문)을 바꾼다 | 둘 다 |
 | 요청 본문에 시크릿이나 토큰의 자리표시(`{{credential.<필드>}}`, `{{auth.token}}`)가 든 값을 더하거나 바꾼다 | 둘 다 |
 | 소스의 `id`, `collector`, `version`을 바꾸거나 멈춘 소스를 다시 켠다, 파일 한도(`limits`)를 올린다, `post_reads` 데이터셋의 페이지(`cursor_param`과 `size_param`이 본문에 쓰여요)를 바꾼다, 페이지 크기를 지우거나(서버가 크기를 정해요) 새 데이터셋에 1,000을 넘는 크기를 쓴다 | 둘 다 |
-| 그 밖(`GET` 데이터셋의 경로를 포함한 데이터셋, 컬럼, 매핑, 낮추는 한도, 이름) | `edit_definitions`만 |
+| 그 밖(`GET` 데이터셋의 경로를 포함한 데이터셋, 컬럼, 매핑, 응답 형식 `response_format`, `records_path`(`[*]` 포함), `missing_array`, 낮추는 한도, 이름) | `edit_definitions`만 |
 
 이 표를 한 곳에서 판정하는 것이 `core.ingest`의 `ClassifyChange(before, after)`예요(ADR-0100). 저장하기 전의 정의와 저장하려는 정의를 견줘 접속 변경(`connection`)인지 매핑만의 변경(`mapping`)인지와 이유의 목록을 돌려주는 순수 함수이고, 정의를 저장하는 쪽이 이 함수를 불러 필요한 능력을 정해요. 이 함수는 두 정의에 기본값을 채워 견주고, 매핑만의 변경이라고 적어 둔 필드(`changeClasses`)를 뺀 나머지가 하나라도 다르면 접속 변경(이유 `other`)으로 봐서, 정의에 필드가 더해져도 분류를 정할 때까지는 이중 권한이 걸려요. 이 함수를 부르는 정의 저장소의 경로는 아직 없어서 함수와 테스트만 있어요. 새 소스는 언제나 접속 변경이에요. 토큰 요청의 주소(`auth.request.url`, `path`), 그 `ca_pem`, `headers`, `auth.expires_in_path`를 바꾸는 일도 접속 변경이라 `edit_definitions`와 `run_sources`가 모두 필요해요(ADR-0106).
 

@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "51683ef37a94f323"
-date: "2026-11-19"
-note: "definition.go의 변경은 인증과 연결 정의(HTTP 소스)의 확장이고 이 안내가 다루는 파일 정의의 설명과 겹치지 않아 안내는 그대로 맞음을 확인"
+hash: "dd7249a2c91ce799"
+date: "2026-11-25"
+note: "파일 소스 정의 가이드가 다루는 옛 흐름은 그대로임을 확인함. 새 필드(response_format, records_path의 [*], missing_array, max_elements)는 어댑터 흐름에서만 받고 옛 흐름의 ParseSource는 거절함"
 text_changed: false
-doc_hash: "f21717fb429aefb5"
+doc_hash: "06592884ef5fe37a"

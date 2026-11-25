@@ -41,6 +41,8 @@ type pageStream struct {
 	opts  PageOptions
 	guard *encodingGuard
 	next  func() (Table, error)
+	// lines is what the lines of a file that has a records_path left for the end of the dataset.
+	lines *lineState
 	page  Page
 	total int
 	count int
@@ -63,8 +65,9 @@ func (s *pageStream) run(ctx context.Context, yield func(Page, error) bool) {
 			s.finish(yield, end)
 			return
 		}
-	} else {
-		s.next = jsonLineRecords(br, s.ds)
+	} else if end, stop := s.openLines(br); stop {
+		s.finish(yield, end)
+		return
 	}
 	for {
 		rec, err := s.next()
@@ -128,13 +131,37 @@ func (s *pageStream) finish(yield func(Page, error) bool, end Completeness) {
 	yield(p, nil)
 }
 
-// endOf is how a read that ended with an error ends the dataset: at the end of the bytes it is complete, and any other
-// stop is not.
+// endOf is how a read that ended with an error ends the dataset: at the end of the bytes it is complete (or, when a record had
+// no array to read and the dataset does not say that is none, it is only what was seen), and any other stop is not.
 func (s *pageStream) endOf(err error) Completeness {
-	if errors.Is(err, io.EOF) {
+	var limit *elementLimitError
+	switch {
+	case errors.Is(err, io.EOF):
+		if s.lines != nil && s.lines.missing > 0 && !s.ds.MissingIsEmpty() {
+			return Completeness{SeenOnly: true, Reason: itoa(s.lines.missing) + " lines had no array at the place of records_path (or null), so what they may have had was not seen"}
+		}
 		return Completeness{Complete: true}
+	case errors.As(err, &limit):
+		return Completeness{Reason: limit.Error() + "; the rest was not read"}
 	}
 	return Completeness{Reason: "the read of the file stopped before its end"}
+}
+
+// openLines sets up the reading of the lines of a file of JSON lines. A dataset that has a records_path is read by it.
+func (s *pageStream) openLines(br *bufio.Reader) (Completeness, bool) {
+	if s.ds.RecordsPath == "" {
+		s.next = jsonLineRecords(br, s.ds)
+		return Completeness{}, false
+	}
+	rp, err := s.ds.Records()
+	if err == nil {
+		s.lines = &lineState{}
+		s.next, err = recordLines(br, s.ds, rp, s.lines)
+	}
+	if err != nil {
+		return Completeness{Reason: "the records_path or a path of a column is not one that can be read"}, true
+	}
+	return Completeness{}, false
 }
 
 func rowsBytes(rows []Row) int {

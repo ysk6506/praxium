@@ -66,6 +66,9 @@ var changeClasses = map[string]string{
 	// are); of a dataset that reads with POST they are kept (what is sent with the secret). Which it is, is decided in datasetForm.
 	"Dataset.Request": classKept, "Dataset.RecordsPath": classMapping, "Dataset.Pagination": classKept, "Dataset.PostReads": classKept,
 	"Dataset.Table": classMapping, "Dataset.SQL": classMapping, "Dataset.KeyCollation": classMapping,
+	// How a response is read (json or json_lines), what a record with no array is, and how many elements one record may have (ADR-0109).
+	// The first two say where the records are and how what is seen is told; the third is a limit, and a limit that is raised is not the mapping.
+	"Dataset.ResponseFormat": classMapping, "Dataset.MissingArray": classMapping, "Dataset.MaxElements": classLimit,
 	"Request.Method": classKept, "Request.Path": classKept, "Request.Query": classKept, "Request.Body": classKept,
 	"Pagination.Kind": classKept, "Pagination.PageParam": classKept, "Pagination.OffsetParam": classKept, "Pagination.SizeParam": classKept, "Pagination.Size": classLimit,
 	"Pagination.FirstPage": classKept, "Pagination.TotalPath": classKept, "Pagination.CursorParam": classKept, "Pagination.CursorIn": classKept,
@@ -86,6 +89,7 @@ var limitCompared = map[string]bool{
 	"Connection.ConnectTimeoutSeconds":   true,
 	"Connection.StatementTimeoutSeconds": true,
 	"Connection.LockTimeoutSeconds":      true,
+	"Dataset.MaxElements":                true,
 	"Pagination.Size":                    true,
 	"Pagination.MaxPages":                true,
 	"Limits.MaxUncompressedBytes":        true,
@@ -320,7 +324,7 @@ func readsWithPost(d Dataset) bool {
 // datasetForm is a dataset with what is the mapping taken out. The request, the pages and post_reads of a dataset that
 // reads with GET are the mapping too; those of a dataset that reads with POST stay, with the limits of the pages out.
 func datasetForm(d Dataset, post bool) Dataset {
-	clearClass(&d, "Dataset", classMapping)
+	clearClass(&d, "Dataset", classMapping, classLimit)
 	if !post {
 		d.Request, d.Pagination, d.PostReads = nil, nil, false
 		return d
@@ -344,6 +348,9 @@ func datasetReasons(before, after Dataset) []string {
 	out := postReasons(name, before, after)
 	if paginationRaised(before.Pagination, after.Pagination, existed) {
 		out = append(out, name+".pagination")
+	}
+	if after.ElementLimit() > before.ElementLimit() {
+		out = append(out, name+".max_elements")
 	}
 	post := readsWithPost(after)
 	if len(out) == 0 && !reflect.DeepEqual(datasetForm(before, post), datasetForm(after, post)) {
