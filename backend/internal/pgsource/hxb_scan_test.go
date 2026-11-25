@@ -85,6 +85,31 @@ type pgsHxbScan struct {
 	registerTLS, registers int // how often the two names are written
 	rightCall              int // calls of RegisterPostgresTLS that are in the one place and given the driver's function
 	packages               map[string]bool
+	configLits             []string // the places of the pq.Config literals, file:function
+}
+
+// pgsHxbCheckConfigLit judges a literal of pq.Config: there is one, in open of connect.go, and it names the mode that does not
+// use TLS (a literal with no mode is the driver's default, which is not that mode).
+func (s *pgsHxbScan) pgsHxbCheckConfigLit(file, fn string, lit *ast.CompositeLit) {
+	sel, ok := lit.Type.(*ast.SelectorExpr)
+	if !ok || sel.Sel.Name != "Config" {
+		return
+	}
+	if id, ok := sel.X.(*ast.Ident); !ok || id.Name != "pq" {
+		return
+	}
+	s.configLits = append(s.configLits, file+":"+fn)
+	hasMode := false
+	for _, el := range lit.Elts {
+		if kv, ok := el.(*ast.KeyValueExpr); ok {
+			if id, ok := kv.Key.(*ast.Ident); ok && id.Name == "SSLMode" {
+				hasMode = true
+			}
+		}
+	}
+	if !hasMode {
+		s.pgsHxbReport(file, fn, "a pq.Config is written without the field SSLMode")
+	}
 }
 
 func (s *pgsHxbScan) pgsHxbReport(file, fn, format string, args ...any) {
@@ -122,6 +147,9 @@ func pgsHxbViolations(files map[string]*ast.File) []string {
 			})
 		}
 	}
+	if len(s.configLits) != 1 || s.configLits[0] != "connect.go:open" {
+		s.out = append(s.out, fmt.Sprintf("connect.go:open: a pq.Config is written %d times (at %v), and has to be once, in open of connect.go", len(s.configLits), s.configLits))
+	}
 	if s.registerTLS != 1 || s.registers != 1 || s.rightCall != 1 {
 		s.out = append(s.out, fmt.Sprintf("connect.go:useTLS: RegisterPostgresTLS is written %d times and RegisterTLSConfig %d times, and each has to be once, in the one call %d", s.registerTLS, s.registers, s.rightCall))
 	}
@@ -148,15 +176,51 @@ func (s *pgsHxbScan) pgsHxbCheckNode(file, fn string, n ast.Node) {
 		if x.Kind == gotok.STRING && slices.Contains(pgsHxbModeWords, strings.Trim(x.Value, "\"`")) {
 			s.pgsHxbReport(file, fn, "%s is the word of a mode of the driver", x.Value)
 		}
+	case *ast.CompositeLit:
+		s.pgsHxbCheckConfigLit(file, fn, x)
 	case *ast.KeyValueExpr:
 		s.pgsHxbCheckKeyValue(file, fn, x)
 	case *ast.AssignStmt:
 		for i, l := range x.Lhs {
-			if sel, ok := l.(*ast.SelectorExpr); ok && sel.Sel.Name == "SSLMode" && !pgsHxbRegisteredMode(x.Rhs, i, file, fn) {
-				s.pgsHxbReport(file, fn, "SSLMode is set to something that is not pq.SSLMode(\"pqgo-\" + key)")
+			if pgsHxbIsSSLMode(l) && !(pgsHxbIsCfgSSLMode(l) && pgsHxbRegisteredMode(x.Rhs, i, file, fn)) {
+				s.pgsHxbReport(file, fn, "SSLMode is set to something that is not pq.SSLMode(\"pqgo-\" + key) on cfg.SSLMode")
 			}
 		}
+	case *ast.UnaryExpr:
+		if x.Op == gotok.AND && pgsHxbIsSSLMode(x.X) {
+			s.pgsHxbReport(file, fn, "the address of SSLMode is taken (a pointer to the mode is a way to set it without an assignment)")
+		}
 	}
+}
+
+// pgsHxbStrip takes off the parentheses and the pointer stars of an expression: (*cfg.SSLMode) is cfg.SSLMode.
+func pgsHxbStrip(e ast.Expr) ast.Expr {
+	for {
+		switch x := e.(type) {
+		case *ast.ParenExpr:
+			e = x.X
+		case *ast.StarExpr:
+			e = x.X
+		default:
+			return e
+		}
+	}
+}
+
+// pgsHxbIsSSLMode is whether an expression, with its parentheses and stars taken off, is a selector named SSLMode.
+func pgsHxbIsSSLMode(e ast.Expr) bool {
+	sel, ok := pgsHxbStrip(e).(*ast.SelectorExpr)
+	return ok && sel.Sel.Name == "SSLMode"
+}
+
+// pgsHxbIsCfgSSLMode is whether the left side is exactly cfg.SSLMode (the parentheses and stars taken off).
+func pgsHxbIsCfgSSLMode(e ast.Expr) bool {
+	sel, ok := pgsHxbStrip(e).(*ast.SelectorExpr)
+	if !ok || sel.Sel.Name != "SSLMode" {
+		return false
+	}
+	id, ok := sel.X.(*ast.Ident)
+	return ok && id.Name == "cfg"
 }
 
 func (s *pgsHxbScan) pgsHxbIsPackage(e ast.Expr) bool {
@@ -259,6 +323,22 @@ func other(cfg interface{}, mode string) { cfg.SSLMode = mode }`,
 	"a mode in a literal": `package pgsource
 import "github.com/lib/pq"
 func other() pq.Config { return pq.Config{SSLMode: pq.SSLModeRequire} }`,
+	"the mode set in parentheses from a joined word": `package pgsource
+import "github.com/lib/pq"
+func other(cfg *pq.Config) { (cfg.SSLMode) = pq.SSLMode("re" + "quire") }`,
+	"the mode set through its address": `package pgsource
+import "github.com/lib/pq"
+func set[T any](p *T, v T) { *p = v }
+func other(cfg *pq.Config) { set(&cfg.SSLMode, "") }`,
+	"the mode set through a star of its address": `package pgsource
+import "github.com/lib/pq"
+func other(cfg *pq.Config) { *(&cfg.SSLMode) = "" }`,
+	"a configuration with no mode": `package pgsource
+import "github.com/lib/pq"
+func bare(host string) pq.Config { return pq.Config{Host: host} }`,
+	"a second configuration": `package pgsource
+import "github.com/lib/pq"
+func second() pq.Config { return pq.Config{SSLMode: pq.SSLModeDisable} }`,
 	"a word of a mode": `package pgsource
 func other() string { return "verify-ca" }`,
 	"the time of the settings": `package pgsource
