@@ -3,8 +3,8 @@ package pgingest
 import (
 	"database/sql"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"os"
 	"sort"
 	"strconv"
 	"strings"
@@ -12,12 +12,20 @@ import (
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // The cost of the identification (ADR-0108): each statement of a unit reads the rows of its range through an index and nothing of the
 // registry that is not asked for, so that what a unit reads does not grow with the size of the source. The tests run a source of
 // places (the five levels of a hierarchy, each object identified in its parent) twice, the second time with one record in ten changed,
 // and ask the server how every statement of the second run went.
+
+// idnRows and idnSize are the size of the source and of a unit of the measurement (go test -args -idn.rows=300000 -idn.size=500).
+var (
+	idnRows = flag.Int("idn.rows", 30_000, "records of the source the measurement identifies")
+	idnSize = flag.Int("idn.size", 0, "rows of a unit of the measurement (0 is the default)")
+	idnNow  = kernel.SystemClock{}
+)
 
 // idnPlace is what a statement read: the rows each relation gave (with the loops counted), the scans in words.
 type idnRead struct {
@@ -43,19 +51,6 @@ func (p *idnPlans) idnHook(tx *sql.Tx, what, query string, args []any) {
 			panic(err)
 		}
 	}()
-	if show := os.Getenv("IDN_SHOW"); show == what {
-		rows, err := tx.Query("EXPLAIN (COSTS OFF) "+query, args...)
-		if err != nil {
-			panic(err)
-		}
-		for rows.Next() {
-			var line string
-			_ = rows.Scan(&line)
-			fmt.Println(line)
-		}
-		_ = rows.Close()
-		panic("shown")
-	}
 	var doc []byte
 	if err := tx.QueryRow("EXPLAIN (ANALYZE, COSTS OFF, TIMING OFF, FORMAT JSON) "+query, args...).Scan(&doc); err != nil {
 		panic(fmt.Sprintf("%s: %v", what, err))
@@ -118,7 +113,7 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		return pgiTexts{"ds_places": rows, "ds_servers": pgiServers[:strings.Index(pgiServers, "\n")+1], "ds_vms": ""}
 	}
 	run := func(rows string, at time.Time) (ingest.RunLease, ingest.IdentifyCounts) {
-		began := time.Now()
+		began := idnNow.Now()
 		l := s.e.open(t, s.kg, s.plan.Source.ID, "server-a")
 		if _, err := s.e.st.Receive(s.e.ctx, l, ingest.Intake{Reader: texts(rows), Plan: s.plan, Options: ingest.PageOptions{MaxRows: 1000}}); err != nil {
 			t.Fatal(err)
@@ -126,7 +121,7 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		if _, err := ingest.RunRawDiff(s.e.ctx, s.e.st, l, s.rdfStart(at, size)); err != nil {
 			t.Fatal(err)
 		}
-		t.Logf("received and compared: %v", time.Since(began))
+		t.Logf("received and compared: %v", idnNow.Now().Sub(began))
 		keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
 		counts, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, idnStart(s, size, 1), keys)
 		if err != nil {
@@ -143,15 +138,15 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		}()
 	}
 	l1, _ := run(idnPlaceRows(n, 0, func(i int) string { return "T" + strconv.Itoa(i) }), rdfT0)
-	mark := time.Now()
+	mark := idnNow.Now()
 	idnApply(s, t)
-	t.Logf("apply: %v", time.Since(mark))
-	mark = time.Now()
+	t.Logf("apply: %v", idnNow.Now().Sub(mark))
+	mark = idnNow.Now()
 	s.rdfSettle(t, l1)
-	t.Logf("settle: %v", time.Since(mark))
-	mark = time.Now()
+	t.Logf("settle: %v", idnNow.Now().Sub(mark))
+	mark = idnNow.Now()
 	s.e.exec(t, `VACUUM ANALYZE`)
-	t.Logf("vacuum: %v", time.Since(mark))
+	t.Logf("vacuum: %v", idnNow.Now().Sub(mark))
 	plans := &idnPlans{most: map[string]*idnRead{}}
 	if explain {
 		identSeen = plans.idnHook
@@ -163,9 +158,9 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		}
 		return "T" + strconv.Itoa(i)
 	}
-	start := time.Now()
+	start := idnNow.Now()
 	_, counts := run(idnPlaceRows(n+n/100, 0, tag), rdfT0.Add(time.Hour))
-	return plans.most, time.Since(start), counts
+	return plans.most, idnNow.Now().Sub(start), counts
 }
 
 // idnRegistry are the relations that grow with what the KG and the source have kept and not with the run: what a unit reads of them is
@@ -213,7 +208,7 @@ func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItD
 			}
 		}
 	}
-	if os.Getenv("IDN_VERBOSE") != "" {
+	if testing.Verbose() {
 		for _, what := range whats {
 			t.Logf("%s: %v", what, large[what].rows)
 		}
@@ -223,12 +218,8 @@ func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItD
 // [REQ-883]
 // The one measurement: IDN_ROWS (default 30000) records, one in ten changed and one in a hundred new, with the five levels of context keys.
 func TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen(t *testing.T) {
-	n := 30_000
-	if v, err := strconv.Atoi(os.Getenv("IDN_ROWS")); err == nil && v > 0 {
-		n = v
-	}
-	size, _ := strconv.Atoi(os.Getenv("IDN_SIZE"))
-	_, took, counts := idnScaled(t, n, size, false)
+	n := *idnRows
+	_, took, counts := idnScaled(t, n, *idnSize, false)
 	t.Logf("%d records, %d changed or new: %v, %+v", n, n/10+n/100, took, counts)
 }
 
@@ -236,38 +227,11 @@ func TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen(t *testing.T) {
 type idnClock struct {
 	spent map[string]time.Duration
 	plans map[string]string
-	nth   int
 	last  string
 	at    time.Time
 }
 
 func (c *idnClock) idnHook(tx *sql.Tx, what, query string, args []any) {
-	if os.Getenv("IDN_SHOW") == what {
-		rows, err := tx.Query("EXPLAIN (COSTS OFF) "+query, args...)
-		if err != nil {
-			panic(err)
-		}
-		for rows.Next() {
-			var line string
-			_ = rows.Scan(&line)
-			fmt.Println(line)
-		}
-		_ = rows.Close()
-		panic("shown")
-	}
-	if os.Getenv("IDN_PLANS") != "" && (what == "bind the new keys" || what == "make the objects under a parent") {
-		var lines []string
-		if rows, err := tx.Query("EXPLAIN (COSTS OFF) "+query, args...); err == nil {
-			for rows.Next() {
-				var line string
-				_ = rows.Scan(&line)
-				lines = append(lines, line)
-			}
-			_ = rows.Close()
-		}
-		c.nth++
-		fmt.Printf("plan %d of %s at %s:\n%s\n", c.nth, what, time.Now().Format("15:04:05"), strings.Join(lines, "\n"))
-	}
 	if _, seen := c.plans[what]; !seen && (what == "copy the keys" || what == "make the slots") {
 		var lines []string
 		if rows, err := tx.Query("EXPLAIN (COSTS OFF) "+query, args...); err == nil {
@@ -280,7 +244,7 @@ func (c *idnClock) idnHook(tx *sql.Tx, what, query string, args []any) {
 		}
 		c.plans[what] = strings.Join(lines, "\n")
 	}
-	now := time.Now()
+	now := idnNow.Now()
 	if c.last != "" {
 		c.spent[c.last] += now.Sub(c.at)
 		if now.Sub(c.at) > 2*time.Second {

@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"testing"
-	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/pgconn"
 )
@@ -38,13 +37,13 @@ func BenchmarkIdnStageIndex(b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			start := time.Now()
+			start := idnNow.Now()
 			// 1000 rows a page, five keys a row: the way a source of a million records is staged
 			if _, err := db.Exec(fmt.Sprintf(`INSERT INTO %s (dataset_no, page, row_no, feed_no, key_ord, type_no, sig_hash, cand_ref)
 				SELECT 1, (i / 5) / 1000, (i / 5) %% 1000, i %% 5, 0, 1, sha256(convert_to(i::text, 'UTF8')), 'obj_' || i FROM generate_series(0, %d) i`, table, rows-1)); err != nil {
 				b.Fatal(err)
 			}
-			b.ReportMetric(time.Since(start).Seconds(), "s/write")
+			b.ReportMetric(idnNow.Now().Sub(start).Seconds(), "s/write")
 			var size int64
 			if err := db.QueryRow(fmt.Sprintf(`SELECT pg_indexes_size('%s')`, table)).Scan(&size); err != nil {
 				b.Fatal(err)
