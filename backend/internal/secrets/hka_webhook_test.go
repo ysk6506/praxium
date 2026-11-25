@@ -30,7 +30,8 @@ func hkaCount(e *hkaEvents, name string) int {
 
 type hkaRig struct {
 	svc    *secrets.Service
-	store  *secrets.MemoryStore
+	store  *secrets.MemoryStore // the store of the sources
+	hooks  *secrets.MemoryStore // the store of the webhooks
 	clock  *kernel.ManualClock
 	hookKy *secrets.MasterKey
 	events *hkaEvents
@@ -38,18 +39,18 @@ type hkaRig struct {
 
 func hkaNew(t *testing.T) *hkaRig {
 	t.Helper()
-	store := secrets.NewMemoryStore()
+	store, hooks := secrets.NewMemoryStore(), secrets.NewWebhookMemoryStore()
 	clock := kernel.NewManualClock(epoch)
 	events := &hkaEvents{}
 	wk := secrets.GenerateWebhookKey(kernel.NewSeededBytes(31))
 	svc, err := secrets.New(secrets.Config{
-		Store: store, Keys: secrets.StaticKey(newKey(99)), WebhookKeys: secrets.StaticKey(wk),
+		Store: store, WebhookStore: hooks, Keys: secrets.StaticKey(newKey(99)), WebhookKeys: secrets.StaticKey(wk),
 		Clock: clock, Bytes: kernel.NewSeededBytes(7), Observer: events,
 	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	return &hkaRig{svc: svc, store: store, clock: clock, hookKy: wk, events: events}
+	return &hkaRig{svc: svc, store: store, hooks: hooks, clock: clock, hookKy: wk, events: events}
 }
 
 func hkaSign(secret, id, ts, body string) []byte {
@@ -103,7 +104,7 @@ func TestHkaATokenIsKeptAsItsHashAndIsCheckedWithoutBeingKept(t *testing.T) {
 	if len(issued.Value) < 40 || issued.Meta.Kind != secrets.KindWebhookToken {
 		t.Fatalf("the token is %d characters of kind %s", len(issued.Value), issued.Meta.Kind)
 	}
-	recs, _ := r.store.List(ctx)
+	recs, _ := r.hooks.List(ctx)
 	if len(recs) != 1 || strings.Contains(string(recs[0].Versions[0].Value.Data), issued.Value) {
 		t.Fatal("the store holds the token")
 	}
@@ -130,24 +131,43 @@ func TestHkaAKindOfTheWebhooksIsNeverOpenedForAUseAndAKindOfTheSourcesNeverCheck
 	}
 	id := secrets.SecretIDFor("src_a", "alerts")
 	use := secrets.Use{SourceID: "src_a", Host: "db.example.test", Port: 5432, Purpose: secrets.PurposeRun}
-	if _, err := r.svc.Open(ctx, id, use); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
+	// The ports of the sources do not reach the store of the webhooks at all.
+	if _, err := r.svc.Open(ctx, id, use); kernel.CodeOf(err) != kernel.CodeNotFound {
+		t.Errorf("the open of the key of a webhook through the store of the sources: %v", err)
+	}
+	if _, err := r.svc.Get(ctx, id); kernel.CodeOf(err) != kernel.CodeNotFound {
+		t.Errorf("the describer of the sources shows the secret of a webhook: %v", err)
+	}
+	if list, _ := r.svc.List(ctx); len(list) != 0 {
+		t.Errorf("the list of the sources holds %d secrets of webhooks", len(list))
+	}
+	// A program that was given the store of the webhooks as its store of the sources still opens nothing of them.
+	mixed, err := secrets.New(secrets.Config{Store: r.hooks, Keys: secrets.StaticKey(newKey(99)), Clock: r.clock, Bytes: kernel.NewSeededBytes(4)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mixed.Open(ctx, id, use); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
 		t.Errorf("the open of the key of a webhook: %v", err)
 	}
-	if _, err := r.svc.AddVersion(ctx, id, secrets.NewFields(map[string]string{"token": "x"})); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
+	if _, err := mixed.AddVersion(ctx, id, secrets.NewFields(map[string]string{"token": "x"})); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
 		t.Errorf("a version by the master path: %v", err)
 	}
-	if _, err := r.svc.SetScope(ctx, id, []string{"src_b"}); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
+	if _, err := mixed.SetScope(ctx, id, []string{"src_b"}); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
 		t.Errorf("a scope by the master path: %v", err)
 	}
-	if _, err := r.svc.RetireVersion(ctx, id, 1); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
+	if _, err := mixed.RetireVersion(ctx, id, 1); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
 		t.Errorf("a retirement by the master path: %v", err)
 	}
 	if _, err := r.svc.Create(ctx, secrets.CreateInput{ID: "x1", Kind: secrets.KindHMACKey, Fields: secrets.NewFields(map[string]string{"key": "abc"})}); err == nil {
 		t.Error("a secret of a webhook was made as the secret of a source")
 	}
-	// A secret of a connection that is put under the id of a webhook, with the source in its scope, is not a proof.
+	// The id of a webhook is not an id a source secret may have; a secret of a connection under another id proves nothing.
 	other := secrets.SecretIDFor("src_a", "other")
 	if _, err := r.svc.Create(ctx, secrets.CreateInput{ID: other, Kind: secrets.KindToken, Fields: secrets.NewFields(map[string]string{"token": testToken}),
+		Scope: []string{"src_a"}, AllowedHosts: []secrets.Address{dbAddress}}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
+		t.Errorf("a secret of a source was put under the id of a webhook: %v", err)
+	}
+	if _, err := r.svc.Create(ctx, secrets.CreateInput{ID: "other", Kind: secrets.KindToken, Fields: secrets.NewFields(map[string]string{"token": testToken}),
 		Scope: []string{"src_a"}, AllowedHosts: []secrets.Address{dbAddress}}); err != nil {
 		t.Fatal(err)
 	}
@@ -186,7 +206,7 @@ func TestHkaTheKeysAreTwoAndOneDoesNotStandInForTheOther(t *testing.T) {
 	if _, err := r.svc.IssueWebhookSecret(ctx, "src_a", "alerts", secrets.WebhookAuthHMAC); err != nil {
 		t.Fatal(err)
 	}
-	onlyMaster, err := secrets.New(secrets.Config{Store: r.store, Keys: secrets.StaticKey(master), Clock: r.clock, Bytes: kernel.NewSeededBytes(2)})
+	onlyMaster, err := secrets.New(secrets.Config{Store: r.store, WebhookStore: r.hooks, Keys: secrets.StaticKey(master), Clock: r.clock, Bytes: kernel.NewSeededBytes(2)})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -196,7 +216,7 @@ func TestHkaTheKeysAreTwoAndOneDoesNotStandInForTheOther(t *testing.T) {
 	if ok, err := onlyMaster.Verifier().VerifyToken(ctx, "src_a", "alerts", []byte("x")); ok || err == nil {
 		t.Errorf("a check without the webhook key: %v %v", ok, err)
 	}
-	onlyHook, err := secrets.New(secrets.Config{Store: r.store, Keys: secrets.NoKey(), WebhookKeys: secrets.StaticKey(r.hookKy), Clock: r.clock, Bytes: kernel.NewSeededBytes(3)})
+	onlyHook, err := secrets.New(secrets.Config{Store: r.store, WebhookStore: r.hooks, Keys: secrets.NoKey(), WebhookKeys: secrets.StaticKey(r.hookKy), Clock: r.clock, Bytes: kernel.NewSeededBytes(3)})
 	if err != nil {
 		t.Fatal(err)
 	}

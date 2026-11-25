@@ -27,12 +27,19 @@ type MemoryStore struct {
 	mu      sync.Mutex
 	records map[string]Record
 	persist func([]Record) (bool, error)
+	webhook bool // the store of the receiving webhooks: only their kinds are kept, and no kind of a source
 }
 
 var _ Store = (*MemoryStore)(nil)
 
-// NewMemoryStore makes an empty store.
+// NewMemoryStore makes an empty store of the secrets of the sources.
 func NewMemoryStore() *MemoryStore { return &MemoryStore{records: map[string]Record{}} }
+
+// NewWebhookMemoryStore makes an empty store of the secrets of the receiving webhooks (ADR-0107): the kinds of a source
+// are not kept in it, and the kinds of a webhook are kept in no other store.
+func NewWebhookMemoryStore() *MemoryStore {
+	return &MemoryStore{records: map[string]Record{}, webhook: true}
+}
 
 // OpenMemoryStore makes a store that starts with records and calls persist with the whole new state (in the order
 // of the ids) before each change takes effect. persist says whether the new state was kept even though it failed (a
@@ -40,9 +47,25 @@ func NewMemoryStore() *MemoryStore { return &MemoryStore{records: map[string]Rec
 // returned. When persist fails otherwise the change does not happen. A record whose shape is wrong, or a repeated id,
 // is an error.
 func OpenMemoryStore(records []Record, persist func([]Record) (bool, error)) (*MemoryStore, error) {
-	m := &MemoryStore{records: make(map[string]Record, len(records)), persist: persist}
+	return openMemoryStore(records, persist, false)
+}
+
+// OpenWebhookMemoryStore is OpenMemoryStore for the secrets of the receiving webhooks.
+func OpenWebhookMemoryStore(records []Record, persist func([]Record) (bool, error)) (*MemoryStore, error) {
+	return openMemoryStore(records, persist, true)
+}
+
+func (m *MemoryStore) validate(r Record) error {
+	if m.webhook {
+		return r.ValidateWebhook()
+	}
+	return r.Validate()
+}
+
+func openMemoryStore(records []Record, persist func([]Record) (bool, error), webhook bool) (*MemoryStore, error) {
+	m := &MemoryStore{records: make(map[string]Record, len(records)), persist: persist, webhook: webhook}
 	for _, r := range records {
-		if err := r.Validate(); err != nil {
+		if err := m.validate(r); err != nil {
 			return nil, err
 		}
 		if _, dup := m.records[r.ID]; dup {
@@ -79,7 +102,7 @@ func (m *MemoryStore) List(context.Context) ([]Record, error) {
 
 // Put stores a copy of the record.
 func (m *MemoryStore) Put(_ context.Context, rec Record) error {
-	if err := rec.Validate(); err != nil {
+	if err := m.validate(rec); err != nil {
 		return err
 	}
 	return m.change(func(next map[string]Record) bool {

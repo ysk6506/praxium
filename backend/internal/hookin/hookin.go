@@ -8,9 +8,11 @@
 //
 //  1. the path is read, and the webhook is looked up in memory (Handler.ServeHTTP, lookup)
 //  2. the address is checked against the allowed ones (admit)
-//  3. the room of the entrance: calls at once, the memory of the bodies, calls at once of the webhook (reserve)
+//  3. the room of the entrance: calls at once of the address, calls at once, the memory of the bodies, calls at once of the
+//     webhook (reserve)
 //  4. a proof that is in the headers or the query is checked before the body is read (proveByHeader)
-//  5. the body is read, to the limit of the webhook and no further, before a deadline (readBody)
+//  5. the body is read, to the limit of the webhook and no further, with a deadline for its first byte and one for all
+//     of it (readBody)
 //  6. a signature is checked, which needs the body (proveBySignature), then the body is checked to be JSON (checkJSON)
 //  7. the state of the source, then the rate of the webhook (afterProof)
 //  8. the mark of the signal (afterProof)
@@ -95,13 +97,18 @@ type Config struct {
 	Logger    *slog.Logger
 	// TrustProxy reads the address of the caller from the last X-Forwarded-For a proxy of the operator appended.
 	TrustProxy bool
-	// MaxInFlight is how many calls the whole entrance takes at once (default 128); MaxBodyMemory is the sum of the
-	// limits of the bodies being read (default 32 MiB); PerWebhookInFlight is the calls at once of one webhook (16).
+	// MaxInFlight is how many calls the whole entrance takes at once (default 128); MaxBodyMemory is the sum of the memory
+	// the bodies being read hold (default 32 MiB); PerWebhookInFlight is the calls at once of one webhook (16);
+	// PerAddressInFlight is the calls at once of one address, an IPv6 address counted by its /64 (4). The last is checked
+	// before anything is held, so an address that opens many calls is refused with the 429 before it takes room from the rest.
 	MaxInFlight        int
 	MaxBodyMemory      int64
 	PerWebhookInFlight int
-	// ReadTimeout is the time a body may take to arrive (default 10 s, at most 30 s).
-	ReadTimeout time.Duration
+	PerAddressInFlight int
+	// ReadTimeout is the time a whole body may take to arrive (default 10 s, at most 30 s); FirstByteTimeout is the time the
+	// first byte of it may take (default 2 s, and no more than ReadTimeout).
+	ReadTimeout      time.Duration
+	FirstByteTimeout time.Duration
 	// FailureRate and FailureBurst are the bucket of the failures of one (webhook, address): default 5 a second, 50.
 	FailureRate  float64
 	FailureBurst int
@@ -112,8 +119,12 @@ const (
 	DefaultMaxInFlight        = 128
 	DefaultMaxBodyMemory      = 32 << 20
 	DefaultPerWebhookInFlight = 16
+	DefaultPerAddressInFlight = 4
 	DefaultReadTimeout        = 10 * time.Second
+	DefaultFirstByteTimeout   = 2 * time.Second
 	MaxReadTimeout            = 30 * time.Second
+	// unknownLengthBytes is the memory a body of no declared length is given to start with; it grows as the body is read.
+	unknownLengthBytes = 64 << 10
 	// unknownBodyBytes is how much of a body is read for a webhook that is not known: the smallest limit.
 	unknownBodyBytes = 1024
 	// MaxJSONDepth and MaxJSONTokens bound the check of the body of a signal, which is thrown away.
@@ -135,11 +146,14 @@ type Handler struct {
 
 	mu      sync.Mutex
 	perHook map[string]int
+	perAddr map[string]int     // calls at once by address group
 	buckets map[string]*bucket // the rate of a webhook, by (source, webhook)
 	fails   map[string]*bucket // the failures, by (source, webhook, address)
 	logged  map[string]*failLog
 
 	counts counters
+
+	noDeadlineLogged atomic.Bool // the entrance says once that the server cannot set a read deadline
 }
 
 // withDefaults fills what the caller left out and holds the read timeout to its highest value.
@@ -153,11 +167,20 @@ func (c Config) withDefaults() Config {
 	if c.PerWebhookInFlight <= 0 {
 		c.PerWebhookInFlight = DefaultPerWebhookInFlight
 	}
+	if c.PerAddressInFlight <= 0 {
+		c.PerAddressInFlight = DefaultPerAddressInFlight
+	}
 	if c.ReadTimeout <= 0 {
 		c.ReadTimeout = DefaultReadTimeout
 	}
 	if c.ReadTimeout > MaxReadTimeout {
 		c.ReadTimeout = MaxReadTimeout
+	}
+	if c.FirstByteTimeout <= 0 {
+		c.FirstByteTimeout = DefaultFirstByteTimeout
+	}
+	if c.FirstByteTimeout > c.ReadTimeout {
+		c.FirstByteTimeout = c.ReadTimeout
 	}
 	if c.FailureRate <= 0 {
 		c.FailureRate = 5
@@ -177,7 +200,7 @@ func New(cfg Config) (*Handler, error) {
 		return nil, kernel.Errorf(kernel.CodeInvalidValue, "the entrance of the webhooks needs a directory, a sink, a verifier, a clock and a logger")
 	}
 	cfg = cfg.withDefaults()
-	return &Handler{cfg: cfg, perHook: map[string]int{}, buckets: map[string]*bucket{}, fails: map[string]*bucket{}, logged: map[string]*failLog{}}, nil
+	return &Handler{cfg: cfg, perHook: map[string]int{}, perAddr: map[string]int{}, buckets: map[string]*bucket{}, fails: map[string]*bucket{}, logged: map[string]*failLog{}}, nil
 }
 
 const (
@@ -212,9 +235,13 @@ type request struct {
 	hook    Hook
 	known   bool
 	addr    netip.Addr
+	group   string // the address as it is counted: an IPv4 address, or the /64 of an IPv6 one (addrGroup)
 	key     string // (source, webhook) when known, else "unknown"
 	limit   int64
 	body    []byte
+	start   time.Time // when the entrance took the call in; the deadlines are from it
+	held    int64     // the bytes of the memory of bodies that this call holds (reserve, readBody)
+	copies  int64     // how many times the body is in memory at once: 2 when a signed message is made of it
 }
 
 // ServeHTTP is steps 1 to 9.
@@ -227,6 +254,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	q := h.lookup(w, r)
 	q.addr = h.addrOf(r)
+	q.group = addrGroup(q.addr)
 	if !q.admit() {
 		return
 	}
@@ -235,8 +263,12 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer release()
-	// A deadline for the whole body, so that a sender that sends a byte a minute holds nothing for long.
-	_ = http.NewResponseController(w).SetReadDeadline(h.cfg.Clock.Now().Add(h.cfg.ReadTimeout))
+	// The first byte of the body has a short time of its own, and the whole body a longer one: a sender that sends nothing,
+	// or a byte a minute, holds its place for seconds and not for the whole of the read time.
+	q.start = h.cfg.Clock.Now()
+	if !q.setDeadline(h.cfg.FirstByteTimeout) {
+		return
+	}
 	if q.known && q.hook.Auth.Type != ingest.WebhookAuthHMAC && !q.proveByHeader() {
 		return
 	}
@@ -278,74 +310,6 @@ func (q *request) admit() bool {
 	}
 	q.fail("address")
 	return false
-}
-
-// reserve is step 3: a place in the entrance, for the calls at once and for the memory of the body.
-func (q *request) reserve() (release func(), ok bool) {
-	h := q.h
-	if h.inflight.Add(1) > int64(h.cfg.MaxInFlight) {
-		h.inflight.Add(-1)
-		h.counts.add("busy")
-		q.w.Header().Set("Retry-After", "1")
-		h.problem(q.w, "server.unavailable", nil, 0)
-		return nil, false
-	}
-	if h.memory.Add(q.limit) > h.cfg.MaxBodyMemory {
-		h.memory.Add(-q.limit)
-		h.inflight.Add(-1)
-		h.counts.add("busy")
-		q.w.Header().Set("Retry-After", "1")
-		h.problem(q.w, "server.unavailable", nil, 0)
-		return nil, false
-	}
-	h.mu.Lock()
-	over := h.perHook[q.key] >= h.cfg.PerWebhookInFlight
-	if !over {
-		h.perHook[q.key]++
-	}
-	h.mu.Unlock()
-	if over {
-		h.memory.Add(-q.limit)
-		h.inflight.Add(-1)
-		h.counts.add("busy_webhook")
-		q.w.Header().Set("Retry-After", "1")
-		h.problem(q.w, "rate_limited.concurrency", nil, 0)
-		return nil, false
-	}
-	return func() {
-		h.mu.Lock()
-		if h.perHook[q.key]--; h.perHook[q.key] <= 0 {
-			delete(h.perHook, q.key)
-		}
-		h.mu.Unlock()
-		h.memory.Add(-q.limit)
-		h.inflight.Add(-1)
-	}, true
-}
-
-// readBody is step 5: the body, to the limit and no further. A declared length over the limit is refused without a read.
-func (q *request) readBody() bool {
-	if q.r.ContentLength > q.limit {
-		q.tooLarge()
-		return false
-	}
-	body, err := io.ReadAll(io.LimitReader(q.r.Body, q.limit+1))
-	if err != nil {
-		q.fail("read")
-		return false
-	}
-	if int64(len(body)) > q.limit {
-		q.tooLarge()
-		return false
-	}
-	q.body = body
-	return true
-}
-
-func (q *request) tooLarge() {
-	q.h.counts.add("too_large")
-	q.w.Header().Set("Connection", "close")
-	q.h.problem(q.w, "invalid_input.body_too_large", map[string]any{"limit_bytes": q.limit}, 0)
 }
 
 // afterProof is steps 6 (the body is JSON) to 9: only a caller that is proven comes here.
@@ -395,6 +359,7 @@ func (q *request) afterProof() {
 // checkJSON reads the body as a stream and keeps nothing of it: one JSON value, not deeper and not longer than the caps.
 func checkJSON(body []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(body))
+	dec.UseNumber() // a number is read as its text: 1e999 is a number of JSON, though it is no float64
 	depth, tokens := 0, 0
 	done := false
 	for {
@@ -433,25 +398,6 @@ const (
 	errTooDeep       = jsonErr("too_deep")
 	errTooManyTokens = jsonErr("too_many_tokens")
 )
-
-// addrOf is where the caller comes from: the address of the connection, or behind a proxy of the operator the last one
-// it appended to X-Forwarded-For.
-func (h *Handler) addrOf(r *http.Request) netip.Addr {
-	raw := r.RemoteAddr
-	if h.cfg.TrustProxy {
-		parts := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
-		if last := strings.TrimSpace(parts[len(parts)-1]); last != "" {
-			raw = last
-		}
-	}
-	if ap, err := netip.ParseAddrPort(raw); err == nil {
-		return ap.Addr().Unmap()
-	}
-	if a, err := netip.ParseAddr(strings.Trim(raw, "[]")); err == nil {
-		return a.Unmap()
-	}
-	return netip.Addr{}
-}
 
 // problem answers with the problem of a catalogue code, and with Retry-After when wait is positive.
 func (h *Handler) problem(w http.ResponseWriter, code string, params map[string]any, wait time.Duration) {

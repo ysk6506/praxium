@@ -100,9 +100,16 @@ func revisionOf(rec Record) []byte {
 
 // material returns the key material of the secret of a webhook, from the cache when the record is the one it was
 // opened from and the minute has not passed, else opened anew. A nil result is "no good secret".
+//
+// What it returns is a copy of the material that the caller wipes with wipe when it is done: the entries of the cache are
+// wiped when they leave it, and a caller that held an entry itself would be left with zeros.
 func (s *Service) material(ctx context.Context, sourceID, webhookID string, want Kind) (*cached, error) {
+	store, err := s.hookStore()
+	if err != nil {
+		return nil, err
+	}
 	id := SecretIDFor(sourceID, webhookID)
-	rec, found, err := s.cfg.Store.Get(ctx, id)
+	rec, found, err := store.Get(ctx, id)
 	if err != nil {
 		return nil, err
 	}
@@ -110,18 +117,42 @@ func (s *Service) material(ctx context.Context, sourceID, webhookID string, want
 	s.vf.mu.Lock()
 	defer s.vf.mu.Unlock()
 	if !found {
-		delete(s.vf.entries, id)
+		s.vf.drop(id)
 		return nil, nil
 	}
 	if c := s.vf.entries[id]; c != nil && now.Before(c.until) && hmac.Equal(c.revision, revisionOf(rec)) {
 		return usable(c, sourceID, want), nil
 	}
-	delete(s.vf.entries, id)
+	s.vf.drop(id)
 	c, err := s.fill(id, rec, sourceID, now)
 	if err != nil || c == nil {
 		return nil, err
 	}
 	return usable(c, sourceID, want), nil
+}
+
+// wipe overwrites the key material with zeros.
+func (c *cached) wipe() {
+	for _, m := range c.material {
+		wipe(m)
+	}
+	c.material = nil
+}
+
+// drop takes an entry out of the cache and wipes it.
+func (v *verifyState) drop(id string) {
+	if c := v.entries[id]; c != nil {
+		c.wipe()
+	}
+	delete(v.entries, id)
+}
+
+// clear takes every entry out of the cache and wipes them.
+func (v *verifyState) clear() {
+	for _, c := range v.entries {
+		c.wipe()
+	}
+	v.entries = map[string]*cached{}
 }
 
 // fill opens the record that the cache lacks, puts it in the cache and tells the audit line. A record that does not
@@ -140,18 +171,23 @@ func (s *Service) fill(id string, rec Record, sourceID string, now time.Time) (*
 	}
 	c.until = now.Add(s.ttl())
 	if s.vf.entries == nil || len(s.vf.entries) >= maxCachedSecrets {
-		s.vf.entries = map[string]*cached{}
+		s.vf.clear()
 	}
 	s.vf.entries[id] = c
 	s.tell(EventSecretOpened, id)
 	return c, nil
 }
 
+// usable is a copy of the entry for the check that was asked for, or nil when the entry is not for it.
 func usable(c *cached, sourceID string, want Kind) *cached {
 	if c.kind != want || !slices.Contains(c.scope, sourceID) || len(c.material) == 0 {
 		return nil
 	}
-	return c
+	out := &cached{revision: c.revision, kind: c.kind, scope: c.scope, until: c.until, material: make([][]byte, len(c.material))}
+	for i, m := range c.material {
+		out.material[i] = slices.Clone(m)
+	}
+	return out
 }
 
 // openMaterial opens the versions that are not retired (the newest few) of an authenticated record.
@@ -164,6 +200,7 @@ func openMaterial(rec Record, key *MasterKey) (*cached, error) {
 		}
 		values, wipeFn, err := decryptVersion(rec, v, key)
 		if err != nil {
+			c.wipe()
 			return nil, err
 		}
 		name := "key"
@@ -174,6 +211,7 @@ func openMaterial(rec Record, key *MasterKey) (*cached, error) {
 		raw, ok := decodeMaterial(rec.Kind, text)
 		wipeFn()
 		if !ok {
+			c.wipe()
 			return nil, errIntegrity()
 		}
 		c.material = append(c.material, raw)
@@ -198,6 +236,7 @@ func (s *Service) verifyHMAC(ctx context.Context, sourceID, webhookID string, si
 		s.dummyVerify(signed, signatures, nil)
 		return false, err
 	}
+	defer c.wipe()
 	ok := false
 	for _, key := range c.material {
 		mac := hmac.New(sha256.New, key)
@@ -217,6 +256,7 @@ func (s *Service) verifyToken(ctx context.Context, sourceID, webhookID string, p
 		s.dummyVerify(nil, nil, presented)
 		return false, err
 	}
+	defer c.wipe()
 	probe := s.probeKey()
 	sum := sha256.Sum256(presented)
 	got := probeMAC(probe, sum[:])

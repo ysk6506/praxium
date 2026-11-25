@@ -28,6 +28,7 @@ chooses one, and its value is shown once on the standard output: give it to the 
 The id is <source-id>/<webhook-id>. -secrets-key-file names the webhook key file, which is not the master key: it is made the first
 time a secret of a webhook is issued, and by default it is <your configuration folder>/praxium/keys/<identifier of the data folder>.webhook.key.
 Keep a copy of it; a server that checks the calls needs this key and no other.
+The secrets of the webhooks are kept in the file webhook-secrets.json of the data folder, apart from secrets.json, which has none of them.
 `
 
 // hookIDs splits the id of a command of the webhooks into the source and the webhook.
@@ -39,8 +40,8 @@ func hookIDs(id string) (source, webhook string, err error) {
 	return source, webhook, nil
 }
 
-// hookStore is the open store for the commands of the webhooks: the file store, and the service that has the webhook key
-// and no master key.
+// hookStore is the open store for the commands of the webhooks: the file of the webhooks (webhook-secrets.json, another
+// file than secrets.json), and the service that has the webhook key and no master key and no secret of a source.
 type hookStore struct {
 	svc    *secrets.Service
 	keys   *fileHookKeys
@@ -66,7 +67,7 @@ func openHookStore(w wiring, loc secretLocation, access secretAccess) (*hookStor
 		return nil, secretLocked(loc.dataDir, err)
 	}
 	out := &hookStore{unlock: unlock}
-	store, err := secretsfile.Open(disk)
+	store, err := secretsfile.OpenWebhooks(disk)
 	if err != nil {
 		_ = out.Close()
 		return nil, err
@@ -76,7 +77,7 @@ func openHookStore(w wiring, loc secretLocation, access secretAccess) (*hookStor
 		out.keys = &fileHookKeys{fileKeys: newFileKeys(w, loc, disk, &secretStore{store: store, bytes: productBytes()}, false), store: store, create: access == secretCreate}
 		keys = out.keys
 	}
-	out.svc, err = secrets.New(secrets.Config{Store: store, Keys: secrets.NoKey(), WebhookKeys: keys, Clock: w.clock, Bytes: productBytes()})
+	out.svc, err = secrets.New(secrets.Config{Store: secrets.NewMemoryStore(), WebhookStore: store, Keys: secrets.NoKey(), WebhookKeys: keys, Clock: w.clock, Bytes: productBytes()})
 	if err != nil {
 		_ = out.Close()
 		return nil, err
@@ -104,11 +105,8 @@ func (k *fileHookKeys) MasterKey() (*secrets.MasterKey, error) {
 		return nil, err
 	}
 	stored := ""
-	for _, rec := range recs {
-		if secrets.IsReceiveOnly(rec.Kind) {
-			stored = rec.Binding.KeyID
-			break
-		}
+	if len(recs) > 0 {
+		stored = recs[0].Binding.KeyID // every record of this file was sealed by the one webhook key
 	}
 	path, err := k.path(stored == "")
 	if err != nil {
@@ -152,7 +150,7 @@ func (k *fileHookKeys) path(create bool) (string, error) {
 	if raw == "" {
 		cfg, err := k.configDir()
 		if err != nil || cfg == "" {
-			return "", kernel.Errorf(secrets.CodeWebhookKeyMissing, "this system has no user configuration folder to keep the webhook key in; name the key file with -webhook-key-file <file>")
+			return "", kernel.Errorf(secrets.CodeWebhookKeyMissing, "this system has no user configuration folder to keep the webhook key in; name the key file with -secrets-key-file <file>")
 		}
 		id, err := k.folderID(create)
 		if err != nil {

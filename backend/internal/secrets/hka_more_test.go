@@ -10,10 +10,10 @@ import (
 
 // [REQ-860]
 func TestHkaWhatGoesWrongInTheStoreOrTheKeyIsAnErrorAndNeverAProof(t *testing.T) {
-	flaky := &faultyStore{MemoryStore: secrets.NewMemoryStore()}
+	flaky := &faultyStore{MemoryStore: secrets.NewWebhookMemoryStore()}
 	wk := secrets.GenerateWebhookKey(kernel.NewSeededBytes(31))
 	clock := kernel.NewManualClock(epoch)
-	svc, err := secrets.New(secrets.Config{Store: flaky, Keys: secrets.NoKey(), WebhookKeys: secrets.StaticKey(wk), Clock: clock, Bytes: kernel.NewSeededBytes(7), VerifyCacheTTL: time.Hour})
+	svc, err := secrets.New(secrets.Config{Store: secrets.NewMemoryStore(), WebhookStore: flaky, Keys: secrets.NoKey(), WebhookKeys: secrets.StaticKey(wk), Clock: clock, Bytes: kernel.NewSeededBytes(7), VerifyCacheTTL: time.Hour})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -57,7 +57,7 @@ func TestHkaWhatGoesWrongInTheStoreOrTheKeyIsAnErrorAndNeverAProof(t *testing.T)
 // [REQ-860]
 func TestHkaAProgramWithoutAUsableWebhookKeyIssuesAndChecksNothing(t *testing.T) {
 	for name, keys := range map[string]secrets.KeyProvider{"none": nil, "a provider with no key": nilKeys{}, "a master key": secrets.StaticKey(newKey(5)), "no key": secrets.NoKey()} {
-		svc, err := secrets.New(secrets.Config{Store: secrets.NewMemoryStore(), Keys: secrets.NoKey(), WebhookKeys: keys, Clock: kernel.NewManualClock(epoch), Bytes: kernel.NewSeededBytes(7)})
+		svc, err := secrets.New(secrets.Config{Store: secrets.NewMemoryStore(), WebhookStore: secrets.NewWebhookMemoryStore(), Keys: secrets.NoKey(), WebhookKeys: keys, Clock: kernel.NewManualClock(epoch), Bytes: kernel.NewSeededBytes(7)})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -110,7 +110,7 @@ func TestHkaTheDummyCheckAnswersNothingAndTheListShowsTheSecretsOfTheWebhooksWit
 	if err != nil {
 		t.Fatal(err)
 	}
-	list, err := r.svc.Describer().List(ctx)
+	list, err := r.svc.ListWebhookSecrets(ctx)
 	if err != nil || len(list) != 1 || list[0].Kind != secrets.KindHMACKey || len(list[0].FieldNames) != 1 || list[0].Scope[0] != "src_a" {
 		t.Fatalf("the list is %+v %v", list, err)
 	}

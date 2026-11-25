@@ -11,9 +11,9 @@ import (
 // [REQ-860]
 func TestHkaAWebhookSecretWhoseScopeLacksTheSourceProvesNothingEvenWhenItIsSealed(t *testing.T) {
 	ctx := context.Background()
-	store := NewMemoryStore()
+	store := NewWebhookMemoryStore()
 	wk := GenerateWebhookKey(kernel.NewSeededBytes(4))
-	svc, err := New(Config{Store: store, Keys: NoKey(), WebhookKeys: StaticKey(wk), Clock: kernel.NewManualClock(time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)), Bytes: kernel.NewSeededBytes(5)})
+	svc, err := New(Config{Store: NewMemoryStore(), WebhookStore: store, Keys: NoKey(), WebhookKeys: StaticKey(wk), Clock: kernel.NewManualClock(time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC)), Bytes: kernel.NewSeededBytes(5)})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -39,15 +39,15 @@ func TestHkaAWebhookSecretWhoseScopeLacksTheSourceProvesNothingEvenWhenItIsSeale
 // [REQ-860]
 func TestHkaARecordThatWasChangedByHandIsRefusedAndTheKeyOfAnotherStoreIsToo(t *testing.T) {
 	ctx := context.Background()
-	store := NewMemoryStore()
+	store := NewWebhookMemoryStore()
 	wk := GenerateWebhookKey(kernel.NewSeededBytes(4))
 	clock := kernel.NewManualClock(time.Date(2030, 1, 1, 0, 0, 0, 0, time.UTC))
-	svc, _ := New(Config{Store: store, Keys: NoKey(), WebhookKeys: StaticKey(wk), Clock: clock, Bytes: kernel.NewSeededBytes(5)})
+	svc, _ := New(Config{Store: NewMemoryStore(), WebhookStore: store, Keys: NoKey(), WebhookKeys: StaticKey(wk), Clock: clock, Bytes: kernel.NewSeededBytes(5)})
 	issued, err := svc.IssueWebhookSecret(ctx, "src_a", "poke", WebhookAuthBasic)
 	if err != nil {
 		t.Fatal(err)
 	}
-	other, _ := New(Config{Store: store, Keys: NoKey(), WebhookKeys: StaticKey(GenerateWebhookKey(kernel.NewSeededBytes(8))), Clock: clock, Bytes: kernel.NewSeededBytes(5)})
+	other, _ := New(Config{Store: NewMemoryStore(), WebhookStore: store, Keys: NoKey(), WebhookKeys: StaticKey(GenerateWebhookKey(kernel.NewSeededBytes(8))), Clock: clock, Bytes: kernel.NewSeededBytes(5)})
 	if ok, err := other.Verifier().VerifyToken(ctx, "src_a", "poke", []byte(issued.Value)); ok || err != nil {
 		t.Errorf("another webhook key: %v %v", ok, err)
 	}

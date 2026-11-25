@@ -29,6 +29,8 @@ func hkaValueLine(t *testing.T, out string) string {
 func TestHkaTheWebhookCommandsMakeTheSecretShowItOnceAndKeepTheWebhookKeyApartFromTheMasterKey(t *testing.T) {
 	e := newSecEnv(t)
 	e.secPut("db_main") // the master key and the folder are made
+	sourcesFile := filepath.Join(e.dataDir, secretsfile.FileName)
+	sourcesBefore := mustRead(t, sourcesFile)
 	out := e.secOk("", "webhook-issue", "crm/alerts", "-kind", "hmac", "-data-dir", e.dataDir)
 	value := hkaValueLine(t, out)
 	if !strings.HasPrefix(value, "whsec_") || !strings.Contains(out, "made the webhook key file") {
@@ -42,7 +44,12 @@ func TestHkaTheWebhookCommandsMakeTheSecretShowItOnceAndKeepTheWebhookKeyApartFr
 		t.Errorf("the webhook key file: %v", err)
 	}
 	// Not again: the value is shown once, and the list never shows it.
-	secAssertAbsent(t, []string{e.secOk("", "list", "-data-dir", e.dataDir), e.secOk("", "show", secrets.SecretIDFor("crm", "alerts"), "-data-dir", e.dataDir)}, []string{value, strings.TrimPrefix(value, "whsec_")})
+	listed := e.secOk("", "list", "-data-dir", e.dataDir)
+	secAssertAbsent(t, []string{listed, mustReadText(t, filepath.Join(e.dataDir, secretsfile.WebhookFileName))}, []string{value, strings.TrimPrefix(value, "whsec_")})
+	if strings.Contains(listed, secrets.SecretIDFor("crm", "alerts")) {
+		t.Errorf("the list of the secrets of the sources shows a webhook: %s", listed)
+	}
+	e.secFails(exitFailure, "", "show", secrets.SecretIDFor("crm", "alerts"), "-data-dir", e.dataDir)
 	e.secFails(exitFailure, "", "webhook-issue", "crm/alerts", "-kind", "hmac", "-data-dir", e.dataDir)
 
 	var rotated struct {
@@ -59,6 +66,14 @@ func TestHkaTheWebhookCommandsMakeTheSecretShowItOnceAndKeepTheWebhookKeyApartFr
 	if got := e.secOk("", "webhook-delete", "crm/poke", "-data-dir", e.dataDir, "--json"); !strings.Contains(got, `"deleted"`) {
 		t.Errorf("the deletion: %s", got)
 	}
+	// secrets.json is the file that every version of the program reads: the webhook commands did not change a byte of it,
+	// and what they keep is in a file of its own, for its owner only.
+	if got := mustRead(t, sourcesFile); string(got) != string(sourcesBefore) {
+		t.Error("a webhook command changed secrets.json")
+	}
+	if info, err := os.Stat(filepath.Join(e.dataDir, secretsfile.WebhookFileName)); err != nil || info.Mode().Perm()&0o077 != 0 {
+		t.Errorf("the file of the webhook secrets: %v %v", info, err)
+	}
 	// The master secret of the folder is as it was, and the webhook secret is not one a source can open.
 	if got := e.secOpen("db_main", "password"); got["password"] != secPass {
 		t.Error("the secret of the source changed")
@@ -68,8 +83,8 @@ func TestHkaTheWebhookCommandsMakeTheSecretShowItOnceAndKeepTheWebhookKeyApartFr
 		t.Fatal(err)
 	}
 	defer func() { _ = st.Close() }()
-	if _, err := st.svc.Opener().Open(ctx0, secrets.SecretIDFor("crm", "alerts"), secrets.Use{SourceID: "crm", Host: "a.example.test", Port: 1, Purpose: secrets.PurposeRun}); kernel.CodeOf(err) != secrets.CodeReceiveOnly {
-		t.Errorf("the key of a webhook was opened as a connection secret: %v", err)
+	if _, err := st.svc.Opener().Open(ctx0, secrets.SecretIDFor("crm", "alerts"), secrets.Use{SourceID: "crm", Host: "a.example.test", Port: 1, Purpose: secrets.PurposeRun}); kernel.CodeOf(err) != kernel.CodeNotFound {
+		t.Errorf("the key of a webhook was reached as a connection secret: %v", err)
 	}
 }
 
@@ -100,12 +115,17 @@ func TestHkaTheWebhookCommandsRefuseWhatIsWrongAndKeepTheKeyOutsideTheDataFolder
 	e.secFails(exitFailure, "", "webhook-rotate", "crm/alerts", "-data-dir", e.dataDir, "-secrets-key-file", other)
 	e.secFails(exitFailure, "", "webhook-rotate", "crm/alerts", "-data-dir", e.dataDir, "-secrets-key-file", filepath.Join(e.cfgDir, "gone.key"))
 	disk, _ := openSecretDisk(e.dataDir, true)
+	if _, err := secretsfile.OpenWebhooks(disk); err != nil {
+		t.Error(err)
+	}
 	if _, err := secretsfile.Open(disk); err != nil {
 		t.Error(err)
 	}
 }
 
 var ctx0 = context.Background()
+
+func mustReadText(t *testing.T, p string) string { return string(mustRead(t, p)) }
 
 func mustRead(t *testing.T, p string) []byte {
 	t.Helper()

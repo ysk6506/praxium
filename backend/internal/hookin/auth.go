@@ -159,8 +159,8 @@ func (q *request) judge(ok bool, err error, kind string) bool {
 func (q *request) fail(kind string) {
 	h := q.h
 	h.counts.add("fail_" + kind)
-	h.logFailure(q.key, q.addr.String(), kind)
-	if wait, ok := h.takeFailure(q.key+"|"+q.addr.String(), h.cfg.Clock.Now()); !ok {
+	h.logFailure(q.key, q.group, kind)
+	if wait, ok := h.takeFailure(q.key+"|"+q.group, h.cfg.Clock.Now()); !ok {
 		h.counts.add("fail_limited")
 		h.problem(q.w, "rate_limited.webhook_rate", nil, wait)
 		return

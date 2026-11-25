@@ -5,6 +5,9 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"log/slog"
 	"slices"
 	"strings"
 
@@ -73,14 +76,48 @@ func KindOfWebhookAuth(authType string) (Kind, bool) {
 // the secret of another.
 func SecretIDFor(sourceID, webhookID string) string {
 	sum := sha256.Sum256([]byte("praxium-webhook-secret/1\x00" + sourceID + "\x00" + webhookID))
-	return "wh_" + hex.EncodeToString(sum[:15])
+	return WebhookIDPrefix + hex.EncodeToString(sum[:15])
 }
 
-// Issued is what an issue or a rotation gives back: the value is shown this once and is not kept anywhere.
+// WebhookIDPrefix begins the id of every secret of a webhook. A secret of a source cannot have an id that begins with it
+// (Create refuses it), so the two never share a name even if the stores were joined one day.
+const WebhookIDPrefix = "wh_"
+
+// hookStore is the store of the secrets of the webhooks; a program that has none gets an error that says so.
+func (s *Service) hookStore() (Store, error) {
+	if s.cfg.WebhookStore == nil {
+		return nil, kernel.Errorf(CodeWebhookStoreMissing, "there is no store of the secrets of the webhooks; give the file of the receiving webhooks")
+	}
+	return s.cfg.WebhookStore, nil
+}
+
+// Issued is what an issue or a rotation gives back: the value is shown this once and is not kept anywhere. It does not
+// print its value: %v, %+v, %#v, a log record and a JSON encoding show the metadata and a mark in place of the value, so
+// that the value is only in the program's output where a caller reads Value on purpose.
 type Issued struct {
 	Meta Meta
 	// Value is what the sender is given: for a signed webhook whsec_ and the key in base64, else the token.
 	Value string
+}
+
+const issuedHidden = "(shown once, not printed)"
+
+// String shows the secret without its value.
+func (i Issued) String() string {
+	return fmt.Sprintf("issued secret %s version %d: %s", i.Meta.ID, i.Meta.Version, issuedHidden)
+}
+
+// GoString is the same for %#v.
+func (i Issued) GoString() string { return i.String() }
+
+// LogValue is the same for a log record.
+func (i Issued) LogValue() slog.Value {
+	return slog.GroupValue(slog.String("id", i.Meta.ID), slog.Int("version", i.Meta.Version), slog.String("value", issuedHidden))
+}
+
+// MarshalJSON is the same for an encoding; a command that shows the value on purpose builds its own output.
+func (i Issued) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]any{"id": i.Meta.ID, "version": i.Meta.Version, "value": issuedHidden})
 }
 
 const (
@@ -101,6 +138,10 @@ func (s *Service) IssueWebhookSecret(ctx context.Context, sourceID, webhookID, a
 	if err := checkWebhookNames(sourceID, webhookID); err != nil {
 		return Issued{}, err
 	}
+	store, err := s.hookStore()
+	if err != nil {
+		return Issued{}, err
+	}
 	key, err := s.webhookKey()
 	if err != nil {
 		return Issued{}, err
@@ -108,7 +149,7 @@ func (s *Service) IssueWebhookSecret(ctx context.Context, sourceID, webhookID, a
 	id := SecretIDFor(sourceID, webhookID)
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	if _, found, err := s.cfg.Store.Get(ctx, id); err != nil {
+	if _, found, err := store.Get(ctx, id); err != nil {
 		return Issued{}, kernel.Wrap(kernel.CodeInternal, err, "cannot read the secret store")
 	} else if found {
 		return Issued{}, kernel.Errorf(kernel.CodeConflict, "the webhook %q of the source %q has a secret already; rotate it", webhookID, sourceID)
@@ -125,7 +166,7 @@ func (s *Service) IssueWebhookSecret(ctx context.Context, sourceID, webhookID, a
 	if err := s.bind(&rec, key); err != nil {
 		return Issued{}, err
 	}
-	if err := s.put(ctx, rec); err != nil {
+	if err := s.putIn(ctx, store, rec); err != nil {
 		return Issued{}, err
 	}
 	return Issued{Meta: rec.meta(), Value: shown}, nil
@@ -143,7 +184,7 @@ func (s *Service) RotateWebhookSecret(ctx context.Context, sourceID, webhookID s
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	rec, err := s.loadWebhook(ctx, sourceID, webhookID, key)
+	store, rec, err := s.loadWebhook(ctx, sourceID, webhookID, key)
 	if err != nil {
 		return Issued{}, err
 	}
@@ -159,7 +200,7 @@ func (s *Service) RotateWebhookSecret(ctx context.Context, sourceID, webhookID s
 	if err := s.bind(&rec, key); err != nil {
 		return Issued{}, err
 	}
-	if err := s.put(ctx, rec); err != nil {
+	if err := s.putIn(ctx, store, rec); err != nil {
 		return Issued{}, err
 	}
 	return Issued{Meta: rec.meta(), Value: shown}, nil
@@ -176,7 +217,7 @@ func (s *Service) RetireWebhookVersion(ctx context.Context, sourceID, webhookID 
 	}
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	rec, err := s.loadWebhook(ctx, sourceID, webhookID, key)
+	store, rec, err := s.loadWebhook(ctx, sourceID, webhookID, key)
 	if err != nil {
 		return Meta{}, err
 	}
@@ -192,7 +233,7 @@ func (s *Service) RetireWebhookVersion(ctx context.Context, sourceID, webhookID 
 	if err := s.bind(&rec, key); err != nil {
 		return Meta{}, err
 	}
-	if err := s.put(ctx, rec); err != nil {
+	if err := s.putIn(ctx, store, rec); err != nil {
 		return Meta{}, err
 	}
 	return rec.meta(), nil
@@ -203,7 +244,44 @@ func (s *Service) DeleteWebhookSecret(ctx context.Context, sourceID, webhookID s
 	if err := checkWebhookNames(sourceID, webhookID); err != nil {
 		return err
 	}
-	return s.Delete(ctx, SecretIDFor(sourceID, webhookID))
+	store, err := s.hookStore()
+	if err != nil {
+		return err
+	}
+	id := SecretIDFor(sourceID, webhookID)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	rec, found, err := store.Get(ctx, id)
+	if err != nil {
+		return kernel.Wrap(kernel.CodeInternal, err, "cannot read the secret store")
+	}
+	if !found {
+		return notFound(id)
+	}
+	if !IsReceiveOnly(rec.Kind) {
+		return kernel.Errorf(CodeIntegrity, "the stored secret %q is not the secret of a webhook; it is not deleted with a webhook command", id)
+	}
+	if _, err := store.Delete(ctx, id); err != nil {
+		return kernel.Wrap(kernel.CodeInternal, err, "cannot write the secret store")
+	}
+	return nil
+}
+
+// ListWebhookSecrets returns the metadata of the secrets of the webhooks, in the order of the ids. No answer holds a value.
+func (s *Service) ListWebhookSecrets(ctx context.Context) ([]Meta, error) {
+	store, err := s.hookStore()
+	if err != nil {
+		return nil, err
+	}
+	recs, err := store.List(ctx)
+	if err != nil {
+		return nil, kernel.Wrap(kernel.CodeInternal, err, "cannot read the secret store")
+	}
+	out := make([]Meta, 0, len(recs))
+	for _, r := range recs {
+		out = append(out, r.meta())
+	}
+	return out, nil
 }
 
 func checkWebhookNames(sourceID, webhookID string) error {
@@ -232,21 +310,25 @@ func (s *Service) webhookKey() (*MasterKey, error) {
 }
 
 // loadWebhook reads the record of the secret of a webhook that must authenticate under the key of the webhooks.
-func (s *Service) loadWebhook(ctx context.Context, sourceID, webhookID string, key *MasterKey) (Record, error) {
-	rec, err := s.load(ctx, SecretIDFor(sourceID, webhookID))
-	if kernel.CodeOf(err) == kernel.CodeNotFound {
-		return Record{}, kernel.Errorf(kernel.CodeNotFound, "the webhook %q of the source %q has no secret; issue it first", webhookID, sourceID)
-	}
+func (s *Service) loadWebhook(ctx context.Context, sourceID, webhookID string, key *MasterKey) (Store, Record, error) {
+	store, err := s.hookStore()
 	if err != nil {
-		return Record{}, err
+		return nil, Record{}, err
+	}
+	rec, found, err := store.Get(ctx, SecretIDFor(sourceID, webhookID))
+	if err != nil {
+		return nil, Record{}, kernel.Wrap(kernel.CodeInternal, err, "cannot read the secret store")
+	}
+	if !found {
+		return nil, Record{}, kernel.Errorf(kernel.CodeNotFound, "the webhook %q of the source %q has no secret; issue it first", webhookID, sourceID)
 	}
 	if !IsReceiveOnly(rec.Kind) || !slices.Equal(rec.Scope, []string{sourceID}) {
-		return Record{}, kernel.Errorf(CodeIntegrity, "the stored secret does not authenticate: the file was changed or mixed from different states")
+		return nil, Record{}, kernel.Errorf(CodeIntegrity, "the stored secret does not authenticate: the file was changed or mixed from different states")
 	}
 	if err := verify(rec, key); err != nil {
-		return Record{}, err
+		return nil, Record{}, err
 	}
-	return rec, nil
+	return store, rec, nil
 }
 
 // webhookValue makes the value of a version: the fields to keep and the text to show once.

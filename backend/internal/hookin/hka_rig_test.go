@@ -41,6 +41,8 @@ type hkaSpy struct {
 	receiving atomic.Bool
 	reads     atomic.Int64
 	signals   atomic.Int64
+	asked     atomic.Int64 // the checks of a proof that were asked of the verifier
+	dummies   atomic.Int64 // the dummy checks of a call that cannot be proven
 	sinkErr   error
 	stateErr  error
 	hooks     map[string]hookin.Hook
@@ -74,6 +76,7 @@ func (s *hkaSpy) Signal(_ context.Context, source string) error {
 }
 
 func (s *hkaSpy) VerifyHMAC(ctx context.Context, src, wh string, signed []byte, sigs [][]byte) (bool, error) {
+	s.asked.Add(1)
 	ok, err := s.inner.VerifyHMAC(ctx, src, wh, signed, sigs)
 	if ok {
 		s.accepted.Add(1)
@@ -82,6 +85,7 @@ func (s *hkaSpy) VerifyHMAC(ctx context.Context, src, wh string, signed []byte, 
 }
 
 func (s *hkaSpy) VerifyToken(ctx context.Context, src, wh string, p []byte) (bool, error) {
+	s.asked.Add(1)
 	ok, err := s.inner.VerifyToken(ctx, src, wh, p)
 	if ok {
 		s.accepted.Add(1)
@@ -89,7 +93,10 @@ func (s *hkaSpy) VerifyToken(ctx context.Context, src, wh string, p []byte) (boo
 	return ok, err
 }
 
-func (s *hkaSpy) Dummy(a []byte, b [][]byte, c []byte) { s.inner.Dummy(a, b, c) }
+func (s *hkaSpy) Dummy(a []byte, b [][]byte, c []byte) {
+	s.dummies.Add(1)
+	s.inner.Dummy(a, b, c)
+}
 
 type hkaRig struct {
 	t       *testing.T
@@ -113,7 +120,7 @@ func hkaNew(t *testing.T, edit ...func(*hookin.Config)) *hkaRig {
 	t.Helper()
 	clock := kernel.NewManualClock(hkaStart)
 	key := secrets.GenerateWebhookKey(kernel.NewSeededBytes(7))
-	svc, err := secrets.New(secrets.Config{Store: secrets.NewMemoryStore(), Keys: secrets.NoKey(), WebhookKeys: secrets.StaticKey(key), Clock: clock, Bytes: kernel.NewSeededBytes(8)})
+	svc, err := secrets.New(secrets.Config{Store: secrets.NewMemoryStore(), WebhookStore: secrets.NewWebhookMemoryStore(), Keys: secrets.NoKey(), WebhookKeys: secrets.StaticKey(key), Clock: clock, Bytes: kernel.NewSeededBytes(8)})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -181,8 +188,15 @@ func hkaFlat(h http.Header) string {
 	return b.String()
 }
 
+// hkaRecorder is a recorder of an answer that, as the response writer of a real server does, takes a read deadline.
+type hkaRecorder struct{ *httptest.ResponseRecorder }
+
+func (hkaRecorder) SetReadDeadline(time.Time) error { return nil }
+
+func hkaRecord() hkaRecorder { return hkaRecorder{httptest.NewRecorder()} }
+
 func (rig *hkaRig) serve(r *http.Request) hkaReply {
-	rec := httptest.NewRecorder()
+	rec := hkaRecord()
 	rig.h.ServeHTTP(rec, r)
 	return hkaReply{rec.Code, rec.Header(), rec.Body.String()}
 }

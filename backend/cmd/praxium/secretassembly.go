@@ -95,21 +95,14 @@ func newFileKeys(w wiring, loc secretLocation, disk secretDisk, s *secretStore, 
 		all, err := s.store.List(ctx)
 		ids := make([]string, 0, len(all))
 		for _, rec := range all {
-			if !secrets.IsReceiveOnly(rec.Kind) { // the secrets of the webhooks have a key of their own
-				ids = append(ids, rec.Binding.KeyID)
-			}
+			ids = append(ids, rec.Binding.KeyID)
 		}
 		return ids, err
 	}
 	if mayCreate {
 		k.mayCreate = func(ctx context.Context) (bool, error) {
 			all, err := s.store.List(ctx)
-			for _, rec := range all {
-				if !secrets.IsReceiveOnly(rec.Kind) {
-					return false, err
-				}
-			}
-			return true, err
+			return len(all) == 0, err
 		}
 	}
 	return k

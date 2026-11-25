@@ -497,10 +497,16 @@ func TestHkaTheEntranceHasRoomForSoManyCallsAndSoMuchBody(t *testing.T) {
 	if got := rig.serve(hkaReq("header", `{}`, map[string]string{"X-Webhook-Token": rig.secrets["header"]})); got.status != 202 {
 		t.Errorf("after: %d", got.status)
 	}
-	// The sum of the bodies that may be read is bounded too.
-	tight := hkaNew(t, func(c *hookin.Config) { c.MaxBodyMemory = 100 << 10 })
-	if got := tight.serve(hkaReq("header", `{}`, map[string]string{"X-Webhook-Token": tight.secrets["header"]})); got.status != 503 {
-		t.Errorf("a body room that is smaller than one body: %d", got.status)
+	// The sum of the bodies that may be read is bounded too: a body with no length is given a start of 64 KiB, which a
+	// room of 1 KiB has not, and a body that is short and says so is given what it needs and no more.
+	tight := hkaNew(t, func(c *hookin.Config) { c.MaxBodyMemory = 1 << 10 })
+	unlengthed := hkaReq("header", ``, map[string]string{"X-Webhook-Token": tight.secrets["header"]})
+	unlengthed.Body, unlengthed.ContentLength = io.NopCloser(strings.NewReader(`{}`)), -1
+	if got := tight.serve(unlengthed); got.status != 503 || got.code() != "server.unavailable" {
+		t.Errorf("a body room that is smaller than the start of one body: %d", got.status)
+	}
+	if got := tight.serve(hkaReq("header", `{}`, map[string]string{"X-Webhook-Token": tight.secrets["header"]})); got.status != 202 {
+		t.Errorf("a short body in a small room: %d", got.status)
 	}
 }
 

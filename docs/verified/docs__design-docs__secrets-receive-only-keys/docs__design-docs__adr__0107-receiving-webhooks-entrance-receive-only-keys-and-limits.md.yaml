@@ -1,7 +1,7 @@
 doc: "docs/design-docs/secrets-receive-only-keys.md"
 target: "docs/design-docs/adr/0107-receiving-webhooks-entrance-receive-only-keys-and-limits.md"
-hash: "1e6ccbdd13bbda05"
+hash: "d202ef883de75e21"
 date: "2026-11-25"
-note: "병합과 용어 정리(필터링, 삭제) 뒤 내용을 다시 대조함"
+note: "단어를 용어집에 맞춤(헬스 상태 등)"
 text_changed: true
-doc_hash: "a1e803187e25c7e6"
+doc_hash: "2a8cfe922c6cf8dc"

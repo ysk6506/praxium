@@ -3,6 +3,7 @@ package secrets
 import (
 	"context"
 	"slices"
+	"strings"
 	"sync"
 	"time"
 
@@ -17,6 +18,10 @@ type Config struct {
 	// Bytes is where keys and nonces come from: kernel.SystemBytes{} in a real run, kernel.NewSeededBytes in a test
 	// that must repeat.
 	Bytes kernel.ByteSource
+	// WebhookStore is the store of the secrets of the receiving webhooks (ADR-0107): another store than Store, and in the
+	// file store another file, so that the file of the secrets of the sources holds nothing of the webhooks and every
+	// version of the program reads it. A program that has none cannot issue or check them.
+	WebhookStore Store
 	// WebhookKeys gives the key of the receiving webhooks (ADR-0107). A program that has none cannot issue or check them.
 	WebhookKeys KeyProvider
 	// Observer is told what the check of a webhook does (the audit line of a fill of the cache, the count of the checks).
@@ -68,8 +73,10 @@ func (s *Service) load(ctx context.Context, id string) (Record, error) {
 	return rec, nil
 }
 
-func (s *Service) put(ctx context.Context, rec Record) error {
-	if err := s.cfg.Store.Put(ctx, rec); err != nil {
+func (s *Service) put(ctx context.Context, rec Record) error { return s.putIn(ctx, s.cfg.Store, rec) }
+
+func (s *Service) putIn(ctx context.Context, store Store, rec Record) error {
+	if err := store.Put(ctx, rec); err != nil {
 		return kernel.Wrap(kernel.CodeInternal, err, "cannot write the secret store")
 	}
 	return nil
@@ -143,6 +150,9 @@ func (s *Service) newVersion(id string, instance []byte, n int, fields Fields, m
 func (s *Service) Create(ctx context.Context, in CreateInput) (Meta, error) {
 	if err := ValidateID(in.ID); err != nil {
 		return Meta{}, err
+	}
+	if strings.HasPrefix(in.ID, WebhookIDPrefix) {
+		return Meta{}, kernel.Errorf(kernel.CodeInvalidValue, "an id that begins with %s is kept for the secrets of the receiving webhooks; use another id", WebhookIDPrefix)
 	}
 	if err := checkFields(in.Kind, in.Fields); err != nil {
 		return Meta{}, err

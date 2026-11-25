@@ -1,6 +1,7 @@
 package ingest
 
 import (
+	"strconv"
 	"strings"
 	"testing"
 )
@@ -116,7 +117,7 @@ func TestHkaAChangeOfAWebhookIsAChangeOfTheConnectionButALowerLimit(t *testing.T
 
 // [REQ-861]
 func TestHkaTheAddressesOfAWebhookAreReadAsAddressesAndNetworks(t *testing.T) {
-	for _, ok := range []string{"192.0.2.7", "192.0.2.0/24", "2001:db8::/32", "::ffff:192.0.2.7"} {
+	for _, ok := range []string{"192.0.2.7", "192.0.2.0/24", "2001:db8::/32", "2001:db8::1", "::/0", "0.0.0.0/0"} {
 		if _, err := ParseAllowEntry(ok); err != nil {
 			t.Errorf("%s: %v", ok, err)
 		}
@@ -124,13 +125,14 @@ func TestHkaTheAddressesOfAWebhookAreReadAsAddressesAndNetworks(t *testing.T) {
 	if p, _ := ParseAllowEntry("192.0.2.77/24"); p.String() != "192.0.2.0/24" {
 		t.Errorf("a network is its network: %s", p)
 	}
-	if p, _ := ParseAllowEntry("::ffff:192.0.2.7"); p.String() != "192.0.2.7/32" {
-		t.Errorf("a mapped address is the address: %s", p)
-	}
-	for _, bad := range []string{"", "example.test", "192.0.2.0/33", "300.1.1.1", "10.0.0.0/8/9"} {
+	for _, bad := range []string{"", "example.test", "192.0.2.0/33", "300.1.1.1", "10.0.0.0/8/9", "::ffff:192.0.2.7", "::ffff:192.0.2.0/120", "::ffff:0:0/96", "0:0:0:0:0:ffff:c000:207"} {
 		if _, err := ParseAllowEntry(bad); err == nil {
 			t.Errorf("%q was taken for an address", bad)
 		}
+	}
+	// In a definition the refusal says what to write instead.
+	if _, err := ParseAdapterSource(strings.NewReader(adpSwap(t, hkaBase, `"allow_ips":["192.0.2.0/24","2001:db8::1"]`, `"allow_ips":["::ffff:192.0.2.0/120"]`))); err == nil || !strings.Contains(err.Error(), "write it as IPv4") {
+		t.Errorf("a network mapped into IPv6 in a definition: %v", err)
 	}
 	many := `"allow_ips":[` + strings.TrimSuffix(strings.Repeat(`"192.0.2.1",`, 257), ",") + `]`
 	if _, err := ParseAdapterSource(strings.NewReader(adpSwap(t, hkaBase, `"allow_ips":["192.0.2.0/24","2001:db8::1"]`, many))); err == nil {
@@ -156,5 +158,29 @@ func TestHkaASignedWebhookTakesItsEventIDOnlyFromWhatTheSignatureCovers(t *testi
 	}
 	if err := CheckWebhookEventID(WebhookAuth{Type: WebhookAuthBasic}, "header:X-Event-Id"); err != nil {
 		t.Errorf("a token has no signature to ask: %v", err)
+	}
+}
+
+// [REQ-861]
+// The highest values of the limits are what the entrance holds a body and a rate to before a caller is proven, so each is
+// held on both sides: the value itself is read, one more is refused, and the highest values are the ones of the ADR.
+func TestHkaTheHighestLimitsOfAWebhookAreHeldOnBothSides(t *testing.T) {
+	if MaxWebhookBodyBytes != 4<<20 || MaxWebhookRate != 10000 || MaxWebhookBurst != 5000 {
+		t.Fatalf("the highest limits are %d, %d and %d bytes, rate, burst", MaxWebhookBodyBytes, MaxWebhookRate, MaxWebhookBurst)
+	}
+	for field, max := range map[string]int{"body_bytes": MaxWebhookBodyBytes, "rate_per_second": MaxWebhookRate, "burst": MaxWebhookBurst} {
+		from := map[string]string{"body_bytes": `"body_bytes":65536`, "rate_per_second": `"rate_per_second":20`, "burst": `"burst":100`}[field]
+		at := hkaWith(t, from, `"`+field+`":`+strconv.Itoa(max))
+		if at.Webhooks[0].Limits == nil {
+			t.Errorf("%s at its highest value was not read", field)
+		}
+		for _, over := range []int{max + 1, 64 << 20, 99999999} {
+			if _, err := ParseAdapterSource(strings.NewReader(adpSwap(t, hkaBase, from, `"`+field+`":`+strconv.Itoa(over)))); err == nil {
+				t.Errorf("%s of %d was read; the highest is %d", field, over, max)
+			}
+		}
+		if _, err := ParseAdapterSource(strings.NewReader(adpSwap(t, hkaBase, from, `"`+field+`":-1`))); err == nil {
+			t.Errorf("%s of -1 was read", field)
+		}
 	}
 }

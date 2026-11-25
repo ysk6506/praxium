@@ -25,4 +25,6 @@ const (
 	CodeReceiveOnly kernel.Code = "secret_receive_only"
 	// CodeWebhookKeyMissing is a use of a secret of a receiving webhook by a program that has no webhook key.
 	CodeWebhookKeyMissing kernel.Code = "secret_webhook_key_missing"
+	// CodeWebhookStoreMissing is a use of a secret of a receiving webhook by a program that has no store for them.
+	CodeWebhookStoreMissing kernel.Code = "secret_webhook_store_missing"
 )

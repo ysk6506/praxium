@@ -44,7 +44,7 @@ func TestHkaOnTheServerTheAccessLogHasNoQueryAndNoOtherAnswerComesOnThePath(t *t
 		for k, v := range headers {
 			r.Header.Set(k, v)
 		}
-		rec := httptest.NewRecorder()
+		rec := hkaRecord()
 		srv.Handler().ServeHTTP(rec, r)
 		return rec.Code, rec.Body.String(), rec.Header()
 	}
@@ -146,7 +146,7 @@ func TestHkaAVerifierThatCannotAnswerIsAFailureThatTellsTheCallerNothing(t *test
 	if err != nil {
 		t.Fatal(err)
 	}
-	rec := httptest.NewRecorder()
+	rec := hkaRecord()
 	h.ServeHTTP(rec, hkaReq("header", `{}`, map[string]string{"X-Webhook-Token": rig.secrets["header"]}))
 	if rec.Code != 401 || !strings.Contains(rec.Body.String(), "auth.webhook_invalid") || strings.Contains(rec.Body.String(), "store") {
 		t.Errorf("%d %s", rec.Code, rec.Body)

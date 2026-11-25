@@ -101,7 +101,7 @@ var (
 	ecWhAuth     = regAdapter("source.webhook.auth_unsupported", unsp, "The type of the proof of the webhook is not one of hmac, header_token, basic and url_token.", "source,webhook,type,supported")
 	ecWhProfile  = regAdapter("source.webhook.profile_invalid", inv, "The profile of the signature is not one of standard_webhooks and body_only, or is given to a type that has no signature.", "source,webhook,profile,reason")
 	ecWhAuthKind = regAdapter("source.webhook.auth_not_for_kind", inv, "The type or the profile of the proof is not allowed for the kind of the webhook (url_token and body_only are for signal only).", "source,webhook,kind,type,profile")
-	ecWhIPs      = regAdapter("source.webhook.allow_ips_invalid", inv, "An entry of allow_ips is not an IP address or a network in CIDR form, or the list is too long.", "source,webhook,reason")
+	ecWhIPs      = regAdapter("source.webhook.allow_ips_invalid", inv, "An entry of allow_ips is not an IP address or a network in CIDR form (an IPv4 address mapped into IPv6 is not one), or the list is too long.", "source,webhook,reason")
 	ecWhLimit    = regAdapter("source.webhook.limit_out_of_range", inv, "A limit of the webhook is outside the range it may have.", "source,webhook,field,value,min,max")
 )
 
@@ -216,18 +216,31 @@ func (w Webhook) checkAllowIPs(c *collector, source, at string) {
 	}
 	for j, e := range w.AllowIPs {
 		if _, err := ParseAllowEntry(e); err != nil {
-			c.add(ecWhIPs, at+ptr("allow_ips", j), Params{"source": source, "webhook": w.ID, "reason": "not an IP address or a network in CIDR form"},
-				"source %s, webhook %s: allow_ips entry %d is not an IP address or a network in CIDR form", source, w.ID, j)
+			c.add(ecWhIPs, at+ptr("allow_ips", j), Params{"source": source, "webhook": w.ID, "reason": allowReason(e)},
+				"source %s, webhook %s: allow_ips entry %d is refused: %s", source, w.ID, j, allowReason(e))
 		}
 	}
 }
 
-// ParseAllowEntry reads one entry of allow_ips: an address, or a network written as address/length.
+// allowReason says what is wrong with an entry that ParseAllowEntry refused.
+func allowReason(entry string) string {
+	if _, err := ParseAllowEntry(entry); err == errMappedEntry {
+		return "an IPv4 address mapped into IPv6; write it as IPv4"
+	}
+	return "not an IP address or a network in CIDR form"
+}
+
+// ParseAllowEntry reads one entry of allow_ips: an address, or a network written as address/length. An IPv4 address is
+// written as IPv4: the form that maps it into IPv6 (::ffff:192.0.2.7, and a network of it) is refused, since the entrance
+// takes the address of a caller in its IPv4 form and a network of the mapped form would never contain it.
 func ParseAllowEntry(entry string) (netip.Prefix, error) {
 	if strings.Contains(entry, "/") {
 		p, err := netip.ParsePrefix(entry)
 		if err != nil {
 			return netip.Prefix{}, err
+		}
+		if p.Addr().Is4In6() {
+			return netip.Prefix{}, errMappedEntry
 		}
 		return p.Masked(), nil
 	}
@@ -235,9 +248,13 @@ func ParseAllowEntry(entry string) (netip.Prefix, error) {
 	if err != nil {
 		return netip.Prefix{}, err
 	}
-	a = a.Unmap()
+	if a.Is4In6() {
+		return netip.Prefix{}, errMappedEntry
+	}
 	return netip.PrefixFrom(a, a.BitLen()), nil
 }
+
+var errMappedEntry = fmt.Errorf("an IPv4 address is written as IPv4, not mapped into IPv6")
 
 // CheckWebhookEventID says whether the place an event id is taken from is covered by the signature of the webhook. A
 // signature covers the body and, with the profile standard_webhooks, the id of the message; an event id that is read from
