@@ -18667,7 +18667,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcAfterA401TheTokenIsAskedForAgainAndTheOldOneGoesToNoServerOfTheTwo": {
@@ -18682,7 +18682,37 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxcAnErrorOfTheTokenRequestKeepsItsKindAndDetail": {
+   "kind": "test",
+   "hash": "76b43cf0d2a0cf3c",
+   "asserts": 3,
+   "literals": [
+    "715e8ce32bef98cb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-844"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxcAReaderRefusesATokenAddressThatIsNoAddress": {
+   "kind": "test",
+   "hash": "b2934d26ec04394e",
+   "asserts": 6,
+   "literals": [
+    "72937d08f563d9a3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-840"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcARequestOfTheAPIThatHasASecretIsRefusedWhereItIsMadeToo": {
@@ -18697,7 +18727,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcASecretThatDoesNotAllowTheTokenHostSendsNothingAnywhere": {
@@ -18712,7 +18742,7 @@
    "reqs": [
     "REQ-845"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcASignerGivesTheTokenRequestTheCredentialsAndTheAPITheToken": {
@@ -18727,7 +18757,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcATokenIsAskedForAgainBeforeItEndsOnTheClockOfTheReader": {
@@ -18742,7 +18772,7 @@
    "reqs": [
     "REQ-842"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcATokenThatIsTooLongOrCannotBeAHeaderIsRefusedBeforeItIsSent": {
@@ -18757,7 +18787,7 @@
    "reqs": [
     "REQ-842"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcAWholeAddressOfTheAPIsOwnOriginIsTheAPIsHost": {
@@ -18772,7 +18802,7 @@
    "reqs": [
     "REQ-840"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcEachHostHasItsOwnCertificateAuthority": {
@@ -18787,7 +18817,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcRealEgressACertificateAuthorityThatCannotBeUsedForTheTokenHostIsRefused": {
@@ -18802,7 +18832,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcRealEgressATokenRequestWithoutTLSToAnAddressThatIsNotTheLoopbackIsRefused": {
@@ -18817,7 +18847,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcRealEgressThePolicyJudgesTheTokenHostToo": {
@@ -18832,7 +18862,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheClientInABasicHeaderAndTheKeyInAJSONBodyGoToTheTokenHostToo": {
@@ -18847,7 +18877,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheClientOfTheTokenHostLivesAsLongAsTheRead": {
@@ -18862,7 +18892,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheCredentialsGoToTheTokenHostAndTheTokenToTheAPIOnly": {
@@ -18877,7 +18907,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheEventsOfTheTokenRequestSayTheHostItWentTo": {
@@ -18892,7 +18922,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheLifetimeOfATokenIsKeptBetweenTheShortestAndTheLongest": {
@@ -18905,7 +18935,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheSecretIsOpenedForTheAPIAndForTheTokenHost": {
@@ -18920,7 +18950,7 @@
    "reqs": [
     "REQ-845"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTheTokenRequestIsCountedInTheRequestsOfARead": {
@@ -18935,7 +18965,7 @@
    "reqs": [
     "REQ-842"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxcTokensAskedForAgainBecauseOfA401AreWithinABudget": {
@@ -18950,7 +18980,7 @@
    "reqs": [
     "REQ-842"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestLeavingTheLoopClosesTheClientAndTheBodies": {
@@ -19150,7 +19180,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "7d33e70fb27bb42b",
+   "hash": "af329e434072c1ac",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -19160,7 +19190,7 @@
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0106-http-source-token-request-to-another-host-and-secrets-of-several-hosts.md"
   },
   "go:backend/internal/httpsource::TestTheRequestsAreSpacedByTheRateOfTheConnection": {
@@ -19255,7 +19285,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "f52975ac92d2bf89",
+   "hash": "5e554820f92600f1",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -19265,7 +19295,7 @@
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0106-http-source-token-request-to-another-host-and-secrets-of-several-hosts.md"
   },
   "go:backend/internal/httpsource::TestTheWordsForWhatIsNotASourceErrorAreFixed": {
@@ -21440,7 +21470,7 @@
    "reqs": [
     "REQ-843"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcAnOriginIsTheSchemeTheHostAndThePort": {
@@ -21455,7 +21485,7 @@
    "reqs": [
     "REQ-840"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcAnotherOriginIsToldInOnePlace": {
@@ -21470,7 +21500,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcAnotherTokenHostKeepsTheSecretOutOfTheRequestsOfTheAPI": {
@@ -21485,7 +21515,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcTheCertificateAuthorityOfTheTokenHostIsItsOwn": {
@@ -21500,7 +21530,7 @@
    "reqs": [
     "REQ-844"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcTheLifetimeOfTheTokenIsReadFromAPathOfTheAnswer": {
@@ -21515,7 +21545,7 @@
    "reqs": [
     "REQ-842"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcTheTokenRequestHasHeadersOfItsOwnThatAreTexts": {
@@ -21530,7 +21560,7 @@
    "reqs": [
     "REQ-841"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxcTheTokenRequestHasOneAddressAPathOrAWholeOne": {
@@ -21545,7 +21575,7 @@
    "reqs": [
     "REQ-840"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdentifiersOfAFeedAreBoundAndAClashIsReported": {

@@ -571,3 +571,44 @@ func TestHxcTheClientOfTheTokenHostLivesAsLongAsTheRead(t *testing.T) {
 // hxcCert is a throwaway certificate (no one holds its key) that stands for the authority of a host; the API's is the same with
 // a line break after it, so that the two are told apart.
 const hxcCert = "-----BEGIN CERTIFICATE-----\nMIIBhTCCASugAwIBAgIURtGaGZSb7VAVHQQp7STkhcncoR8wCgYIKoZIzj0EAwIw\nFzEVMBMGA1UEAwwMZXhhbXBsZS50ZXN0MCAXDTI2MTExOTEwMjEyN1oYDzIxMjYx\nMDI2MTAyMTI3WjAXMRUwEwYDVQQDDAxleGFtcGxlLnRlc3QwWTATBgcqhkjOPQIB\nBggqhkjOPQMBBwNCAASCdORDNqElggutE2cVqCCOTZ44AGGGM7ACcNJtJstRWgLZ\njCOmhbFMo01h2e0j2AL6MazLrO2T6jji4af51UPho1MwUTAdBgNVHQ4EFgQUVXuy\nfSxGvyMsczWPNhux+3ufAVAwHwYDVR0jBBgwFoAUVXuyfSxGvyMsczWPNhux+3uf\nAVAwDwYDVR0TAQH/BAUwAwEB/zAKBggqhkjOPQQDAgNIADBFAiEAo/VQIH+m9EXV\nQiZCDGBFQCvCy5hLs3tw573C7HWM7aQCIH6ZkOZqpPiLzlSDmQtrce0tjz0n/oWp\nLxeolirs3Vs/\n-----END CERTIFICATE-----"
+
+// [REQ-840]
+// A reader refuses a token address that the definition check would have refused, if the definition was changed after it
+// was checked, and a token address of the API's own origin has no second opening of the secret.
+func TestHxcAReaderRefusesATokenAddressThatIsNoAddress(t *testing.T) {
+	for _, bad := range []string{"ftp://idp.example.test/token", "https://user@idp.example.test/token", "https://a..b.test/token", "https://idp.example.test:%/token"} {
+		g := hxcNew(t, hxcDoc(hxcOAuthPost, "", ""), hxcHosts, "3600")
+		cfg := g.hxcReader.cfg
+		cfg.Source.Connection.Auth.Request.URL = bad
+		if _, err := New(cfg); err == nil {
+			t.Errorf("%s: a reader was made", bad)
+		}
+	}
+	g := hxcNew(t, hxcDoc(strings.Replace(hxcOAuthPost, "https://idp.example.test/", "https://api.example.test/", 1), "", ""), []secrets.Address{{Host: hxcAPIHost, Port: 443}}, "3600")
+	rn, err := g.hxcReader.begin(hsCtx, hsSource, g.hxcDef.Datasets[0], secrets.PurposeRun)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rn.close()
+	if _, ok := rn.signer.tokenAddress(); ok {
+		t.Error("a second opening for the API's own origin")
+	}
+	if err := rn.ofTokenRequest(plan{token: true}, ingest.NewSourceError(ingest.SrcSourceBusy, "busy", nil).WithDetail("d")); err == nil {
+		t.Error("an error")
+	}
+}
+
+// [REQ-844]
+// The words of an error of the token request say it is the token request's and keep the detail the operator reads.
+func TestHxcAnErrorOfTheTokenRequestKeepsItsKindAndDetail(t *testing.T) {
+	g := hxcNew(t, hxcDoc(hxcOAuthPost, "", ""), hxcHosts, "3600")
+	rn, err := g.hxcReader.begin(hsCtx, hsSource, g.hxcDef.Datasets[0], secrets.PurposeRun)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer rn.close()
+	got, ok := ingest.SourceErrorOf(rn.ofTokenRequest(plan{token: true}, ingest.NewSourceError(ingest.SrcSourceBusy, "busy", nil).WithDetail("d")))
+	if !ok || got.Kind != ingest.SrcSourceBusy || got.Detail != "d" || !strings.HasPrefix(got.Message, "the token request to the authentication host") {
+		t.Errorf("%+v", got)
+	}
+}

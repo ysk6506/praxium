@@ -27,7 +27,7 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
 test_change_reason: 두 테스트는 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 새 파일(tokenask.go)과 바뀐 파일이 같은 규칙(값을 꺼내는 곳은 auth.go 한 곳, 요청을 만드는 곳은 request.go 한 곳, 금지한 글자와 import 없음)을 지키는 것을 새 지문으로 다시 기록한다. 같은 호스트만 허용하던 단언을 가진 잠긴 테스트는 없었다.
-decision_hash: bf82ddcb9b70491f
+decision_hash: 9e8af32c4d8dab77
 ---
 # ADR-0106 HTTP 소스의 다른 호스트 인증 서버
 
