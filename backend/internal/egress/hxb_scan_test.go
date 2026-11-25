@@ -20,8 +20,9 @@ import (
 // function: the second one adds a file of a way around to the real files and wants a violation of that file.
 //
 // What the scan holds is the whole of the way the verification of a certificate is turned off:
-//   - crypto/tls is imported by its own name (no other name, no dot), and nothing is imported that reaches a field behind the
-//     type system (reflect, unsafe, runtime/debug);
+//   - crypto/tls is imported by its own name (no other name, no dot), and the files import only the list hxbAllowedImports
+//     (so nothing reaches a field behind the type system: no reflect, unsafe, runtime/debug, encoding/json, encoding/gob,
+//     encoding/xml);
 //   - the type tls.Config is spelled only in the functions that make or pass the settings, and there only as a pointer or as
 //     the type of a literal: no declaration of a type or a variable of it, no other name for it, no new(tls.Config);
 //   - the settings are made by two literals, each in its own function and with the fields it may have;
@@ -101,6 +102,13 @@ var (
 		"parsePins":       {"pin.go:pinnedConfig"},
 	}
 	hxbBannedImports = []string{"reflect", "unsafe", "runtime/debug"}
+	// hxbAllowedImports is the list of the imports of the package as it is written now. A file of the package imports
+	// nothing else: an import that reaches a field by its name (encoding/json, encoding/gob, encoding/xml) is a way round too.
+	hxbAllowedImports = []string{
+		"context", "crypto/sha256", "crypto/subtle", "crypto/tls", "crypto/x509", "encoding/base64", "encoding/binary",
+		"errors", "github.com/ysk6506/praxium/backend/internal/kernel", "io", "net", "net/http", "net/netip", "net/url",
+		"strconv", "strings", "sync", "sync/atomic", "time", "unicode", "unicode/utf8",
+	}
 	// hxbPinOnly are the words written once, in pinnedTLSConfig.
 	hxbPinOnly = []string{"InsecureSkipVerify", "VerifyConnection"}
 )
@@ -169,6 +177,8 @@ func (s *hxbScan) hxbCheckImports(name string, f *ast.File) {
 		}
 		if slices.Contains(hxbBannedImports, path) {
 			s.hxbReport(hxbSite{name, ""}, "imports %s, a way to a field behind the type system", path)
+		} else if !slices.Contains(hxbAllowedImports, path) {
+			s.hxbReport(hxbSite{name, ""}, "imports %s, which is not in the list of the imports of the package", path)
 		}
 	}
 }
@@ -463,6 +473,15 @@ func call() { _ = pinnedTLSConfig("", nil) }`,
 func fixed() { _, _ = connectionTLS("", []string{"sha256/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="}) }`,
 	"a set of pins written by hand": `package egress
 func hand() pinSet { return pinSet{} }`,
+	"a decoder that fills the settings by the names of fields": `package egress
+import "encoding/json"
+func loosen(v any) { _ = json.Unmarshal([]byte(` + "`" + `{"insecureskipverify":true}` + "`" + `), v) }`,
+	"a gob decoder": `package egress
+import "encoding/gob"
+var _ = gob.NewDecoder`,
+	"an xml decoder": `package egress
+import "encoding/xml"
+var _ = xml.Unmarshal`,
 	"reflect": `package egress
 import "reflect"
 var _ = reflect.TypeOf`,
