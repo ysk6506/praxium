@@ -14827,6 +14827,21 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/egress::TestHxbAFaultyRangeIsCutInTheError": {
+   "kind": "test",
+   "hash": "64df97fea44ddee1",
+   "asserts": 1,
+   "literals": [
+    "e440434212df50c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/egress::TestHxbAllowInsecureAndPlaintextRangesAreNotGivenTogether": {
    "kind": "test",
    "hash": "7a86838068cae7a1",
@@ -14839,7 +14854,7 @@
    "reqs": [
     "REQ-820"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbAPinMismatchIsMappedAsTLSAndNotAsAConnectionFailure": {
@@ -14854,7 +14869,22 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbParsePinRefusesWhatIsNotAPin": {
+   "kind": "test",
+   "hash": "076f8e5d039ed11d",
+   "asserts": 2,
+   "literals": [
+    "c12778a5c462fa04"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbParseRangesTakesAddressesAndRangesOnly": {
@@ -14869,7 +14899,7 @@
    "reqs": [
     "REQ-820"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPinnedClientAcceptsTheKeyWhateverTheChainTheNameAndTheDates": {
@@ -14884,7 +14914,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPinnedClientRefusesAnotherKeyBeforeAnyRequest": {
@@ -14899,7 +14929,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPinsAreParsedIntoAnEmptyProofSet": {
@@ -14914,7 +14944,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPinsHoldOnARedirectAndAfterTheServerChangesItsCertificate": {
@@ -14929,7 +14959,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPlaintextRangesAreJudgedOnTheResolvedAddresses": {
@@ -14944,7 +14974,7 @@
    "reqs": [
     "REQ-820"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPlaintextRangesDecideByTheAddress": {
@@ -14959,7 +14989,7 @@
    "reqs": [
     "REQ-820"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPlaintextRangesOfEveryAddressKeepTheRefusedRanges": {
@@ -14974,7 +15004,7 @@
    "reqs": [
     "REQ-820"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbPostgresSettingsAreRegisteredByEgress": {
@@ -14989,7 +15019,22 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbProbeEndsWithAnErrorWhenThereIsNoServerToAsk": {
+   "kind": "test",
+   "hash": "9a8459b11c4a7cb9",
+   "asserts": 4,
+   "literals": [
+    "b7746d047083b680"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbProbeIsJudgedByThePolicyAndTakesHTTPSOnly": {
@@ -15004,7 +15049,7 @@
    "reqs": [
     "REQ-824"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbProbeLeavesTheClientAsItWas": {
@@ -15019,7 +15064,7 @@
    "reqs": [
     "REQ-824"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbProbeOfAPostgresServerAsksForTLSFirst": {
@@ -15035,7 +15080,7 @@
     "REQ-824",
     "REQ-826"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbProbeShowsTheCertificateAndSendsNoRequest": {
@@ -15050,12 +15095,12 @@
    "reqs": [
     "REQ-824"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins": {
    "kind": "test",
-   "hash": "eb8d547e4c7810a4",
+   "hash": "4fdeca62f64c1dc0",
    "asserts": 16,
    "literals": [
     "5187ec0968c7476d"
@@ -15065,7 +15110,7 @@
    "reqs": [
     "REQ-823"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsForTheWaysAround": {
@@ -15080,7 +15125,7 @@
    "reqs": [
     "REQ-823"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbTheSummaryOfACertificateIsCleaned": {
@@ -15095,7 +15140,7 @@
    "reqs": [
     "REQ-824"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbTheTrackerOfAPlaintextConnectionIsJudgedByTheRanges": {
@@ -15110,7 +15155,7 @@
    "reqs": [
     "REQ-820"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestHxbWithoutPinsTheVerificationCannotBeSkipped": {
@@ -15125,7 +15170,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/egress::TestIPLiteralsAreJudgedWithoutResolving": {
@@ -15460,7 +15505,7 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "61b5d08c507fcf03",
+   "hash": "cd7beebce4db3e0b",
    "asserts": 6,
    "literals": [
     "c584953f77926789"
@@ -15470,12 +15515,12 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "429e71cbb1e17aec",
+   "hash": "d4b52d774e34af66",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"
@@ -15485,7 +15530,7 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTheMetadataAddressOfGoogleOverIPv6IsRefused": {
@@ -18968,7 +19013,7 @@
    "reqs": [
     "REQ-824"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxbACheckTellsThePlaintextAndThePinsAsNotes": {
@@ -18983,7 +19028,7 @@
    "reqs": [
     "REQ-821"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxbAPinThatDoesNotMatchIsNotTriedAgain": {
@@ -18998,7 +19043,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxbThePinsOfTheDefinitionReachTheClient": {
@@ -19013,7 +19058,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestLeavingTheLoopClosesTheClientAndTheBodies": {
@@ -19223,7 +19268,7 @@
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/httpsource::TestTheRequestsAreSpacedByTheRateOfTheConnection": {
@@ -19328,7 +19373,7 @@
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/httpsource::TestTheWordsForWhatIsNotASourceErrorAreFixed": {
@@ -20078,7 +20123,7 @@
    "reqs": [
     "REQ-401"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/ingest::TestAdpFieldsOfLaterStepsAreUnknown": {
@@ -21503,7 +21548,7 @@
    "reqs": [
     "REQ-825"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxbPinsOfAConnectionAreCheckedAndNormalized": {
@@ -21518,7 +21563,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHxbPinsThatAreWrongAreDefinitionErrors": {
@@ -21533,7 +21578,7 @@
    "reqs": [
     "REQ-822"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdentifiersOfAFeedAreBoundAndAClashIsReported": {
@@ -29371,7 +29416,7 @@
    "reqs": [
     "REQ-679"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/pgsource::TestPgsStatementsQuoteNamesAndTakeValuesAsArguments": {
@@ -29468,7 +29513,7 @@
     "REQ-659",
     "REQ-660"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/pgsource::TestPgsTLSModeAgainstAServerWithoutTLSRefusesAndDoesNotFallBack": {
@@ -33068,7 +33113,7 @@
    "reqs": [
     "REQ-826"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/sourcecheck::TestHxbAnotherKeyThanThePinsIsRefusedAndTheCheckShowsIt": {
@@ -33083,7 +33128,7 @@
    "reqs": [
     "REQ-826"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/sourcecheck::TestHxbAPinnedPostgresServerIsReadWhateverItsChainAndName": {
@@ -33098,7 +33143,7 @@
    "reqs": [
     "REQ-826"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/sourcecheck::TestScEveryTransactionIsRepeatableReadReadOnly": {
