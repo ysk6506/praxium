@@ -85,6 +85,7 @@ covers:
 - [REST API 설계 — 계약이 먼저, 일관된 형식, 로그인, 계약을 지키는 장치, CLI](design-docs/rest-api.md)
 - [저장한 질의와 간선 정의 — 정의의 모양, 검사, 권한, REST와 MCP 툴, 질의 화면](design-docs/saved-queries.md)
 - [시크릿과 암호화 — 입력 후 재조회 불가, 사용 시점에만 복호화, 사용 이력 기록](design-docs/secrets-and-encryption.md)
+- [받는 웹훅의 수신 전용 키 — 확인 포트, 웹훅 키, 60초 캐시](design-docs/secrets-receive-only-keys.md)
 - [프락시움 자신의 관측성과 운영 가능성 — 신호, 진단, 운영 액션, 권한과 기록](design-docs/self-observability.md)
 - [정의의 쓰기, 시크릿, 경로, 화면 — 소스와 매핑을 편집하는 길](design-docs/source-editing.md)
 - [소스와 어댑터 — DB와 API 소스의 정의, 어댑터의 포트, 읽기 전용, 바깥 요청의 묶기](design-docs/sources-and-adapters.md)
