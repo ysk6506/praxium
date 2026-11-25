@@ -38,9 +38,12 @@ func (rn *run) data(ctx context.Context, ds ingest.Dataset, at pos) (*answer, er
 		if err == nil {
 			return &answer{rn: rn, ds: ds, p: p, rep: rep, attempt: attempt}, nil
 		}
-		if !errors.Is(err, errUnauthorized) || !rn.signer.refreshable() || refreshed {
+		// A token the source refuses is asked for once more, for this request and at most maxTokenRefreshes times in the read: a
+		// source that refuses every other token would otherwise be asked for tokens as often as for data (ADR-0106).
+		if !errors.Is(err, errUnauthorized) || !rn.signer.refreshable() || refreshed || rn.refreshes >= maxTokenRefreshes {
 			return nil, err
 		}
+		rn.refreshes++
 		rn.signer.drop()
 	}
 }
@@ -108,6 +111,11 @@ func (a *answer) again(ctx context.Context, err error) error {
 	rn.emit(ingest.Event{Kind: ingest.EventRetry, Attempt: a.attempt + 1, Reason: retryReason(err)})
 	if serr := rn.r.cfg.Sleep(ctx, wait); serr != nil {
 		return serr
+	}
+	// The token may have run out while the body was read and the wait was waited for; it is asked for again before the request
+	// is sent again, as before every request.
+	if eerr := rn.signer.ensure(ctx, rn); eerr != nil {
+		return eerr
 	}
 	rep, attempt, xerr := rn.exchangeFrom(ctx, a.p, a.attempt+1)
 	if xerr != nil {

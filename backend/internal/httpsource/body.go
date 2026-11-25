@@ -16,6 +16,12 @@ import (
 // source gave (verbatim) is left as it is: no placeholder of it is read. It makes the tree anew, so the definition's own is
 // never changed. unescapeNames says whether the doubled braces of the names are written as one.
 func (s *signer) fill(v any, unescapeNames bool) (any, error) {
+	return s.fillIn(v, unescapeNames, false)
+}
+
+// fillIn is fill for the body of a request that is the token request (forToken) or one of the API: which secret a value is
+// taken from, and whether the token may be in it, is the request's (valueIn).
+func (s *signer) fillIn(v any, unescapeNames, forToken bool) (any, error) {
 	switch x := v.(type) {
 	case map[string]any:
 		out := make(map[string]any, len(x))
@@ -24,7 +30,7 @@ func (s *signer) fill(v any, unescapeNames bool) (any, error) {
 			if unescapeNames {
 				name = ingest.UnescapeBraces(k)
 			}
-			filled, err := s.fill(e, unescapeNames)
+			filled, err := s.fillIn(e, unescapeNames, forToken)
 			if err != nil {
 				return nil, err
 			}
@@ -34,7 +40,7 @@ func (s *signer) fill(v any, unescapeNames bool) (any, error) {
 	case []any:
 		out := make([]any, len(x))
 		for i, e := range x {
-			filled, err := s.fill(e, unescapeNames)
+			filled, err := s.fillIn(e, unescapeNames, forToken)
 			if err != nil {
 				return nil, err
 			}
@@ -45,7 +51,7 @@ func (s *signer) fill(v any, unescapeNames bool) (any, error) {
 		return string(x), nil
 	case string:
 		if p, ok := ingest.ParsePlaceholder(x); ok {
-			return s.valueOf(p)
+			return s.valueIn(p, forToken)
 		}
 		return ingest.UnescapeBraces(x), nil
 	}
@@ -58,7 +64,7 @@ func (s *signer) bodyOf(p plan) ([]byte, string, error) {
 	if p.tmpl == nil {
 		return nil, "", nil
 	}
-	filled, err := s.fill(p.tmpl, !p.token)
+	filled, err := s.fillIn(p.tmpl, !p.token, p.token)
 	if err != nil {
 		return nil, "", err
 	}

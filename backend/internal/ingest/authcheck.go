@@ -15,13 +15,13 @@ var authReads = map[string][]string{
 	AuthBearer:       {"credential"},
 	AuthBasic:        {"credential"},
 	AuthHeader:       {"credential", "header", "prefix"},
-	AuthTokenRequest: {"credential", "request", "token_path", "token_from", "send", "send_header", "send_prefix", "headers"},
+	AuthTokenRequest: {"credential", "request", "token_path", "token_from", "expires_in_path", "send", "send_header", "send_prefix", "headers"},
 	AuthCustom:       {"credential", "headers"},
 }
 
 func (a Auth) fieldsSet() []namedSet {
 	return []namedSet{{"credential", a.Credential != nil}, {"header", a.Header != ""}, {"prefix", a.Prefix != ""},
-		{"request", a.Request != nil}, {"token_path", a.TokenPath != ""}, {"token_from", a.TokenFrom != ""}, {"send", a.Send != ""},
+		{"request", a.Request != nil}, {"token_path", a.TokenPath != ""}, {"token_from", a.TokenFrom != ""}, {"expires_in_path", a.ExpiresInPath != ""}, {"send", a.Send != ""},
 		{"send_header", a.SendHeader != ""}, {"send_prefix", a.SendPrefix != nil}, {"headers", len(a.Headers) > 0}}
 }
 
@@ -78,6 +78,7 @@ func (a Auth) checkHeader(c *collector, id, at string) {
 
 func (a Auth) checkTokenRequest(c *collector, id, at string) {
 	a.checkTokenFrom(c, id, at)
+	a.checkExpiresIn(c, id, at)
 	a.checkSend(c, id, at)
 	if a.SendHeader != "" {
 		if reason := firstText(headerProblem(a.SendHeader, true), loggedHeaderProblem(a.SendHeader)); reason != "" {
@@ -209,11 +210,7 @@ func (r TokenRequest) check(c *collector, id, at string) {
 	bad := func(field, reason string) {
 		c.add(ecAdTokenReq, at+ptr(field), Params{"source": id, "field": "auth.request." + field, "reason": reason}, "source %s: auth.request.%s %s", id, field, reason)
 	}
-	if reason := requestPathProblem(r.Path); reason != "" {
-		bad("path", reason)
-	} else {
-		c.checkText(id, at+ptr("path"), "auth.request.path", r.Path)
-	}
+	r.checkAddress(c, id, at, bad)
 	basic := false
 	switch r.CredentialsIn {
 	case "", CredentialsInBody:
