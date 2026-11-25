@@ -32,6 +32,9 @@ amends_tests:
   - go:backend/internal/pgschema::TestIngestDiffFollowsTheStepFromTheGeneratorBeforeByAddingOnly
 test_change_reason: 생성기 버전이 3에서 4가 되어 버전 단언의 값이 바뀌고, 앞 단계의 더하기 단계를 확인하던 테스트는 이제 2에서 3의 단계를 명시해 같은 단언을 한다. 3에서 4의 단계는 새 테스트가 확인한다. 단언은 줄지 않았다.
 decision_hash: 709cd03a5340f073
+amended_by:
+  - adr: "0102"
+    what: 수신이 데이터셋마다 남기는 수 줄에 완전성 세 갈래(`coverage`)를 더하는 것
 ---
 # ADR-0098 새 수집 흐름의 수신 단계와 실행 기록 — 새 유닛 `adapter.pgingest`
 

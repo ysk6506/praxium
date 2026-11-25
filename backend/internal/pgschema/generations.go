@@ -1,5 +1,7 @@
 package pgschema
 
+import "strings"
+
 // generatorAdditions are what a generator version added to the fixed tables of a storage schema: the steps that
 // make them in a schema that an older version made. A version that changed a table that was already there, or
 // took one away, has no entry, and a schema of an older version is not followed past it (Diff refuses it).
@@ -7,6 +9,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	3: func(schema string, _ Manifest) ([]Step, error) { return ingestSteps(schema), nil },
 	4: func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
 	5: valueSteps,
+	6: func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -91,4 +94,27 @@ func NameIndexSteps(schema string, typeNo int) []Step {
 		steps = append(steps, Step{Phase: Concurrent, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, true)})
 	}
 	return steps
+}
+
+// rawDiffSteps is what generator version 6 adds for the comparison of the received rows with the raw records (ADR-0102): a
+// wait that says its time is up, the place of the row a record of the computation was read from, and a problem that may have no
+// definition, and the index of the rows received by key. A schema made by this build has them already, so each step is made to be run twice, and a schema that has no such table (a KG that was not made with the ingestion tables) is left as it is.
+func rawDiffSteps(schema string) []Step {
+	alter := func(table, column, what string) Step {
+		return Step{Phase: InTx, What: WhatColumn, Name: table + "." + column,
+			SQL: "ALTER TABLE IF EXISTS " + Qualified(schema, table) + " " + what}
+	}
+	return []Step{
+		alter(TableRecordWait, ColExpired, "ADD COLUMN IF NOT EXISTS "+ColExpired+" "+typeExpired),
+		alter(TableCalcRecord, ColPage, "ADD COLUMN IF NOT EXISTS "+ColPage+" integer"),
+		alter(TableCalcRecord, ColRowNo, "ADD COLUMN IF NOT EXISTS "+ColRowNo+" integer"),
+		alter(TableRecordProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
+		alter(TableCalcProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
+		{Phase: InTx, What: WhatTable, Name: TableCalcOwner,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
+				strings.Replace(calcOwnerDef().sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"},
+		{Phase: InTx, What: WhatIndex, Name: "stage_record_key",
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableStageRecord) + "') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS " + QuoteIdent("stage_record_key") +
+				" ON " + Qualified(schema, TableStageRecord) + " (" + stageRecordKeyIndex().Expr + "); END IF; END $$"},
+	}
 }

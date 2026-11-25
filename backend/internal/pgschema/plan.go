@@ -10,9 +10,11 @@ import (
 // without a decision of its own. Version 3 adds the tables of the ingestion at scale (ADR-0095): Diff follows
 // the step from 2 to 3 by making them. Version 4 adds the column held to the tables of the keys, ends and claims that were
 // received (ADR-0098): Diff follows the step from 3 to 4 by adding it (generations.go). Version 5 adds the name indexes of the
-// tables of the types and moves the volatile values out of prov into their columns (ADR-0101): Diff follows the step from 4
-// to 5 with the two indexes of each type that the schema has and one statement for each table of values.
-const GeneratorVersion = 5
+// tables of the types and moves the volatile values out of prov into their columns (ADR-0101): Diff follows the step from 4 to 5.
+// Version 6 adds, for the comparison of the received rows with the raw records (ADR-0102), the column expired of the waits, the
+// place of the row (page, row_no) of a record of the computation, a problem that has no definition, the table that says which run
+// the computation is of and the index of the rows received by key: Diff follows the step from 5 to 6.
+const GeneratorVersion = 6
 
 // Phase says where a step may run.
 type Phase int

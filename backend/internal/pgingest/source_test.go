@@ -164,12 +164,14 @@ func TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySou
 	// the number of the source of the rolled back call is not in use, so the source is put again and that one is taken off.
 	ref = e.attach(t, kg, plan)
 	off := measure(func(tx *sql.Tx) error { return dropTx(e.ctx, tx, ref.KGNo, ref.SrcNo) })
-	if off > 100 {
-		t.Errorf("taking a source off a KG holds %d locks, more than 100", off)
+	// the index of the rows received by key (ADR-0102) is one more relation to drop
+	if off > 110 {
+		t.Errorf("taking a source off a KG holds %d locks, more than 110", off)
 	}
 	t.Logf("putting a source to a KG: %d locks; taking it off: %d (max_locks_per_transaction is %d here)", put, off, perTx)
-	// a KG of 30 sources, more than the 26 or so that one transaction can drop at the default of 64: deleting it takes the
-	// sources off one by one, a transaction each, and then drops the schema.
+	// a KG of 30 sources, more than the 17 or so that one transaction can drop at the default of 64 (a schema of this model takes
+	// about 5000 locks and each source about 83 more, of the 6400 that the lock table has for 100 connections): deleting it takes
+	// the sources off one by one, a transaction each, and then drops the schema.
 	for i := 2; i <= 30; i++ {
 		if _, err := e.st.AttachSource(e.ctx, kg.ID, fmt.Sprintf("src_%d", i), []string{"ds_a"}); err != nil {
 			t.Fatal(err)

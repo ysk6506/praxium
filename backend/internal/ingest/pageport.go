@@ -48,11 +48,56 @@ func (o PageOptions) WithDefaults() PageOptions {
 	return o
 }
 
-// Completeness says whether the whole dataset was read. It is the last page's to give: a read that stopped at a limit,
-// or at an error of the source, is not complete, and the reason says which.
+// Completeness says how much of the dataset was read. It is the last page's to give, and it is one of three (Coverage): the
+// whole dataset (Complete), only what the source showed (SeenOnly: what is shown is true, but a record that is not shown may
+// still be there), or not all of it (neither: a read that stopped at a limit or at an error of the source, and the reason says
+// which). SeenOnly is for a source that cannot tell whole from part, and it is only meant with Complete false, so that code
+// that asks only Complete takes it for not complete, which is the safe reading. A value that says both is not one a reader may
+// give: the receiving refuses it (Check), and Coverage reads it as incomplete. No reader of this build gives SeenOnly yet.
 type Completeness struct {
 	Complete bool
 	Reason   string
+	SeenOnly bool
+}
+
+// Coverage is how much of a dataset a read gave, and so what the comparison with the raw records may count (ADR-0102).
+type Coverage string
+
+// The three coverages. A complete read shows every record the source has, so a record that is not shown is absent. A read of
+// what is seen shows true records, and a record that is not shown is neither counted absent nor closed. An incomplete read
+// is left out whole: not even the rows that changed are used.
+const (
+	CoverageComplete   Coverage = "complete"
+	CoverageSeenOnly   Coverage = "seen_only"
+	CoverageIncomplete Coverage = "incomplete"
+)
+
+// Valid says whether the coverage is one of the three.
+func (c Coverage) Valid() bool {
+	return c == CoverageComplete || c == CoverageSeenOnly || c == CoverageIncomplete
+}
+
+// Check refuses a completeness that says both whole and only what was seen: the two do not go together, and neither is the
+// safer reading to take for the reader's word, so the receiving does not guess.
+func (c Completeness) Check() error {
+	if c.Complete && c.SeenOnly {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the end of a dataset says that it was read whole and that only what was seen was read: it is one of the two")
+	}
+	return nil
+}
+
+// Coverage is the coverage the completeness says. A value that says both (see Check) is read as incomplete, the reading that
+// counts nothing that is not shown.
+func (c Completeness) Coverage() Coverage {
+	switch {
+	case c.Complete && c.SeenOnly:
+		return CoverageIncomplete
+	case c.Complete:
+		return CoverageComplete
+	case c.SeenOnly:
+		return CoverageSeenOnly
+	}
+	return CoverageIncomplete
 }
 
 // Shape is what the first page of a table with a header says about the header: the declared columns it lacks, the

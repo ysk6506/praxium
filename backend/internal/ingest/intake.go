@@ -28,6 +28,17 @@ type DatasetIntake struct {
 	Complete   bool
 	Reason     string
 	NotRead    string
+	// SeenOnly is the dataset read as what the source showed (Completeness.SeenOnly), with Complete false.
+	SeenOnly bool
+}
+
+// Coverage is what the comparison with the raw records may count of the dataset: a dataset whose header lacks a declared column
+// gave no rows however it ended and is left out whole, and any other is what its last page said.
+func (d DatasetIntake) Coverage() Coverage {
+	if d.NotRead != "" {
+		return CoverageIncomplete
+	}
+	return Completeness{Complete: d.Complete, SeenOnly: d.SeenOnly}.Coverage()
 }
 
 // IntakeReport is what one receiving did, a line for every dataset of the source in the order of the definition.
@@ -79,7 +90,10 @@ func (in Intake) receive(ctx context.Context, ds Dataset) (DatasetIntake, error)
 			line.NotRead = shapeReason(Table{Missing: page.Shape.Missing, Header: page.Shape.Header, Hint: page.Shape.Hint})
 		}
 		if page.Last {
-			line.Complete, line.Reason = page.End.Complete, page.End.Reason
+			if err := page.End.Check(); err != nil {
+				return line, err
+			}
+			line.Complete, line.Reason, line.SeenOnly = page.End.Complete, page.End.Reason, page.End.SeenOnly
 			return line, nil
 		}
 	}

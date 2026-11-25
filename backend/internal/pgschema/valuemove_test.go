@@ -41,6 +41,7 @@ func TestVmEveryTableOfATypeHasTheTwoNameIndexesAndNoIndexOnTheReference(t *test
 // [REQ-763]
 func TestVmAKGOfGeneratorFourIsFollowedToFiveByMovingTheValuesAndBuildingTheNameIndexesAfterwards(t *testing.T) {
 	next := manifestOf(t, smallDefs(t))
+	next.GeneratorVersion = 5 // the steps of version 5 alone: what a later version adds is in the tests of that version
 	old := next
 	old.GeneratorVersion = 4
 	delta, err := pgschema.Diff(old, next)
@@ -74,7 +75,7 @@ func TestVmAKGOfGeneratorFourIsFollowedToFiveByMovingTheValuesAndBuildingTheName
 	if own := stepOf(delta.Steps, "s_1"); !strings.Contains(own, `a13 = CASE WHEN jsonb_exists(t.prov->'13', 'v') THEN ((t.prov->'13'->>'v')::double precision) ELSE t.a13 END`) {
 		t.Errorf("the statement of the table of the server does not cast a number:\n%s", own)
 	}
-	if delta.Result.GeneratorVersion != pgschema.GeneratorVersion {
+	if delta.Result.GeneratorVersion != next.GeneratorVersion {
 		t.Errorf("the generator to keep is %d", delta.Result.GeneratorVersion)
 	}
 }
@@ -82,6 +83,7 @@ func TestVmAKGOfGeneratorFourIsFollowedToFiveByMovingTheValuesAndBuildingTheName
 // [REQ-763]
 func TestVmAKGOfGeneratorThreeIsFollowedThroughFourToFiveInOrder(t *testing.T) {
 	next := manifestOf(t, smallDefs(t))
+	next.GeneratorVersion = 5 // the steps of version 5 alone: what a later version adds is in the tests of that version
 	old := next
 	old.GeneratorVersion = 3
 	delta, err := pgschema.Diff(old, next)
