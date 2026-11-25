@@ -81,8 +81,8 @@ func TestIdnTheObjectsTheIdentificationMakesAreTheObjectsTheOldPipelineMakesForT
 		if _, err := runner.Run(context.Background(), plan, kg.ID); err != nil {
 			t.Fatalf("step %d: the old run: %v", n, err)
 		}
-		l, _ := s.idnPipeline(t, pgiTexts{"ds_s": fetch.text}, rdfT0.Add(time.Duration(n)*time.Hour), 0)
-		s.idnApply(t)
+		l, _ := idnPipeline(s, t, pgiTexts{"ds_s": fetch.text}, rdfT0.Add(time.Duration(n)*time.Hour), 0)
+		idnApply(s, t)
 		s.rdfSettle(t, l)
 		total += st.groups
 		oldRefs := idnOldObjects(t, runner, kg.ID)

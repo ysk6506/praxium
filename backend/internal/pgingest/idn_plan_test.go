@@ -31,7 +31,7 @@ type idnPlans struct {
 	seen int
 }
 
-func (p *idnPlans) hook(tx *sql.Tx, what, query string, args []any) {
+func (p *idnPlans) idnHook(tx *sql.Tx, what, query string, args []any) {
 	if strings.HasPrefix(strings.TrimSpace(query), "SET ") {
 		return
 	}
@@ -128,7 +128,7 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 		}
 		t.Logf("received and compared: %v", time.Since(began))
 		keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
-		counts, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, s.idnStart(size, 1), keys)
+		counts, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, idnStart(s, size, 1), keys)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -136,15 +136,15 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 	}
 	if !explain {
 		clock := &idnClock{spent: map[string]time.Duration{}, plans: map[string]string{}}
-		identSeen = clock.hook
+		identSeen = clock.idnHook
 		defer func() {
 			identSeen = nil
-			t.Log(clock.report())
+			t.Log(clock.idnReport())
 		}()
 	}
 	l1, _ := run(idnPlaceRows(n, 0, func(i int) string { return "T" + strconv.Itoa(i) }), rdfT0)
 	mark := time.Now()
-	s.idnApply(t)
+	idnApply(s, t)
 	t.Logf("apply: %v", time.Since(mark))
 	mark = time.Now()
 	s.rdfSettle(t, l1)
@@ -154,7 +154,7 @@ func idnScaled(t *testing.T, n, size int, explain bool) (map[string]*idnRead, ti
 	t.Logf("vacuum: %v", time.Since(mark))
 	plans := &idnPlans{most: map[string]*idnRead{}}
 	if explain {
-		identSeen = plans.hook
+		identSeen = plans.idnHook
 		defer func() { identSeen = nil }()
 	}
 	tag := func(i int) string {
@@ -236,11 +236,12 @@ func TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen(t *testing.T) {
 type idnClock struct {
 	spent map[string]time.Duration
 	plans map[string]string
+	nth   int
 	last  string
 	at    time.Time
 }
 
-func (c *idnClock) hook(tx *sql.Tx, what, query string, args []any) {
+func (c *idnClock) idnHook(tx *sql.Tx, what, query string, args []any) {
 	if os.Getenv("IDN_SHOW") == what {
 		rows, err := tx.Query("EXPLAIN (COSTS OFF) "+query, args...)
 		if err != nil {
@@ -253,6 +254,19 @@ func (c *idnClock) hook(tx *sql.Tx, what, query string, args []any) {
 		}
 		_ = rows.Close()
 		panic("shown")
+	}
+	if os.Getenv("IDN_PLANS") != "" && (what == "bind the new keys" || what == "make the objects under a parent") {
+		var lines []string
+		if rows, err := tx.Query("EXPLAIN (COSTS OFF) "+query, args...); err == nil {
+			for rows.Next() {
+				var line string
+				_ = rows.Scan(&line)
+				lines = append(lines, line)
+			}
+			_ = rows.Close()
+		}
+		c.nth++
+		fmt.Printf("plan %d of %s at %s:\n%s\n", c.nth, what, time.Now().Format("15:04:05"), strings.Join(lines, "\n"))
 	}
 	if _, seen := c.plans[what]; !seen && (what == "copy the keys" || what == "make the slots") {
 		var lines []string
@@ -269,14 +283,14 @@ func (c *idnClock) hook(tx *sql.Tx, what, query string, args []any) {
 	now := time.Now()
 	if c.last != "" {
 		c.spent[c.last] += now.Sub(c.at)
-		if now.Sub(c.at) > 5*time.Second {
+		if now.Sub(c.at) > 2*time.Second {
 			fmt.Printf("slow: %s %v\n", c.last, now.Sub(c.at))
 		}
 	}
 	c.last, c.at = what, now
 }
 
-func (c *idnClock) report() string {
+func (c *idnClock) idnReport() string {
 	var names []string
 	for k := range c.spent {
 		names = append(names, k)

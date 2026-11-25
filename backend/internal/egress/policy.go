@@ -30,9 +30,15 @@ type Policy struct {
 	// AllowRanges are the exceptions of DenyLoopback and DenyPrivate. They open only what those two closed: a range
 	// of refusedRanges, Deny and Self stay refused whatever is listed here.
 	AllowRanges []netip.Prefix
-	// AllowInsecure lets a source be reached without TLS (http, or sslmode=disable of PostgreSQL) at an address that is
-	// not the loopback. It never lets a certificate go unverified: nothing does.
+	// AllowInsecure lets a source be reached without TLS (http, or sslmode=disable of PostgreSQL) at every address. It is for
+	// a program and a test; the operator of a server gives PlaintextRanges (ADR-0105). It cannot be given together with
+	// PlaintextRanges. It never lets the verification of a certificate be skipped: only pins (pin.go) replace it.
 	AllowInsecure bool
+	// PlaintextRanges are the ranges of addresses that a source may be reached at without TLS (http, or sslmode=disable of
+	// PostgreSQL), besides the loopback, which always may. Empty means the loopback only. The decision is made on the
+	// addresses the name was resolved to, all of which have to be on the loopback or in a range. A range of refusedRanges,
+	// Deny and Self stays refused whatever is listed here. To allow every address, list 0.0.0.0/0 and ::/0.
+	PlaintextRanges []netip.Prefix
 }
 
 type rangeRule struct {
@@ -125,32 +131,20 @@ type compiled struct {
 	self         []netip.AddrPort
 	denyPrivate  bool
 	denyLoopback bool
-	insecure     bool
+	// plain are the ranges a connection without TLS may go to besides the loopback (AllowInsecure is 0.0.0.0/0 and ::/0).
+	plain []netip.Prefix
 }
 
 func compile(p Policy) (*compiled, error) {
-	c := &compiled{denyPrivate: p.DenyPrivate, denyLoopback: p.DenyLoopback, insecure: p.AllowInsecure}
-	if len(p.Hosts) > 0 {
-		c.hosts = map[string]bool{}
-		for _, h := range p.Hosts {
-			name, _, bad := NormalizeHost(h)
-			if bad != "" {
-				return nil, kernel.Errorf(kernel.CodeInvalidValue, "egress: a host of the policy is not valid: %s", bad)
-			}
-			c.hosts[name] = true
-		}
-	}
-	if len(p.Ports) > 0 {
-		c.ports = map[uint16]bool{}
-		for _, port := range p.Ports {
-			if port == 0 {
-				return nil, kernel.Errorf(kernel.CodeInvalidValue, "egress: port 0 is not a port of the policy")
-			}
-			c.ports[port] = true
-		}
+	c := &compiled{denyPrivate: p.DenyPrivate, denyLoopback: p.DenyLoopback}
+	if err := c.compileNames(p); err != nil {
+		return nil, err
 	}
 	var err error
 	if c.deny, err = prefixes("Deny", p.Deny); err != nil {
+		return nil, err
+	}
+	if err := c.compilePlain(p); err != nil {
 		return nil, err
 	}
 	if c.allow, err = prefixes("AllowRanges", p.AllowRanges); err != nil {
@@ -163,6 +157,45 @@ func compile(p Policy) (*compiled, error) {
 		c.self = append(c.self, netip.AddrPortFrom(canonical(s.Addr()), s.Port()))
 	}
 	return c, nil
+}
+
+// compileNames fills the sets of hosts and ports.
+func (c *compiled) compileNames(p Policy) error {
+	if len(p.Hosts) > 0 {
+		c.hosts = map[string]bool{}
+		for _, h := range p.Hosts {
+			name, _, bad := NormalizeHost(h)
+			if bad != "" {
+				return kernel.Errorf(kernel.CodeInvalidValue, "egress: a host of the policy is not valid: %s", bad)
+			}
+			c.hosts[name] = true
+		}
+	}
+	if len(p.Ports) > 0 {
+		c.ports = map[uint16]bool{}
+		for _, port := range p.Ports {
+			if port == 0 {
+				return kernel.Errorf(kernel.CodeInvalidValue, "egress: port 0 is not a port of the policy")
+			}
+			c.ports[port] = true
+		}
+	}
+	return nil
+}
+
+// compilePlain fills the ranges a connection without TLS may go to.
+func (c *compiled) compilePlain(p Policy) error {
+	if p.AllowInsecure && len(p.PlaintextRanges) > 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "egress: AllowInsecure and PlaintextRanges are two ways to say the same thing and are not given together")
+	}
+	var err error
+	if c.plain, err = prefixes("PlaintextRanges", p.PlaintextRanges); err != nil {
+		return err
+	}
+	if p.AllowInsecure {
+		c.plain = []netip.Prefix{netip.MustParsePrefix("0.0.0.0/0"), netip.MustParsePrefix("::/0")}
+	}
+	return nil
 }
 
 // prefixes validates ranges and writes an IPv4-mapped range as the IPv4 range, which is the form addresses are
@@ -184,6 +217,23 @@ func prefixes(field string, in []netip.Prefix) ([]netip.Prefix, error) {
 		out = append(out, netip.PrefixFrom(addr, bits).Masked())
 	}
 	return out, nil
+}
+
+// plaintextAllowed says whether a connection without TLS may go to the address: it is on the loopback or in a range of
+// PlaintextRanges. An address that carries an IPv4 address in a transition range (see embedded) is allowed only when the
+// address inside is as well, so that a range of IPv4 addresses is not a way round itself.
+func (c *compiled) plaintextAllowed(ip netip.Addr) bool {
+	ip = canonical(ip)
+	candidates := []netip.Addr{ip}
+	if inner, ok := embedded(ip); ok {
+		candidates = append(candidates, inner)
+	}
+	for _, cand := range candidates {
+		if !cand.IsLoopback() && !within(c.plain, cand) {
+			return false
+		}
+	}
+	return true
 }
 
 func within(list []netip.Prefix, ip netip.Addr) bool {

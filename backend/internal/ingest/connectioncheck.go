@@ -1,11 +1,12 @@
 package ingest
 
 import (
+	"crypto/sha256"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"net/netip"
 	"net/url"
-	"sort"
 	"strconv"
 	"strings"
 )
@@ -83,6 +84,7 @@ func (cn *Connection) normalizeHTTP(c *collector, id string) {
 		}
 	}
 	cn.checkCA(c, id)
+	cn.checkTLS(c, id, strings.HasPrefix(strings.ToLower(cn.BaseURL), "https://"))
 	cn.checkHeaders(c, id)
 	c.intOr(id, "timeout_seconds", &cn.TimeoutSeconds, 1, 3600, DefaultHTTPTimeoutSeconds)
 	cn.RequestsPerSecond = defaultedF(c.checkRange(ecAdRange, Params{"source": id}, "requests_per_second", ptr("connection", "requests_per_second"), cn.RequestsPerSecond, numBounds{0.01, 1000}), cn.RequestsPerSecond, DefaultRequestsPerSecond)
@@ -174,6 +176,60 @@ func (cn Connection) checkCA(c *collector, id string) {
 	}
 }
 
+// checkTLS checks the pins of the connection and writes them in the form they are compared in, each once. uses says
+// whether the connection uses TLS at all: a pin of a connection without it is a mistake that would make a person believe
+// the connection is protected.
+func (cn *Connection) checkTLS(c *collector, id string, uses bool) {
+	if cn.TLS == nil {
+		return
+	}
+	bad := func(reason string, steps ...any) {
+		c.add(ecAdTLSPins, ptr(steps...), Params{"source": id, "reason": reason}, "source %s: tls.pins %s", id, reason)
+	}
+	pins := cn.TLS.Pins
+	switch {
+	case len(pins) == 0:
+		bad("has no pin; give one to eight, or leave tls out", "connection", "tls", "pins")
+		return
+	case len(pins) > MaxTLSPins:
+		bad("has more than "+strconv.Itoa(MaxTLSPins)+" pins", "connection", "tls", "pins")
+		return
+	case cn.CAPEM != "":
+		bad("is given together with ca_pem; the pins replace the verification against an authority, so give one of them", "connection", "tls", "pins")
+		return
+	case !uses:
+		bad("is given for a connection without TLS, which has no certificate to pin", "connection", "tls", "pins")
+		return
+	}
+	seen := map[string]bool{}
+	canonical := make([]string, 0, len(pins))
+	for i, p := range pins {
+		pin, ok := normalizePin(p)
+		if !ok {
+			bad("has an item that is not sha256/ and the base64 of a 32-byte hash", "connection", "tls", "pins", i)
+			return
+		}
+		if !seen[pin] {
+			seen[pin] = true
+			canonical = append(canonical, pin)
+		}
+	}
+	cn.TLS = &ConnectionTLS{Pins: canonical}
+}
+
+// normalizePin reads a pin ("sha256/" and the base64 of 32 bytes) and writes it the one way it is compared in.
+func normalizePin(p string) (string, bool) {
+	rest, ok := strings.CutPrefix(p, "sha256/")
+	if !ok {
+		return "", false
+	}
+	raw, err := base64.StdEncoding.DecodeString(rest)
+	if err != nil || len(raw) != sha256.Size {
+		return "", false
+	}
+	return "sha256/" + base64.StdEncoding.EncodeToString(raw), true
+}
+
 func caProblem(text string) string {
 	rest, n := []byte(text), 0
 	for {
@@ -200,29 +256,7 @@ func caProblem(text string) string {
 }
 
 func (cn Connection) checkHeaders(c *collector, id string) {
-	names := make([]string, 0, len(cn.Headers))
-	for name := range cn.Headers {
-		names = append(names, name)
-	}
-	sort.Strings(names)
-	seen := map[string]bool{}
-	for _, name := range names {
-		reason := headerProblem(name, false)
-		if reason == "" && seen[strings.ToLower(name)] {
-			reason = "is written twice, in two spellings"
-		}
-		if reason == "" {
-			reason = valueProblem(cn.Headers[name])
-		}
-		if reason == "" && hasPlaceholderInside(cn.Headers[name]) {
-			reason = "has a {{credential.…}} or {{auth.token}}; a header of the connection is a text, and a secret goes in a header through auth.headers"
-		}
-		seen[strings.ToLower(name)] = true
-		if reason != "" {
-			c.add(ecAdHeader, ptr("connection", "headers", name), Params{"source": id, "header": clip(name, idClipAt), "reason": reason},
-				"source %s: the header %q %s", id, clip(name, idClipAt), reason)
-		}
-	}
+	checkHeaderTexts(c, id, []any{"connection", "headers"}, cn.Headers)
 }
 
 func (cn *Connection) normalizePostgres(c *collector, id string) {
@@ -243,6 +277,7 @@ func (cn *Connection) normalizePostgres(c *collector, id string) {
 	cn.checkPostgresCredential(c, id)
 	cn.checkSSL(c, id)
 	cn.checkCA(c, id)
+	cn.checkTLS(c, id, cn.SSLMode != SSLDisable)
 	c.intOr(id, "connect_timeout_seconds", &cn.ConnectTimeoutSeconds, 1, 300, DefaultConnectSeconds)
 	c.intOr(id, "statement_timeout_seconds", &cn.StatementTimeoutSeconds, 1, 3600, DefaultStatementSeconds)
 	c.intOr(id, "lock_timeout_seconds", &cn.LockTimeoutSeconds, 1, 300, DefaultLockSeconds)

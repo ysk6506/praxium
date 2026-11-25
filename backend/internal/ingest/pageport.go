@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"iter"
+	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
@@ -52,7 +53,8 @@ func (o PageOptions) WithDefaults() PageOptions {
 // whole dataset (Complete), only what the source showed (SeenOnly: what is shown is true, but a record that is not shown may
 // still be there), or not all of it (neither: a read that stopped at a limit or at an error of the source, and the reason says
 // which). SeenOnly is for a source that cannot tell whole from part, and it is only meant with Complete false, so that code
-// that asks only Complete takes it for not complete, which is the safe reading. No reader of this build gives SeenOnly yet.
+// that asks only Complete takes it for not complete, which is the safe reading. A value that says both is not one a reader may
+// give: the receiving refuses it (Check), and Coverage reads it as incomplete. No reader of this build gives SeenOnly yet.
 type Completeness struct {
 	Complete bool
 	Reason   string
@@ -76,9 +78,21 @@ func (c Coverage) Valid() bool {
 	return c == CoverageComplete || c == CoverageSeenOnly || c == CoverageIncomplete
 }
 
-// Coverage is the coverage the completeness says. Complete wins over SeenOnly, so a value that says both is complete.
+// Check refuses a completeness that says both whole and only what was seen: the two do not go together, and neither is the
+// safer reading to take for the reader's word, so the receiving does not guess.
+func (c Completeness) Check() error {
+	if c.Complete && c.SeenOnly {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the end of a dataset says that it was read whole and that only what was seen was read: it is one of the two")
+	}
+	return nil
+}
+
+// Coverage is the coverage the completeness says. A value that says both (see Check) is read as incomplete, the reading that
+// counts nothing that is not shown.
 func (c Completeness) Coverage() Coverage {
 	switch {
+	case c.Complete && c.SeenOnly:
+		return CoverageIncomplete
 	case c.Complete:
 		return CoverageComplete
 	case c.SeenOnly:
@@ -151,6 +165,41 @@ type CheckResult struct {
 	Message string
 	Rows    int
 	Steps   []CheckStep
+	// Notes are things the person should know that are no failure and no step (the data goes without encryption, the
+	// certificate that is pinned is accepted after it has expired). They go with a result of any kind.
+	Notes []CheckNote
+	// Cert is the certificate the server presented, set when the check failed because the certificate could not be
+	// verified or is not one of the pins. It is there so that a person who is allowed to change the connection can compare it
+	// with what the owner of the server gave them and pin it. The texts of it are the server's own, cut and cleaned.
+	Cert *CertSummary
+}
+
+// The codes of the notes of a check.
+const (
+	// NotePlaintext says the connection uses no TLS: the credentials and the data cross the network as they are.
+	NotePlaintext = "source.plaintext_transport"
+	// NotePinExpiry says a certificate that is pinned is accepted whatever its dates are.
+	NotePinExpiry = "source.pin_expiry_ignored"
+)
+
+// CheckNote is a thing a check tells that is not a failure: a closed code and the words for it.
+type CheckNote struct {
+	Code    string
+	Message string
+}
+
+// CertSummary is the certificate a server presented, in words that are safe to show (the server's own words, cut and with
+// the control and formatting characters taken out). SPKISHA256 is the pin of it: what tls.pins takes to accept it. The words
+// were written by the server, so a screen shows them as text and always escapes them; Truncated says that something was cut.
+type CertSummary struct {
+	Subject    string
+	Issuer     string
+	SANs       []string
+	SANsMore   int
+	NotBefore  time.Time
+	NotAfter   time.Time
+	SPKISHA256 string
+	Truncated  bool
 }
 
 // CheckStep is one item of a check: its name (a closed phrase of the reader's), how it came out and the words for it.

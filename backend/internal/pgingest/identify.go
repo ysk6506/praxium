@@ -117,6 +117,13 @@ func (s *Store) BeginIdentify(ctx context.Context, lease ingest.RunLease, start 
 		if err != nil {
 			return err
 		}
+		kgNo, err := kgNoOfRun(ctx, tx, run.kgID)
+		if err != nil {
+			return err
+		}
+		if err := ownsCalc(ctx, tx, kgNo, lease.No); err != nil {
+			return err
+		}
 		var rd struct {
 			Receive struct {
 				Datasets []struct {
@@ -186,7 +193,24 @@ func loadIdent(ctx context.Context, tx *sql.Tx, lease ingest.RunLease) (*identRu
 	if err != nil {
 		return nil, err
 	}
+	if err := ownsCalc(ctx, tx, kgNo, lease.No); err != nil {
+		return nil, err
+	}
 	return &identRun{kgNo: kgNo, srcNo: run.srcNo, runNo: lease.No, st: &st}, nil
+}
+
+// ownsCalc says that the tables of the computation are the run's: the comparison of the step before wrote its number there, and a
+// run that is not that one (it went back to wait for a confirmation and another run took the tables, or the tables were emptied) must
+// not read what is in them.
+func ownsCalc(ctx context.Context, tx *sql.Tx, kgNo, runNo int64) error {
+	var owned bool
+	if err := tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM "+pgschema.TableRef(kgNo, pgschema.TableCalcOwner)+" WHERE "+pgschema.ColRunNo+" = $1)", runNo).Scan(&owned); err != nil {
+		return dbErr(err, "read whose the tables of the computation are")
+	}
+	if !owned {
+		return kernel.Errorf(ingest.CodeRunStage, "the tables of the computation are not the run %d's", runNo)
+	}
+	return nil
 }
 
 func identOf(counts []byte) (identState, error) {

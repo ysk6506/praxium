@@ -8,7 +8,7 @@ import (
 )
 
 // [REQ-785]
-func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionAndTheIndexOfTheRowsReceivedAndNothingElse(t *testing.T) {
+func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionTheOwnerOfTheComputationAndTheIndexOfTheRowsReceivedAndNothingElse(t *testing.T) {
 	next := igtPlan(t).Manifest
 	next.GeneratorVersion = 6 // the steps of version 6 alone: what a later version adds is in the tests of that version
 	old := next
@@ -24,14 +24,20 @@ func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsTh
 		"record_problem.def_no": `ALTER TABLE IF EXISTS "s_7"."record_problem" ALTER COLUMN def_no DROP NOT NULL`,
 		"calc_problem.def_no":   `ALTER TABLE IF EXISTS "s_7"."calc_problem" ALTER COLUMN def_no DROP NOT NULL`,
 	}
+	want["calc_owner"] = `DO $$ BEGIN IF to_regclass('"s_7"."calc_record"') IS NOT NULL THEN CREATE TABLE IF NOT EXISTS "s_7"."calc_owner" (
+    run_no bigint NOT NULL PRIMARY KEY
+); END IF; END $$`
 	want["stage_record_key"] = `DO $$ BEGIN IF to_regclass('"s_7"."stage_record"') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS "stage_record_key" ON "s_7"."stage_record" (dataset_no, key, page, row_no); END IF; END $$`
 	if len(delta.Steps) != len(want) {
 		t.Fatalf("%d steps", len(delta.Steps))
 	}
 	for _, s := range delta.Steps {
 		kind := pgschema.WhatColumn
-		if s.Name == "stage_record_key" {
+		switch s.Name {
+		case "stage_record_key":
 			kind = pgschema.WhatIndex
+		case "calc_owner":
+			kind = pgschema.WhatTable
 		}
 		if s.Phase != pgschema.InTx || s.What != kind || want[s.Name] != s.SQL {
 			t.Errorf("unexpected step %+v", s)
@@ -41,7 +47,7 @@ func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsTh
 		t.Errorf("the generator to keep is %d", delta.Result.GeneratorVersion)
 	}
 	plan := igtPlan(t)
-	for table, column := range map[string]string{"record_wait": "expired boolean NOT NULL DEFAULT false", "calc_record": "page integer,", "calc_wait": "expired boolean NOT NULL"} {
+	for table, column := range map[string]string{"record_wait": "expired boolean NOT NULL DEFAULT false", "calc_record": "page integer,", "calc_wait": "expired boolean NOT NULL", "calc_owner": "run_no bigint NOT NULL PRIMARY KEY"} {
 		if !strings.Contains(stepSQL(plan, table), column) {
 			t.Errorf("a new KG has no %q in %s: %s", column, table, stepSQL(plan, table))
 		}
@@ -76,7 +82,7 @@ func TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix(t *testi
 			t.Fatalf("step %d is not %s: %v", i, name, names)
 		}
 	}
-	tail := []string{"record_wait.expired", "calc_record.page", "calc_record.row_no", "record_problem.def_no", "calc_problem.def_no", "stage_record_key"}
+	tail := []string{"record_wait.expired", "calc_record.page", "calc_record.row_no", "record_problem.def_no", "calc_problem.def_no", "calc_owner", "stage_record_key"}
 	if len(names) < len(tail) || strings.Join(names[len(names)-len(tail):], "|") != strings.Join(tail, "|") {
 		t.Errorf("the steps of six are not last of the steps of a transaction: %v", names)
 	}

@@ -111,6 +111,9 @@ func rawDiffSteps(schema string) []Step {
 		alter(TableCalcRecord, ColRowNo, "ADD COLUMN IF NOT EXISTS "+ColRowNo+" integer"),
 		alter(TableRecordProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
 		alter(TableCalcProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
+		{Phase: InTx, What: WhatTable, Name: TableCalcOwner,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
+				strings.Replace(calcOwnerDef().sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"},
 		{Phase: InTx, What: WhatIndex, Name: "stage_record_key",
 			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableStageRecord) + "') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS " + QuoteIdent("stage_record_key") +
 				" ON " + Qualified(schema, TableStageRecord) + " (" + stageRecordKeyIndex().Expr + "); END IF; END $$"},

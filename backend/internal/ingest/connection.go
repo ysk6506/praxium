@@ -90,6 +90,9 @@ type Connection struct {
 	// CAPEM is the certificate or certificates that sign the server's: the only ones trusted when it is given, in place
 	// of the system's. HTTP and PostgreSQL both have it.
 	CAPEM string `json:"ca_pem,omitempty"`
+	// TLS names the certificates of the server that are accepted in place of verifying its chain, its name and its dates
+	// (ADR-0105). HTTP and PostgreSQL both have it; it is not given together with CAPEM or without TLS.
+	TLS *ConnectionTLS `json:"tls,omitempty"`
 	// TimeoutSeconds is how long one request may take.
 	TimeoutSeconds    int               `json:"timeout_seconds,omitempty"`
 	RequestsPerSecond float64           `json:"requests_per_second,omitempty"`
@@ -111,6 +114,19 @@ type Connection struct {
 	LockTimeoutSeconds      int        `json:"lock_timeout_seconds,omitempty"`
 }
 
+// MaxTLSPins is how many pins a connection may name: several, so that a key can be replaced without a gap.
+const MaxTLSPins = 8
+
+// ConnectionTLS is what a connection says about the certificate of its server beyond the default (verify it against the
+// system's authorities, or against ca_pem).
+type ConnectionTLS struct {
+	// Pins are the public keys of the certificates the server may present, each as "sha256/" and the base64 of the SHA-256 of
+	// the SubjectPublicKeyInfo of the certificate. With a pin the chain, the name and the dates of the certificate are not
+	// looked at: only whether its public key is one of the pins. It is to be used for a server whose certificate cannot be
+	// verified (a self-signed one, a name that does not match), and it holds although the certificate has expired.
+	Pins []string `json:"pins,omitempty"`
+}
+
 // Auth is how an HTTP source is signed in to. Kind says which of the other fields are read: bearer and header send a
 // token secret, basic sends a password secret, token_request asks for a token with a secret first, and custom sends
 // nothing by itself.
@@ -126,6 +142,9 @@ type Auth struct {
 	// TokenFrom is where the token is in the answer: at TokenPath (path, the default) or the whole body, which is a JSON
 	// text (body).
 	TokenFrom string `json:"token_from,omitempty"`
+	// ExpiresInPath is where the answer tells for how many seconds the token holds (a number or a text of digits), and the
+	// token is asked for again before that. Without it the token is asked for again only when the source refuses it (401).
+	ExpiresInPath string `json:"expires_in_path,omitempty"`
 	// Send is how the token goes on the requests for data: in the header SendHeader names (header, the default), or
 	// only where a placeholder or Headers puts it (template).
 	Send       string `json:"send,omitempty"`
@@ -146,15 +165,27 @@ type SecretHeader struct {
 	Prefix string `json:"prefix,omitempty"`
 }
 
-// TokenRequest is the request that gives a token: a POST to a path of the same host. The credentials go in the body
+// TokenRequest is the request that gives a token: a POST to a path under the base address (Path, the host of the API) or to a
+// whole address (URL), which may be another host: the authentication server (ADR-0106). The credentials go in the body
 // (CredentialsIn body, the default: the body is a JSON tree or, as a form, a flat map, and a value that is exactly
 // {{credential.<field>}} is replaced by that field of the secret, as a value and never as a part of a text) or in an
 // Authorization: Basic header (basic: the request may have no body).
 type TokenRequest struct {
-	Path          string         `json:"path"`
-	Format        string         `json:"format,omitempty"`
-	CredentialsIn string         `json:"credentials_in,omitempty"`
-	Body          map[string]any `json:"body,omitempty"`
+	// Path is the path of the request under the base address; URL is the whole address of it, https:// or http://, with a
+	// path and nothing else. One of the two is given. The host and the port of URL are the origin of the token request, and
+	// it may differ from the origin of base_url.
+	Path string `json:"path,omitempty"`
+	URL  string `json:"url,omitempty"`
+	// CAPEM is the certificate authority of the token server: the only one trusted for it when it is given, in place of the
+	// system's. It is read when URL is another origin than base_url; the ca_pem of the connection is the API's and never
+	// the token server's.
+	CAPEM string `json:"ca_pem,omitempty"`
+	// Headers are the headers of the token request only, as texts. When the token goes to another host the headers of the
+	// connection are not sent to it; these are.
+	Headers       map[string]string `json:"headers,omitempty"`
+	Format        string            `json:"format,omitempty"`
+	CredentialsIn string            `json:"credentials_in,omitempty"`
+	Body          map[string]any    `json:"body,omitempty"`
 }
 
 // Request is the request an HTTP dataset reads with: the method (GET unless the dataset says it reads with POST), the

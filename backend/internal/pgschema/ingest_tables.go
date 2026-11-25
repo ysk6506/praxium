@@ -26,7 +26,7 @@ const (
 	// typeHeld says that a key, an end or a claim belongs to a row that a rule filtered out (generator version 4).
 	typeHeld = "boolean NOT NULL DEFAULT false"
 	// typeDefNo is the number of the definition (the feed or the link) a problem arose in; a problem of the record as a whole,
-	// such as a key that repeats in the batch, has none (generator version 5).
+	// such as a key that repeats in the batch, has none (generator version 6).
 	typeDefNo = "integer"
 	// typeExpired says that the time of a wait is up: the record is closed (unseen) or let go of (filtered).
 	typeExpired = "boolean NOT NULL DEFAULT false"
@@ -129,6 +129,7 @@ func computeRecordDefs() []tableDef {
 			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColKind, typeSmall),
 			col(ColRuns, typeInt), col(ColFirstAt, "timestamptz NOT NULL"), col(ColExpired, "boolean NOT NULL"),
 		}},
+		calcOwnerDef(),
 	}
 }
 
@@ -272,12 +273,6 @@ func ingestIndexDefs() []indexDef {
 	return append(out, identifyIndexDefs()...)
 }
 
-// stageRecordKeyIndex is the index the comparison of the rows received reads by (ADR-0102): the key in the order of the
-// raw records' key, then the place of the row. The source's partitions have it with the table.
-func stageRecordKeyIndex() indexDef {
-	return indexDef{Name: "stage_record_key", Table: TableStageRecord, Expr: strings.Join([]string{ColDatasetNo, ColKey, ColPage, ColRowNo}, ", ")}
-}
-
 // identifyIndexDefs are the indexes the identification reads by (ADR-0108). The rows received are read by a range of pages, which is
 // how they were put in, so the index of a source's rows is a BRIN (it costs the COPY of the receiving next to nothing).
 func identifyIndexDefs() []indexDef {
@@ -301,4 +296,15 @@ func identifyIndexDefs() []indexDef {
 		{Name: "calc_newobj_ref", Table: TableCalcNewObj, Unique: true, Expr: ColRef},
 		{Name: "calc_ref_pair", Table: TableCalcRef, Expr: ColRid + ", " + ColRole},
 	}
+}
+
+// stageRecordKeyIndex is the index the comparison of the rows received reads by (ADR-0102): the key in the order of the
+// raw records' key, then the place of the row. The source's partitions have it with the table.
+func stageRecordKeyIndex() indexDef {
+	return indexDef{Name: "stage_record_key", Table: TableStageRecord, Expr: strings.Join([]string{ColDatasetNo, ColKey, ColPage, ColRowNo}, ", ")}
+}
+
+// calcOwnerDef is the table that says which run the tables of the computation are of: one row, the number of the run.
+func calcOwnerDef() tableDef {
+	return tableDef{Name: TableCalcOwner, Cols: []string{col(ColRunNo, "bigint NOT NULL PRIMARY KEY")}}
 }

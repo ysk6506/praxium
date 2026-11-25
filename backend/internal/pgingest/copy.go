@@ -20,11 +20,16 @@ import (
 // copyStatement is the text of the statement that copies the columns of a table of a source's partition. The partition is named
 // itself so that the rows go straight in and no other partition is locked.
 func copyStatement(kgNo, srcNo int64, table string, cols []string) string {
+	return copyInto(pgschema.TableRef(kgNo, pgschema.SourcePartition(table, srcNo)), cols)
+}
+
+// copyInto is the text of the statement that copies the columns into a table that is named whole.
+func copyInto(ref string, cols []string) string {
 	quoted := make([]string, len(cols))
 	for i, c := range cols {
 		quoted[i] = pgschema.QuoteIdent(c)
 	}
-	return "COPY " + pgschema.TableRef(kgNo, pgschema.SourcePartition(table, srcNo)) + " (" + strings.Join(quoted, ", ") + ") FROM STDIN"
+	return "COPY " + ref + " (" + strings.Join(quoted, ", ") + ") FROM STDIN"
 }
 
 // copier is one COPY that is open in a transaction.
@@ -36,7 +41,16 @@ type copier struct {
 
 // openCopy starts a COPY of the columns into the partition of the source.
 func openCopy(ctx context.Context, tx *sql.Tx, kgNo, srcNo int64, table string, cols []string) (*copier, error) {
-	stmt, err := tx.PrepareContext(ctx, copyStatement(kgNo, srcNo, table, cols))
+	return openCopyOf(ctx, tx, copyStatement(kgNo, srcNo, table, cols), table)
+}
+
+// openCopyTable starts a COPY of the columns into a table of the KG (a table of the computation, which has no partitions).
+func openCopyTable(ctx context.Context, tx *sql.Tx, kgNo int64, table string, cols []string) (*copier, error) {
+	return openCopyOf(ctx, tx, copyInto(pgschema.TableRef(kgNo, table), cols), table)
+}
+
+func openCopyOf(ctx context.Context, tx *sql.Tx, statement, table string) (*copier, error) {
+	stmt, err := tx.PrepareContext(ctx, statement)
 	if err != nil {
 		return nil, dbErr(err, "start the COPY into "+table)
 	}

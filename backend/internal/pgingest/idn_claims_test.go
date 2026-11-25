@@ -29,8 +29,8 @@ func idnClaims(rows ...string) pgiTexts {
 // [REQ-885]
 func TestIdnTwoObjectsThatSayTheyHaveOneIdentifierGetItByTheRuleAndTheLoserIsToldAndAFeedThatMakesNoObjectFindsTheOnesThereAre(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, idnClaimSource, idnClaimMapping))
-	l1, _ := s.idnPipeline(t, idnClaims("A,sn1,Zorvane,aa:aa:aa:aa:aa:01,on", "B,sn2,Zorvane,aa:aa:aa:aa:aa:02,on"), rdfT0, 0)
-	a1 := s.idnBound(t)
+	l1, _ := idnPipeline(s, t, idnClaims("A,sn1,Zorvane,aa:aa:aa:aa:aa:01,on", "B,sn2,Zorvane,aa:aa:aa:aa:aa:02,on"), rdfT0, 0)
+	a1 := idnBounds(s, t)
 	refA := idnRefOf(a1, "ds_s", "A")
 	// the feed that makes none finds the object the other made, in the same run
 	for _, b := range a1 {
@@ -41,13 +41,13 @@ func TestIdnTwoObjectsThatSayTheyHaveOneIdentifierGetItByTheRuleAndTheLoserIsTol
 	if len(a1) != 4 {
 		t.Fatalf("%+v", a1)
 	}
-	s.idnApply(t)
+	idnApply(s, t)
 	k := s.ref.KGNo
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".object_identifier (obj_no, scheme, value, scope, seq_from) SELECT c.obj_no, '%s', cl.value, '', 1 FROM "s_%d".calc_claim cl
 		JOIN "s_%d".calc_bind c ON c.rid = cl.rid AND c.feed_no = cl.feed_no`, k, idnScheme(s, "bmc_mac"), k, k))
 	s.rdfSettle(t, l1)
 
-	_, counts := s.idnPipelineAfter(t, idnClaims("A,sn1,Zorvane,aa:aa:aa:aa:aa:01,on", "B,sn2,Zorvane,aa:aa:aa:aa:aa:02,on",
+	_, counts := idnPipelineAfter(s, t, idnClaims("A,sn1,Zorvane,aa:aa:aa:aa:aa:01,on", "B,sn2,Zorvane,aa:aa:aa:aa:aa:02,on",
 		"C,sn3,Zorvane,aa:aa:aa:aa:aa:01,on",                                       // says it has the identifier A has
 		"D,sn4,Zorvane,aa:aa:aa:aa:aa:09,on", "E,sn5,Zorvane,aa:aa:aa:aa:aa:09,on", // two new objects that say they have the same one
 		"H,snH,Zorvane,aa:aa:aa:aa:aa:08,off", // held, and there is no object of its key
@@ -59,7 +59,7 @@ func TestIdnTwoObjectsThatSayTheyHaveOneIdentifierGetItByTheRuleAndTheLoserIsTol
 		return s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d".calc_ref r JOIN "s_%d".calc_record c ON c.rid = r.rid WHERE r.role = %d AND r.state = %d AND c.key = '%s'`,
 			k, k, pgschema.RefRoleClaim, pgschema.RefLostClaim, key))
 	}
-	bs := s.idnBound(t)
+	bs := idnBounds(s, t)
 	// the holder keeps it; of two that have none, the object with the smaller id keeps it
 	if lost("C") != 1 || lost("A") != 0 {
 		t.Errorf("C lost %d, A lost %d", lost("C"), lost("A"))

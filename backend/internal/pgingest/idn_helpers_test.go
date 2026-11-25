@@ -14,12 +14,12 @@ import (
 // another test file of this folder.
 
 // idnStart is the start of the identification of the plan, with the sizes of a unit given (0 is the default).
-func (s *rdfSetup) idnStart(size, pages int) ingest.IdentifyStart {
+func idnStart(s *rdfSetup, size, pages int) ingest.IdentifyStart {
 	return ingest.IdentifyStart{Feeds: s.plan.IdentifyFeeds(), Schemes: s.plan.SchemeNumbers(), BucketRows: size, Pages: pages}
 }
 
 // idnPipeline receives the datasets, compares them with the raw records and identifies the records of the run.
-func (s *rdfSetup) idnPipeline(t *testing.T, texts pgiTexts, at time.Time, size int) (ingest.RunLease, ingest.IdentifyCounts) {
+func idnPipeline(s *rdfSetup, t *testing.T, texts pgiTexts, at time.Time, size int) (ingest.RunLease, ingest.IdentifyCounts) {
 	t.Helper()
 	l := s.e.open(t, s.kg, s.plan.Source.ID, "server-a")
 	if _, err := s.e.st.Receive(s.e.ctx, l, ingest.Intake{Reader: texts, Plan: s.plan, Options: ingest.PageOptions{MaxRows: 2}}); err != nil {
@@ -29,7 +29,7 @@ func (s *rdfSetup) idnPipeline(t *testing.T, texts pgiTexts, at time.Time, size 
 		t.Fatal(err)
 	}
 	keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
-	counts, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, s.idnStart(size, 1), keys)
+	counts, err := ingest.RunIdentify(s.e.ctx, s.e.st, l, idnStart(s, size, 1), keys)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -46,7 +46,7 @@ type idnBound struct {
 	IsNew   bool
 }
 
-func (s *rdfSetup) idnBound(t *testing.T) []idnBound {
+func idnBounds(s *rdfSetup, t *testing.T) []idnBound {
 	t.Helper()
 	k := s.ref.KGNo
 	rows, err := s.e.admin.QueryContext(s.e.ctx, fmt.Sprintf(`SELECT d.dataset_id, c.key, b.feed_no, b.obj_no, COALESCE(o.ref, n.ref), b.is_new
@@ -83,7 +83,7 @@ func idnRefOf(bs []idnBound, dataset, key string) string {
 // idnApply does to the registry and the identification index what the apply will do with what the identification made, so that the
 // next run finds the objects of this one: the new objects, the keys, and the references of the records (it is not the apply: it is what
 // a test of the identification needs of it).
-func (s *rdfSetup) idnApply(t *testing.T) {
+func idnApply(s *rdfSetup, t *testing.T) {
 	t.Helper()
 	k := s.ref.KGNo
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".object (obj_no, ref, type_no, name, min_grade, seq_from) SELECT obj_no, ref, type_no, ref, 0, 1 FROM "s_%d".calc_newobj`, k, k))
@@ -96,14 +96,14 @@ func (s *rdfSetup) idnApply(t *testing.T) {
 func idnJoin(rows ...string) string { return strings.Join(rows, "\n") + "\n" }
 
 // idnPipelineAfter is idnPipeline for a run that goes on from the state the last run left: the run before it is ended.
-func (s *rdfSetup) idnPipelineAfter(t *testing.T, texts pgiTexts, n int) (ingest.RunLease, ingest.IdentifyCounts) {
+func idnPipelineAfter(s *rdfSetup, t *testing.T, texts pgiTexts, n int) (ingest.RunLease, ingest.IdentifyCounts) {
 	t.Helper()
-	return s.idnPipeline(t, texts, rdfT0.Add(time.Duration(n+1)*time.Hour), 0)
+	return idnPipeline(s, t, texts, rdfT0.Add(time.Duration(n+1)*time.Hour), 0)
 }
 
 // idnUndo ends the run and empties what it received, and puts back the registry and the index of what the run before had, so that
 // the same run can be done again in another order.
-func (s *rdfSetup) idnUndo(t *testing.T, l ingest.RunLease) {
+func idnUndo(s *rdfSetup, t *testing.T, l ingest.RunLease) {
 	t.Helper()
 	if err := s.e.st.EndRun(s.e.ctx, l, ingest.RunEnd{Stage: ingest.RunFailed, Class: ingest.EndProduct, Code: "test", Reason: "a test does it again"}); err != nil {
 		t.Fatal(err)

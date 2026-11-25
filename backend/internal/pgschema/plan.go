@@ -9,11 +9,13 @@ import (
 // a setting, an index) is a new version; a schema made by an older version is not followed by a newer one
 // without a decision of its own. Version 3 adds the tables of the ingestion at scale (ADR-0095): Diff follows
 // the step from 2 to 3 by making them. Version 4 adds the column held to the tables of the keys, ends and claims that were
-// received (ADR-0098): Diff follows the step from 3 to 4 by adding it (generations.go). Version 5 adds the name indexes of the tables of the types and moves the volatile values out of prov into their columns (ADR-0101): Diff follows the step from 4 to 5. Version 6 adds, for the comparison of the received
-// rows with the raw records (ADR-0102), the column expired of the waits, the place of the row (page, row_no) of a record of the
-// computation, a problem that has no definition and the index of the rows received by key: Diff follows the step from 5 to 6.
+// received (ADR-0098): Diff follows the step from 3 to 4 by adding it (generations.go). Version 5 adds the name indexes of the
+// tables of the types and moves the volatile values out of prov into their columns (ADR-0101): Diff follows the step from 4 to 5.
+// Version 6 adds, for the comparison of the received rows with the raw records (ADR-0102), the column expired of the waits, the
+// place of the row (page, row_no) of a record of the computation, a problem that has no definition, the table that says which run
+// the computation is of and the index of the rows received by key: Diff follows the step from 5 to 6.
 // Version 7 adds, for the identification of the records of a run (ADR-0108), the column held to the keys, ends and claims of the
-// computation, the feed of a bound record, four working tables and the indexes they and the rows received are read by: Diff follows the
+// computation, the feed of a bound record, five working tables and the indexes they and the rows received are read by: Diff follows the
 // step from 6 to 7.
 const GeneratorVersion = 7
 

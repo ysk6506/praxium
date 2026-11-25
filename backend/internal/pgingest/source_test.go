@@ -169,8 +169,9 @@ func TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySou
 		t.Errorf("taking a source off a KG holds %d locks, more than 110", off)
 	}
 	t.Logf("putting a source to a KG: %d locks; taking it off: %d (max_locks_per_transaction is %d here)", put, off, perTx)
-	// a KG of 30 sources, more than the 26 or so that one transaction can drop at the default of 64: deleting it takes the
-	// sources off one by one, a transaction each, and then drops the schema.
+	// a KG of 30 sources, more than the 17 or so that one transaction can drop at the default of 64 (a schema of this model takes
+	// about 5000 locks and each source about 83 more, of the 6400 that the lock table has for 100 connections): deleting it takes
+	// the sources off one by one, a transaction each, and then drops the schema.
 	for i := 2; i <= 30; i++ {
 		if _, err := e.st.AttachSource(e.ctx, kg.ID, fmt.Sprintf("src_%d", i), []string{"ds_a"}); err != nil {
 			t.Fatal(err)

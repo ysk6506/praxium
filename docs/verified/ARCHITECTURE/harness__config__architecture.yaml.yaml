@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "4c8e98ad60badf01"
-date: "2026-11-20"
-note: "병합: main의 adapter.pgingest 행(ADR-0098)과 이 브랜치의 adapter.pgstore 행(StagedApplier, test_may_import, ADR-0099)을 둘 다 남겼고 architecture.yaml과 맞음을 확인"
+hash: "2bc360391ee55e51"
+date: "2026-11-25"
+note: "sourcecheck 행에 httptls_test.go와 test_may_import의 adapter.httpsource를 맞춰 고쳤고 나머지 표는 architecture.yaml과 같음을 확인했다 (ADR-0105)"
 text_changed: true
-doc_hash: "3ec77fcc008e9173"
+doc_hash: "3ba7e57b0005eb3b"

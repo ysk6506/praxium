@@ -436,7 +436,8 @@ func (s *Store) PutAnswers(ctx context.Context, lease ingest.RunLease, answers [
 // parameters are the labels, the ids and whether each has no name, as the text of arrays.
 func (r *identRun) settleAnswers(ctx context.Context, tx *sql.Tx, labels, refs, missing string) error {
 	const un = "unnest($1::text::bigint[], $2::text::text[], $3::text::boolean[]) AS u(label, ref, missing)"
-	pl := "pl AS (SELECT l.pid, l.label FROM {label} l WHERE l.round_no = {R} AND l.iter = {F} AND l.label = ANY($1::text::bigint[]))"
+	// a join with the labels as rows, not a test of each label against the whole array (that is the square of the page)
+	pl := "pl AS (SELECT l.pid, l.label FROM unnest($1::text::bigint[]) AS q(label) JOIN {label} l ON l.round_no = {R} AND l.iter = {F} AND l.label = q.label)"
 	answered := "answers AS (SELECT a.label, a.rid, a.feed_no, a.key_ord, a.type_no, u.ref, u.missing FROM {ask} a JOIN " + un +
 		" ON u.label = a.label WHERE a.round_no = {R} AND NOT a.answer)"
 	steps := []struct {

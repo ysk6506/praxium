@@ -11,8 +11,11 @@ import (
 
 // ClientOptions are the settings of an HTTP client of a source.
 type ClientOptions struct {
-	// CAPEM is the certificate authority of the source (see TLSConfig). Empty means the system's authorities.
+	// CAPEM is the certificate authority of the source (see tlsConfig). Empty means the system's authorities.
 	CAPEM string
+	// Pins, when not empty, are the public keys the server may present (see pin.go); the chain, the name and the dates of
+	// its certificate are then not looked at. They are not used together with CAPEM.
+	Pins []string
 	// Timeout bounds one request from the dial to the end of the body. Zero means 30 seconds.
 	Timeout time.Duration
 	// MaxRedirects is how many redirects to the same origin the client follows. Zero, the default of the design,
@@ -51,12 +54,13 @@ type Response struct {
 // message.
 type Client struct {
 	hc *http.Client
+	d  *Dialer
 }
 
 // NewClient makes a Client on the dialer. The client keeps its own connections; close them with
 // CloseIdleConnections when the work is done.
 func NewClient(d *Dialer, opt ClientOptions) (*Client, error) {
-	tlsCfg, err := TLSConfig(opt.CAPEM)
+	tlsCfg, err := connectionTLS(opt.CAPEM, opt.Pins)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +81,7 @@ func NewClient(d *Dialer, opt ClientOptions) (*Client, error) {
 		MaxIdleConnsPerHost:    2,
 	}
 	hc := &http.Client{Transport: guard{base: base}, Timeout: timeout, CheckRedirect: redirectRule(opt.MaxRedirects)}
-	return &Client{hc: hc}, nil
+	return &Client{hc: hc, d: d}, nil
 }
 
 // Do sends the request. A 3xx response that the client does not follow is an error of the kind KindRedirect.

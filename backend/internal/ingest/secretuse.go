@@ -13,7 +13,7 @@ func (s Source) checkSecretUse(c *collector) {
 		return
 	}
 	a := s.Connection.Auth
-	u := secretUse{uses: len(a.Headers), fields: CredentialFields(*a, nil)}
+	u := secretUse{uses: len(a.Headers), fields: CredentialFields(*a, nil), cross: TokenGoesToAnotherOrigin(s)}
 	for _, h := range a.Headers {
 		if src, ok := ParseHeaderFrom(h.From); ok && src.Token {
 			u.tokenUsed = true
@@ -25,6 +25,7 @@ func (s Source) checkSecretUse(c *collector) {
 		}
 	}
 	s.checkSecretNeeds(c, a, u)
+	s.checkTokenOrigin(c)
 }
 
 // checkSecretNeeds checks what the authentication as a whole needs of the placeholders and the headers it has.
@@ -70,6 +71,9 @@ func secretFieldsProblem(kind string, fields []string) string {
 
 // secretUse is what the placeholders and the headers of an authentication use, counted while the bodies are walked.
 type secretUse struct {
+	// cross says that the token is asked for at another origin than the base address: the secret goes there, and a request of
+	// the API carries the token and never a value of the secret.
+	cross     bool
 	uses      int
 	tokenUsed bool
 	fields    []string
@@ -85,6 +89,9 @@ func (s Source) checkBodyPlaceholders(c *collector, a *Auth, i int, u *secretUse
 		case p.Token && a.Kind != AuthTokenRequest:
 			c.add(ecAdElsewhere, at, Params{"source": s.ID, "field": "request.body"},
 				"source %s, dataset %s: request.body has {{auth.token}}, and the authentication (%s) gives no token; only token_request does", s.ID, d.ID, a.Kind)
+		case !p.Token && u.cross:
+			c.add(ecAdElsewhere, at, Params{"source": s.ID, "field": "request.body"},
+				"source %s, dataset %s: request.body has {{credential.%s}}, and the token is asked for at another host than base_url; the secret goes to that host only, and the API gets the token", s.ID, d.ID, p.Field)
 		case !p.Token && (a.Credential == nil || a.Kind == AuthNone):
 			c.add(ecAdElsewhere, at, Params{"source": s.ID, "field": "request.body"},
 				"source %s, dataset %s: request.body has {{credential.%s}}, and the authentication has no secret", s.ID, d.ID, p.Field)

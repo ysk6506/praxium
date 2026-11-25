@@ -2,7 +2,6 @@ package pgingest
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 )
 
@@ -23,13 +22,13 @@ func idnServers(rows ...string) pgiTexts {
 func TestIdnTheKeysOfARecordFindNoObjectOneObjectOrSeveralAndTheGroupsAreMadeWhateverTheOrder(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, idnServerSource, idnServerMapping))
 	first := []string{"A,sn1,Zorvane,u1", "B,sn2,Zorvane,u2"}
-	l1, _ := s.idnPipeline(t, idnServers(first...), rdfT0, 0)
-	a1 := s.idnBound(t)
+	l1, _ := idnPipeline(s, t, idnServers(first...), rdfT0, 0)
+	a1 := idnBounds(s, t)
 	if len(a1) != 2 || idnRefOf(a1, "ds_s", "A") == idnRefOf(a1, "ds_s", "B") {
 		t.Fatalf("%+v", a1)
 	}
 	refA, refB := idnRefOf(a1, "ds_s", "A"), idnRefOf(a1, "ds_s", "B")
-	s.idnApply(t)
+	idnApply(s, t)
 	s.rdfSettle(t, l1)
 	second := append(append([]string{}, first...),
 		"C,sn1,Zorvane,u3",  // the serial finds A; the uuid is new and is bound to A
@@ -40,9 +39,9 @@ func TestIdnTheKeysOfARecordFindNoObjectOneObjectOrSeveralAndTheGroupsAreMadeWha
 		"H,snM,Zorvane,uM",  //
 		"L1,snL,Zorvane,u1", // a new serial that leads to A and to B is bound to neither
 		"L2,snL,Zorvane,u2")
-	for run, order := range [][]string{second, reversed(second), rotated(second, 3)} {
-		l, counts := s.idnPipelineAfter(t, idnServers(order...), run)
-		bs := s.idnBound(t)
+	for run, order := range [][]string{second, idnReversed(second), idnRotated(second, 3)} {
+		l, counts := idnPipelineAfter(s, t, idnServers(order...), run)
+		bs := idnBounds(s, t)
 		want := map[string]string{"C": refA, "D": refB, "E": refA, "L1": refA, "L2": refB}
 		for key, ref := range want {
 			if got := idnRefOf(bs, "ds_s", key); got != ref {
@@ -59,11 +58,11 @@ func TestIdnTheKeysOfARecordFindNoObjectOneObjectOrSeveralAndTheGroupsAreMadeWha
 		if n := s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d".calc_problem p JOIN "s_%d".calc_record c ON c.rid = p.rid WHERE p.kind = 'identity_conflict' AND c.key = 'E'`, s.ref.KGNo, s.ref.KGNo)); n != 1 {
 			t.Errorf("run %d: the conflict of E is told %d times", run, n)
 		}
-		s.idnUndo(t, l)
+		idnUndo(s, t, l)
 	}
 }
 
-func reversed(rows []string) []string {
+func idnReversed(rows []string) []string {
 	out := make([]string, len(rows))
 	for i, r := range rows {
 		out[len(rows)-1-i] = r
@@ -71,8 +70,6 @@ func reversed(rows []string) []string {
 	return out
 }
 
-func rotated(rows []string, n int) []string {
+func idnRotated(rows []string, n int) []string {
 	return append(append([]string{}, rows[n:]...), rows[:n]...)
 }
-
-var _ = strings.Join

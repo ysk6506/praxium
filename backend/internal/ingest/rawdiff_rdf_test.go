@@ -116,13 +116,13 @@ func TestRdfTheStartOfTheComparisonNeedsATimeAndEachDatasetOnceAndTheSizeOfABuck
 }
 
 // [REQ-780]
-func TestRdfTheCoverageOfAReadIsOneOfThreeAndCompleteWinsAndAHeaderThatChangedLeavesTheDatasetOut(t *testing.T) {
+func TestRdfTheCoverageOfAReadIsOneOfThreeAndAValueThatSaysBothIsReadAsIncompleteAndAHeaderThatChangedLeavesTheDatasetOut(t *testing.T) {
 	for _, c := range []struct {
 		end  Completeness
 		want Coverage
 	}{
 		{Completeness{Complete: true}, CoverageComplete},
-		{Completeness{Complete: true, SeenOnly: true}, CoverageComplete},
+		{Completeness{Complete: true, SeenOnly: true}, CoverageIncomplete},
 		{Completeness{SeenOnly: true, Reason: "the source cannot tell"}, CoverageSeenOnly},
 		{Completeness{Reason: "a limit"}, CoverageIncomplete},
 		{Completeness{}, CoverageIncomplete},
@@ -133,6 +133,14 @@ func TestRdfTheCoverageOfAReadIsOneOfThreeAndCompleteWinsAndAHeaderThatChangedLe
 	}
 	if Coverage("some").Valid() || Coverage("").Valid() {
 		t.Error("a word that is not one of the three is a coverage")
+	}
+	if err := (Completeness{Complete: true, SeenOnly: true}).Check(); kernel.CodeOf(err) != kernel.CodeInvalidValue {
+		t.Errorf("an end that says whole and only what was seen: %v", err)
+	}
+	for _, ok := range []Completeness{{Complete: true}, {SeenOnly: true}, {}} {
+		if err := ok.Check(); err != nil {
+			t.Errorf("%+v: %v", ok, err)
+		}
 	}
 	seen := DatasetIntake{Complete: false, SeenOnly: true}
 	if seen.Coverage() != CoverageSeenOnly || (DatasetIntake{Complete: true}).Coverage() != CoverageComplete {
@@ -162,5 +170,15 @@ func TestRdfTheReceivingTellsForEachDatasetTheCoverageItsLastPageSaid(t *testing
 		if got := rep.Datasets[0]; got.Coverage() != c.want || got.SeenOnly != c.end.SeenOnly || got.Complete != c.end.Complete || got.Reason != c.end.Reason {
 			t.Errorf("%s: %+v", name, got)
 		}
+	}
+}
+
+// [REQ-783]
+func TestRdfTheReceivingRefusesALastPageThatSaysWholeAndOnlyWhatWasSeen(t *testing.T) {
+	row := Row{Key: "RK1", Line: 2, Fields: map[string]string{"asset_id": "RK1", "rack_name": "a"}}
+	script := sxScript{pages: []Page{{Dataset: "ds_racks", No: 0, Rows: []Row{row}, Last: true, End: Completeness{Complete: true, SeenOnly: true}}}}
+	_, err := (Intake{Reader: script, Sink: &sxMemory{}, Plan: sxScalePlan(t, sourceJSON, mappingJSON)}).Run(context.Background())
+	if kernel.CodeOf(err) != kernel.CodeInvalidValue {
+		t.Errorf("a dataset that is whole and only what was seen: %v", err)
 	}
 }

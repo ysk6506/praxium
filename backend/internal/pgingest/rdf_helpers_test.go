@@ -226,9 +226,12 @@ func (s *rdfSetup) rdfRun(t *testing.T, l ingest.RunLease, st ingest.RawDiffStar
 	return rep
 }
 
-// settle does to the raw records and the waits what the cleaning will do with what the comparison made (ADR-0102 decision 4): a
-// record the run opened is written over its raw record, a record that was closed is deleted, and the waits of the source are written
-// over by those of the run except the absences that closed a record. Then the run ends and the staged rows are emptied.
+// settle does to the raw records, the waits and the problems what the cleaning will do with what the comparison made (ADR-0102
+// decision 4): a record the run opened is written over its raw record, a record that was closed is deleted, the waits of the source
+// are written over by those of the run except the absences that closed a record, and the problem of a repeated key is the
+// comparison's alone: it is put to record_problem from calc_problem, and the line of a key that the comparison made a record of
+// (with a reason of its own, not those of the identification) and that no longer repeats is taken away, while a record that a later
+// step made leaves the problem as it is. Then the run ends and the staged rows are emptied.
 func (s *rdfSetup) rdfSettle(t *testing.T, l ingest.RunLease) {
 	t.Helper()
 	k := s.ref.KGNo
@@ -238,6 +241,10 @@ func (s *rdfSetup) rdfSettle(t *testing.T, l ingest.RunLease) {
 		SELECT src_no, dataset_no, key, raw_hash, fields, decl_rev, opened_seq, fate FROM "s_%d".calc_record WHERE why IN (%d, %d)
 		ON CONFLICT (src_no, dataset_no, key) DO UPDATE SET raw_hash = excluded.raw_hash, fields = excluded.fields, decl_rev = excluded.decl_rev,
 		opened_seq = excluded.opened_seq, fate = excluded.fate`, raw, k, pgschema.CalcWhyNew, pgschema.CalcWhyChanged))
+	s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d".record_problem p USING "s_%d".calc_record c WHERE c.why NOT IN (%d, %d) AND p.kind = 'duplicate_key' AND p.src_no = c.src_no AND p.dataset_no = c.dataset_no AND p.key = c.key`,
+		k, k, pgschema.CalcWhyUnresolved, pgschema.CalcWhyExpanded))
+	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".record_problem (src_no, dataset_no, key, def_no, field, kind, reason)
+		SELECT c.src_no, c.dataset_no, c.key, p.def_no, p.field, p.kind, p.reason FROM "s_%d".calc_problem p JOIN "s_%d".calc_record c ON c.rid = p.rid WHERE p.kind = 'duplicate_key'`, k, k, k))
 	s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d".record_wait WHERE src_no = $1`, k), s.ref.SrcNo)
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".record_wait (src_no, dataset_no, key, kind, runs, first_at, expired)
 		SELECT src_no, dataset_no, key, kind, runs, first_at, expired FROM "s_%d".calc_wait WHERE NOT (kind = %d AND expired)`, k, k, pgschema.WaitUnseen))

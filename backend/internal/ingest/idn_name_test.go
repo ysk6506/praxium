@@ -6,7 +6,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/graph"
 )
 
-// REQ-884: an object that has neither a name attribute nor a value of its own in the key is not made.
+// [REQ-884] An object that has neither a name attribute nor a value of its own in the key is not made.
 func TestIdnObjectNameIsEmptyWithoutNameOrOwnKey(t *testing.T) {
 	fp := &feedPlan{}
 	if got := objectName(fp, Row{}, nil); got != "" {

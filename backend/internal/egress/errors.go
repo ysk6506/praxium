@@ -129,9 +129,12 @@ func tlsReason(err error) (string, bool) {
 	var unknown x509.UnknownAuthorityError
 	var host x509.HostnameError
 	var invalid x509.CertificateInvalidError
+	var pinned *PinMismatchError
 	var record tls.RecordHeaderError
 	var alert tls.AlertError
 	switch {
+	case errors.As(err, &pinned):
+		return "the certificate of the server is not one of the pinned ones", true
 	case errors.As(err, &unknown):
 		return "the certificate is not signed by a trusted authority", true
 	case errors.As(err, &host):

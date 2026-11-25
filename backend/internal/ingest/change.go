@@ -48,14 +48,14 @@ var changeClasses = map[string]string{
 	"Source.Version": classKept, "Source.ID": classKept, "Source.Name": classMapping, "Source.Adapter": classKept, "Source.Collector": classKept,
 	"Source.Connection": classKept, "Source.Disabled": classMapping, "Source.Datasets": classMapping, "Source.Limits": classLimit,
 
-	"Connection.BaseURL": classKept, "Connection.CAPEM": classKept, "Connection.TimeoutSeconds": classLimit, "Connection.RequestsPerSecond": classLimit,
+	"Connection.BaseURL": classKept, "Connection.CAPEM": classKept, "Connection.TLS": classKept, "Connection.TimeoutSeconds": classLimit, "Connection.RequestsPerSecond": classLimit,
 	"Connection.Headers": classKept, "Connection.Auth": classKept, "Connection.MaxResponseBytes": classLimit, "Connection.MaxRetryWaitSeconds": classLimit,
 	"Connection.Host": classKept, "Connection.Port": classKept, "Connection.Database": classKept, "Connection.Credential": classKept, "Connection.SSLMode": classKept,
 	"Connection.ConnectTimeoutSeconds": classLimit, "Connection.StatementTimeoutSeconds": classLimit, "Connection.LockTimeoutSeconds": classLimit,
 
 	"Auth.Kind": classKept, "Auth.Credential": classKept, "Auth.Header": classKept, "Auth.Prefix": classKept, "Auth.Request": classKept, "Auth.TokenPath": classKept,
-	"Auth.TokenFrom": classKept, "Auth.Send": classKept, "Auth.SendHeader": classKept, "Auth.SendPrefix": classKept, "Auth.Headers": classKept,
-	"TokenRequest.Path": classKept, "TokenRequest.Format": classKept, "TokenRequest.CredentialsIn": classKept, "TokenRequest.Body": classKept,
+	"Auth.TokenFrom": classKept, "Auth.ExpiresInPath": classKept, "Auth.Send": classKept, "Auth.SendHeader": classKept, "Auth.SendPrefix": classKept, "Auth.Headers": classKept,
+	"TokenRequest.Path": classKept, "TokenRequest.URL": classKept, "TokenRequest.CAPEM": classKept, "TokenRequest.Headers": classKept, "TokenRequest.Format": classKept, "TokenRequest.CredentialsIn": classKept, "TokenRequest.Body": classKept,
 	"SecretHeader.Name": classKept, "SecretHeader.From": classKept, "SecretHeader.Prefix": classKept,
 	"SecretRef.SecretID": classKept,
 
@@ -243,6 +243,7 @@ func connectionReasons(before, after *Connection) []string {
 	}
 	differs("base_url", before.BaseURL, after.BaseURL)
 	differs("ca_pem", before.CAPEM, after.CAPEM)
+	differs("tls", before.TLS, after.TLS)
 	differs("headers", headersOf(before), headersOf(after))
 	differs("auth", authOf(before), authOf(after))
 	differs("host", before.Host, after.Host)

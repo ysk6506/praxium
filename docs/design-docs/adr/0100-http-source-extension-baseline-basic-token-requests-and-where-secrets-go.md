@@ -28,6 +28,9 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
 test_change_reason: 첫 테스트는 정의 오류 코드 네 개(auth.headers의 from 잘못, 시크릿 필드 섞임, custom이 보낼 것 없음, 토큰 사용 잘못)를 더하면서 사례 표 adpCases에 사례 다섯 개를 더하는 내용 변경이고, 빼거나 고친 사례와 단언은 없다. 나머지 둘은 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 새 파일(body.go)과 바뀐 파일이 같은 규칙(값을 꺼내는 곳은 auth.go 한 곳, 요청을 만드는 곳은 request.go 한 곳, 금지한 글자와 import 없음)을 지키는 것을 새 지문으로 다시 기록한다.
 decision_hash: 84eaa9508c5bc874
+amended_by:
+  - adr: "0106"
+    what: 뒤의 PR로 미뤘던 E2(다른 호스트의 인증 서버)의 구현과 그 세부 결정
 ---
 # ADR-0100 HTTP 소스 확장의 기준 결정
 

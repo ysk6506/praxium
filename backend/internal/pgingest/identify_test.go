@@ -11,8 +11,8 @@ import (
 // [REQ-880]
 func TestIdnTheRecordsOfARunAreBoundToObjectsWhoseIdsAreTheOnesTheKeysGive(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
-	_, counts := s.idnPipeline(t, pgiAll(), rdfT0, 0)
-	bs := s.idnBound(t)
+	_, counts := idnPipeline(s, t, pgiAll(), rdfT0, 0)
+	bs := idnBounds(s, t)
 	if len(bs) != 7 {
 		t.Fatalf("%d records are bound: %+v", len(bs), bs)
 	}
@@ -46,7 +46,7 @@ func idnPlaces(rows ...string) pgiTexts {
 // [REQ-880] [REQ-881]
 func TestIdnAnObjectWhoseKeyHasAParentIsMadeOnceTheParentIsAndItsIdComesFromGo(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, idnMapping))
-	_, counts := s.idnPipeline(t, idnPlaces("1,HQ,B1,F1,R1,rack a,RK1", "2,HQ,B1,F1,R1,rack b,RK2", "3,HQ,B1,F2,R2,rack c,RK3"), rdfT0, 0)
+	_, counts := idnPipeline(s, t, idnPlaces("1,HQ,B1,F1,R1,rack a,RK1", "2,HQ,B1,F1,R1,rack b,RK2", "3,HQ,B1,F2,R2,rack c,RK3"), rdfT0, 0)
 	if counts.NewObjects != 9 || counts.Unresolved != 0 || counts.Rounds < 5 {
 		t.Fatalf("%+v", counts)
 	}

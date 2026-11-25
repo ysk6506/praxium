@@ -75,18 +75,21 @@ follows:
 | `bearer` | `credential` | `token` |
 | `basic` | `credential` | `password` |
 | `header` | `credential`, `header`(헤더 이름), `prefix`(토큰 앞의 글. 선택) | `token` |
-| `token_request` | `credential`, `request`(`path`, `format`, `credentials_in`, `body`), `token_path`나 `token_from`, `send`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요), `headers` | 본문이 쓰는 필드가 정해요(`username`과 `password`, 또는 `token`). 아무것도 안 쓰면 `password` |
+| `token_request` | `credential`, `request`(`path`이나 `url`, `ca_pem`, `headers`, `format`, `credentials_in`, `body`), `token_path`나 `token_from`, `expires_in_path`, `send`, `send_header`(기본 `Authorization`), `send_prefix`(기본 `Bearer `. 빈 글도 돼요), `headers` | 본문이 쓰는 필드가 정해요(`username`과 `password`, 또는 `token`). 아무것도 안 쓰면 `password` |
 | `custom` | `credential`, `headers` | 쓰는 필드가 정해요(`token` 하나, 또는 `username`과 `password`. 둘을 섞으면 정의 오류) |
 
-  `token_request`는 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요. 토큰 주소는 `base_url`과 같은 호스트여야 해요. 다른 호스트의 토큰 주소(OAuth2의 대부분)는 안 돼요(10절).
+  `token_request`는 토큰을 받아 와요. 받은 토큰은 값을 래핑한 타입에 넣어 한 실행 안에서만 기억하고, 401이면 한 번 다시 받아요(한 읽기에서 최대 3번까지이고, 넘으면 `auth_failed`예요. 옛 토큰은 토큰 서버로 보내지 않아요).
+  - **토큰 주소(ADR-0106).** `request.path`(`base_url` 아래 경로)나 `request.url`(절대 주소) 가운데 하나만 적어요. `url`이 `base_url`과 다른 출처(스킴, 호스트, 포트)이면 다른 호스트의 인증 서버예요(OAuth2의 `client_credentials` 같은 것). 이때 자격 증명(시크릿)은 토큰 서버로만, 받은 토큰은 API(`base_url`의 출처)로만 가요. API 쪽 요청에는 `{{credential.<필드>}}`와 `credential.*`를 읽는 `auth.headers`를 쓸 수 없고(정의 오류, 실행 때도 토큰 요청을 보내기 전에 한 번 더 막아요), `connection.headers`는 토큰 서버로 가지 않아요. 토큰 요청만의 헤더는 `request.headers`(글자 값)에 적어요. 토큰 서버의 인증 기관은 `request.ca_pem`에 적고(다른 출처의 `url`에서만), API의 `connection.ca_pem`은 토큰 서버에 쓰지 않아요. 같은 출처의 `url`은 `path`와 같게 다뤄요(`ca_pem`은 정의 오류). 토큰 서버는 다른 요청과 같은 egress 검사(정책, 실제 IP, 리디렉션 거절)를 모두 지나요. 시크릿의 `allowed_hosts`에 토큰 서버의 호스트와 포트가 없으면 요청을 하나도 보내지 않아요(`secret_unusable`). 토큰 요청도 `max_pages`가 세는 읽기의 요청에 들어가요. 불완전하게 끝나면 이유 글에 그중 토큰 요청 수를 적어요. `url`의 호스트와 포트는 정규형으로 적어야 하고(이름 끝의 점, 앞에 0이 붙은 포트 같은 것은 정의 오류), `expires_in_path`가 적혀 있는데 수명을 읽지 못하면 읽기마다 사건 하나로 알려요.
+  - **수명.** `expires_in_path`에 응답 안의 수명(초, 숫자나 숫자만 든 글) 경로를 적으면 만료 전에 다시 받아요. 수명은 30초와 24시간 사이로 맞추고, 끝나기 10분의 1(최대 30초) 전에 새로 받아요. 값이 없거나 숫자가 아니면 소스가 거절할 때까지 써요(`token_from: body`와 함께는 정의 오류). 토큰은 16 KiB까지예요.
   - **자격 증명의 자리.** `request.credentials_in`은 `body`(기본. 본문의 `{{credential.<필드>}}`)나 `basic`(시크릿의 `username`과 `password`로 `Authorization: Basic`을 만들어요. 본문은 선택이고 없으면 본문 없는 POST예요. 본문에 `{{credential.…}}`를 쓰면 정의 오류예요. 사용자 이름에 `:`가 있으면 보내지 않고 `secret_unusable`이에요). 본문은 `json`이면 JSON 트리(중첩된 객체와 배열, 숫자와 불리언)이고 `form`이면 글자 값의 평평한 맵이에요.
   - **토큰의 자리.** `token_from`은 `path`(기본. `token_path`가 가리키는 곳)나 `body`(응답 본문 전체가 JSON 글자 하나. 객체, 숫자, 빈 글자, null은 `response_format`이에요. `token_path`와 함께 쓰면 정의 오류예요). `token_path`도 `token_from`도 없으면 지금처럼 정의 오류예요.
   - **토큰을 보내는 법.** `send`는 `header`(기본. `send_header`와 `send_prefix`로)나 `template`(자동으로 붙이지 않고 `headers`의 `from: "token"`이나 본문의 `{{auth.token}}`이 쓰인 곳에서만. 쓰이는 곳이 없으면 정의 오류)예요.
   - **`headers`(`custom`과 `token_request`).** `[{"name", "from", "prefix"}]`로 시크릿이나 토큰이 가는 헤더를 적어요. `from`은 `credential.<필드>`나 `token`(`token_request`만)이고 `prefix`는 값 앞의 글이에요(선택). 이름은 `connection.headers`와 같은 금지 목록을 지나고(`Authorization`은 써도 돼요), 서버와 프록시의 접근 로그에 남는 헤더(`User-Agent`, `Referer`, `Forwarded`, `Via`, `X-Request-Id`, `traceparent`, `X-Amzn-Trace-Id`, `Baggage`, `X-Forwarded-*`, `X-Real-IP`, `True-Client-IP`, `CF-Connecting-IP`, `From`, `Origin` 같은 것)와 서로 다른 철자의 같은 이름은 정의 오류예요. 같은 접근 로그 목록은 `header` 종류의 `header`와 `send_header`에도 걸려요. 열여섯 개까지예요. 이 헤더들은 종류가 보내는 헤더 뒤에 붙어서 같은 이름이면 이겨요.
   - **`custom`.** 자동으로 붙이는 헤더가 없어요. `headers`나 본문의 `{{credential.<필드>}}`가 없으면 아무것도 보내지 않으므로 정의 오류예요.
   - **보내기 전의 검사.** 헤더로 가는 시크릿과 받은 토큰의 값에 줄바꿈이나 제어 문자(탭은 빼고)가 있으면 요청을 보내지 않고 다시 보내지도 않아요. 시크릿의 값은 `secret_unusable`, 받은 토큰은 `response_format`이에요(새 오류 종류는 없어요). 본문으로 가는 값은 JSON으로 인코딩되어 따옴표, 역슬래시, `<`, 줄바꿈이 있어도 구조가 깨지지 않아요.
-- `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB, 정의에서 256 MiB까지), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
+- `connection`의 다른 필드는 `base_url`(필수. `http`나 `https`, 사용자 정보와 질의와 조각이 없는 주소), `ca_pem`, `tls`(인증서 고정. 아래), `timeout_seconds`(기본 30), `requests_per_second`(기본 5), `headers`, `max_response_bytes`(압축을 푼 뒤 응답 하나의 상한. 기본 16 MiB, 정의에서 256 MiB까지), `max_retry_wait_seconds`(한 번의 재시도를 기다리는 시간의 상한. 기본 60)예요. 모두 시작 값이고 정의에서 바꿀 수 있어요.
 - `ca_pem`은 **그 인증서만 신뢰해요**(시스템의 신뢰 목록을 대신해요). 인증서가 아닌 블록(개인 키 같은 것)이 있으면 정의 오류예요.
+- `tls.pins`는 인증서를 검증할 수 없는 서버(자체 서명 인증서, 이름이 맞지 않는 인증서)를 위한 **인증서 고정**이에요([ADR-0105](adr/0105-http-source-extension-plaintext-ranges-and-certificate-pins.md)). 서버 인증서 공개 키(SubjectPublicKeyInfo)의 SHA-256을 `sha256/<base64>`로 한 개에서 여덟 개까지 적어요(키를 교체할 때 새 키를 미리 넣어 두려고 여럿을 받아요. 같은 지문을 두 번 쓰면 한 번으로 세요). 고정이 있으면 체인, 이름, 만료는 보지 않고 서버가 보낸 인증서의 공개 키 지문이 목록에 있는지만 봐요. 서버는 핸드셰이크에서 그 키를 가졌음을 증명해야 하므로 인증서 사본으로는 통과할 수 없어요. **`ca_pem`과 함께 쓸 수 없고**, `http://`나 `sslmode=disable`에는 쓸 수 없어요(정의 오류). 같은 키로 인증서를 갱신하면 고정은 그대로 유지돼요. 고정한 인증서는 만료돼도 연결되므로 점검이 그 사실을 알려요(아래). 고정은 정의 편집자가 정하고(`ca_pem`과 같은 등급), 바꾸는 저장은 접속 변경이에요. 어느 지문을 고정할지는 **서버 관리자에게 받은 값과 맞춰 보고** 정해야 해요. 점검이 보여 주는 지문을 맞춰 보지 않고 고정하면 그 순간 중간자의 인증서를 고정하게 돼요.
 - 자리표시 `{{credential.<필드>}}`와 `{{auth.token}}`은 요청 본문의 값 통째에서만 있어요(3.3). 주소(경로, 질의)에는 둘 수 없어요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 3절).
 - `pagination.kind`는 `none`, `page`, `offset`, `cursor`(표지를 싣는 자리를 `query`나 `body`로 적어요), `next_url`(본문의 다음 주소. 같은 출처만), `link_header`예요. 종류마다 읽는 필드가 달라요(구현됨, ADR-0090). 모든 종류에 `max_pages`(기본 1,000)가 있어요.
 
@@ -102,7 +105,7 @@ follows:
   `first_page`를 꼭 적게 한 것은 0부터 시작하는 소스를 1부터 읽으면 첫 페이지가 조용히 빠지기 때문이에요. 페이지네이션이 더하는 인자의 이름이 `request.query`의 이름과 겹치면 정의 오류예요.
 - 소스가 전체 개수를 주면(`total_path`) 수집한 수와 견줘요. 다르면 불완전한 수집이에요. 페이지를 넘기는 사이에 소스가 바뀌어 겹치거나 빠진 것을 잡으려는 거예요.
 - 응답은 JSON만 읽어요. `connection.headers`에는 쓸 수 없는 헤더가 있어요(8절).
-- TLS 확인을 끄거나 낮추는 길은 없어요(8절, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 정의에 `tls_verify` 같은 필드를 적으면 모르는 필드와 같은 정의 오류예요. 사설 인증 기관의 서버는 `ca_pem`으로 받고, 그러면 그 인증서만 믿어요.
+- TLS 확인을 끄거나 낮추는 길은 없어요(8절, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)). 정의에 `tls_verify` 같은 필드를 적으면 모르는 필드와 같은 정의 오류예요. 사설 인증 기관의 서버는 `ca_pem`으로 받고, 그러면 그 인증서만 믿어요. 검증할 수 없는 인증서의 서버는 확인을 끄는 대신 `tls.pins`로 **그 키만** 받아요(위. ADR-0105). 고정은 `adapter.egress`의 한 곳(`pin.go`)에서만 만들어요.
 - 데이터셋의 `request.method`는 `GET`이 기본이에요. `POST`로 읽는 데이터셋은 `"post_reads": true`로 밝혀야 해요(7.1).
 
 **구현(`adapter.httpsource`, [ADR-0092](adr/0092-http-source-adapter-adapter-httpsource.md)).** 위의 인증 다섯과 페이지 넘김 여섯, `post_reads`, `total_path`의 견줌, 한도와 재시도를 이 유닛이 구현했어요(구현됨). `core.ingest`의 `PageReader`(`ReadPages`, `Check`)와 선택 인터페이스 `Observer`, `Previewer`를 가져요. 시크릿은 값을 여는 포트(`secrets.Opener`)만 받아 인증을 붙이는 한 곳에서 꺼내요. 설계와 다르게 한 곳은 셋이에요. (1) 응답 하나가 `max_response_bytes`를 넘으면 불완전한 수집이 아니라 **설정 오류**(`response_format`)예요(같은 요청은 같은 크기로 다시 오므로 일부만 받아 완전하다고 하면 안 되고, 정의를 고쳐야 해요). (2) `next_url`과 `link_header`는 이어 읽기 토큰을 내지 않아요(서버가 준 주소에 서명된 질의가 들 수 있어서 처음부터 다시 읽어요). (3) 데이터셋 전체의 바이트와 실행 전체의 시간은 아직 한도가 없어요(정의에 그 필드가 없어요).
@@ -122,9 +125,9 @@ follows:
   ]
 }
 ```
-- 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있고 그 인증서만 신뢰해요(인증서가 아닌 블록은 정의 오류예요. 어댑터는 이것을 등록한 TLS 설정으로 드라이버에 넘기고 드라이버의 `sslmode` 값은 `disable`과 그것 둘만 써요).
-- 필드는 `host`, `port`(기본 5432), `database`, `credential`(필수), `sslmode`(`verify-full`, `disable`. 기본 `verify-full`), `ca_pem`, `connect_timeout_seconds`(기본 10), `statement_timeout_seconds`(기본 60), `lock_timeout_seconds`(기본 5)예요.
-- `sslmode`는 `verify-full`과 `disable` 둘뿐이고 확인을 낮추는 값(`require`, `verify-ca`)은 없어요. `disable`은 정의로는 받지만 실제 허용은 연결할 때 정해요. 풀린 주소가 모두 루프백이거나 운영자 설정(`-allow-insecure-sources`)이 있을 때만이에요(8절. 이름이 아니라 풀린 주소로 다이얼러가 정하고, 어댑터는 연결 맥락에 `egress.WithPlaintext`를 달아요. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
+- 계정 이름과 비밀번호는 시크릿(`password` 종류)에서 와요. 비밀번호 없는 접속은 정의 오류예요. `host`는 이름이나 IP 하나이고 쉼표, `/`, `@`가 든 값은 거절해요. 클라이언트 인증서와 키는 받지 않아요(개인 키가 정의에 들어가기 때문이에요). `ca_pem`은 정의에 직접 적을 수 있고 그 인증서만 신뢰해요(인증서가 아닌 블록은 정의 오류예요. TLS 설정은 `adapter.egress`가 만들어 드라이버에 등록하고, 어댑터는 설정을 손에 쥐지 않아요(`egress.RegisterPostgresTLS`에 드라이버의 등록 함수를 넘겨요). 드라이버의 `sslmode` 값은 `disable`과 그것 둘만 써요). `tls.pins`가 있으면 `ca_pem` 대신 서버 인증서의 키 지문으로 확인해요(ADR-0105).
+- 필드는 `host`, `port`(기본 5432), `database`, `credential`(필수), `sslmode`(`verify-full`, `disable`. 기본 `verify-full`), `ca_pem`, `tls`(HTTP와 같은 인증서 고정), `connect_timeout_seconds`(기본 10), `statement_timeout_seconds`(기본 60), `lock_timeout_seconds`(기본 5)예요.
+- `sslmode`는 `verify-full`과 `disable` 둘뿐이고 확인을 낮추는 값(`require`, `verify-ca`)은 없어요. `disable`은 정의로는 받지만 실제 허용은 연결할 때 정해요. 풀린 주소가 모두 루프백이거나 운영자가 정한 평문 허용 범위(`-source-plaintext-ranges`) 안에 있을 때만이에요(8절. 이름이 아니라 풀린 주소로 다이얼러가 정하고, 어댑터는 연결 맥락에 `egress.WithPlaintext`를 달아요. [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 규칙과 같은 방식이에요). 이 값을 바꾸는 저장은 접속 변경이에요.
 - `table`이면 서버가 컬럼 목록으로 `SELECT`를 만들어요(그 데이터셋은 뒤에 `keyed_read` 지원 기능을 저절로 가져요). `sql`이면 사용자가 쓴 문장 하나예요(7.2).
 - **값을 문자열로 바꾸는 규칙.** 모든 값은 문자열이에요.
 
@@ -255,7 +258,7 @@ follows:
 
 문서와 화면에 이 문장을 그대로 써요. **"프락시움은 읽기 전용 트랜잭션에서 문장 하나만 실행한다. 보통의 쓰기 문장은 막히지만 함수 호출과 `COPY TO`는 막지 못한다. 경계는 소스 쪽의 읽기 전용 계정이다."**
 
-- 점검은 첫 페이지을 실제로 읽고 단계별로(시크릿, 이름과 연결, TLS, 인증, 문장, 키 컬럼, 첫 페이지) 알려요. **예정(ADR-0093)에서** 그 계정이 쓰기 권한을 가졌는지도 조사해 경고해요. 조사하지 못하면 "확인했다"가 아니라 "확인하지 못함"이라고 써요.
+- 점검은 첫 페이지을 실제로 읽고 단계별로(시크릿, 이름과 연결, TLS, 인증, 문장, 키 컬럼, 첫 페이지) 알려요. 결과에는 단계 말고도 **알림**(`source.plaintext_transport`: 자격 증명과 데이터가 암호화 없이 간다, `source.pin_expiry_ignored`: 고정한 인증서는 만료돼도 받는다)이 붙고, 점검이 인증서 때문에(검증 실패나 고정 불일치) 실패하면 서버가 보낸 인증서의 요약(주체, 발급자, SAN(스무 개까지), 유효 기간, 고정에 쓸 지문 `sha256/…`)도 붙어요. 요약은 같은 주소로 핸드셰이크만 한 번 더 해서 얻고(요청이나 비밀번호는 보내지 않고, 연결 정책은 그대로 걸려요), 서버가 낸 글이므로 제어 문자와 서식 문자를 빼고 길이를 자른 것이고(잘렸으면 `Truncated`로 알려요), 서버가 쓴 글이라 화면은 반드시 이스케이프해서 글로만 보여요. 서버가 인증서를 바꾸면 새 지문을 보이며 실패해요. 이 요약은 서버의 내부 이름을 드러내므로, 점검을 부르는 쪽(점검 API)이 그 소스의 접속을 바꿀 권한이 있는 사람에게만 보여야 해요. **예정(ADR-0093)에서** 그 계정이 쓰기 권한을 가졌는지도 조사해 경고해요. 조사하지 못하면 "확인했다"가 아니라 "확인하지 못함"이라고 써요.
 - 연결을 맺는 순간의 실제 IP 검사와 거절 목록(8절)을 HTTP와 같은 다이얼러로 PostgreSQL 접속에도 걸어요.
 - 접속 설정을 서버의 환경에서 읽지 않아요. 접속 설정을 손으로 채워서 환경 변수, 서비스 파일, `.pgpass`, 홈 폴더의 인증서를 보지 않아요(어댑터가 구현했고 테스트가 적대적인 환경으로 확인해요). `PQGO_DEBUG`가 설정된 채로는 서버가 시작하지 않고 어댑터도 읽지 않아요. 사용자 이름, 비밀번호, 호스트, 데이터베이스 이름에 NUL이나 제어 문자가 있으면 연결하지 않아요.
 - 오류는 8절의 분류로 바꿔요. 예외 하나: 사용자가 쓴 SQL의 문법 오류와 없는 테이블과 컬럼(SQLSTATE 42류)은 요청한 사람에게 그 응답에서만 서버의 문장과 위치를 보여요. 실행 기록과 로그에는 분류만 남겨요.
@@ -269,16 +272,16 @@ follows:
 |---|---|
 | 경로 | `/`로 시작해요. `//`, `\`, `?`, `#`, 스킴이 없어요. 조립한 주소의 스킴, 호스트, 포트가 `base_url`과 같은지 다시 확인해요 |
 | 리디렉션 | 따르지 않아요(3xx는 오류). 다음 페이지의 주소(본문, `Link` 헤더)는 같은 출처일 때만 따라요 |
-| 실제 IP | **이름을 스스로 한 번 풀고, 풀린 모든 주소를 검사하고, 검사한 IP 글자로 연결해요**(다시 풀지 않아요. 이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 하나라도 거절 목록에 있으면 전체를 거절해요. 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`과 `0.0.0.0/8`, 멀티캐스트, 예약 대역과 브로드캐스트, IPv4가 든 IPv6(매핑, 호환, 번역, NAT64, 6to4)의 속 주소, 터널 주소(Teredo), 서버 자신의 API 주소. 서버 플래그(`-source-deny-hosts`)로 더해요. 사설 주소와 루프백은 기본으로 허용해요. 사설과 루프백을 막고 예외만 여는 엄격한 정책(`DenyPrivate`)도 있어요 |
+| 실제 IP | **이름을 스스로 한 번 풀고, 풀린 모든 주소를 검사하고, 검사한 IP 글자로 연결해요**(다시 풀지 않아요. 이름 풀이가 연결마다 다른 IP를 주는 공격을 막아요). 하나라도 거절 목록에 있으면 전체를 거절해요. 거절 목록: 링크 로컬, 메타데이터 주소, `0.0.0.0`과 `0.0.0.0/8`, 멀티캐스트, 예약 대역과 브로드캐스트, IPv4가 든 IPv6(매핑, 호환, 번역, NAT64, 6to4)의 속 주소, 터널 주소(Teredo), 서버 자신의 API 주소. 서버 플래그(`-source-deny-ranges`. IP와 CIDR만)로 더해요. 사설 주소와 루프백은 기본으로 허용해요. 사설과 루프백을 막고 예외만 여는 엄격한 정책(`DenyPrivate`)도 있어요 |
 | 프록시 | 쓰지 않아요. 환경 변수를 읽지 않는 전송 계층을 새로 만들어요 |
 | 헤더 | `connection.headers`에 `Host`, `Authorization`, `Cookie`, `Proxy-*`, `Accept-Encoding`, `Content-Length`, `Transfer-Encoding`, `Connection`과 메서드를 바꾸는 `X-HTTP-Method-Override`, `X-HTTP-Method`, `X-Method-Override`와 연결을 바꾸거나 끝내는 `Upgrade`, `TE`, `Keep-Alive`, `Trailer`, `Expect`를 쓸 수 없어요(`Content-Type`은 본문 형식을 요구하는 API가 있어 써도 돼요). 인증은 `auth`로만 해요. `auth.headers`의 이름도 같은 목록을 지나고(`Authorization`은 써도 돼요) 접근 로그에 남는 헤더(2.2)는 쓸 수 없어요 |
-| 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 루프백이거나 `-allow-insecure-sources`일 때만이에요. TLS는 1.2 이상이고 인증서와 이름을 언제나 확인해요. **확인을 끄는 길은 없어요**(ADR-0091이 ADR-0058의 `tls_verify: false`와 `-allow-unverified-source-tls`를 거두었어요) |
+| 전송 계층 | `https`가 기본이에요. `http`(와 PostgreSQL의 `sslmode=disable`)는 풀린 주소가 모두 루프백이거나 `-source-plaintext-ranges`(IP와 CIDR 목록. 빈 목록은 루프백만)의 범위 안에 있을 때만이에요. TLS는 1.2 이상이고 인증서와 이름을 언제나 확인해요. **확인을 끄는 길은 없어요**(ADR-0091이 ADR-0058의 `tls_verify: false`와 `-allow-unverified-source-tls`를 거두었어요). 검증할 수 없는 인증서는 정의의 `tls.pins`가 키 지문으로 확인을 대신해요(ADR-0105) |
 | 오류 | 표준 라이브러리와 드라이버의 문장을 그대로 쓰지 않아요. 이름 풀이, 연결, TLS, 인증, 권한, 시간 초과, 응답 형식으로 분류해요. 토큰 발급 응답의 본문을 오류에 넣지 않아요 |
 | 로그 | 값을 래핑한 타입에서 꺼내는 자리는 어댑터의 요청 조립 한 곳이에요(테스트로 고정). 요청과 응답을 로그에 찍는 코드가 없어요 |
 
-`-allow-`로 시작하는 새 플래그는 `-allow-insecure-sources` 하나이고 [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 플래그와 같은 방식(기본은 꺼짐)이에요. `-source-deny-hosts`는 거절 목록에 더하는 플래그예요. 이것은 ADR-0018 결정 9의 "소스별 예외, 승인, 기한"이 아니라 정의의 명시와 서버 플래그로 여는 방식이고 기한이 없어요.
+`-source-plaintext-ranges=10.1.0.0/16,192.0.2.7`은 암호화 없는 접속(`http`, PostgreSQL의 `sslmode=disable`)을 루프백 말고 허락할 주소 범위예요(기본은 빈 목록, 곧 루프백만이고 [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md)의 데이터베이스 TLS 플래그와 같은 방식으로 꺼져 있어요). IP와 CIDR만 받고 호스트 이름은 받지 않아요(이름은 풀리는 주소가 바뀔 수 있어서 풀린 주소로 판정하는 규칙과 맞지 않아요). 풀린 주소가 하나라도 범위 밖이면 거절해요. 모든 주소를 허락하려면 `0.0.0.0/0,::/0`을 적어야 하고, 거절 목록(링크 로컬, 메타데이터 주소, 거절 범위 플래그, 서버 자신의 API)은 이 범위와 상관없이 거절해요. 넓은 대역보다 소스 주소 하나(`/32`)를 권해요. 옛 이름 `-allow-insecure-sources`는 없애요(남기면 "모두 허락"의 뜻이 조용히 바뀌어요). `-source-deny-ranges`는 거절 목록에 더하는 플래그예요(IP와 CIDR). 이것은 ADR-0018 결정 9의 "소스별 예외, 승인, 기한"이 아니라 정의의 명시와 서버 플래그로 여는 방식이고 기한이 없어요.
 
-**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`와 `TLSConfig`를 여기서 받고 자기 연결을 따로 만들지 않아요. 아직 이 유닛을 부르는 어댑터와 조립부가 없어서 `-allow-insecure-sources`와 `-source-deny-hosts` 플래그는 예정이에요. 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) TLS 확인을 끄는 길이 없어요. (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). HTTP 어댑터는 `net/http`를 import하지 않고 이 유닛의 `Request`와 `Response`(`Client.Do(ctx, Request)`)만 써요. 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이고 `adapter.httpsource`가 해요(구현됨). 조립부에서 이 어댑터를 등록하는 일과 `-allow-insecure-sources`, `-source-deny-hosts` 플래그는 아직 예정이에요.
+**구현(`adapter.egress`, [ADR-0091](adr/0091-egress-defence-in-one-unit-adapter-egress.md)).** 위 표의 실제 IP, 프록시, 전송 계층, 오류, 리디렉션, 같은 출처의 규칙은 이 유닛이 해요. 어댑터는 `Dialer`와 `Client`(PostgreSQL은 `RegisterPostgresTLS`)를 여기서 받고, TLS 설정(`*tls.Config`)은 이 유닛 밖에서 손에 쥘 수 없어요(설정을 만드는 함수는 모두 비공개예요). 그리고 자기 연결을 따로 만들지 않아요. 조립부가 아직 없어서 `-source-plaintext-ranges`와 `-source-deny-ranges` 플래그는 예정이에요(목록을 읽는 `egress.ParseRanges`와 `Policy`의 `PlaintextRanges`와 `Deny`는 있어요). 이 유닛이 정한 것 가운데 위 표와 다른 곳은 둘이에요. (1) 확인을 끄는 길이 없어요. 확인을 대신하는 것은 고정 하나이고 `pin.go`의 `pinnedTLSConfig` 한 곳에만 있어요(핀 없이는 타지 못하고, 어댑터는 TLS 설정을 손에 쥐지 않아요). (2) 리디렉션은 기본으로 따르지 않고(3xx는 오류), 켜도 같은 출처의 것만 따라요. 다른 출처로의 리디렉션은 다시 검사하는 대신 거절해요(자격 증명이 든 헤더가 다른 곳으로 가지 않게요). HTTP 어댑터는 `net/http`를 import하지 않고 이 유닛의 `Request`와 `Response`(`Client.Do(ctx, Request)`)만 써요. 속도 제한과 재시도는 이 유닛이 아니라 HTTP 어댑터의 일이고 `adapter.httpsource`가 해요(구현됨). 조립부에서 이 어댑터를 등록하는 일과 `-source-plaintext-ranges`, `-source-deny-ranges` 플래그는 아직 예정이에요.
 
 ## 9. 한도
 숫자는 [기본값 표](defaults.md)에 "예정"으로 있어요. 넘으면 불완전한 수집이에요(HTTP의 응답 하나가 `max_response_bytes`를 넘는 것만 설정 오류예요. 구현됨, ADR-0092. 페이지 수, 요청 속도, 재시도, 요청 시간도 HTTP 쪽은 구현됨).
@@ -294,7 +297,8 @@ follows:
 | 경우 | 되나요 |
 |---|---|
 | 토큰을 헤더로 보내는 평평한 목록(페이지 번호, 오프셋, 전체 개수) | 돼요 |
-| 로그인 요청으로 토큰을 받는 API(본문이 JSON이나 폼, 같은 호스트. 본문이 중첩된 JSON-RPC도) | 돼요 |
+| 로그인 요청으로 토큰을 받는 API(본문이 JSON이나 폼. 본문이 중첩된 JSON-RPC도) | 돼요 |
+| 다른 호스트의 인증 서버에서 토큰을 받는 API(OAuth2 `client_credentials`의 폼, `client_secret_post`와 `client_secret_basic`) | 돼요(`request.url`. 시크릿이 두 호스트를 허용해야 해요) |
 | Basic 인증으로 로그인하고 응답 본문이 토큰 글자 하나인 API(세션 만들기 꼴) | 돼요(`credentials_in: basic`, `token_from: body`) |
 | 키를 헤더의 이름을 골라 보내거나(`auth.headers`) 요청 본문의 값으로 보내는 API | 돼요(`custom`, 본문의 `{{credential.<필드>}}`) |
 | 다음 페이지의 주소를 본문이나 `Link` 헤더로 주는 API(같은 출처) | 돼요 |

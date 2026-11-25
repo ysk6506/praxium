@@ -21,8 +21,13 @@ const (
 // Check reads the first page of the dataset for real, step by step, so that it tells which step a trouble is in: the
 // secret, the name and the connection, the TLS, the sign-in, the statement, the key columns, and the first page. It does
 // not look at what the account may write and does not discover what the source offers (the next change does).
-func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) ingest.CheckResult {
-	c := &checker{}
+//
+// The result carries the notes of the source (no TLS, a pinned certificate accepted whatever its dates are), and when the
+// certificate of the server was the reason it failed, what the server presented, found by one more handshake that sends
+// no password and no statement (ADR-0105).
+func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) (res ingest.CheckResult) {
+	defer func() { res.Notes = r.notes() }()
+	c := &checker{r: r}
 	pl, err := r.checkSetup(ctx, source, ds, c)
 	if err != nil {
 		return c.fail(ctx, err)
@@ -38,6 +43,7 @@ func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) in
 }
 
 type checker struct {
+	r     *Reader
 	steps []ingest.CheckStep
 	sess  *session
 	step  string // the step being made, which a failure belongs to
@@ -57,7 +63,33 @@ func (c *checker) fail(ctx context.Context, err error) ingest.CheckResult {
 	if c.step != "" {
 		c.steps = append(c.steps, ingest.CheckStep{Name: c.step, Kind: kind, Message: msg})
 	}
-	return ingest.CheckResult{Kind: kind, Message: msg, Steps: c.steps}
+	res := ingest.CheckResult{Kind: kind, Message: msg, Steps: c.steps}
+	if se, ok := ingest.SourceErrorOf(err); ok && se.Kind == ingest.SrcTLSRejected {
+		res.Cert = c.r.presentedCertificate(ctx)
+	}
+	return res
+}
+
+// presentedCertificate is what the server presents when asked to start TLS, with nothing sent after it.
+func (r *Reader) presentedCertificate(ctx context.Context) *ingest.CertSummary {
+	sum, err := r.dialer.ProbePostgresCert(ctx, r.st.host, r.st.port)
+	if err != nil || sum == nil {
+		return nil
+	}
+	return &ingest.CertSummary{Subject: sum.Subject, Issuer: sum.Issuer, SANs: sum.SANs, SANsMore: sum.SANsMore,
+		NotBefore: sum.NotBefore, NotAfter: sum.NotAfter, SPKISHA256: sum.SPKISHA256, Truncated: sum.Truncated}
+}
+
+// notes are what a check says about the source besides how it went.
+func (r *Reader) notes() []ingest.CheckNote {
+	var out []ingest.CheckNote
+	if r.st.disable {
+		out = append(out, ingest.CheckNote{Code: ingest.NotePlaintext, Message: "the password and the data of this source cross the network without encryption (sslmode disable)"})
+	}
+	if len(r.st.pins) > 0 {
+		out = append(out, ingest.CheckNote{Code: ingest.NotePinExpiry, Message: "the certificate of the server is accepted by its public key alone: its dates, its name and its chain are not looked at, so an expired certificate is accepted"})
+	}
+	return out
 }
 
 func (c *checker) done(p ingest.Page) ingest.CheckResult {

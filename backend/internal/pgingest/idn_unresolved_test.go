@@ -9,7 +9,7 @@ import (
 )
 
 // putPlace keeps a raw record of the places that a run before read, with a reference that was not solved.
-func (s *rdfSetup) idnPutPlace(t *testing.T, key string, declRev int, cells ...string) {
+func idnPutPlace(s *rdfSetup, t *testing.T, key string, declRev int, cells ...string) {
 	t.Helper()
 	k := s.ref.KGNo
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO %s (src_no, dataset_no, key, raw_hash, fields, decl_rev, opened_seq, fate) VALUES ($1, $2, $3, $4, $5, $6, 1, 0)`, pgiTable(s.ref, pgschema.TableRawRecord)),
@@ -23,17 +23,17 @@ func (s *rdfSetup) idnPutPlace(t *testing.T, key string, declRev int, cells ...s
 // [REQ-880] [REQ-884]
 func TestIdnARecordWhoseReferenceIsNotSolvedIsReadAgainFromItsCellsAndBoundWithoutTouchingTheOnesThatAre(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, idnMapping))
-	s.idnPutPlace(t, "1", 0, "1", "HQ", "B1", "F1", "R1", "rack a", "RK1")
-	s.idnPutPlace(t, "2", 0, "2", "HQ", "B1", "F1", "R1", "rack b", "RK2")
+	idnPutPlace(s, t, "1", 0, "1", "HQ", "B1", "F1", "R1", "rack a", "RK1")
+	idnPutPlace(s, t, "2", 0, "2", "HQ", "B1", "F1", "R1", "rack b", "RK2")
 	// a record kept under another declaration than the dataset has now is not read: its references stay as they are
-	s.idnPutPlace(t, "3", 7, "3", "HQ", "B1", "F2", "R2", "rack c", "RK3")
+	idnPutPlace(s, t, "3", 7, "3", "HQ", "B1", "F2", "R2", "rack c", "RK3")
 	// the places are not given this time, so the comparison leaves them out and only the references say they are to be looked at
-	l, counts := s.idnPipeline(t, pgiTexts{}, rdfT0, 0)
+	l, counts := idnPipeline(s, t, pgiTexts{}, rdfT0, 0)
 	if counts.Seeded != 2 || counts.Rebuilt != 2 || counts.NewObjects != 6 || counts.Unresolved != 0 {
 		// two racks of one room: a site, a building, a floor, a room and the two racks
 		t.Fatalf("%+v", counts)
 	}
-	bs := s.idnBound(t)
+	bs := idnBounds(s, t)
 	if len(bs) != 10 {
 		t.Errorf("%d records are bound: %+v", len(bs), bs)
 	}

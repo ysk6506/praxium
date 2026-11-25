@@ -75,6 +75,7 @@ func TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCount
 		{"ds_places", "s4", pgschema.WaitFiltered, 3, true},  // shown, filtered, and its time is up
 		{"ds_servers", "x1", pgschema.WaitUnseen, 1, false},  // the dataset was left out whole
 		{"ds_vms", "v2", pgschema.WaitUnseen, 2, false},      // the dataset never retires: what was there stays and nothing is added
+		{"ds_vms", "v3", pgschema.WaitFiltered, 3, false},    // not shown, and a record that a rule filters is counted still, and never up
 		{"ds_vms", "v4", pgschema.WaitFiltered, 6, false},    // counted, and never up
 	}
 	if !reflect.DeepEqual(seen, wantWaits) {
@@ -153,5 +154,28 @@ func TestRdfTheComparisonDoesNotBeginForARunThatIsNotComputingOrForAnotherAttemp
 	}
 	if place, _ := s.e.st.RawDiffPlace(s.e.ctx, l.No); !place.Done() {
 		t.Fatalf("%+v", place)
+	}
+}
+
+// [REQ-781]
+func TestRdfAWordOfCoverageThatIsNotOneOfThreeIsReadAsIncompleteAndALineWithNoWordIsReadByItsCompleteFlag(t *testing.T) {
+	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
+	l := s.e.open(t, s.kg, s.plan.Source.ID, "server-a")
+	s.e.exec(t, `UPDATE sync_run SET counts = counts || $2::jsonb WHERE run_no = $1`, l.No, `{"receive":{"datasets":[
+		{"dataset":"ds_places","complete":true,"coverage":"everything"},
+		{"dataset":"ds_servers","complete":true},
+		{"dataset":"ds_vms","complete":false}]}}`)
+	if err := s.e.st.AdvanceRun(s.e.ctx, l, ingest.RunReceiving, ingest.RunComputing); err != nil {
+		t.Fatal(err)
+	}
+	plan, err := s.e.st.BeginRawDiff(s.e.ctx, l, s.rdfStart(rdfNow, 0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := []ingest.Coverage{ingest.CoverageIncomplete, ingest.CoverageComplete, ingest.CoverageIncomplete}
+	for i, d := range plan.Datasets {
+		if d.Coverage != want[i] {
+			t.Errorf("%s is read as %s, not %s", d.Dataset, d.Coverage, want[i])
+		}
 	}
 }

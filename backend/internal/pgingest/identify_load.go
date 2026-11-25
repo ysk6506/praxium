@@ -189,15 +189,11 @@ func (r *identRun) putKeys(ctx context.Context, tx *sql.Tx, rows []ingest.Rebuil
 		if *c != nil {
 			return nil
 		}
-		quoted := make([]string, len(cols))
-		for i, col := range cols {
-			quoted[i] = pgschema.QuoteIdent(col)
-		}
-		stmt, err := tx.PrepareContext(ctx, "COPY "+r.t(table)+" ("+strings.Join(quoted, ", ")+") FROM STDIN")
+		made, err := openCopyTable(ctx, tx, r.kgNo, table, cols)
 		if err != nil {
-			return dbErr(err, "start the COPY into "+table)
+			return err
 		}
-		*c = &copier{ctx: ctx, stmt: stmt}
+		*c = made
 		return nil
 	}
 	abort := func() {

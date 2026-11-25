@@ -71,6 +71,17 @@ func TestPgsTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 		"pq.DialOpen":           "a dial that is not the connector's",
 		"InsecureSkipVerify":    "a switch that turns the verification of a certificate off",
 		"VerifyPeerCertificate": "a hook that replaces the verification of a certificate",
+		"VerifyConnection":      "a hook that replaces the verification of a certificate (egress sets it, for the pins)",
+		"KeyLogWriter":          "a log of the keys of the connection",
+		"EncryptedClientHello":  "a setting that makes the handshake skip the hook of the verification",
+		"GetClientCertificate":  "a client certificate (a definition has none)",
+		"RootCAs":               "a list of authorities of this package (egress makes the settings)",
+		"ServerName":            "a change to the settings that egress made",
+		"MinVersion":            "a change to the settings that egress made",
+		"MaxVersion":            "a change to the settings that egress made",
+		"Renegotiation":         "a change to the settings that egress made",
+		"egress.TLSConfig":      "the settings of egress in the hand of this package (RegisterPostgresTLS keeps them out of it)",
+		"pq.RegisterTLSConfig(": "a registration of settings that this package holds (the function is handed to egress.RegisterPostgresTLS, not called)",
 		"net.Dial":              "a dial that does not go through egress",
 		"net.Dialer":            "a dialer that is not egress's",
 		"crypto/tls":            "a TLS configuration of this package (egress makes it)",
@@ -99,7 +110,7 @@ func TestPgsTheCodeHasNoWayAroundTheDefence(t *testing.T) {
 		}
 	}
 	// The two places that must exist, so that the scan does not pass because it looks at nothing.
-	for _, c := range []struct{ file, text string }{{"credential.go", ".Reveal("}, {"session.go", ".PrepareContext("}, {"session.go", ".QueryContext("}, {"connect.go", "conn.Dialer("}, {"session.go", "ReadOnly: true"}} {
+	for _, c := range []struct{ file, text string }{{"credential.go", ".Reveal("}, {"session.go", ".PrepareContext("}, {"session.go", ".QueryContext("}, {"connect.go", "conn.Dialer("}, {"session.go", "ReadOnly: true"}, {"connect.go", "egress.RegisterPostgresTLS(pq.RegisterTLSConfig,"}} {
 		found := false
 		for _, line := range code[c.file] {
 			found = found || strings.Contains(line, c.text)
