@@ -144,7 +144,8 @@ type CheckNote struct {
 }
 
 // CertSummary is the certificate a server presented, in words that are safe to show (the server's own words, cut and with
-// the control and formatting characters taken out). SPKISHA256 is the pin of it: what tls.pins takes to accept it.
+// the control and formatting characters taken out). SPKISHA256 is the pin of it: what tls.pins takes to accept it. The words
+// were written by the server, so a screen shows them as text and always escapes them; Truncated says that something was cut.
 type CertSummary struct {
 	Subject    string
 	Issuer     string
@@ -153,6 +154,7 @@ type CertSummary struct {
 	NotBefore  time.Time
 	NotAfter   time.Time
 	SPKISHA256 string
+	Truncated  bool
 }
 
 // CheckStep is one item of a check: its name (a closed phrase of the reader's), how it came out and the words for it.

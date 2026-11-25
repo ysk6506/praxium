@@ -231,3 +231,32 @@ func TestHxbProbeLeavesTheClientAsItWas(t *testing.T) {
 		t.Errorf("%d requests", requests.Load())
 	}
 }
+
+// [REQ-824] A summary that was cut says so, so that a long first part cannot hide what follows without anyone seeing that
+// something is missing; one that was not cut does not.
+func TestHxbTheSummaryOfACertificateSaysWhenItWasCut(t *testing.T) {
+	short := summarize(&x509.Certificate{Subject: pkix.Name{CommonName: "short"}, Issuer: pkix.Name{CommonName: "issuer"}, DNSNames: []string{"a.example.test"}})
+	if short.Truncated {
+		t.Error("a summary that holds all of the certificate is marked as cut")
+	}
+	for name, cert := range map[string]*x509.Certificate{
+		"subject": {Subject: pkix.Name{CommonName: strings.Repeat("s", 300)}},
+		"issuer":  {Issuer: pkix.Name{CommonName: strings.Repeat("i", 300)}},
+		"name":    {DNSNames: []string{strings.Repeat("n", 300) + ".example.test"}},
+		"names": {DNSNames: func() []string {
+			var out []string
+			for i := 0; i <= summarySANMax; i++ {
+				out = append(out, "n"+strconv.Itoa(i)+".example.test")
+			}
+			return out
+		}()},
+	} {
+		if !summarize(cert).Truncated {
+			t.Errorf("a cut %s is not marked", name)
+		}
+	}
+	// exactly at the limit is not cut
+	if got := summarize(&x509.Certificate{Subject: pkix.Name{CommonName: strings.Repeat("s", summaryTextMax-3)}}); got.Truncated || len(got.Subject) != summaryTextMax {
+		t.Errorf("at the limit: %d bytes, cut %v", len(got.Subject), got.Truncated)
+	}
+}

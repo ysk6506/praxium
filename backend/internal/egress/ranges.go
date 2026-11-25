@@ -15,7 +15,9 @@ const MaxRanges = 256
 // the range of that address alone. Names are not taken: a name can be answered with other addresses later, and the
 // decisions of the policy are made on the addresses a name was resolved to. An empty text is an empty list. An item that
 // is empty, has a zone or is not an address or a range is an error that names the item (the operator wrote it), and so is
-// a list of more than MaxRanges.
+// a list of more than MaxRanges. A range has to be written as its first address: "10.1.2.3/16" is an error, not
+// "10.1.0.0/16" (host bits are not dropped, which would widen what the operator wrote), "/0" is only "0.0.0.0/0" and
+// "::/0", and a range that carries an IPv4 address in IPv6 notation has at least 96 bits.
 func ParseRanges(list string) ([]netip.Prefix, error) {
 	if strings.TrimSpace(list) == "" {
 		return nil, nil
@@ -42,7 +44,18 @@ func parseRange(item string) (netip.Prefix, error) {
 		if err != nil || p.Addr().Zone() != "" {
 			return netip.Prefix{}, errNotRange
 		}
-		return p.Masked(), nil
+		// A range is written as its first address. Host bits are never dropped silently: an operator's typo would widen the
+		// range ("10.1.2.3/8" is not "10.0.0.0/8"), and for a list that allows plaintext widening is the unsafe way. This
+		// includes /0, which is only 0.0.0.0/0 or ::/0 as written.
+		if p != p.Masked() {
+			return netip.Prefix{}, errNotRange
+		}
+		// An address that carries an IPv4 address is a range of IPv4 addresses only from /96 on; a shorter one would name
+		// IPv6 addresses that are not IPv4 at all, and is almost always a mistake.
+		if p.Addr().Is4In6() && p.Bits() < 96 {
+			return netip.Prefix{}, errNotRange
+		}
+		return p, nil
 	}
 	a, err := netip.ParseAddr(item)
 	if err != nil || a.Zone() != "" {

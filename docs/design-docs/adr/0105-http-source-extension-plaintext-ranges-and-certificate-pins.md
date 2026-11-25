@@ -37,8 +37,11 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
   - go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions
-test_change_reason: 앞의 둘은 TLS 확인을 건너뛰는 글자(InsecureSkipVerify)를 egress의 고정 설정 한 곳에만 허락하는 것으로 검사를 바꾼다. egress 쪽은 금지 글자 목록에서 빠지는 것이 InsecureSkipVerify와 VerifyConnection뿐이고 이 둘은 pin.go에 정확히 한 번씩만 있어야 하는 검사로 옮기며 KeyLogWriter와 EncryptedClientHello를 금지 목록에 더하고, 필드 허용 목록의 AST 단언은 새 파일의 테스트가 맡으므로 합치면 이전보다 엄격하거나 같고, pgsource 쪽은 *tls.Config를 쥐거나 만드는 길을 egress의 등록 함수 호출 하나만 남기고 막으므로 엄격하거나 같다. 바꾼 검사가 우회 파일을 실제로 거절하는 것은 새 테스트 TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins가 따로 확인한다. 셋째는 정의 오류 코드 source.connection.tls_pins_invalid를 더하면서 사례 표 adpCases에 사례 세 개를 더하는 내용 변경이고, 빼거나 고친 사례와 단언은 없다. 나머지 넷은 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드(pin.go, probe.go 같은 새 파일과 바뀐 파일)가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 바뀐 코드가 같은 규칙을 지키는 것을 새 지문으로 다시 기록한다.
-decision_hash: c77a3002a4b06b8f
+  - go:backend/internal/egress::TestTLSConfigAlwaysVerifies
+  - go:backend/internal/egress::TestTLSConfigTrustsOnlyTheGivenAuthority
+  - go:backend/internal/egress::TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt
+test_change_reason: 앞의 둘은 TLS 확인을 건너뛰는 글자(InsecureSkipVerify)를 egress의 고정 설정 한 곳에만 허락하는 것으로 검사를 바꾼다. egress 쪽은 금지 글자 목록에서 빠지는 것이 InsecureSkipVerify와 VerifyConnection뿐이고 이 둘은 pin.go에 정확히 한 번씩만 있어야 하는 검사로 옮기며 KeyLogWriter와 EncryptedClientHello를 금지 목록에 더하고, 필드 허용 목록의 AST 단언은 새 파일의 테스트가 맡으므로 합치면 이전보다 엄격하거나 같고, pgsource 쪽은 *tls.Config를 쥐거나 만드는 길을 egress의 등록 함수 호출 하나만 남기고 막으므로 엄격하거나 같다. 바꾼 검사가 우회 파일을 실제로 거절하는 것은 새 테스트 TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins가 따로 확인한다. 셋째는 정의 오류 코드 source.connection.tls_pins_invalid를 더하면서 사례 표 adpCases에 사례 세 개를 더하는 내용 변경이고, 빼거나 고친 사례와 단언은 없다. 나머지 넷은 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드(pin.go, probe.go 같은 새 파일과 바뀐 파일)가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 바뀐 코드가 같은 규칙을 지키는 것을 새 지문으로 다시 기록한다. 마지막 셋(TestTLSConfig로 시작하는 egress의 세 테스트)은 독립 검토(L6)에 따라 egress.TLSConfig를 비공개 tlsConfig로 바꾸면서 테스트가 함수를 부르는 이름만 바뀌는 내용 변경이다. 단언은 한 글자도 바뀌지 않았고 오류 문구의 글자도 그대로이다. 이 변경으로 egress 밖에서는 *tls.Config를 손에 쥘 수 없다.
+decision_hash: 02bc78e3883fdc0b
 ---
 # ADR-0105 HTTP 소스 확장 — 평문 허용 범위와 인증서 고정
 
@@ -69,8 +72,15 @@ ADR-0100이 정한 HTTP 소스 확장 가운데 E5(평문 HTTP의 허용 목록)
 
 ### 우회 검사의 변경
 
-11. egress의 `TestTheCodeHasNoWayAroundTheDefence`에서 `InsecureSkipVerify`와 `VerifyConnection`은 "어디에도 없어야"에서 "`pin.go`에 정확히 한 줄씩"으로 바뀌고, `KeyLogWriter`와 `EncryptedClientHello`가 금지 목록에 더해진다. 새 테스트 `TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins`는 구문 트리에서 `tls.Config`의 필드를 허용 목록으로 검사하고(`KeyLogWriter`, `Time`, 암호화된 ClientHello 따위는 허용하지 않는다) 우회 파일 사례를 실제로 거절하는 것을 보인다.
+11. egress의 `TestTheCodeHasNoWayAroundTheDefence`에서 `InsecureSkipVerify`와 `VerifyConnection`은 "어디에도 없어야"에서 "`pin.go`에 정확히 한 줄씩"으로 바뀌고, `KeyLogWriter`와 `EncryptedClientHello`가 금지 목록에 더해진다. 새 테스트 `TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins`는 구문 트리를 보는 판정 함수 하나(`hxbViolations`: 파일 집합을 받아 위반 목록을 낸다)를 본 검사와 자기 시험(`TestHxbTheScanOfTheSettingsFailsForTheWaysAround`)이 함께 쓴다. 규칙은 `crypto/tls`를 별명과 점 없이만 import하고, `tls.Config`라는 글을 정해진 함수 여섯에서 포인터나 리터럴의 타입으로만 쓰고(타입 선언, 별명, 변수, `new`는 위반), 설정을 만드는 곳 둘이 각각 정해진 필드만 쓰며, `tls.Config` 필드의 선택자가 대입의 왼쪽(괄호, `*`, 인덱스 포함), `++`/`--`, `&`의 피연산자, `range`의 대상에 나오면 실패하고, `pinnedConfig`와 `probeConfig`를 부르는 곳을 정해진 함수로 못박는 것이다(`pinnedConfig`는 연결의 `pins`만 받는다). 필드 이름은 `tls.Config` 타입에서 가져오고 이름으로 판정해 같은 이름의 다른 필드도 걸리므로 넓게 잡는 쪽이다. `go/types`는 쓰지 않았다. 타입을 쓸 수 있는 자리가 위 목록뿐이라 타입으로 보아도 같은 곳이 걸리고, 소스 import는 시험을 느리게 하고 GOROOT에 기대기 때문이다. 자기 시험은 검토가 찾은 네 꼴(import 별명, 타입 별명, 필드 포인터와 `*(&x.F)`와 `--`, 고정 값으로 `pinnedConfig`를 부르는 다른 함수)과 그 밖의 우회를 합쳐 스물여덟 가지를 진짜 파일 집합에 더해 위반이 나오는지 보고, 필요한 자리가 없어졌을 때도 실패하는지 본다.
 12. pgsource의 `TestPgsTheCodeHasNoWayAroundTheDefence`는 `tls.Config`와 확인 건너뛰기에 관한 글자를 모두 막되 egress의 등록 함수 호출 하나만 허락하도록 바뀐다.
+13. 같은 방식(판정 함수 하나와 자기 시험)의 새 검사 `TestPgsHxbTheOnlyWayToTheTLSSettingsIsTheRegistrationOfEgress`가 `egress.RegisterPostgresTLS(`와 `RegisterTLSConfig`가 각각 정확히 한 번, `connect.go`의 `useTLS`에서 드라이버의 함수를 감싸지 않고 그대로 넘기는 호출 하나에만 있을 것, `reflect`·`unsafe`·`crypto/tls`를 import하지 않을 것, `SSLMode`에는 `pq.SSLModeDisable`과 `pq.SSLMode("pqgo-" + key)`만 넣을 것(`require`, `prefer`, `allow`, `verify-ca`, `verify-full`, `disable` 글자 금지), `tls.Config`의 필드 이름(`Time` 포함)을 패키지 이름이 아닌 값에 쓰지 않을 것을 본다. egress의 `TestHxbOnlyPgsourceRegistersTLSSettingsWithTheDriver`는 백엔드 전체를 훑어 이 두 이름을 쓰는 파일이 `egress/tls.go`와 `pgsource/connect.go`뿐임을 본다. `egress.TLSConfig`는 비공개 `tlsConfig`로 바뀌어 egress 밖에서 `*tls.Config`를 손에 쥐는 길이 없다(위 amends_tests의 마지막 셋).
+
+### 독립 검토의 낮은 발견에 따른 보강
+
+14. 범위 파서(`egress.ParseRanges`)는 호스트 비트가 남은 범위를 오류로 하고(`10.1.2.3/16`), `/0`은 `0.0.0.0/0`과 `::/0` 표기만, IPv4를 품은 IPv6 표기는 `/96` 이상만 받는다(운영자의 오타가 평문 허용 범위를 말없이 넓히지 않게).
+15. 인증서 요약(`CertSummary`)은 글이나 이름 목록이 잘리면 `Truncated`로 알린다. 요약은 서버가 쓴 글이라 화면은 반드시 이스케이프해서 글로만 보인다.
+16. PostgreSQL 소스의 핀 불일치(또는 핀이 있는 정의의 TLS 실패)는 "서버의 키가 정의에 고정한 것이 아니다"로 알리고, 체인과 이름과 만료가 틀렸다는 안내를 하지 않는다.
 
 ## 범위 밖
 
@@ -90,7 +100,8 @@ ADR-0100이 정한 HTTP 소스 확장 가운데 E5(평문 HTTP의 허용 목록)
 - **키가 새면 막지 못한다**: 고정한 인증서의 개인 키를 가진 쪽은 통과한다.
 - **인증서 요약의 노출 범위**: 요구 사항(R17)은 요약을 접속 변경 권한이 있는 사람에게만 보이라고 한다. 점검 API가 아직 없어 강제하지 못하고, 이 ADR과 문서에 전제로 적어 둔다. API를 만드는 PR이 확인해야 한다.
 - **플랫폼 전체의 평문 안내와 플래그 연결이 아직 없다**: 서버 조립 때 한다.
+- **다음 PR이 볼 것**: 서버 조립 PR은 조립 코드가 `AllowInsecure`를 켜지 못하게 묶는 검사와 범위 파서 강화(결정 14)의 연결을 본다. 점검 API PR은 인증서 요약을 접속 변경 권한과 실행 권한을 함께 가진 주체에게만 보이는 것과, `ProbeCert`·`ProbePostgresCert`(정책이 허락하는 아무 호스트와 포트의 인증서를 돌려주는 공개 함수)의 감사 기록을 본다.
 
 ## 확인
 
-`hxb` 접두어 테스트들이 평문 범위(풀린 주소 기준, 빈 목록, 겹침, 오류), 고정(일치, 불일치, 체인과 이름 무시, 세션 이어 붙임, 여럿), 점검의 인증서 요약과 안내, 정의 오류와 정규화, 변경 분류, 실제 PostgreSQL 뒤의 고정 읽기, 우회 검사를 본다.
+`hxb` 접두어 테스트들이 평문 범위(풀린 주소 기준, 빈 목록, 겹침, 오류), 고정(일치, 불일치, 체인과 이름 무시, 세션 이어 붙임(설정에 세션 캐시가 없는 것, 그리고 캐시를 손으로 넣어도 이어 붙인 세션에서 핀 불일치가 거절되는 것), 여럿), 점검의 인증서 요약과 안내, 정의 오류와 정규화, 변경 분류, 실제 PostgreSQL 뒤의 고정 읽기, 그 읽기를 취소하는 요청이 고정한 서버로 TLS를 거쳐 가는 것, 우회 검사를 본다.

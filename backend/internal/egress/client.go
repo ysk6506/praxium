@@ -11,7 +11,7 @@ import (
 
 // ClientOptions are the settings of an HTTP client of a source.
 type ClientOptions struct {
-	// CAPEM is the certificate authority of the source (see TLSConfig). Empty means the system's authorities.
+	// CAPEM is the certificate authority of the source (see tlsConfig). Empty means the system's authorities.
 	CAPEM string
 	// Pins, when not empty, are the public keys the server may present (see pin.go); the chain, the name and the dates of
 	// its certificate are then not looked at. They are not used together with CAPEM.

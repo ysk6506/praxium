@@ -14872,6 +14872,51 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/egress::TestHxbAResumedSessionIsCheckedAgainstThePinsToo": {
+   "kind": "test",
+   "hash": "7f321a50e58d0f29",
+   "asserts": 12,
+   "literals": [
+    "25dbeb60006c66e3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbNoSettingsOfTLSHoldASessionCache": {
+   "kind": "test",
+   "hash": "c0a791ca31c3fef0",
+   "asserts": 8,
+   "literals": [
+    "e4e5026a719a6d95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbOnlyPgsourceRegistersTLSSettingsWithTheDriver": {
+   "kind": "test",
+   "hash": "5dd1712dd64316b9",
+   "asserts": 2,
+   "literals": [
+    "fe0861adbfe4effb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/egress::TestHxbParsePinRefusesWhatIsNotAPin": {
    "kind": "test",
    "hash": "076f8e5d039ed11d",
@@ -14887,12 +14932,27 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/egress::TestHxbParseRangesRefusesHostBitsAndTooWideMappedRanges": {
+   "kind": "test",
+   "hash": "8016c0249d6df57e",
+   "asserts": 3,
+   "literals": [
+    "ce0465e2e801e73d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/egress::TestHxbParseRangesTakesAddressesAndRangesOnly": {
    "kind": "test",
-   "hash": "0ef11a3600db70c8",
+   "hash": "b5ffca9102d151eb",
    "asserts": 7,
    "literals": [
-    "bfc2104541373f9f"
+    "d8779d1ffe5e6149"
    ],
    "precision": [],
    "skips": 0,
@@ -15100,10 +15160,10 @@
   },
   "go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins": {
    "kind": "test",
-   "hash": "4fdeca62f64c1dc0",
-   "asserts": 16,
+   "hash": "660774c81099f2a4",
+   "asserts": 3,
    "literals": [
-    "5187ec0968c7476d"
+    "24f87f1eef59a205"
    ],
    "precision": [],
    "skips": 0,
@@ -15113,12 +15173,42 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/egress::TestHxbTheScanOfTheRegistrationFailsForAnotherPackage": {
+   "kind": "test",
+   "hash": "f2567a0251711597",
+   "asserts": 4,
+   "literals": [
+    "7a6ffae3bfdec96b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsForTheWaysAround": {
    "kind": "test",
-   "hash": "223a26853a68aeee",
-   "asserts": 2,
+   "hash": "a19ecae47881bef5",
+   "asserts": 5,
    "literals": [
-    "0dd1c6115a02ad9e"
+    "bed0acac56943cf7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-823"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsWhenAPlaceIsGone": {
+   "kind": "test",
+   "hash": "3dae23a236d3e608",
+   "asserts": 4,
+   "literals": [
+    "3263e9dbbc97f7eb"
    ],
    "precision": [],
    "skips": 0,
@@ -15134,6 +15224,21 @@
    "asserts": 5,
    "literals": [
     "e7a9294dd8c316fe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheSummaryOfACertificateSaysWhenItWasCut": {
+   "kind": "test",
+   "hash": "944be16c9d628dc0",
+   "asserts": 3,
+   "literals": [
+    "94c6e6d65fa9ff96"
    ],
    "precision": [],
    "skips": 0,
@@ -15505,7 +15610,7 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "cd7beebce4db3e0b",
+   "hash": "6cf9b583686eb04c",
    "asserts": 6,
    "literals": [
     "c584953f77926789"
@@ -15520,7 +15625,7 @@
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "d4b52d774e34af66",
+   "hash": "2a0f9b46d648d129",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"
@@ -15565,7 +15670,7 @@
   },
   "go:backend/internal/egress::TestTLSConfigAlwaysVerifies": {
    "kind": "test",
-   "hash": "3ed1da406696333c",
+   "hash": "75c547cf01434bc1",
    "asserts": 3,
    "literals": [
     "dbe86a38b2f371eb"
@@ -15575,12 +15680,12 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt": {
    "kind": "test",
-   "hash": "42034ec7920db134",
+   "hash": "6e63e72b2295c958",
    "asserts": 2,
    "literals": [
     "0d07c3e7b7d5c78e"
@@ -15590,12 +15695,12 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTLSConfigTrustsOnlyTheGivenAuthority": {
    "kind": "test",
-   "hash": "d6a48936d70215da",
+   "hash": "60a61e819241362a",
    "asserts": 3,
    "literals": [
     "230e489885dd4e95"
@@ -15605,8 +15710,8 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTrkBudgetOfAWindow": {
    "kind": "test",
@@ -19258,7 +19363,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "e55162f73d0b9ebd",
+   "hash": "166b028fb3754bf4",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -19363,7 +19468,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "ad75d3eabfa06c5f",
+   "hash": "b7a47bb8a856e832",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -28989,6 +29094,52 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgsource::TestPgsHxbTheOnlyWayToTheTLSSettingsIsTheRegistrationOfEgress": {
+   "kind": "test",
+   "hash": "55867004cddd34c6",
+   "asserts": 3,
+   "literals": [
+    "eeae75afbcbdd38f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659",
+    "REQ-660"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgsHxbThePinnedFailureIsWordedAsOne": {
+   "kind": "test",
+   "hash": "05c0b65902a6fbf6",
+   "asserts": 3,
+   "literals": [
+    "ba4a4ac40b4af002"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgsHxbTheScanFailsForTheWaysAround": {
+   "kind": "test",
+   "hash": "07538cc25be67479",
+   "asserts": 8,
+   "literals": [
+    "e7b4b3d2d15e2ff1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgsource::TestPgsKeepsRowsOfOneKeyOnOnePage": {
    "kind": "test",
    "hash": "a7d3bbad1f9aa6af",
@@ -29406,7 +29557,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "46a4fb66a483806b",
+   "hash": "9e18d4361a743d0f",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -29500,7 +29651,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "ad7beed8b999053c",
+   "hash": "bc367477e5e1b8f4",
    "asserts": 5,
    "literals": [
     "83ddf40c2eb59700"
@@ -33103,7 +33254,7 @@
   },
   "go:backend/internal/sourcecheck::TestHxbACheckThatWorksShowsNoCertificateAndNotesThePlaintext": {
    "kind": "test",
-   "hash": "fa9cfcd53cbf01cb",
+   "hash": "7b4c6f24b638266a",
    "asserts": 9,
    "literals": [
     "c0056ac2accf80ff"
@@ -33118,10 +33269,10 @@
   },
   "go:backend/internal/sourcecheck::TestHxbAnotherKeyThanThePinsIsRefusedAndTheCheckShowsIt": {
    "kind": "test",
-   "hash": "d5a8d952bca699c8",
-   "asserts": 15,
+   "hash": "5d5f3fbf8cced018",
+   "asserts": 16,
    "literals": [
-    "950805ec7685e32d"
+    "b5b0662dc38c0549"
    ],
    "precision": [],
    "skips": 0,
@@ -33133,10 +33284,25 @@
   },
   "go:backend/internal/sourcecheck::TestHxbAPinnedPostgresServerIsReadWhateverItsChainAndName": {
    "kind": "test",
-   "hash": "b9b785fc615f3e51",
+   "hash": "e6fb3aaee10de4f5",
    "asserts": 10,
    "literals": [
     "580c18498abd2df9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxbTheCancelRequestOfAReadGoesToThePinnedServerOverTLS": {
+   "kind": "test",
+   "hash": "8a771cb1ae2018f4",
+   "asserts": 10,
+   "literals": [
+    "f243cc9ec0e75ef8"
    ],
    "precision": [],
    "skips": 0,

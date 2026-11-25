@@ -32,7 +32,11 @@ const (
 	summarySANMax  = 20
 )
 
-// CertSummary is what a server presented: its own certificate, in words that are safe to show.
+// CertSummary is what a server presented: its own certificate, in words that are safe to show. The words are the server's
+// own, written by whoever made the certificate, so they are text and never markup: a screen shows them escaped, and gives
+// them no meaning (they are cleaned of control and formatting characters here, but a text such as "<script>" is left as
+// it is). A text that was cut (the subject, the issuer or a name) or a list of names that was cut is marked by Truncated, so
+// that a long first part cannot hide what follows it without anyone seeing that something is missing.
 type CertSummary struct {
 	Subject, Issuer string
 	// SANs are the names and addresses the certificate is for, at most 20.
@@ -43,6 +47,8 @@ type CertSummary struct {
 	NotAfter  time.Time
 	// SPKISHA256 is the pin of the certificate ("sha256/…"): what is written in tls.pins to accept it.
 	SPKISHA256 string
+	// Truncated says that a text was cut at its limit or that SANsMore is not zero: what is shown is not all of it.
+	Truncated bool
 }
 
 // ProbeCert shows the certificate of the server that rawURL (an https address) names, as the client would reach it.
@@ -128,10 +134,12 @@ func askPostgresForTLS(conn net.Conn) error {
 }
 
 func summarize(cert *x509.Certificate) *CertSummary {
-	sum := &CertSummary{
-		Subject: cleanText(cert.Subject.String()), Issuer: cleanText(cert.Issuer.String()),
-		NotBefore: cert.NotBefore.UTC(), NotAfter: cert.NotAfter.UTC(), SPKISHA256: PinOf(cert),
-	}
+	sum := &CertSummary{NotBefore: cert.NotBefore.UTC(), NotAfter: cert.NotAfter.UTC(), SPKISHA256: PinOf(cert)}
+	var cut bool
+	sum.Subject, cut = cleanText(cert.Subject.String())
+	sum.Truncated = cut
+	sum.Issuer, cut = cleanText(cert.Issuer.String())
+	sum.Truncated = sum.Truncated || cut
 	var names []string
 	names = append(names, cert.DNSNames...)
 	for _, ip := range cert.IPAddresses {
@@ -146,17 +154,20 @@ func summarize(cert *x509.Certificate) *CertSummary {
 	for i, n := range names {
 		if i == summarySANMax {
 			sum.SANsMore = len(names) - summarySANMax
+			sum.Truncated = true
 			break
 		}
-		sum.SANs = append(sum.SANs, cleanText(n))
+		text, cut := cleanText(n)
+		sum.Truncated = sum.Truncated || cut
+		sum.SANs = append(sum.SANs, text)
 	}
 	return sum
 }
 
 // cleanText makes a text of a certificate fit to be shown: bytes that are not UTF-8 are replaced, the control characters
 // and the formatting characters of Unicode (the marks that turn the direction of the text, the zero-width ones) and the
-// separators of lines are taken out, and what is left is cut at summaryTextMax bytes.
-func cleanText(s string) string {
+// separators of lines are taken out, and what is left is cut at summaryTextMax bytes. The second result says that it was cut.
+func cleanText(s string) (string, bool) {
 	s = strings.ToValidUTF8(s, "�")
 	var b strings.Builder
 	for _, r := range s {
@@ -164,9 +175,9 @@ func cleanText(s string) string {
 			continue
 		}
 		if b.Len()+utf8.RuneLen(r) > summaryTextMax {
-			break
+			return b.String(), true
 		}
 		b.WriteRune(r)
 	}
-	return b.String()
+	return b.String(), false
 }

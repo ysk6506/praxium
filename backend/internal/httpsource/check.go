@@ -149,5 +149,5 @@ func (rn *run) presentedCertificate(ctx context.Context, failure error) *ingest.
 		return nil
 	}
 	return &ingest.CertSummary{Subject: sum.Subject, Issuer: sum.Issuer, SANs: sum.SANs, SANsMore: sum.SANsMore,
-		NotBefore: sum.NotBefore, NotAfter: sum.NotAfter, SPKISHA256: sum.SPKISHA256}
+		NotBefore: sum.NotBefore, NotAfter: sum.NotAfter, SPKISHA256: sum.SPKISHA256, Truncated: sum.Truncated}
 }

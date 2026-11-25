@@ -77,7 +77,7 @@ func (r *Reader) presentedCertificate(ctx context.Context) *ingest.CertSummary {
 		return nil
 	}
 	return &ingest.CertSummary{Subject: sum.Subject, Issuer: sum.Issuer, SANs: sum.SANs, SANsMore: sum.SANsMore,
-		NotBefore: sum.NotBefore, NotAfter: sum.NotAfter, SPKISHA256: sum.SPKISHA256}
+		NotBefore: sum.NotBefore, NotAfter: sum.NotAfter, SPKISHA256: sum.SPKISHA256, Truncated: sum.Truncated}
 }
 
 // notes are what a check says about the source besides how it went.

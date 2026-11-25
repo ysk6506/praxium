@@ -192,11 +192,11 @@ func TestHxbTheTrackerOfAPlaintextConnectionIsJudgedByTheRanges(t *testing.T) {
 
 // [REQ-820] The list an operator writes is read as addresses and ranges, nothing else.
 func TestHxbParseRangesTakesAddressesAndRangesOnly(t *testing.T) {
-	got, err := ParseRanges(" 10.1.0.0/16,192.0.2.7 , 2001:db8::7,10.1.2.3/16")
+	got, err := ParseRanges(" 10.1.0.0/16,192.0.2.7 , 2001:db8::7,10.1.2.0/24")
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"10.1.0.0/16", "192.0.2.7/32", "2001:db8::7/128", "10.1.0.0/16"}
+	want := []string{"10.1.0.0/16", "192.0.2.7/32", "2001:db8::7/128", "10.1.2.0/24"}
 	if len(got) != len(want) {
 		t.Fatalf("%v", got)
 	}
@@ -219,5 +219,29 @@ func TestHxbParseRangesTakesAddressesAndRangesOnly(t *testing.T) {
 	}
 	if _, err := ParseRanges("0.0.0.0/0,::/0"); err != nil {
 		t.Errorf("the spelling of every address: %v", err)
+	}
+}
+
+// [REQ-820] A range is written as its first address: host bits are an error that names the item, never dropped (that would
+// widen what the operator wrote), /0 is only the two spellings of every address, and a range of IPv6 notation that carries
+// IPv4 addresses has at least 96 bits.
+func TestHxbParseRangesRefusesHostBitsAndTooWideMappedRanges(t *testing.T) {
+	for _, bad := range []string{
+		"10.1.2.3/16", "10.1.2.3/8", "10.1.2.3/0", "10.0.0.1/31", "1.2.3.4/0", "::1/0", "2001:db8::1/32",
+		"::ffff:10.0.0.0/8", "::ffff:0.0.0.0/95", "::ffff:0:0/0", "::ffff:10.1.2.3/100",
+	} {
+		_, err := ParseRanges("192.0.2.7," + bad)
+		if err == nil {
+			t.Errorf("%q was accepted", bad)
+			continue
+		}
+		if !strings.Contains(err.Error(), bad) {
+			t.Errorf("the error for %q does not name the item: %v", bad, err)
+		}
+	}
+	for _, ok := range []string{"10.0.0.0/8", "10.1.2.3/32", "0.0.0.0/0", "::/0", "::ffff:10.0.0.0/104", "::ffff:10.1.2.3/128", "2001:db8::/32"} {
+		if _, err := ParseRanges(ok); err != nil {
+			t.Errorf("%q was refused: %v", ok, err)
+		}
 	}
 }
