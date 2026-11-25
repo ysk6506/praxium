@@ -38,6 +38,9 @@ type Request struct {
 	URL    string
 	Header map[string][]string
 	Body   io.Reader
+	// Identity asks the source not to compress the answer. The adapter sets no header of encoding itself (a header that asks for
+	// compression, or its absence, is the transport's); a body whose end is read from the protocol is asked for this way.
+	Identity bool
 }
 
 // Response is the answer of a source. The body is read once, and what goes wrong while reading it comes back as an
@@ -46,6 +49,12 @@ type Response struct {
 	Status int
 	Header map[string][]string
 	Body   io.ReadCloser
+	// Ended says that the end of the body is marked by the protocol: a length that is read in full, the last chunk, or the end
+	// of an HTTP/2 stream. A body that is read to its end without such a mark may have been cut where a connection closed, and
+	// the reader of a body that is made of lines (one record each) cannot tell by the body whether it was. A body that the
+	// transport unpacked is not marked: it has no length (the transport removes it), and a compressed stream that is closed
+	// before its first byte, or between two of its members, reads as whole.
+	Ended bool
 }
 
 // Client is an HTTP client whose every connection goes through a Dialer. It reads no proxy from the
@@ -101,7 +110,25 @@ func (c *Client) Do(ctx context.Context, req Request) (*Response, error) {
 		_ = resp.Body.Close()
 		return nil, &Error{Kind: KindRedirect, Reason: "the source answered with a redirect, which is not followed"}
 	}
-	return &Response{Status: resp.StatusCode, Header: resp.Header.Clone(), Body: safeBody{resp.Body}}, nil
+	return &Response{Status: resp.StatusCode, Header: resp.Header.Clone(), Body: safeBody{resp.Body}, Ended: endMarked(resp)}, nil
+}
+
+// endMarked says whether the protocol marks the end of the body of a response: a length, the chunked coding, or HTTP/2. A body
+// that the transport unpacked (Uncompressed) is not a mark: the length is gone, and the stream of gzip ends cleanly at the
+// start and between its members, where a connection that closed cut it.
+func endMarked(resp *http.Response) bool {
+	if resp.Uncompressed {
+		return false
+	}
+	if resp.ContentLength >= 0 || resp.ProtoMajor >= 2 {
+		return true
+	}
+	for _, te := range resp.TransferEncoding {
+		if strings.EqualFold(te, "chunked") {
+			return true
+		}
+	}
+	return false
 }
 
 // build parses the URL itself and makes the request. It refuses what url.Parse reads in a way the judgement does not.
@@ -122,6 +149,9 @@ func build(ctx context.Context, req Request) (*http.Request, error) {
 		for _, v := range values {
 			hreq.Header.Add(name, v)
 		}
+	}
+	if req.Identity {
+		hreq.Header.Set("Accept-Encoding", "identity")
 	}
 	return hreq, nil
 }

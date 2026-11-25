@@ -140,6 +140,9 @@ func adpCases(t *testing.T) []adpCase {
 		{"table with quotes", p("inventory.servers", `\"x\"`), "source.dataset.table_invalid", "/datasets/0/table"},
 		{"empty statement", p(`"sql":"SELECT vm_id, host_id FROM placement WHERE retired_at IS NULL"`, `"sql":"  "`), "source.dataset.sql_invalid", "/datasets/1/sql"},
 		{"collation", p(`"table":"inventory.servers"`, `"table":"inventory.servers","key_collation":"a b"`), "source.dataset.key_collation_invalid", "/datasets/0/key_collation"},
+		{"response_format that is none of the two", h(`"id":"ds_servers",`, `"id":"ds_servers","response_format":"ndjson",`), "source.response_format_invalid", "/datasets/0/response_format"},
+		{"json_lines with pages", h(`"id":"ds_servers",`, `"id":"ds_servers","response_format":"json_lines",`), "source.response_format_pagination", "/datasets/0/pagination/kind"},
+		{"missing_array without a [*]", h(`"id":"ds_servers",`, `"id":"ds_servers","missing_array":"empty",`), "source.dataset.expand_invalid", "/datasets/0/missing_array"},
 	}
 }
 

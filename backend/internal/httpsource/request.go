@@ -24,6 +24,9 @@ type plan struct {
 	// set), and not retried.
 	token bool
 	basic bool
+	// identity asks the source not to compress the answer: a body of JSON lines whose end is read from the protocol cannot be one that
+	// the transport unpacks (egress.Response.Ended).
+	identity bool
 	// host and port are where the request goes when that is not the API's origin (the token request to another host); they are
 	// empty for the requests of the API.
 	host string
@@ -104,7 +107,7 @@ func (rn *run) dataPlan(ds ingest.Dataset, at pos) (plan, error) {
 	req := ds.Request
 	p := newParams(req)
 	rn.pager.apply(p, at)
-	pl := plan{method: req.Method, shown: p.shown}
+	pl := plan{method: req.Method, shown: p.shown, identity: ds.JSONLines()}
 	if pl.method == "" {
 		pl.method = ingest.MethodGet
 	}
@@ -156,7 +159,7 @@ func (rn *run) build(p plan) (egress.Request, error) {
 	if err := rn.sign(p, h); err != nil {
 		return egress.Request{}, err
 	}
-	req := egress.Request{Method: ingest.MethodGet, URL: p.url.String(), Header: h}
+	req := egress.Request{Method: ingest.MethodGet, URL: p.url.String(), Header: h, Identity: p.identity}
 	if p.method == ingest.MethodPost {
 		req.Method = ingest.MethodPost
 		req.Body = bytes.NewReader(body)

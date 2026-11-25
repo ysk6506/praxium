@@ -154,7 +154,7 @@ func (rn *run) once(ctx context.Context, p plan, attempt int) (*reply, error) {
 	if !p.token && resp.Status != 401 && resp.Status != 403 {
 		rn.prog.authenticated = true
 	}
-	rep := &reply{status: resp.Status, header: resp.Header, url: p.url, started: started}
+	rep := &reply{status: resp.Status, header: resp.Header, url: p.url, started: started, ended: resp.Ended}
 	if resp.Status < 200 || resp.Status > 299 {
 		_ = resp.Body.Close()
 		rn.after(p, rep, 0)

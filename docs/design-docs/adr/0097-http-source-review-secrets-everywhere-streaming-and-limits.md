@@ -28,6 +28,9 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
 test_change_reason: 두 테스트는 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 새 파일과 바뀐 파일이 같은 규칙(값을 꺼내는 곳은 auth.go 한 곳, 요청을 만드는 곳은 request.go 한 곳, 금지한 글자와 import 없음)을 지키는 것을 새 지문으로 다시 기록한다.
 decision_hash: 1fc87bf8da17b914
+amended_by:
+  - adr: "0109"
+    what: 읽기의 단위(줄과 바깥 레코드)와 egress가 알리는 본문의 끝 표시를 완결성에 쓰는 것
 ---
 # ADR-0097 HTTP 소스 어댑터의 보안 검토 반영
 

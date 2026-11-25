@@ -64,6 +64,14 @@ type Dataset struct {
 	RecordsPath string      `json:"records_path,omitempty"`
 	Pagination  *Pagination `json:"pagination,omitempty"`
 	PostReads   bool        `json:"post_reads,omitempty"`
+	// ResponseFormat is how the response is read: json (one JSON value, the default) or json_lines (JSON values one after the
+	// other, a record each, as an export that is streamed gives them). It is a field of a dataset of an HTTP source.
+	ResponseFormat string `json:"response_format,omitempty"`
+	// MissingArray and MaxElements belong to a records_path that opens an array inside each record ([*]): what a record that
+	// has no array (or null) is, and the most elements one record may have. They are fields of a dataset of an HTTP source and
+	// of a file of JSON lines.
+	MissingArray string `json:"missing_array,omitempty"`
+	MaxElements  int    `json:"max_elements,omitempty"`
 	// Table and SQL say what a dataset of a PostgreSQL source reads: a table or view, or one statement; and
 	// KeyCollation is the collation the natural key is ordered by, when it is not the column's own (sources-and-adapters.md 2.3).
 	Table        string `json:"table,omitempty"`
@@ -150,12 +158,12 @@ func decodeProblem(c *collector, data []byte, what string, into any, err error) 
 // gives a *DefinitionErrors. A source of another adapter is refused here as one this build does not have, which is what
 // the file flow of the command line is to say of it; ParseAdapterSource reads all three.
 func ParseSource(r io.Reader) (Source, error) {
-	return parseSourceFor(r, fileOnly)
+	return parseSourceFor(r, fileOnly, false)
 }
 
 // ParseAdapterSource reads and checks a source definition of any adapter: file, http or postgres (ADR-0090).
 func ParseAdapterSource(r io.Reader) (Source, error) {
-	return parseSourceFor(r, allAdapters)
+	return parseSourceFor(r, allAdapters, true)
 }
 
 var (
@@ -163,25 +171,28 @@ var (
 	allAdapters = []string{AdapterFile, AdapterHTTP, AdapterPostgres}
 )
 
-func parseSourceFor(r io.Reader, adapters []string) (Source, error) {
+// parseSourceFor reads a source of the adapters given. adapterFlow says that it is read for the flow of the adapters (see
+// collector.adapterFlow), which is not told from the adapters, so that a change of the list changes nothing else.
+func parseSourceFor(r io.Reader, adapters []string, adapterFlow bool) (Source, error) {
 	var s Source
 	if err := decodeStrict(r, DocumentSource, "source definition", &s); err != nil {
 		return Source{}, err
 	}
-	return s.normalized(adapters)
+	return s.normalized(adapters, adapterFlow)
 }
 
 // normalized fills the defaults and checks the whole source.
-func (s Source) normalized(adapters []string) (Source, error) {
+func (s Source) normalized(adapters []string, adapterFlow bool) (Source, error) {
 	c := newCollector(DocumentSource)
-	s = s.normalize(c, adapters)
+	s = s.normalize(c, adapters, adapterFlow)
 	if err := c.err(); err != nil {
 		return Source{}, err
 	}
 	return s, nil
 }
 
-func (s Source) normalize(c *collector, adapters []string) Source {
+func (s Source) normalize(c *collector, adapters []string, adapterFlow bool) Source {
+	c.adapterFlow = adapterFlow
 	c.checkVersion(s.Version, "source definition")
 	if s.ID == "" {
 		c.add(ecSrcIDMissing, ptr("id"), nil, "a source needs an id")
@@ -253,6 +264,10 @@ func (d Dataset) normalize(c *collector, source, adapter string, i int) Dataset 
 	cols := d.checkColumns(c, at, where)
 	if adapter == AdapterHTTP || adapter == AdapterPostgres {
 		d = d.checkRecords(c, source, adapter, at)
+		d.checkColumnPaths(c, source, at)
+	}
+	if d.readsRecordsPath(c, adapter) {
+		d.checkRecordsPath(c, source, at)
 		d.checkColumnPaths(c, source, at)
 	}
 	if parserOK {

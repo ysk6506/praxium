@@ -33,6 +33,10 @@ type resumeToken struct {
 	Skip   int    `json:"s,omitempty"`
 	Base   int    `json:"b,omitempty"`
 	End    bool   `json:"e,omitempty"`
+	// Miss and Outers are how many records before the position had no array where records_path opens one, and had their array looked
+	// for: a read that goes on from the position does not read them again, and what it ends with depends on them (ADR-0109).
+	Miss   int `json:"m,omitempty"`
+	Outers int `json:"r,omitempty"`
 }
 
 const tokenVersion = 1
@@ -50,6 +54,8 @@ type startPoint struct {
 	skip int
 	base int
 	done bool
+	// miss and outers are the counts of the token (see resumeToken).
+	miss, outers int
 }
 
 func (rn *run) startAt(fp string, resume []byte) startPoint {
@@ -58,14 +64,14 @@ func (rn *run) startAt(fp string, resume []byte) startPoint {
 		return start
 	}
 	var t resumeToken
-	if err := json.Unmarshal(resume, &t); err != nil || t.V != tokenVersion || t.FP != fp || t.Skip < 0 || t.Base < 0 {
+	if err := json.Unmarshal(resume, &t); err != nil || t.V != tokenVersion || t.FP != fp || t.Skip < 0 || t.Base < 0 || t.Miss < 0 || t.Outers < t.Miss {
 		return start
 	}
-	return startPoint{at: pos{page: t.Page, offset: t.Offset, cursor: t.Cursor}, skip: t.Skip, base: t.Base, done: t.End}
+	return startPoint{at: pos{page: t.Page, offset: t.Offset, cursor: t.Cursor}, skip: t.Skip, base: t.Base, done: t.End, miss: t.Miss, outers: t.Outers}
 }
 
-func tokenAt(fp string, at pos, skip, base int) []byte {
-	return encodeToken(resumeToken{FP: fp, Page: at.page, Offset: at.offset, Cursor: at.cursor, Skip: skip, Base: base})
+func tokenAt(fp string, at pos, skip, base int, c arrayCount) []byte {
+	return encodeToken(resumeToken{FP: fp, Page: at.page, Offset: at.offset, Cursor: at.cursor, Skip: skip, Base: base, Miss: c.missing, Outers: c.outers})
 }
 
 // fingerprint names the parts of the definition a position depends on: where the requests go, what they ask, and how
@@ -88,3 +94,6 @@ func fingerprint(set settings, ds ingest.Dataset) string {
 }
 
 func itoa(n int) string { return strconv.Itoa(n) }
+
+// arrayCount is how many records had no array where records_path opens one (missing), and had their array looked for (outers).
+type arrayCount struct{ missing, outers int }
