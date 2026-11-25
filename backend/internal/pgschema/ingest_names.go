@@ -30,6 +30,10 @@ const (
 	TableCalcNewKey  = "calc_newkey"
 	TableCalcDropped = "calc_dropped"
 	TableCalcObject  = "calc_object"
+	TableCalcSlot    = "calc_slot"
+	TableCalcLabel   = "calc_label"
+	TableCalcAsk     = "calc_ask"
+	TableCalcNewObj  = "calc_newobj"
 	TableStageObject = "stage_object"
 	TableStageLink   = "stage_link"
 	TableStageVolat  = "stage_volatile"
@@ -120,6 +124,14 @@ const (
 	ColEntry       = "entry"
 	ColScheme      = "scheme"
 	ColScope       = "scope"
+	ColPid         = "pid"
+	ColLabel       = "label"
+	ColIter        = "iter"
+	ColFoundNo     = "found_no"
+	ColParentNo    = "parent_no"
+	ColParentRef   = "parent_ref"
+	ColMissing     = "missing"
+	ColAnswer      = "answer"
 )
 
 // The codes of the small enumerations the ingestion tables keep as numbers, where a table has many rows.
@@ -170,6 +182,11 @@ const (
 	// CalcJobRawDiff is the job of the computing that compares the received rows with the raw records (step 2); the value
 	// of calc_job before any job is 0, and the part is the next bucket of the job.
 	CalcJobRawDiff int16 = 1
+	// CalcJobIdentify is the job that finds the objects of the records of the run (step 3, ADR-0108); its place is in the counts.
+	CalcJobIdentify int16 = 2
+
+	// ObjectWhyIdentified is why an object is in calc_object: a record of the run was bound to it, or made it, in the identification.
+	ObjectWhyIdentified int16 = 1
 
 	// The kinds of a row of ingest_diff, in the order the apply writes them: the objects (the registry, the type
 	// tables, the history, the retirement), the identification keys, the links, the identifiers.
@@ -270,7 +287,7 @@ func SourcePartition(table string, srcNo int64) string {
 func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
-		TableCalcDropped, TableCalcObject, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
+		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcAsk, TableCalcNewObj, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
 		TableCalcProblem, TableCalcRef, TableIngestDiff,
 	}
 }

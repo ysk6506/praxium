@@ -1,5 +1,7 @@
 package pgschema
 
+import "strings"
+
 // generatorAdditions are what a generator version added to the fixed tables of a storage schema: the steps that
 // make them in a schema that an older version made. A version that changed a table that was already there, or
 // took one away, has no entry, and a schema of an older version is not followed past it (Diff refuses it).
@@ -8,6 +10,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	4: func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
 	5: valueSteps,
 	6: func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
+	7: func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -112,4 +115,36 @@ func rawDiffSteps(schema string) []Step {
 			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableStageRecord) + "') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS " + QuoteIdent("stage_record_key") +
 				" ON " + Qualified(schema, TableStageRecord) + " (" + stageRecordKeyIndex().Expr + "); END IF; END $$"},
 	}
+}
+
+// identifySteps is what generator version 7 adds for the identification of the records of a run (ADR-0108): the column held of the
+// keys, the ends and the claims of the computation, the feed of a bound record, the four working tables and the indexes. A schema made
+// by this build has them already, so each step is made to be run twice, and a schema that has no such table is left as it is.
+func identifySteps(schema string) []Step {
+	alter := func(table, column, what string) Step {
+		return Step{Phase: InTx, What: WhatColumn, Name: table + "." + column,
+			SQL: "ALTER TABLE IF EXISTS " + Qualified(schema, table) + " ADD COLUMN IF NOT EXISTS " + column + " " + what}
+	}
+	steps := []Step{
+		alter(TableCalcKey, ColHeld, typeHeld),
+		alter(TableCalcEnd, ColHeld, typeHeld),
+		alter(TableCalcClaim, ColHeld, typeHeld),
+		alter(TableCalcBind, ColFeedNo, "integer NOT NULL DEFAULT 0"),
+	}
+	for _, d := range identifyTableDefs() {
+		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name,
+			SQL: strings.Replace(d.sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1)})
+	}
+	for _, d := range identifyIndexDefs() {
+		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, d.Table) + "') IS NOT NULL THEN " +
+				createIfNotExists(d.sql(schema, false)) + "; END IF; END $$"})
+	}
+	return steps
+}
+
+// createIfNotExists is the statement of an index made to be run again.
+func createIfNotExists(sql string) string {
+	i := strings.Index(sql, "INDEX ")
+	return sql[:i+len("INDEX ")] + "IF NOT EXISTS " + sql[i+len("INDEX "):]
 }

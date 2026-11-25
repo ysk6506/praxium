@@ -111,6 +111,7 @@ func receiveTableDefs() []tableDef {
 func computeTableDefs() []tableDef {
 	defs := computeRecordDefs()
 	defs = append(defs, computeKeyDefs()...)
+	defs = append(defs, identifyTableDefs()...)
 	defs = append(defs, computeResultDefs()...)
 	return append(defs, ingestDiffDef())
 }
@@ -137,17 +138,17 @@ func computeKeyDefs() []tableDef {
 	return []tableDef{
 		{Name: TableCalcKey, Cols: []string{
 			col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall),
-			col(ColSigHash, typeHash16), col(ColCandRef, `text COLLATE "C"`), col(ColAncTypes, "smallint[]"), col(ColAncSigs, "bytea[]"),
+			col(ColSigHash, typeHash16), col(ColCandRef, `text COLLATE "C"`), col(ColAncTypes, "smallint[]"), col(ColAncSigs, "bytea[]"), col(ColHeld, typeHeld),
 		}},
 		{Name: TableCalcEnd, Cols: []string{
-			col(ColRid, typeBig), col(ColDefNo, typeInt), col(ColSide, typeSmall), col(ColLookupHash, typeHash16),
+			col(ColRid, typeBig), col(ColDefNo, typeInt), col(ColSide, typeSmall), col(ColLookupHash, typeHash16), col(ColHeld, typeHeld),
 		}},
 		{Name: TableCalcClaim, Cols: []string{
-			col(ColRid, typeBig), col(ColSchemeNo, typeInt), col(ColFeedNo, typeInt), col(ColValueHash, typeHash16), col(ColValue, "text NOT NULL"),
+			col(ColRid, typeBig), col(ColSchemeNo, typeInt), col(ColFeedNo, typeInt), col(ColValueHash, typeHash16), col(ColValue, "text NOT NULL"), col(ColHeld, typeHeld),
 		}},
 		// The object a row is bound to, whether it is new, and the round of the identification that bound it.
 		{Name: TableCalcBind, Cols: []string{
-			col(ColRid, typeBig), col(ColKeyOrd, typeSmall), col(ColObjNo, typeBig), col(ColIsNew, "boolean NOT NULL"), col(ColRound, typeSmall),
+			col(ColRid, typeBig), col(ColFeedNo, "integer NOT NULL DEFAULT 0"), col(ColKeyOrd, typeSmall), col(ColObjNo, typeBig), col(ColIsNew, "boolean NOT NULL"), col(ColRound, typeSmall),
 		}},
 		// A key bound in this run, and a key that this run dropped because it led to two objects: it stays dropped
 		// for the rest of the run (ingestion-at-scale-identity.md 2.2, rule 3).
@@ -162,6 +163,35 @@ func computeKeyDefs() []tableDef {
 		// The objects that are computed again, and why.
 		{Name: TableCalcObject, Cols: []string{
 			col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColWhy, typeSmall),
+		}},
+	}
+}
+
+// identifyTableDefs are the working tables of the identification (generator version 7, ADR-0108). They are only inserted into: a
+// unit writes its rows and the place of the run in one transaction, so a run that stops goes on from the next unit.
+func identifyTableDefs() []tableDef {
+	return []tableDef{
+		// A key of a record that is ready in a round: its parent found, so its place in the index is known. pid is the record and the
+		// feed in one number (rid * 1024 + feed_no). found_no is the object the index has for the key, if any.
+		{Name: TableCalcSlot, Cols: []string{
+			col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColPid, typeBig), col(ColKeyOrd, typeSmall), col(ColTypeNo, typeSmall),
+			col(ColCtxNo, "bigint NOT NULL DEFAULT 0"), col(ColSigHash, typeHash16), col(ColRound, typeSmall), col(ColFoundNo, "bigint"),
+		}},
+		// The label of a record and feed in a round, at each turn of the search for the groups: the smallest pid of the group so far.
+		{Name: TableCalcLabel, Cols: []string{
+			col(ColRound, typeSmall), col(ColIter, typeSmall), col(ColPid, typeBig), col(ColLabel, typeBig),
+		}},
+		// A new group whose object has a context key: what Go needs to make its id, and what Go answers (ref, or that it has no name).
+		{Name: TableCalcAsk, Cols: []string{
+			col(ColRound, typeSmall), col(ColLabel, typeBig), col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColKeyOrd, typeSmall),
+			col(ColTypeNo, typeSmall), col(ColParentNo, "bigint"), col(ColParentRef, `text COLLATE "C"`),
+			col(ColRef, `text COLLATE "C"`), col(ColMissing, "boolean"), col(ColAnswer, "boolean NOT NULL DEFAULT false"),
+			"PRIMARY KEY (" + ColRound + ", " + ColLabel + ", " + ColAnswer + ")",
+		}},
+		// The objects this run makes, by number and by id.
+		{Name: TableCalcNewObj, Cols: []string{
+			col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColRef, `text COLLATE "C" NOT NULL`), col(ColTypeNo, typeSmall),
+			col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColRound, typeSmall),
 		}},
 	}
 }
@@ -217,7 +247,7 @@ func ingestDiffDef() tableDef {
 // filled again have only the ones a step reads by; the others are made by a later change if a measurement asks.
 func ingestIndexDefs() []indexDef {
 	identity := ColRole + " = " + itoa16(RefRoleIdentity)
-	return []indexDef{
+	out := []indexDef{
 		// From an object to the records that feed it.
 		{Name: "record_ref_target", Table: TableRecordRef, Expr: ColTargetNo, Where: identity},
 		// From a link to the record whose end made it.
@@ -233,10 +263,35 @@ func ingestIndexDefs() []indexDef {
 		// takes the last row of a key by the place.
 		stageRecordKeyIndex(),
 	}
+	return append(out, identifyIndexDefs()...)
 }
 
 // stageRecordKeyIndex is the index the comparison of the rows received reads by (ADR-0102): the key in the order of the
 // raw records' key, then the place of the row. The source's partitions have it with the table.
 func stageRecordKeyIndex() indexDef {
 	return indexDef{Name: "stage_record_key", Table: TableStageRecord, Expr: strings.Join([]string{ColDatasetNo, ColKey, ColPage, ColRowNo}, ", ")}
+}
+
+// identifyIndexDefs are the indexes the identification reads by (ADR-0108). The rows received are read by a range of pages, which is
+// how they were put in, so the index of a source's rows is a BRIN (it costs the COPY of the receiving next to nothing).
+func identifyIndexDefs() []indexDef {
+	pages := strings.Join([]string{ColDatasetNo, ColPage}, ", ")
+	return []indexDef{
+		{Name: "stage_key_page", Table: TableStageKey, Method: "brin", Expr: pages},
+		{Name: "stage_end_page", Table: TableStageEnd, Method: "brin", Expr: pages},
+		{Name: "stage_claim_page", Table: TableStageClaim, Method: "brin", Expr: pages},
+		{Name: "calc_record_row", Table: TableCalcRecord, Expr: strings.Join([]string{ColDatasetNo, ColPage, ColRowNo}, ", "), Where: ColPage + " IS NOT NULL"},
+		{Name: "calc_key_rid", Table: TableCalcKey, Expr: ColRid + ", " + ColFeedNo},
+		{Name: "calc_end_rid", Table: TableCalcEnd, Expr: ColRid},
+		{Name: "calc_claim_rid", Table: TableCalcClaim, Expr: ColRid},
+		{Name: "calc_claim_value", Table: TableCalcClaim, Expr: ColSchemeNo + ", " + ColValueHash},
+		{Name: "calc_bind_pair", Table: TableCalcBind, Expr: ColRid + ", " + ColFeedNo},
+		{Name: "calc_newkey_key", Table: TableCalcNewKey, Unique: true, Expr: strings.Join([]string{ColTypeNo, ColCtxNo, ColSigHash}, ", "), Include: ColObjNo},
+		{Name: "calc_slot_pid", Table: TableCalcSlot, Expr: ColRound + ", " + ColPid},
+		{Name: "calc_slot_key", Table: TableCalcSlot, Expr: strings.Join([]string{ColRound, ColTypeNo, ColCtxNo, ColSigHash}, ", ")},
+		{Name: "calc_label_pid", Table: TableCalcLabel, Unique: true, Expr: strings.Join([]string{ColRound, ColIter, ColPid}, ", "), Include: ColLabel},
+		{Name: "calc_label_label", Table: TableCalcLabel, Expr: strings.Join([]string{ColRound, ColIter, ColLabel}, ", ")},
+		{Name: "calc_newobj_ref", Table: TableCalcNewObj, Unique: true, Expr: ColRef},
+		{Name: "calc_ref_pair", Table: TableCalcRef, Expr: ColRid + ", " + ColRole},
+	}
 }

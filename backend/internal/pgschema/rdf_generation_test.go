@@ -10,6 +10,7 @@ import (
 // [REQ-785]
 func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionAndTheIndexOfTheRowsReceivedAndNothingElse(t *testing.T) {
 	next := igtPlan(t).Manifest
+	next.GeneratorVersion = 6 // the steps of version 6 alone: what a later version adds is in the tests of that version
 	old := next
 	old.GeneratorVersion = 5
 	delta, err := pgschema.Diff(old, next)
@@ -36,7 +37,7 @@ func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsTh
 			t.Errorf("unexpected step %+v", s)
 		}
 	}
-	if delta.Result.GeneratorVersion != pgschema.GeneratorVersion {
+	if delta.Result.GeneratorVersion != next.GeneratorVersion {
 		t.Errorf("the generator to keep is %d", delta.Result.GeneratorVersion)
 	}
 	plan := igtPlan(t)
@@ -55,6 +56,7 @@ func TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsTh
 // [REQ-785]
 func TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix(t *testing.T) {
 	next := igtPlan(t).Manifest
+	next.GeneratorVersion = 6 // up to version 6: what a later version adds is in the tests of that version
 	old := next
 	old.GeneratorVersion = 3
 	delta, err := pgschema.Diff(old, next)
