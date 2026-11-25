@@ -34,8 +34,8 @@ type loop struct {
 	// the records that had no array where records_path opens one, and cut says that a body ended without a mark of its end or broke;
 	// the first makes the read not complete, the other two make it read as what was seen (ADR-0109). early says that a check
 	// stopped after the lines it is given.
-	lines, early, cut bool
-	bad, missing, fed int
+	lines, early, cut         bool
+	bad, missing, outers, fed int
 }
 
 // checkLines is how many records a check reads of a response of JSON lines: the answer of an export may be very long, and a check
@@ -138,6 +138,7 @@ func (l *loop) fetch() bool {
 		return false
 	}
 	l.missing += w.missing
+	l.outers += w.outers
 	l.cut = l.cut || w.cut
 	return l.take(w, end)
 }
@@ -177,6 +178,10 @@ func (l *loop) endOf(sp step) ingest.Completeness {
 		return ingest.Completeness{Reason: sp.reason}
 	case l.bad > 0:
 		return ingest.Completeness{Reason: strconv.Itoa(l.bad) + " records of the answer could not be read (not an object, or with no natural key), and the lines of an export are not read again, so the dataset is not complete"}
+	case l.missing > 0 && l.missing == l.outers:
+		// Not one record has an array: with missing_array empty that would be a dataset of no records that is complete, and every
+		// object of it would be closed. A records_path that is wrong reads the same, so it is read as what was seen.
+		return ingest.Completeness{SeenOnly: true, Reason: "none of the " + strconv.Itoa(l.outers) + " records had an array (or null) where records_path opens one; check the records_path"}
 	case l.missing > 0 && !l.ds.MissingIsEmpty():
 		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.missing) + " records had no array (or null) where records_path opens one, so what they may have had was not seen"}
 	case l.cut:

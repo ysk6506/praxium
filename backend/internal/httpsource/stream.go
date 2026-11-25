@@ -107,8 +107,10 @@ type walked struct {
 	// missing is how many records had no array (or null) where the records_path opens one, and cut says that the body ended without
 	// a mark of its end or broke, so that what was given is what was seen (a body of JSON lines; lines.go).
 	missing int
-	cut     bool
-	srcErr  error
+	// outers is how many records had their array looked for, and every one of them had none when it is the same as missing.
+	outers int
+	cut    bool
+	srcErr error
 }
 
 // frame is an open object or array of the document the walker is in.
@@ -412,17 +414,18 @@ func (w *walker) record(idx int) (bool, error) {
 
 // elements gives the elements of the array a record has to each, one at a time (see giveElements).
 func (w *walker) elements(idx int, outer any) (bool, error) {
-	return giveElements(w.rp, outer, idx, w.limit, &w.out.missing, w.each)
+	return giveElements(w.rp, outer, idx, w.limit, &w.out, w.each)
 }
 
 // giveElements gives the elements of the array the record outer has at the place records_path opens one to each. A record that has
-// no array (or null) gives none and is counted in missing; a value that is no array, or more elements than the limit, is a failure
+// no array (or null) gives none and is counted in missing (and every record in outers); a value that is no array, or more elements than the limit, is a failure
 // of the shape of the answer. It tells whether to go on.
-func giveElements(rp ingest.RecordsPath, outer any, idx, limit int, missing *int, each func(it item) bool) (bool, error) {
+func giveElements(rp ingest.RecordsPath, outer any, idx, limit int, out *walked, each func(it item) bool) (bool, error) {
+	out.outers++
 	elems, state := rp.Elements(outer)
 	switch {
 	case state == ingest.ArrayMissing:
-		*missing++
+		out.missing++
 		return true, nil
 	case state == ingest.ArrayWrongKind:
 		return false, errArrayKind

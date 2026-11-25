@@ -143,6 +143,31 @@ func TestHxdMissingArrayEmptyKeepsTheDatasetCompleteAndAValueThatIsNoArrayFails(
 }
 
 // [REQ-905]
+// When not one record of the dataset has an array, missing_array empty does not make it complete: a records_path that is wrong reads
+// the same, and the dataset would close every object it had. It is read as what was seen, with an event that says to check the path.
+func TestHxdMissingArrayEmptyDoesNotMakeADatasetOfRecordsWithNoArrayAtAllComplete(t *testing.T) {
+	hosts := hxdFive()
+	for i := range hosts {
+		hosts[i].omit = true
+	}
+	g := hxdNew(t, hxdDoc("", hxdHostsDS(`,"total_path":"total"`, `"missing_array":"empty",`)), hxdHostsServer(hosts))
+	pages, err := g.hxdRead(hsCtx, ingest.PageOptions{})
+	end := hxdEnd(t, pages)
+	if err != nil || !end.SeenOnly || end.Complete || !strings.Contains(end.Reason, "records_path") || len(hxdKeys(pages)) != 0 {
+		t.Errorf("end %+v, rows %v, err %v", end, hxdKeys(pages), err)
+	}
+	seen := 0
+	for _, e := range g.events {
+		if e.Kind == ingest.EventIncomplete && strings.Contains(e.Reason, "records_path") {
+			seen++
+		}
+	}
+	if seen != 1 {
+		t.Errorf("%d events say to check the records_path, want 1", seen)
+	}
+}
+
+// [REQ-905]
 // A record that has more elements than max_elements is a failure of the shape of the answer, and the limit the definition gives
 // is the one that holds.
 func TestHxdARecordWithMoreElementsThanTheLimitFails(t *testing.T) {

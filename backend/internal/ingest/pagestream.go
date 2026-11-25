@@ -137,6 +137,9 @@ func (s *pageStream) endOf(err error) Completeness {
 	var limit *elementLimitError
 	switch {
 	case errors.Is(err, io.EOF):
+		if s.lines != nil && s.lines.missing > 0 && s.lines.missing == s.lines.outers {
+			return Completeness{SeenOnly: true, Reason: "none of the " + itoa(s.lines.outers) + " lines had an array at the place of records_path (or null); check the records_path"}
+		}
 		if s.lines != nil && s.lines.missing > 0 && !s.ds.MissingIsEmpty() {
 			return Completeness{SeenOnly: true, Reason: itoa(s.lines.missing) + " lines had no array at the place of records_path (or null), so what they may have had was not seen"}
 		}

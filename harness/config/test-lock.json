@@ -14827,6 +14827,472 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/egress::TestHxbAFaultyRangeIsCutInTheError": {
+   "kind": "test",
+   "hash": "64df97fea44ddee1",
+   "asserts": 1,
+   "literals": [
+    "e440434212df50c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbAllowInsecureAndPlaintextRangesAreNotGivenTogether": {
+   "kind": "test",
+   "hash": "7a86838068cae7a1",
+   "asserts": 10,
+   "literals": [
+    "b293dbaadcbf26a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbAPinMismatchIsMappedAsTLSAndNotAsAConnectionFailure": {
+   "kind": "test",
+   "hash": "6addb22aebdfe7e2",
+   "asserts": 1,
+   "literals": [
+    "bd374fe472d22404"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbAResumedSessionIsCheckedAgainstThePinsToo": {
+   "kind": "test",
+   "hash": "7f321a50e58d0f29",
+   "asserts": 12,
+   "literals": [
+    "25dbeb60006c66e3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbNoSettingsOfTLSHoldASessionCache": {
+   "kind": "test",
+   "hash": "c0a791ca31c3fef0",
+   "asserts": 8,
+   "literals": [
+    "e4e5026a719a6d95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbOnlyPgsourceRegistersTLSSettingsWithTheDriver": {
+   "kind": "test",
+   "hash": "5dd1712dd64316b9",
+   "asserts": 2,
+   "literals": [
+    "fe0861adbfe4effb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbParsePinRefusesWhatIsNotAPin": {
+   "kind": "test",
+   "hash": "076f8e5d039ed11d",
+   "asserts": 2,
+   "literals": [
+    "c12778a5c462fa04"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbParseRangesRefusesHostBitsAndTooWideMappedRanges": {
+   "kind": "test",
+   "hash": "8016c0249d6df57e",
+   "asserts": 3,
+   "literals": [
+    "ce0465e2e801e73d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbParseRangesTakesAddressesAndRangesOnly": {
+   "kind": "test",
+   "hash": "b5ffca9102d151eb",
+   "asserts": 7,
+   "literals": [
+    "d8779d1ffe5e6149"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPinnedClientAcceptsTheKeyWhateverTheChainTheNameAndTheDates": {
+   "kind": "test",
+   "hash": "de62a45cf5c60342",
+   "asserts": 9,
+   "literals": [
+    "9f52eaa274ebf138"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPinnedClientRefusesAnotherKeyBeforeAnyRequest": {
+   "kind": "test",
+   "hash": "e98f1c2ce998a58c",
+   "asserts": 11,
+   "literals": [
+    "95c7735dc5d782f9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPinsAreParsedIntoAnEmptyProofSet": {
+   "kind": "test",
+   "hash": "5fd2c1f4c4086a17",
+   "asserts": 11,
+   "literals": [
+    "049f6863193892f1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPinsHoldOnARedirectAndAfterTheServerChangesItsCertificate": {
+   "kind": "test",
+   "hash": "c8d2af85c7c41799",
+   "asserts": 14,
+   "literals": [
+    "119c1080bdabf30e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPlaintextRangesAreJudgedOnTheResolvedAddresses": {
+   "kind": "test",
+   "hash": "01609e08db7e8f29",
+   "asserts": 17,
+   "literals": [
+    "6ac36b11485e0ffa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPlaintextRangesDecideByTheAddress": {
+   "kind": "test",
+   "hash": "4f0c268c8084e058",
+   "asserts": 6,
+   "literals": [
+    "c3830e6603be98f7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPlaintextRangesOfEveryAddressKeepTheRefusedRanges": {
+   "kind": "test",
+   "hash": "86c3798130e69b7f",
+   "asserts": 15,
+   "literals": [
+    "19d8c936c3b59b4d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbPostgresSettingsAreRegisteredByEgress": {
+   "kind": "test",
+   "hash": "ee0796520a795edb",
+   "asserts": 9,
+   "literals": [
+    "88c91ee06f78a0d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbProbeEndsWithAnErrorWhenThereIsNoServerToAsk": {
+   "kind": "test",
+   "hash": "9a8459b11c4a7cb9",
+   "asserts": 4,
+   "literals": [
+    "b7746d047083b680"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbProbeIsJudgedByThePolicyAndTakesHTTPSOnly": {
+   "kind": "test",
+   "hash": "07e03c83dd644390",
+   "asserts": 14,
+   "literals": [
+    "650448fb5574d966"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbProbeLeavesTheClientAsItWas": {
+   "kind": "test",
+   "hash": "8cafc7952cba2121",
+   "asserts": 7,
+   "literals": [
+    "b21d084c594db864"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbProbeOfAPostgresServerAsksForTLSFirst": {
+   "kind": "test",
+   "hash": "b5d242ad7d35d885",
+   "asserts": 15,
+   "literals": [
+    "48be64b787b477f5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824",
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbProbeShowsTheCertificateAndSendsNoRequest": {
+   "kind": "test",
+   "hash": "f74b168575012f39",
+   "asserts": 7,
+   "literals": [
+    "486f0a5c4738ac6b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins": {
+   "kind": "test",
+   "hash": "a38f9b4f201d4117",
+   "asserts": 3,
+   "literals": [
+    "24f87f1eef59a205"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-823"
+   ],
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
+  },
+  "go:backend/internal/egress::TestHxbThePgsourceListOfTLSFieldsIsTheListOfTheType": {
+   "kind": "test",
+   "hash": "c926a8a54ead2b6e",
+   "asserts": 4,
+   "literals": [
+    "5f433e659a4b6ed6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-823"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheScanOfTheRegistrationFailsForAnotherPackage": {
+   "kind": "test",
+   "hash": "f2567a0251711597",
+   "asserts": 4,
+   "literals": [
+    "7a6ffae3bfdec96b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsForTheWaysAround": {
+   "kind": "test",
+   "hash": "201408282515bea1",
+   "asserts": 5,
+   "literals": [
+    "bed0acac56943cf7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-823"
+   ],
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
+  },
+  "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsWhenAPlaceIsGone": {
+   "kind": "test",
+   "hash": "0eb01605cd39751e",
+   "asserts": 4,
+   "literals": [
+    "3263e9dbbc97f7eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-823"
+   ],
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
+  },
+  "go:backend/internal/egress::TestHxbTheSummaryOfACertificateIsCleaned": {
+   "kind": "test",
+   "hash": "d5c7c6fe92933110",
+   "asserts": 5,
+   "literals": [
+    "e7a9294dd8c316fe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheSummaryOfACertificateSaysWhenItWasCut": {
+   "kind": "test",
+   "hash": "944be16c9d628dc0",
+   "asserts": 3,
+   "literals": [
+    "94c6e6d65fa9ff96"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbTheTrackerOfAPlaintextConnectionIsJudgedByTheRanges": {
+   "kind": "test",
+   "hash": "d61690c91934b7bd",
+   "asserts": 8,
+   "literals": [
+    "1562e355d871c534"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxbWithoutPinsTheVerificationCannotBeSkipped": {
+   "kind": "test",
+   "hash": "e2074826a142fb4f",
+   "asserts": 12,
+   "literals": [
+    "18f43a398bd075df"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/egress::TestHxdABodyCutBeforeItsLastChunkBreaksTheRead": {
    "kind": "test",
    "hash": "47f7cc6c18c511cb",
@@ -15189,10 +15655,10 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "47cf0ce5701b2012",
-   "asserts": 4,
+   "hash": "28cd33e6155cddb3",
+   "asserts": 6,
    "literals": [
-    "1002af0c6c4f9e98"
+    "c584953f77926789"
    ],
    "precision": [],
    "skips": 0,
@@ -15204,7 +15670,7 @@
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "f3d8da5e276dbb52",
+   "hash": "c7f9341aa62bf66a",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"
@@ -15249,7 +15715,7 @@
   },
   "go:backend/internal/egress::TestTLSConfigAlwaysVerifies": {
    "kind": "test",
-   "hash": "3ed1da406696333c",
+   "hash": "75c547cf01434bc1",
    "asserts": 3,
    "literals": [
     "dbe86a38b2f371eb"
@@ -15259,12 +15725,12 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTLSConfigRefusesATextWithoutACertificateAndDoesNotEchoIt": {
    "kind": "test",
-   "hash": "42034ec7920db134",
+   "hash": "6e63e72b2295c958",
    "asserts": 2,
    "literals": [
     "0d07c3e7b7d5c78e"
@@ -15274,12 +15740,12 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTLSConfigTrustsOnlyTheGivenAuthority": {
    "kind": "test",
-   "hash": "d6a48936d70215da",
+   "hash": "60a61e819241362a",
    "asserts": 3,
    "literals": [
     "230e489885dd4e95"
@@ -15289,8 +15755,8 @@
    "reqs": [
     "REQ-661"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/egress::TestTrkBudgetOfAWindow": {
    "kind": "test",
@@ -18685,6 +19151,66 @@
    "added": "2026-11-25",
    "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
+  "go:backend/internal/httpsource::TestHxbACheckShowsTheCertificateThatFailed": {
+   "kind": "test",
+   "hash": "c912459917fc6c97",
+   "asserts": 15,
+   "literals": [
+    "68b1b472dea4a333"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-824"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxbACheckTellsThePlaintextAndThePinsAsNotes": {
+   "kind": "test",
+   "hash": "761874b7eb231c50",
+   "asserts": 7,
+   "literals": [
+    "a16b7fbdf7929578"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-821"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxbAPinThatDoesNotMatchIsNotTriedAgain": {
+   "kind": "test",
+   "hash": "d7ead83ac5672b40",
+   "asserts": 3,
+   "literals": [
+    "005fb98d6af7e919"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxbThePinsOfTheDefinitionReachTheClient": {
+   "kind": "test",
+   "hash": "42819a30a1dc7ee2",
+   "asserts": 6,
+   "literals": [
+    "cd569a63fbaac192"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestHxcACheckTellsTheTokenRequestAsAnItemOfItsOwn": {
    "kind": "test",
    "hash": "99c4ff13555a3b1e",
@@ -19328,6 +19854,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestHxdMissingArrayEmptyDoesNotMakeADatasetOfRecordsWithNoArrayAtAllComplete": {
+   "kind": "test",
+   "hash": "9b6a382a22dd968c",
+   "asserts": 4,
+   "literals": [
+    "a2ccc3bdcd867a52"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestHxdMissingArrayEmptyKeepsTheDatasetCompleteAndAValueThatIsNoArrayFails": {
    "kind": "test",
    "hash": "42a3c9895f7b27c0",
@@ -19645,7 +20186,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "841f893a9f68d4d4",
+   "hash": "38a5a5fd73e8b6a4",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -19750,7 +20291,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "3ab57d392996fad2",
+   "hash": "918b5924ec5da75c",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -20500,10 +21041,10 @@
   },
   "go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace": {
    "kind": "test",
-   "hash": "8e7f8fd49ee58616",
+   "hash": "5b2e72b09c71bb3b",
    "asserts": 8,
    "literals": [
-    "4494d10093c824c5"
+    "01949f574bc3d6b2"
    ],
    "precision": [],
    "skips": 0,
@@ -21923,6 +22464,51 @@
    "added": "2026-11-20",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestHxbAChangeOfThePinsIsAChangeOfTheConnection": {
+   "kind": "test",
+   "hash": "11f234f6f7baeecb",
+   "asserts": 7,
+   "literals": [
+    "a0268347bbdda7ba"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-825"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxbPinsOfAConnectionAreCheckedAndNormalized": {
+   "kind": "test",
+   "hash": "6df5b62bfab6060a",
+   "asserts": 4,
+   "literals": [
+    "fc8028af9d8c728f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxbPinsThatAreWrongAreDefinitionErrors": {
+   "kind": "test",
+   "hash": "b3e55f06c67717f8",
+   "asserts": 4,
+   "literals": [
+    "288f533cc11010f5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestHxcAChangeOfTheTokenAddressIsAChangeOfTheConnection": {
    "kind": "test",
    "hash": "d34ca24bc1420f5f",
@@ -22105,10 +22691,10 @@
   },
   "go:backend/internal/ingest::TestHxdAFileOfJSONLinesThatOpensAnArray": {
    "kind": "test",
-   "hash": "465aef4d04622c21",
-   "asserts": 10,
+   "hash": "6a1972893cbb5428",
+   "asserts": 12,
    "literals": [
-    "50c2adfe753e3dce"
+    "fd9593db1e7ffd2f"
    ],
    "precision": [],
    "skips": 0,
@@ -30066,6 +30652,52 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgsource::TestPgsHxbTheOnlyWayToTheTLSSettingsIsTheRegistrationOfEgress": {
+   "kind": "test",
+   "hash": "55867004cddd34c6",
+   "asserts": 3,
+   "literals": [
+    "eeae75afbcbdd38f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659",
+    "REQ-660"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgsHxbThePinnedFailureIsWordedAsOne": {
+   "kind": "test",
+   "hash": "05c0b65902a6fbf6",
+   "asserts": 3,
+   "literals": [
+    "ba4a4ac40b4af002"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgsource::TestPgsHxbTheScanFailsForTheWaysAround": {
+   "kind": "test",
+   "hash": "07538cc25be67479",
+   "asserts": 8,
+   "literals": [
+    "e7b4b3d2d15e2ff1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-659"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgsource::TestPgsKeepsRowsOfOneKeyOnOnePage": {
    "kind": "test",
    "hash": "a7d3bbad1f9aa6af",
@@ -30483,7 +31115,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "a7646fe88a52553a",
+   "hash": "9e18d4361a743d0f",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -30493,8 +31125,8 @@
    "reqs": [
     "REQ-679"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/pgsource::TestPgsStatementsQuoteNamesAndTakeValuesAsArguments": {
    "kind": "test",
@@ -30577,10 +31209,10 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "da4585f3fd0e2664",
+   "hash": "bc367477e5e1b8f4",
    "asserts": 5,
    "literals": [
-    "e75973869c22b055"
+    "83ddf40c2eb59700"
    ],
    "precision": [],
    "skips": 0,
@@ -30590,8 +31222,8 @@
     "REQ-659",
     "REQ-660"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
   },
   "go:backend/internal/pgsource::TestPgsTLSModeAgainstAServerWithoutTLSRefusesAndDoesNotFallBack": {
    "kind": "test",
@@ -34191,6 +34823,187 @@
     "REQ-403"
    ],
    "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxbACheckThatWorksShowsNoCertificateAndNotesThePlaintext": {
+   "kind": "test",
+   "hash": "7b4c6f24b638266a",
+   "asserts": 9,
+   "literals": [
+    "c0056ac2accf80ff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxbAnotherKeyThanThePinsIsRefusedAndTheCheckShowsIt": {
+   "kind": "test",
+   "hash": "5d5f3fbf8cced018",
+   "asserts": 16,
+   "literals": [
+    "b5b0662dc38c0549"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxbAPinnedPostgresServerIsReadWhateverItsChainAndName": {
+   "kind": "test",
+   "hash": "e6fb3aaee10de4f5",
+   "asserts": 10,
+   "literals": [
+    "580c18498abd2df9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxbTheCancelRequestOfAReadGoesToThePinnedServerOverTLS": {
+   "kind": "test",
+   "hash": "8a771cb1ae2018f4",
+   "asserts": 10,
+   "literals": [
+    "f243cc9ec0e75ef8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtAnAliasOfTheAPIsAddressIsItsOwnHost": {
+   "kind": "test",
+   "hash": "1346dfc8d58626e7",
+   "asserts": 6,
+   "literals": [
+    "5f86002ab5243e15"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtANextPageAtTheTokenServerIsNotFollowed": {
+   "kind": "test",
+   "hash": "50caad006158616a",
+   "asserts": 4,
+   "literals": [
+    "84289b9b147d1ee7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtARedirectOfTheTokenServerIsNotFollowed": {
+   "kind": "test",
+   "hash": "856bc676acbbfd67",
+   "asserts": 3,
+   "literals": [
+    "1bb7140c4d8c5a85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtATokenServerInThePlaintextRangeIsAskedAndTheCheckSaysItIsNotEncrypted": {
+   "kind": "test",
+   "hash": "8b9e7858db86bc74",
+   "asserts": 6,
+   "literals": [
+    "0760b7ffb05e847b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820",
+    "REQ-821"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtATokenServerOutsideThePlaintextRangeIsRefused": {
+   "kind": "test",
+   "hash": "33ae5fc195df5913",
+   "asserts": 3,
+   "literals": [
+    "ac8fff9dfd41c306"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-820"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtEachHostGetsItsOwnAuthority": {
+   "kind": "test",
+   "hash": "86f07b600dbfc0c4",
+   "asserts": 5,
+   "literals": [
+    "5f3ab047b0d79a1d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtTheAuthorityOfTheAPIIsNotTrustedForTheTokenServer": {
+   "kind": "test",
+   "hash": "48aec5899bf525ee",
+   "asserts": 3,
+   "literals": [
+    "188de9b9723dcf3d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxtTheAuthorityOfTheTokenServerIsNotTrustedForTheAPI": {
+   "kind": "test",
+   "hash": "45020c5a54ae38c8",
+   "asserts": 3,
+   "literals": [
+    "7e00a16b32cf8f48"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-826"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/sourcecheck::TestScEveryTransactionIsRepeatableReadReadOnly": {

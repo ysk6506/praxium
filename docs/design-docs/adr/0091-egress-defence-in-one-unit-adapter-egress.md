@@ -39,6 +39,8 @@ decision_hash: 03a3d65bb212de3e
 amended_by:
   - adr: "0093"
     what: 다이얼러에 연결 추적 변종(전체 닫기, 바이트 예산, 모두 평문으로 보기)을 더한다. 뒤로 미룬 일의 PostgreSQL 연결 감싸개 함수는 이것으로 닫는다
+  - adr: "0105"
+    what: TLS 확인을 끄는 길이 없다는 결정을 인증서 고정 한 곳으로 좁혀 고친 것, 평문 허용을 AllowInsecure 하나에서 IP/CIDR 목록(PlaintextRanges)으로 넓힌 것
 ---
 # ADR-0091 소스가 밖으로 붙는 연결을 한 곳에서 막는다
 

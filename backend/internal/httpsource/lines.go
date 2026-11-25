@@ -110,7 +110,7 @@ func lineRecords(rp ingest.RecordsPath, v any, index, maxElements int, out *walk
 	if !rp.Expand {
 		return each(item{rec: rec, index: index, last: true}), nil
 	}
-	return giveElements(rp, rec, index, maxElements, &out.missing, each)
+	return giveElements(rp, rec, index, maxElements, out, each)
 }
 
 // lines reads the body of the answer as JSON lines and gives its records to each. The content type is not looked at (an export

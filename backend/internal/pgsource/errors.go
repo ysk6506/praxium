@@ -93,7 +93,11 @@ func fromEgress(ee *egress.Error, cause error) error {
 		}
 		return sourceErr(ingest.SrcNameNotFound, "the host name of the source has no address", cause)
 	case egress.KindTLS:
-		return sourceErr(ingest.SrcTLSRejected, "the certificate of the server is not trusted, has expired, or does not match the host name", cause)
+		var pinned *egress.PinMismatchError
+		if errors.As(cause, &pinned) {
+			return sourceErr(ingest.SrcTLSRejected, msgNotPinned, cause)
+		}
+		return sourceErr(ingest.SrcTLSRejected, tlsGenericMessage, cause)
 	case egress.KindTimeout:
 		return sourceErr(ingest.SrcTimeout, "the source did not answer within the time limit of the connection", cause)
 	case egress.KindCanceled:
@@ -176,4 +180,23 @@ func cleanDetail(s string) string {
 		}
 		return r
 	}, s)
+}
+
+// The words of a TLS failure of a source that pins the key of the certificate of its server: the chain, the name and the dates
+// are not looked at then, so a message about them would be wrong.
+const (
+	tlsGenericMessage = "the certificate of the server is not trusted, has expired, or does not match the host name"
+	msgNotPinned      = "the key of the certificate the server sent is not one of the keys pinned in the definition (tls.pins)"
+	msgPinnedFailed   = "the TLS handshake with the server failed (the definition pins the key of its certificate, so the chain, the name and the dates of it are not looked at)"
+)
+
+// classifyPinned is classify for a source whose definition has pins: a failure of TLS is not worded as one of the chain, the
+// name or the dates of the certificate, which a pinned connection does not check.
+func classifyPinned(parent context.Context, err error, pins []string) error {
+	out := classify(parent, err)
+	se, ok := ingest.SourceErrorOf(out)
+	if !ok || len(pins) == 0 || se.Kind != ingest.SrcTLSRejected || se.Message != tlsGenericMessage {
+		return out
+	}
+	return sourceErr(ingest.SrcTLSRejected, msgPinnedFailed, se.Err)
 }

@@ -15,6 +15,8 @@ import (
 type lineState struct {
 	// missing is how many records had no array (or null) at the place of the records_path.
 	missing int
+	// outers is how many records had their array looked for; when it is the same as missing, no record had one.
+	outers int
 }
 
 // elementLimitError says that a record had more elements than max_elements.
@@ -92,6 +94,7 @@ func openLine(ds Dataset, rb *RowBuilder, rp RecordsPath, line int, text []byte,
 		return rb.Record(rec, line, where), nil, nil, nil
 	}
 	elems, state := rp.Elements(rec)
+	st.outers++
 	switch {
 	case state == ArrayMissing:
 		st.missing++

@@ -23,6 +23,8 @@ type answer struct {
 	attempt int
 	// missing is how many records of the attempts that broke had no array where records_path opens one (they are not read again).
 	missing int
+	// outers is how many records of those attempts had their array looked for.
+	outers int
 }
 
 // data sends the request for a position and gives the answer of a success, with the body not read yet. A token that the
@@ -105,12 +107,14 @@ func (a *answer) read(ctx context.Context, skip int, each func(it item) bool) (*
 	w.reply = a.rep
 	if err != nil {
 		a.missing += w.missing
+		a.outers += w.outers
 		a.rep.closeBody()
 		return nil, rn.answerError(ctx, err)
 	}
 	a.rep.closeBody()
 	rn.after(a.p, a.rep, w.bytes)
 	w.missing += a.missing
+	w.outers += a.outers
 	return w, nil
 }
 

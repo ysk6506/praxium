@@ -293,6 +293,10 @@ func TestHxdAFileOfJSONLinesThatOpensAnArray(t *testing.T) {
 	if keys, _, end = hxdLinesOf(t, empty, missing, PageOptions{}); len(keys) != 4 || !end.Complete || end.SeenOnly {
 		t.Errorf("missing_array empty: keys %v, end %+v", keys, end)
 	}
+	none := `{"hostid":"h4"}` + "\n" + `{"hostid":"h5","ifs":null}`
+	if keys, _, end = hxdLinesOf(t, empty, none, PageOptions{}); len(keys) != 0 || end.Complete || !end.SeenOnly || !strings.Contains(end.Reason, "records_path") {
+		t.Errorf("missing_array empty, and no line has an array: keys %v, end %+v", keys, end)
+	}
 	limited := strings.Replace(hxdFileDS, `"records_path"`, `"max_elements":2,"records_path"`, 1)
 	if keys, _, end = hxdLinesOf(t, limited, body, PageOptions{}); end.Complete || end.SeenOnly || !strings.Contains(end.Reason, "max_elements") {
 		t.Errorf("more elements than the limit: keys %v, end %+v", keys, end)

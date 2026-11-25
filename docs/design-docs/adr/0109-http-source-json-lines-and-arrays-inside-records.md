@@ -28,6 +28,9 @@ amends:
   - adr: "0097"
     what: 읽기의 단위(줄과 바깥 레코드)와 egress가 알리는 본문의 끝 표시를 완결성에 쓰는 것
 amends_tests:
+  - go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins
+  - go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsForTheWaysAround
+  - go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsWhenAPlaceIsGone
   - go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence
   - go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged
   - go:backend/internal/httpsource::TestA408IsSentAgainAndOtherStatusesAreTheRequestsFault
@@ -162,10 +165,8 @@ amends_tests:
   - go:backend/internal/httpsource::TestThroughTheRealEgressClientAnAddressThePolicyRefusesIsAConfigurationErrorAndNothingIsSent
   - go:backend/internal/httpsource::TestWhatIsUnderAnErrorStaysForTheOperatorAndNeverInTheWords
   - go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace
-  - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
-  - go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported
 test_change_reason: 고친 것은 단언이 아니라 지문이다. 이 테스트들은 고쳐진 제품 코드(읽기 반복의 콜백, 응답과 정의의 필드, 오류 코드 표)와 거기서 읽는 글자를 거쳐 닿으므로 제품 코드가 바뀌면 지문이 바뀐다. 테스트 코드와 기대값은 그대로이고 adpCases에 새 사례 3개만 더했다.
-decision_hash: 3447b6a6da86c203
+decision_hash: 1b8e5cf8dafb9c48
 ---
 # ADR-0109 HTTP 소스의 줄마다 JSON 응답과 레코드 안의 배열 펼치기
 
@@ -179,7 +180,7 @@ ADR-0100이 E4(줄마다 JSON인 응답)와 E8(레코드 안의 배열을 행으
 2. **E4의 끝.** egress의 `Response`에 읽기 전용 필드 `Ended`(본문의 끝을 프로토콜이 표시하는가: 길이, 마지막 청크, HTTP/2, 압축 본문의 끝)를 더한다. 끝 표시와 함께 끝난 본문은 완전하다. 끝 표시 없이 끝나거나 읽는 중에 끊기면 끝까지 받은 줄만 레코드이고 끊긴 줄은 버리며 그 데이터셋은 **보인 것만**(`Completeness.SeenOnly`)이다. 요청을 다시 보내 건너뛰지 않고 이어 읽기 토큰도 없고 받은 토큰은 쓰지 않는다. 끝 표시가 있는데 값의 가운데에서 끝난 본문, JSON이 아닌 값, `records_path`에 아무것도 없는 줄, 한도 초과는 `response_format` 실패(그 데이터셋을 통째로 뺀다)이고, 객체가 아니거나 자연 키가 없는 레코드가 하나라도 있으면 그 데이터셋은 불완전이다(오류를 한 줄로 붙여 보내는 제품의 끝 줄이 키 없는 레코드로 읽혀 데이터셋을 완전하게 두지 않으려는 것이다). 호출자가 취소한 읽기는 끊김이 아니라 취소다. 점검은 앞의 100개 레코드만 읽고 본문을 닫는다.
 3. **E8. `[*]`와 `^.`.** `records_path`에 `[*]`를 한 번 쓸 수 있다(`result[*].interfaces`). `[*]` 앞은 바깥 레코드가 있는 자리이고 뒤는 바깥 레코드 안의 배열까지의 경로이며, 그 배열의 원소가 이 데이터셋의 레코드다. 두 번, 뒤에 경로 없음, `[*]` 바로 뒤의 글은 정의 오류다(`source.path.invalid`). `json`에서 `[*]` 앞은 바깥 레코드의 배열 자리(비면 응답이 그 배열)이고, `json_lines`에서는 줄 안의 바깥 레코드 자리(비면 줄이 바깥 레코드)다. 원소의 컬럼 경로는 첫 단계의 `^`로 바깥 레코드를 읽고(`^.hostid`) 한 단계 위만이다. 맨 `^`, `^.^.x`, 가운데의 `^`는 정의 오류이고 이름이 `^`인 키는 `["^"]`로 적는다. `[*]`가 없는 데이터셋에서는 `^`가 지금처럼 키 이름이다. 자연 키는 원소의 필드를 하나는 읽어야 하고 숫자 단계(배열 안의 자리)를 읽는 컬럼을 쓸 수 없다(`source.dataset.expand_invalid`). **`ParsePath`는 바꾸지 않는다**: 별도의 읽기 함수(`ParseRecordsPath`, `ParseColumnPath`)가 `records_path`와 컬럼 경로를 읽으므로 잠긴 문법 테스트와 파일 JSON Lines의 옛 경로 읽기가 그대로다. 컬럼 경로의 `[*]`와 모든 `[?…]`는 그대로 "지원하지 않음"이다.
 4. **E8의 셈과 한도.** 페이지 넘김, 짧은 페이지, `total_path`와의 견줌, 이어 읽기 토큰의 건너뜀과 앞선 수는 **바깥 레코드**로 센다(원소로 세면 offset이 건너뛰어 바깥 레코드가 빠지고, 전체 수가 없는 소스는 완전으로 끝난다). 바깥 레코드 하나(2 MiB 이하)를 읽어 그 원소를 배열 순서대로 하나씩 페이지에 넣으므로 레코드 하나가 한 페이지를 넘기지 못하고, 바깥 레코드 하나의 원소는 `max_elements`(기본 100,000, 정의가 1부터 1,000,000까지)까지이며 넘으면 `response_format`이다. 페이지가 바깥 레코드의 가운데에서 잘리면 그 페이지의 토큰은 그 바깥 레코드의 처음부터 읽게 하고, 본문이 끊겨 다시 받을 때도 건너뛰는 것은 끝까지 준 바깥 레코드뿐이다. 그래서 다시 받은 응답에서 안쪽 순서가 달라도 빠지는 원소가 없고, 다시 준 원소는 같은 키의 행이 겹칠 뿐이다. 행의 줄 번호는 바깥 레코드의 번호이고 위치는 "page P, record I, element J"다.
-5. **E8의 배열이 없을 때.** 바깥 레코드에 배열이 없거나 null이면 원소 0개이고 그런 레코드가 **하나라도 있으면** 그 데이터셋은 보인 것만이다(없는 배열이 비어서인지 보이지 않아서인지 모르므로 안 보인 것을 세지 않는다. 그러면 경로가 틀려 모두에 배열이 없어도 대량 삭제가 없다). `missing_array: "empty"`를 고르면 원소 0개이고 완전성은 그대로다(`seen_only`는 기본을 이름으로 적는 값이다). 배열이 아닌 값(객체, 글, 수, 참거짓)은 `response_format` 실패다. 설계 6절의 "모두에 없으면 불완전"은 7절의 이 규칙으로 대체됐다.
+5. **E8의 배열이 없을 때.** 바깥 레코드에 배열이 없거나 null이면 원소 0개이고 그런 레코드가 **하나라도 있으면** 그 데이터셋은 보인 것만이다(없는 배열이 비어서인지 보이지 않아서인지 모르므로 안 보인 것을 세지 않는다. 그러면 경로가 틀려 모두에 배열이 없어도 대량 삭제가 없다). `missing_array: "empty"`를 고르면 원소 0개이고 완전성은 그대로다(`seen_only`는 기본을 이름으로 적는 값이다). 다만 한 캡처에서 바깥 레코드가 하나 이상인데 **그 모두에** 배열이 없으면 `empty`여도 보인 것만으로 끝나고 "배열이 하나도 없음, `records_path`를 확인"이라는 이유의 사건 하나를 남긴다(경로가 틀리면 모든 레코드가 원소 0개로 끝나 데이터셋의 객체가 모두 닫히기 때문이다). 일부에만 없으면 `empty`의 뜻대로다. 배열이 아닌 값(객체, 글, 수, 참거짓)은 `response_format` 실패다. 설계 6절의 "모두에 없으면 불완전"은 7절의 이 규칙으로 대체됐다.
 6. **보인 것만을 내는 곳.** 어댑터(`adapter.httpsource`)가 마지막 페이지에서 `Completeness{SeenOnly: true}`를 낸다(`readloop.go`의 `endOf`). 더 약한 끝이 이긴다: 페이지 한도나 전체 수 불일치(불완전)가 보인 것만보다 앞이고, 읽을 수 없는 레코드(`json_lines`)가 그 다음이다. 파일의 JSON Lines는 `pagestream.go`의 `endOf`가 낸다.
 7. **파일의 JSON Lines.** 어댑터 흐름(`ParseAdapterSource`)의 `parser: json_lines` 데이터셋은 `records_path`, `missing_array`, `max_elements`를 받고 같은 뜻으로 읽는다. 줄이 바깥 레코드이고(`records_path`의 `[*]` 앞이 있으면 줄 안의 그 자리), 원소 하나가 한 레코드 단위로 페이지에 들어가며, 배열이 없는 줄이 있으면 보인 것만이고 원소가 한도를 넘으면 불완전이다. 옛 파일 흐름(`ParseSource`, `Parse`, `Runner`)은 이 필드를 정의 오류로 거절하거나 읽지 않는다(아래 "옛 흐름").
 8. **권한 분류.** `response_format`, `missing_array`는 매핑 변경(레코드가 어디에 있고 읽은 것이 전부인지 어떻게 말하는가이며 새 목적지, 시크릿, 요청을 더하지 않는다), `max_elements`는 한도라서 올리는 변경(기본 100,000보다 큰 값으로 새 데이터셋을 더하는 것 포함)은 접속 변경이고 내리는 변경은 매핑 변경이다(`ClassifyChange`의 분류표와 한도 비교 `limitCompared`).
