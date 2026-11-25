@@ -1,6 +1,7 @@
 package ingest
 
 import (
+	"strconv"
 	"strings"
 )
 
@@ -105,13 +106,41 @@ func ParseRecordsPath(s string) (RecordsPath, error) {
 }
 
 // Elements gives the elements of the array an outer record has at Inner, and says what is there. It is only for a path that
-// has [*].
+// has [*]. No key, or null, at a step is no array (ArrayMissing: the record may have had elements that were not shown); an outer
+// record that is not an object, a step that goes through a value of another kind (a text where an object should be), and a value
+// at the end that is no array are ArrayWrongKind: the source said something else than what the definition reads (ADR-0109).
 func (p RecordsPath) Elements(outer any) ([]any, ArrayState) {
-	at, ok := p.Inner.Lookup(outer)
-	if !ok || at == nil {
+	cur := outer
+	if _, ok := cur.(map[string]any); !ok {
+		return nil, ArrayWrongKind
+	}
+	for _, step := range p.Inner {
+		switch x := cur.(type) {
+		case nil:
+			return nil, ArrayMissing
+		case map[string]any:
+			next, ok := x[step]
+			if !ok {
+				return nil, ArrayMissing
+			}
+			cur = next
+		case []any:
+			i, err := strconv.Atoi(step)
+			if err != nil {
+				return nil, ArrayWrongKind
+			}
+			if i < 0 || i >= len(x) {
+				return nil, ArrayMissing
+			}
+			cur = x[i]
+		default:
+			return nil, ArrayWrongKind
+		}
+	}
+	if cur == nil {
 		return nil, ArrayMissing
 	}
-	list, isList := at.([]any)
+	list, isList := cur.([]any)
 	if !isList {
 		return nil, ArrayWrongKind
 	}

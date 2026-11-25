@@ -26,6 +26,9 @@ type hxdReply struct {
 	cutAt int
 	// cancel is called when the body is read up to cutAt, before it breaks.
 	cancel func()
+	// together gives the break with the last bytes of the part that is read (a read may return both), so that the break is known
+	// before the reader has looked at those bytes.
+	together bool
 }
 
 func hxdOK(body string, ended bool) hxdReply {
@@ -44,6 +47,20 @@ func (b hxdBroken) Read([]byte) (int, error) {
 		b.cancel()
 	}
 	return 0, &egress.Error{Kind: egress.KindConnect, Reason: "the connection broke"}
+}
+
+// hxdTogether is a body that gives all it has and the break in one read.
+type hxdTogether struct {
+	data string
+	done bool
+}
+
+func (b *hxdTogether) Read(p []byte) (int, error) {
+	if b.done {
+		return 0, &egress.Error{Kind: egress.KindConnect, Reason: "the connection broke"}
+	}
+	b.done = true
+	return copy(p, b.data), &egress.Error{Kind: egress.KindConnect, Reason: "the connection broke"}
 }
 
 // hxdBody counts the bytes the reader took of the body, and whether it was closed.
@@ -80,7 +97,9 @@ func (c hxdClient) Do(_ context.Context, req egress.Request) (*egress.Response, 
 	s.seen = append(s.seen, r)
 	rep := s.handle(len(s.seen), r)
 	var body io.Reader = strings.NewReader(rep.body)
-	if rep.cutAt > 0 {
+	if rep.cutAt > 0 && rep.together {
+		body = &hxdTogether{data: rep.body[:rep.cutAt]}
+	} else if rep.cutAt > 0 {
 		body = io.MultiReader(strings.NewReader(rep.body[:rep.cutAt]), hxdBroken{cancel: rep.cancel})
 	}
 	return &egress.Response{Status: rep.status, Header: rep.header, Body: hxdBody{r: body, taken: &s.taken, closed: &s.closed}, Ended: rep.ended}, nil

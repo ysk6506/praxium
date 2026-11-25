@@ -250,7 +250,7 @@ func TestHxdTheOuterRecordIsTheLineForLinesAndTheArrayOfThemForAValue(t *testing
 
 // [REQ-905]
 // A response of lines in which a record has no array is only what was seen, as for one value, and one with an element that is not
-// an object leaves the dataset not complete.
+// an object is a failure of the shape of the answer.
 func TestHxdLinesWithARecordWithNoArrayAreOnlyWhatWasSeen(t *testing.T) {
 	lines := `{"id":"ds_a","request":{"path":"/export"},"response_format":"json_lines","records_path":"[*].interfaces","natural_key":["host","id"],"columns":[{"name":"host","paths":["^.hostid"]},{"name":"id"}]}`
 	g := hxdNew(t, hxdDoc("", lines), func(int, hsRequest) hxdReply {
@@ -262,8 +262,8 @@ func TestHxdLinesWithARecordWithNoArrayAreOnlyWhatWasSeen(t *testing.T) {
 	}
 	g = hxdNew(t, hxdDoc("", lines), func(int, hsRequest) hxdReply { return hxdOK(`{"hostid":"h1","interfaces":[{"id":"i1"},7]}`+"\n", true) })
 	pages, err = g.hxdRead(hsCtx, ingest.PageOptions{})
-	if end := hxdEnd(t, pages); err != nil || end.Complete || end.SeenOnly {
-		t.Errorf("end %+v, err %v", end, err)
+	if se, ok := ingest.SourceErrorOf(err); !ok || se.Kind != ingest.SrcResponseFormat {
+		t.Errorf("an element that is not an object is a failure of the shape of the answer: %v", err)
 	}
 }
 

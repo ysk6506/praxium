@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "dd7249a2c91ce799"
+hash: "232710d11a984e7e"
 date: "2026-11-25"
-note: "파일 소스 정의 가이드가 다루는 옛 흐름은 그대로임을 확인함. 새 필드(response_format, records_path의 [*], missing_array, max_elements)는 어댑터 흐름에서만 받고 옛 흐름의 ParseSource는 거절함"
+note: "definition.go는 파일 흐름과 어댑터 흐름을 인자로 가르도록 바뀌었을 뿐이고(ParseSource는 옛 파일 흐름 그대로) 가이드가 다루는 파일 정의의 필드와 검사는 달라지지 않음을 확인함"
 text_changed: false
 doc_hash: "06592884ef5fe37a"

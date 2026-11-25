@@ -36,6 +36,13 @@ type loop struct {
 	// stopped after the lines it is given.
 	lines, early, cut         bool
 	bad, missing, outers, fed int
+	// noLines says that a body of JSON lines had no value. recs counts the records the answers gave (the elements, or the records
+	// that have none to open) and rows the rows they made; a read that had records and no row did not see what it was meant to.
+	// cells is the bytes of the cells of the rows of the response being read, and over says it passed the limit of rowBytesFactor.
+	noLines    bool
+	recs, rows int
+	cells      int
+	over       bool
 }
 
 // checkLines is how many records a check reads of a response of JSON lines: the answer of an export may be very long, and a check
@@ -48,8 +55,10 @@ type tail struct {
 	at   pos
 	seen int
 	end  *respEnd
-	// mid says that elements of the same record come after, so that a read goes on from the start of the record.
-	mid bool
+	// mid says that elements of the same record come after, so that a read goes on from the start of the record. count is how many
+	// records before the position had no array, and had their array looked for.
+	mid   bool
+	count arrayCount
 }
 
 // respEnd is what the end of a response says, which is known when the whole answer is read: how many records it had and
@@ -59,6 +68,8 @@ type respEnd struct {
 	done bool
 	n    int
 	sp   step
+	// count is the same as the one of a tail, at the end of the response.
+	count arrayCount
 }
 
 // read gives the pages of a dataset to yield. It ends with a page that has Last set, or with an error.
@@ -83,8 +94,9 @@ func (rn *run) read(ctx context.Context, ds ingest.Dataset, opts ingest.PageOpti
 	l.mint = l.tokenOfTail
 	start := rn.startAt(fp, opts.Resume)
 	l.at, l.skip, l.seen = start.at, start.skip, start.base
+	l.missing, l.outers = start.miss, start.outers
 	if start.done {
-		l.finish(ingest.Completeness{Complete: true})
+		l.finish(l.endOf(step{complete: true}))
 		return
 	}
 	l.run()
@@ -126,8 +138,16 @@ func (l *loop) fetch() bool {
 	}
 	l.requests++
 	end := &respEnd{}
-	w, err := a.records(l.ctx, l.skip, func(it item) bool { return l.feed(it, end) })
-	if err != nil {
+	l.cells = 0
+	w, err := a.records(l.ctx, l.skip, func(it item) bool {
+		it.missing, it.outers = it.missing+a.missing, it.outers+a.outers
+		return l.feed(it, end)
+	})
+	switch {
+	case l.over:
+		l.fail(l.rn.answerError(l.ctx, errRowsTooBig))
+		return false
+	case err != nil:
 		l.fail(err)
 		return false
 	}
@@ -139,7 +159,7 @@ func (l *loop) fetch() bool {
 	}
 	l.missing += w.missing
 	l.outers += w.outers
-	l.cut = l.cut || w.cut
+	l.cut, l.noLines = l.cut || w.cut, l.noLines || w.noLines
 	return l.take(w, end)
 }
 
@@ -155,7 +175,7 @@ func (l *loop) take(w *walked, end *respEnd) bool {
 		l.fail(l.rn.pageValueError(l.ctx, err))
 		return false
 	}
-	end.n, end.sp, end.done = w.n, sp, true
+	end.n, end.sp, end.done, end.count = w.n, sp, true, arrayCount{l.missing, l.outers}
 	l.at, l.skip, l.seen = sp.next, 0, l.seen+w.n
 	switch {
 	case !sp.more:
@@ -178,16 +198,30 @@ func (l *loop) endOf(sp step) ingest.Completeness {
 		return ingest.Completeness{Reason: sp.reason}
 	case l.bad > 0:
 		return ingest.Completeness{Reason: strconv.Itoa(l.bad) + " records of the answer could not be read (not an object, or with no natural key), and the lines of an export are not read again, so the dataset is not complete"}
+	}
+	if end, ok := l.seenOnly(); ok {
+		return end
+	}
+	return ingest.Completeness{Complete: true}
+}
+
+// seenOnly says whether the read did not see all there is, and so ends as what was seen (see endOf).
+func (l *loop) seenOnly() (ingest.Completeness, bool) {
+	switch {
 	case l.missing > 0 && l.missing == l.outers:
 		// Not one record has an array: with missing_array empty that would be a dataset of no records that is complete, and every
 		// object of it would be closed. A records_path that is wrong reads the same, so it is read as what was seen.
-		return ingest.Completeness{SeenOnly: true, Reason: "none of the " + strconv.Itoa(l.outers) + " records had an array (or null) where records_path opens one; check the records_path"}
+		return ingest.Completeness{SeenOnly: true, Reason: "none of the " + strconv.Itoa(l.outers) + " records had an array (or null) where records_path opens one; check the records_path"}, true
 	case l.missing > 0 && !l.ds.MissingIsEmpty():
-		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.missing) + " records had no array (or null) where records_path opens one, so what they may have had was not seen"}
+		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.missing) + " records had no array (or null) where records_path opens one, so what they may have had was not seen"}, true
+	case l.noLines:
+		return ingest.Completeness{SeenOnly: true, Reason: "the answer has no value at all: an export with no record and one that was not sent cannot be told apart, so nothing is taken as seen"}, true
 	case l.cut:
-		return ingest.Completeness{SeenOnly: true, Reason: "the answer ended with no mark of its end, or broke, so the lines that were read to their end are what was seen"}
+		return ingest.Completeness{SeenOnly: true, Reason: "the answer ended with no mark of its end, or broke, so the lines that were read to their end are what was seen"}, true
+	case l.recs > 0 && l.rows == 0 && (l.lines || l.ds.OpensArray()):
+		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.recs) + " records were read and none made a row (all were passed over, as a row with no natural key is when the definition says so), so the answer may not be what the definition reads"}, true
 	}
-	return ingest.Completeness{Complete: true}
+	return ingest.Completeness{}, false
 }
 
 // feed puts a record of the response on the pages. The values of the open secrets are taken out of it first, and the token
@@ -197,12 +231,18 @@ func (l *loop) feed(it item, end *respEnd) bool {
 	if l.lines {
 		l.bad += len(table.Unreadable)
 	}
+	l.recs += table.Received() + skipped(table)
+	l.rows += len(table.Rows)
+	if l.cells += cellBytes(table); l.cells > rowBytesFactor*l.rn.set.maxBytes {
+		l.over = true
+		return false
+	}
 	var after func() []byte
 	if l.rn.pager.resumable() && !l.lines {
 		after = l.mint
 	}
 	ok := l.pw.AddLazy(l.ctx, table, after, l.yield)
-	l.tail = tail{i: it.index, at: l.at, seen: l.seen, end: end, mid: !it.last}
+	l.tail = tail{i: it.index, at: l.at, seen: l.seen, end: end, mid: !it.last, count: l.countAt(it)}
 	if l.rn.firstOnly && l.lines && it.last && it.index+1 >= checkLines {
 		l.early = true
 		return false
@@ -236,11 +276,11 @@ func (l *loop) tokenOfTail() []byte {
 	t := l.tail
 	switch {
 	case t.mid:
-		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i, t.seen), t.at.cursor)
+		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i, t.seen, t.count), t.at.cursor)
 	case !t.end.done || t.i < t.end.n-1:
-		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i+1, t.seen), t.at.cursor)
+		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i+1, t.seen, t.count), t.at.cursor)
 	case t.end.sp.more:
-		return l.rn.safeToken(tokenAt(l.fp, t.end.sp.next, 0, t.seen+t.end.n), t.end.sp.next.cursor)
+		return l.rn.safeToken(tokenAt(l.fp, t.end.sp.next, 0, t.seen+t.end.n, t.end.count), t.end.sp.next.cursor)
 	}
 	return nil
 }
@@ -258,4 +298,35 @@ func (l *loop) fail(err error) {
 		l.rn.emit(ingest.Event{Kind: ingest.EventFailed, Class: se.Class, ErrorKind: se.Kind})
 	}
 	l.yield(ingest.Page{}, err)
+}
+
+// countAt is how many records before the position after the record it was given had no array, and had their array looked for. A
+// record that has more elements after this one is read again from its start, so it is not counted.
+func (l *loop) countAt(it item) arrayCount {
+	c := arrayCount{missing: l.missing + it.missing, outers: l.outers + it.outers}
+	if !it.last && c.outers > 0 {
+		c.outers--
+	}
+	return c
+}
+
+// skipped is how many records of a table were passed over by a rule of the definition (a row with no key, when it says so).
+func skipped(t ingest.Table) int {
+	n := 0
+	for _, c := range t.Skipped {
+		n += c
+	}
+	return n
+}
+
+// cellBytes is the bytes of the keys and cells of the rows of a table.
+func cellBytes(t ingest.Table) int {
+	n := 0
+	for _, r := range t.Rows {
+		n += len(r.Key)
+		for k, v := range r.Fields {
+			n += len(k) + len(v)
+		}
+	}
+	return n
 }

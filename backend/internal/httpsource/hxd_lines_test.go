@@ -202,12 +202,13 @@ func TestHxdACheckReadsTheFirstLinesOnly(t *testing.T) {
 }
 
 // [REQ-900]
-// An answer of no content is a dataset with no record, as it is for a body that is one value.
+// An answer of no content is no record, and is only what was seen: an export with no record and one that was not sent cannot be told
+// apart (a body of one value, that is [], says it has none).
 func TestHxdNoContentIsNoRecordsForLines(t *testing.T) {
 	g := hxdNew(t, hxdDoc("", hxdLines), func(int, hsRequest) hxdReply { return hxdReply{status: 204} })
 	pages, err := g.hxdRead(hsCtx, ingest.PageOptions{})
-	if err != nil || len(hxdKeys(pages)) != 0 || !hxdEnd(t, pages).Complete {
-		t.Errorf("rows %v, err %v", hxdKeys(pages), err)
+	if end := hxdEnd(t, pages); err != nil || len(hxdKeys(pages)) != 0 || end.Complete || !end.SeenOnly {
+		t.Errorf("rows %v, end %+v, err %v", hxdKeys(pages), end, err)
 	}
 }
 

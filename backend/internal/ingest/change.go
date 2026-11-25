@@ -166,7 +166,7 @@ func changeForm(s Source) Source {
 	if json.Unmarshal(data, &c) != nil {
 		return s
 	}
-	return c.normalize(newCollector(DocumentSource), allAdapters)
+	return c.normalize(newCollector(DocumentSource), allAdapters, true)
 }
 
 // clearClass sets to zero the fields of the struct that v points to which changeClasses gives one of the classes.

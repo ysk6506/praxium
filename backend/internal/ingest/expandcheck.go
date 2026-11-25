@@ -30,8 +30,8 @@ const (
 // Records reads the records_path of the dataset.
 func (d Dataset) Records() (RecordsPath, error) { return ParseRecordsPath(d.RecordsPath) }
 
-// opensArray says whether the records_path of the dataset has [*]. A path that cannot be read has none (it is reported elsewhere).
-func (d Dataset) opensArray() bool {
+// OpensArray says whether the records_path of the dataset has [*]. A path that cannot be read has none (it is reported elsewhere).
+func (d Dataset) OpensArray() bool {
 	rp, err := d.Records()
 	return err == nil && rp.Expand
 }
@@ -100,17 +100,19 @@ func (d Dataset) checkExpandKey(c *collector, source, at string) {
 			if col.Name != name {
 				continue
 			}
+			colOwn := len(col.Paths) > 0 // a column that reads the outer record first never reads the element (the paths are tried in order)
 			for _, text := range col.Paths {
 				cp, err := ParseColumnPath(text, true)
 				if err != nil {
 					continue
 				}
-				ownField = ownField || !cp.Up
+				colOwn = colOwn && !cp.Up
 				if slices.ContainsFunc(cp.Path, isNumber) {
 					c.add(ecAdExpand, at+ptr("natural_key", i), Params{"source": source, "dataset": d.ID, "field": "natural_key", "reason": "names a column that reads a place in an array (a number)"},
 						"source %s, dataset %s: natural_key column %q reads a place in an array (a number); the order of an array can change, so the key would name another element: use a field of the element", source, d.ID, clip(name, idClipAt))
 				}
 			}
+			ownField = ownField || colOwn
 		}
 	}
 	if len(d.NaturalKey) > 0 && !ownField {

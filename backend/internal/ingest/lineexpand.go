@@ -15,8 +15,24 @@ import (
 type lineState struct {
 	// missing is how many records had no array (or null) at the place of the records_path.
 	missing int
-	// outers is how many records had their array looked for; when it is the same as missing, no record had one.
+	// outers is how many records had an array looked for and had a value there or none (not a value of another kind); when it is the
+	// same as missing, no record had one.
 	outers int
+	// bad is how many of the tables the lines gave held a line that could not be read (not JSON, nothing at records_path, a value of
+	// another kind than the definition reads, an element that is not an object or has no natural key): a dataset with any is not
+	// complete (the same as a response of JSON lines, ADR-0109). recs counts what the lines gave (rows, lines that could not be read
+	// and rows passed over by a rule) and rows the rows.
+	bad, recs, rows int
+}
+
+// count notes what a table holds.
+func (st *lineState) count(t Table) {
+	st.bad += len(t.Unreadable)
+	st.rows += len(t.Rows)
+	st.recs += t.Received()
+	for _, n := range t.Skipped {
+		st.recs += n
+	}
 }
 
 // elementLimitError says that a record had more elements than max_elements.
@@ -41,7 +57,7 @@ func recordLines(br *bufio.Reader, ds Dataset, rp RecordsPath, st *lineState) (f
 		at    int
 		line  int
 	}
-	return func() (Table, error) {
+	next := func() (Table, error) {
 		for {
 			if pending.at < len(pending.elems) {
 				j := pending.at
@@ -67,6 +83,13 @@ func recordLines(br *bufio.Reader, ds Dataset, rp RecordsPath, st *lineState) (f
 			}
 			pending.outer, pending.elems, pending.at, pending.line = outer, elems, 0, line
 		}
+	}
+	return func() (Table, error) {
+		t, err := next()
+		if err == nil {
+			st.count(t)
+		}
+		return t, err
 	}, nil
 }
 
@@ -94,7 +117,9 @@ func openLine(ds Dataset, rb *RowBuilder, rp RecordsPath, line int, text []byte,
 		return rb.Record(rec, line, where), nil, nil, nil
 	}
 	elems, state := rp.Elements(rec)
-	st.outers++
+	if state != ArrayWrongKind {
+		st.outers++
+	}
 	switch {
 	case state == ArrayMissing:
 		st.missing++

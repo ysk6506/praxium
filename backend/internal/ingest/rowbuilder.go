@@ -33,7 +33,7 @@ type builderColumn struct {
 // NewRowBuilder reads the paths of the dataset's columns. It refuses a path the grammar does not read.
 func NewRowBuilder(ds Dataset) (*RowBuilder, error) {
 	b := &RowBuilder{ds: ds, cols: make([]builderColumn, 0, len(ds.Columns))}
-	outer := ds.opensArray()
+	outer := ds.OpensArray()
 	for _, c := range ds.Columns {
 		paths := c.Paths
 		if len(paths) == 0 {

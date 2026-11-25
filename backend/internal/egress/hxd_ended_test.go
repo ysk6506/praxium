@@ -1,6 +1,8 @@
 package egress
 
 import (
+	"bytes"
+	"compress/gzip"
 	"io"
 	"net"
 	"testing"
@@ -10,8 +12,7 @@ import (
 // body that may have been cut. Every name here begins with hxd so that it never meets a name of the older tests of this folder.
 
 // [REQ-901]
-// A length, the last chunk and a body of an HTTP/1.1 answer that the transport unpacks are marks of an end; a body that goes on
-// until the connection closes has none.
+// A length and the last chunk are marks of an end; a body that goes on until the connection closes has none.
 func TestHxdTheEndOfABodyIsMarkedByALengthOrTheLastChunkAndNotByAClosedConnection(t *testing.T) {
 	for _, c := range []struct {
 		name  string
@@ -54,4 +55,44 @@ func TestHxdABodyCutBeforeItsLastChunkBreaksTheRead(t *testing.T) {
 		t.Errorf("a body cut before its last chunk was read to a clean end")
 	}
 	_ = resp.Body.Close()
+}
+
+func hxdGzip(parts ...string) []byte {
+	var b bytes.Buffer
+	for _, p := range parts {
+		w := gzip.NewWriter(&b)
+		_, _ = w.Write([]byte(p))
+		_ = w.Close()
+	}
+	return b.Bytes()
+}
+
+// [REQ-901]
+// A body that the transport unpacks has no mark of its end, because a stream of gzip that a closed connection cut before its first
+// byte, or between two of its members, is read to a clean end: it is never taken as a whole body (what the reader of lines needs).
+func TestHxdABodyThatTheTransportUnpacksIsNeverMarkedAsEnded(t *testing.T) {
+	line := "{\"id\":\"r001\"}\n"
+	whole := hxdGzip(line, "{\"id\":\"r002\"}\n")
+	for _, c := range []struct {
+		name string
+		body []byte
+		want string
+	}{
+		{"cut before the first byte", nil, ""},
+		{"cut between two members", whole[:len(hxdGzip(line))], line},
+		{"whole", whole, line + "{\"id\":\"r002\"}\n"},
+	} {
+		reply := "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nConnection: close\r\n\r\n" + string(c.body)
+		target := ctRaw(t, reply, func(tc *net.TCPConn) { _ = tc.Close() })
+		cl, _ := ctClient(t, nil, Policy{}, ClientOptions{})
+		resp, err := ctGet(t, cl, target)
+		if err != nil {
+			t.Fatalf("%s: %v", c.name, err)
+		}
+		body, rerr := io.ReadAll(resp.Body)
+		_ = resp.Body.Close()
+		if rerr != nil || string(body) != c.want || resp.Ended {
+			t.Errorf("%s: body %q, err %v, Ended %v (a body that is unpacked is never marked)", c.name, body, rerr, resp.Ended)
+		}
+	}
 }

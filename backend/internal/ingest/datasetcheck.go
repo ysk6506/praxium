@@ -50,10 +50,13 @@ func (d Dataset) checkRecords(c *collector, source, adapter, at string) Dataset 
 
 // checkColumnPaths checks the paths of the columns by the grammar of a path into a record.
 func (d Dataset) checkColumnPaths(c *collector, source, at string) {
-	outer := d.opensArray()
+	outer := d.OpensArray()
 	for i, col := range d.Columns {
 		for j, p := range col.Paths {
 			_, err := ParseColumnPath(p, outer)
+			if cp, e2 := ParseColumnPath(p, true); err == nil && !outer && c.adapterFlow && e2 == nil && cp.Up {
+				err = &PathError{Reason: `begins with ^, which reads the record the elements are in only where records_path has [*]; a key that is named ^ is written ["^"]`}
+			}
 			c.pathProblem(source, d.ID, at+ptr("columns", i, "paths", j), "column "+clip(col.Name, idClipAt)+" path", p, err)
 		}
 	}

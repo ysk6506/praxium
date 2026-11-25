@@ -36,6 +36,8 @@ func walkLines(body io.Reader, limit int, rp ingest.RecordsPath, maxElements int
 	switch {
 	case err == nil:
 		return out, nil
+	case isShapeError(err):
+		return out, err
 	case win.srcErr != nil:
 		out.cut, out.srcErr = true, win.srcErr
 		return out, nil
@@ -43,6 +45,14 @@ func walkLines(body io.Reader, limit int, rp ingest.RecordsPath, maxElements int
 		return out, win.err
 	}
 	return out, err
+}
+
+// isShapeError tells a failure of the shape of the answer (a value that is not JSON, a record or an array that is not what records_path
+// reads, a limit that was passed) from one of the connection. A body that broke and had such a fault is not read as what was seen:
+// the fault is the failure (it is not made smaller by the break).
+func isShapeError(err error) bool {
+	var fe *formatError
+	return errors.As(err, &fe) || errors.Is(err, errRecordTooBig)
 }
 
 // lineSrc is the decoder of a body of lines and the window it reads through.
@@ -85,6 +95,7 @@ func lineEnd(err error, win *window, ended bool, out *walked) error {
 	switch {
 	case errors.Is(err, io.EOF):
 		out.valid, out.found, out.cut = true, true, !ended
+		out.noLines = out.n == 0
 		return nil
 	case win.srcErr != nil || win.err != nil:
 		return err
@@ -119,7 +130,9 @@ func lineRecords(rp ingest.RecordsPath, v any, index, maxElements int, out *walk
 func (a *answer) lines(ctx context.Context, each func(it item) bool) (*walked, error) {
 	rn := a.rn
 	if a.rep.status == 204 {
-		return a.empty(), nil
+		w := a.empty()
+		w.noLines = true
+		return w, nil
 	}
 	rp, err := a.ds.Records()
 	if err != nil {

@@ -137,11 +137,10 @@ func (s *pageStream) endOf(err error) Completeness {
 	var limit *elementLimitError
 	switch {
 	case errors.Is(err, io.EOF):
-		if s.lines != nil && s.lines.missing > 0 && s.lines.missing == s.lines.outers {
-			return Completeness{SeenOnly: true, Reason: "none of the " + itoa(s.lines.outers) + " lines had an array at the place of records_path (or null); check the records_path"}
-		}
-		if s.lines != nil && s.lines.missing > 0 && !s.ds.MissingIsEmpty() {
-			return Completeness{SeenOnly: true, Reason: itoa(s.lines.missing) + " lines had no array at the place of records_path (or null), so what they may have had was not seen"}
+		if s.lines != nil {
+			if end, ok := s.lines.endOf(s.ds); ok {
+				return end
+			}
 		}
 		return Completeness{Complete: true}
 	case errors.As(err, &limit):
@@ -256,4 +255,22 @@ func jsonLineRecords(br *bufio.Reader, ds Dataset) func() (Table, error) {
 		}
 		return Table{}, stopped
 	}
+}
+
+// endOf is how the end of the bytes ends a dataset whose lines were read by records_path, when it is not complete: a line that could
+// not be read makes it not complete (a line is one record or the many elements of an array, and what it had is not known); no
+// record that had an array, with some that had none, or no row of the records there were, makes it what was seen. ok is false when
+// none of these is so.
+func (st *lineState) endOf(ds Dataset) (Completeness, bool) {
+	switch {
+	case st.bad > 0:
+		return Completeness{Reason: itoa(st.bad) + " lines or elements could not be read (not JSON, nothing or another kind of value where records_path reads, or no natural key), so the dataset is not complete"}, true
+	case st.missing > 0 && st.missing == st.outers:
+		return Completeness{SeenOnly: true, Reason: "none of the " + itoa(st.outers) + " lines had an array at the place of records_path (or null); check the records_path"}, true
+	case st.missing > 0 && !ds.MissingIsEmpty():
+		return Completeness{SeenOnly: true, Reason: itoa(st.missing) + " lines had no array at the place of records_path (or null), so what they may have had was not seen"}, true
+	case st.recs > 0 && st.rows == 0:
+		return Completeness{SeenOnly: true, Reason: itoa(st.recs) + " records were read and none made a row, so the file may not be what the definition reads"}, true
+	}
+	return Completeness{}, false
 }

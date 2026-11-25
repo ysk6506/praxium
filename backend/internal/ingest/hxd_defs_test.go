@@ -302,8 +302,8 @@ func TestHxdAFileOfJSONLinesThatOpensAnArray(t *testing.T) {
 		t.Errorf("more elements than the limit: keys %v, end %+v", keys, end)
 	}
 	notArray := `{"hostid":"h1","ifs":{"id":"i1"}}`
-	if keys, _, end = hxdLinesOf(t, hxdFileDS, notArray, PageOptions{}); len(keys) != 0 || !end.Complete {
-		t.Errorf("a value that is no array is an unreadable line: keys %v, end %+v", keys, end)
+	if keys, _, end = hxdLinesOf(t, hxdFileDS, notArray, PageOptions{}); len(keys) != 0 || end.Complete || end.SeenOnly {
+		t.Errorf("a value that is no array is an unreadable line, and a dataset with one is not complete: keys %v, end %+v", keys, end)
 	}
 }
 
@@ -313,8 +313,8 @@ func TestHxdAFileOfJSONLinesThatOpensAnArray(t *testing.T) {
 func TestHxdAFileOfJSONLinesWithARecordsPathOfOneRecord(t *testing.T) {
 	ds := `{"id":"d","parser":"json_lines","records_path":"result","natural_key":["id"],"columns":[{"name":"id"}]}`
 	keys, _, end := hxdLinesOf(t, ds, `{"result":{"id":"a"}}`+"\n"+`{"nothing":1}`+"\n"+`{"result":{"id":"b"}}`, PageOptions{})
-	if !slices.Equal(keys, []string{"a", "b"}) || !end.Complete {
-		t.Errorf("keys %v, end %+v", keys, end)
+	if !slices.Equal(keys, []string{"a", "b"}) || end.Complete || end.SeenOnly || !strings.Contains(end.Reason, "could not be read") {
+		t.Errorf("a line with nothing at records_path is a line that cannot be read, and the dataset is not complete: keys %v, end %+v", keys, end)
 	}
 	old := `{"id":"d","parser":"json_lines","natural_key":["id"],"columns":[{"name":"id","paths":["a.b"]}]}`
 	if keys, _, end = hxdLinesOf(t, old, `{"a":{"b":"x"}}`+"\n", PageOptions{}); !slices.Equal(keys, []string{"x"}) || !end.Complete {

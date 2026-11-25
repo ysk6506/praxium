@@ -45,8 +45,15 @@ var (
 	errTwice       = &formatError{"records_path leads to the records twice in the answer"}
 	errTooDeep     = &formatError{"the answer nests deeper than " + strconv.Itoa(maxDepth) + " levels outside its records"}
 	errRecordsPath = &formatError{"records_path is not a path"}
-	errArrayKind   = &formatError{"a record has a value that is not an array where records_path opens an array in it"}
+	errArrayKind   = &formatError{"a record is not an object, or has a value of another kind than an object on the way to, or is not an array where, records_path opens an array in it"}
+	errRowsTooBig  = &formatError{"the rows made of one response are more than " + strconv.Itoa(rowBytesFactor) + " times max_response_bytes (a value of the outer record, read as ^., is in every row of its elements); lower the size of a page, read less of the outer record, or raise max_response_bytes"}
+	errElementKind = &formatError{"an element of the array records_path opens is not an object"}
 )
+
+// rowBytesFactor times max_response_bytes is the most the rows made of one response may hold (the bytes of their cells): the answer
+// bounds the rows of a path that does not open an array, and a path that does (a value of the outer record read by ^. is in every
+// row of its elements) would not be bounded by it.
+const rowBytesFactor = 4
 
 // item is a record given to the one who reads the answer. For a records_path with [*] it is an element of the array of a
 // record, rec being the element and outer the record it is in; otherwise rec is the record. index is the place of the record
@@ -58,6 +65,9 @@ type item struct {
 	elem       int
 	last       bool
 	expanded   bool
+	// missing and outers are how many records of the response, up to this one, had no array (missing) and had their array looked
+	// for (outers); the token of a read that goes on from here carries them (ADR-0109).
+	missing, outers int
 }
 
 // window is the reader the decoder reads the body through. It hashes what it gives (the same answer twice is found by it),
@@ -110,7 +120,9 @@ type walked struct {
 	// outers is how many records had their array looked for, and every one of them had none when it is the same as missing.
 	outers int
 	cut    bool
-	srcErr error
+	// noLines says that a body of JSON lines had no value at all: an export that is empty and one that was not sent cannot be told apart.
+	noLines bool
+	srcErr  error
 }
 
 // frame is an open object or array of the document the walker is in.
@@ -433,7 +445,10 @@ func giveElements(rp ingest.RecordsPath, outer any, idx, limit int, out *walked,
 		return false, &formatError{"a record has more than " + strconv.Itoa(limit) + " elements in the array records_path opens (max_elements)"}
 	}
 	for j, el := range elems {
-		if !each(item{rec: el, outer: outer, index: idx, elem: j, last: j == len(elems)-1, expanded: true}) {
+		if _, ok := el.(map[string]any); !ok {
+			return false, errElementKind
+		}
+		if !each(item{rec: el, outer: outer, index: idx, elem: j, last: j == len(elems)-1, expanded: true, missing: out.missing, outers: out.outers}) {
 			return false, nil
 		}
 	}
