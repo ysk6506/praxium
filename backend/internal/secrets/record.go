@@ -80,9 +80,16 @@ func (r Record) current() (VersionRecord, bool) {
 	return VersionRecord{}, false
 }
 
-// Validate checks the shape of a stored record: syntax and structure, not the cryptography (that is checked when the
-// secret is opened). A record that fails is a file that cannot be used.
-func (r Record) Validate() error {
+// Validate checks the shape of a stored record of a source: syntax and structure, not the cryptography (that is checked
+// when the secret is opened). A record that fails is a file that cannot be used. A record of a receiving webhook is not
+// one of these: it lives in a store of its own (ValidateWebhook), so that the file of the secrets of the sources is read
+// by every version of the program.
+func (r Record) Validate() error { return r.validate(false) }
+
+// ValidateWebhook is Validate for the record of a receiving webhook, which has a receive-only kind and no other.
+func (r Record) ValidateWebhook() error { return r.validate(true) }
+
+func (r Record) validate(webhook bool) error {
 	bad := func(why string) error {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the stored secret %q %s", r.ID, why)
 	}
@@ -92,7 +99,7 @@ func (r Record) Validate() error {
 	if len(r.Instance) != instanceLen {
 		return bad("has no instance id of the right length")
 	}
-	if _, ok := kindFields[r.Kind]; !ok {
+	if known := kindIsOfStore(r.Kind, webhook); !known {
 		return bad("has an unknown kind")
 	}
 	if scope, err := normalizeScope(slices.Clone(r.Scope)); err != nil || !slices.Equal(scope, r.Scope) {
@@ -108,6 +115,15 @@ func (r Record) Validate() error {
 		return bad("has a binding that is not in the stored form")
 	}
 	return r.validateVersions(bad)
+}
+
+// kindIsOfStore says whether a kind belongs in the store of the sources (webhook false) or of the webhooks (true).
+func kindIsOfStore(kind Kind, webhook bool) bool {
+	if webhook {
+		return IsReceiveOnly(kind)
+	}
+	_, ok := FieldNames(kind)
+	return ok
 }
 
 func (r Record) validateVersions(bad func(string) error) error {
@@ -153,7 +169,7 @@ func validSealed(s Sealed, withKey bool) bool {
 }
 
 func (r Record) meta() Meta {
-	names, _ := FieldNames(r.Kind)
+	names, _ := kindFieldNames(r.Kind)
 	m := Meta{
 		ID: r.ID, Kind: r.Kind, FieldNames: names, CreatedAt: r.CreatedAt,
 		Scope: slices.Clone(r.Scope), AllowedHosts: slices.Clone(r.AllowedHosts),

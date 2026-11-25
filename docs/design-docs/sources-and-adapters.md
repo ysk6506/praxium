@@ -171,6 +171,42 @@ follows:
 
 그 밖의 필드는 지금과 같아요. 한 소스만 읽는 옛 매핑 파일(id가 없는 것)은 명령줄이 `-source`의 id를 데이터셋 앞에 붙여 읽고, 저장소에 적용할 때의 매핑 id는 그 소스 id와 같게 해요([정의의 쓰기, 시크릿, 경로, 화면](source-editing.md) 1.5). 자세한 것은 [수집 서비스와 실행](ingestion-service.md) 3절이에요.
 
+### 2.6 받는 웹훅 `webhooks[]` (ADR-0107)
+소스는 다른 제품이 부르는 **받는 웹훅**을 둘 수 있어요(파일 소스는 못 둬요). 정의는 웹훅이 무엇이고 호출을 어떻게 증명하는지만 말하고, **비밀은 정의에 없어요**(값도, 참조도 없어요). 서버가 웹훅마다 하나를 만들어 한 번만 보여 줘요([시크릿과 암호화](secrets-and-encryption.md) 6.1). 소스의 접속 비밀을 웹훅 증명에 쓰는 경로도 없어요.
+
+```json
+"webhooks": [
+  {"id": "changed", "kind": "signal",
+   "auth": {"type": "hmac", "profile": "standard_webhooks"},
+   "allow_ips": ["192.0.2.0/24", "2001:db8::1"],
+   "limits": {"rate_per_second": 20, "burst": 100, "body_bytes": 65536}}
+]
+```
+
+| 필드 | 값 |
+|---|---|
+| `id` | 소스 안에서 하나뿐인 이름(소문자, 숫자, `_`, `-`, 64자까지) |
+| `kind` | `signal`만 처리해요. `records`, `alarms`는 설계에 있지만 아직 처리하는 길이 없어서 정의 오류예요(`source.webhook.kind_not_handled_yet`) |
+| `auth.type` | `hmac`(서명), `header_token`(`X-Webhook-Token` 헤더), `basic`(사용자 이름은 웹훅 id, 비밀번호는 서버가 만든 값), `url_token`(`?token=`, 질의에만) |
+| `auth.profile` | `hmac`일 때만. `standard_webhooks`(권장)와 `body_only`(약함) |
+| `allow_ips` | 선택. 주소나 CIDR 네트워크(256개까지). IPv4 주소는 IPv4 꼴로 써요(`::ffff:`로 매핑한 꼴은 정의 오류예요). 없으면 어디서든 받아요 |
+| `limits` | 선택. 초당 호출 수(기본 50, 위쪽 한도 10,000), 버스트(500, 5,000), 본문 바이트(256 KiB, 4 MiB). 위쪽 한도는 올릴 수 없어요 |
+
+규칙: 소스당 32개까지(기본값 8은 설정이 서는 때 이어져요). `url_token`과 `body_only`는 `signal`에만 써요. 서명이 있는 웹훅(`hmac`)에서 이벤트 id를 서명 밖의 헤더로 고르는 정의는 거절해요(`CheckWebhookEventID`. 이벤트 id를 적는 자리는 이후 변경이 와요). 위반은 `source.webhook.*` 오류예요.
+
+**권한 등급.** 정의를 바꿀 때 `webhooks[]`의 더하기, 삭제, `kind`, `auth`, `allow_ips`, `id`의 변경은 접속 등급이에요(소스의 접속과 같은 권한을 요구해요). `limits`는 **올릴 때만** 접속 등급이고, 낮추거나 같으면 매핑 등급이에요. 브랜치와 제안의 정의는 받는 주소를 열지 않아요. 적용된 정의만 열어요.
+
+**입구의 동작.** 부르는 쪽의 처리 순서와 한도는 `adapter.hookin`이 정해요: 출발지 주소 허용 목록, 주소마다의 동시 처리(IPv6는 /64, 기본 4, 넘으면 429), 입구 전체의 동시 처리와 본문 메모리 합(넘으면 503), 웹훅마다의 동시 처리(429), 헤더로 끝나는 증명을 본문 전에, 본문은 한도와 첫 바이트 기한(기본 2초)과 읽기 기한(기본 10초, 30초까지)으로(읽기 기한을 걸 수 없는 서버에서는 받지 않아요), 서명 확인, JSON 흘려 읽기 검사(깊이 32, 토큰 100,000), 소스 상태, 웹훅의 빈도 한도(429와 `Retry-After`), 신호 표시, 202. **인증이 끝나기 전에는 PostgreSQL에 닿지 않아요.** 모르는 웹훅과 틀린 비밀은 같은 401(`auth.webhook_invalid`)이고 같은 본문이에요. 모르는 웹훅은 가장 작은 한도(1 KiB)까지 읽고 더미 비교를 해서 일을 비슷하게 해요. 그래도 웹훅 id의 있음이 드러날 수 있어요. 걸린 시간, 큰 본문에 대한 답(모르는 웹훅은 1 KiB가 넘으면 413이고 아는 서명 웹훅은 401이며 자기 한도를 넘으면 `limit_bytes`와 함께 413이에요), 모르는 경로가 나눠 쓰는 실패 버킷, `Expect: 100-continue`에 대한 답이 그 길이에요. 웹훅 id는 비밀이 아니고 알아도 비밀 없이는 할 수 있는 것이 없어서 받아들이는 위험이에요. 인증 실패는 (웹훅, 주소) 토큰 버킷으로 세고(IPv6 주소는 /64로 묶어요) 잠그지 않아서 맞는 증명은 실패 수와 무관하게 통과해요. 비밀, 질의 문자열, 본문은 어디에도 적지 않고 로그는 (웹훅, 주소, 종류)로 묶어 분당 한 줄이에요.
+
+| 증명 | 막는 것 | 못 막는 것 |
+|---|---|---|
+| `hmac` + `standard_webhooks` | 위조, 재생(시각 ±300초), 본문 바꿔치기 | 키를 가진 쪽의 오용 |
+| `hmac` + `body_only` | 위조, 본문 바꿔치기 | **재생**(시각이 없어요) |
+| `header_token`, `basic` | 추측(서버가 만든 높은 엔트로피 값) | 가로채면 재생과 위조 |
+| `url_token` | 추측 | 주소의 질의가 프록시와 보낸 쪽 설정에 남아요. 새어도 가장 나쁜 결과는 신호 한 번이라 `signal`에만 써요 |
+
+신호(`signal`)는 정보를 담지 않아요. 본문은 JSON인지만 보고 버려요. 인증된 신호는 그 소스의 `source_state.signal_pending_at`이 비었을 때만 채워요(반복해도 비용이 거의 없어요). 실행을 여는 일은 상태 기계가 서는 뒤의 변경이에요. 받은 함(`webhook_inbox`)과 요청 층 필터링, 서버 배선도 그렇고 이번에는 없어요.
+
 ## 3. 변수와 경로의 문법
 
 ### 3.1 변수
@@ -360,4 +396,4 @@ DB와 API는 붙일 곳이 있어야 해 볼 수 있어요. 합성 세계(작은
 - 미결: 문서의 `version`과 정의 저장소의 `schema_version`의 관계(8a 단계의 결정 기록). 인증과 페이지네이션의 종류별 필드 이름은 ADR-0090이 정했어요.
 
 ## 13. 관련 결정과 요구사항
-[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md), [ADR-0008](adr/0008-ingestion.md), [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md), [ADR-0093](adr/0093-postgres-source-adapter-keyset-pages-and-driver-containment.md), [ADR-0111](adr/0111-http-source-child-datasets-values-of-a-parent-in-the-request.md). 요구사항: REQ-110, REQ-111, REQ-174(예정, 문장을 이 설계에 맞춰 두었어요), REQ-401, REQ-411, REQ-412, REQ-419, REQ-441, REQ-484, REQ-486부터 REQ-491까지, REQ-655, REQ-670, REQ-671, REQ-910부터 REQ-919까지. 앞 문서: [수집 설계](ingestion.md), [파이프라인 설계](pipeline.md).
+[ADR-0107](adr/0107-receiving-webhooks-entrance-receive-only-keys-and-limits.md)(받는 웹훅, 2.6), [ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md), [ADR-0008](adr/0008-ingestion.md), [ADR-0064](adr/0064-security-basics-report-channel-pinned-actions-and-database-tls.md), [ADR-0093](adr/0093-postgres-source-adapter-keyset-pages-and-driver-containment.md), [ADR-0111](adr/0111-http-source-child-datasets-values-of-a-parent-in-the-request.md). 요구사항: REQ-110, REQ-111, REQ-174(예정, 문장을 이 설계에 맞춰 두었어요), REQ-401, REQ-411, REQ-412, REQ-419, REQ-441, REQ-484, REQ-486부터 REQ-491까지, REQ-655, REQ-670, REQ-671, REQ-910부터 REQ-919까지. 앞 문서: [수집 설계](ingestion.md), [파이프라인 설계](pipeline.md).

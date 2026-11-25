@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "6b919ab1b8a518c8"
+hash: "87c34bef85fb92cf"
 date: "2026-11-25"
-note: "ADR-0111은 HTTP 소스의 자식 데이터셋만 더했고 파일 소스 정의의 필드와 동작은 바뀌지 않았다. definition.go는 normalize를 나눈 리팩터링만 더했다"
-text_changed: false
-doc_hash: "06592884ef5fe37a"
+note: "definition.go에 Source.Webhooks가 더해져 최상위 필드 표에 webhooks 행을 더했고(ADR-0107), 같은 파일의 ADR-0109 정의 검사 변경은 이 문서와 어긋나지 않음"
+text_changed: true
+doc_hash: "36fbebf41adaa5b5"

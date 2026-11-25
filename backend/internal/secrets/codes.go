@@ -20,4 +20,11 @@ const (
 	CodeMasterKeyInvalid kernel.Code = "secret_master_key_invalid"
 	// CodeMasterKeyMismatch is a stored secret that another master key sealed than the one given.
 	CodeMasterKeyMismatch kernel.Code = "secret_master_key_mismatch"
+	// CodeReceiveOnly is an attempt to open, or to change with the master key, a secret of a receiving webhook: it is
+	// checked by the Verifier and never opened for a use.
+	CodeReceiveOnly kernel.Code = "secret_receive_only"
+	// CodeWebhookKeyMissing is a use of a secret of a receiving webhook by a program that has no webhook key.
+	CodeWebhookKeyMissing kernel.Code = "secret_webhook_key_missing"
+	// CodeWebhookStoreMissing is a use of a secret of a receiving webhook by a program that has no store for them.
+	CodeWebhookStoreMissing kernel.Code = "secret_webhook_store_missing"
 )

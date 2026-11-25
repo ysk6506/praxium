@@ -3,6 +3,7 @@ package kgread
 import (
 	"context"
 	"log/slog"
+	"net/netip"
 	"strings"
 	"time"
 
@@ -88,19 +89,31 @@ func isRefusal(err error) bool {
 // auth_blocked.
 func (g Gate) refuseToken(who Caller, reason, code string) *Problem {
 	if l := g.Limiter; l != nil {
-		if wait, blocked := l.Blocked(who.Key); blocked {
+		key := limitKey(who.Key)
+		if wait, blocked := l.Blocked(key); blocked {
 			secs := int(wait/time.Second) + 1
 			return &Problem{Code: "rate_limited.requests", Params: map[string]any{"retry_after_seconds": secs}, RetryAfter: secs}
 		}
-		l.Failed(who.Key)
+		l.Failed(key)
 		g.audit(who, "auth_failed", reason)
-		if _, blocked := l.Blocked(who.Key); blocked {
+		if _, blocked := l.Blocked(key); blocked {
 			g.audit(who, "auth_blocked", "too many refused tokens")
 		}
 		return &Problem{Code: code}
 	}
 	g.audit(who, "auth_failed", reason)
 	return &Problem{Code: code}
+}
+
+// limitKey is the key the limiter counts a caller by: an IPv4 address as it is and an IPv6 address as its /64, so that the
+// addresses of one network are one caller (kernel.AddrGroup). A key that is not an address is counted as it is. The audit
+// line keeps the whole key.
+func limitKey(key string) string {
+	a, err := netip.ParseAddr(key)
+	if err != nil {
+		return key
+	}
+	return kernel.AddrGroup(a.Unmap().WithZone(""))
 }
 
 func (g Gate) audit(who Caller, event, reason string) {

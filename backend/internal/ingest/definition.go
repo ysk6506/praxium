@@ -100,6 +100,8 @@ type Source struct {
 	Datasets []Dataset `json:"datasets"`
 	// Limits are the safety limits of the readers of workbook files; an unset one is the default.
 	Limits *Limits `json:"limits,omitempty"`
+	// Webhooks are the receiving webhooks of the source (ADR-0107).
+	Webhooks []Webhook `json:"webhooks,omitempty"`
 }
 
 // decodeStrict reads one JSON document and refuses a field it does not know: a misspelt field of a definition
@@ -240,6 +242,7 @@ func (s Source) normalize(c *collector, adapters []string, adapterFlow bool) Sou
 	s.Datasets = ds
 	s.checkParents(c)
 	s.checkSecretUse(c)
+	s.Webhooks = s.normalizeWebhooks(c)
 	return s
 }
 
