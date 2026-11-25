@@ -125,15 +125,16 @@ func TestHxcTheCheckAndTheAdapterTellTheOriginTheSameWay(t *testing.T) {
 			}
 			doc := strings.Replace(hxcDoc(request, "", ""), "https://api.example.test/api/v2", c.base+"/api/v2", 1)
 			def, err := ingest.ParseAdapterSource(strings.NewReader(doc))
-			switch {
-			case !c.accepted && err == nil:
-				t.Errorf("%s %s (ca_pem %v): the check lets in an address that is not written the way the client reads it", c.base, c.url, withCA)
-			case c.accepted && !withCA && err != nil:
-				t.Errorf("%s %s: refused: %v", c.base, c.url, err)
-			}
-			// A ca_pem for the origin of the base address is refused by the check, and so is read by nobody.
 			if err != nil {
+				// The check refuses an address that is not written the way the client reads it, and a ca_pem for the
+				// origin of the base address (it would be read by nobody). Any other refusal is wrong.
+				if c.accepted && !withCA {
+					t.Errorf("%s %s: refused: %v", c.base, c.url, err)
+				}
 				continue
+			}
+			if !c.accepted {
+				t.Errorf("%s %s (ca_pem %v): the check lets in an address that is not written the way the client reads it", c.base, c.url, withCA)
 			}
 			set, serr := readSettings(def)
 			cross := ingest.TokenGoesToAnotherOrigin(def)

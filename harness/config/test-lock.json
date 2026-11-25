@@ -18942,7 +18942,7 @@
   },
   "go:backend/internal/httpsource::TestHxcTheCheckAndTheAdapterTellTheOriginTheSameWay": {
    "kind": "test",
-   "hash": "7eee04ef7ff3de5e",
+   "hash": "ad368f54c9c1d5dd",
    "asserts": 4,
    "literals": [
     "f921dd3673454cca"
@@ -19285,7 +19285,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "c9cb21290ba9f4f6",
+   "hash": "8e46e4fefca3f665",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -19390,7 +19390,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "671c0dedbbcca930",
+   "hash": "ec9e52f2ef426b94",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
