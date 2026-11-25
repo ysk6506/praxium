@@ -8,7 +8,6 @@ enforced_by:
   - backend/internal/ingest/hxc_defs_test.go
   - backend/internal/httpsource/hxc_cross_test.go
   - backend/internal/httpsource/hxc_egress_test.go
-  - backend/internal/httpsource/hxc_tls_test.go
   - backend/internal/httpsource/hxc_fix_test.go
   - backend/internal/ingest/hxc_fix_test.go
 touches_protected:
@@ -30,7 +29,7 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
 test_change_reason: 두 테스트는 패키지의 모든 .go 파일을 go:embed로 읽어 제품 코드의 글자를 검사하므로 제품 코드가 바뀌면 지문이 바뀐다. 단언은 한 글자도 바뀌지 않았고, 새 파일(tokenask.go)과 바뀐 파일이 같은 규칙(값을 꺼내는 곳은 auth.go 한 곳, 요청을 만드는 곳은 request.go 한 곳, 금지한 글자와 import 없음)을 지키는 것을 새 지문으로 다시 기록한다. 같은 호스트만 허용하던 단언을 가진 잠긴 테스트는 없었다.
-decision_hash: 8b024fae99b0e5aa
+decision_hash: 7460677fddc591fb
 ---
 # ADR-0106 HTTP 소스의 다른 호스트 인증 서버
 
@@ -63,5 +62,6 @@ E5·E6(B1), E4·E8(A2), E7(C)은 이 PR이 아니다.
 
 ## 확인
 
-- `ingest`의 `hxc_defs_test.go`(주소의 형태, 출처 비교, 정의 규칙, 헤더, 수명, 분류)와 `httpsource`의 `hxc_cross_test.go`(두 가짜 출처, 폼과 Basic과 JSON 키, 시크릿의 두 번 열기, 401과 예산, 수명, 길이, 사건의 호스트, 점검)와 `hxc_egress_test.go`(진짜 egress 클라이언트에서 토큰 호스트의 정책 거절, 평문 거절, 쓸 수 없는 인증 기관. 호스트마다의 인증 기관 신뢰와 리디렉션 거절은 egress 유닛의 기존 테스트도 맡는다), `hxc_tls_test.go`(진짜 TLS 서버 둘, 인증 기관 둘, 진짜 egress 클라이언트: 호스트마다의 인증 기관, 토큰 서버의 리디렉션 다섯 코드, 같은 주소의 다른 이름, 다음 페이지가 토큰 서버를 가리키는 경우), `hxc_fix_test.go`(요청마다의 호스트, 토큰 요청 전의 거절, 출처 판단이 정의 검사와 어댑터에서 같음, 포트 범위, 다시 보낼 때의 만료, 수명 알림, 이유 글)와 `ingest`의 `hxc_fix_test.go`(호스트와 포트의 정규형).
+- `ingest`의 `hxc_defs_test.go`(주소의 형태, 출처 비교, 정의 규칙, 헤더, 수명, 분류)와 `httpsource`의 `hxc_cross_test.go`(두 가짜 출처, 폼과 Basic과 JSON 키, 시크릿의 두 번 열기, 401과 예산, 수명, 길이, 사건의 호스트, 점검)와 `hxc_egress_test.go`(진짜 egress 클라이언트에서 토큰 호스트의 정책 거절, 평문 거절, 쓸 수 없는 인증 기관. 호스트마다의 인증 기관 신뢰와 리디렉션 거절은 egress 유닛의 기존 테스트도 맡는다), `hxc_fix_test.go`(요청마다의 호스트, 토큰 요청 전의 거절, 출처 판단이 정의 검사와 어댑터에서 같음, 포트 범위, 다시 보낼 때의 만료, 수명 알림, 이유 글)와 `ingest`의 `hxc_fix_test.go`(호스트와 포트의 정규형).
+- 진짜 TLS 서버 둘과 진짜 egress 클라이언트로 보는 끝에서 끝까지의 테스트(호스트마다의 인증 기관, 토큰 서버의 리디렉션 다섯 코드, 같은 주소의 다른 이름, 다음 페이지가 토큰 서버를 가리키는 경우)는 이 PR에 두지 않는다. 소켓을 여는 테스트는 그것이 허락된 테스트 전용 유닛(`adapter.sourcecheck`, ADR-0093)에만 둘 수 있고, 그 유닛이 HTTP 어댑터를 부르게 하는 일은 보호된 구조 설정의 변경이라 B1(ADR-0105)의 고침에서 평문 토큰 요청의 테스트와 함께 한다. 그 사이의 성질은 egress 유닛의 진짜 TLS 테스트(호스트마다의 인증 기관, 리디렉션 거절)와 이 PR의 가짜 클라이언트 테스트(요청마다의 호스트, 호스트마다의 클라이언트 설정)가 나눠 지킨다.
 - 잠긴 테스트: 위 둘의 지문만 바뀐다.

@@ -19073,84 +19073,6 @@
    "added": "2026-11-25",
    "amended_by": null
   },
-  "go:backend/internal/httpsource::TestHxcTLSAnAliasOfTheAPIsAddressIsItsOwnHost": {
-   "kind": "test",
-   "hash": "6a6a7dbf83370e33",
-   "asserts": 6,
-   "literals": [
-    "90d3da65cca8c1d1"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-25",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcTLSANextPageAtTheTokenHostIsNotFollowed": {
-   "kind": "test",
-   "hash": "7ea2680b5f69777e",
-   "asserts": 4,
-   "literals": [
-    "a20e647e966860c3"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-25",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcTLSARedirectOfTheTokenHostIsNotFollowed": {
-   "kind": "test",
-   "hash": "62763a23fd7a6197",
-   "asserts": 3,
-   "literals": [
-    "43a65304677f1f54"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-25",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcTLSHappyPathEachHostGetsItsOwn": {
-   "kind": "test",
-   "hash": "17359d2b1c267bac",
-   "asserts": 6,
-   "literals": [
-    "d800b54f348b1ac9"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-25",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcTLSTheAPICAIsNotTrustedForTheTokenHost": {
-   "kind": "test",
-   "hash": "0266fc16609c264a",
-   "asserts": 3,
-   "literals": [
-    "d6b25d724a03f18c"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-25",
-   "amended_by": null
-  },
-  "go:backend/internal/httpsource::TestHxcTLSTheTokenCAIsNotTrustedForTheAPI": {
-   "kind": "test",
-   "hash": "6e25388b7a021285",
-   "asserts": 3,
-   "literals": [
-    "d7b3f6acd9aabdb8"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [],
-   "added": "2026-11-25",
-   "amended_by": null
-  },
   "go:backend/internal/httpsource::TestHxcTokensAskedForAgainBecauseOfA401AreWithinABudget": {
    "kind": "test",
    "hash": "fd303fa47a17a943",
@@ -19363,7 +19285,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "2d7f8b763ee7efc9",
+   "hash": "c9cb21290ba9f4f6",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -19468,7 +19390,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "326c13c572f6a47b",
+   "hash": "671c0dedbbcca930",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
