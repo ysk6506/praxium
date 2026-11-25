@@ -46,6 +46,9 @@ type IdentifyFeed struct {
 	TypeNo int
 	// Creates says that a record of the feed may make an object. A feed that does not only finds the objects there are.
 	Creates bool
+	// Retires says that the feed may retire the objects it makes: the references its records give to the objects are retirable, and an
+	// object that no open record supports any more and that has such a reference is a candidate for retirement (Expander).
+	Retires bool
 	// NameCol is the place of the cell the name of the object is read from among the cells of a record, or -1 when it is not known
 	// (the feed gives no name, or reads a dataset a refinement makes).
 	NameCol int

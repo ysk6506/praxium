@@ -22820,6 +22820,52 @@
    "added": "2026-11-16",
    "amended_by": "0075-definition-id-grammar-and-schema-version.md"
   },
+  "go:backend/internal/ingest::TestExpTheLinkTypesThatHoldAnEndToOneAreTheOnesTheBindingsOfTheModelSayAndTheFeedsSayWhichMayRetire": {
+   "kind": "test",
+   "hash": "b181dbe9ea6d2f4a",
+   "asserts": 10,
+   "literals": [
+    "4bbf0d9083e96101"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-891",
+    "REQ-892"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestExpTheRunOfTheExpansionBeginsOnceDoesTheUnitsInOrderAndReportsAtTheEnd": {
+   "kind": "test",
+   "hash": "a31a9225c78a3b25",
+   "asserts": 4,
+   "literals": [
+    "7c4f083fc3881e5a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestExpTheRunOfTheExpansionStopsAtAUnitThatFailsAtARunThatIsNotComputingAndAtACancelledContext": {
+   "kind": "test",
+   "hash": "6e002d45f3704b37",
+   "asserts": 5,
+   "literals": [
+    "8e9404f17f3a24de"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestFileStateStoreKeepsAStateAcrossOpens": {
    "kind": "test",
    "hash": "0e1fa2947549ac9f",
@@ -30017,6 +30063,138 @@
     "REQ-559"
    ],
    "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpAnObjectIsOnlyACandidateForRetirementWhenAFeedThatRetiresMadeIt": {
+   "kind": "test",
+   "hash": "0597efabd0fe7f58",
+   "asserts": 5,
+   "literals": [
+    "65956f1aac6cd37f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-891"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAnotherSourceStandsUnderIsNotACandidateAndOneThatNoRecordStandsUnderIs": {
+   "kind": "test",
+   "hash": "7e286e099cc3037c",
+   "asserts": 26,
+   "literals": [
+    "5fabc9058c306729"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-891",
+    "REQ-898"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpAStatementThatFailsInAUnitLeavesTheUnitUndoneAndTheRunGoesOnFromIt": {
+   "kind": "test",
+   "hash": "92a3e12ff0bbb919",
+   "asserts": 9,
+   "literals": [
+    "160ffde3b6365d64"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-896"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheCandidatesForRetirementAreTheObjectsTheOldPipelineRetiresInTheSameCaptures": {
+   "kind": "test",
+   "hash": "759f911292414db6",
+   "asserts": 26,
+   "literals": [
+    "cef46ab244c655fe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-891",
+    "REQ-897"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheExpansionDoesNotBeginOnARunWhoseIdentificationIsNotDoneAndTheComputationOfEverythingGoesByUnitsOfRecords": {
+   "kind": "test",
+   "hash": "f715190198293bea",
+   "asserts": 21,
+   "literals": [
+    "46ac3c74f67761d2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-896"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheExpansionOfARunOfAWorldThatHasACaseForEveryRule": {
+   "kind": "test",
+   "hash": "4d23019b0fca9d62",
+   "asserts": 11,
+   "literals": [
+    "b7331766759a7f0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-891",
+    "REQ-892",
+    "REQ-893",
+    "REQ-894",
+    "REQ-895",
+    "REQ-896"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheSetIsTheSameForAnyOrderOfTheRowsReceivedAndOfTheNumbersOfTheRecords": {
+   "kind": "test",
+   "hash": "ef6260d420e0a8c0",
+   "asserts": 7,
+   "literals": [
+    "296306bd345e257e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-895"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpWhatManyRecordsOfARunShareIsReadOnceForAUnitSoTheRowsReadGoWithTheNumberOfRecords": {
+   "kind": "test",
+   "hash": "53fee5cfe899e05b",
+   "asserts": 6,
+   "literals": [
+    "9037dece65e1b75b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-899"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestHkaASignalIsMarkedOnceOnEveryRowOfTheSourceAndNeverTwice": {
