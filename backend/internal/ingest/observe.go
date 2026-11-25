@@ -83,11 +83,14 @@ func (o PreviewOptions) WithDefaults() PreviewOptions {
 	return o
 }
 
-// Exchange is one request and its answer as a person may see them: the method, the path, the query the definition wrote
-// (the names and the values the definition gave), the status, and the headers by name with the values of the few that
-// are shown. A header, a body and the query of an address the server gave are not here.
+// Exchange is one request and its answer as a person may see them: the method, the host and the port it went to (the
+// token host's for a token request to another host than the API's), the path, the query the definition wrote (the names
+// and the values the definition gave), the status, and the headers by name with the values of the few that are shown. A
+// header, a body and the query of an address the server gave are not here.
 type Exchange struct {
 	Method  string      `json:"method"`
+	Host    string      `json:"host,omitempty"`
+	Port    int         `json:"port,omitempty"`
 	Path    string      `json:"path"`
 	Query   []NameValue `json:"query,omitempty"`
 	Status  int         `json:"status"`
