@@ -52,14 +52,24 @@ type Config struct {
 	Sleep Sleeper
 	// Observer is told what happens. Nil tells nobody.
 	Observer ingest.Observer
+	// Ceilings are what no definition may pass and the limits of the whole run; a zero field is its starting value (limits.go).
+	// A server setting that fills it is made when the server is put together.
+	Ceilings Ceilings
 }
 
 // Reader reads the datasets of one HTTP source. It implements the read port (ingest.PageReader) and the optional
 // ingest.Previewer, and it has no method that writes to the source. It holds the definition and nothing of a read: every
 // read opens its own secret and makes its own client.
+//
+// A Reader is made for each run of the source. The one thing it keeps from one read to the next is what the run has spent
+// against the limits of the whole run (the requests it sent and the time since the first one, Ceilings): the datasets of a run
+// are read one after the other by the same Reader and share them, and a second run with the same Reader goes on from what the first
+// spent (ADR-0111).
 type Reader struct {
-	cfg Config
-	set settings
+	cfg  Config
+	set  settings
+	ceil Ceilings
+	bud  *budget
 }
 
 var (
@@ -82,7 +92,20 @@ func New(cfg Config) (*Reader, error) {
 	if cfg.Sleep == nil {
 		cfg.Sleep = sleepFor
 	}
-	return &Reader{cfg: cfg, set: set}, nil
+	return &Reader{cfg: cfg, set: set, ceil: cfg.Ceilings.withDefaults(), bud: &budget{}}, nil
+}
+
+// parentOf is the dataset that gives the values of a child, from the definition the reader was made with.
+func (r *Reader) parentOf(ds ingest.Dataset) (ingest.Dataset, bool) {
+	if ds.Parent == nil {
+		return ingest.Dataset{}, false
+	}
+	for _, d := range r.cfg.Source.Datasets {
+		if d.ID == ds.Parent.Dataset && d.ID != ds.ID {
+			return d, true
+		}
+	}
+	return ingest.Dataset{}, false
 }
 
 func sleepFor(ctx context.Context, d time.Duration) error {

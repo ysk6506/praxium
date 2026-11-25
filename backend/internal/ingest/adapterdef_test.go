@@ -156,6 +156,16 @@ func adpCases(t *testing.T) []adpCase {
 		{"response_format that is none of the two", h(`"id":"ds_servers",`, `"id":"ds_servers","response_format":"ndjson",`), "source.response_format_invalid", "/datasets/0/response_format"},
 		{"json_lines with pages", h(`"id":"ds_servers",`, `"id":"ds_servers","response_format":"json_lines",`), "source.response_format_pagination", "/datasets/0/pagination/kind"},
 		{"missing_array without a [*]", h(`"id":"ds_servers",`, `"id":"ds_servers","missing_array":"empty",`), "source.dataset.expand_invalid", "/datasets/0/missing_array"},
+		{"a parent that is no dataset of the source", adpKid(t, adpHelper, `"parent":{"dataset":"nope","values":{"id":"id"}},`, "/servers/{parent.id}"), "source.parent_unknown", "/datasets/1/parent/dataset"},
+		{"a dataset that is its own parent", adpKid(t, adpHelper, `"parent":{"dataset":"ds_servers","values":{"id":"id"}},`, "/servers/{parent.id}"), "source.parent_cycle", "/datasets/1/parent/dataset"},
+		{"a parent that has a parent", adpKid(t, adpHelper+`{"id":"ds_mid","parent":{"dataset":"ds_ids","values":{"id":"id"}},"request":{"path":"/mid/{parent.id}"},"natural_key":["a"],"columns":[{"name":"a"}]},`,
+			`"parent":{"dataset":"ds_mid","values":{"id":"id"}},`, "/servers/{parent.id}"), "source.parent_depth", "/datasets/2/parent/dataset"},
+		{"a variable that is not declared", adpKid(t, adpHelper, `"parent":{"dataset":"ds_ids","values":{"id":"id"}},`, "/servers/{parent.other}"), "source.parent_template_unknown", "/datasets/1/request/path"},
+		{"a value that is not used", adpKid(t, adpHelper, `"parent":{"dataset":"ds_ids","values":{"id":"id"}},`, "/servers"), "source.parent_value_unused", "/datasets/1/parent/values/id"},
+		{"a batch that is too big", adpKid(t, adpHelper, `"parent":{"dataset":"ds_ids","values":{"id":"id"},"batch":{"size":5000,"match":"id"}},`, "/servers/{parent.id}"), "source.batch_invalid", "/datasets/1/parent/batch/size"},
+		{"a batch in the path", adpKid(t, adpHelper, `"parent":{"dataset":"ds_ids","values":{"id":"id"},"batch":{"size":10,"match":"id"}},`, "/servers/{parent.id}"), "source.parent_template_place", "/datasets/1/request/path"},
+		{"a parent with no values", adpKid(t, adpHelper, `"parent":{"dataset":"ds_ids","values":{}},`, "/servers"), "source.parent_invalid", "/datasets/1/parent/values"},
+		{"a helper with columns", adpKid(t, `{"id":"ds_ids","collect":false,"columns":[{"name":"a"}],"request":{"path":"/ids"}},`, `"parent":{"dataset":"ds_ids","values":{"id":"id"}},`, "/servers/{parent.id}"), "source.collect_helper_mapped", "/datasets/0/columns"},
 	}
 }
 

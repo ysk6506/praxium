@@ -106,6 +106,9 @@ func (r Runner) collect(ctx context.Context, plan *Plan, st *State, rep *Report,
 	cap := captured{keys: map[string][]string{}, dups: map[string]int{}, issues: map[string]map[string][]CellIssue{}}
 	books := map[string]*Workbook{}
 	for _, ds := range plan.Source.Datasets {
+		if ds.Helper() {
+			continue
+		}
 		dr := rep.dataset(ds.ID)
 		c, err := r.Fetcher.Fetch(ctx, plan.Source.ID, ds)
 		if err != nil {

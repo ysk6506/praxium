@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "87c34bef85fb92cf"
+hash: "4e2b623432be042b"
 date: "2026-11-25"
-note: "definition.go에 Source.Webhooks가 더해져 최상위 필드 표에 webhooks 행을 더했고(ADR-0107), 같은 파일의 ADR-0109 정의 검사 변경은 이 문서와 어긋나지 않음"
+note: "main 합치기: definition.go에 Source.Webhooks(ADR-0107)가 더해졌고 가이드의 최상위 표에 webhooks 행이 이미 있다. 이 가이드는 파일 소스의 데이터셋 필드 표를 다루고, HTTP 전용 필드(collect, parent, on_not_found, ADR-0111)는 소스와 어댑터 2.6과 요구사항 REQ-910~919에 있어 가이드와 어긋나지 않는다"
 text_changed: true
 doc_hash: "36fbebf41adaa5b5"
