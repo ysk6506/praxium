@@ -2,9 +2,9 @@ package pgingest
 
 import (
 	"fmt"
-	"math/rand"
 	"testing"
 
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
@@ -13,31 +13,36 @@ import (
 
 // rdfRandSteps are the captures of a run of random ones: a handful of keys that come and go, are filtered and freed, repeat, and
 // datasets that are not given or are cut off, at times that follow one another by an hour to a day.
-func rdfRandSteps(r *rand.Rand, n int) []rdfStep {
+func rdfRandSteps(rng *kernel.SeededRng, n int) []rdfStep {
+	// rdfDraw is a number from 0 to below n, from the seeded generator of the kernel (results stay reproducible, REQ-001).
+	rdfDraw := func(n int) int { return int(rng.Uint64() % uint64(n)) }
 	keys := []string{"a", "b", "c", "d", "e", "f", "g"}
 	gen := func(cut *bool) []string {
-		*cut = r.Intn(10) == 0
-		if r.Intn(10) == 0 {
+		*cut = rdfDraw(10) == 0
+		if rdfDraw(10) == 0 {
 			return nil
 		}
 		out := []string{}
 		for _, k := range keys {
-			if r.Intn(10) < 3 {
+			if rdfDraw(10) < 3 {
 				continue
 			}
 			reps := 1
-			if r.Intn(6) == 0 {
-				reps = 2 + r.Intn(2)
+			if rdfDraw(6) == 0 {
+				reps = 2 + rdfDraw(2)
 			}
 			for i := 0; i < reps; i++ {
 				flag := "on"
-				if r.Intn(4) == 0 {
+				if rdfDraw(4) == 0 {
 					flag = "off"
 				}
-				out = append(out, fmt.Sprintf("%s/%s/%d", k, flag, 1+r.Intn(2)))
+				out = append(out, fmt.Sprintf("%s/%s/%d", k, flag, 1+rdfDraw(2)))
 			}
 		}
-		r.Shuffle(len(out), func(i, j int) { out[i], out[j] = out[j], out[i] })
+		for i := len(out) - 1; i > 0; i-- {
+			j := rdfDraw(i + 1)
+			out[i], out[j] = out[j], out[i]
+		}
 		return out
 	}
 	hour := 0
@@ -47,7 +52,7 @@ func rdfRandSteps(r *rand.Rand, n int) []rdfStep {
 		st.racks = gen(&st.racksCut)
 		st.pods = gen(&st.podsCut)
 		steps = append(steps, st)
-		hour += []int{1, 1, 2, 9, 13, 25}[r.Intn(6)]
+		hour += []int{1, 1, 2, 9, 13, 25}[rdfDraw(6)]
 	}
 	return steps
 }
@@ -55,12 +60,12 @@ func rdfRandSteps(r *rand.Rand, n int) []rdfStep {
 // [REQ-784]
 func TestRdfTheComparisonGivesWhatTheOldPipelineGivesForRandomCapturesAndAnyCutOfTheBuckets(t *testing.T) {
 	for _, c := range []struct {
-		seed int64
+		seed uint64
 		size int
 	}{{1, 1}, {2, 2}, {3, 0}} {
 		p := rdfNewParity(t, c.size)
 		p.onlyRaw = true
-		steps := rdfRandSteps(rand.New(rand.NewSource(c.seed)), 30)
+		steps := rdfRandSteps(kernel.NewSeededRng(c.seed), 30)
 		for n, st := range steps {
 			p.rdfStepOn(n, st)
 			if t.Failed() {
