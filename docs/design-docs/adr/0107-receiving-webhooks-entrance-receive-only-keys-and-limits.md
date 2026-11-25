@@ -52,6 +52,9 @@ updates_docs:
   - docs/product-specs/requirements-access.md
   - docs/product-specs/requirements-ingestion.md
 decision_hash: a6a4d3d9c6b90b9e
+amended_by:
+  - adr: "0112"
+    what: 프록시 뒤에서 주소를 적지 않은 호출은 허용 목록 웹훅이 거절하고, 그 호출의 묶음은 연결 주소의 묶음이다
 ---
 # ADR-0107 받는 웹훅의 입구 — 정의, 수신 전용 키, 확인 포트, 한도와 신호 표시
 

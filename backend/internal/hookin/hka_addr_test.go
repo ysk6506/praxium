@@ -65,8 +65,9 @@ func TestHkaTheForwardedAddressIsTheLastItemOfAllTheLinesAndNothingElseCounts(t 
 	}
 	wrong := hkaReq("header", `{}`, map[string]string{"X-Webhook-Token": "wrong"})
 	rig.serve(wrong)
-	if !strings.Contains(rig.logs.String(), `"address":"none"`) {
-		t.Errorf("the failure of a call with no address is not logged as one:\n%s", rig.logs.String())
+	// Behind a proxy with no address the call is counted as the connection's address (not vouched for), not as "none".
+	if !strings.Contains(rig.logs.String(), `"address":"192.0.2.10"`) {
+		t.Errorf("the failure of a call with no address is not logged as the connection's address:\n%s", rig.logs.String())
 	}
 	// Without a proxy of the operator the lines are what a caller wrote and nothing is read from them.
 	plain := hkaNew(t)

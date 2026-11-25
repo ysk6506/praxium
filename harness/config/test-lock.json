@@ -17329,10 +17329,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheForwardedAddressIsTheLastItemOfAllTheLinesAndNothingElseCounts": {
    "kind": "test",
-   "hash": "71ca0da40bd34dcf",
+   "hash": "e8dde1d5f30ddba3",
    "asserts": 6,
    "literals": [
-    "cf40bdc91776d3ed"
+    "fc5e9c09c57af848"
    ],
    "precision": [],
    "skips": 0,
@@ -17340,7 +17340,7 @@
     "REQ-862"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0112-client-address-one-rule.md"
   },
   "go:backend/internal/hookin::TestHkaTheLogHoldsNoSecretNoQueryAndNoBodyAndGroupsTheFailures": {
    "kind": "test",
@@ -18390,6 +18390,21 @@
     "REQ-275"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/httpapi::TestXffRESTTwoLinesTheKeyIsTheLastItemOfTheProxyLine": {
+   "kind": "test",
+   "hash": "b3d6d3102559fb2d",
+   "asserts": 2,
+   "literals": [
+    "b2d03892d26b4a65"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestA408IsSentAgainAndOtherStatusesAreTheRequestsFault": {
@@ -25704,6 +25719,68 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/kernel::TestCadAddrGroupCountsAnIPv6NetworkAsOne": {
+   "kind": "test",
+   "hash": "14ef24e05693cd5b",
+   "asserts": 2,
+   "literals": [
+    "28183e83c0157826"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/kernel::TestCadCallerKeyIsTheAddressOrTheConnectionHost": {
+   "kind": "test",
+   "hash": "e651616097f7230b",
+   "asserts": 1,
+   "literals": [
+    "f3b0687a74c81ff7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/kernel::TestCadClientAddrReadsTheLastItemOfAllTheLines": {
+   "kind": "test",
+   "hash": "5bac123394d09854",
+   "asserts": 2,
+   "literals": [
+    "4965e238e4665235"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314",
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/kernel::TestCadUntrustedHeaderIsNotRead": {
+   "kind": "test",
+   "hash": "51ce0b487eedc669",
+   "asserts": 2,
+   "literals": [
+    "f8671df9edd77cf5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314",
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/kernel::TestCodeCatalogueIsStable": {
    "kind": "test",
    "hash": "05274b06212a18ed",
@@ -26380,6 +26457,22 @@
    "reqs": [],
    "added": "2026-11-18",
    "amended_by": "0078-remove-impact-computation-users-ask-by-query.md"
+  },
+  "go:backend/internal/kgread::TestXffGateCountsAnIPv6NetworkAsOneCallerAndLogsEachAddress": {
+   "kind": "test",
+   "hash": "ecc49cd800ff8979",
+   "asserts": 5,
+   "literals": [
+    "d62018a7a53958be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314",
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
   },
   "go:backend/internal/mcpapi::FuzzParseStrict": {
    "kind": "test",
@@ -27307,6 +27400,21 @@
     "REQ-505"
    ],
    "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/mcpapi::TestXffMCPTwoLinesTheKeyIsTheLastItemOfTheProxyLine": {
+   "kind": "test",
+   "hash": "65faba817a758ce4",
+   "asserts": 3,
+   "literals": [
+    "dc75a56cf2c3a5fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-314"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/memstore::TestAChangeOfEveryKindCanBeReadBackAtItsOwnNumber": {
