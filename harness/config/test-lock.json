@@ -17042,6 +17042,36 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/hookin::TestHkaAnEarlyRefusalOfTheEntranceGivesBackThePlaceOfTheAddressAndTheMemory": {
+   "kind": "test",
+   "hash": "ce51e020757335a7",
+   "asserts": 13,
+   "literals": [
+    "f4f1756fa7483bf1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAnEntranceWithNoTimesSetGivesTwoSecondsForTheFirstByteAndTenForTheBody": {
+   "kind": "test",
+   "hash": "f283b319ff8fd853",
+   "asserts": 4,
+   "literals": [
+    "b9d1200154176a03"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/hookin::TestHkaAnythingButAPostIsRefusedAndAHookThatCannotBeHandledIsNotOne": {
    "kind": "test",
    "hash": "c26fea902306d565",
@@ -17093,6 +17123,21 @@
    "asserts": 4,
    "literals": [
     "2bb8a4b279ffb549"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAVerifierThatIsBrokenWritesOneLineForAWebhookAndThenOneAMinute": {
+   "kind": "test",
+   "hash": "b937ad71dc4f9974",
+   "asserts": 7,
+   "literals": [
+    "1122aaaa80c3c821"
    ],
    "precision": [],
    "skips": 0,
@@ -17213,6 +17258,21 @@
    "asserts": 6,
    "literals": [
     "a6969ff59f614735"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheDefaultsOfTheEntranceAreTheNumbersOfTheDecision": {
+   "kind": "test",
+   "hash": "b3246252cb7b251d",
+   "asserts": 1,
+   "literals": [
+    "f1b13e6664a55b73"
    ],
    "precision": [],
    "skips": 0,
@@ -17363,6 +17423,21 @@
    "asserts": 5,
    "literals": [
     "eddf12ba9c9d582d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheTimesOfTheEntranceAreHeldToTheHighestAndTheFirstByteToTheBody": {
+   "kind": "test",
+   "hash": "736eed029f158a10",
+   "asserts": 4,
+   "literals": [
+    "bd6c12a71bcba763"
    ],
    "precision": [],
    "skips": 0,
@@ -35190,6 +35265,21 @@
    "asserts": 6,
    "literals": [
     "5dff9432b5337807"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheCopyOfTheKeyThatACheckWorkedOnIsOverwrittenAndTheEntryOfTheCacheIsNot": {
+   "kind": "test",
+   "hash": "ac324b89c91e468e",
+   "asserts": 7,
+   "literals": [
+    "968c3f76f45fe0d0"
    ],
    "precision": [],
    "skips": 0,

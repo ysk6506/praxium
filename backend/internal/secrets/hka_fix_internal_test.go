@@ -2,6 +2,10 @@ package secrets
 
 import (
 	"context"
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/base64"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -115,5 +119,49 @@ func TestHkaTheWebhookDeleteRefusesARecordThatIsNotTheSecretOfAWebhook(t *testin
 	}
 	if _, found, _ := hooks.Get(hkbCtx, rec.ID); !found {
 		t.Error("the record was deleted")
+	}
+}
+
+// [REQ-860]
+// The copy of the key material that a check works on is overwritten when the check is done, for a signed webhook and for a
+// webhook of a token, and the entry of the cache is not: the next check still passes.
+func TestHkaTheCopyOfTheKeyThatACheckWorkedOnIsOverwrittenAndTheEntryOfTheCacheIsNot(t *testing.T) {
+	for _, tc := range []struct {
+		name string
+		auth string
+		kind Kind
+	}{{"signed", WebhookAuthHMAC, KindHMACKey}, {"token", WebhookAuthHeaderToken, KindWebhookToken}} {
+		t.Run(tc.name, func(t *testing.T) {
+			svc, _ := hkbService(t, NewWebhookMemoryStore())
+			issued, err := svc.IssueWebhookSecret(hkbCtx, "src_a", "poke", tc.auth)
+			if err != nil {
+				t.Fatal(err)
+			}
+			var seen [][]byte
+			ok, err := svc.withMaterial(hkbCtx, "src_a", "poke", tc.kind, func() { t.Error("the dummy ran for a secret that is there") }, func(material [][]byte) bool {
+				seen = append(seen, material...)
+				return !hkbAllZero(material)
+			})
+			if err != nil || !ok {
+				t.Fatalf("the check over the copy: %v %v", ok, err)
+			}
+			if len(seen) == 0 || !hkbAllZero(seen) {
+				t.Error("the copy of the key material was not overwritten when the check was done")
+			}
+			if cached := svc.vf.entries[SecretIDFor("src_a", "poke")]; cached == nil || hkbAllZero(cached.material) {
+				t.Fatal("the entry of the cache was overwritten with the copy")
+			}
+			if tc.auth == WebhookAuthHMAC {
+				key, _ := base64.StdEncoding.DecodeString(strings.TrimPrefix(issued.Value, "whsec_"))
+				mac := hmac.New(sha256.New, key)
+				mac.Write([]byte("body"))
+				ok, err = svc.Verifier().VerifyHMAC(hkbCtx, "src_a", "poke", []byte("body"), [][]byte{mac.Sum(nil)})
+			} else {
+				ok, err = svc.Verifier().VerifyToken(hkbCtx, "src_a", "poke", []byte(issued.Value))
+			}
+			if err != nil || !ok {
+				t.Errorf("the next check after the copy was overwritten: %v %v", ok, err)
+			}
+		})
 	}
 }

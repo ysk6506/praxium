@@ -71,10 +71,12 @@ type failLog struct {
 	count int
 }
 
-func (h *Handler) logFailure(webhook, addr, kind string) {
-	key := webhook + "|" + addr + "|" + kind
+// groupLog counts a call for the key and says whether a line is to be written now, and with how many calls since the last
+// line: the first call of a key writes at once, then one line a minute. The table is emptied when it holds too many keys.
+func (h *Handler) groupLog(key string) (calls int, write bool) {
 	now := h.now()
 	h.mu.Lock()
+	defer h.mu.Unlock()
 	f := h.logged[key]
 	if f == nil {
 		if len(h.logged) >= maxTrackedKeys {
@@ -84,14 +86,25 @@ func (h *Handler) logFailure(webhook, addr, kind string) {
 		h.logged[key] = f
 	}
 	f.count++
-	write := f.last.IsZero() || now.Sub(f.last) >= logEvery
-	n := f.count
+	write = f.last.IsZero() || now.Sub(f.last) >= logEvery
+	calls = f.count
 	if write {
 		f.last, f.count = now, 0
 	}
-	h.mu.Unlock()
-	if write {
+	return calls, write
+}
+
+func (h *Handler) logFailure(webhook, addr, kind string) {
+	if n, write := h.groupLog(webhook + "|" + addr + "|" + kind); write {
 		h.cfg.Logger.Warn("a call of a webhook was not proven", slog.String("webhook", webhook), slog.String("address", addr), slog.String("kind", kind), slog.Int("calls", n))
+	}
+}
+
+// logVerifierFault writes the fault of the verifier by the same grouping, one group for each webhook: while the verifier is
+// broken every call of the webhook comes here, and a line for each would be the way to fill the log.
+func (h *Handler) logVerifierFault(webhook string) {
+	if n, write := h.groupLog("fault|" + webhook); write {
+		h.cfg.Logger.Error("the proof of a webhook could not be checked", slog.String("webhook", webhook), slog.Int("calls", n))
 	}
 }
 

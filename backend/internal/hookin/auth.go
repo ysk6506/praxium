@@ -139,10 +139,11 @@ func parseSignatures(header string) [][]byte {
 }
 
 // judge turns the answer of the verifier into the end of the step. A fault of the verifier is a failure too, and it is
-// logged: the caller learns nothing of the secrets from it.
+// logged, in groups like the failures (the first at once, then one line a minute for each webhook, with the count): the
+// caller learns nothing of the secrets from it.
 func (q *request) judge(ok bool, err error, kind string) bool {
 	if err != nil {
-		q.h.cfg.Logger.Error("the proof of a webhook could not be checked", "webhook", q.key)
+		q.h.logVerifierFault(q.key)
 		q.fail("verifier")
 		return false
 	}

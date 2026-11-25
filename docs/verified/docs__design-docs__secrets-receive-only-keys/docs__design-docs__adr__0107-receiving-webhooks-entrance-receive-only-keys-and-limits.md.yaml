@@ -1,7 +1,7 @@
 doc: "docs/design-docs/secrets-receive-only-keys.md"
 target: "docs/design-docs/adr/0107-receiving-webhooks-entrance-receive-only-keys-and-limits.md"
-hash: "d202ef883de75e21"
+hash: "a6a4d3d9c6b90b9e"
 date: "2026-11-25"
-note: "단어를 용어집에 맞춤(헬스 상태 등)"
-text_changed: true
+note: "ADR-0107 got known limits and the grouped log of verifier faults; this doc's rows (cache, overwrite, audit line) still match"
+text_changed: false
 doc_hash: "2a8cfe922c6cf8dc"

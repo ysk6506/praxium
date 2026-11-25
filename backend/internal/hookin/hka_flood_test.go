@@ -346,3 +346,66 @@ func TestHkaABodyThatGrowsPastTheRoomOfTheBodiesIsRefusedWhereItGrows(t *testing
 	}
 	a.end(t)
 }
+
+// hkaBigSigned makes a signed webhook that takes bodies up to the highest limit: a call of it is charged real memory.
+func hkaBigSigned(rig *hkaRig) {
+	rig.spy.mu.Lock()
+	rig.spy.hooks[hkaSource+"/big"] = hkaHook(ingest.WebhookAuthHMAC, ingest.ProfileStandardWebhooks, ingest.WebhookLimits{BodyBytes: ingest.MaxWebhookBodyBytes})
+	rig.spy.mu.Unlock()
+}
+
+// [REQ-862]
+// What an early refusal of the entrance gave back: the places of the address and the memory.
+func TestHkaAnEarlyRefusalOfTheEntranceGivesBackThePlaceOfTheAddressAndTheMemory(t *testing.T) {
+	const a = "203.0.113.9:1"
+	const b = "198.51.100.9:1"
+	t.Run("entrance full", func(t *testing.T) {
+		rig := hkaNew(t, func(c *hookin.Config) { c.MaxInFlight = 1 })
+		hkaBigSigned(rig)
+		holder := rig.hold("big", b, -1, nil)
+		for i := 0; i < 8; i++ {
+			h := rig.hold("big", a, -1, nil)
+			if got, done := h.answered(); !done || got.status != 503 {
+				t.Errorf("refusal %d: %v %d", i, done, got.status)
+			}
+		}
+		holder.end(t)
+		if n := rig.h.Counts()["busy_address"]; n != 0 {
+			t.Errorf("the address ran out of places by refusals: %d", n)
+		}
+		h := rig.hold("big", a, -1, nil)
+		if _, done := h.answered(); done {
+			t.Error("the address is not taken in after the entrance has room")
+		}
+		h.end(t)
+	})
+	t.Run("memory full", func(t *testing.T) {
+		rig := hkaNew(t, func(c *hookin.Config) { c.MaxBodyMemory = 100 << 10 })
+		hkaBigSigned(rig)
+		for i := 0; i < 8; i++ {
+			h := rig.hold("big", a, -1, nil)
+			if got, done := h.answered(); !done || got.status != 503 {
+				t.Errorf("refusal %d: %v %d", i, done, got.status)
+			}
+		}
+		if n := rig.h.Counts()["busy_address"]; n != 0 {
+			t.Errorf("the address ran out of places by refusals: %d", n)
+		}
+	})
+	t.Run("webhook full", func(t *testing.T) {
+		rig := hkaNew(t, func(c *hookin.Config) { c.PerWebhookInFlight = 1; c.MaxBodyMemory = 300 << 10 })
+		hkaBigSigned(rig)
+		holder := rig.hold("big", b, -1, nil)
+		for i := 0; i < 8; i++ {
+			h := rig.hold("big", a, -1, nil)
+			if got, done := h.answered(); !done || got.status != 429 {
+				t.Errorf("refusal %d: %v %d", i, done, got.status)
+			}
+		}
+		c := rig.h.Counts()
+		holder.end(t)
+		if c["busy_address"] != 0 || c["busy"] != 0 || c["busy_webhook"] != 8 {
+			t.Errorf("refusals counted %v: the address or the memory was not given back", c)
+		}
+	})
+}

@@ -230,42 +230,52 @@ func decodeMaterial(kind Kind, text string) ([]byte, bool) {
 	return raw, err == nil && len(raw) == hmacKeyBytes
 }
 
-func (s *Service) verifyHMAC(ctx context.Context, sourceID, webhookID string, signed []byte, signatures [][]byte) (bool, error) {
-	c, err := s.material(ctx, sourceID, webhookID, KindHMACKey)
+// withMaterial runs a check over a copy of the key material of the secret of a webhook, counts the answer, and overwrites
+// the copy when the check is done. For a secret that is not there, or is not good, or cannot be opened, it does the dummy
+// work of the kind of check and answers false (with the fault, if there is one). The copy is the caller's: the entries of
+// the cache are not touched.
+func (s *Service) withMaterial(ctx context.Context, sourceID, webhookID string, want Kind, dummy func(), check func(material [][]byte) bool) (bool, error) {
+	c, err := s.material(ctx, sourceID, webhookID, want)
 	if err != nil || c == nil {
-		s.dummyVerify(signed, signatures, nil)
+		dummy()
 		return false, err
 	}
 	defer c.wipe()
-	ok := false
-	for _, key := range c.material {
-		mac := hmac.New(sha256.New, key)
-		mac.Write(signed)
-		sum := mac.Sum(nil)
-		for _, sig := range signatures {
-			ok = subtle.ConstantTimeCompare(sum, sig) == 1 || ok
-		}
-	}
+	ok := check(c.material)
 	s.count(ok, SecretIDFor(sourceID, webhookID))
 	return ok, nil
 }
 
+func (s *Service) verifyHMAC(ctx context.Context, sourceID, webhookID string, signed []byte, signatures [][]byte) (bool, error) {
+	return s.withMaterial(ctx, sourceID, webhookID, KindHMACKey,
+		func() { s.dummyVerify(signed, signatures, nil) },
+		func(material [][]byte) bool {
+			ok := false
+			for _, key := range material {
+				mac := hmac.New(sha256.New, key)
+				mac.Write(signed)
+				sum := mac.Sum(nil)
+				for _, sig := range signatures {
+					ok = subtle.ConstantTimeCompare(sum, sig) == 1 || ok
+				}
+			}
+			return ok
+		})
+}
+
 func (s *Service) verifyToken(ctx context.Context, sourceID, webhookID string, presented []byte) (bool, error) {
-	c, err := s.material(ctx, sourceID, webhookID, KindWebhookToken)
-	if err != nil || c == nil {
-		s.dummyVerify(nil, nil, presented)
-		return false, err
-	}
-	defer c.wipe()
-	probe := s.probeKey()
-	sum := sha256.Sum256(presented)
-	got := probeMAC(probe, sum[:])
-	ok := false
-	for _, stored := range c.material {
-		ok = subtle.ConstantTimeCompare(got, probeMAC(probe, stored)) == 1 || ok
-	}
-	s.count(ok, SecretIDFor(sourceID, webhookID))
-	return ok, nil
+	return s.withMaterial(ctx, sourceID, webhookID, KindWebhookToken,
+		func() { s.dummyVerify(nil, nil, presented) },
+		func(material [][]byte) bool {
+			probe := s.probeKey()
+			sum := sha256.Sum256(presented)
+			got := probeMAC(probe, sum[:])
+			ok := false
+			for _, stored := range material {
+				ok = subtle.ConstantTimeCompare(got, probeMAC(probe, stored)) == 1 || ok
+			}
+			return ok
+		})
 }
 
 func (s *Service) count(ok bool, id string) {
