@@ -38,7 +38,7 @@ amends_tests:
   - go:backend/internal/pgschema::TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionTheOwnerOfTheComputationAndTheIndexOfTheRowsReceivedAndNothingElse
   - go:backend/internal/pgschema::TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix
 test_change_reason: 생성기 버전이 6에서 7이 되어, 버전 단언의 값이 바뀌고(6에서 7), 5에서 최신까지와 3에서 최신까지의 단계를 확인하던 두 테스트는 목표 버전(6)을 명시해 같은 단언을 한다. 6에서 7의 단계는 새 테스트(`ident_generation_test.go`)가 확인한다. 단언은 줄지 않았다.
-decision_hash: 669db545ca53daa1
+decision_hash: b3be35b059953cc3
 ---
 # ADR-0108 새 수집 흐름의 3단계(영향 집합의 출발과 식별)
 
@@ -169,7 +169,7 @@ ADR-0086이 새 수집 흐름의 3단계를 "출발 레코드를 `calc_record`�
 | 새 키 묶기 | `calc_slot`, `calc_label`, `calc_newkey` | 357, 310, 200 | 283, 283, 200 |
 | 끝내기 | `calc_bind`, `calc_key`, `calc_record` | 600, 600, 600 | 600, 600, 600 |
 
-기본 단위(10만 쌍)로 잰 둘째 실행의 식별 시간이다(2코어, 다른 부하가 있는 때의 어림): 10,000개(1,100개가 바뀌거나 새 것) 1.4초, 30,000개(3,300개) 3.7초, 100,000개(11,000개) 13.7초. 단위 하나의 가장 긴 문장은 슬롯 만들기로 10만 개에서 4~6초이고, 한도(임대 60초의 3분의 1) 안이다. 처음에 `LATERAL`로만 바꾸자 슬롯 만들기에서 서버가 "준비됨"을 가리는 조인을 단위의 제곱짜리 중첩 루프로 골라 3만 개가 10분을 넘겼다. 창 함수(`bool_and(...) OVER (PARTITION BY rid, feed_no)`)로 바꿔 고쳤다. 검토의 조건과 달리 시험 데이터는 한 키의 쌍 수가 실행의 크기에 따라 늘지 않게 고쳤다(사이트와 건물을 레코드 2천, 1천 개마다 하나로 하고, 새 레코드를 레코드 백 개에 하나씩 퍼뜨렸다). 한 키의 쌍 수가 곧 읽는 양이 되는 것은 키 라벨의 본성이다(알려진 한계).
+기본 단위(10만 쌍)로 잰 둘째 실행의 식별 시간이다(2코어, 다른 부하가 있는 때의 어림): 10,000개(1,100개가 바뀌거나 새 것) 1.4초, 30,000개(3,300개) 3.7초, 100,000개(11,000개) 13.7초. 단위 하나의 가장 긴 문장은 슬롯 만들기로 10만 개에서 4~6초이고, 한도(임대 60초의 3분의 1) 안이다. 처음에 `LATERAL`로만 바꾸자 슬롯 만들기에서 서버가 "준비됨"을 가리는 조인을 단위의 제곱짜리 중첩 루프로 골라 3만 개가 10분을 넘겼다. 창 함수(`bool_and(...) OVER (PARTITION BY rid, feed_no)`)로 바꿔 고쳤다. 검토의 조건과 달리 테스트 데이터는 한 키의 쌍 수가 실행의 크기에 따라 늘지 않게 고쳤다(사이트와 건물을 레코드 2천, 1천 개마다 하나로 하고, 새 레코드를 레코드 백 개에 하나씩 퍼뜨렸다). 한 키의 쌍 수가 곧 읽는 양이 되는 것은 키 라벨의 본성이다(알려진 한계).
 
 ## 알려진 한계
 
