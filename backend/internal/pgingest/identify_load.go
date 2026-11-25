@@ -182,54 +182,52 @@ func (s *Store) PutRebuilt(ctx context.Context, lease ingest.RunLease, unit int,
 	})
 }
 
-// identCopies are the three COPYs of the keys, the ends and the claims Go made, each opened when its first row comes.
+// identCopies are the rows of the keys, the ends and the claims Go made for a unit. A COPY is one at a time on a connection, so the
+// rows of a unit (bounded by its size) are kept and sent table by table.
 type identCopies struct {
-	ctx    context.Context
-	tx     *sql.Tx
-	kgNo   int64
 	schema map[string]int
-	keys   *copier
-	ends   *copier
-	claims *copier
+	keys   [][]any
+	ends   [][]any
+	claims [][]any
 }
 
-func (c *identCopies) open(into **copier, table string, cols []string) (*copier, error) {
-	if *into == nil {
-		made, err := openCopyTable(c.ctx, c.tx, c.kgNo, table, cols)
-		if err != nil {
-			return nil, err
-		}
-		*into = made
+var (
+	identKeyCols = []string{pgschema.ColRid, pgschema.ColFeedNo, pgschema.ColKeyOrd, pgschema.ColTypeNo, pgschema.ColSigHash,
+		pgschema.ColCandRef, pgschema.ColAncTypes, pgschema.ColAncSigs, pgschema.ColHeld}
+	identEndCols   = []string{pgschema.ColRid, pgschema.ColDefNo, pgschema.ColSide, pgschema.ColLookupHash, pgschema.ColHeld}
+	identClaimCols = []string{pgschema.ColRid, pgschema.ColSchemeNo, pgschema.ColFeedNo, pgschema.ColValueHash, pgschema.ColValue, pgschema.ColHeld}
+)
+
+// identSend copies the rows kept into a table, if there are any.
+func identSend(ctx context.Context, tx *sql.Tx, kgNo int64, table string, cols []string, rows [][]any) error {
+	if len(rows) == 0 {
+		return nil
 	}
-	return *into, nil
+	cp, err := openCopyTable(ctx, tx, kgNo, table, cols)
+	if err != nil {
+		return err
+	}
+	for _, row := range rows {
+		if err := cp.add(row...); err != nil {
+			return err
+		}
+	}
+	return cp.finish()
 }
 
-func (c *identCopies) abort() {
-	for _, one := range []*copier{c.keys, c.ends, c.claims} {
-		if one != nil {
-			one.abort()
-		}
+// flush sends the keys, then the ends, then the claims.
+func (c *identCopies) flush(ctx context.Context, tx *sql.Tx, kgNo int64) error {
+	if err := identSend(ctx, tx, kgNo, pgschema.TableCalcKey, identKeyCols, c.keys); err != nil {
+		return err
 	}
-}
-
-func (c *identCopies) finish() error {
-	for _, one := range []*copier{c.keys, c.ends, c.claims} {
-		if one != nil {
-			if err := one.finish(); err != nil {
-				return err
-			}
-		}
+	if err := identSend(ctx, tx, kgNo, pgschema.TableCalcEnd, identEndCols, c.ends); err != nil {
+		return err
 	}
-	return nil
+	return identSend(ctx, tx, kgNo, pgschema.TableCalcClaim, identClaimCols, c.claims)
 }
 
 // addKey sends a key with the types and signatures of its parents.
 func (c *identCopies) addKey(rid int64, k ingest.StageKey, parents []ingest.StageParent) error {
-	cp, err := c.open(&c.keys, pgschema.TableCalcKey, []string{pgschema.ColRid, pgschema.ColFeedNo, pgschema.ColKeyOrd, pgschema.ColTypeNo, pgschema.ColSigHash,
-		pgschema.ColCandRef, pgschema.ColAncTypes, pgschema.ColAncSigs, pgschema.ColHeld})
-	if err != nil {
-		return err
-	}
 	var types []int
 	var sigs [][]byte
 	for _, p := range parents {
@@ -242,19 +240,17 @@ func (c *identCopies) addKey(rid int64, k ingest.StageKey, parents []ingest.Stag
 	if len(types) > 0 {
 		at, as = smallArray(types), bytesArray(sigs)
 	}
-	return cp.add(rid, int64(k.Feed), int64(k.Ord), int64(k.TypeNo), k.SigHash[:], cand, at, as, k.Held)
+	c.keys = append(c.keys, []any{rid, int64(k.Feed), int64(k.Ord), int64(k.TypeNo), k.SigHash[:], cand, at, as, k.Held})
+	return nil
 }
 
 func (c *identCopies) addEnd(rid int64, e ingest.StageEnd) error {
-	cp, err := c.open(&c.ends, pgschema.TableCalcEnd, []string{pgschema.ColRid, pgschema.ColDefNo, pgschema.ColSide, pgschema.ColLookupHash, pgschema.ColHeld})
-	if err != nil {
-		return err
-	}
 	side := pgschema.RefRoleLinkFrom
 	if e.Side == "to" {
 		side = pgschema.RefRoleLinkTo
 	}
-	return cp.add(rid, int64(e.Def), int64(side), e.LookupHash[:], e.Held)
+	c.ends = append(c.ends, []any{rid, int64(e.Def), int64(side), e.LookupHash[:], e.Held})
+	return nil
 }
 
 func (c *identCopies) addClaim(rid int64, cl ingest.StageClaim) error {
@@ -262,27 +258,23 @@ func (c *identCopies) addClaim(rid int64, cl ingest.StageClaim) error {
 	if !ok {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the identifier scheme %q has no number", cl.Scheme)
 	}
-	cp, err := c.open(&c.claims, pgschema.TableCalcClaim, []string{pgschema.ColRid, pgschema.ColSchemeNo, pgschema.ColFeedNo, pgschema.ColValueHash, pgschema.ColValue, pgschema.ColHeld})
-	if err != nil {
-		return err
-	}
-	return cp.add(rid, int64(scheme), int64(cl.Feed), cl.ValueHash[:], cl.Value, cl.Held)
+	c.claims = append(c.claims, []any{rid, int64(scheme), int64(cl.Feed), cl.ValueHash[:], cl.Value, cl.Held})
+	return nil
 }
 
 // putKeys writes the keys, the ends and the claims Go made, by COPY.
 func (r *identRun) putKeys(ctx context.Context, tx *sql.Tx, rows []ingest.RebuiltRow) error {
-	c := &identCopies{ctx: ctx, tx: tx, kgNo: r.kgNo, schema: r.st.Schemes}
+	c := &identCopies{schema: r.st.Schemes}
 	for _, row := range rows {
 		parents := map[[2]int][]ingest.StageParent{}
 		for _, p := range row.Parents {
 			parents[[2]int{p.Feed, p.Ord}] = append(parents[[2]int{p.Feed, p.Ord}], p)
 		}
 		if err := c.addRow(row, parents); err != nil {
-			c.abort()
 			return err
 		}
 	}
-	return c.finish()
+	return c.flush(ctx, tx, r.kgNo)
 }
 
 func (c *identCopies) addRow(row ingest.RebuiltRow, parents map[[2]int][]ingest.StageParent) error {

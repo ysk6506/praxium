@@ -22450,6 +22450,82 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestIdnRunIdentifyBeginsOnceGivesTheRowsToTheKeyMakerByDatasetAndTheAsksOneByOneAndReportsAtTheEnd": {
+   "kind": "test",
+   "hash": "ffd795a679e4e213",
+   "asserts": 6,
+   "literals": [
+    "891ed308f79bc853"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdnRunIdentifyRefusesARunThatIsNotComputingAndStopsAtTheFirstFailure": {
+   "kind": "test",
+   "hash": "38d27024c0ef419d",
+   "asserts": 5,
+   "literals": [
+    "0ad2b890d9271053"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdnTheIdOfAnObjectIsTheOneTheKeyGivesAndARowWithNoKeyOrNoNameIsMissing": {
+   "kind": "test",
+   "hash": "2e88a44738628be6",
+   "asserts": 8,
+   "literals": [
+    "ce9afd4e0b3540f3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-881",
+    "REQ-884"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdnThePlanGivesTheFeedsAndMakesTheKeysAgainFromTheCellsOfARecord": {
+   "kind": "test",
+   "hash": "46cc38f42ef59c6f",
+   "asserts": 7,
+   "literals": [
+    "ae6e305b3b28c007"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-881"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIdnTheStartOfTheIdentificationRefusesFeedsAndSizesThatCannotBe": {
+   "kind": "test",
+   "hash": "6d43e084b61a9eb3",
+   "asserts": 3,
+   "literals": [
+    "f2036be5e1cfea67"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestInAndNotInSetAsideTheSpacesAtTheEnds": {
    "kind": "test",
    "hash": "41d5697f75b8a097",
@@ -28381,6 +28457,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestIdnARunThatHasFewerRoundsThanTheKeysNeedLeavesTheRecordsUnresolvedAndSaysSo": {
+   "kind": "test",
+   "hash": "a103af6e539a58e9",
+   "asserts": 5,
+   "literals": [
+    "667031abdb57dc46"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-882"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestIdnARunThatStopsGoesOnFromTheNextUnitAndMakesWhatARunThatDoesNotStopMakes": {
    "kind": "test",
    "hash": "0af902e416db2d11",
@@ -28411,6 +28502,37 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitThatFailsLeavesTheRunWhereItWasAndTheRunGoesOnToTheSameEnd": {
+   "kind": "test",
+   "hash": "16227267a74c39ce",
+   "asserts": 5,
+   "literals": [
+    "99a9dab198935f36"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnEveryStatementOfTheClaimsAndOfTheLookupThatFailsIsReportedAndTheNextRunIsTheSame": {
+   "kind": "test",
+   "hash": "e4535c15f9a65c5c",
+   "asserts": 7,
+   "literals": [
+    "f93f96d6ed8bbc26"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883",
+    "REQ-885"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen": {
    "kind": "test",
    "hash": "3b132ca5bbd13234",
@@ -28422,6 +28544,52 @@
    "skips": 0,
    "reqs": [
     "REQ-883"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnTheCallsOfTheIdentificationThatAreMadeOutOfOrderOrOnARunThereIsNotAreRefused": {
+   "kind": "test",
+   "hash": "0d517e4917855e8b",
+   "asserts": 19,
+   "literals": [
+    "a2700994386ba378"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnTheCellsOfARecordAreReadBackWhateverTheyHold": {
+   "kind": "test",
+   "hash": "6ba6c65ddd0c5919",
+   "asserts": 1,
+   "literals": [
+    "8057c6b2d5af2601"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-880"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnTheEndsOfTheLinksAndTheClaimsOfARecordGoErasedFromItsCellsAreKeptWithTheKeys": {
+   "kind": "test",
+   "hash": "7be316a7334a6fae",
+   "asserts": 14,
+   "literals": [
+    "7eb58c8cfa4a6b24"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-880",
+    "REQ-885"
    ],
    "added": "2026-11-25",
    "amended_by": null
@@ -28468,6 +28636,22 @@
    "skips": 0,
    "reqs": [
     "REQ-880"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnTheRecordsOfSmallUnitsWithReferencesNotSolvedAndWithEndsAreAllBound": {
+   "kind": "test",
+   "hash": "9ca9585a2f473c0d",
+   "asserts": 11,
+   "literals": [
+    "38d756e09f6f8809"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-880",
+    "REQ-884"
    ],
    "added": "2026-11-25",
    "amended_by": null
