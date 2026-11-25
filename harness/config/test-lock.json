@@ -30129,10 +30129,10 @@
   },
   "go:backend/internal/pgsource::TestPgsHxbTheOnlyWayToTheTLSSettingsIsTheRegistrationOfEgress": {
    "kind": "test",
-   "hash": "a7d759dfb4feefdd",
+   "hash": "92de003284c971c2",
    "asserts": 3,
    "literals": [
-    "1e1c05dab67d3038"
+    "136fb1e67407cd70"
    ],
    "precision": [],
    "skips": 0,
@@ -30160,10 +30160,10 @@
   },
   "go:backend/internal/pgsource::TestPgsHxbTheScanFailsForTheWaysAround": {
    "kind": "test",
-   "hash": "cd242c74b2db0ab0",
+   "hash": "1d788ebd6bc0802c",
    "asserts": 8,
    "literals": [
-    "c1c75cb619e12fc5"
+    "024f27bbdd387bef"
    ],
    "precision": [],
    "skips": 0,
@@ -30590,7 +30590,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "6044da2f73225795",
+   "hash": "ca1da89320b1b945",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -30684,7 +30684,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "e130adb288991bac",
+   "hash": "a3293917b6ca6b22",
    "asserts": 5,
    "literals": [
     "83ddf40c2eb59700"

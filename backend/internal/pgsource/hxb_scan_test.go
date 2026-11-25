@@ -85,7 +85,14 @@ type pgsHxbScan struct {
 	registerTLS, registers int // how often the two names are written
 	rightCall              int // calls of RegisterPostgresTLS that are in the one place and given the driver's function
 	packages               map[string]bool
-	configLits             []string // the places of the pq.Config literals, file:function
+	configLits             []string                   // the places of the pq.Config literals, file:function
+	allowedConfig          map[*ast.SelectorExpr]bool // the uses of the word pq.Config that the code is allowed to have
+}
+
+// pgsHxbIsConfigWord is whether a selector is the word pq.Config.
+func pgsHxbIsConfigWord(sel *ast.SelectorExpr) bool {
+	id, ok := sel.X.(*ast.Ident)
+	return ok && id.Name == "pq" && sel.Sel.Name == "Config"
 }
 
 // pgsHxbCheckConfigLit judges a literal of pq.Config: there is one, in open of connect.go, and it names the mode that does not
@@ -99,6 +106,9 @@ func (s *pgsHxbScan) pgsHxbCheckConfigLit(file, fn string, lit *ast.CompositeLit
 		return
 	}
 	s.configLits = append(s.configLits, file+":"+fn)
+	if file == "connect.go" && fn == "open" {
+		s.allowedConfig[sel] = true
+	}
 	hasMode := false
 	for _, el := range lit.Elts {
 		if kv, ok := el.(*ast.KeyValueExpr); ok {
@@ -117,7 +127,7 @@ func (s *pgsHxbScan) pgsHxbReport(file, fn, format string, args ...any) {
 }
 
 func pgsHxbViolations(files map[string]*ast.File) []string {
-	s := &pgsHxbScan{fields: map[string]bool{}}
+	s := &pgsHxbScan{fields: map[string]bool{}, allowedConfig: map[*ast.SelectorExpr]bool{}}
 	for _, name := range pgsHxbTLSFields {
 		s.fields[name] = true
 	}
@@ -168,9 +178,23 @@ func (s *pgsHxbScan) pgsHxbCheckNode(file, fn string, n ast.Node) {
 		}
 	case *ast.CallExpr:
 		s.pgsHxbCheckCall(file, fn, x)
+	case *ast.FuncDecl:
+		// the one place the word pq.Config may be a pointer parameter: useTLS of connect.go
+		if file == "connect.go" && x.Name.Name == "useTLS" && x.Type.Params != nil {
+			for _, f := range x.Type.Params.List {
+				if star, ok := f.Type.(*ast.StarExpr); ok {
+					if sel, ok := star.X.(*ast.SelectorExpr); ok && pgsHxbIsConfigWord(sel) {
+						s.allowedConfig[sel] = true
+					}
+				}
+			}
+		}
 	case *ast.SelectorExpr:
 		if s.fields[x.Sel.Name] && !s.pgsHxbIsPackage(x.X) {
 			s.pgsHxbReport(file, fn, "the field %s of tls.Config is named", x.Sel.Name)
+		}
+		if pgsHxbIsConfigWord(x) && !s.allowedConfig[x] {
+			s.pgsHxbReport(file, fn, "pq.Config is written here: it is allowed only as the literal in open of connect.go and as the pointer parameter of useTLS")
 		}
 	case *ast.BasicLit:
 		if x.Kind == gotok.STRING && slices.Contains(pgsHxbModeWords, strings.Trim(x.Value, "\"`")) {
@@ -336,6 +360,18 @@ func other(cfg *pq.Config) { *(&cfg.SSLMode) = "" }`,
 	"a configuration with no mode": `package pgsource
 import "github.com/lib/pq"
 func bare(host string) pq.Config { return pq.Config{Host: host} }`,
+	"a variable of the configuration": `package pgsource
+import "github.com/lib/pq"
+var c pq.Config`,
+	"new of the configuration": `package pgsource
+import "github.com/lib/pq"
+func other() { _ = new(pq.Config) }`,
+	"an alias of the configuration": `package pgsource
+import "github.com/lib/pq"
+type X = pq.Config`,
+	"a struct holding the configuration": `package pgsource
+import "github.com/lib/pq"
+type X struct{ c pq.Config }`,
 	"a second configuration": `package pgsource
 import "github.com/lib/pq"
 func second() pq.Config { return pq.Config{SSLMode: pq.SSLModeDisable} }`,

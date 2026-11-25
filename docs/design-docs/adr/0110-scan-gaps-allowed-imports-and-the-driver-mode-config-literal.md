@@ -24,7 +24,7 @@ amends_tests:
   - go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions
   - go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence
 test_change_reason: 우회 검사를 더 엄격하게(사례와 규칙을 더함, 옛 단언 그대로). 단언은 한 글자도 바뀌지 않았고, 바뀐 것은 검사의 허용 목록, 규칙, 자기 테스트 표뿐이며 그 결과 지문이 바뀐 테스트만 적는다.
-decision_hash: 49a7497104f22c15
+decision_hash: 2ca5b6e6f373eed5
 ---
 # ADR-0110 우회 검사의 틈 두 개 닫기
 
@@ -49,15 +49,15 @@ ADR-0105는 TLS 확인을 끄는 길을 egress의 `pin.go` 한 곳으로 좁히�
    - `SSLMode`의 주소(`&…SSLMode`)는 위반이다.
    - `pq.Config{…}` 리터럴은 `connect.go`의 `open` 함수 안에 정확히 한 번만 허용한다. 그 리터럴은 `SSLMode: pq.SSLModeDisable`을 반드시 적어야 한다.
 4. 설정은 지금 코드가 만드는 한 곳의 꼴로만 만든다. 그 밖의 `pq.Config` 리터럴은 위반이다.
+4a. pgsource 제품 파일에서 `pq.Config`라는 글(선택자)은 허용된 자리에서만 쓴다. 허용된 자리는 `connect.go`의 `open` 안의 리터럴 하나, 그리고 `connect.go`의 `useTLS` 매개변수의 포인터 타입(`*pq.Config`) 하나다. `var`, `new`, 타입 선언과 별명, 구조체 필드, 다른 함수의 리터럴과 결과 타입은 모두 위반이다. 그래서 모드 없는 설정을 다른 방법으로 만드는 길도 막힌다.
 
 ### 자기 테스트
 
-5. 두 검사의 자기 테스트 표(`hxbWaysAround`, `pgsHxbWaysAround`)에 새 사례를 더한다: `encoding/json`(필드를 이름으로 채우는 디코더), `encoding/gob`, `encoding/xml`, 괄호로 감싼 대입과 글자 이어 붙이기, 주소로 넘기는 꼴, 별표로 감싼 주소, `SSLMode`가 없는 리터럴, 둘째 리터럴. 각 사례는 진짜 파일 집합에 더했을 때 위반을 내야 한다. 옛 사례는 그대로 둔다.
+5. 두 검사의 자기 테스트 표(`hxbWaysAround`, `pgsHxbWaysAround`)에 새 사례를 더한다: `var c pq.Config`, `new(pq.Config)`, `type X = pq.Config`, `type X struct{ c pq.Config }`, `encoding/json`(필드를 이름으로 채우는 디코더), `encoding/gob`, `encoding/xml`, 괄호로 감싼 대입과 글자 이어 붙이기, 주소로 넘기는 꼴, 별표로 감싼 주소, `SSLMode`가 없는 리터럴, 둘째 리터럴. 각 사례는 진짜 파일 집합에 더했을 때 위반을 내야 한다. 옛 사례는 그대로 둔다.
 
 ## 범위 밖
 
 - 제품의 동작은 바뀌지 않는다. 이 결정은 검사의 규칙만 더한다.
-- `var c pq.Config`나 `new(pq.Config)`처럼 리터럴이 아닌 꼴은 이 규칙으로 잡지 않는다. 이 꼴을 막을지는 다음 검토에서 정한다.
 
 ## 호환의 변화
 
