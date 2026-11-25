@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/access"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/kgread"
 )
 
@@ -87,28 +88,8 @@ func (h *Handler) refusedToken(s access.Subject) string {
 	return ""
 }
 
-// clientKey is where the caller comes from, for the limiter and the audit line: the address of the connection, or behind
-// a proxy that the operator declared, the last address the proxy appended to X-Forwarded-For. It is the REST server's
-// rule, read here because the address of a request is the transport's.
+// clientKey is where the caller comes from, for the limiter and the audit line: the kernel's rule, the same as the REST
+// server's (every line of X-Forwarded-For behind a declared proxy, the last item the proxy wrote).
 func (h *Handler) clientKey(r *http.Request) string {
-	if h.cfg.TrustProxy {
-		parts := strings.Split(r.Header.Get("X-Forwarded-For"), ",")
-		if last := strings.TrimSpace(parts[len(parts)-1]); last != "" {
-			return last
-		}
-	}
-	return hostOfAddr(r.RemoteAddr)
-}
-
-// hostOfAddr is the host part of "host:port" or "[host]:port".
-func hostOfAddr(addr string) string {
-	if strings.HasPrefix(addr, "[") {
-		if end := strings.Index(addr, "]"); end > 0 {
-			return addr[1:end]
-		}
-	}
-	if i := strings.LastIndex(addr, ":"); i >= 0 && strings.Count(addr, ":") == 1 {
-		return addr[:i]
-	}
-	return addr
+	return kernel.CallerKey(r.RemoteAddr, r.Header.Values("X-Forwarded-For"), h.cfg.TrustProxy)
 }

@@ -235,6 +235,7 @@ type request struct {
 	hook    Hook
 	known   bool
 	addr    netip.Addr
+	vouched bool   // the address is the one a proxy of the operator wrote, or the connection's without a proxy (callerAddr)
 	group   string // the address as it is counted: an IPv4 address, or the /64 of an IPv6 one (addrGroup)
 	key     string // (source, webhook) when known, else "unknown"
 	limit   int64
@@ -253,7 +254,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	q := h.lookup(w, r)
-	q.addr = h.addrOf(r)
+	q.addr, q.vouched = h.callerAddr(r)
 	q.group = addrGroup(q.addr)
 	if !q.admit() {
 		return
@@ -301,7 +302,7 @@ func (q *request) admit() bool {
 	if !q.known || len(q.hook.AllowIPs) == 0 {
 		return true
 	}
-	if q.addr.IsValid() {
+	if q.vouched {
 		for _, p := range q.hook.AllowIPs {
 			if p.Contains(q.addr) {
 				return true
