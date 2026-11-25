@@ -291,3 +291,58 @@ func TestHkaAServerThatCannotSetAReadDeadlineTakesNoCallAndSaysSoOnce(t *testing
 		t.Errorf("counts %v, %d in flight", rig.h.Counts(), rig.h.InFlight())
 	}
 }
+
+// hkaOnceDeadline is a response writer that takes a read deadline once and then no more, as one whose connection went away.
+type hkaOnceDeadline struct {
+	*httptest.ResponseRecorder
+	calls *int
+}
+
+func (d hkaOnceDeadline) SetReadDeadline(time.Time) error {
+	if *d.calls++; *d.calls > 1 {
+		return http.ErrNotSupported
+	}
+	return nil
+}
+
+// [REQ-862]
+// A deadline that cannot be set after the first byte is a refusal as well: the body is not read on without one.
+func TestHkaADeadlineThatCannotBeMovedAfterTheFirstByteEndsTheCall(t *testing.T) {
+	rig := hkaNew(t)
+	calls := 0
+	rec := hkaOnceDeadline{httptest.NewRecorder(), &calls}
+	rig.h.ServeHTTP(rec, hkaReq("header", `{}`, map[string]string{"X-Webhook-Token": rig.secrets["header"]}))
+	if rec.Code != 503 || calls != 2 || rig.spy.signals.Load() != 0 || rig.h.Counts()["no_deadline"] != 1 || rig.h.InFlight() != 0 {
+		t.Errorf("%d after %d deadlines, %d signals, counts %v", rec.Code, calls, rig.spy.signals.Load(), rig.h.Counts())
+	}
+}
+
+// [REQ-862]
+// A body that grows past what the room of the bodies has left is refused when it grows, and gives back what it held.
+func TestHkaABodyThatGrowsPastTheRoomOfTheBodiesIsRefusedWhereItGrows(t *testing.T) {
+	rig := hkaNew(t, func(c *hookin.Config) { c.MaxBodyMemory = 200 << 10 })
+	rig.spy.mu.Lock()
+	rig.spy.hooks[hkaSource+"/big"] = hkaHook(ingest.WebhookAuthHMAC, ingest.ProfileStandardWebhooks, ingest.WebhookLimits{BodyBytes: ingest.MaxWebhookBodyBytes})
+	rig.spy.mu.Unlock()
+	h := rig.hold("big", "203.0.113.1:1", -1, nil)
+	// 64 KiB fill the first buffer, which was charged twice (the signed message is a copy); one byte more asks it to double.
+	go func() { _, _ = h.pw.Write(bytes.Repeat([]byte("x"), 64<<10+1)) }()
+	select {
+	case got := <-h.reply:
+		if got.status != 503 || got.code() != "server.unavailable" {
+			t.Errorf("a body that outgrew the room: %d %s", got.status, got.body)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("the call that outgrew the room was not answered")
+	}
+	_ = h.pw.Close()
+	if rig.h.InFlight() != 0 {
+		t.Errorf("%d calls in the entrance", rig.h.InFlight())
+	}
+	// What it held is back: two bodies of the start size fit again.
+	a := rig.hold("big", "203.0.113.2:1", -1, nil)
+	if _, done := a.answered(); done {
+		t.Error("the room was not given back")
+	}
+	a.end(t)
+}

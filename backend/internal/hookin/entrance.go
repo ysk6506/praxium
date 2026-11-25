@@ -165,13 +165,11 @@ func (q *request) readBody() bool {
 	}
 }
 
-// grow makes the buffer twice as large, up to what the body can need, and charges the growth before it is made.
+// grow makes the buffer twice as large, up to what the body can need, and charges the growth before it is made. A buffer
+// that is full at that size is never asked to grow: a body that declares its length cannot be longer than it, and one that
+// does not fills the limit and one byte only when it is over the limit, which readBody has refused.
 func (q *request) grow(buf []byte) ([]byte, bool) {
 	next := min(int64(cap(buf))*2, q.capacityBytes())
-	if next <= int64(cap(buf)) {
-		q.tooLarge()
-		return nil, false
-	}
 	if !q.hold((next - int64(cap(buf))) * q.copies) {
 		q.busy("busy")
 		return nil, false

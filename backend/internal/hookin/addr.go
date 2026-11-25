@@ -39,10 +39,7 @@ func addrGroup(a netip.Addr) string {
 	case a.Is4():
 		return a.String()
 	}
-	p, err := a.Prefix(64)
-	if err != nil {
-		return noAddress
-	}
+	p, _ := a.Prefix(64) // a valid IPv6 address with no zone has a prefix of 64 bits
 	return p.String()
 }
 
