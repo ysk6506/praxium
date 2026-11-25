@@ -25,7 +25,9 @@ const DefaultRawDiffBucketRows = 100_000
 type RawDiffDataset struct {
 	Dataset string
 	// Retire says that a record that complete reads do not show is counted absent and closed when its time is up, and that a
-	// record a rule filters is let go of when its time is up. Without it the waits are counted and never end (deletion none).
+	// record a rule filters is let go of when its time is up (the deletion rule of the dataset is absent_in_full). Without it
+	// (deletion none) an absence is not counted at all, as before, and the time of a record that a rule filters is counted but never
+	// up: the record is not let go of.
 	Retire bool
 }
 
@@ -72,6 +74,8 @@ type RawDiffCover struct {
 
 // RawDiffPlace is where the comparison of a run stands: whether it has begun, whether the last bucket (the one that has no end)
 // is done, and the bucket to do next. A bucket is done when the place has moved past it, so Next is the number of the buckets done.
+// A comparison has begun only while the tables of the computation are the run's own (they are one set per KG, and another source
+// of the KG that begins its computation empties them), so a run that comes back to find them another's has not begun.
 type RawDiffPlace struct {
 	Stage    RunStage
 	Begun    bool
@@ -147,8 +151,12 @@ type RawDiffer interface {
 	RawDiffReport(ctx context.Context, no int64) (RawDiffReport, error)
 }
 
-// RunRawDiff does the whole comparison of a run, or what is left of it: it begins it when it has not begun, goes through the
-// buckets from the one the run is at, and gives what was made. The context is looked at between buckets, so a canceled run stops
+// RunRawDiff does the whole comparison of a run, or what is left of it: it begins it when it has not begun (a comparison whose
+// tables another run emptied has not begun, so a run that waited for its turn and comes back does it again from its start, at the
+// time in start), goes through the buckets from the one the run is at, and gives what was made. It may be called again for a run
+// whose comparison is done and whose tables are its own, and then it only reports; it is not called for a run that is past the
+// comparison in the later jobs of the computation (the state machine knows by the job of the run), for it would begin again and
+// empty what they made. The context is looked at between buckets, so a canceled run stops
 // after the bucket in hand and a server that takes the run over goes on from there. A run that is not computing is refused with
 // CodeRunStage.
 func RunRawDiff(ctx context.Context, d RawDiffer, lease RunLease, start RawDiffStart) (RawDiffReport, error) {

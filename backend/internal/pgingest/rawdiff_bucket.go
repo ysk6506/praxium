@@ -55,7 +55,7 @@ func (s *Store) DiffRawBucket(ctx context.Context, lease ingest.RunLease, part i
 			return dbErr(err, "read the clock of the database")
 		}
 		out.Took = ended.Sub(began)
-		return moveOn(ctx, tx, lease, part, end, out.Counts)
+		return moveOn(ctx, tx, lease, end, state.added(out.Counts))
 	})
 	return out, err
 }
@@ -159,11 +159,26 @@ func execBucket(ctx context.Context, tx *sql.Tx, b bucketRun) ([]ingest.RawDiffC
 	return out, dbErr(rows.Err(), "read what the bucket made")
 }
 
-// moveOn writes what the bucket made to the counts of the run, moves the place to the next bucket (it begins where this one ended,
-// and there is none after the last) and lets the lease run on. The
-// attempt is the condition, so a server that woke up late changes nothing (and its bucket rolls back with the transaction).
-func moveOn(ctx context.Context, tx *sql.Tx, l ingest.RunLease, part int, end *rawDiffKey, counts []ingest.RawDiffCounts) error {
-	text, err := json.Marshal(counts)
+// added is what the buckets done have made once the bucket in hand is added: a line for every dataset, in the order of the state.
+func (s rawDiffState) added(bucket []ingest.RawDiffCounts) []ingest.RawDiffCounts {
+	out := make([]ingest.RawDiffCounts, len(s.Datasets))
+	for i, d := range s.Datasets {
+		out[i].Dataset = d.Dataset
+		if i < len(s.Totals) {
+			out[i] = s.Totals[i]
+		}
+		if i < len(bucket) {
+			out[i].Add(bucket[i])
+		}
+	}
+	return out
+}
+
+// moveOn writes what the buckets made so far (totals, one line a dataset) to the counts of the run, moves the place to the next
+// bucket (it begins where this one ended, and there is none after the last) and lets the lease run on. The attempt is the
+// condition, so a server that woke up late changes nothing (and its bucket rolls back with the transaction).
+func moveOn(ctx context.Context, tx *sql.Tx, l ingest.RunLease, end *rawDiffKey, totals []ingest.RawDiffCounts) error {
+	text, err := json.Marshal(totals)
 	if err != nil {
 		return kernel.Wrap(kernel.CodeInternal, err, "write the counts of the bucket")
 	}
@@ -171,11 +186,11 @@ func moveOn(ctx context.Context, tx *sql.Tx, l ingest.RunLease, part int, end *r
 	if err != nil {
 		return kernel.Wrap(kernel.CodeInternal, err, "write the place of the next bucket")
 	}
-	set := "jsonb_set(jsonb_set(jsonb_set(" + pgschema.ColCounts + ", ARRAY['raw_diff', 'parts', $3::text], $4::jsonb, true), ARRAY['raw_diff', 'lo'], $5::jsonb, true), ARRAY['raw_diff', 'done'], $6::jsonb, true)"
+	set := "jsonb_set(jsonb_set(jsonb_set(" + pgschema.ColCounts + ", ARRAY['raw_diff', 'totals'], $3::jsonb, true), ARRAY['raw_diff', 'lo'], $4::jsonb, true), ARRAY['raw_diff', 'done'], $5::jsonb, true)"
 	res, err := tx.ExecContext(ctx, "UPDATE "+pgschema.TableSyncRun+" SET "+pgschema.ColCalcPart+" = "+pgschema.ColCalcPart+" + 1, "+pgschema.ColCounts+
-		" = "+set+", "+pgschema.ColLeaseUntil+" = "+lease("$7")+", "+
+		" = "+set+", "+pgschema.ColLeaseUntil+" = "+lease("$6")+", "+
 		pgschema.ColUpdatedAt+" = now() WHERE "+guard()+" AND "+pgschema.ColStage+" = '"+string(ingest.RunComputing)+"'",
-		l.No, l.Attempt, strconv.Itoa(part), string(text), string(next), strconv.FormatBool(end == nil), l.Term.Seconds())
+		l.No, l.Attempt, string(text), string(next), strconv.FormatBool(end == nil), l.Term.Seconds())
 	if err != nil {
 		return dbErr(err, "move the run to the next bucket")
 	}

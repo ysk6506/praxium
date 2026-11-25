@@ -21863,17 +21863,32 @@
    "added": "2026-11-25",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestRdfTheCoverageOfAReadIsOneOfThreeAndCompleteWinsAndAHeaderThatChangedLeavesTheDatasetOut": {
+  "go:backend/internal/ingest::TestRdfTheCoverageOfAReadIsOneOfThreeAndAValueThatSaysBothIsReadAsIncompleteAndAHeaderThatChangedLeavesTheDatasetOut": {
    "kind": "test",
-   "hash": "ac8f0e2e1d85aedd",
-   "asserts": 4,
+   "hash": "60b2d38f6d06c4bf",
+   "asserts": 6,
    "literals": [
-    "6cc8de46a102df70"
+    "a1d31e0eb56b877e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-780"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRdfTheReceivingRefusesALastPageThatSaysWholeAndOnlyWhatWasSeen": {
+   "kind": "test",
+   "hash": "3fb33e24547a5d7b",
+   "asserts": 2,
+   "literals": [
+    "2d5ba6fb86c4d935"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-783"
    ],
    "added": "2026-11-25",
    "amended_by": null
@@ -27538,10 +27553,10 @@
   },
   "go:backend/internal/pgingest::TestRdfABucketReadsTheIndexRangeItCoversAndNotTheWholeTableAndWhatItReadsDoesNotGrowWithTheSource": {
    "kind": "test",
-   "hash": "3fea374a38aff923",
+   "hash": "be2486a054fb0318",
    "asserts": 7,
    "literals": [
-    "3ca595e44d48f3a4"
+    "7cc933992a5acd45"
    ],
    "precision": [],
    "skips": 0,
@@ -27553,10 +27568,10 @@
   },
   "go:backend/internal/pgingest::TestRdfABucketThatFailsLeavesNothingAndThePlaceStaysAtIt": {
    "kind": "test",
-   "hash": "f95ab3b1413362d9",
+   "hash": "86594e455b227dd1",
    "asserts": 16,
    "literals": [
-    "a944f414daed6798"
+    "2eb222cef1c76dd6"
    ],
    "precision": [],
    "skips": 0,
@@ -27568,10 +27583,10 @@
   },
   "go:backend/internal/pgingest::TestRdfACallWithACanceledContextIsRefusedByEveryStepOfTheComparison": {
    "kind": "test",
-   "hash": "7bed296dde78a642",
+   "hash": "7c9f5bb84d83009b",
    "asserts": 9,
    "literals": [
-    "2789d9701ef4c9e9"
+    "2c20252424360a9c"
    ],
    "precision": [],
    "skips": 0,
@@ -27583,10 +27598,10 @@
   },
   "go:backend/internal/pgingest::TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCountsNothingAndADatasetThatNeverRetiresWaitsForNothing": {
    "kind": "test",
-   "hash": "117f22c5af496823",
+   "hash": "24ebd5de3b8e9698",
    "asserts": 12,
    "literals": [
-    "398190fdc068099b"
+    "b71b5bc3518af1d1"
    ],
    "precision": [],
    "skips": 0,
@@ -27598,10 +27613,10 @@
   },
   "go:backend/internal/pgingest::TestRdfADatasetTheReceivingDidNotGiveIsLeftOutWhole": {
    "kind": "test",
-   "hash": "4989790dc414259c",
+   "hash": "0f0c1c375c45f0c9",
    "asserts": 11,
    "literals": [
-    "6f38dbeb064a5bda"
+    "e74375cc4f4732b4"
    ],
    "precision": [],
    "skips": 0,
@@ -27611,12 +27626,72 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestRdfAKeyHasOneReasonByOrderOfWeightSoWhatIsLetGoOfIsToldByTheWaitAndWhatIsShownAgainByTheCounts": {
+   "kind": "test",
+   "hash": "89ad4a44de1df6f1",
+   "asserts": 13,
+   "literals": [
+    "f4c4cc3676c5b946"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-780"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRdfAKeyThatRepeatsKeepsItsProblemFromItsStartThroughTheRunsThatDoNotChangeItToItsEnd": {
+   "kind": "test",
+   "hash": "b20372e0fc1fadd2",
+   "asserts": 7,
+   "literals": [
+    "990eaa0b340420cf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-784"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRdfARowWhoseHashIsTheSameAndWhoseFilteringTurnsOverMakesTheObjectsTheOldPipelineMakes": {
+   "kind": "test",
+   "hash": "621885c277db70bf",
+   "asserts": 4,
+   "literals": [
+    "1be498c35cfed7f6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-784"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRdfARunThatFindsTheTablesOfTheComputationAnotherRunsHasNotBegunAndDoesTheComparisonAgainFromItsStart": {
+   "kind": "test",
+   "hash": "78499804aa15cca3",
+   "asserts": 26,
+   "literals": [
+    "bb33ef96d4d5a7f2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-782"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestRdfAServerThatTakesTheRunOverGoesOnFromTheBucketTheRunIsAtAndCountsAtTheTimeTheComparisonBeganAt": {
    "kind": "test",
-   "hash": "313938ca1dada596",
+   "hash": "74da401165887062",
    "asserts": 17,
    "literals": [
-    "6d6b1ea451c4211a"
+    "6fad78be4fbd30cf"
    ],
    "precision": [],
    "skips": 0,
@@ -27628,10 +27703,10 @@
   },
   "go:backend/internal/pgingest::TestRdfAStepThatTheDatabaseRefusesIsToldAndTheBucketLeavesNothing": {
    "kind": "test",
-   "hash": "42c9484aa643048c",
+   "hash": "32a5c45e75285fc5",
    "asserts": 11,
    "literals": [
-    "63b2b01b1bb89e22"
+    "4df0cb4a4c6bbfe6"
    ],
    "precision": [],
    "skips": 0,
@@ -27641,12 +27716,27 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestRdfAWordOfCoverageThatIsNotOneOfThreeIsReadAsIncompleteAndALineWithNoWordIsReadByItsCompleteFlag": {
+   "kind": "test",
+   "hash": "f07f846797e581c9",
+   "asserts": 8,
+   "literals": [
+    "b847e907fed3a9d3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-781"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestRdfEveryFateOfAKeyIsToldAndTheWaitsAreCountedAtTheTimeOfTheRun": {
    "kind": "test",
-   "hash": "828671f1d2ec7537",
-   "asserts": 15,
+   "hash": "4231048b30cbd906",
+   "asserts": 16,
    "literals": [
-    "b0ae16ce6e26f5cb"
+    "e9c26345afa92db9"
    ],
    "precision": [],
    "skips": 0,
@@ -27658,10 +27748,10 @@
   },
   "go:backend/internal/pgingest::TestRdfTheBucketsAreRangesOfDatasetAndKeyThatFollowOneAnotherAndTheLastHasNoEnd": {
    "kind": "test",
-   "hash": "7dcaabaea7fb2556",
+   "hash": "263760c0351685be",
    "asserts": 13,
    "literals": [
-    "2dcb5c2e3b76046f"
+    "d2f2ff0effb797f9"
    ],
    "precision": [],
    "skips": 0,
@@ -27673,10 +27763,10 @@
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonDoesNotBeginForARunThatIsNotComputingOrForAnotherAttempt": {
    "kind": "test",
-   "hash": "c8c4761f550fbaea",
+   "hash": "f7c023e34618ea17",
    "asserts": 16,
    "literals": [
-    "a8e3db794655424f"
+    "cc4948914670ad6c"
    ],
    "precision": [],
    "skips": 0,
@@ -27688,10 +27778,25 @@
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonGivesTheRawRecordsTheWaitsTheCountsAndTheLiveObjectsTheOldPipelineGivesForTheSameCaptures": {
    "kind": "test",
-   "hash": "38f8ed7ee4925964",
+   "hash": "6f92dbfc4550d374",
    "asserts": 3,
    "literals": [
-    "50420b7836b8c50e"
+    "0241a379d9f12a18"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-784"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRdfTheComparisonGivesWhatTheOldPipelineGivesForRandomCapturesAndAnyCutOfTheBuckets": {
+   "kind": "test",
+   "hash": "c4c67290e49cb4cc",
+   "asserts": 3,
+   "literals": [
+    "c3de148afc3b99c6"
    ],
    "precision": [],
    "skips": 0,
@@ -27703,10 +27808,10 @@
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonReadsTheCoverageOfTheReceivingFromTheCountsAndTakesTheOldFlagWhereThereIsNone": {
    "kind": "test",
-   "hash": "eb4ec938a4e7b7c3",
+   "hash": "982408fd42e6d509",
    "asserts": 8,
    "literals": [
-    "03499c64b8a79e45"
+    "f158538906cc8e28"
    ],
    "precision": [],
    "skips": 0,
@@ -27733,10 +27838,10 @@
   },
   "go:backend/internal/pgingest::TestRdfWhatIsMadeDoesNotDependOnHowTheWorkIsCutIntoBuckets": {
    "kind": "test",
-   "hash": "e7928563294993de",
-   "asserts": 10,
+   "hash": "8c96bf61943f4883",
+   "asserts": 14,
    "literals": [
-    "a3c4642b62e55daf"
+    "d85221d4c8fea4ec"
    ],
    "precision": [],
    "skips": 0,
@@ -27748,10 +27853,10 @@
   },
   "go:backend/internal/pgingest::TestRdfWhatTheComparisonMadeOfARunIsWhatTheNextRunStartsFrom": {
    "kind": "test",
-   "hash": "31929f2250af22f6",
+   "hash": "1fc34cd549877814",
    "asserts": 25,
    "literals": [
-    "cc06e055bda5413f"
+    "b54723623ca9e3a3"
    ],
    "precision": [],
    "skips": 0,
@@ -28192,12 +28297,12 @@
    "added": "2026-11-19",
    "amended_by": null
   },
-  "go:backend/internal/pgschema::TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionAndTheIndexOfTheRowsReceivedAndNothingElse": {
+  "go:backend/internal/pgschema::TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionTheOwnerOfTheComputationAndTheIndexOfTheRowsReceivedAndNothingElse": {
    "kind": "test",
-   "hash": "29ef7cbb52747764",
+   "hash": "c777e7129acb45c8",
    "asserts": 8,
    "literals": [
-    "1cd41d5ed19b54a3"
+    "3eb31d440e222afd"
    ],
    "precision": [],
    "skips": 0,
@@ -28209,10 +28314,10 @@
   },
   "go:backend/internal/pgschema::TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix": {
    "kind": "test",
-   "hash": "96f6fdf8033a4779",
+   "hash": "fea193b5f683382f",
    "asserts": 5,
    "literals": [
-    "12b9396bd0fa8318"
+    "96e5030ac981ca9d"
    ],
    "precision": [],
    "skips": 0,
@@ -30008,12 +30113,12 @@
    "added": "2026-11-14",
    "amended_by": null
   },
-  "go:backend/internal/pgstore::TestRdfAKGOfGeneratorFourGetsTheColumnsOfTheComparisonWhenItIsAdjustedAndKeepsWhatItHas": {
+  "go:backend/internal/pgstore::TestRdfAKGOfGeneratorFourGetsTheColumnsAndTheOwnerTableOfTheComparisonWhenItIsAdjustedAndKeepsWhatItHas": {
    "kind": "test",
-   "hash": "fea85ec7ea7779e4",
-   "asserts": 21,
+   "hash": "38e4f21611286940",
+   "asserts": 24,
    "literals": [
-    "26c3533547affeed"
+    "a3f3bffc82320173"
    ],
    "precision": [],
    "skips": 0,

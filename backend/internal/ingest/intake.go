@@ -90,6 +90,9 @@ func (in Intake) receive(ctx context.Context, ds Dataset) (DatasetIntake, error)
 			line.NotRead = shapeReason(Table{Missing: page.Shape.Missing, Header: page.Shape.Header, Hint: page.Shape.Hint})
 		}
 		if page.Last {
+			if err := page.End.Check(); err != nil {
+				return line, err
+			}
 			line.Complete, line.Reason, line.SeenOnly = page.End.Complete, page.End.Reason, page.End.SeenOnly
 			return line, nil
 		}

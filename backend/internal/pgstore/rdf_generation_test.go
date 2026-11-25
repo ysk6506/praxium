@@ -11,7 +11,7 @@ import (
 )
 
 // [REQ-785]
-func TestRdfAKGOfGeneratorFourGetsTheColumnsOfTheComparisonWhenItIsAdjustedAndKeepsWhatItHas(t *testing.T) {
+func TestRdfAKGOfGeneratorFourGetsTheColumnsAndTheOwnerTableOfTheComparisonWhenItIsAdjustedAndKeepsWhatItHas(t *testing.T) {
 	ctx := context.Background()
 	st, admin := igtOpenStandard(t)
 	m := sxStandard(t, true)
@@ -31,6 +31,7 @@ func TestRdfAKGOfGeneratorFourGetsTheColumnsOfTheComparisonWhenItIsAdjustedAndKe
 		sxRun(t, admin, fmt.Sprintf(`ALTER TABLE "%s"."%s" ALTER COLUMN def_no SET NOT NULL`, schema, table))
 	}
 	sxRun(t, admin, fmt.Sprintf(`DROP INDEX "%s".stage_record_key`, schema))
+	sxRun(t, admin, fmt.Sprintf(`DROP TABLE "%s".calc_owner`, schema))
 	sxRun(t, admin, fmt.Sprintf(`INSERT INTO "%s".record_wait (src_no, dataset_no, key, kind, runs, first_at) VALUES (1, 1, 'k', 0, 2, now())`, schema))
 	sxRun(t, admin, `UPDATE kg_schema_state SET generator_version = 4, manifest = jsonb_set(manifest, '{generator_version}', '4') WHERE kg_id = $1`, kg.String())
 	got, err := st.AdjustStorageSchema(ctx, kg, m)
@@ -49,6 +50,9 @@ func TestRdfAKGOfGeneratorFourGetsTheColumnsOfTheComparisonWhenItIsAdjustedAndKe
 	}
 	if n := sxInt(t, admin, `SELECT count(*) FROM pg_indexes WHERE schemaname = $1 AND indexname = 'stage_record_key'`, schema); n != 1 {
 		t.Errorf("the adjusted schema has no index of the rows received by key: %d", n)
+	}
+	if n := sxInt(t, admin, `SELECT count(*) FROM information_schema.columns WHERE table_schema = $1 AND table_name = 'calc_owner' AND column_name = 'run_no'`, schema); n != 1 {
+		t.Errorf("the adjusted schema has no table that says whose the computation is: %d", n)
 	}
 	if n := sxInt(t, admin, fmt.Sprintf(`SELECT count(*) FROM "%s".record_wait WHERE key = 'k' AND runs = 2 AND NOT expired`, schema)); n != 1 {
 		t.Errorf("the wait that was there is not kept as it was: %d", n)

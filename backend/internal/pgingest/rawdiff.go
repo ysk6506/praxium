@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"strconv"
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
@@ -22,12 +21,14 @@ var _ ingest.RawDiffer = (*Store)(nil)
 // rawDiffState is what the counts of a run keep of the comparison. The time is the one every wait is counted at; it is written when
 // the comparison begins, so a server that goes on after another one died counts at the same time.
 type rawDiffState struct {
-	At       string                            `json:"at"`
-	Size     int                               `json:"size"`
-	Lo       *rawDiffKey                       `json:"lo"`
-	Done     bool                              `json:"done"`
-	Datasets []rawDiffDataset                  `json:"datasets"`
-	Parts    map[string][]ingest.RawDiffCounts `json:"parts"`
+	At       string           `json:"at"`
+	Size     int              `json:"size"`
+	Lo       *rawDiffKey      `json:"lo"`
+	Done     bool             `json:"done"`
+	Datasets []rawDiffDataset `json:"datasets"`
+	// Totals is what the buckets done have made, added up for each dataset in the order of Datasets: one line each, however many
+	// buckets there are.
+	Totals []ingest.RawDiffCounts `json:"totals"`
 }
 
 // rawDiffKey is a place in the order of the comparison: a dataset and a key of it. The first bucket has none (it begins at the
@@ -105,7 +106,10 @@ func (s *Store) BeginRawDiff(ctx context.Context, lease ingest.RunLease, start i
 		if size == 0 {
 			size = ingest.DefaultRawDiffBucketRows
 		}
-		state := rawDiffState{At: start.Now.UTC().Format(time.RFC3339Nano), Size: size, Datasets: datasets, Parts: map[string][]ingest.RawDiffCounts{}}
+		state := rawDiffState{At: start.Now.UTC().Format(time.RFC3339Nano), Size: size, Datasets: datasets, Totals: make([]ingest.RawDiffCounts, len(datasets))}
+		for i, d := range datasets {
+			state.Totals[i].Dataset = d.Dataset
+		}
 		if err := s.startJob(ctx, tx, lease, kgNo, state); err != nil {
 			return err
 		}
@@ -135,12 +139,16 @@ type receivedCoverage struct {
 	NotRead  string          `json:"not_read"`
 }
 
+// coverage reads the safe way: a word that is not one of the three says nothing that can be counted, so it is incomplete, and only a
+// line that has no word at all is read by its complete flag.
 func (r receivedCoverage) coverage() ingest.Coverage {
 	switch {
 	case r.NotRead != "":
 		return ingest.CoverageIncomplete
 	case r.Coverage.Valid():
 		return r.Coverage
+	case r.Coverage != "":
+		return ingest.CoverageIncomplete
 	case r.Complete:
 		return ingest.CoverageComplete
 	}
@@ -196,7 +204,8 @@ func rawDiffDatasets(ctx context.Context, tx *sql.Tx, run runRow, start ingest.R
 	return out, nil
 }
 
-// startJob empties the tables of the computation and writes the state of the comparison to the run, with the place at the first bucket.
+// startJob empties the tables of the computation, writes that they are this run's, and writes the state of the comparison to the
+// run, with the place at the first bucket.
 func (s *Store) startJob(ctx context.Context, tx *sql.Tx, l ingest.RunLease, kgNo int64, state rawDiffState) error {
 	truncate, err := pgschema.TruncateComputeSQL(kgNo)
 	if err != nil {
@@ -204,6 +213,9 @@ func (s *Store) startJob(ctx context.Context, tx *sql.Tx, l ingest.RunLease, kgN
 	}
 	if _, err := tx.ExecContext(ctx, truncate); err != nil {
 		return dbErr(err, "empty the tables of the computation")
+	}
+	if _, err := tx.ExecContext(ctx, "INSERT INTO "+pgschema.TableRef(kgNo, pgschema.TableCalcOwner)+" ("+pgschema.ColRunNo+") VALUES ($1)", l.No); err != nil {
+		return dbErr(err, "write whose the tables of the computation are")
 	}
 	text, err := json.Marshal(map[string]any{"raw_diff": state})
 	if err != nil {
@@ -221,17 +233,28 @@ func (s *Store) startJob(ctx context.Context, tx *sql.Tx, l ingest.RunLease, kgN
 	return nil
 }
 
-// RawDiffPlace says where the comparison stands: see ingest.RawDiffer.
+// RawDiffPlace says where the comparison stands: see ingest.RawDiffer. The tables of the computation are one set per KG, so a
+// comparison that was begun is the run's only while the tables say they are its own: after another source of the KG began its
+// computation they are not, and the place says that the comparison has not begun.
 func (s *Store) RawDiffPlace(ctx context.Context, no int64) (ingest.RawDiffPlace, error) {
 	var (
 		place  ingest.RawDiffPlace
 		stage  string
+		kgID   string
 		job    int16
 		counts []byte
+		owned  bool
 	)
 	err := s.tx(ctx, roleApplier, func(tx *sql.Tx) error {
-		return tx.QueryRowContext(ctx, "SELECT "+pgschema.ColStage+", "+pgschema.ColCalcJob+", "+pgschema.ColCalcPart+", "+pgschema.ColCounts+" FROM "+
-			pgschema.TableSyncRun+" WHERE "+pgschema.ColRunNo+" = $1", no).Scan(&stage, &job, &place.Next, &counts)
+		if err := tx.QueryRowContext(ctx, "SELECT "+pgschema.ColStage+", "+pgschema.ColKGID+", "+pgschema.ColCalcJob+", "+pgschema.ColCalcPart+", "+pgschema.ColCounts+" FROM "+
+			pgschema.TableSyncRun+" WHERE "+pgschema.ColRunNo+" = $1", no).Scan(&stage, &kgID, &job, &place.Next, &counts); err != nil || job != pgschema.CalcJobRawDiff {
+			return err
+		}
+		kgNo, err := kgNoOfRun(ctx, tx, kgID)
+		if err != nil {
+			return err
+		}
+		return tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM "+pgschema.TableRef(kgNo, pgschema.TableCalcOwner)+" WHERE "+pgschema.ColRunNo+" = $1)", no).Scan(&owned)
 	})
 	if isNoRows(err) {
 		return place, kernel.Errorf(kernel.CodeNotFound, "no run %d", no)
@@ -240,7 +263,7 @@ func (s *Store) RawDiffPlace(ctx context.Context, no int64) (ingest.RawDiffPlace
 		return place, dbErr(err, "read where the comparison stands")
 	}
 	place.Stage = ingest.RunStage(stage)
-	if job != pgschema.CalcJobRawDiff {
+	if job != pgschema.CalcJobRawDiff || !owned {
 		return ingest.RawDiffPlace{Stage: place.Stage}, nil
 	}
 	state, err := stateOf(counts)
@@ -263,9 +286,12 @@ func stateOf(counts []byte) (rawDiffState, error) {
 
 // RawDiffReport adds up what the buckets that are done made: see ingest.RawDiffer.
 func (s *Store) RawDiffReport(ctx context.Context, no int64) (ingest.RawDiffReport, error) {
-	var counts []byte
+	var (
+		counts  []byte
+		buckets int
+	)
 	err := s.tx(ctx, roleApplier, func(tx *sql.Tx) error {
-		return tx.QueryRowContext(ctx, "SELECT "+pgschema.ColCounts+" FROM "+pgschema.TableSyncRun+" WHERE "+pgschema.ColRunNo+" = $1", no).Scan(&counts)
+		return tx.QueryRowContext(ctx, "SELECT "+pgschema.ColCounts+", "+pgschema.ColCalcPart+" FROM "+pgschema.TableSyncRun+" WHERE "+pgschema.ColRunNo+" = $1", no).Scan(&counts, &buckets)
 	})
 	if isNoRows(err) {
 		return ingest.RawDiffReport{}, kernel.Errorf(kernel.CodeNotFound, "no run %d", no)
@@ -277,14 +303,12 @@ func (s *Store) RawDiffReport(ctx context.Context, no int64) (ingest.RawDiffRepo
 	if err != nil {
 		return ingest.RawDiffReport{}, err
 	}
-	rep := ingest.RawDiffReport{Buckets: len(state.Parts)}
+	rep := ingest.RawDiffReport{Buckets: buckets}
 	for i, d := range state.Datasets {
 		rep.Datasets = append(rep.Datasets, d.cover())
 		total := ingest.RawDiffCounts{Dataset: d.Dataset}
-		for part := 0; part < len(state.Parts); part++ {
-			if lines := state.Parts[strconv.Itoa(part)]; i < len(lines) {
-				total.Add(lines[i])
-			}
+		if i < len(state.Totals) {
+			total = state.Totals[i]
 		}
 		rep.Counts = append(rep.Counts, total)
 	}

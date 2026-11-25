@@ -36,7 +36,11 @@ const (
 	TableStageIdent  = "stage_ident"
 	TableCalcProblem = "calc_problem"
 	TableCalcRef     = "calc_ref"
-	TableIngestDiff  = ReservedIngestDiff
+	// TableCalcOwner holds the number of the run that the tables of the computation are of (one row, written when the computation
+	// begins, emptied with the others): the tables are one set per KG, so a run that comes back to the KG after another source
+	// began its computation finds that they are not its own (ADR-0102).
+	TableCalcOwner  = "calc_owner"
+	TableIngestDiff = ReservedIngestDiff
 )
 
 // The shared tables of the runs (migration 0006), outside the storage schemas.
@@ -269,7 +273,7 @@ func SourcePartition(table string, srcNo int64) string {
 // computation.
 func ComputeTables() []string {
 	return []string{
-		TableCalcRecord, TableCalcWait, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
+		TableCalcRecord, TableCalcWait, TableCalcOwner, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
 		TableCalcDropped, TableCalcObject, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
 		TableCalcProblem, TableCalcRef, TableIngestDiff,
 	}

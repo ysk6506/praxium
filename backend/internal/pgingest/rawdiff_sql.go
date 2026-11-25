@@ -100,11 +100,27 @@ absent2 AS (
   SELECT a.*, (a.runs >= $12 AND $6::timestamptz - a.first_at >= make_interval(secs => $11::float8)) AS expired
   FROM absent a
 ),
+absent_f AS (
+  -- a key that is kept, is not shown and is waited for as filtered, in a dataset that was read whole: its record is open, so the wait
+  -- goes on (one more run, the first time kept), as the code that was there counts every open record that a rule filters. A record
+  -- that the absence closes in this run is not counted
+  SELECT r.dataset_no, r.key, wt.f_runs + 1 AS runs, wt.f_first AS first_at, wt.f_expired AS was_expired,
+         (cfg.retire AND wt.f_runs + 1 >= $12 AND $6::timestamptz - wt.f_first >= make_interval(secs => $11::float8)) AS over
+  FROM {raw} r
+  JOIN cfg ON cfg.dataset_no = r.dataset_no AND cfg.cover = 'complete'
+  JOIN wt ON wt.dataset_no = r.dataset_no AND wt.key = r.key AND wt.f_runs IS NOT NULL
+  WHERE r.src_no = $1 AND {in_range_r}
+    AND NOT EXISTS (SELECT 1 FROM w WHERE w.dataset_no = r.dataset_no AND w.key = r.key)
+    AND NOT EXISTS (SELECT 1 FROM absent2 a WHERE a.dataset_no = r.dataset_no AND a.key = r.key AND a.expired)
+),
 starts AS (
-  -- the records the run goes on with: the shown ones that have a reason, and the ones that are closed
+  -- the records the run goes on with: the shown ones that have a reason, the ones that are closed, and the ones a rule filters that
+  -- are not shown and whose wait is up
   SELECT dataset_no, key, fields, raw_hash, decl_rev, filtered, why, page, row_no, rows_n FROM why WHERE why IS NOT NULL
   UNION ALL
   SELECT dataset_no, key, NULL::text[], NULL::bytea, NULL::int, false, {w_closed}::smallint, NULL::int, NULL::int, 0 FROM absent2 WHERE expired
+  UNION ALL
+  SELECT dataset_no, key, NULL::text[], NULL::bytea, NULL::int, false, {w_released}::smallint, NULL::int, NULL::int, 0 FROM absent_f WHERE over AND NOT was_expired
 ),
 ins_rec AS (
   INSERT INTO {calc_record} (src_no, dataset_no, key, fields, raw_hash, decl_rev, opened_seq, fate, why, page, row_no)
@@ -134,11 +150,13 @@ ins_wait AS (
   -- a shown key that a rule filters is waited for, and one that is not filtered is waited for no more
   SELECT $1, dataset_no, key, {filtered}, f_runs, f_first, f_over FROM why WHERE filtered
   UNION ALL
-  -- a key that is not shown is waited for as absent
+  -- a key that is not shown is waited for as absent, and as filtered too when it is open and a rule filters it
   SELECT $1, dataset_no, key, {unseen}, runs, first_at, expired FROM absent2
   UNION ALL
+  SELECT $1, dataset_no, key, {filtered}, runs, first_at, over FROM absent_f
+  UNION ALL
   -- what is not counted stays as it is: a dataset left out whole, a key that a read of what is seen does not show, and an absence
-  -- in a dataset that never retires
+  -- in a dataset that never retires (a filtered key that is not shown is counted above, in a dataset that never retires too)
   SELECT x.src_no, x.dataset_no, x.key, x.kind, x.runs, x.first_at, x.expired
   FROM {wait} x
   LEFT JOIN cfg ON cfg.dataset_no = x.dataset_no
@@ -156,6 +174,8 @@ facts AS (
   FROM why
   UNION ALL
   SELECT dataset_no, false, false, false, expired, NOT expired, false, 0, false, expired FROM absent2
+  UNION ALL
+  SELECT dataset_no, false, false, false, false, false, false, 0, (over AND NOT was_expired), (over AND NOT was_expired) FROM absent_f
 )
 SELECT dataset_no,
        count(*) FILTER (WHERE added), count(*) FILTER (WHERE modified), count(*) FILTER (WHERE unchanged),

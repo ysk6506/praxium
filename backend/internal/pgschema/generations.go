@@ -1,5 +1,7 @@
 package pgschema
 
+import "strings"
+
 // generatorAdditions are what a generator version added to the fixed tables of a storage schema: the steps that
 // make them in a schema that an older version made. A version that changed a table that was already there, or
 // took one away, has no entry, and a schema of an older version is not followed past it (Diff refuses it).
@@ -108,6 +110,9 @@ func rawDiffSteps(schema string) []Step {
 		alter(TableCalcRecord, ColRowNo, "ADD COLUMN IF NOT EXISTS "+ColRowNo+" integer"),
 		alter(TableRecordProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
 		alter(TableCalcProblem, ColDefNo, "ALTER COLUMN "+ColDefNo+" DROP NOT NULL"),
+		{Phase: InTx, What: WhatTable, Name: TableCalcOwner,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
+				strings.Replace(calcOwnerDef().sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"},
 		{Phase: InTx, What: WhatIndex, Name: "stage_record_key",
 			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableStageRecord) + "') IS NOT NULL THEN CREATE INDEX IF NOT EXISTS " + QuoteIdent("stage_record_key") +
 				" ON " + Qualified(schema, TableStageRecord) + " (" + stageRecordKeyIndex().Expr + "); END IF; END $$"},

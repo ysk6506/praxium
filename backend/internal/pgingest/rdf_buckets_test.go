@@ -2,6 +2,7 @@ package pgingest
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -70,8 +71,15 @@ func TestRdfWhatIsMadeDoesNotDependOnHowTheWorkIsCutIntoBuckets(t *testing.T) {
 		if got := s.rdfDump(t); got != want {
 			t.Errorf("%d rows to a bucket:\n%s\nwant\n%s", rows, got, want)
 		}
-		if c := rep.Counts[0]; c.Starting != 9 || c.Added != 2 || c.Unseen != 2 {
+		if c := rep.Counts[0]; c.Starting != 11 || c.Added != 2 || c.Unseen != 3 {
 			t.Errorf("%d rows to a bucket: %+v", rows, c)
+		}
+		// the run record keeps one line to a dataset however many buckets there are, not a line to every bucket
+		if n := s.e.count(t, `SELECT jsonb_array_length(counts->'raw_diff'->'totals') FROM sync_run WHERE run_no = $1`, l.No); n != len(rep.Counts) {
+			t.Errorf("%d rows to a bucket: the run keeps %d lines of what the buckets made, for %d datasets", rows, n, len(rep.Counts))
+		}
+		if n := s.e.count(t, `SELECT count(*) FROM sync_run WHERE run_no = $1 AND counts->'raw_diff' ? 'parts'`, l.No); n != 0 {
+			t.Errorf("%d rows to a bucket: the run keeps a line to every bucket", rows)
 		}
 	}
 }
@@ -225,5 +233,64 @@ func TestRdfWhatTheComparisonMadeOfARunIsWhatTheNextRunStartsFrom(t *testing.T) 
 	}
 	if waits := s.rdfCalcWaits(t); len(waits) != 3 {
 		t.Fatalf("%+v", waits)
+	}
+}
+
+// [REQ-782]
+func TestRdfARunThatFindsTheTablesOfTheComputationAnotherRunsHasNotBegunAndDoesTheComparisonAgainFromItsStart(t *testing.T) {
+	s := rdfNew(t, pgiPlan(t, pgiSourceJSON, pgiMappingJSON))
+	rdfSeedFates(t, s)
+	a := s.rdfComputing(t, "server-a", rdfCover())
+	want, err := ingest.RunRawDiff(s.e.ctx, s.e.st, a, s.rdfStart(rdfNow, 0))
+	if err != nil {
+		t.Fatal(err)
+	}
+	dump := s.rdfDump(t)
+	if place, err := s.e.st.RawDiffPlace(s.e.ctx, a.No); err != nil || !place.Done() {
+		t.Fatalf("%+v %v", place, err)
+	}
+	// the run that is done is asked again and says what it made, without making it again
+	if again, err := ingest.RunRawDiff(s.e.ctx, s.e.st, a, s.rdfStart(rdfNow.Add(time.Hour), 0)); err != nil || !reflect.DeepEqual(again, want) || s.rdfDump(t) != dump {
+		t.Fatalf("a run that is done and whose tables are its own: %+v %v", again, err)
+	}
+	// the run waits for a confirmation and lets go of the gate of the KG; another source of the KG begins its computation: the tables
+	// are emptied and are its own
+	if err := s.e.st.AdvanceRun(s.e.ctx, a, ingest.RunComputing, ingest.RunAwaitingConfirmation); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.e.st.AttachSource(s.e.ctx, s.kg.ID, "src_other", []string{"ds_x"}); err != nil {
+		t.Fatal(err)
+	}
+	b := s.e.open(t, s.kg, "src_other", "server-b")
+	s.e.exec(t, `UPDATE sync_run SET counts = '{"receive":{"datasets":[]}}' WHERE run_no = $1`, b.No)
+	if err := s.e.st.AdvanceRun(s.e.ctx, b, ingest.RunReceiving, ingest.RunComputing); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := s.e.st.BeginRawDiff(s.e.ctx, b, ingest.RawDiffStart{Now: rdfNow, Datasets: []ingest.RawDiffDataset{{Dataset: "ds_x"}}}); err != nil {
+		t.Fatal(err)
+	}
+	if place, err := s.e.st.RawDiffPlace(s.e.ctx, a.No); err != nil || place.Begun || place.Done() || place.Stage != ingest.RunAwaitingConfirmation {
+		t.Fatalf("a run whose tables were emptied by another has not begun: %+v %v", place, err)
+	}
+	if place, err := s.e.st.RawDiffPlace(s.e.ctx, b.No); err != nil || !place.Begun {
+		t.Fatalf("the run that emptied them has: %+v %v", place, err)
+	}
+	if n := s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d".calc_record`, s.ref.KGNo)); n != 0 {
+		t.Fatalf("%d records of the run that waited are left", n)
+	}
+	// the run is confirmed, takes the gate again once the other has let go of it, and does the comparison from its start, at the time
+	// it was given, and makes what it made
+	if err := s.e.st.AdvanceRun(s.e.ctx, b, ingest.RunComputing, ingest.RunAwaitingConfirmation); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.e.st.AdvanceRun(s.e.ctx, a, ingest.RunAwaitingConfirmation, ingest.RunComputing); err != nil {
+		t.Fatal(err)
+	}
+	got, err := ingest.RunRawDiff(s.e.ctx, s.e.st, a, s.rdfStart(rdfNow, 0))
+	if err != nil || !reflect.DeepEqual(got, want) || s.rdfDump(t) != dump {
+		t.Fatalf("the comparison again: %+v %v", got, err)
+	}
+	if place, _ := s.e.st.RawDiffPlace(s.e.ctx, b.No); place.Begun {
+		t.Fatalf("the tables are the first run's again: %+v", place)
 	}
 }
