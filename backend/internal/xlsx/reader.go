@@ -3,6 +3,7 @@ package xlsx
 import (
 	"archive/zip"
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -127,11 +128,17 @@ func (p *pkg) open(f *zip.File) (io.ReadCloser, error) {
 	}{budgetReader{rc, p}, rc}, nil
 }
 
-// damaged is the error of a part that cannot be unpacked or parsed. A limit passes through unchanged.
+// damaged is the error of a part that cannot be unpacked or parsed. A limit passes through unchanged, and so does an error of the
+// place the bytes come from (a storage that failed, a context that is done): that is no fault of the file, and to say the file is
+// damaged would tell the person to mend a file that is fine.
 func damaged(name string, err error) error {
 	var ke *kernel.Error
+	var se *ingest.SourceError
 	if errors.As(err, &ke) {
 		return ke
+	}
+	if errors.As(err, &se) || errors.Is(err, context.Canceled) || errors.Is(err, context.DeadlineExceeded) {
+		return err
 	}
 	return kernel.Wrap(kernel.CodeInvalidValue, err, "the workbook is damaged: the part "+name+" cannot be read")
 }
@@ -155,7 +162,7 @@ func (p *pkg) relsOf(part string) (map[string]relationship, error) {
 		return nil, err
 	}
 	defer rc.Close()
-	rels, err := parseRels(rc)
+	rels, err := parseRels(f.Name, rc)
 	if err != nil {
 		return nil, damaged(f.Name, err)
 	}

@@ -1,0 +1,2518 @@
+{
+  "commit": "8aecc37",
+  "cases": [
+    {
+      "name": "inline strings",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "서버 목록",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "Asset",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "Name",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "Count",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "Seen",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "OK",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "Note",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a \u0026 b \u003cc\u003e",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-14",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#N/A",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 3,
+                  "Hidden": true,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#2",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "  padded  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12345678901234600000",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-15",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "false",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "cached",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 5,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#3",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "가나다",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "0.1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-04",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 2
+                },
+                {
+                  "Row1": 5,
+                  "Col1": 4,
+                  "Row2": 6,
+                  "Col2": 5
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 3,
+                  "Max": 3
+                },
+                {
+                  "Min": 5,
+                  "Max": 6
+                }
+              ],
+              "HiddenRows": 2
+            },
+            {
+              "Name": "hid",
+              "Index": 2,
+              "Kind": "worksheet",
+              "State": "hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "very",
+              "Index": 3,
+              "Kind": "worksheet",
+              "State": "very_hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "chart",
+              "Index": 4,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "empty",
+              "Index": 5,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "inline strings with explicit n and absolute targets",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "서버 목록",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "Asset",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "Name",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "Count",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "Seen",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "OK",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "Note",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a \u0026 b \u003cc\u003e",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-14",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#N/A",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 3,
+                  "Hidden": true,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#2",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "  padded  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12345678901234600000",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-15",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "false",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "cached",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 5,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#3",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "가나다",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "0.1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-04",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 2
+                },
+                {
+                  "Row1": 5,
+                  "Col1": 4,
+                  "Row2": 6,
+                  "Col2": 5
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 3,
+                  "Max": 3
+                },
+                {
+                  "Min": 5,
+                  "Max": 6
+                }
+              ],
+              "HiddenRows": 2
+            },
+            {
+              "Name": "hid",
+              "Index": 2,
+              "Kind": "worksheet",
+              "State": "hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "very",
+              "Index": 3,
+              "Kind": "worksheet",
+              "State": "very_hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "chart",
+              "Index": 4,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "empty",
+              "Index": 5,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared strings in runs and words for booleans",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "서버 목록",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "Asset",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "Name",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "Count",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "Seen",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "OK",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "Note",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a \u0026 b \u003cc\u003e",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-14",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#N/A",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 3,
+                  "Hidden": true,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#2",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "  padded  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12345678901234600000",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-15",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "false",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "cached",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 5,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#3",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "가나다",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "0.1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-04",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 2
+                },
+                {
+                  "Row1": 5,
+                  "Col1": 4,
+                  "Row2": 6,
+                  "Col2": 5
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 3,
+                  "Max": 3
+                },
+                {
+                  "Min": 5,
+                  "Max": 6
+                }
+              ],
+              "HiddenRows": 2
+            },
+            {
+              "Name": "hid",
+              "Index": 2,
+              "Kind": "worksheet",
+              "State": "hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "very",
+              "Index": 3,
+              "Kind": "worksheet",
+              "State": "very_hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "chart",
+              "Index": 4,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "empty",
+              "Index": 5,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared strings with a prefix on every element",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "서버 목록",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "Asset",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "Name",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "Count",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "Seen",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "OK",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "Note",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a \u0026 b \u003cc\u003e",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-14",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#N/A",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 3,
+                  "Hidden": true,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#2",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "  padded  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12345678901234600000",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-15",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "false",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "cached",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 5,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#3",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "가나다",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "0.1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-04",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 2
+                },
+                {
+                  "Row1": 5,
+                  "Col1": 4,
+                  "Row2": 6,
+                  "Col2": 5
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 3,
+                  "Max": 3
+                },
+                {
+                  "Min": 5,
+                  "Max": 6
+                }
+              ],
+              "HiddenRows": 2
+            },
+            {
+              "Name": "hid",
+              "Index": 2,
+              "Kind": "worksheet",
+              "State": "hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "very",
+              "Index": 3,
+              "Kind": "worksheet",
+              "State": "very_hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "chart",
+              "Index": 4,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "empty",
+              "Index": 5,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "date system of 1904",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "서버 목록",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "Asset",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "Name",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "Count",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "Seen",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "OK",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "Note",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a \u0026 b \u003cc\u003e",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2030-03-15",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#N/A",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 3,
+                  "Hidden": true,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#2",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "  padded  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12345678901234600000",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2030-03-16",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "false",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "cached",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 5,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#3",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "가나다",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "0.1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-04",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 2
+                },
+                {
+                  "Row1": 5,
+                  "Col1": 4,
+                  "Row2": 6,
+                  "Col2": 5
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 3,
+                  "Max": 3
+                },
+                {
+                  "Min": 5,
+                  "Max": 6
+                }
+              ],
+              "HiddenRows": 2
+            },
+            {
+              "Name": "hid",
+              "Index": 2,
+              "Kind": "worksheet",
+              "State": "hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "very",
+              "Index": 3,
+              "Kind": "worksheet",
+              "State": "very_hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "chart",
+              "Index": 4,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "empty",
+              "Index": 5,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "macro and external parts that are not followed",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "서버 목록",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "Asset",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "Name",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "Count",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "Seen",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "OK",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "Note",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a \u0026 b \u003cc\u003e",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-14",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#N/A",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 3,
+                  "Hidden": true,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#2",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "  padded  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "12345678901234600000",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-15",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "bool",
+                      "Text": "false",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "text",
+                      "Text": "cached",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 5,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "#3",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "가나다",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "0.1",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "date",
+                      "Text": "2026-03-04",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 2
+                },
+                {
+                  "Row1": 5,
+                  "Col1": 4,
+                  "Row2": 6,
+                  "Col2": 5
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 3,
+                  "Max": 3
+                },
+                {
+                  "Min": 5,
+                  "Max": 6
+                }
+              ],
+              "HiddenRows": 2
+            },
+            {
+              "Name": "hid",
+              "Index": 2,
+              "Kind": "worksheet",
+              "State": "hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "very",
+              "Index": 3,
+              "Kind": "worksheet",
+              "State": "very_hidden",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "chart",
+              "Index": 4,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "empty",
+              "Index": 5,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "a bare number is a plain decimal",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "n",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "number",
+                      "Text": "0.0000001",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "number",
+                      "Text": "0",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "100",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "number",
+                      "Text": "1500",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 5,
+                      "Kind": "error",
+                      "Text": "#VALUE!",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "number",
+                      "Text": "7",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "rows and cells without addresses",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "a",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "b",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "c",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "d",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "a row number that is not a number, and a row with no cell",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "a",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                },
+                {
+                  "Number": 8,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "bool",
+                      "Text": "true",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "shared strings",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "one",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "two",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "text",
+                      "Text": "  three  ",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "text of a formula and of a date",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "xAy",
+                      "Formula": true,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "date",
+                      "Text": "2026-01-02T03:04:05Z",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "error",
+                      "Text": "#VALUE!",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "a value in CDATA and a comment in the row",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "number",
+                      "Text": "12",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "a\u003cb",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "columns and merges that are odd",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "text",
+                      "Text": "a",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 1,
+                  "Col2": 3
+                },
+                {
+                  "Row1": 2,
+                  "Col1": 2,
+                  "Row2": 2,
+                  "Col2": 2
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 2,
+                  "Max": 3
+                }
+              ],
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "merges and columns before the data",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 2,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 2,
+                      "Kind": "text",
+                      "Text": "b",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": [
+                {
+                  "Row1": 1,
+                  "Col1": 1,
+                  "Row2": 2,
+                  "Col2": 2
+                }
+              ],
+              "HiddenCols": [
+                {
+                  "Min": 1,
+                  "Max": 1
+                }
+              ],
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "styles that make a date and a formula that has no value",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "Raw",
+              "Index": 1,
+              "Kind": "worksheet",
+              "State": "visible",
+              "Rows": [
+                {
+                  "Number": 1,
+                  "Hidden": false,
+                  "Cells": [
+                    {
+                      "Col": 1,
+                      "Kind": "date",
+                      "Text": "2026-03-14T12:00:00Z",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 2,
+                      "Kind": "number",
+                      "Text": "46095",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 3,
+                      "Kind": "number",
+                      "Text": "5",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 4,
+                      "Kind": "text",
+                      "Text": "",
+                      "Formula": true,
+                      "NoValue": true,
+                      "Skipped": false,
+                      "Blank": false
+                    },
+                    {
+                      "Col": 6,
+                      "Kind": "error",
+                      "Text": "#REF!",
+                      "Formula": false,
+                      "NoValue": false,
+                      "Skipped": false,
+                      "Blank": false
+                    }
+                  ]
+                }
+              ],
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "empty",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the file is empty"
+      }
+    },
+    {
+      "name": "text",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the file is not an .xlsx workbook: it does not start like a ZIP archive"
+      }
+    },
+    {
+      "name": "cut short",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the file is not a readable ZIP archive: it is damaged or cut short: zip: not a valid zip file"
+      }
+    },
+    {
+      "name": "a sheet that is no part",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is damaged: it lists sheet \"s\" but the archive has no part xl/worksheets/sheet1.xml"
+      }
+    },
+    {
+      "name": "a sheet that has no relationship, an external one and a chart",
+      "answer": {
+        "workbook": {
+          "Sheets": [
+            {
+              "Name": "a",
+              "Index": 1,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "b",
+              "Index": 2,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            },
+            {
+              "Name": "c",
+              "Index": 3,
+              "Kind": "other",
+              "State": "visible",
+              "Rows": null,
+              "Merges": null,
+              "HiddenCols": null,
+              "HiddenRows": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "a shared string that does not exist",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is damaged: the part xl/worksheets/sheet1.xml cannot be read: cell A1: the shared string \"9\" does not exist"
+      }
+    },
+    {
+      "name": "a broken sheet",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is damaged: the part xl/worksheets/sheet1.xml cannot be read: XML syntax error on line 1: element \u003crow\u003e closed by \u003c/worksheet\u003e"
+      }
+    },
+    {
+      "name": "rows over the limit",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is over the safety limit max_rows_per_sheet (4) by sheet \"Raw\" (a cell in row 5): if the file is meant to be this large, raise limits.max_rows_per_sheet in the source definition"
+      }
+    },
+    {
+      "name": "columns over the limit",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is over the safety limit max_columns_per_sheet (3) by sheet \"Raw\" (a cell in column E): if the file is meant to be this large, raise limits.max_columns_per_sheet in the source definition"
+      }
+    },
+    {
+      "name": "a cell of too many characters",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is over the safety limit max_cell_chars (10) by a cell of sheet \"Raw\": if the file is meant to be this large, raise limits.max_cell_chars in the source definition"
+      }
+    },
+    {
+      "name": "too many shared strings",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is over the safety limit max_shared_strings (2) in the table of shared strings: if the file is meant to be this large, raise limits.max_shared_strings in the source definition"
+      }
+    },
+    {
+      "name": "more unpacked bytes than the limit",
+      "answer": {
+        "code": "invalid_value",
+        "error": "invalid_value: the workbook is over the safety limit max_uncompressed_bytes (100000) (the part xl/worksheets/sheet1.xml alone declares 300306 bytes): if the file is meant to be this large, raise limits.max_uncompressed_bytes in the source definition"
+      }
+    }
+  ]
+}
