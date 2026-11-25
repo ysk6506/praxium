@@ -11,6 +11,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	5: valueSteps,
 	6: func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
 	7: func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
+	8: func(schema string, _ Manifest) ([]Step, error) { return modelTableSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a

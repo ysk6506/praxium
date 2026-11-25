@@ -72,6 +72,9 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 	if err := adjustable(rec, found, err, kg); err != nil {
 		return adjustment{}, err
 	}
+	if m.token, err = readInstallToken(ctx, tx); err != nil {
+		return adjustment{}, err
+	}
 	next, err := plan(m, rec.KGNo)
 	if err != nil {
 		return adjustment{}, err
@@ -86,6 +89,9 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 		return adjustment{rec: rec}, nil
 	}
 	if err := runSteps(ctx, tx, inTx, pgschema.InTx); err != nil {
+		return adjustment{}, err
+	}
+	if err := runQuerySteps(ctx, tx, next); err != nil {
 		return adjustment{}, err
 	}
 	state, result := string(pgschema.StateOK), delta.Result

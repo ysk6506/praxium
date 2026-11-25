@@ -41,6 +41,9 @@ type SchemaModel struct {
 	Registry  *model.Registry
 	Search    pgschema.SearchSet
 	WithStats bool
+	// token is the token of the installation that the executor reads from the database before it plans, for the names of the roles of
+	// the query schema (ADR-0113). A caller does not give it.
+	token string
 }
 
 // SchemaRecord is the row of kg_schema_state of one KG: what its storage schema was made from and how far it has

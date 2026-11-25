@@ -17,7 +17,9 @@ import (
 // Version 7 adds, for the identification of the records of a run (ADR-0108), the column held to the keys, ends and claims of the
 // computation, the feed of a bound record, five working tables and the indexes they and the rows received are read by: Diff follows the
 // step from 6 to 7.
-const GeneratorVersion = 7
+// Version 8 adds the tables that describe the model, under the query schema (views, functions and roles) that is made on top of them
+// (ADR-0113): Diff follows the step from 7 to 8 by making the tables, and the query schema is made whole by the steps of Plan.Query.
+const GeneratorVersion = 8
 
 // Phase says where a step may run.
 type Phase int
@@ -37,6 +39,12 @@ const (
 	WhatColumn     = "column"
 	WhatIndex      = "index"
 	WhatStatistics = "statistics"
+	// The kinds of the steps of the query schema (ADR-0113): the filling of a table of the model description, a view, a function and the
+	// rights a role gets.
+	WhatRows     = "rows"
+	WhatView     = "view"
+	WhatFunction = "function"
+	WhatGrant    = "grant"
 )
 
 // Step is one statement of a plan.
@@ -56,12 +64,19 @@ type Options struct {
 	// WithStats puts the statistics objects in the steps. Without it they are in Plan.Deferred and the
 	// manifest says the statistics are pending, so they can be made after the first load.
 	WithStats bool
+	// InstallToken is the token of the installation (CheckInstallToken), which the names of the roles of the query schema carry. A plan
+	// made without one has the tables and no query schema: the executor always gives it, and a test of the tables alone need not.
+	InstallToken string
 }
 
-// Plan is what Build returns: the statements in the order they run, and the manifest to keep when they have.
+// Plan is what Build returns: the statements in the order they run, and the manifest to keep when they have. Query is the part that
+// gives the KG its query schemas (ADR-0113): it is made again, whole, whenever the schema is made or follows the model, and it runs
+// after the steps, in the same transaction, once the roles are there.
 type Plan struct {
 	Steps    []Step
 	Deferred []Step
+	Query    []Step
+	Roles    []string
 	Manifest Manifest
 }
 
@@ -124,6 +139,12 @@ func Build(reg *model.Registry, opts Options) (Plan, error) {
 	}
 	if len(plan.Deferred) > 0 {
 		plan.Manifest.State = StateStatsPending
+	}
+	if opts.InstallToken != "" {
+		if plan.Query, err = buildQuery(reg, sh, opts, search); err != nil {
+			return Plan{}, err
+		}
+		plan.Roles = QueryRoleNames(opts.InstallToken, opts.KGNo)
 	}
 	return plan, nil
 }
