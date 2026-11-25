@@ -91,11 +91,26 @@ func (s *rdfSetup) idnApply(t *testing.T) {
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".record_ref (src_no, dataset_no, key, role, def_no, sub, lookup_hash, target_no, state, retirable)
 		SELECT c.src_no, c.dataset_no, c.key, r.role, r.def_no, r.sub, r.lookup_hash, r.target_no, r.state, false FROM "s_%d".calc_ref r JOIN "s_%d".calc_record c ON c.rid = r.rid
 		ON CONFLICT (src_no, dataset_no, key, role, def_no, sub) DO UPDATE SET target_no = excluded.target_no, state = excluded.state`, k, k, k))
-	s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d".raw_record r USING "s_%d".calc_record c WHERE c.why = %d AND c.dataset_no = r.dataset_no AND c.key = r.key`, k, k, pgschema.CalcWhyClosed))
-	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".raw_record (src_no, dataset_no, key, raw_hash, fields, decl_rev, opened_seq, fate)
-		SELECT src_no, dataset_no, key, raw_hash, fields, decl_rev, opened_seq, fate FROM "s_%d".calc_record WHERE why IN (%d, %d) AND fields IS NOT NULL
-		ON CONFLICT (src_no, dataset_no, key) DO UPDATE SET raw_hash = excluded.raw_hash, fields = excluded.fields, decl_rev = excluded.decl_rev, fate = excluded.fate`,
-		k, k, pgschema.CalcWhyNew, pgschema.CalcWhyChanged))
 }
 
 func idnJoin(rows ...string) string { return strings.Join(rows, "\n") + "\n" }
+
+// idnPipelineAfter is idnPipeline for a run that goes on from the state the last run left: the run before it is ended.
+func (s *rdfSetup) idnPipelineAfter(t *testing.T, texts pgiTexts, n int) (ingest.RunLease, ingest.IdentifyCounts) {
+	t.Helper()
+	return s.idnPipeline(t, texts, rdfT0.Add(time.Duration(n+1)*time.Hour), 0)
+}
+
+// idnUndo ends the run and empties what it received, and puts back the registry and the index of what the run before had, so that
+// the same run can be done again in another order.
+func (s *rdfSetup) idnUndo(t *testing.T, l ingest.RunLease) {
+	t.Helper()
+	if err := s.e.st.EndRun(s.e.ctx, l, ingest.RunEnd{Stage: ingest.RunFailed, Class: ingest.EndProduct, Code: "test", Reason: "a test does it again"}); err != nil {
+		t.Fatal(err)
+	}
+	trunc, err := pgschema.TruncateReceiveSQL(s.ref.KGNo, s.ref.SrcNo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	s.e.exec(t, trunc)
+}
