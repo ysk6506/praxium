@@ -268,9 +268,7 @@ func (d Dataset) normalize(c *collector, source, adapter string, i int) Dataset 
 	}
 	if d.readsRecordsPath(c, adapter) {
 		d.checkRecordsPath(c, source, at)
-		if d.OpensArray() {
-			d.checkColumnPaths(c, source, at)
-		}
+		d.checkColumnPaths(c, source, at)
 	}
 	if parserOK {
 		d.Sheet = d.Sheet.normalize(c, at+ptr("sheet"), d, where)

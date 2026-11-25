@@ -13,6 +13,9 @@ import (
 
 // lineState is what the reading of the lines learns that the end of the dataset needs.
 type lineState struct {
+	// read is the bytes of the lines read so far, and cells the bytes of the cells of the rows made from them: RowsOver bounds the
+	// second by the first (N1, the same bound as a response of HTTP has).
+	read, cells int
 	// missing is how many records had no array (or null) at the place of the records_path.
 	missing int
 	// outers is how many records had an array looked for and had a value there or none (not a value of another kind); when it is the
@@ -70,6 +73,7 @@ func recordLines(br *bufio.Reader, ds Dataset, rp RecordsPath, st *lineState) (f
 			}
 			text, err := br.ReadBytes('\n')
 			line++
+			st.read += len(text)
 			stopped = err
 			if len(bytes.TrimSpace(text)) == 0 {
 				continue
@@ -88,6 +92,10 @@ func recordLines(br *bufio.Reader, ds Dataset, rp RecordsPath, st *lineState) (f
 		t, err := next()
 		if err == nil {
 			st.count(t)
+			st.cells += CellBytes(t)
+			if RowsOver(st.cells, st.read, DefaultPageBytes) {
+				return Table{}, &rowBytesError{}
+			}
 		}
 		return t, err
 	}, nil

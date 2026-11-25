@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"strconv"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -108,6 +109,21 @@ func lineEnd(err error, win *window, ended bool, out *walked) error {
 	return &formatError{"value " + strconv.Itoa(out.n+1) + " of the answer is not JSON"}
 }
 
+// compressedNote adds to a failure that a value is not JSON the fact that the source sent the answer compressed although the request
+// asked for identity (N2): the source ignored the request, and the reason says so. The failure stays the same kind.
+func compressedNote(err error, header map[string][]string) error {
+	var fe *formatError
+	if !errors.As(err, &fe) || !strings.HasSuffix(fe.words, "is not JSON") {
+		return err
+	}
+	for _, enc := range header["Content-Encoding"] {
+		if e := strings.ToLower(strings.TrimSpace(enc)); e != "" && e != "identity" {
+			return &formatError{fe.words + "; the source sent the answer compressed (Content-Encoding: " + e + ") although the request asked for identity"}
+		}
+	}
+	return err
+}
+
 // lineRecords gives the record of one value to each, or the elements of the array it has. It tells whether to go on.
 func lineRecords(rp ingest.RecordsPath, v any, index, maxElements int, out *walked, each func(it item) bool) (bool, error) {
 	rec := v
@@ -140,6 +156,7 @@ func (a *answer) lines(ctx context.Context, each func(it item) bool) (*walked, e
 		return nil, kernel.Errorf(kernel.CodeInvalidValue, "records_path is not a path")
 	}
 	w, err := walkLines(a.rep.rc, rn.set.maxBytes, rp, a.ds.ElementLimit(), a.rep.ended, each)
+	err = compressedNote(err, a.rep.header)
 	if w.valid {
 		rn.prog.responded = true
 	}

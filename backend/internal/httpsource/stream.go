@@ -46,14 +46,9 @@ var (
 	errTooDeep     = &formatError{"the answer nests deeper than " + strconv.Itoa(maxDepth) + " levels outside its records"}
 	errRecordsPath = &formatError{"records_path is not a path"}
 	errArrayKind   = &formatError{"a record is not an object, or has a value of another kind than an object on the way to, or is not an array where, records_path opens an array in it"}
-	errRowsTooBig  = &formatError{"the rows made of one response are more than " + strconv.Itoa(rowBytesFactor) + " times max_response_bytes (a value of the outer record, read as ^., is in every row of its elements); lower the size of a page, read less of the outer record, or raise max_response_bytes"}
+	errRowsTooBig  = &formatError{"the rows made of one response are more than " + strconv.Itoa(ingest.RowBytesFactor) + " times max_response_bytes (a value of the outer record, read as ^., is in every row of its elements); lower the size of a page, read less of the outer record, or raise max_response_bytes"}
 	errElementKind = &formatError{"an element of the array records_path opens is not an object"}
 )
-
-// rowBytesFactor times max_response_bytes is the most the rows made of one response may hold (the bytes of their cells): the answer
-// bounds the rows of a path that does not open an array, and a path that does (a value of the outer record read by ^. is in every
-// row of its elements) would not be bounded by it.
-const rowBytesFactor = 4
 
 // item is a record given to the one who reads the answer. For a records_path with [*] it is an element of the array of a
 // record, rec being the element and outer the record it is in; otherwise rec is the record. index is the place of the record

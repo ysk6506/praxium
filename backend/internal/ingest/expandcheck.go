@@ -100,13 +100,15 @@ func (d Dataset) checkExpandKey(c *collector, source, at string) {
 			if col.Name != name {
 				continue
 			}
-			colOwn := len(col.Paths) > 0 // a column that reads the outer record first never reads the element (the paths are tried in order)
+			colOwn, first := len(col.Paths) > 0, true // the paths are tried in order, so the first path that reads says whether the column reads the element (N5): a column whose first path reads the outer record never reads the element
 			for _, text := range col.Paths {
 				cp, err := ParseColumnPath(text, true)
 				if err != nil {
 					continue
 				}
-				colOwn = colOwn && !cp.Up
+				if first {
+					colOwn, first = !cp.Up, false
+				}
 				if slices.ContainsFunc(cp.Path, isNumber) {
 					c.add(ecAdExpand, at+ptr("natural_key", i), Params{"source": source, "dataset": d.ID, "field": "natural_key", "reason": "names a column that reads a place in an array (a number)"},
 						"source %s, dataset %s: natural_key column %q reads a place in an array (a number); the order of an array can change, so the key would name another element: use a field of the element", source, d.ID, clip(name, idClipAt))

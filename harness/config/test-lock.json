@@ -18527,6 +18527,19 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestCompressedNoteSaysTheSourceIgnoredIdentity": {
+   "kind": "test",
+   "hash": "3fbfca72261f3875",
+   "asserts": 4,
+   "literals": [
+    "0894b08e2865357c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestEachKindOfAuthenticationSignsTheRequestAndNothingElseDoes": {
    "kind": "test",
    "hash": "7f06ccd35294686b",
@@ -20291,7 +20304,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "35ca51d9db6d4ccc",
+   "hash": "00a79ed3f4c52252",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -20396,7 +20409,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "df0d71ae33ea44f2",
+   "hash": "0577cf5d6899a6ac",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -23382,6 +23395,45 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestN5FileJSONLinesCaretWithoutAnArrayIsAPathError": {
+   "kind": "test",
+   "hash": "d95a3c5a813c16fa",
+   "asserts": 2,
+   "literals": [
+    "693f9ac10e5f224d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestN5NaturalKeyColumnWithElementFirstIsAccepted": {
+   "kind": "test",
+   "hash": "719e8777226d2167",
+   "asserts": 2,
+   "literals": [
+    "d9069b61fcaae2d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestN5NaturalKeyColumnWithOuterFirstIsRefused": {
+   "kind": "test",
+   "hash": "dcd59009ec599820",
+   "asserts": 2,
+   "literals": [
+    "96b81dee917a0b04"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestNaturalKeyCandidatesAreTheColumnsFilledInEveryRowAndDifferentInEach": {
    "kind": "test",
    "hash": "c6308f56fda9fcea",
@@ -23811,6 +23863,45 @@
     "REQ-264"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowBudgetBoundIsExactlyTheFactor": {
+   "kind": "test",
+   "hash": "8bcb1fc4b979cc9f",
+   "asserts": 2,
+   "literals": [
+    "8d0e9205e67d74be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowBudgetFileExpansionWithASmallOuterValueIsRead": {
+   "kind": "test",
+   "hash": "cf6d4279566ee9a1",
+   "asserts": 3,
+   "literals": [
+    "a376aba59b19bfe0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowBudgetFileStopsRowsBeyondFourTimesTheBytesRead": {
+   "kind": "test",
+   "hash": "323e9d4b6a6fb28d",
+   "asserts": 4,
+   "literals": [
+    "2177cc5ca252fac6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestRowProblemsOfAWorkbookCarryTheRangeOfTheRow": {

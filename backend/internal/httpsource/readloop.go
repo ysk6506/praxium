@@ -38,7 +38,7 @@ type loop struct {
 	bad, missing, outers, fed int
 	// noLines says that a body of JSON lines had no value. recs counts the records the answers gave (the elements, or the records
 	// that have none to open) and rows the rows they made; a read that had records and no row did not see what it was meant to.
-	// cells is the bytes of the cells of the rows of the response being read, and over says it passed the limit of rowBytesFactor.
+	// cells is the bytes of the cells of the rows of the response being read, and over says it passed the limit of ingest.RowBytesFactor.
 	noLines    bool
 	recs, rows int
 	cells      int
@@ -233,7 +233,7 @@ func (l *loop) feed(it item, end *respEnd) bool {
 	}
 	l.recs += table.Received() + skipped(table)
 	l.rows += len(table.Rows)
-	if l.cells += cellBytes(table); l.cells > rowBytesFactor*l.rn.set.maxBytes {
+	if l.cells += ingest.CellBytes(table); ingest.RowsOver(l.cells, l.rn.set.maxBytes, 0) {
 		l.over = true
 		return false
 	}
@@ -315,18 +315,6 @@ func skipped(t ingest.Table) int {
 	n := 0
 	for _, c := range t.Skipped {
 		n += c
-	}
-	return n
-}
-
-// cellBytes is the bytes of the keys and cells of the rows of a table.
-func cellBytes(t ingest.Table) int {
-	n := 0
-	for _, r := range t.Rows {
-		n += len(r.Key)
-		for k, v := range r.Fields {
-			n += len(k) + len(v)
-		}
 	}
 	return n
 }

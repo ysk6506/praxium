@@ -135,7 +135,10 @@ func (s *pageStream) finish(yield func(Page, error) bool, end Completeness) {
 // no array to read and the dataset does not say that is none, it is only what was seen), and any other stop is not.
 func (s *pageStream) endOf(err error) Completeness {
 	var limit *elementLimitError
+	var rows *rowBytesError
 	switch {
+	case errors.As(err, &rows):
+		return Completeness{Reason: rows.Error()}
 	case errors.Is(err, io.EOF):
 		if s.lines != nil {
 			if end, ok := s.lines.endOf(s.ds); ok {
