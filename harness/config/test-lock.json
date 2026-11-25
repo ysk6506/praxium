@@ -35049,6 +35049,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestHkaAFailingStoreIsAnInternalErrorOfEveryWebhookCommand": {
+   "kind": "test",
+   "hash": "4f4a10523b3a674e",
+   "asserts": 6,
+   "literals": [
+    "7014cc13a4efd723"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestHkaAKindOfTheWebhooksIsNeverOpenedForAUseAndAKindOfTheSourcesNeverChecked": {
    "kind": "test",
    "hash": "5824ccdcc3e1f3eb",
@@ -35280,6 +35295,21 @@
    "asserts": 5,
    "literals": [
     "c68d16e414b624a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheWebhookCommandsRefuseWhatTheyCannotDo": {
+   "kind": "test",
+   "hash": "da022370189d0489",
+   "asserts": 6,
+   "literals": [
+    "1c878f2e99d075d8"
    ],
    "precision": [],
    "skips": 0,
