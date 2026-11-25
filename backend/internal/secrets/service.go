@@ -3,7 +3,9 @@ package secrets
 import (
 	"context"
 	"slices"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
@@ -16,6 +18,18 @@ type Config struct {
 	// Bytes is where keys and nonces come from: kernel.SystemBytes{} in a real run, kernel.NewSeededBytes in a test
 	// that must repeat.
 	Bytes kernel.ByteSource
+	// WebhookStore is the store of the secrets of the receiving webhooks (ADR-0107): another store than Store, and in the
+	// file store another file, so that the file of the secrets of the sources holds nothing of the webhooks and every
+	// version of the program reads it. A program that has none cannot issue or check them.
+	WebhookStore Store
+	// WebhookKeys gives the key of the receiving webhooks (ADR-0107). A program that has none cannot issue or check them.
+	WebhookKeys KeyProvider
+	// Observer is told what the check of a webhook does (the audit line of a fill of the cache, the count of the checks).
+	// Nil is no one.
+	Observer Observer
+	// VerifyCacheTTL is how long an opened key of a webhook stays in memory: at most a minute, and a minute when it is
+	// not given.
+	VerifyCacheTTL time.Duration
 }
 
 // Service is the secret store. It implements the three ports, which the composition root hands out one by one:
@@ -23,6 +37,7 @@ type Config struct {
 type Service struct {
 	cfg Config
 	mu  sync.Mutex // serializes the writes (read, change, put) of this process, the only writer of its store
+	vf  verifyState
 }
 
 var (
@@ -58,8 +73,10 @@ func (s *Service) load(ctx context.Context, id string) (Record, error) {
 	return rec, nil
 }
 
-func (s *Service) put(ctx context.Context, rec Record) error {
-	if err := s.cfg.Store.Put(ctx, rec); err != nil {
+func (s *Service) put(ctx context.Context, rec Record) error { return s.putIn(ctx, s.cfg.Store, rec) }
+
+func (s *Service) putIn(ctx context.Context, store Store, rec Record) error {
+	if err := store.Put(ctx, rec); err != nil {
 		return kernel.Wrap(kernel.CodeInternal, err, "cannot write the secret store")
 	}
 	return nil
@@ -100,6 +117,9 @@ func (s *Service) master() (*MasterKey, error) {
 	if key == nil {
 		return NoKey().MasterKey()
 	}
+	if key.purpose != "" {
+		return nil, kernel.Errorf(CodeMasterKeyInvalid, "the key given as the master key is a key of another purpose; give the master key file")
+	}
 	return key, nil
 }
 
@@ -130,6 +150,9 @@ func (s *Service) newVersion(id string, instance []byte, n int, fields Fields, m
 func (s *Service) Create(ctx context.Context, in CreateInput) (Meta, error) {
 	if err := ValidateID(in.ID); err != nil {
 		return Meta{}, err
+	}
+	if strings.HasPrefix(in.ID, WebhookIDPrefix) {
+		return Meta{}, kernel.Errorf(kernel.CodeInvalidValue, "an id that begins with %s is kept for the secrets of the receiving webhooks; use another id", WebhookIDPrefix)
 	}
 	if err := checkFields(in.Kind, in.Fields); err != nil {
 		return Meta{}, err
@@ -182,6 +205,9 @@ func (s *Service) AddVersion(ctx context.Context, id string, fields Fields) (Met
 	if err != nil {
 		return Meta{}, err
 	}
+	if IsReceiveOnly(rec.Kind) {
+		return Meta{}, errReceiveOnly(id)
+	}
 	if err := checkFields(rec.Kind, fields); err != nil {
 		return Meta{}, err
 	}
@@ -218,6 +244,9 @@ func (s *Service) RetireVersion(ctx context.Context, id string, version int) (Me
 	rec, err := s.load(ctx, id)
 	if err != nil {
 		return Meta{}, err
+	}
+	if IsReceiveOnly(rec.Kind) {
+		return Meta{}, errReceiveOnly(id)
 	}
 	if err := verify(rec, master); err != nil {
 		return Meta{}, err
@@ -287,6 +316,9 @@ func (s *Service) rebind(ctx context.Context, id string, change func(*Record)) (
 	rec, err := s.load(ctx, id)
 	if err != nil {
 		return Meta{}, err
+	}
+	if IsReceiveOnly(rec.Kind) {
+		return Meta{}, errReceiveOnly(id)
 	}
 	if err := verify(rec, master); err != nil {
 		return Meta{}, err

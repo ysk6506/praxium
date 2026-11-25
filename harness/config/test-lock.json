@@ -10097,6 +10097,51 @@
    "added": "2026-11-18",
    "amended_by": "0079-remove-demo-mode.md"
   },
+  "go:backend/cmd/praxium::TestHkaTheWebhookCommandsAnswerForASecretThatIsNotThereAndForAKeyFileThatIsNotAWebhookKey": {
+   "kind": "test",
+   "hash": "b015e7e7db77fec7",
+   "asserts": 7,
+   "literals": [
+    "7fc44226c33551c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestHkaTheWebhookCommandsMakeTheSecretShowItOnceAndKeepTheWebhookKeyApartFromTheMasterKey": {
+   "kind": "test",
+   "hash": "8beb942ffd213ae6",
+   "asserts": 18,
+   "literals": [
+    "b9ff959283a9a792"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestHkaTheWebhookCommandsRefuseWhatIsWrongAndKeepTheKeyOutsideTheDataFolder": {
+   "kind": "test",
+   "hash": "3a3a9e9c850a37c0",
+   "asserts": 5,
+   "literals": [
+    "07ed325ae82c64cf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIdgIngestToolsWriteTheVersionAndIdsOfTheGrammar": {
    "kind": "test",
    "hash": "8c16a71e977297f5",
@@ -16892,6 +16937,531 @@
    "added": "2026-11-13",
    "amended_by": null
   },
+  "go:backend/internal/hookin::TestHkaABodyThatArrivesTooSlowlyIsGivenUpAtTheDeadline": {
+   "kind": "test",
+   "hash": "fd18ac62d10ff583",
+   "asserts": 6,
+   "literals": [
+    "97cc852be35413ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaABodyThatGrowsPastTheRoomOfTheBodiesIsRefusedWhereItGrows": {
+   "kind": "test",
+   "hash": "23aa51fcd5c878a3",
+   "asserts": 6,
+   "literals": [
+    "4bf566ce1a435c8a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaABodyWithANumberThatIsTooBigForAFloatIsStillJSON": {
+   "kind": "test",
+   "hash": "65bbfd916847a697",
+   "asserts": 3,
+   "literals": [
+    "95cf255c1b4fc125"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaACallThatIsProvenByEachTypeIsAcceptedAndMarksTheSignal": {
+   "kind": "test",
+   "hash": "1a8be15fde18ca2b",
+   "asserts": 4,
+   "literals": [
+    "73c2abaee1c88108"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAddressesAreTakenFromTheConnectionAndFromTheProxyOnlyWhenTheOperatorSaysSo": {
+   "kind": "test",
+   "hash": "86ed9c52680db48d",
+   "asserts": 7,
+   "literals": [
+    "1f27604e0ea8364c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaADeadlineThatCannotBeMovedAfterTheFirstByteEndsTheCall": {
+   "kind": "test",
+   "hash": "6e97f8ea5d337056",
+   "asserts": 2,
+   "literals": [
+    "fedeea8db1378bcb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAnAddressIsCountedAsItselfWhenIPv4AndAsItsNetworkWhenIPv6": {
+   "kind": "test",
+   "hash": "efcd81f955bbae61",
+   "asserts": 2,
+   "literals": [
+    "028b4098d5b48674"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAnEarlyRefusalOfTheEntranceGivesBackThePlaceOfTheAddressAndTheMemory": {
+   "kind": "test",
+   "hash": "ce51e020757335a7",
+   "asserts": 13,
+   "literals": [
+    "f4f1756fa7483bf1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAnEntranceWithNoTimesSetGivesTwoSecondsForTheFirstByteAndTenForTheBody": {
+   "kind": "test",
+   "hash": "f283b319ff8fd853",
+   "asserts": 4,
+   "literals": [
+    "b9d1200154176a03"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAnythingButAPostIsRefusedAndAHookThatCannotBeHandledIsNotOne": {
+   "kind": "test",
+   "hash": "c26fea902306d565",
+   "asserts": 8,
+   "literals": [
+    "386218b55a9e07ff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAServerThatCannotSetAReadDeadlineTakesNoCallAndSaysSoOnce": {
+   "kind": "test",
+   "hash": "9c22f8f556c696bf",
+   "asserts": 5,
+   "literals": [
+    "99f3295e69ee8379"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaATokenIsProvenWhereItIsMeantToBeAndNowhereElse": {
+   "kind": "test",
+   "hash": "daedeed6050e54f8",
+   "asserts": 4,
+   "literals": [
+    "e3c7a37432a15691"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAVerifierThatCannotAnswerIsAFailureThatTellsTheCallerNothing": {
+   "kind": "test",
+   "hash": "18cc390b49f7eff2",
+   "asserts": 4,
+   "literals": [
+    "2bb8a4b279ffb549"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAVerifierThatIsBrokenWritesOneLineForAWebhookAndThenOneAMinute": {
+   "kind": "test",
+   "hash": "b937ad71dc4f9974",
+   "asserts": 7,
+   "literals": [
+    "1122aaaa80c3c821"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAWebhookThatIsNotKnownAnswersAsAWrongSecretDoes": {
+   "kind": "test",
+   "hash": "5fdffbf413b92263",
+   "asserts": 4,
+   "literals": [
+    "51c4368d65370b6e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaCallsThatPromiseABigBodyHoldOnlyWhatHasComeAndLeaveTheMemoryToOthers": {
+   "kind": "test",
+   "hash": "4f9962b4b4da2b52",
+   "asserts": 10,
+   "literals": [
+    "d1fdcd65dea4df5b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaFailuresAreCountedByTheBucketAndNeverLockACallerThatIsRight": {
+   "kind": "test",
+   "hash": "de4792436ef9c2a7",
+   "asserts": 6,
+   "literals": [
+    "3becb540623d6291"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaNothingBehindTheProofIsReachedByACallThatIsNotProven": {
+   "kind": "test",
+   "hash": "705fc0ce4861be98",
+   "asserts": 3,
+   "literals": [
+    "faad421166c2d553"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaOnTheServerTheAccessLogHasNoQueryAndNoOtherAnswerComesOnThePath": {
+   "kind": "test",
+   "hash": "19071de94644399d",
+   "asserts": 10,
+   "literals": [
+    "27716518ae316af1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaSlowBodiesOnTheStackOfTheServerEndAtTheirDeadlinesAndLeaveTheEntranceOpen": {
+   "kind": "test",
+   "hash": "b1cd3ae2c1b2ae12",
+   "asserts": 10,
+   "literals": [
+    "4a7d7dfb19ad1b64"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaSlowCallsOfOneAddressDoNotTakeTheSignedWebhookFromItsRightSender": {
+   "kind": "test",
+   "hash": "c10a5a0493cf4339",
+   "asserts": 13,
+   "literals": [
+    "0017b60eea4ac09c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheBodyIsCheckedAsJSONOnlyForACallThatIsProven": {
+   "kind": "test",
+   "hash": "e11f5b79fd7a27c6",
+   "asserts": 6,
+   "literals": [
+    "a6969ff59f614735"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheDefaultsOfTheEntranceAreTheNumbersOfTheDecision": {
+   "kind": "test",
+   "hash": "b3246252cb7b251d",
+   "asserts": 1,
+   "literals": [
+    "f1b13e6664a55b73"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheEntranceHasRoomForSoManyCallsAndSoMuchBody": {
+   "kind": "test",
+   "hash": "877f93c060387c32",
+   "asserts": 8,
+   "literals": [
+    "ef24f19e8da02faf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheEntranceKeepsToTheLimitsOfTheBody": {
+   "kind": "test",
+   "hash": "e4f250e1ccef736f",
+   "asserts": 6,
+   "literals": [
+    "a3014bd90a76d75f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheFailuresOfAnIPv6NetworkAreOneBucketAndOneLine": {
+   "kind": "test",
+   "hash": "d0ead69b3ebf3041",
+   "asserts": 5,
+   "literals": [
+    "d54092107148279f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheForwardedAddressIsTheLastItemOfAllTheLinesAndNothingElseCounts": {
+   "kind": "test",
+   "hash": "71ca0da40bd34dcf",
+   "asserts": 6,
+   "literals": [
+    "cf40bdc91776d3ed"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheLogHoldsNoSecretNoQueryAndNoBodyAndGroupsTheFailures": {
+   "kind": "test",
+   "hash": "3d1435135c9b734c",
+   "asserts": 5,
+   "literals": [
+    "f395d908a5b4d2e3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheMarksOfAFloodOfWebhooksAndAddressesStayBounded": {
+   "kind": "test",
+   "hash": "6973c64c87537ef5",
+   "asserts": 3,
+   "literals": [
+    "f85ea0780a2d009e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheReadDeadlineIsAskedOfTheClockAndHeldToThirtySeconds": {
+   "kind": "test",
+   "hash": "4d918c95f1a61be3",
+   "asserts": 4,
+   "literals": [
+    "48312056ba3f2081"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheSignatureOfStandardWebhooksIsOverTheIDTheTimeAndTheBody": {
+   "kind": "test",
+   "hash": "2a5c1d773d40a81f",
+   "asserts": 5,
+   "literals": [
+    "96f68d42fe4b9517"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheSourceThatIsStoppedAndTheRateOfTheWebhookAreAnsweredOnlyToACallThatIsProven": {
+   "kind": "test",
+   "hash": "9c71dec8dcea55b3",
+   "asserts": 11,
+   "literals": [
+    "ff61d0a9aacca9c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheTablesOfMarksNeverGrowPastTheirBoundAndAreEmptiedWhenTheyAreFull": {
+   "kind": "test",
+   "hash": "b3be09eb044cf7da",
+   "asserts": 5,
+   "literals": [
+    "eddf12ba9c9d582d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheTimesOfTheEntranceAreHeldToTheHighestAndTheFirstByteToTheBody": {
+   "kind": "test",
+   "hash": "736eed029f158a10",
+   "asserts": 4,
+   "literals": [
+    "bd6c12a71bcba763"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaWhatIsRefusedBeforeTheVerifierIsAskedAndWhatIsAskedForAWebhookThatIsNotKnown": {
+   "kind": "test",
+   "hash": "c37dc19530720262",
+   "asserts": 9,
+   "literals": [
+    "2b53b69a818c113e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/httpapi::TestACallWhoseFirstTryIsStillRunningIsRefusedNotRepeated": {
    "kind": "test",
    "hash": "d9ec216d1edabfc6",
@@ -21159,10 +21729,10 @@
   },
   "go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace": {
    "kind": "test",
-   "hash": "5b2e72b09c71bb3b",
+   "hash": "b4b7462cb1ab27c3",
    "asserts": 8,
    "literals": [
-    "01949f574bc3d6b2"
+    "5d34beff67cd736d"
    ],
    "precision": [],
    "skips": 0,
@@ -21170,7 +21740,7 @@
     "REQ-401"
    ],
    "added": "2026-11-25",
-   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
+   "amended_by": "0107-receiving-webhooks-entrance-receive-only-keys-and-limits.md"
   },
   "go:backend/internal/ingest::TestAdpFieldsOfLaterStepsAreUnknown": {
    "kind": "test",
@@ -22354,6 +22924,96 @@
     "REQ-286"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaAChangeOfAWebhookIsAChangeOfTheConnectionButALowerLimit": {
+   "kind": "test",
+   "hash": "a2a2cbc04228bd33",
+   "asserts": 20,
+   "literals": [
+    "3f7af98ab70eff83"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaASignedWebhookTakesItsEventIDOnlyFromWhatTheSignatureCovers": {
+   "kind": "test",
+   "hash": "b7e8d64ba1f2e369",
+   "asserts": 4,
+   "literals": [
+    "926925c6b81e48e9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaAWebhookIsReadWithItsDefaultsAndHoldsNoSecret": {
+   "kind": "test",
+   "hash": "55749be0216cd7c6",
+   "asserts": 9,
+   "literals": [
+    "dd727bcec32547fe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaEveryFieldOfAWebhookHasItsClassAndALimitHasItsComparison": {
+   "kind": "test",
+   "hash": "d382c5801fa43a39",
+   "asserts": 5,
+   "literals": [
+    "fd81d0178c119a85"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaTheAddressesOfAWebhookAreReadAsAddressesAndNetworks": {
+   "kind": "test",
+   "hash": "06f687d188c4b6ea",
+   "asserts": 7,
+   "literals": [
+    "45745e28a1c3c450"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaTheHighestLimitsOfAWebhookAreHeldOnBothSides": {
+   "kind": "test",
+   "hash": "a7dffe3db94df9d9",
+   "asserts": 7,
+   "literals": [
+    "4ad71bc8ae0d280f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestHostsLinkToServersByNormalisedSerial": {
@@ -29085,6 +29745,21 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestHkaASignalIsMarkedOnceOnEveryRowOfTheSourceAndNeverTwice": {
+   "kind": "test",
+   "hash": "3a250a902597e59f",
+   "asserts": 21,
+   "literals": [
+    "ef22281f1ca5eb39"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-863"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestPgiACallThatNeedsATableThatIsDamagedFailsWithAnError": {
    "kind": "test",
    "hash": "d462cbc2ce28c6c7",
@@ -34434,6 +35109,366 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestHkaADeletedSecretStopsCheckingAtOnceAndAnIssueTwiceIsAConflict": {
+   "kind": "test",
+   "hash": "9d1b605978c4bd0c",
+   "asserts": 9,
+   "literals": [
+    "049cfac6e90feaba"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaAFailingStoreIsAnInternalErrorOfEveryWebhookCommand": {
+   "kind": "test",
+   "hash": "4f4a10523b3a674e",
+   "asserts": 6,
+   "literals": [
+    "7014cc13a4efd723"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaAKindOfTheWebhooksIsNeverOpenedForAUseAndAKindOfTheSourcesNeverChecked": {
+   "kind": "test",
+   "hash": "5824ccdcc3e1f3eb",
+   "asserts": 15,
+   "literals": [
+    "da4d20f3b473ca1b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaAnIssuedSignedSecretChecksASignatureAndNothingElse": {
+   "kind": "test",
+   "hash": "6f05008ff70ef23b",
+   "asserts": 6,
+   "literals": [
+    "394fb11505bf9557"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaAnOpenedKeyStaysInMemoryAMinuteAtMostAndIsAuditedWhenItIsOpened": {
+   "kind": "test",
+   "hash": "2dd208f420dfdb46",
+   "asserts": 10,
+   "literals": [
+    "dcd23fb19103f6b5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaAProgramWithoutAUsableWebhookKeyIssuesAndChecksNothing": {
+   "kind": "test",
+   "hash": "dae341957622bc2b",
+   "asserts": 4,
+   "literals": [
+    "400ef782e9d20b07"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaARecordThatWasChangedByHandIsRefusedAndTheKeyOfAnotherStoreIsToo": {
+   "kind": "test",
+   "hash": "9374803fb87cf282",
+   "asserts": 4,
+   "literals": [
+    "5185d173110e3f99"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaARetirementNamesAVersionThatIsThereAndNotRetiredAndTheNamesAreIDs": {
+   "kind": "test",
+   "hash": "a09d831e798f3148",
+   "asserts": 7,
+   "literals": [
+    "306a85c781cbf0e7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaASecretOfASourceCannotTakeTheIDOfAWebhookAndTheWebhookDeleteTouchesOnlyWebhooks": {
+   "kind": "test",
+   "hash": "220b4ace7a42e64d",
+   "asserts": 3,
+   "literals": [
+    "66d479760c03a6eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaATokenIsKeptAsItsHashAndIsCheckedWithoutBeingKept": {
+   "kind": "test",
+   "hash": "35f2fbf6b7ad71d4",
+   "asserts": 6,
+   "literals": [
+    "6e39a9f6c6edb126"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaAWebhookSecretWhoseScopeLacksTheSourceProvesNothingEvenWhenItIsSealed": {
+   "kind": "test",
+   "hash": "691bc179e9c7c16b",
+   "asserts": 6,
+   "literals": [
+    "5dff9432b5337807"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheCopyOfTheKeyThatACheckWorkedOnIsOverwrittenAndTheEntryOfTheCacheIsNot": {
+   "kind": "test",
+   "hash": "ac324b89c91e468e",
+   "asserts": 7,
+   "literals": [
+    "968c3f76f45fe0d0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheDummyCheckAnswersNothingAndTheListShowsTheSecretsOfTheWebhooksWithoutValues": {
+   "kind": "test",
+   "hash": "7ff72c11f1c8c373",
+   "asserts": 6,
+   "literals": [
+    "dc517de86e0685a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheKeyIsKeptInMemoryForAMinuteAtMostWhateverTimeIsAskedFor": {
+   "kind": "test",
+   "hash": "33aa0d1636c1d249",
+   "asserts": 5,
+   "literals": [
+    "b19a9e8a5a67606e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheKeysAreTwoAndOneDoesNotStandInForTheOther": {
+   "kind": "test",
+   "hash": "de2343017f7550a6",
+   "asserts": 12,
+   "literals": [
+    "b4bc3b79e3466e4c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheKeyThatLeavesTheCacheIsOverwrittenAndACheckThatIsRunningIsNotHurtByIt": {
+   "kind": "test",
+   "hash": "4b21029b0cd6ef1d",
+   "asserts": 9,
+   "literals": [
+    "bd778f7d5a4a7b09"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheStoredHashOfATokenIsNotASigningKeyAndTheKindOfASecretIsKept": {
+   "kind": "test",
+   "hash": "21035d39f6cae9d1",
+   "asserts": 6,
+   "literals": [
+    "0b23ed40bb78cdbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheStoreOfTheSourcesKeepsNoWebhookKindAndTheStoreOfTheWebhooksNoOtherKind": {
+   "kind": "test",
+   "hash": "ca738a4f4710ec9a",
+   "asserts": 15,
+   "literals": [
+    "740e0911b65b29b0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheValueThatWasIssuedIsNotPrintedByAnyOfTheWaysAValueIsPrinted": {
+   "kind": "test",
+   "hash": "9a31a9dd6de1a998",
+   "asserts": 5,
+   "literals": [
+    "c68d16e414b624a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheWebhookCommandsRefuseWhatTheyCannotDo": {
+   "kind": "test",
+   "hash": "da022370189d0489",
+   "asserts": 6,
+   "literals": [
+    "1c878f2e99d075d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheWebhookDeleteRefusesARecordThatIsNotTheSecretOfAWebhook": {
+   "kind": "test",
+   "hash": "fb68acd9c9a2312f",
+   "asserts": 7,
+   "literals": [
+    "eaafeff2c4ef8bcb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTwoVersionsCheckWhileTheOldOneIsNotRetiredAndARetiredOneAtOnceNoLonger": {
+   "kind": "test",
+   "hash": "a6908f5055895286",
+   "asserts": 10,
+   "literals": [
+    "ee5db1096e9f2e14"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTwoWebhooksOfOneSourceAndTwoSourcesHaveTwoSecretIDs": {
+   "kind": "test",
+   "hash": "7b198e89725c02fc",
+   "asserts": 1,
+   "literals": [
+    "5249b73c220edf56"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaWhatGoesWrongInTheStoreOrTheKeyIsAnErrorAndNeverAProof": {
+   "kind": "test",
+   "hash": "cf5fdff3daf91d75",
+   "asserts": 12,
+   "literals": [
+    "daa02b7eaae4e1e2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestHostsThatLookAlikeAreDifferentHosts": {
    "kind": "test",
    "hash": "66fbee46f9be8ae0",
@@ -34943,6 +35978,51 @@
     "REQ-403"
    ],
    "added": "2026-11-16",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestHkaEachFileIsReadOnlyAsItsOwnAndAWebhookRecordInTheFileOfTheSourcesIsRefused": {
+   "kind": "test",
+   "hash": "cf60d3179ed3f96c",
+   "asserts": 9,
+   "literals": [
+    "e62101785764863a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestHkaTheFileOfTheSourcesIsNotTouchedByTheWebhooksAndHasOnlyTheFormOfAlwaysAndNoKindOfAWebhook": {
+   "kind": "test",
+   "hash": "671be8c9663d525a",
+   "asserts": 13,
+   "literals": [
+    "34ae0b5b8535b12c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestHkaTheSecretsOfTheWebhooksSurviveARestartAndAreCheckedWithTheWebhookFileAndKeyAlone": {
+   "kind": "test",
+   "hash": "0cf81e08c8267db4",
+   "asserts": 13,
+   "literals": [
+    "2ed420068a77c5f2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/secretsfile::TestTheDiskFailingAtAnyStepLeavesTheOldFileOrTheNewOneAndTheStoreAgreesWithIt": {

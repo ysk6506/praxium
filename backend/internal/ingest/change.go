@@ -47,6 +47,9 @@ const (
 var changeClasses = map[string]string{
 	"Source.Version": classKept, "Source.ID": classKept, "Source.Name": classMapping, "Source.Adapter": classKept, "Source.Collector": classKept,
 	"Source.Connection": classKept, "Source.Disabled": classMapping, "Source.Datasets": classMapping, "Source.Limits": classLimit,
+	// The webhooks have their own comparison (webhookReasons) and their own table (webhookClasses): a webhook is the place
+	// a call is let in, so every change of one is a change of the connection but a limit that is lowered.
+	"Source.Webhooks": classKept,
 
 	"Connection.BaseURL": classKept, "Connection.CAPEM": classKept, "Connection.TLS": classKept, "Connection.TimeoutSeconds": classLimit, "Connection.RequestsPerSecond": classLimit,
 	"Connection.Headers": classKept, "Connection.Auth": classKept, "Connection.MaxResponseBytes": classLimit, "Connection.MaxRetryWaitSeconds": classLimit,
@@ -134,6 +137,7 @@ func ClassifyChange(before, after Source) Change {
 	}
 	reasons = append(reasons, connectionReasons(b.Connection, a.Connection)...)
 	reasons = append(reasons, limitReasons(b.Limits, a.Limits)...)
+	reasons = append(reasons, webhookReasons(b.Webhooks, a.Webhooks)...)
 	old := map[string]Dataset{}
 	for _, d := range b.Datasets {
 		old[d.ID] = d
@@ -187,7 +191,7 @@ func sourceKept(s Source) Source {
 		clearClass(&c, "Connection", classMapping, classLimit)
 		s.Connection = &c
 	}
-	s.Datasets = nil
+	s.Datasets, s.Webhooks = nil, nil
 	clearClass(&s, "Source", classMapping, classLimit)
 	return s
 }

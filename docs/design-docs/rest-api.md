@@ -172,14 +172,14 @@ queued ─▶ running ─▶ succeeded
 
 | 그룹 | 상태 | 의미 | 예 |
 |---|---|---|---|
-| `auth` | 401 | 신원을 신뢰할 수 없어요 | `auth.token_missing`, `auth.token_expired`, `auth.token_invalid` |
+| `auth` | 401 | 신원을 신뢰할 수 없어요 | `auth.token_missing`, `auth.token_expired`, `auth.token_invalid`, `auth.webhook_invalid` |
 | `permission` | 403 | 보이는 대상이지만 그 작업은 할 수 없어요 | `permission.role_missing`, `permission.not_in_scope`, `permission.self_approval` |
 | `not_found` | 404 | 없거나 보이지 않아요 | `not_found.resource` |
-| `invalid_input` | 400, 422, 428 | 입력이 틀려요 | `invalid_input.field`, `invalid_input.filter_field_unknown`, `invalid_input.precondition_required` |
+| `invalid_input` | 400, 422, 428 | 입력이 틀려요 | `invalid_input.field`, `invalid_input.filter_field_unknown`, `invalid_input.precondition_required`, `invalid_input.webhook_body` |
 | `conflict` | 409, 412 | 현재 상태와 일치하지 않아요 | `conflict.version_mismatch`, `conflict.state_not_allowed`, `conflict.request_in_progress`, `conflict.generation_changed` |
-| `rate_limited` | 429 | 한도를 초과했어요 | `rate_limited.requests`, `rate_limited.concurrency`, `rate_limited.compute_budget` |
+| `rate_limited` | 429 | 한도를 초과했어요 | `rate_limited.requests`, `rate_limited.concurrency`, `rate_limited.compute_budget`, `rate_limited.webhook_rate` |
 | `blocked` | 409 | 차단 사유가 있어요(`blockers`에 사유 목록) | `blocked.proposal` |
-| `stale` | 409, 410, 503 | 기준 데이터가 오래됐거나 아직 준비되지 않았어요 | `stale.branch_behind_trunk`, `stale.since_too_old`, `stale.projection_not_ready`, `stale.min_seq_not_reached` |
+| `stale` | 409, 410, 503 | 기준 데이터가 오래됐거나 아직 준비되지 않았어요 | `stale.branch_behind_trunk`, `stale.since_too_old`, `stale.projection_not_ready`, `stale.min_seq_not_reached`, `stale.source_not_receiving` |
 | `server` | 500, 503 | 서버 내부 문제 | `server.internal`, `server.unavailable` |
 
 **필드별 오류.** 입력이 잘못되면 `errors`에 필드마다 하나씩 줘요. `pointer`는 JSON 포인터(표준)예요.

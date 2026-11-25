@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"io"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/secrets"
@@ -10,6 +11,9 @@ import (
 
 // runSecretCommand opens the store as the command needs it, does the command and prints its answer.
 func runSecretCommand(name string, f secretFlags, out io.Writer, w wiring) error {
+	if strings.HasPrefix(name, "webhook-") {
+		return runSecretHookCommand(name, f, out, w)
+	}
 	spec := secretCommands[name]
 	st, err := openSecretStore(w, secretLocation{dataDir: f.dataDir, keyFile: f.keyFile}, spec.access)
 	if err != nil {

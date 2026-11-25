@@ -18,6 +18,9 @@ func (s *Service) Open(ctx context.Context, id string, use Use) (*Opened, error)
 	if err != nil {
 		return nil, err
 	}
+	if IsReceiveOnly(rec.Kind) {
+		return nil, errReceiveOnly(id)
+	}
 	master, err := s.master()
 	if err != nil {
 		return nil, err
@@ -70,7 +73,7 @@ func decryptVersion(rec Record, ver VersionRecord, master *MasterKey) (map[strin
 	}
 	defer wipe(plain)
 	raw, ok := decodeFields(plain)
-	names, _ := FieldNames(rec.Kind)
+	names, _ := kindFieldNames(rec.Kind)
 	if !ok || len(raw) != len(names) {
 		wipeAll(raw)
 		return nil, nil, errIntegrity()

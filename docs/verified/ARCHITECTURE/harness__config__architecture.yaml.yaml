@@ -1,7 +1,7 @@
 doc: "ARCHITECTURE.md"
 target: "harness/config/architecture.yaml"
-hash: "2bc360391ee55e51"
+hash: "6f54c4844a801678"
 date: "2026-11-25"
-note: "sourcecheck 행에 httptls_test.go와 test_may_import의 adapter.httpsource를 맞춰 고쳤고 나머지 표는 architecture.yaml과 같음을 확인했다 (ADR-0105)"
+note: "origin/main 병합 뒤 architecture.yaml과 내용을 다시 대조함"
 text_changed: true
-doc_hash: "3ba7e57b0005eb3b"
+doc_hash: "2b5058b226851c61"

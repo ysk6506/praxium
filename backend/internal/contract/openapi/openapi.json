@@ -3324,6 +3324,7 @@
           "auth.token_expired",
           "auth.token_invalid",
           "auth.token_missing",
+          "auth.webhook_invalid",
           "blocked.proposal",
           "conflict.generation_changed",
           "conflict.idempotency_key_reused",
@@ -3350,6 +3351,7 @@
           "invalid_input.precondition_required",
           "invalid_input.sort_field_unknown",
           "invalid_input.unsupported_media_type",
+          "invalid_input.webhook_body",
           "not_found.resource",
           "permission.hidden_attribute",
           "permission.mcp_not_allowed",
@@ -3359,12 +3361,14 @@
           "rate_limited.compute_budget",
           "rate_limited.concurrency",
           "rate_limited.requests",
+          "rate_limited.webhook_rate",
           "server.internal",
           "server.unavailable",
           "stale.branch_behind_trunk",
           "stale.min_seq_not_reached",
           "stale.projection_not_ready",
-          "stale.since_too_old"
+          "stale.since_too_old",
+          "stale.source_not_receiving"
         ],
         "type": "string",
         "x-catalogue": {
@@ -3377,6 +3381,10 @@
             "status": 401
           },
           "auth.token_missing": {
+            "group": "auth",
+            "status": 401
+          },
+          "auth.webhook_invalid": {
             "group": "auth",
             "status": 401
           },
@@ -3484,6 +3492,10 @@
             "group": "invalid_input",
             "status": 415
           },
+          "invalid_input.webhook_body": {
+            "group": "invalid_input",
+            "status": 400
+          },
           "not_found.resource": {
             "group": "not_found",
             "status": 404
@@ -3520,6 +3532,10 @@
             "group": "rate_limited",
             "status": 429
           },
+          "rate_limited.webhook_rate": {
+            "group": "rate_limited",
+            "status": 429
+          },
           "server.internal": {
             "group": "server",
             "status": 500
@@ -3543,6 +3559,10 @@
           "stale.since_too_old": {
             "group": "stale",
             "status": 410
+          },
+          "stale.source_not_receiving": {
+            "group": "stale",
+            "status": 503
           }
         }
       },

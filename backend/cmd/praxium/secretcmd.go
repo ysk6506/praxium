@@ -17,7 +17,7 @@ import (
 // data folder and look at them, without a server. A value is never an argument of a command: it comes from a file
 // (-field <name>=<file>) or from the standard input, so it is in no list of processes and no shell history.
 
-const secretUsage = "usage: praxium secret put|rotate|list|show|retire|delete|set-scope|set-hosts ..."
+const secretUsage = "usage: praxium secret put|rotate|list|show|retire|delete|set-scope|set-hosts|webhook-issue|webhook-rotate|webhook-retire|webhook-delete ..."
 
 const secretBody = `Secrets for the sources: the passwords and tokens that Praxium needs to read your databases and APIs. They are kept in the
 data folder (secrets.json) encrypted, and the key that opens them is a file of its own outside the data folder.
@@ -29,6 +29,7 @@ data folder (secrets.json) encrypted, and the key that opens them is a file of i
   delete      delete a secret with all its versions
   set-scope   replace the sources that may use a secret
   set-hosts   replace the addresses (host:port) a secret may be used for
+  webhook-issue, webhook-rotate, webhook-retire, webhook-delete   the secrets of the receiving webhooks, which the server makes (praxium secret webhook-issue --help)
 
 A value is written and never read back: no command shows it. It is never an argument either, so it does not end up in
 the history of your shell: give it as a file (-field <name>=<file>) or pipe it in, one line per field in the order of the
@@ -104,6 +105,18 @@ var secretCommands = map[string]secretSpec{
 	"delete":    {usage: secretDelUsage, body: "Deletes a secret with all its versions. It needs no master key. Praxium does not check whether a source still uses the secret (that check comes with the sources that refer to secrets).\n\nexample:\n  praxium secret delete db_main -data-dir data\n", access: secretDelete},
 	"set-scope": {usage: secretScopeUsage, body: "Replaces the sources that may use the secret (the ids of the sources, comma separated). -scope \"\" means no source.\n\nexample:\n  praxium secret set-scope db_main -scope src_db,src_other -data-dir data\n", access: secretChange, scope: true, key: true},
 	"set-hosts": {usage: secretHostsUsage, body: "Replaces the addresses the secret may be used for, as host:port (comma separated or -host given again). -host \"\" means no address.\n\nexample:\n  praxium secret set-hosts db_main -host db.example.test:5432 -data-dir data\n", access: secretChange, host: true, key: true},
+	"webhook-issue": {usage: "usage: praxium secret webhook-issue <source-id>/<webhook-id> -kind hmac|header_token|basic|url_token -data-dir <folder> [-secrets-key-file <file>] [--json]",
+		body:   "Makes the secret of a webhook, with its first version, and shows the value once. -kind is the type of the proof of the webhook: hmac (a signature; the value is whsec_ and a key), header_token, basic (the user name is the id of the webhook, the value is the password) or url_token (the value goes in ?token=).\n\n" + secretWebhookBody + "\nexample:\n  praxium secret webhook-issue crm/alerts -kind hmac -data-dir data\n",
+		access: secretCreate, kind: true, key: true},
+	"webhook-rotate": {usage: "usage: praxium secret webhook-rotate <source-id>/<webhook-id> -data-dir <folder> [-secrets-key-file <file>] [--json]",
+		body:   "Makes a new version and shows its value once. The older versions are still checked until you retire them.\n\n" + secretWebhookBody + "\nexample:\n  praxium secret webhook-rotate crm/alerts -data-dir data\n",
+		access: secretChange, key: true},
+	"webhook-retire": {usage: "usage: praxium secret webhook-retire <source-id>/<webhook-id> -version <N> -data-dir <folder> [-secrets-key-file <file>] [--json]",
+		body:   "Retires a version: it proves nothing from then on.\n\n" + secretWebhookBody + "\nexample:\n  praxium secret webhook-retire crm/alerts -version 1 -data-dir data\n",
+		access: secretChange, version: true, key: true},
+	"webhook-delete": {usage: "usage: praxium secret webhook-delete <source-id>/<webhook-id> -data-dir <folder> [--json]",
+		body:   "Deletes the secret of a webhook with all its versions. It needs no key.\n\n" + secretWebhookBody + "\nexample:\n  praxium secret webhook-delete crm/alerts -data-dir data\n",
+		access: secretDelete},
 }
 
 // secretFlags is what the command line of a secret command says. The lists keep what was typed; nothing is checked
@@ -278,7 +291,7 @@ func parseAddresses(list []string) ([]secrets.Address, error) {
 // runSecret is `praxium secret ...`.
 func runSecret(args []string, stdout, stderr io.Writer, w wiring) int {
 	if len(args) == 0 {
-		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "secret needs put, rotate, list, show, retire, delete, set-scope or set-hosts"), "secret")
+		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "secret needs put, rotate, list, show, retire, delete, set-scope, set-hosts or a webhook command"), "secret")
 	}
 	name := args[0]
 	if _, ok := secretCommands[name]; !ok {

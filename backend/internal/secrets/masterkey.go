@@ -31,6 +31,9 @@ type MasterKey struct {
 	redacted
 	id  string
 	get func() []byte
+	// purpose is "" for the master key of the secrets of the sources and purposeWebhook for the key of the receiving
+	// webhooks (ADR-0107): the two are different keys in different files, and neither opens what the other sealed.
+	purpose string
 }
 
 // KeyProvider is the port that gives the master key. Where the key comes from (a file, a key service) is the
@@ -79,8 +82,12 @@ func GenerateMasterKey(src kernel.ByteSource) *MasterKey {
 // Encode returns the key file for the key. The file holds the key itself: the caller writes it where only its
 // owner can read it.
 func (k *MasterKey) Encode() []byte {
+	format := masterFormat
+	if k.purpose == purposeWebhook {
+		format = webhookKeyFormat
+	}
 	out, _ := json.MarshalIndent(masterFile{
-		Format: masterFormat, Version: masterVersion, KeyID: k.id, Method: MethodAES256GCM,
+		Format: format, Version: masterVersion, KeyID: k.id, Method: MethodAES256GCM,
 		Key: base64.StdEncoding.EncodeToString(k.bytes()),
 	}, "", " ")
 	return append(out, '\n')
@@ -89,8 +96,13 @@ func (k *MasterKey) Encode() []byte {
 // ParseMasterKey reads a key file. The errors have the code CodeMasterKeyInvalid and never repeat what the bytes
 // hold (not even the text of a syntax error, which names a character of the input).
 func ParseMasterKey(data []byte) (*MasterKey, error) {
+	return parseKeyFile(data, masterFormat, "master key", newMasterKey)
+}
+
+// parseKeyFile reads the file of a key of the format given; build makes the key and so tells its id.
+func parseKeyFile(data []byte, format, noun string, build func([]byte) *MasterKey) (*MasterKey, error) {
 	invalid := func(why string) (*MasterKey, error) {
-		return nil, kernel.Errorf(CodeMasterKeyInvalid, "the master key file %s; give the key file this store was made with", why)
+		return nil, kernel.Errorf(CodeMasterKeyInvalid, "the %s file %s; give the key file this store was made with", noun, why)
 	}
 	if len(data) > maxKeyFileLen {
 		return invalid("is too large")
@@ -99,13 +111,13 @@ func ParseMasterKey(data []byte) (*MasterKey, error) {
 	dec := json.NewDecoder(bytes.NewReader(data))
 	dec.DisallowUnknownFields()
 	if err := dec.Decode(&f); err != nil {
-		return invalid("is not a praxium master key file")
+		return invalid("is not a praxium " + noun + " file")
 	}
 	if _, err := dec.Token(); err != io.EOF {
 		return invalid("has text after the key")
 	}
-	if f.Format != masterFormat {
-		return invalid("is not a praxium master key file")
+	if f.Format != format {
+		return invalid("is not a praxium " + noun + " file")
 	}
 	if f.Version != masterVersion {
 		return invalid("has a version this program does not read")
@@ -121,7 +133,7 @@ func ParseMasterKey(data []byte) (*MasterKey, error) {
 	if err != nil || len(raw) != keyLen || subtle.ConstantTimeCompare(raw, make([]byte, keyLen)) == 1 {
 		return invalid("has a key that is not 32 bytes of base64")
 	}
-	key := newMasterKey(raw)
+	key := build(raw)
 	if key.id != f.KeyID {
 		return invalid("has a key id that is not the id of its key")
 	}
