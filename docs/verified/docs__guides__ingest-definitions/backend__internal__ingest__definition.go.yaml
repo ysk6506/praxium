@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "51683ef37a94f323"
-date: "2026-11-19"
-note: "definition.go의 변경은 인증과 연결 정의(HTTP 소스)의 확장이고 이 안내가 다루는 파일 정의의 설명과 겹치지 않아 안내는 그대로 맞음을 확인"
+hash: "c4e3953d46c5f562"
+date: "2026-11-25"
+note: "definition.go의 정의 검사를 고쳤다(ADR-0109 N5: 자연 키 컬럼은 첫 읽는 경로로 정하고, 파일 JSON Lines의 ^.는 [*] 없이도 같은 정의 오류로 잡는다). 이 문서는 records_path와 ^.의 규칙을 적지 않아 어긋나는 곳이 없다."
 text_changed: false
-doc_hash: "f21717fb429aefb5"
+doc_hash: "06592884ef5fe37a"

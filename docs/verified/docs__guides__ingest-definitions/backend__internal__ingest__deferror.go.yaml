@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/deferror.go"
-hash: "8011d80911a20a22"
-date: "2026-11-16"
-note: "ADR-0070: 정의의 오류가 여럿이면 모두 나오고 위치와 코드를 가진다는 절을 더했고, 문장과 필드 설명은 코드(definition.go, mapping.go, sheetopts.go, refine.go, workbook.go)와 대조해 그대로 맞다"
-text_changed: true
-doc_hash: "f47f691169bdc959"
+hash: "b9b82901a6d1b7bf"
+date: "2026-11-25"
+note: "파일 소스 정의 가이드가 다루는 옛 흐름은 그대로임을 확인함. 새 필드(response_format, records_path의 [*], missing_array, max_elements)는 어댑터 흐름에서만 받고 옛 흐름의 ParseSource는 거절함"
+text_changed: false
+doc_hash: "06592884ef5fe37a"

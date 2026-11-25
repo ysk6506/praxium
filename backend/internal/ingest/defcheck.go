@@ -74,6 +74,11 @@ func where(params Params) string {
 // checkPath records the error of a path into a record or a response that the grammar does not read.
 func (c *collector) checkPath(source, dataset, pointer, field, text string) bool {
 	_, err := ParsePath(text)
+	return c.pathProblem(source, dataset, pointer, field, text, err)
+}
+
+// pathProblem records the error a reading of a path gave, if it is one of a path that is not read, and tells whether there was none.
+func (c *collector) pathProblem(source, dataset, pointer, field, text string, err error) bool {
 	var pe *PathError
 	if !errors.As(err, &pe) {
 		return true

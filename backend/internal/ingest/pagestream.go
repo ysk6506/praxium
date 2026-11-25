@@ -41,6 +41,8 @@ type pageStream struct {
 	opts  PageOptions
 	guard *encodingGuard
 	next  func() (Table, error)
+	// lines is what the lines of a file that has a records_path left for the end of the dataset.
+	lines *lineState
 	page  Page
 	total int
 	count int
@@ -63,8 +65,9 @@ func (s *pageStream) run(ctx context.Context, yield func(Page, error) bool) {
 			s.finish(yield, end)
 			return
 		}
-	} else {
-		s.next = jsonLineRecords(br, s.ds)
+	} else if end, stop := s.openLines(br); stop {
+		s.finish(yield, end)
+		return
 	}
 	for {
 		rec, err := s.next()
@@ -128,13 +131,42 @@ func (s *pageStream) finish(yield func(Page, error) bool, end Completeness) {
 	yield(p, nil)
 }
 
-// endOf is how a read that ended with an error ends the dataset: at the end of the bytes it is complete, and any other
-// stop is not.
+// endOf is how a read that ended with an error ends the dataset: at the end of the bytes it is complete (or, when a record had
+// no array to read and the dataset does not say that is none, it is only what was seen), and any other stop is not.
 func (s *pageStream) endOf(err error) Completeness {
-	if errors.Is(err, io.EOF) {
+	var limit *elementLimitError
+	var rows *rowBytesError
+	switch {
+	case errors.As(err, &rows):
+		return Completeness{Reason: rows.Error()}
+	case errors.Is(err, io.EOF):
+		if s.lines != nil {
+			if end, ok := s.lines.endOf(s.ds); ok {
+				return end
+			}
+		}
 		return Completeness{Complete: true}
+	case errors.As(err, &limit):
+		return Completeness{Reason: limit.Error() + "; the rest was not read"}
 	}
 	return Completeness{Reason: "the read of the file stopped before its end"}
+}
+
+// openLines sets up the reading of the lines of a file of JSON lines. A dataset that has a records_path is read by it.
+func (s *pageStream) openLines(br *bufio.Reader) (Completeness, bool) {
+	if s.ds.RecordsPath == "" {
+		s.next = jsonLineRecords(br, s.ds)
+		return Completeness{}, false
+	}
+	rp, err := s.ds.Records()
+	if err == nil {
+		s.lines = &lineState{}
+		s.next, err = recordLines(br, s.ds, rp, s.lines)
+	}
+	if err != nil {
+		return Completeness{Reason: "the records_path or a path of a column is not one that can be read"}, true
+	}
+	return Completeness{}, false
 }
 
 func rowsBytes(rows []Row) int {
@@ -226,4 +258,22 @@ func jsonLineRecords(br *bufio.Reader, ds Dataset) func() (Table, error) {
 		}
 		return Table{}, stopped
 	}
+}
+
+// endOf is how the end of the bytes ends a dataset whose lines were read by records_path, when it is not complete: a line that could
+// not be read makes it not complete (a line is one record or the many elements of an array, and what it had is not known); no
+// record that had an array, with some that had none, or no row of the records there were, makes it what was seen. ok is false when
+// none of these is so.
+func (st *lineState) endOf(ds Dataset) (Completeness, bool) {
+	switch {
+	case st.bad > 0:
+		return Completeness{Reason: itoa(st.bad) + " lines or elements could not be read (not JSON, nothing or another kind of value where records_path reads, or no natural key), so the dataset is not complete"}, true
+	case st.missing > 0 && st.missing == st.outers:
+		return Completeness{SeenOnly: true, Reason: "none of the " + itoa(st.outers) + " lines had an array at the place of records_path (or null); check the records_path"}, true
+	case st.missing > 0 && !ds.MissingIsEmpty():
+		return Completeness{SeenOnly: true, Reason: itoa(st.missing) + " lines had no array at the place of records_path (or null), so what they may have had was not seen"}, true
+	case st.recs > 0 && st.rows == 0:
+		return Completeness{SeenOnly: true, Reason: itoa(st.recs) + " records were read and none made a row, so the file may not be what the definition reads"}, true
+	}
+	return Completeness{}, false
 }
