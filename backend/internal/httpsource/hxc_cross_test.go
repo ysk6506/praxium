@@ -283,7 +283,12 @@ func TestHxcTheLifetimeOfATokenIsKeptBetweenTheShortestAndTheLongest(t *testing.
 		{`{"e":"1h"}`, "e", 0},
 		{`{"e":" 5"}`, "e", 0},
 		{`{"e":[5]}`, "e", 0},
-		{`{"e":1e999}`, "e", 0},
+		// A number that is out of the range of a float is as long as the longest life, or as short as the shortest, and not none.
+		{`{"e":1e999}`, "e", 24*time.Hour - 30*time.Second},
+		{`{"e":-1e999}`, "e", 27 * time.Second},
+		{`{"e":1e-999}`, "e", 27 * time.Second},
+		{`{"e":"` + strings.Repeat("9", 400) + `"}`, "e", 24*time.Hour - 30*time.Second},
+		{`{"e":` + strings.Repeat("9", 400) + `}`, "e", 24*time.Hour - 30*time.Second},
 	} {
 		if got := lifeOf(doc(c.js), c.path); got != c.want {
 			t.Errorf("%s at %q: %s, want %s", c.js, c.path, got, c.want)

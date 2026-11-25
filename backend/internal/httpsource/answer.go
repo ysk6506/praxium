@@ -112,6 +112,11 @@ func (a *answer) again(ctx context.Context, err error) error {
 	if serr := rn.r.cfg.Sleep(ctx, wait); serr != nil {
 		return serr
 	}
+	// The token may have run out while the body was read and the wait was waited for; it is asked for again before the request
+	// is sent again, as before every request.
+	if eerr := rn.signer.ensure(ctx, rn); eerr != nil {
+		return eerr
+	}
 	rep, attempt, xerr := rn.exchangeFrom(ctx, a.p, a.attempt+1)
 	if xerr != nil {
 		return xerr

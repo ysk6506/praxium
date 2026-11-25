@@ -1,8 +1,10 @@
 package ingest
 
 import (
+	"net/netip"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 )
 
@@ -15,22 +17,35 @@ import (
 // origin is the scheme, the host and the port of an address, with the port of the scheme where none is written.
 type origin struct{ scheme, host, port string }
 
-// originOfText reads the origin of an address as it is written: the scheme and the host in lower case, and the port. It
-// does not normalize the host (a name that is written another way is another origin here), so that two addresses are the
-// same origin here only when they are the same origin for the client too.
+// originOfText reads the origin of an address the way the client does for the forms of it that the client accepts: the scheme
+// and the host in lower case, the host without the one dot that ends an absolute name and an IP address in its canonical
+// form, and the port as a number (the one of the scheme where none is written). A host that is written another way than that
+// is another origin only when the client takes it for another host; the token address has to be written in the canonical form
+// (tokenHostProblem), so that the two readings of it cannot differ.
 func originOfText(raw string) (origin, bool) {
 	u, err := url.Parse(raw)
 	if err != nil || u.Hostname() == "" {
 		return origin{}, false
 	}
-	port := u.Port()
-	if port == "" {
-		port = "80"
-		if strings.EqualFold(u.Scheme, "https") {
-			port = "443"
-		}
+	port := "80"
+	if strings.EqualFold(u.Scheme, "https") {
+		port = "443"
 	}
-	return origin{strings.ToLower(u.Scheme), strings.ToLower(u.Hostname()), port}, true
+	if p := u.Port(); p != "" {
+		n, err := strconv.Atoi(p)
+		if err != nil {
+			return origin{}, false
+		}
+		port = strconv.Itoa(n)
+	}
+	host := strings.ToLower(u.Hostname())
+	if len(host) > 1 {
+		host = strings.TrimSuffix(host, ".")
+	}
+	if ip, err := netip.ParseAddr(host); err == nil {
+		host = ip.String()
+	}
+	return origin{strings.ToLower(u.Scheme), host, port}, true
 }
 
 // tokenCrossOrigin tells whether the token request goes to another origin than the base address. It is true when either
@@ -88,7 +103,79 @@ func tokenURLPartsProblem(u *url.URL) string {
 	case !portOK(u.Port()):
 		return "has a port that is not from 1 to 65535"
 	}
+	return tokenHostProblem(u)
+}
+
+// tokenHostProblem says why the host and the port of the address of a token request are not written in the one form the client
+// reads them in, or "". The client reads a host as the canonical form of it (the one dot that ends a name is dropped, an IP
+// address is written the way net/netip writes it) and refuses what it cannot read that way; an address that is written another
+// way would be the same origin as base_url for the client and another for a reader of the text, and its ca_pem would be given
+// and not used. The same checks as the client's are made here, since this package cannot import the client's.
+func tokenHostProblem(u *url.URL) string {
+	if p := u.Port(); p != "" && p != strconv.Itoa(portNumber(p)) {
+		return "has a port that is written with a leading zero or a sign; write the number as it is, or leave the port out"
+	}
+	host := u.Hostname()
+	switch {
+	case host == "" || len(host) > 253:
+		return "has a host that is empty or longer than 253 bytes"
+	case strings.Contains(host, ":"):
+		return ipHostProblem(host)
+	}
+	return nameHostProblem(host)
+}
+
+func portNumber(p string) int {
+	n, _ := strconv.Atoi(p)
+	return n
+}
+
+// ipHostProblem says why an IPv6 address is not written the canonical way.
+func ipHostProblem(host string) string {
+	ip, err := netip.ParseAddr(host)
+	if err != nil || !ip.Is6() || ip.Zone() != "" {
+		return "has an IPv6 address that is not one (a zone, as in %eth0, is not allowed)"
+	}
+	if ip.String() != strings.ToLower(host) {
+		return "has an IPv6 address that is not written the canonical way (" + ip.String() + ")"
+	}
 	return ""
+}
+
+// hostChars are the characters a host name is made of (in lower case).
+const hostChars = "abcdefghijklmnopqrstuvwxyz0123456789-._"
+
+// nameHostProblem says why a name or an IPv4 address is not written the canonical way: ASCII letters, digits, - and _ in labels
+// of 1 to 63 bytes that are separated by dots, with no dot at the end; and an IPv4 address as four numbers and no other form
+// (127.1, 2130706433 and 0x7f.0.0.1 are names the resolver of the system reads as addresses).
+func nameHostProblem(host string) string {
+	lower := strings.ToLower(host)
+	switch {
+	case strings.Trim(lower, hostChars) != "":
+		return "has a host with a character that a host name does not have (only ASCII letters, digits, - and _ between dots)"
+	case strings.HasSuffix(lower, "."):
+		return "has a host that ends in a dot; write the name without it"
+	}
+	labels := strings.Split(lower, ".")
+	for _, label := range labels {
+		if len(label) == 0 || len(label) > 63 {
+			return "has a host with an empty label or a label of more than 63 bytes"
+		}
+	}
+	if numericLabel(labels[len(labels)-1]) {
+		if ip, err := netip.ParseAddr(lower); err != nil || !ip.Is4() || ip.String() != lower {
+			return "has a host that is a number and not an IPv4 address of four numbers"
+		}
+	}
+	return ""
+}
+
+// numericLabel tells a label that a resolver may read as a number: all decimal digits, or 0x and hexadecimal digits.
+func numericLabel(label string) bool {
+	if digits, hex := strings.CutPrefix(label, "0x"); hex {
+		return strings.Trim(digits, "0123456789abcdef") == ""
+	}
+	return label != "" && strings.Trim(label, "0123456789") == ""
 }
 
 // checkAddress checks where the token is asked for: a path under the base address, or a whole address, and what belongs

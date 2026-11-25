@@ -3,6 +3,7 @@ package httpsource
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"math"
 	"net/url"
 	"regexp"
@@ -59,6 +60,8 @@ func (s *signer) ensure(ctx context.Context, rn *run) error {
 	s.token = holdText(tok)
 	if life > 0 {
 		s.expires = rn.r.cfg.Clock.Now().Add(life)
+	} else if s.auth.ExpiresInPath != "" {
+		rn.noteLifeUnread()
 	}
 	s.addMasked(tok, s.sendPrefix()+tok)
 	for _, h := range s.auth.Headers {
@@ -71,6 +74,19 @@ func (s *signer) ensure(ctx context.Context, rn *run) error {
 		rn.prog.authenticated = true
 	}
 	return nil
+}
+
+// lifeUnread is the kind of the event that says the answer of the token request gave no lifetime at expires_in_path, though the
+// definition names one: the token is asked for again only when the source refuses it. The event has no value of the answer.
+const lifeUnread ingest.EventKind = "token_life_unread"
+
+// noteLifeUnread tells that the lifetime could not be read, once in a read.
+func (rn *run) noteLifeUnread() {
+	if rn.lifeNoted {
+		return
+	}
+	rn.lifeNoted = true
+	rn.emit(ingest.Event{Kind: lifeUnread, Reason: "the answer of the token request has no lifetime at expires_in_path that is a number of seconds; the token is asked for again only when the source refuses it"})
 }
 
 // tokenPlan is the request that asks for the token: a POST to the address of the token request, with the body of the
@@ -163,10 +179,52 @@ func lifeOf(doc any, text string) time.Duration {
 	default:
 		return 0
 	}
-	if err != nil || math.IsNaN(secs) || math.IsInf(secs, 0) {
+	// A number out of the range of a float is as long as the longest life (or as short as the shortest) and not none: the
+	// parser gives the infinity it is nearest to together with an error of range.
+	if (err != nil && !errors.Is(err, strconv.ErrRange)) || math.IsNaN(secs) {
 		return 0
 	}
 	secs = math.Min(math.Max(secs, shortestLife.Seconds()), longestLife.Seconds())
 	life := time.Duration(secs * float64(time.Second))
 	return life - min(life/10, lifeMargin)
+}
+
+// noSecretForTheAPI refuses what the definition check does not let in, once more where a request is made: when the token is
+// asked for at another host than the API, a value of the secret goes to the token host only, and a request of the API has the
+// token and nothing of the secret. Nothing is sent.
+func (s *signer) noSecretForTheAPI() error {
+	if !s.cross {
+		return nil
+	}
+	return noSecretInHeaders(s.auth)
+}
+
+func noSecretInHeaders(a ingest.Auth) error {
+	for _, e := range a.Headers {
+		if src, ok := ingest.ParseHeaderFrom(e.From); ok && !src.Token {
+			return unusable("a header of the authentication has a value of the secret, and the token is asked for at another host than the API; the secret goes to that host only, and nothing was sent")
+		}
+	}
+	return nil
+}
+
+// noSecretInTheRequestsOfTheAPI is the same refusal as noSecretForTheAPI and valueIn make, made before the first request of the
+// read: the headers of the authentication and the body of the dataset are looked at, so that the token request is not sent for a
+// read that would be refused at its first request of the API. It refuses nothing when the token is not asked for at another host.
+func noSecretInTheRequestsOfTheAPI(set settings, ds ingest.Dataset) error {
+	if !set.token.cross {
+		return nil
+	}
+	if err := noSecretInHeaders(set.auth); err != nil {
+		return err
+	}
+	if ds.Request == nil {
+		return nil
+	}
+	for _, p := range ingest.PlaceholdersOf(ds.Request.Body) {
+		if !p.Token {
+			return unusable("a body of a request of the API has a placeholder of the secret, and the token is asked for at another host; the secret goes to that host only, and nothing was sent")
+		}
+	}
+	return nil
 }

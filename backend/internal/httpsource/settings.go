@@ -54,16 +54,12 @@ func readSettings(def ingest.Source) (settings, error) {
 		return settings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s is not an http source with a connection", def.ID)
 	}
 	cn := def.Connection
-	u, err := url.Parse(cn.BaseURL)
-	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" || u.User != nil {
-		return settings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: base_url is not an http or https address", def.ID)
-	}
-	host, _, bad := egress.NormalizeHost(u.Hostname())
-	if bad != "" {
-		return settings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: base_url has a host that is not allowed", def.ID)
+	u, host, port, err := addressOf(def.ID, "base_url", cn.BaseURL)
+	if err != nil {
+		return settings{}, err
 	}
 	s := settings{
-		id: def.ID, scheme: u.Scheme, host: host, port: portOf(u), basePath: strings.TrimRight(u.Path, "/"),
+		id: def.ID, scheme: u.Scheme, host: host, port: port, basePath: strings.TrimRight(u.Path, "/"),
 		timeout:  secondsOr(cn.TimeoutSeconds, ingest.DefaultHTTPTimeoutSeconds),
 		maxBytes: intOr(cn.MaxResponseBytes, ingest.DefaultMaxResponseBytes),
 		maxWait:  secondsOr(cn.MaxRetryWaitSeconds, ingest.DefaultMaxRetryWaitSeconds),
@@ -105,15 +101,11 @@ func (s *settings) readToken() error {
 
 // tokenAddress reads the whole address of the token request.
 func (s *settings) tokenAddress(tr *ingest.TokenRequest) (tokenSettings, error) {
-	u, err := url.Parse(tr.URL)
-	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" || u.User != nil {
-		return tokenSettings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url is not an http or https address", s.id)
+	u, host, port, err := addressOf(s.id, "auth.request.url", tr.URL)
+	if err != nil {
+		return tokenSettings{}, err
 	}
-	host, _, bad := egress.NormalizeHost(u.Hostname())
-	if bad != "" {
-		return tokenSettings{}, kernel.Errorf(kernel.CodeInvalidValue, "source %s: auth.request.url has a host that is not allowed", s.id)
-	}
-	t := tokenSettings{url: true, scheme: u.Scheme, host: host, port: portOf(u), path: u.Path, rawPath: u.RawPath, headers: tr.Headers}
+	t := tokenSettings{url: true, scheme: u.Scheme, host: host, port: port, path: u.Path, rawPath: u.RawPath, headers: tr.Headers}
 	t.cross = t.scheme != s.scheme || t.host != s.host || t.port != s.port
 	if t.cross {
 		t.caPEM = tr.CAPEM
@@ -121,16 +113,36 @@ func (s *settings) tokenAddress(tr *ingest.TokenRequest) (tokenSettings, error) 
 	return t, nil
 }
 
-func portOf(u *url.URL) int {
+// addressOf reads an address of the definition (base_url or auth.request.url) the way a request is made to it: http or https,
+// a host that is allowed in the form the client has it, and a port from 1 to 65535. The host and the port are what the
+// secret is opened for.
+func addressOf(id, field, raw string) (*url.URL, string, int, error) {
+	u, err := url.Parse(raw)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Hostname() == "" || u.User != nil {
+		return nil, "", 0, kernel.Errorf(kernel.CodeInvalidValue, "source %s: %s is not an http or https address", id, field)
+	}
+	host, _, bad := egress.NormalizeHost(u.Hostname())
+	if bad != "" {
+		return nil, "", 0, kernel.Errorf(kernel.CodeInvalidValue, "source %s: %s has a host that is not allowed", id, field)
+	}
+	port, ok := portOf(u)
+	if !ok {
+		return nil, "", 0, kernel.Errorf(kernel.CodeInvalidValue, "source %s: %s has a port that is not from 1 to 65535", id, field)
+	}
+	return u, host, port, nil
+}
+
+// portOf is the port of an address, the one of its scheme when none is written; it is not ok when the port written is not from
+// 1 to 65535.
+func portOf(u *url.URL) (int, bool) {
 	if p := u.Port(); p != "" {
-		if n, err := strconv.Atoi(p); err == nil {
-			return n
-		}
+		n, err := strconv.Atoi(p)
+		return n, err == nil && n >= 1 && n <= 65535
 	}
 	if u.Scheme == "https" {
-		return 443
+		return 443, true
 	}
-	return 80
+	return 80, true
 }
 
 func secondsOr(n, def int) time.Duration { return time.Duration(intOr(n, def)) * time.Second }

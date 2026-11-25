@@ -1,6 +1,7 @@
 package httpsource
 
 import (
+	"context"
 	"net/netip"
 	"strconv"
 	"strings"
@@ -20,14 +21,27 @@ const (
 	hxcIdpPort = 9443
 )
 
-// hxcReal makes the rig for a token host at an explicit port and a reader that goes through the real egress client.
+// hxcByName answers the name of each host with an address of its own, so that a policy can refuse one of the two hosts and let
+// the other in.
+type hxcByName map[string]netip.Addr
+
+func (r hxcByName) LookupNetIP(_ context.Context, _, host string) ([]netip.Addr, error) {
+	return []netip.Addr{r[host]}, nil
+}
+
+// hxcAPIAddr is the address the name of the API has in the rig; addr, which the rig is given, is the token host's.
+const hxcAPIAddr = "10.1.2.3"
+
+// hxcReal makes the rig for a token host at an explicit port and a reader that goes through the real egress client. The name
+// of the API is at an address a policy lets in, and the name of the token host is at addr, so that what a policy refuses is the
+// token host alone.
 func hxcReal(t *testing.T, scheme, auth string, policy egress.Policy, addr string) (*hxcRig, *Reader) {
 	t.Helper()
 	tokenURL := scheme + "://" + hxcIdpHost + ":" + strconv.Itoa(hxcIdpPort) + "/oauth2/token"
 	a := strings.Replace(auth, "https://idp.example.test/oauth2/token", tokenURL, 1)
 	doc := strings.Replace(hxcDoc(a, "", ""), "https://api.example.test/api/v2", "https://"+hxcAPIHost+":"+strconv.Itoa(hxcAPIPort)+"/api/v2", 1)
 	g := hxcNew(t, doc, []secrets.Address{{Host: hxcAPIHost, Port: hxcAPIPort}, {Host: hxcIdpHost, Port: hxcIdpPort}}, "3600")
-	d, err := egress.New(egress.Config{Policy: policy, Resolver: hsResolver{hsAddrs: []netip.Addr{netip.MustParseAddr(addr)}}})
+	d, err := egress.New(egress.Config{Policy: policy, Resolver: hxcByName{hxcAPIHost: netip.MustParseAddr(hxcAPIAddr), hxcIdpHost: netip.MustParseAddr(addr)}})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -50,21 +64,41 @@ func hxcRealKind(t *testing.T, r *Reader, g *hxcRig) string {
 	return ""
 }
 
+// hxcRealRefusedAt reads, and gives the kind the read ended with and the host and port of the event that says it failed.
+func hxcRealRefusedAt(t *testing.T, r *Reader, g *hxcRig) (string, string, int) {
+	t.Helper()
+	kind := hxcRealKind(t, r, g)
+	for _, e := range g.hxcEvents {
+		if e.Kind == ingest.EventFailed {
+			return kind, e.Host, e.Port
+		}
+	}
+	t.Fatal("the read did not fail")
+	return "", "", 0
+}
+
 // [REQ-844]
-// The token request is judged by the policy of the egress like any request: a policy that allows the API's host alone refuses
-// the token host, a denied loopback refuses it, and the secret is not sent (nothing is connected to).
+// The token request is judged by the policy of the egress like any request, and the host that is refused is the token host's
+// (the API's name is at an address that each of these policies lets in, so the refusal is the token host's alone): a policy
+// that allows the API's host alone, a loopback that is denied, and an address that is always refused.
 func TestHxcRealEgressThePolicyJudgesTheTokenHostToo(t *testing.T) {
-	g, r := hxcReal(t, "https", hxcOAuthPost, egress.Policy{Hosts: []string{hxcAPIHost}}, "127.0.0.1")
-	if k := hxcRealKind(t, r, g); k != ingest.SrcPolicyDenied {
-		t.Errorf("a policy of the API's host alone: %q", k)
-	}
-	g, r = hxcReal(t, "https", hxcOAuthPost, egress.Policy{DenyLoopback: true}, "127.0.0.1")
-	if k := hxcRealKind(t, r, g); k != ingest.SrcPolicyDenied {
-		t.Errorf("a loopback that is denied: %q", k)
-	}
-	g, r = hxcReal(t, "https", hxcOAuthPost, egress.Policy{}, "169.254.169.254")
-	if k := hxcRealKind(t, r, g); k != ingest.SrcPolicyDenied {
-		t.Errorf("an address that is always refused: %q", k)
+	for _, c := range []struct {
+		name   string
+		policy egress.Policy
+		addr   string
+	}{
+		{"a policy of the API's host alone", egress.Policy{Hosts: []string{hxcAPIHost}}, "127.0.0.1"},
+		{"a loopback that is denied", egress.Policy{DenyLoopback: true}, "127.0.0.1"},
+		{"an address that is always refused", egress.Policy{}, "169.254.169.254"},
+	} {
+		g, r := hxcReal(t, "https", hxcOAuthPost, c.policy, c.addr)
+		kind, host, port := hxcRealRefusedAt(t, r, g)
+		if kind != ingest.SrcPolicyDenied || host != hxcIdpHost || port != hxcIdpPort {
+			t.Errorf("%s: %q at %s:%d", c.name, kind, host, port)
+		}
+		if len(g.hxcAPI.hsSeen) != 0 || len(g.hxcIdp.hsSeen) != 0 {
+			t.Errorf("%s: a request was sent", c.name)
+		}
 	}
 }
 

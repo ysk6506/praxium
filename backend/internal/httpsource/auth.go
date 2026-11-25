@@ -148,20 +148,18 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ing
 	if !set.needsSecret() {
 		return s, nil
 	}
+	// Before the secret is opened and before any request, the token request included: a definition that puts a value of the
+	// secret in a request of the API, when the token is asked for at another host, is refused with nothing sent anywhere.
+	if err := noSecretInTheRequestsOfTheAPI(set, ds); err != nil {
+		return nil, err
+	}
 	opened, err := opener.Open(ctx, set.auth.Credential.SecretID, secrets.Use{SourceID: set.id, Host: set.host, Port: set.port, Purpose: purpose})
 	if err != nil {
 		return nil, openError(ctx, err)
 	}
 	s.opened = opened
-	if set.token.cross {
-		// The secret is opened a second time for the host of the token request. The store decides, at the one place where it
-		// decides, whether the secret may be used for that address too (ADR-0106); when it may not, no request has been made.
-		s.cross = true
-		s.tokenOpened, err = opener.Open(ctx, set.auth.Credential.SecretID, secrets.Use{SourceID: set.id, Host: set.token.host, Port: set.token.port, Purpose: purpose})
-		if err != nil {
-			s.close()
-			return nil, openError(ctx, err)
-		}
+	if err := s.openForTokenHost(ctx, opener, set, purpose); err != nil {
+		return nil, err
 	}
 	kind, known, fields := needs(set, ds)
 	for _, o := range s.openeds() {
@@ -184,6 +182,23 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ing
 	s.fields = fields
 	s.setMasks()
 	return s, nil
+}
+
+// openForTokenHost opens the secret a second time for the host of the token request, when that is another host than the API's.
+// The store decides, at the one place where it decides, whether the secret may be used for that address too (ADR-0106); when it
+// may not, no request has been made. What was opened is closed again when it fails.
+func (s *signer) openForTokenHost(ctx context.Context, opener secrets.Opener, set settings, purpose secrets.Purpose) error {
+	if !set.token.cross {
+		return nil
+	}
+	s.cross = true
+	tokenOpened, err := opener.Open(ctx, set.auth.Credential.SecretID, secrets.Use{SourceID: set.id, Host: set.token.host, Port: set.token.port, Purpose: purpose})
+	if err != nil {
+		s.close()
+		return openError(ctx, err)
+	}
+	s.tokenOpened = tokenOpened
+	return nil
 }
 
 // headerValuesSafe tells whether the values of the secret that go into a header can be a value of a header. It is asked
@@ -363,21 +378,6 @@ func (s *signer) applyKind(h map[string][]string) error {
 	case ingest.AuthTokenRequest:
 		if tok := s.token.text(); tok != "" && s.auth.Send != ingest.SendTemplate {
 			setHeader(h, s.sendHeader(), s.sendPrefix()+tok)
-		}
-	}
-	return nil
-}
-
-// noSecretForTheAPI refuses what the definition check does not let in, once more where a request is made: when the token is
-// asked for at another host than the API, a value of the secret goes to the token host only, and a request of the API has the
-// token and nothing of the secret. Nothing is sent.
-func (s *signer) noSecretForTheAPI() error {
-	if !s.cross {
-		return nil
-	}
-	for _, e := range s.auth.Headers {
-		if src, ok := ingest.ParseHeaderFrom(e.From); ok && !src.Token {
-			return unusable("a header of the authentication has a value of the secret, and the token is asked for at another host than the API; the secret goes to that host only, and nothing was sent")
 		}
 	}
 	return nil

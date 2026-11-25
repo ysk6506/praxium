@@ -42,10 +42,12 @@ type run struct {
 	// read asked for, and refreshes how many of those were asked for because the source refused the token it had.
 	where                    address
 	tokenRequests, refreshes int
-	pace                     *pacer
-	pager                    *pager
-	maxPages                 int
-	prog                     progress
+	// lifeNoted says that the event of a lifetime that could not be read was told.
+	lifeNoted bool
+	pace      *pacer
+	pager     *pager
+	maxPages  int
+	prog      progress
 	// keep says that the exchanges are kept, for a preview.
 	keep      bool
 	exchanges []ingest.Exchange

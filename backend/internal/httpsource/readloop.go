@@ -77,7 +77,7 @@ func (rn *run) read(ctx context.Context, ds ingest.Dataset, opts ingest.PageOpti
 func (l *loop) run() {
 	for {
 		if l.requests+l.rn.tokenRequests >= l.rn.maxPages {
-			l.finish(ingest.Completeness{Reason: "the source has more than " + strconv.Itoa(l.rn.maxPages) + " pages (max_pages), the most one read fetches; the rest was not read"})
+			l.finish(ingest.Completeness{Reason: l.pagesReason()})
 			return
 		}
 		if err := l.ctx.Err(); err != nil {
@@ -88,6 +88,16 @@ func (l *loop) run() {
 			return
 		}
 	}
+}
+
+// pagesReason says why a read ends at max_pages. The requests for tokens are among the requests max_pages counts, so the reason
+// says how many there were when the source gave any.
+func (l *loop) pagesReason() string {
+	limit := strconv.Itoa(l.rn.maxPages)
+	if n := l.rn.tokenRequests; n > 0 {
+		return "the source has more than " + limit + " pages (max_pages), the most one read fetches, and " + strconv.Itoa(n) + " of those requests asked for a token; the rest was not read"
+	}
+	return "the source has more than " + limit + " pages (max_pages), the most one read fetches; the rest was not read"
 }
 
 // fetch sends the request for the position, reads the records of the answer onto the pages as they come and finds where
