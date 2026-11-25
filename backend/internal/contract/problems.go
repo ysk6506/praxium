@@ -66,6 +66,12 @@ var problemCodes = []ProblemCode{
 	{"stale.since_too_old", "stale", 410, "The event id is older than the events kept; read the state again."},
 	{"stale.projection_not_ready", "stale", 503, "The projection the answer needs is not built yet."},
 	{"stale.min_seq_not_reached", "stale", 503, "The replica has not reached min_seq within the wait."},
+	// The receiving webhooks (ADR-0107): the codes of the entrance that other products call; every failure of the
+	// proof of the sender has the one code and the one body.
+	{"auth.webhook_invalid", "auth", 401, "The call of a receiving webhook is not proven: the webhook, the secret or the signature is not accepted."},
+	{"stale.source_not_receiving", "stale", 503, "The source is stopped or does not receive now; send the call again later."},
+	{"rate_limited.webhook_rate", "rate_limited", 429, "The webhook gets more calls than its limit allows; see Retry-After."},
+	{"invalid_input.webhook_body", "invalid_input", 400, "The body of a webhook call is not JSON, or it is deeper or longer than the limits of the entrance."},
 	{"server.internal", "server", 500, "A bug or a broken dependency; retrying does not help."},
 	{"server.unavailable", "server", 503, "The server cannot answer now; retry later."},
 }

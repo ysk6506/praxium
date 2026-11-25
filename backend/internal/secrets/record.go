@@ -92,7 +92,7 @@ func (r Record) Validate() error {
 	if len(r.Instance) != instanceLen {
 		return bad("has no instance id of the right length")
 	}
-	if _, ok := kindFields[r.Kind]; !ok {
+	if _, ok := kindFieldNames(r.Kind); !ok {
 		return bad("has an unknown kind")
 	}
 	if scope, err := normalizeScope(slices.Clone(r.Scope)); err != nil || !slices.Equal(scope, r.Scope) {
@@ -153,7 +153,7 @@ func validSealed(s Sealed, withKey bool) bool {
 }
 
 func (r Record) meta() Meta {
-	names, _ := FieldNames(r.Kind)
+	names, _ := kindFieldNames(r.Kind)
 	m := Meta{
 		ID: r.ID, Kind: r.Kind, FieldNames: names, CreatedAt: r.CreatedAt,
 		Scope: slices.Clone(r.Scope), AllowedHosts: slices.Clone(r.AllowedHosts),

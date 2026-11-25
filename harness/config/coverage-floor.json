@@ -9,6 +9,7 @@
   "go:adapter.filejournal": 93,
   "go:adapter.filesource": 98,
   "go:adapter.graphcheck": 95.5,
+  "go:adapter.hookin": 98,
   "go:adapter.http": 93,
   "go:adapter.httpsource": 98,
   "go:adapter.identitycheck": 97.5,

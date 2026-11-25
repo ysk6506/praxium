@@ -1267,6 +1267,14 @@
     },
     {
       "method": "POST",
+      "path": "/v1/sources/{source_id}/webhooks/{webhook_id}:receive",
+      "feature": "받는 웹훅(소스의 신호를 받음, 웹훅 자체 인증)",
+      "adr": "ADR-0107",
+      "phase": "alpha-2",
+      "status": "planned"
+    },
+    {
+      "method": "POST",
       "path": "/v1/sources/{source_id}:check",
       "feature": "소스 점검(`branch_id`를 받음)",
       "adr": "ADR-0008",

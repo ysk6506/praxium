@@ -140,6 +140,19 @@ func adpCases(t *testing.T) []adpCase {
 		{"table with quotes", p("inventory.servers", `\"x\"`), "source.dataset.table_invalid", "/datasets/0/table"},
 		{"empty statement", p(`"sql":"SELECT vm_id, host_id FROM placement WHERE retired_at IS NULL"`, `"sql":"  "`), "source.dataset.sql_invalid", "/datasets/1/sql"},
 		{"collation", p(`"table":"inventory.servers"`, `"table":"inventory.servers","key_collation":"a b"`), "source.dataset.key_collation_invalid", "/datasets/0/key_collation"},
+		// The receiving webhooks (ADR-0107): cases are added, none of the older ones is changed.
+		{"webhooks of a file source", adpSwap(t, adpFile, `"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"hmac"}}],"datasets"`), "source.webhook.not_for_adapter", "/webhooks"},
+		{"33 webhooks", h(`"datasets"`, `"webhooks":[`+strings.TrimSuffix(strings.Repeat(`{"id":"w","kind":"signal","auth":{"type":"hmac"}},`, 33), ",")+`],"datasets"`), "source.webhook.too_many", "/webhooks"},
+		{"webhook id", h(`"datasets"`, `"webhooks":[{"id":"Bad","kind":"signal","auth":{"type":"hmac"}}],"datasets"`), "source.webhook.id_invalid", "/webhooks/0/id"},
+		{"webhook id repeated", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"hmac"}},{"id":"w","kind":"signal","auth":{"type":"basic"}}],"datasets"`), "source.webhook.id_repeated", "/webhooks/1/id"},
+		{"webhook kind", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"poll","auth":{"type":"hmac"}}],"datasets"`), "source.webhook.kind_unsupported", "/webhooks/0/kind"},
+		{"webhook kind records", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"records","auth":{"type":"hmac"}}],"datasets"`), "source.webhook.kind_not_handled_yet", "/webhooks/0/kind"},
+		{"webhook auth type", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"digest"}}],"datasets"`), "source.webhook.auth_unsupported", "/webhooks/0/auth/type"},
+		{"webhook profile on a token", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"header_token","profile":"standard_webhooks"}}],"datasets"`), "source.webhook.profile_invalid", "/webhooks/0/auth/profile"},
+		{"webhook unknown profile", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"hmac","profile":"md5"}}],"datasets"`), "source.webhook.profile_invalid", "/webhooks/0/auth/profile"},
+		{"webhook url_token for records", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"records","auth":{"type":"url_token"}}],"datasets"`), "source.webhook.auth_not_for_kind", "/webhooks/0/auth"},
+		{"webhook allow_ips", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"hmac"},"allow_ips":["10.0.0.0/33"]}],"datasets"`), "source.webhook.allow_ips_invalid", "/webhooks/0/allow_ips/0"},
+		{"webhook limit", h(`"datasets"`, `"webhooks":[{"id":"w","kind":"signal","auth":{"type":"hmac"},"limits":{"body_bytes":99999999}}],"datasets"`), "source.webhook.limit_out_of_range", "/webhooks/0/limits/body_bytes"},
 	}
 }
 

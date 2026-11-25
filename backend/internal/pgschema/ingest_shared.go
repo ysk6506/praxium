@@ -34,6 +34,8 @@ const (
 	ColEndClass   = "end_class"
 	ColEndCode    = "end_code"
 	ColEndReason  = "end_reason"
+	// ColSignalPending is the time of the first signal of a receiving webhook that has not been taken (migration 0007).
+	ColSignalPending = "signal_pending_at"
 )
 
 // The names of the two partial unique indexes that make the gate of the runs.
@@ -53,7 +55,7 @@ func SyncRunColumns() []string {
 
 // SourceStateColumns lists the columns of source_state.
 func SourceStateColumns() []string {
-	return []string{ColSrcNo, ColKGID, ColSourceID, "full_receive", "full_compute", "applied_definition_set", "created_at"}
+	return []string{ColSrcNo, ColKGID, ColSourceID, "full_receive", "full_compute", "applied_definition_set", "created_at", ColSignalPending}
 }
 
 // SourceDatasetColumns lists the columns of source_dataset.

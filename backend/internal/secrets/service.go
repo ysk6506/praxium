@@ -4,6 +4,7 @@ import (
 	"context"
 	"slices"
 	"sync"
+	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
@@ -16,6 +17,14 @@ type Config struct {
 	// Bytes is where keys and nonces come from: kernel.SystemBytes{} in a real run, kernel.NewSeededBytes in a test
 	// that must repeat.
 	Bytes kernel.ByteSource
+	// WebhookKeys gives the key of the receiving webhooks (ADR-0107). A program that has none cannot issue or check them.
+	WebhookKeys KeyProvider
+	// Observer is told what the check of a webhook does (the audit line of a fill of the cache, the count of the checks).
+	// Nil is no one.
+	Observer Observer
+	// VerifyCacheTTL is how long an opened key of a webhook stays in memory: at most a minute, and a minute when it is
+	// not given.
+	VerifyCacheTTL time.Duration
 }
 
 // Service is the secret store. It implements the three ports, which the composition root hands out one by one:
@@ -23,6 +32,7 @@ type Config struct {
 type Service struct {
 	cfg Config
 	mu  sync.Mutex // serializes the writes (read, change, put) of this process, the only writer of its store
+	vf  verifyState
 }
 
 var (
@@ -99,6 +109,9 @@ func (s *Service) master() (*MasterKey, error) {
 	}
 	if key == nil {
 		return NoKey().MasterKey()
+	}
+	if key.purpose != "" {
+		return nil, kernel.Errorf(CodeMasterKeyInvalid, "the key given as the master key is a key of another purpose; give the master key file")
 	}
 	return key, nil
 }
@@ -182,6 +195,9 @@ func (s *Service) AddVersion(ctx context.Context, id string, fields Fields) (Met
 	if err != nil {
 		return Meta{}, err
 	}
+	if IsReceiveOnly(rec.Kind) {
+		return Meta{}, errReceiveOnly(id)
+	}
 	if err := checkFields(rec.Kind, fields); err != nil {
 		return Meta{}, err
 	}
@@ -218,6 +234,9 @@ func (s *Service) RetireVersion(ctx context.Context, id string, version int) (Me
 	rec, err := s.load(ctx, id)
 	if err != nil {
 		return Meta{}, err
+	}
+	if IsReceiveOnly(rec.Kind) {
+		return Meta{}, errReceiveOnly(id)
 	}
 	if err := verify(rec, master); err != nil {
 		return Meta{}, err
@@ -287,6 +306,9 @@ func (s *Service) rebind(ctx context.Context, id string, change func(*Record)) (
 	rec, err := s.load(ctx, id)
 	if err != nil {
 		return Meta{}, err
+	}
+	if IsReceiveOnly(rec.Kind) {
+		return Meta{}, errReceiveOnly(id)
 	}
 	if err := verify(rec, master); err != nil {
 		return Meta{}, err

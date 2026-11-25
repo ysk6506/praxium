@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/definition.go"
-hash: "51683ef37a94f323"
-date: "2026-11-19"
-note: "definition.go의 변경은 인증과 연결 정의(HTTP 소스)의 확장이고 이 안내가 다루는 파일 정의의 설명과 겹치지 않아 안내는 그대로 맞음을 확인"
-text_changed: false
-doc_hash: "f21717fb429aefb5"
+hash: "1bf8eac953e2a9f5"
+date: "2026-11-25"
+note: "definition.go에 Source.Webhooks가 더해져 최상위 필드 표에 webhooks 행을 더함"
+text_changed: true
+doc_hash: "36fbebf41adaa5b5"

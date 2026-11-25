@@ -131,3 +131,19 @@ praxium secret show db_main -data-dir /var/lib/praxium
   - 키 파일을 데이터 폴더 안에 하드 링크로 두는 것은 "데이터 폴더 밖" 검사가 알아채지 못해요. 하드 링크를 지원하지 않는 파일 시스템에서는 키 파일과 `FOLDER_ID`를 만들 수 없어 명령이 실패해요. 권한 비트가 없는 파일 시스템에서는 파일이 느슨하게 보여 읽기를 거절해요.
   - `list`와 `show`는 묶음 태그를 검증하지 않아요. 폴더 권한 0700은 명령이 만드는 폴더에만 해당해요.
   - 저장소에 있는 시크릿을 암호화한 키와 다른 키로는 키를 쓰는 명령(`put`, `rotate`, `retire`, `set-scope`, `set-hosts`) 모두 못 해요(오류에 두 키 id만 나와요). `-secrets-key-file`에 빈 값을 주면 명령줄 오류예요. `FOLDER_ID`가 없거나 깨졌으면 `-secrets-key-file`로 키를 지정해요.
+
+### 받는 웹훅의 키 (ADR-0107)
+
+소스의 변화를 알리려고 다른 제품이 부르는 받는 웹훅은 서명이나 토큰으로 증명해요. 이 키는 서버가 만들고 **한 번만** 보여 줘요(값을 고르거나 다시 볼 수 없어요). 소스 접속 시크릿과 다른 키 파일(웹훅 키)로 감싸요. 아래의 id는 지어낸 것이에요.
+
+```bash
+praxium secret webhook-issue crm/changed -kind hmac -data-dir /var/lib/praxium
+praxium secret webhook-rotate crm/changed -data-dir /var/lib/praxium
+praxium secret webhook-retire crm/changed -version 1 -data-dir /var/lib/praxium
+praxium secret webhook-delete crm/changed -data-dir /var/lib/praxium
+```
+
+- id는 `<소스 id>/<웹훅 id>`이고 `-kind`는 증명의 종류(`hmac`, `header_token`, `basic`, `url_token`)예요. 값은 `hmac`이면 `whsec_…`, 아니면 토큰이에요. Basic의 사용자 이름은 웹훅 id예요.
+- `webhook-rotate`는 새 버전을 더하고 옛 버전도 `webhook-retire`로 폐기할 때까지 확인해서, 보내는 쪽을 바꾸는 동안 끊기지 않아요.
+- **웹훅 키 파일**은 처음 만들 때 사용자 설정 폴더 아래 `praxium/keys/<데이터 폴더의 식별자>.webhook.key`로 만들어요. `-secrets-key-file`로 위치를 정해요. 마스터 키와 별개이고 서로 대신하지 못해요. 따로 백업해 둬요. 잃으면 웹훅의 키를 다시 만들어요. 데이터 폴더 안에는 둘 수 없어요.
+- 서버가 데이터 폴더를 쥐고 있는 동안은 이 명령도 못 써요(마스터 키 명령과 같아요).

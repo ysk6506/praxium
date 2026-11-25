@@ -1,7 +1,7 @@
 doc: "AGENTS.md"
 target: "harness/config/architecture.yaml"
-hash: "2bc360391ee55e51"
+hash: "6f54c4844a801678"
 date: "2026-11-25"
-note: "architecture.yaml 변경은 adapter.sourcecheck 테스트 전용 유닛의 test_may_import에 adapter.httpsource를 더하고 restricted_stdlib의 net, net/http, crypto/tls에 테스트 파일 하나(httptls_test.go)를 이름으로 더한 것뿐이라 AGENTS.md의 규칙 설명은 그대로 맞고 고칠 곳이 없었다 (ADR-0105)"
+note: "origin/main 병합 뒤 architecture.yaml과 내용을 다시 대조함"
 text_changed: false
 doc_hash: "9b6002b7868d9dd0"
