@@ -31,6 +31,8 @@ decision_hash: 84eaa9508c5bc874
 amended_by:
   - adr: "0106"
     what: 뒤의 PR로 미뤘던 E2(다른 호스트의 인증 서버)의 구현과 그 세부 결정
+  - adr: "0109"
+    what: 뒤의 PR로 미뤘던 E4(줄마다 JSON인 응답)와 E8(레코드 안의 배열 펼치기)의 구현과 그 세부 결정
 ---
 # ADR-0100 HTTP 소스 확장의 기준 결정
 

@@ -347,3 +347,91 @@ func TestHxtATokenServerOutsideThePlaintextRangeIsRefused(t *testing.T) {
 		t.Errorf("kind=%s idp=%d api=%d", hxtKind(err), hxtCount(w.idpSeen), hxtCount(w.apiSeen))
 	}
 }
+
+// hxdSocket serves one answer on the loopback, as text, and gives the request it was sent.
+func hxdSocket(t *testing.T, reply string) (port int, request <-chan string) {
+	t.Helper()
+	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { _ = ln.Close() })
+	got := make(chan string, 1)
+	go func() {
+		c, err := ln.Accept()
+		if err != nil {
+			return
+		}
+		defer func() { _ = c.Close() }()
+		var head strings.Builder
+		buf := make([]byte, 1)
+		for !strings.HasSuffix(head.String(), "\r\n\r\n") {
+			if _, err := c.Read(buf); err != nil {
+				break
+			}
+			head.Write(buf)
+		}
+		got <- head.String()
+		_, _ = io.WriteString(c, reply)
+	}()
+	return ln.Addr().(*net.TCPAddr).Port, got
+}
+
+// hxdReadLines reads a dataset of JSON lines through the real egress client from a source on the loopback that answers with reply,
+// and gives the last page's end, the number of rows and the request the source got.
+func hxdReadLines(t *testing.T, reply string) (ingest.Completeness, int, string) {
+	t.Helper()
+	port, request := hxdSocket(t, reply)
+	doc := `{"version":1,"id":"src_hxd","adapter":"http","connection":{"base_url":"http://127.0.0.1:` + strconv.Itoa(port) + `/v1","auth":{"kind":"none"}},` +
+		`"datasets":[{"id":"ds_a","request":{"path":"/export"},"response_format":"json_lines","natural_key":["id"],"columns":[{"name":"id"}]}]}`
+	src, err := ingest.ParseAdapterSource(strings.NewReader(doc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	d, err := egress.New(egress.Config{Policy: egress.Policy{}})
+	if err != nil {
+		t.Fatal(err)
+	}
+	rd, err := httpsource.New(httpsource.Config{Source: src, Connect: httpsource.ViaDialer(d), Clock: kernel.NewManualClock(time.Unix(0, 0).UTC()), Rng: kernel.NewSeededRng(1)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	var end ingest.Completeness
+	rows := 0
+	for p, err := range rd.ReadPages(scCtx, "src_hxd", src.Datasets[0], ingest.PageOptions{}) {
+		if err != nil {
+			t.Fatalf("the read failed: %v", err)
+		}
+		rows += len(p.Rows)
+		if p.Last {
+			end = p.End
+		}
+	}
+	return end, rows, <-request
+}
+
+// [REQ-901]
+// The end mark is read from a real connection: a body that ends where the connection closes, with no length and no last chunk, is
+// only what was seen; a body with a length, or the last chunk, is whole; and a compressed body that has no bytes at all (which a client
+// that unpacks it would read as a clean end) is only what was seen. The request asks the source not to compress.
+func TestHxdTheEndMarkOfARealConnectionDecidesWhatIsWhole(t *testing.T) {
+	body := `{"id":"a"}` + "\n" + `{"id":"b"}` + "\n"
+	for _, c := range []struct {
+		name, reply string
+		seen        bool
+		rows        int
+	}{
+		{"closed with no mark", "HTTP/1.1 200 OK\r\nConnection: close\r\n\r\n" + body, true, 2},
+		{"a length", "HTTP/1.1 200 OK\r\nContent-Length: " + strconv.Itoa(len(body)) + "\r\n\r\n" + body, false, 2},
+		{"chunked", "HTTP/1.1 200 OK\r\nTransfer-Encoding: chunked\r\n\r\n" + strconv.FormatInt(int64(len(body)), 16) + "\r\n" + body + "\r\n0\r\n\r\n", false, 2},
+		{"a compressed body of no bytes", "HTTP/1.1 200 OK\r\nContent-Encoding: gzip\r\nConnection: close\r\n\r\n", true, 0},
+	} {
+		end, rows, request := hxdReadLines(t, c.reply)
+		if end.SeenOnly != c.seen || end.Complete == c.seen || rows != c.rows {
+			t.Errorf("%s: %+v, rows %d", c.name, end, rows)
+		}
+		if !strings.Contains(strings.ToLower(request), "accept-encoding: identity") {
+			t.Errorf("%s: the request does not ask for no compression:\n%s", c.name, request)
+		}
+	}
+}

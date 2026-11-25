@@ -10114,10 +10114,10 @@
   },
   "go:backend/cmd/praxium::TestHkaTheWebhookCommandsMakeTheSecretShowItOnceAndKeepTheWebhookKeyApartFromTheMasterKey": {
    "kind": "test",
-   "hash": "6088b7c624f21a4b",
-   "asserts": 12,
+   "hash": "8beb942ffd213ae6",
+   "asserts": 18,
    "literals": [
-    "3edb1ce368010763"
+    "b9ff959283a9a792"
    ],
    "precision": [],
    "skips": 0,
@@ -10129,8 +10129,8 @@
   },
   "go:backend/cmd/praxium::TestHkaTheWebhookCommandsRefuseWhatIsWrongAndKeepTheKeyOutsideTheDataFolder": {
    "kind": "test",
-   "hash": "5b7fca0e905cd3be",
-   "asserts": 4,
+   "hash": "3a3a9e9c850a37c0",
+   "asserts": 5,
    "literals": [
     "07ed325ae82c64cf"
    ],
@@ -15205,10 +15205,10 @@
   },
   "go:backend/internal/egress::TestHxbTheOnlyWayToSkipTheVerificationIsTheConfigOfThePins": {
    "kind": "test",
-   "hash": "4bd54ae48f0679fb",
+   "hash": "b502add37b11e0ed",
    "asserts": 3,
    "literals": [
-    "24f87f1eef59a205"
+    "bac67964fac1dcd1"
    ],
    "precision": [],
    "skips": 0,
@@ -15216,7 +15216,7 @@
     "REQ-823"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/egress::TestHxbThePgsourceListOfTLSFieldsIsTheListOfTheType": {
    "kind": "test",
@@ -15250,10 +15250,10 @@
   },
   "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsForTheWaysAround": {
    "kind": "test",
-   "hash": "27810d4f7d90d6ce",
+   "hash": "696d83bd3bf4b7b3",
    "asserts": 5,
    "literals": [
-    "bed0acac56943cf7"
+    "2c10186e329f5f3d"
    ],
    "precision": [],
    "skips": 0,
@@ -15261,14 +15261,14 @@
     "REQ-823"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/egress::TestHxbTheScanOfTheSettingsFailsWhenAPlaceIsGone": {
    "kind": "test",
-   "hash": "79381265f70371c8",
+   "hash": "213e28745b1d7fe1",
    "asserts": 4,
    "literals": [
-    "3263e9dbbc97f7eb"
+    "dfcd334173b643b3"
    ],
    "precision": [],
    "skips": 0,
@@ -15276,7 +15276,7 @@
     "REQ-823"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/egress::TestHxbTheSummaryOfACertificateIsCleaned": {
    "kind": "test",
@@ -15334,6 +15334,51 @@
    "skips": 0,
    "reqs": [
     "REQ-822"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxdABodyCutBeforeItsLastChunkBreaksTheRead": {
+   "kind": "test",
+   "hash": "47f7cc6c18c511cb",
+   "asserts": 5,
+   "literals": [
+    "820353d6238c7fcd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxdABodyThatTheTransportUnpacksIsNeverMarkedAsEnded": {
+   "kind": "test",
+   "hash": "00e36ecbe1aa56d3",
+   "asserts": 4,
+   "literals": [
+    "7d15a1bfd93e92a0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/egress::TestHxdTheEndOfABodyIsMarkedByALengthOrTheLastChunkAndNotByAClosedConnection": {
+   "kind": "test",
+   "hash": "4a1c7f910a5bd0e2",
+   "asserts": 4,
+   "literals": [
+    "8e49b8407422fc01"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
    ],
    "added": "2026-11-25",
    "amended_by": null
@@ -15670,7 +15715,7 @@
   },
   "go:backend/internal/egress::TestTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "f5685ffb7a5dba7d",
+   "hash": "1fb98838405a8ffe",
    "asserts": 6,
    "literals": [
     "c584953f77926789"
@@ -15681,11 +15726,11 @@
     "REQ-661"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/egress::TestTheDialerConnectsToTheLiteralAddressItJudged": {
    "kind": "test",
-   "hash": "371b9470a2d88165",
+   "hash": "1f3c77bb1ee8b97c",
    "asserts": 3,
    "literals": [
     "3a10675d9b7896dc"
@@ -15696,7 +15741,7 @@
     "REQ-661"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/egress::TestTheMetadataAddressOfGoogleOverIPv6IsRefused": {
    "kind": "test",
@@ -16894,10 +16939,25 @@
   },
   "go:backend/internal/hookin::TestHkaABodyThatArrivesTooSlowlyIsGivenUpAtTheDeadline": {
    "kind": "test",
-   "hash": "aff6531613602d18",
+   "hash": "fd18ac62d10ff583",
    "asserts": 6,
    "literals": [
-    "d093494a9dfcfa2d"
+    "97cc852be35413ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaABodyWithANumberThatIsTooBigForAFloatIsStillJSON": {
+   "kind": "test",
+   "hash": "65bbfd916847a697",
+   "asserts": 3,
+   "literals": [
+    "95cf255c1b4fc125"
    ],
    "precision": [],
    "skips": 0,
@@ -16909,10 +16969,10 @@
   },
   "go:backend/internal/hookin::TestHkaACallThatIsProvenByEachTypeIsAcceptedAndMarksTheSignal": {
    "kind": "test",
-   "hash": "89dfce7e9b6bc2a9",
+   "hash": "1a8be15fde18ca2b",
    "asserts": 4,
    "literals": [
-    "7d0459f251b10818"
+    "73c2abaee1c88108"
    ],
    "precision": [],
    "skips": 0,
@@ -16924,10 +16984,25 @@
   },
   "go:backend/internal/hookin::TestHkaAddressesAreTakenFromTheConnectionAndFromTheProxyOnlyWhenTheOperatorSaysSo": {
    "kind": "test",
-   "hash": "364bd67f308715e6",
+   "hash": "86ed9c52680db48d",
    "asserts": 7,
    "literals": [
-    "9e32b0b9528a486c"
+    "1f27604e0ea8364c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAnAddressIsCountedAsItselfWhenIPv4AndAsItsNetworkWhenIPv6": {
+   "kind": "test",
+   "hash": "efcd81f955bbae61",
+   "asserts": 2,
+   "literals": [
+    "028b4098d5b48674"
    ],
    "precision": [],
    "skips": 0,
@@ -16939,10 +17014,25 @@
   },
   "go:backend/internal/hookin::TestHkaAnythingButAPostIsRefusedAndAHookThatCannotBeHandledIsNotOne": {
    "kind": "test",
-   "hash": "421392feb2a9115b",
+   "hash": "c26fea902306d565",
    "asserts": 8,
    "literals": [
-    "16049fe9602bae9b"
+    "386218b55a9e07ff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaAServerThatCannotSetAReadDeadlineTakesNoCallAndSaysSoOnce": {
+   "kind": "test",
+   "hash": "9c22f8f556c696bf",
+   "asserts": 5,
+   "literals": [
+    "99f3295e69ee8379"
    ],
    "precision": [],
    "skips": 0,
@@ -16954,10 +17044,10 @@
   },
   "go:backend/internal/hookin::TestHkaATokenIsProvenWhereItIsMeantToBeAndNowhereElse": {
    "kind": "test",
-   "hash": "d92620178d38873c",
+   "hash": "daedeed6050e54f8",
    "asserts": 4,
    "literals": [
-    "fa14e37a14346a7e"
+    "e3c7a37432a15691"
    ],
    "precision": [],
    "skips": 0,
@@ -16969,10 +17059,10 @@
   },
   "go:backend/internal/hookin::TestHkaAVerifierThatCannotAnswerIsAFailureThatTellsTheCallerNothing": {
    "kind": "test",
-   "hash": "f5d7dbecde41f9b9",
+   "hash": "18cc390b49f7eff2",
    "asserts": 4,
    "literals": [
-    "cb24c3b2cf68c32c"
+    "2bb8a4b279ffb549"
    ],
    "precision": [],
    "skips": 0,
@@ -16984,10 +17074,25 @@
   },
   "go:backend/internal/hookin::TestHkaAWebhookThatIsNotKnownAnswersAsAWrongSecretDoes": {
    "kind": "test",
-   "hash": "199a3d01d9dfd138",
+   "hash": "5fdffbf413b92263",
    "asserts": 4,
    "literals": [
-    "293de046ec707a72"
+    "51c4368d65370b6e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaCallsThatPromiseABigBodyHoldOnlyWhatHasComeAndLeaveTheMemoryToOthers": {
+   "kind": "test",
+   "hash": "4f9962b4b4da2b52",
+   "asserts": 10,
+   "literals": [
+    "d1fdcd65dea4df5b"
    ],
    "precision": [],
    "skips": 0,
@@ -16999,10 +17104,10 @@
   },
   "go:backend/internal/hookin::TestHkaFailuresAreCountedByTheBucketAndNeverLockACallerThatIsRight": {
    "kind": "test",
-   "hash": "750aa06ff00deabb",
+   "hash": "de4792436ef9c2a7",
    "asserts": 6,
    "literals": [
-    "2fbbe253acb8e3b4"
+    "3becb540623d6291"
    ],
    "precision": [],
    "skips": 0,
@@ -17014,10 +17119,10 @@
   },
   "go:backend/internal/hookin::TestHkaNothingBehindTheProofIsReachedByACallThatIsNotProven": {
    "kind": "test",
-   "hash": "24cef1681f8dd6c2",
+   "hash": "705fc0ce4861be98",
    "asserts": 3,
    "literals": [
-    "695bdd47a050a964"
+    "faad421166c2d553"
    ],
    "precision": [],
    "skips": 0,
@@ -17029,10 +17134,40 @@
   },
   "go:backend/internal/hookin::TestHkaOnTheServerTheAccessLogHasNoQueryAndNoOtherAnswerComesOnThePath": {
    "kind": "test",
-   "hash": "a852731a0d3ac29a",
+   "hash": "19071de94644399d",
    "asserts": 10,
    "literals": [
-    "fb606331038220d0"
+    "27716518ae316af1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaSlowBodiesOnTheStackOfTheServerEndAtTheirDeadlinesAndLeaveTheEntranceOpen": {
+   "kind": "test",
+   "hash": "b1cd3ae2c1b2ae12",
+   "asserts": 10,
+   "literals": [
+    "4a7d7dfb19ad1b64"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaSlowCallsOfOneAddressDoNotTakeTheSignedWebhookFromItsRightSender": {
+   "kind": "test",
+   "hash": "c10a5a0493cf4339",
+   "asserts": 13,
+   "literals": [
+    "0017b60eea4ac09c"
    ],
    "precision": [],
    "skips": 0,
@@ -17044,10 +17179,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheBodyIsCheckedAsJSONOnlyForACallThatIsProven": {
    "kind": "test",
-   "hash": "42debf27476d9151",
+   "hash": "e11f5b79fd7a27c6",
    "asserts": 6,
    "literals": [
-    "d6addfa5b62af482"
+    "a6969ff59f614735"
    ],
    "precision": [],
    "skips": 0,
@@ -17059,10 +17194,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheEntranceHasRoomForSoManyCallsAndSoMuchBody": {
    "kind": "test",
-   "hash": "526dcb0475a33191",
-   "asserts": 7,
+   "hash": "877f93c060387c32",
+   "asserts": 8,
    "literals": [
-    "8168ba8bfadb2a68"
+    "ef24f19e8da02faf"
    ],
    "precision": [],
    "skips": 0,
@@ -17074,10 +17209,40 @@
   },
   "go:backend/internal/hookin::TestHkaTheEntranceKeepsToTheLimitsOfTheBody": {
    "kind": "test",
-   "hash": "711284c20fc42934",
+   "hash": "e4f250e1ccef736f",
    "asserts": 6,
    "literals": [
-    "820e6df614baed08"
+    "a3014bd90a76d75f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheFailuresOfAnIPv6NetworkAreOneBucketAndOneLine": {
+   "kind": "test",
+   "hash": "d0ead69b3ebf3041",
+   "asserts": 5,
+   "literals": [
+    "d54092107148279f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheForwardedAddressIsTheLastItemOfAllTheLinesAndNothingElseCounts": {
+   "kind": "test",
+   "hash": "71ca0da40bd34dcf",
+   "asserts": 6,
+   "literals": [
+    "cf40bdc91776d3ed"
    ],
    "precision": [],
    "skips": 0,
@@ -17089,10 +17254,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheLogHoldsNoSecretNoQueryAndNoBodyAndGroupsTheFailures": {
    "kind": "test",
-   "hash": "cbd4a24e210eb7f4",
+   "hash": "3d1435135c9b734c",
    "asserts": 5,
    "literals": [
-    "b1de03cf75debab5"
+    "f395d908a5b4d2e3"
    ],
    "precision": [],
    "skips": 0,
@@ -17104,10 +17269,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheMarksOfAFloodOfWebhooksAndAddressesStayBounded": {
    "kind": "test",
-   "hash": "e7004f4187c23505",
+   "hash": "6973c64c87537ef5",
    "asserts": 3,
    "literals": [
-    "5a90c616c64f1272"
+    "f85ea0780a2d009e"
    ],
    "precision": [],
    "skips": 0,
@@ -17119,10 +17284,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheReadDeadlineIsAskedOfTheClockAndHeldToThirtySeconds": {
    "kind": "test",
-   "hash": "5628002c7f2d28fb",
+   "hash": "4d918c95f1a61be3",
    "asserts": 4,
    "literals": [
-    "5ddab2bf4080e347"
+    "48312056ba3f2081"
    ],
    "precision": [],
    "skips": 0,
@@ -17134,10 +17299,10 @@
   },
   "go:backend/internal/hookin::TestHkaTheSignatureOfStandardWebhooksIsOverTheIDTheTimeAndTheBody": {
    "kind": "test",
-   "hash": "132a2ae13179e8ad",
+   "hash": "2a5c1d773d40a81f",
    "asserts": 5,
    "literals": [
-    "0f7361c2219786b4"
+    "96f68d42fe4b9517"
    ],
    "precision": [],
    "skips": 0,
@@ -17149,10 +17314,40 @@
   },
   "go:backend/internal/hookin::TestHkaTheSourceThatIsStoppedAndTheRateOfTheWebhookAreAnsweredOnlyToACallThatIsProven": {
    "kind": "test",
-   "hash": "c9f7cdc2d63785a9",
+   "hash": "9c71dec8dcea55b3",
    "asserts": 11,
    "literals": [
-    "27d65887c93e92d4"
+    "ff61d0a9aacca9c9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaTheTablesOfMarksNeverGrowPastTheirBoundAndAreEmptiedWhenTheyAreFull": {
+   "kind": "test",
+   "hash": "b3be09eb044cf7da",
+   "asserts": 5,
+   "literals": [
+    "eddf12ba9c9d582d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-862"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/hookin::TestHkaWhatIsRefusedBeforeTheVerifierIsAskedAndWhatIsAskedForAWebhookThatIsNotKnown": {
+   "kind": "test",
+   "hash": "c37dc19530720262",
+   "asserts": 9,
+   "literals": [
+    "2b53b69a818c113e"
    ],
    "precision": [],
    "skips": 0,
@@ -18094,153 +18289,153 @@
   },
   "go:backend/internal/httpsource::TestA408IsSentAgainAndOtherStatusesAreTheRequestsFault": {
    "kind": "test",
-   "hash": "c2698f10188f80ea",
+   "hash": "927d0fa4ec2fc5dd",
    "asserts": 5,
    "literals": [
-    "50a4a5056c8129ce"
+    "7f44a3527242072f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestA429IsSentAgainAfterTheTimeTheSourceAsksFor": {
    "kind": "test",
-   "hash": "1e7d0593aa9a8ebf",
+   "hash": "c4545ca2583ce194",
    "asserts": 5,
    "literals": [
-    "e98187926ac770bf"
+    "23f958c4b3f3121b"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestABodyThatBreaksWhileItIsReadIsAConnectionThatWasLostAndIsSentAgain": {
    "kind": "test",
-   "hash": "42ef3af32e1fae5c",
+   "hash": "9f6f78956a2217f3",
    "asserts": 2,
    "literals": [
-    "76b350db27fa4f76"
+    "8c08ebd5fd63d626"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestABodyThatCannotBeWrittenIsTheProductsFault": {
    "kind": "test",
-   "hash": "366dba78c8a4e74b",
+   "hash": "d06f5896a638e843",
    "asserts": 2,
    "literals": [
-    "cf4b1ea11c713b7a"
+    "6c1dbc0ce67d02f5"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestACancelledReadEndsWithTheErrorOfTheContextAndClosesWhatItOpened": {
    "kind": "test",
-   "hash": "9808cebee7441a3e",
+   "hash": "d6f54b144cf727ae",
    "asserts": 4,
    "literals": [
-    "368529ec3cd0b488"
+    "a2e6fa6b17fb5bcb"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestACertificateAuthorityThatCannotBeUsedIsAConfigurationError": {
    "kind": "test",
-   "hash": "967a50a7def61b47",
+   "hash": "dc05841b9c138f9c",
    "asserts": 4,
    "literals": [
-    "db6773d4c6487fd0"
+    "cf4876880da6f955"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestACheckOfASourceThatIsOffOrCancelledOrOfAnIncompleteFirstResponse": {
    "kind": "test",
-   "hash": "2dae39d642eaacf8",
+   "hash": "9e9e2ac66e6cb99d",
    "asserts": 8,
    "literals": [
-    "aae40f15d8ff252c"
+    "67b4be5e442a41e0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestACheckReadsTheFirstResponseOnlyAndTellsItemByItem": {
    "kind": "test",
-   "hash": "802dfc4a553a8cde",
+   "hash": "304773ff4dec85dc",
    "asserts": 7,
    "literals": [
-    "e5b5daea47abdd66"
+    "3ca0fd63077df3a0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestACheckSaysWhichItemFailedWithTheKindAndTheWordsOfTheFailure": {
    "kind": "test",
-   "hash": "f9053ede25179e9b",
+   "hash": "25f0a385366b5540",
    "asserts": 5,
    "literals": [
-    "876eb724dbbfde9d"
+    "6b526e6ecc29caee"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAConnectionThatBreaksOrTimesOutIsSentAgainButACertificateIsNot": {
    "kind": "test",
-   "hash": "6d6d54db786185da",
+   "hash": "6af41d87faf6a0f4",
    "asserts": 4,
    "literals": [
-    "b2b8305ea7879c85"
+    "be9ddb8b82ff4670"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAContentTypeIsJSONOrTheNameOfAJSONSyntaxOrNothing": {
    "kind": "test",
@@ -18259,528 +18454,528 @@
   },
   "go:backend/internal/httpsource::TestACursorInTheBodyOfAPostReadsThroughThePages": {
    "kind": "test",
-   "hash": "da39fc981668e236",
+   "hash": "3c0c6399743b4f88",
    "asserts": 4,
    "literals": [
-    "5bcd9c68d12eff37"
+    "c04504247f94504b"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestACursorThatDoesNotMoveStopsTheReadAsNotComplete": {
    "kind": "test",
-   "hash": "c43db3e2f2d471af",
+   "hash": "2ed35cb879229683",
    "asserts": 4,
    "literals": [
-    "ac2a734c0172d657"
+    "995ffd3b8010dd31"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestADatasetWithNoPaginationIsOneResponseAndAPathThatIsNoPathIsNoTotalAndNoNext": {
    "kind": "test",
-   "hash": "e319bb15cf047572",
+   "hash": "526b3248b9be1a25",
    "asserts": 4,
    "literals": [
-    "4a88bee723e0ed94"
+    "1ef4851143cb4686"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAddressesTheSourceGaveAreNeverPutInAToken": {
    "kind": "test",
-   "hash": "ee0658eca2612f30",
+   "hash": "68b8690ed53bda23",
    "asserts": 4,
    "literals": [
-    "041711d89c07f7a8"
+    "90c47e96e12daa59"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAFailureWithNoRetryAfterIsSentAgainThreeTimesAfterGrowingWaitsThatTheLimitCaps": {
    "kind": "test",
-   "hash": "41e34176a2a4ca72",
+   "hash": "cf29d165700c8d2a",
    "asserts": 3,
    "literals": [
-    "021ff61297212ac9"
+    "ee817a040ba0934d"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAFullLastPageIsFollowedByAnEmptyOneAndEndsComplete": {
    "kind": "test",
-   "hash": "c3bed940dcbe66ac",
+   "hash": "87aff9372e96aa12",
    "asserts": 4,
    "literals": [
-    "971bf5baa60a9caf"
+    "d676ff30cf932784"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAGetIsTheDefaultAPostNeedsPostReadsAndAPostIsSentOnce": {
    "kind": "test",
-   "hash": "ba3c8f7130b36941",
+   "hash": "4993b1e2d11c5dc7",
    "asserts": 5,
    "literals": [
-    "4c21a05fe5d6ad9f"
+    "b901e47ce8a9d4e4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnAdapterThatSignsInNeedsAWayToOpenSecretsAndAClockAndAConnector": {
    "kind": "test",
-   "hash": "736c0150b5badfe5",
+   "hash": "38749eb7ffd2976b",
    "asserts": 6,
    "literals": [
-    "ea5c498a0f527f32"
+    "34f3a766c1d58e13"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnAddressOfAnotherOriginIsNotFollowed": {
    "kind": "test",
-   "hash": "079f9db640121da8",
+   "hash": "e717d388f8a86152",
    "asserts": 3,
    "literals": [
-    "cbe6b3e87d764d40"
+    "7e3d8b918e8d762a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnAddressThatPointsAtItselfStopsTheReadAsNotComplete": {
    "kind": "test",
-   "hash": "59ceb823d348ce22",
+   "hash": "2448c730ffe5b45e",
    "asserts": 3,
    "literals": [
-    "fa85db5e4883465f"
+    "4053d10537b91d33"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnAnswerBiggerThanTheLimitAfterItIsUnpackedIsAConfigurationError": {
    "kind": "test",
-   "hash": "ef371ad8ad054bf0",
+   "hash": "c66c7a5ff87a1722",
    "asserts": 4,
    "literals": [
-    "bbcb32bc2f0c7303"
+    "ddebbaae7377a990"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnAnswerThatIsNotWhatTheDefinitionExpectsIsAFormatError": {
    "kind": "test",
-   "hash": "7e85d83835d6c81d",
+   "hash": "bde9023a1a53c084",
    "asserts": 2,
    "literals": [
-    "4c3f01288befc826"
+    "72a058cd1eb3da03"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnEmptyDatasetIsOneEmptyCompletePage": {
    "kind": "test",
-   "hash": "e6c2ab616778042d",
+   "hash": "cf477064afe4880b",
    "asserts": 2,
    "literals": [
-    "ae993287a0ff4341"
+    "7ff55547696a5349"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnEndTokenReadsNothingAndAnUnusableTokenReadsFromTheStart": {
    "kind": "test",
-   "hash": "b4e0b2f225461c27",
+   "hash": "1ecfba8a196a49a0",
    "asserts": 4,
    "literals": [
-    "316749e42ca54165"
+    "eb1e0affbf7f796d"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAnErrorOfTheCallersContextIsNotAFailureOfTheSource": {
    "kind": "test",
-   "hash": "33c1686ba9126d4e",
+   "hash": "07ea015767210055",
    "asserts": 3,
    "literals": [
-    "24b5e9da710d77ca"
+    "03219716049bf702"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAPreviewGivesMaskedRowsAndTheExchangesThatMadeThem": {
    "kind": "test",
-   "hash": "b43029c6b01777b3",
+   "hash": "8981b2c6337bcdb1",
    "asserts": 8,
    "literals": [
-    "773f985ea3ec136e"
+    "3512fe27c2dc9db4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAPreviewIsAsBigAsAskedAndHidesWhatTheSourceGaveAsAnAddress": {
    "kind": "test",
-   "hash": "978471679e35b079",
+   "hash": "6099cfa4c24cf33c",
    "asserts": 5,
    "literals": [
-    "0a0cb41a0687f15c"
+    "1add11e6a06042dc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAPreviewThatFailsGivesTheErrorAndNoRows": {
    "kind": "test",
-   "hash": "54f5a207df7c7538",
+   "hash": "93864ea85449c001",
    "asserts": 7,
    "literals": [
-    "70bcba46e6b69339"
+    "b949a0a40b8239fe"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAReaderIsMadeForOneSourceAndOneHttpDatasetAndSourcesThatAreOffAreNotRead": {
    "kind": "test",
-   "hash": "fe5a530f31890cc6",
+   "hash": "64722f3a086d3494",
    "asserts": 6,
    "literals": [
-    "12826652a08d7b57"
+    "88b5d7bd5367055e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAReaderThatWasGivenNoSleepWaitsOnATimer": {
    "kind": "test",
-   "hash": "c4b58244b734c904",
+   "hash": "da93bc8827c59cfc",
    "asserts": 3,
    "literals": [
-    "53095f73a4c90255"
+    "ac7c47680f681abe"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAReaderWithNoObserverTellsNobody": {
    "kind": "test",
-   "hash": "d68ef3cbfa7e009d",
+   "hash": "75ad0a00d11ddebb",
    "asserts": 4,
    "literals": [
-    "13aef0061ce34729"
+    "8994013c23aab4d8"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAReadGoesOnFromTheTokenOfAnyPageAndGivesTheSameRows": {
    "kind": "test",
-   "hash": "de4ae2e1e3414dbd",
+   "hash": "05a976ad22a02cdb",
    "asserts": 4,
    "literals": [
-    "f49cab9fedf5cbb3"
+    "909bcaf6d4cd8043"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestARecordThatIsNotARowIsUnreadableWithWhereItWas": {
    "kind": "test",
-   "hash": "070dfcc71252696f",
+   "hash": "b7edd8ec8504010f",
    "asserts": 5,
    "literals": [
-    "bdabff7627b281ce"
+    "bd1824642b880901"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestARetryAfterLongerThanTheLimitEndsTheReadAtOnce": {
    "kind": "test",
-   "hash": "35129e2b09c285f5",
+   "hash": "d784c96ffd9109a2",
    "asserts": 2,
    "literals": [
-    "a7216e6efa8a18bb"
+    "baf805b83b7425e4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestASecretThatMaySeeNoSuchUseIsTheSettingsFault": {
    "kind": "test",
-   "hash": "837203d0726ba760",
+   "hash": "2667359746c01efd",
    "asserts": 2,
    "literals": [
-    "3fcbfeb208220522"
+    "d0a431e48f8b717c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestASecretWhoseStoreFailsIsTheProductsFaultAndOneAtTheWrongAddressIsRefused": {
    "kind": "test",
-   "hash": "c7f6d84aca4ae1b1",
+   "hash": "6916cf9a174f37f9",
    "asserts": 3,
    "literals": [
-    "de7de432821536ab"
+    "5051d13828f00e14"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAShortPageDoesNotEndTheReadWhileTheTotalIsNotReached": {
    "kind": "test",
-   "hash": "51e1751206ac36e9",
+   "hash": "7336c9464dbe88e1",
    "asserts": 3,
    "literals": [
-    "7a6f7b44cbb6fcda"
+    "e856ba350352f984"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATokenGoesOnWithTheNumbersOfTheLinesAndTheTotal": {
    "kind": "test",
-   "hash": "d736b7197a558874",
+   "hash": "bf8e35233dc0589a",
    "asserts": 5,
    "literals": [
-    "bfca9a2946d418fb"
+    "2302d6fecaea622c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATokenHoldsPositionsAndNothingElse": {
    "kind": "test",
-   "hash": "a4c07ebd4a2dc5ab",
+   "hash": "b531773219693fd1",
    "asserts": 3,
    "literals": [
-    "51faeb2b0b7738c4"
+    "ad626652d63f0687"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATokenRequestAsksForATokenOnceAndSendsItOnEveryRequestAfterwards": {
    "kind": "test",
-   "hash": "e9f32be25a490158",
+   "hash": "20534b7c6b49c3ce",
    "asserts": 5,
    "literals": [
-    "bab6939913c053e1"
+    "16a8d288789533f4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATokenRequestMayBeAFormAndMayChooseTheHeaderAndThePrefix": {
    "kind": "test",
-   "hash": "78af3fd6d6f46841",
+   "hash": "0f4c33529b1c8187",
    "asserts": 4,
    "literals": [
-    "0d7fb50ccb86da80"
+    "9354c81004c5a6ee"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATokenRequestThatFailsIsTheSourcesRefusalOrAFormatError": {
    "kind": "test",
-   "hash": "02cbb9b1cfb14779",
+   "hash": "ad56ba337476c426",
    "asserts": 2,
    "literals": [
-    "81b05ce0d2f5a919"
+    "d1c195bd9e4e7d6f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATokenTheSourceNoLongerAcceptsIsAskedForOnceMore": {
    "kind": "test",
-   "hash": "ca4055700b726069",
+   "hash": "9e8d21081b537ba8",
    "asserts": 4,
    "literals": [
-    "aa14af235cbd6975"
+    "aa7b5cc3ba273c56"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestATotalThatIsNotWhatWasReadMakesTheReadNotComplete": {
    "kind": "test",
-   "hash": "684c441e9e68641a",
+   "hash": "07f4d39ba4eeb952",
    "asserts": 4,
    "literals": [
-    "5d681749c3591f59"
+    "1c02db760cf3917c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAWaitThatFailsEndsTheReadWithItsError": {
    "kind": "test",
-   "hash": "b55e0aa4579b395c",
+   "hash": "c5d03bd5dc350a98",
    "asserts": 3,
    "literals": [
-    "34cf5fe6411cdd46"
+    "1a958e25f76d2dea"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestAWrappedSecretPrintsAsNothingInEveryWay": {
    "kind": "test",
@@ -18797,395 +18992,408 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestCompressedNoteSaysTheSourceIgnoredIdentity": {
+   "kind": "test",
+   "hash": "3fbfca72261f3875",
+   "asserts": 4,
+   "literals": [
+    "0894b08e2865357c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestEachKindOfAuthenticationSignsTheRequestAndNothingElseDoes": {
    "kind": "test",
-   "hash": "6954edb1b156b495",
+   "hash": "7f06ccd35294686b",
    "asserts": 5,
    "literals": [
-    "1d5f1f9e97915071"
+    "53001db2f0bf009a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestEachReadMakesItsOwnClientWithTheTimeoutAndTheCertificateAuthorityOfTheConnection": {
    "kind": "test",
-   "hash": "4808a0c916102f28",
+   "hash": "350241b1cde51bca",
    "asserts": 4,
    "literals": [
-    "13835ae2e3ef11c5"
+    "d6d5508c9dfd29a9"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestEventsAreToldWhatHappenedAndHaveNoFieldForAValue": {
    "kind": "test",
-   "hash": "a2f06cafb16d515d",
+   "hash": "c87a8dc40fe43645",
    "asserts": 9,
    "literals": [
-    "27a8190b277f9e37"
+    "956e8ba2550785cf"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestEveryFailureOfTheConnectionIsOneOfTheClosedKindsWithItsClass": {
    "kind": "test",
-   "hash": "87a38298ff46ba68",
+   "hash": "ce7330bf75a577c8",
    "asserts": 4,
    "literals": [
-    "077b1dc158f2aca1"
+    "c618224e03f4957c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestEveryKindOfPaginationReadsTheWholeDatasetAndEndsComplete": {
    "kind": "test",
-   "hash": "d94119fb1c1b175d",
+   "hash": "1ef82416d21a0276",
    "asserts": 7,
    "literals": [
-    "14c51846ed115f3b"
+    "020f9ce2e37e8b9e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfACursorThatHoldsASecretIsNotPutInAToken": {
    "kind": "test",
-   "hash": "3c2709443bfba660",
+   "hash": "4f21d0793a4692ec",
    "asserts": 6,
    "literals": [
-    "aafabbf20061afb2"
+    "8cd6f8338402e7b8"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfACursorWithNoSecretStaysInTheToken": {
    "kind": "test",
-   "hash": "e9b75a2c3a90bf24",
+   "hash": "728c875dee6daa25",
    "asserts": 4,
    "literals": [
-    "b170d88ac4a4f589"
+    "23ae6ed860ce6de2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfAnAnswerThatIsNotTheShapeIsAFailureAtTheFirstPlaceItIsSeen": {
    "kind": "test",
-   "hash": "d1c410e28f73fff9",
+   "hash": "560a4660ea25bcd0",
    "asserts": 4,
    "literals": [
-    "490596f8b5317920"
+    "641ffeddfda67733"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfAPlaceInsideARecordAndABooleanAreReadByThePagination": {
    "kind": "test",
-   "hash": "f46fdc0e7be56e07",
+   "hash": "9ff8bf27e0bafe23",
    "asserts": 5,
    "literals": [
-    "6d03546d41092fab"
+    "024cd6a48a5928bc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfARecordHasAMostOfTwoMebibytes": {
    "kind": "test",
-   "hash": "3d69d9022bfc2b18",
+   "hash": "a20d959f82979285",
    "asserts": 5,
    "literals": [
-    "23418aa8f1ab488e"
+    "d24a8312a3239624"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfARecordIsNeverGivenTwiceWhenABodyBreaksAndTheRequestIsSentAgain": {
    "kind": "test",
-   "hash": "c52c073741bc8ce7",
+   "hash": "0c3db078b4ac50a8",
    "asserts": 5,
    "literals": [
-    "a28e776126a61a08"
+    "ff9e9f5ce8489b69"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfARecordWhoseKeyIsASecretHasNoSecretInItsRow": {
    "kind": "test",
-   "hash": "b93e6423ee0d5da6",
+   "hash": "b15ffda225ecaadf",
    "asserts": 4,
    "literals": [
-    "2c69577f086892ad"
+    "b451633c1e6800cc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfARequestSentAgainAfterABrokenBodyMayFailInItsWaitOrItsAnswer": {
    "kind": "test",
-   "hash": "ad8dc486e730ebd7",
+   "hash": "5534ce5f91bd29ac",
    "asserts": 4,
    "literals": [
-    "7fccc8712bbd2380"
+    "6be94300df02dfce"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfARetryAfterThatOverflowsIsLongerThanTheLimit": {
    "kind": "test",
-   "hash": "d069c9c96349ef76",
+   "hash": "00cb4eb5fd78ec5a",
    "asserts": 5,
    "literals": [
-    "af8a58ecbbaabd0f"
+    "8400e04f0b6b9249"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-694"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfASecretEchoedIntoTheNextPathIsInNoEventAndNoExchange": {
    "kind": "test",
-   "hash": "af8105317cd9da25",
+   "hash": "38fc2c744dc4899f",
    "asserts": 7,
    "literals": [
-    "f2a493ec92138c58"
+    "448b1bdc05e64693"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfASecretIsTakenOutOfNumbersAndOfEveryDepthOfARecord": {
    "kind": "test",
-   "hash": "654a4420f29c836c",
+   "hash": "f7e1d12bd530e808",
    "asserts": 3,
    "literals": [
-    "df5f3d6228c8515d"
+    "55afbeec5ecffffe"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfATokenIsMadeOncePerPageAndNotOncePerRecord": {
    "kind": "test",
-   "hash": "96748305fa890395",
+   "hash": "03eb4a548119edcc",
    "asserts": 6,
    "literals": [
-    "c010f32b59c5a3c9"
+    "3218e18ef166cd8b"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-693"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfAValueForTheNextPageHasAMostOfEightKibibytes": {
    "kind": "test",
-   "hash": "00f987c471ec8d20",
+   "hash": "ea7577bf938b3654",
    "asserts": 4,
    "literals": [
-    "84cda5653afebb7a"
+    "ff7313d9d3390780"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-693"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfEchoedSecretsAreTakenOutOfTheRowsOfARunAndOfAPreview": {
    "kind": "test",
-   "hash": "b047192f20d49110",
+   "hash": "1c5823dbe0be5b11",
    "asserts": 6,
    "literals": [
-    "67f9c4f276d4e63b"
+    "0466941235ef2572"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfEveryTextOfAnExchangeHasTheValuesTakenOut": {
    "kind": "test",
-   "hash": "c6d7fd62a6f3bbdc",
+   "hash": "863d474746dafeb6",
    "asserts": 5,
    "literals": [
-    "609f3e55b17263c7"
+    "782c51a0bd198e1c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfFailuresOfTheShapeInsideTheParts": {
    "kind": "test",
-   "hash": "3359ce1d7f976b75",
+   "hash": "ad42cbb7dc9f92c3",
    "asserts": 4,
    "literals": [
-    "be7f65e4098ca402"
+    "9b3ccbab555ad7a8"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfTheAnswerToTheRequestForATokenIsSmallAndWhole": {
    "kind": "test",
-   "hash": "38d40b50a73d50d8",
+   "hash": "50695ea18fe0f540",
    "asserts": 4,
    "literals": [
-    "6a4969fb1496f777"
+    "e0746fda6ea2950a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfTheCursorIsLookedAtAsItIsAndNotOnlyInsideTheToken": {
    "kind": "test",
-   "hash": "a23e6486bfe9e5cb",
+   "hash": "c350e37826d29523",
    "asserts": 6,
    "literals": [
-    "5044030994dc94a9"
+    "96f1d0e11f62c669"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-690"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfTheEventOfAResponseHasTheBytesOfTheBodyRead": {
    "kind": "test",
-   "hash": "01488274afd8347b",
+   "hash": "e31687c207179313",
    "asserts": 4,
    "literals": [
-    "4431e3df98c056aa"
+    "6ba8f7f6b6ec6731"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfTheMemoryOfAReadDoesNotFollowTheSizeOfTheAnswer": {
    "kind": "test",
-   "hash": "c53c630acff01d73",
+   "hash": "6be25f133a4dc894",
    "asserts": 3,
    "literals": [
-    "35c4c4864b5d2055"
+    "baca4945d8104b53"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfThePlacesThePaginationReadsAreFoundWhereverTheyAre": {
    "kind": "test",
-   "hash": "80214473e442c5cf",
+   "hash": "5dd9b6050bef27ff",
    "asserts": 6,
    "literals": [
-    "58e32c47439b988e"
+    "a69a10c503fe5c64"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-692"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHsfTheShapesOfASecretAreAllListedAndAShortValueIsNone": {
    "kind": "test",
@@ -19204,33 +19412,33 @@
   },
   "go:backend/internal/httpsource::TestHxaABodyHandedBackAsATextHasNoValueOfTheSecretInTheWayJSONWritesIt": {
    "kind": "test",
-   "hash": "5b2c76deb18ae4f4",
+   "hash": "73b260d28ae2d572",
    "asserts": 8,
    "literals": [
-    "1defb8c2cc63dc14"
+    "40e50d5ff3314cce"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-744"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaABodyPlaceholderIsAValueAndTheStructureStaysWhole": {
    "kind": "test",
-   "hash": "0ef72ff9fbd1555c",
+   "hash": "453031a52e8002fe",
    "asserts": 7,
    "literals": [
-    "ad015ac1c1489ac0"
+    "b8fc01471e3b6828"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-742"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaAnEntryThatNamesNoSourceAddsNothing": {
    "kind": "test",
@@ -19247,33 +19455,33 @@
   },
   "go:backend/internal/httpsource::TestHxaARequestSentAgainAfterA401CarriesTheNewToken": {
    "kind": "test",
-   "hash": "d407fa5b9d73dab8",
+   "hash": "24395326f9632e89",
    "asserts": 5,
    "literals": [
-    "605e66031ba5b54c"
+    "8ce31aa37d1fafa4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-742"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaAShortValueOfTheSecretIsNotCarriedInTheTokenOfAPage": {
    "kind": "test",
-   "hash": "2e9e37579d8238da",
+   "hash": "d49bf567edcf7728",
    "asserts": 4,
    "literals": [
-    "4d81b652969903e8"
+    "751bd1f110de9397"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-744"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaASignerWithoutASecretRefusesWhatNeedsOne": {
    "kind": "test",
@@ -19290,93 +19498,93 @@
   },
   "go:backend/internal/httpsource::TestHxaATokenRequestWithNoBodySendsAnEmptyObject": {
    "kind": "test",
-   "hash": "1ea53c021eb589cc",
+   "hash": "218a0b86b8914348",
    "asserts": 4,
    "literals": [
-    "9bc0dc1f4cb0314f"
+    "eebeefd1e3385a78"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-742"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaAUserNameInTheDataChangesNoRowAndNoKey": {
    "kind": "test",
-   "hash": "e41c4b86432bbeb0",
+   "hash": "4188573b6fd451f6",
    "asserts": 12,
    "literals": [
-    "8734f2b22f08878c"
+    "7752dfa9617d6082"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-744"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaAValueForAHeaderIsRefusedBeforeTheRequestForTheToken": {
    "kind": "test",
-   "hash": "62891fc54248d24a",
+   "hash": "fc023b1416bc9d1b",
    "asserts": 4,
    "literals": [
-    "aebc8ef63fa1fdee"
+    "21755ab1c21fe66a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-743"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaAValueThatCannotBeAHeaderIsNotSentAndNotRetried": {
    "kind": "test",
-   "hash": "6c72a32775043290",
+   "hash": "db1ce6987f9d3643",
    "asserts": 16,
    "literals": [
-    "f2dedae6acf11f0b"
+    "0b93976dfe4edec4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-743"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaBasicCredentialsAndATokenThatIsTheWholeBody": {
    "kind": "test",
-   "hash": "30c9e64a0e93170d",
+   "hash": "adc0fe8f679528a2",
    "asserts": 11,
    "literals": [
-    "e98d4bc00de395e8"
+    "c14b2a7849c4530c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-740"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaEveryFieldOfTheOpenSecretIsTakenOutWhicheverDatasetIsRead": {
    "kind": "test",
-   "hash": "3ebc052cb98beb66",
+   "hash": "a25f951b2b0c65ce",
    "asserts": 8,
    "literals": [
-    "03f7c1cf06fae4d5"
+    "04e85153cb02ac57"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-744"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaTheFieldsThatMustHaveAValueAreTheUnionOfTheKindAndTheBody": {
    "kind": "test",
@@ -19393,48 +19601,48 @@
   },
   "go:backend/internal/httpsource::TestHxaTheHeadersOfTheAuthenticationCarryTheSecretAndTheToken": {
    "kind": "test",
-   "hash": "e2ae6c76e4fa3115",
+   "hash": "38c702f082607789",
    "asserts": 7,
    "literals": [
-    "8a3b125279733dda"
+    "a01d4df8dad5c2f1"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-741"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaTheKindBasicRefusesAUserNameWithAColon": {
    "kind": "test",
-   "hash": "c385503d934a490e",
+   "hash": "58377280c5f4aa94",
    "asserts": 4,
    "literals": [
-    "66177c050ebc876d"
+    "c798ddcbe9859cf3"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-740"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxaWhatAPlaceOfTheSecretGivesIsTakenOutWhenTheSourceHandsItBack": {
    "kind": "test",
-   "hash": "2f84944bec207974",
+   "hash": "e3a2487d874a1a79",
    "asserts": 14,
    "literals": [
-    "50c342b073a26d87"
+    "e11d99c6c20d49b2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-744"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxbACheckShowsTheCertificateThatFailed": {
    "kind": "test",
@@ -19498,10 +19706,10 @@
   },
   "go:backend/internal/httpsource::TestHxcACheckTellsTheTokenRequestAsAnItemOfItsOwn": {
    "kind": "test",
-   "hash": "fa69539cd929be91",
+   "hash": "ce2d745ea0e7b9e8",
    "asserts": 6,
    "literals": [
-    "b1d66caa4f02dff1"
+    "c17a520fa2835d0a"
    ],
    "precision": [],
    "skips": 0,
@@ -19509,14 +19717,14 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcAfterA401TheTokenIsAskedForAgainAndTheOldOneGoesToNoServerOfTheTwo": {
    "kind": "test",
-   "hash": "400da73c2f17a3e2",
+   "hash": "99806c5ff3517179",
    "asserts": 5,
    "literals": [
-    "1c88bbe0063e4d1a"
+    "d1373e849aca51b6"
    ],
    "precision": [],
    "skips": 0,
@@ -19524,14 +19732,14 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcALifetimeThatCannotBeReadIsToldOnceInARead": {
    "kind": "test",
-   "hash": "980d9ff6a517aa36",
+   "hash": "3e82f74d87ab305d",
    "asserts": 8,
    "literals": [
-    "7550d6866764ddc8"
+    "cf1a211da0e4dbcb"
    ],
    "precision": [],
    "skips": 0,
@@ -19539,14 +19747,14 @@
     "REQ-842"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcAnErrorOfTheTokenRequestKeepsItsKindAndDetail": {
    "kind": "test",
-   "hash": "76b43cf0d2a0cf3c",
+   "hash": "379c00d2067b83f8",
    "asserts": 3,
    "literals": [
-    "715e8ce32bef98cb"
+    "3038c62452752d45"
    ],
    "precision": [],
    "skips": 0,
@@ -19554,7 +19762,7 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcAPortThatIsNoPortIsRefusedByTheReader": {
    "kind": "test",
@@ -19573,10 +19781,10 @@
   },
   "go:backend/internal/httpsource::TestHxcAReaderRefusesATokenAddressThatIsNoAddress": {
    "kind": "test",
-   "hash": "b2934d26ec04394e",
+   "hash": "8aea1f479f58aea0",
    "asserts": 6,
    "literals": [
-    "72937d08f563d9a3"
+    "d8034706ff4ed1be"
    ],
    "precision": [],
    "skips": 0,
@@ -19584,14 +19792,14 @@
     "REQ-840"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcARequestOfTheAPIThatHasASecretIsRefusedWhereItIsMadeToo": {
    "kind": "test",
-   "hash": "a349136e16c0e72d",
+   "hash": "2009c598bcdd56c7",
    "asserts": 10,
    "literals": [
-    "775d97f76784e714"
+    "1f56d7f2b4c6adc6"
    ],
    "precision": [],
    "skips": 0,
@@ -19599,14 +19807,14 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcARequestThatIsSentAgainAfterABrokenBodyHasATokenThatHolds": {
    "kind": "test",
-   "hash": "1a9ca5c3ab296799",
+   "hash": "b0eec94efa45b0d4",
    "asserts": 4,
    "literals": [
-    "bd589960ced0021a"
+    "26368431546c194e"
    ],
    "precision": [],
    "skips": 0,
@@ -19614,14 +19822,14 @@
     "REQ-842"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcASecretInARequestOfTheAPIIsRefusedBeforeTheTokenRequest": {
    "kind": "test",
-   "hash": "cf9f65470b67fc64",
+   "hash": "8c5388850bf5e098",
    "asserts": 8,
    "literals": [
-    "97cbe3df4b9a179b"
+    "b9069ccf92062e88"
    ],
    "precision": [],
    "skips": 0,
@@ -19629,14 +19837,14 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcASecretThatDoesNotAllowTheTokenHostSendsNothingAnywhere": {
    "kind": "test",
-   "hash": "379eba600605f6c1",
+   "hash": "5a7786b4a057baf5",
    "asserts": 7,
    "literals": [
-    "2016cd365d440be7"
+    "7f34c50a5f957d86"
    ],
    "precision": [],
    "skips": 0,
@@ -19644,14 +19852,14 @@
     "REQ-845"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcASignerGivesTheTokenRequestTheCredentialsAndTheAPITheToken": {
    "kind": "test",
-   "hash": "b29b0b1309e3f1d6",
+   "hash": "23d091b7a1bda217",
    "asserts": 11,
    "literals": [
-    "d7044dc5de3a6177"
+    "3a90b107062a5e41"
    ],
    "precision": [],
    "skips": 0,
@@ -19659,14 +19867,14 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcATokenIsAskedForAgainBeforeItEndsOnTheClockOfTheReader": {
    "kind": "test",
-   "hash": "7fff35641e7e096d",
+   "hash": "3be81d8c38b94fd8",
    "asserts": 5,
    "literals": [
-    "cb028858d65e7c46"
+    "54112d70f28687e3"
    ],
    "precision": [],
    "skips": 0,
@@ -19674,14 +19882,14 @@
     "REQ-842"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcATokenThatIsTooLongOrCannotBeAHeaderIsRefusedBeforeItIsSent": {
    "kind": "test",
-   "hash": "3c353bed7a62799d",
+   "hash": "9d7a64cdb2534894",
    "asserts": 5,
    "literals": [
-    "43d5265f14cd06a3"
+    "0afdafbb99a3b32f"
    ],
    "precision": [],
    "skips": 0,
@@ -19689,14 +19897,14 @@
     "REQ-842"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcAWholeAddressOfTheAPIsOwnOriginIsTheAPIsHost": {
    "kind": "test",
-   "hash": "12ca9b8660404687",
+   "hash": "58c91afa3e02d1b5",
    "asserts": 3,
    "literals": [
-    "fdb7699e5fedd606"
+    "ebaae043287016c6"
    ],
    "precision": [],
    "skips": 0,
@@ -19704,14 +19912,14 @@
     "REQ-840"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcEachHostHasItsOwnCertificateAuthority": {
    "kind": "test",
-   "hash": "445f56133b86f93b",
+   "hash": "415f8d8f30d5ff23",
    "asserts": 10,
    "literals": [
-    "d818c37b27681647"
+    "017972cb7a082e7c"
    ],
    "precision": [],
    "skips": 0,
@@ -19719,14 +19927,14 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcRealEgressACertificateAuthorityThatCannotBeUsedForTheTokenHostIsRefused": {
    "kind": "test",
-   "hash": "bc681e52bff6d247",
+   "hash": "b15ccf59a374633e",
    "asserts": 4,
    "literals": [
-    "a92908fbffcd9cca"
+    "4d89ae3cbb5f1832"
    ],
    "precision": [],
    "skips": 0,
@@ -19734,14 +19942,14 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcRealEgressATokenRequestWithoutTLSToAnAddressThatIsNotTheLoopbackIsRefused": {
    "kind": "test",
-   "hash": "52ab36687af03d3d",
+   "hash": "1a71753b6fddf617",
    "asserts": 3,
    "literals": [
-    "ca333d17c06c92af"
+    "b8d18d4d7de0f7f5"
    ],
    "precision": [],
    "skips": 0,
@@ -19749,14 +19957,14 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcRealEgressThePolicyJudgesTheTokenHostToo": {
    "kind": "test",
-   "hash": "1d95ab75841fcb86",
+   "hash": "c5302ad968ffbd42",
    "asserts": 4,
    "literals": [
-    "8322f8ec12f5e2e9"
+    "ef7fd9db0da25855"
    ],
    "precision": [],
    "skips": 0,
@@ -19764,14 +19972,14 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheAddressOfEachRequestIsItsOwnHost": {
    "kind": "test",
-   "hash": "a9d092c619b5d43b",
+   "hash": "03051dd95e367432",
    "asserts": 5,
    "literals": [
-    "49ef2cb034fc571d"
+    "3ef93cc17ddf26c4"
    ],
    "precision": [],
    "skips": 0,
@@ -19779,7 +19987,7 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheCheckAndTheAdapterTellTheOriginTheSameWay": {
    "kind": "test",
@@ -19798,10 +20006,10 @@
   },
   "go:backend/internal/httpsource::TestHxcTheClientInABasicHeaderAndTheKeyInAJSONBodyGoToTheTokenHostToo": {
    "kind": "test",
-   "hash": "355b62528116a5de",
+   "hash": "f82ef9cc9e888490",
    "asserts": 8,
    "literals": [
-    "87bb398a3988c6d4"
+    "796b4d8496e0eb07"
    ],
    "precision": [],
    "skips": 0,
@@ -19809,14 +20017,14 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheClientOfTheTokenHostLivesAsLongAsTheRead": {
    "kind": "test",
-   "hash": "198802080c772cfa",
+   "hash": "e00bc516d98679ae",
    "asserts": 4,
    "literals": [
-    "3216fae81969854d"
+    "0d436e05b9beccbc"
    ],
    "precision": [],
    "skips": 0,
@@ -19824,14 +20032,14 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheCredentialsGoToTheTokenHostAndTheTokenToTheAPIOnly": {
    "kind": "test",
-   "hash": "d83964442df9af61",
+   "hash": "7667ee3ac60858cf",
    "asserts": 10,
    "literals": [
-    "f6228e645c48a5d9"
+    "f9c85ec816fec5fc"
    ],
    "precision": [],
    "skips": 0,
@@ -19839,14 +20047,14 @@
     "REQ-841"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheEventsOfTheTokenRequestSayTheHostItWentTo": {
    "kind": "test",
-   "hash": "f8e33b04f51e96ec",
+   "hash": "b2001ca8721ca23f",
    "asserts": 11,
    "literals": [
-    "a67c81926c337de1"
+    "d5bf37c4fc6762e7"
    ],
    "precision": [],
    "skips": 0,
@@ -19854,7 +20062,7 @@
     "REQ-844"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheLifetimeOfATokenIsKeptBetweenTheShortestAndTheLongest": {
    "kind": "test",
@@ -19871,10 +20079,10 @@
   },
   "go:backend/internal/httpsource::TestHxcTheReasonOfMaxPagesSaysHowManyRequestsWereForATokenToo": {
    "kind": "test",
-   "hash": "beb0dd5ace37a9c7",
+   "hash": "6754bb3830adda58",
    "asserts": 8,
    "literals": [
-    "72ab4e2df09e9448"
+    "545cb09f3d451dab"
    ],
    "precision": [],
    "skips": 0,
@@ -19882,14 +20090,14 @@
     "REQ-842"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheSecretIsOpenedForTheAPIAndForTheTokenHost": {
    "kind": "test",
-   "hash": "4f39d93dbc80e5d0",
+   "hash": "eff00447c79a11dd",
    "asserts": 7,
    "literals": [
-    "f9b963fd68df431e"
+    "8ec2ded9a7a06dbf"
    ],
    "precision": [],
    "skips": 0,
@@ -19897,14 +20105,14 @@
     "REQ-845"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTheTokenRequestIsCountedInTheRequestsOfARead": {
    "kind": "test",
-   "hash": "e103ae42213c3941",
+   "hash": "763cf76ae5eb68e6",
    "asserts": 4,
    "literals": [
-    "c0bd26100914acea"
+    "ec17529b07d6d27a"
    ],
    "precision": [],
    "skips": 0,
@@ -19912,37 +20120,472 @@
     "REQ-842"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestHxcTokensAskedForAgainBecauseOfA401AreWithinABudget": {
    "kind": "test",
-   "hash": "fd303fa47a17a943",
+   "hash": "e157a983864d0794",
    "asserts": 7,
    "literals": [
-    "bbcd7145d27f7c48"
+    "8307f4849e847f92"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-842"
+   ],
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
+  },
+  "go:backend/internal/httpsource::TestHxdABodyOfLinesWithNoValueIsOnlyWhatWasSeen": {
+   "kind": "test",
+   "hash": "0f9d45d79052a32d",
+   "asserts": 6,
+   "literals": [
+    "326aba3abd1a60a7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdABodyThatBreaksGivesTheLinesThatWereReadAndIsNotSentAgain": {
+   "kind": "test",
+   "hash": "99db61397a960e74",
+   "asserts": 5,
+   "literals": [
+    "c8528b3a0cb26093"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdABodyThatBreaksInsideARecordLosesNoElement": {
+   "kind": "test",
+   "hash": "dca0248be32d1d88",
+   "asserts": 5,
+   "literals": [
+    "b7701ab2c5946040"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-906"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdABodyWithNoMarkOfItsEndIsOnlyWhatWasSeen": {
+   "kind": "test",
+   "hash": "c7ab71e9163c4f27",
+   "asserts": 4,
+   "literals": [
+    "1094cb7ecedfc486"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdACanceledReadOfLinesIsNotACut": {
+   "kind": "test",
+   "hash": "552424d6f12a97f8",
+   "asserts": 2,
+   "literals": [
+    "b3de8bccd88adb26"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdACheckReadsTheFirstLinesOnly": {
+   "kind": "test",
+   "hash": "e893dd9dcd7ad667",
+   "asserts": 3,
+   "literals": [
+    "067be430bc19d9e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-902"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdACutLastLineIsLeftOutWithNoMarkAndAFailureWithOne": {
+   "kind": "test",
+   "hash": "71be470234f49517",
+   "asserts": 5,
+   "literals": [
+    "11865da911a453f4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdAFaultOfTheShapeWinsOverABreak": {
+   "kind": "test",
+   "hash": "0e163190caa4b7a0",
+   "asserts": 5,
+   "literals": [
+    "863c487c67578f87"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdALineThatCannotBeReadMakesTheDatasetNotComplete": {
+   "kind": "test",
+   "hash": "ab4b992046612a47",
+   "asserts": 8,
+   "literals": [
+    "ecd4de2d3db95ac7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdAnElementThatIsNoObjectFailsAndRecordsThatMadeNoRowAreOnlyWhatWasSeen": {
+   "kind": "test",
+   "hash": "c953613d6bcf9e1b",
+   "asserts": 12,
+   "literals": [
+    "d9043f323f2dfc3f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdAPageIsCutInsideARecordAndTheTokenGoesOnFromItsStart": {
+   "kind": "test",
+   "hash": "d2c5385d7059098e",
+   "asserts": 8,
+   "literals": [
+    "762d68eb633727c6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-906"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdAPreviewReadsLines": {
+   "kind": "test",
+   "hash": "813704f99e7c3c27",
+   "asserts": 2,
+   "literals": [
+    "e3f5416624254519"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-900"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdAReadThatGoesOnFromATokenKnowsTheRecordsBeforeItThatHadNoArray": {
+   "kind": "test",
+   "hash": "129ce51604e350f3",
+   "asserts": 12,
+   "literals": [
+    "7c49c315a1f63c8c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-906"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdARecordOfAnotherKindIsNotARecordWithNoArray": {
+   "kind": "test",
+   "hash": "a4d785b95e49adfe",
+   "asserts": 7,
+   "literals": [
+    "79a4dcdaf04181bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdARecordWithMoreElementsThanTheLimitFails": {
+   "kind": "test",
+   "hash": "e51b1d56514d472c",
+   "asserts": 4,
+   "literals": [
+    "c46abad99c9aba2e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdARecordWithNoArrayMakesTheDatasetOnlyWhatWasSeen": {
+   "kind": "test",
+   "hash": "c9617a4dcb3ac885",
+   "asserts": 4,
+   "literals": [
+    "c0c04d79d5246d0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdATokenIsNotUsedForLines": {
+   "kind": "test",
+   "hash": "fbcdf57cb7525856",
+   "asserts": 2,
+   "literals": [
+    "8fbca75344c0dfe1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdJSONLinesAreRecordsAndTheReadIsOneRequestWithNoToken": {
+   "kind": "test",
+   "hash": "53b4bcb82d1ebd5e",
+   "asserts": 7,
+   "literals": [
+    "08e3611dd8597c84"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-900"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdLinesWithARecordWithNoArrayAreOnlyWhatWasSeen": {
+   "kind": "test",
+   "hash": "70d69a1f4229f020",
+   "asserts": 5,
+   "literals": [
+    "ca86f9b88a4c019a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdMissingArrayEmptyDoesNotMakeADatasetOfRecordsWithNoArrayAtAllComplete": {
+   "kind": "test",
+   "hash": "af80c08f8745c94a",
+   "asserts": 4,
+   "literals": [
+    "a8ef655dac9f786d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdMissingArrayEmptyKeepsTheDatasetCompleteAndAValueThatIsNoArrayFails": {
+   "kind": "test",
+   "hash": "69b4d56d452c7320",
+   "asserts": 5,
+   "literals": [
+    "441bc496eed9069b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdNoContentIsNoRecordsForLines": {
+   "kind": "test",
+   "hash": "dfdb283a830ba41a",
+   "asserts": 3,
+   "literals": [
+    "d28601d3604616a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-900"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdOneRecordWithManyElementsIsCutIntoPages": {
+   "kind": "test",
+   "hash": "d2e2e670ccb5fe21",
+   "asserts": 3,
+   "literals": [
+    "ce4570abf01af615"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-906"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdTheElementsOfTheArraysAreTheRecordsInTheOrderOfTheAnswer": {
+   "kind": "test",
+   "hash": "0b12ae3bc3476021",
+   "asserts": 6,
+   "literals": [
+    "9611bb3d2d45fc72"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdTheLimitsOfTheBodyHoldForLines": {
+   "kind": "test",
+   "hash": "5a37142f59200e92",
+   "asserts": 4,
+   "literals": [
+    "68b0d810e401a685"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-900"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdTheOuterRecordIsTheLineForLinesAndTheArrayOfThemForAValue": {
+   "kind": "test",
+   "hash": "0ae1d03ad448817a",
+   "asserts": 7,
+   "literals": [
+    "655660f8ae6485c2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdThePagesAreCountedByTheOuterRecords": {
+   "kind": "test",
+   "hash": "6d4870eb39f979c9",
+   "asserts": 8,
+   "literals": [
+    "8102760a9718dc4a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-904"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdTheRecordOfALineIsAtRecordsPathAndALineWithNothingThereFailsTheDataset": {
+   "kind": "test",
+   "hash": "4a855daa9aaf3e09",
+   "asserts": 4,
+   "literals": [
+    "782d67d81fb583e8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-900"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxdTheRowsOfOneResponseAreBoundedByFourTimesTheBytesOfTheResponseLimit": {
+   "kind": "test",
+   "hash": "0f89d596aa7f38b0",
+   "asserts": 7,
+   "literals": [
+    "133b7519853422a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-909"
    ],
    "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestLeavingTheLoopClosesTheClientAndTheBodies": {
    "kind": "test",
-   "hash": "cef43298bf266c4d",
+   "hash": "b682e72a564e901b",
    "asserts": 3,
    "literals": [
-    "a7987167af9666fa"
+    "b31e72b49b6923d2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestLinkHeadersAreReadWithManyLinksAndRelations": {
    "kind": "test",
@@ -19961,172 +20604,172 @@
   },
   "go:backend/internal/httpsource::TestMaxPagesStopsTheReadAsNotComplete": {
    "kind": "test",
-   "hash": "829d65802e549938",
+   "hash": "bb038cbdfcd8fe9c",
    "asserts": 4,
    "literals": [
-    "cda880b69b6818c6"
+    "e187f25a35bd400c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestNoSecretValueIsInAnyErrorEventResultOrPrintOfTheReader": {
    "kind": "test",
-   "hash": "e4aa2f39f8fb4544",
+   "hash": "2059b29482180017",
    "asserts": 8,
    "literals": [
-    "71535440850ce215"
+    "3ca9b727dd197e01"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestPageNumbersStartWhereTheDefinitionSays": {
    "kind": "test",
-   "hash": "b4387aa2f26e9f74",
+   "hash": "14aea8927d178e70",
    "asserts": 5,
    "literals": [
-    "e7dd87773d12000d"
+    "8f834a36b1c61a59"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestRetryAfterMayBeADate": {
    "kind": "test",
-   "hash": "7304ed32d51be9ff",
+   "hash": "857090f072319ee4",
    "asserts": 4,
    "literals": [
-    "cb239c13ea20cebd"
+    "355a8585af5673ea"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheBodyOfAPostKeepsNumbersArraysAndBooleansAndACursorThatLooksLikeANumberStaysText": {
    "kind": "test",
-   "hash": "a8ff5707910a807d",
+   "hash": "4f41f3ba6b523199",
    "asserts": 6,
    "literals": [
-    "4a1d0dd1a7d82888"
+    "97a013aea5cf04c6"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheHeadersOfTheConnectionGoOnEveryRequestAndTheAuthenticationWinsTheSameName": {
    "kind": "test",
-   "hash": "41405e5a19532b9d",
+   "hash": "899265a33b4e2713",
    "asserts": 4,
    "literals": [
-    "e1808d406794a021"
+    "eb098e252bf90307"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheOtherKindsStopAtOnceOnA401And403AndDoNotAskAgain": {
    "kind": "test",
-   "hash": "8aa54d964cf3edb2",
+   "hash": "dc813522c859e91f",
    "asserts": 2,
    "literals": [
-    "b4cd84039096afb4"
+    "09bf03e8e8396829"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestThePagesAreCutByTheSharedRulesWhateverTheSizeOfAResponse": {
    "kind": "test",
-   "hash": "8b6c2d50c73de962",
+   "hash": "ad142ebcf18edd08",
    "asserts": 5,
    "literals": [
-    "8b61c993e78b7ff3"
+    "5143b4ba81fff1fd"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestThePlainHeadersOfTheConnectionAreNeverCompressedByTheAdapter": {
    "kind": "test",
-   "hash": "d5198fcf357c7e56",
+   "hash": "4bbb42baf5d7166d",
    "asserts": 3,
    "literals": [
-    "0cdab4e2e35d5e3c"
+    "9dabc52dea03c508"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheQueryAndThePathAreMadeFromTheDefinitionWithTheBracesUnescaped": {
    "kind": "test",
-   "hash": "06c59911f4e8c342",
+   "hash": "c296cec956342e8f",
    "asserts": 3,
    "literals": [
-    "7782756604d65724"
+    "7b59546f75f87141"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheRecordsMayBeTheWholeDocumentOrNullOrNothing": {
    "kind": "test",
-   "hash": "a004f29371b250ea",
+   "hash": "12a09b10ad292d8c",
    "asserts": 9,
    "literals": [
-    "8902b4479efbedc5"
+    "cea294b5ac5ca493"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "c9163020373e36c5",
+   "hash": "00a79ed3f4c52252",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -20137,52 +20780,52 @@
     "REQ-662"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheRequestsAreSpacedByTheRateOfTheConnection": {
    "kind": "test",
-   "hash": "8c98c2029d57494c",
+   "hash": "ca266f0e6d285751",
    "asserts": 3,
    "literals": [
-    "d4a48b5306096ead"
+    "fd6f56946a29f03c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-664"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheSameAnswerTwiceInARowStopsTheReadAsNotComplete": {
    "kind": "test",
-   "hash": "5609d0bc8be1e079",
+   "hash": "af33063d610bc1b3",
    "asserts": 4,
    "literals": [
-    "c2ff1a06f7c3c256"
+    "1b08813444088592"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-663"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheSecretIsOpenedForThisSourceAtTheHostAndPortOfTheRequestsAndForThePurposeOfTheRead": {
    "kind": "test",
-   "hash": "0c2a8ad7cfb7bb19",
+   "hash": "3ca34f865703b69e",
    "asserts": 6,
    "literals": [
-    "155b21ffe38be464"
+    "24c3e9be1f37d96d"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheSettingsOfAConnectionTakeTheStartingValuesAndTheOriginIsWrittenForTheHost": {
    "kind": "test",
@@ -20216,22 +20859,22 @@
   },
   "go:backend/internal/httpsource::TestTheStateOfARunAndTheTokenItHoldsPrintAsNothing": {
    "kind": "test",
-   "hash": "e8de5b237aa896be",
+   "hash": "13dfc010d82ef311",
    "asserts": 9,
    "literals": [
-    "c056f108564f87d6"
+    "e00b5c30d5206d6a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "dac901f70a1f604e",
+   "hash": "0577cf5d6899a6ac",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -20242,7 +20885,7 @@
     "REQ-665"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestTheWordsForWhatIsNotASourceErrorAreFixed": {
    "kind": "test",
@@ -20261,48 +20904,48 @@
   },
   "go:backend/internal/httpsource::TestTheWordsOfAnErrorAreMaskedOfTheValuesOfTheOpenSecretsAsASecondWall": {
    "kind": "test",
-   "hash": "c4e12bc8ed21ff6a",
+   "hash": "3766e978f42e837c",
    "asserts": 3,
    "literals": [
-    "267908739ba2b453"
+    "e2199bf5247c49e8"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestThroughTheRealEgressClientAnAddressThePolicyRefusesIsAConfigurationErrorAndNothingIsSent": {
    "kind": "test",
-   "hash": "a45aeefe76e1b33e",
+   "hash": "d004b752d70c2b6b",
    "asserts": 4,
    "literals": [
-    "fd6a613e636ab4c5"
+    "dd32392f4c7d05e2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/httpsource::TestWhatIsUnderAnErrorStaysForTheOperatorAndNeverInTheWords": {
    "kind": "test",
-   "hash": "84addbe3b8f0a158",
+   "hash": "a7b834940f9a6db0",
    "asserts": 3,
    "literals": [
-    "43cff4407259eeca"
+    "ec36134f1d4d8abf"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-25",
+   "amended_by": "0109-http-source-json-lines-and-arrays-inside-records.md"
   },
   "go:backend/internal/identity::TestADisabledPrincipalsTokensAreRefusedAndTheLastAdministratorStays": {
    "kind": "test",
@@ -20981,10 +21624,10 @@
   },
   "go:backend/internal/ingest::TestAdpEveryCodeOfTheAdapterTableIsGivenAtItsPlace": {
    "kind": "test",
-   "hash": "dabc6cc5b14d6a87",
+   "hash": "b4b7462cb1ab27c3",
    "asserts": 8,
    "literals": [
-    "67e66d62fb0d727d"
+    "5d34beff67cd736d"
    ],
    "precision": [],
    "skips": 0,
@@ -22240,10 +22883,25 @@
   },
   "go:backend/internal/ingest::TestHkaTheAddressesOfAWebhookAreReadAsAddressesAndNetworks": {
    "kind": "test",
-   "hash": "c2aedfae27bf3e89",
-   "asserts": 6,
+   "hash": "06f687d188c4b6ea",
+   "asserts": 7,
    "literals": [
-    "6b7db7e65b162c46"
+    "45745e28a1c3c450"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-861"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHkaTheHighestLimitsOfAWebhookAreHeldOnBothSides": {
+   "kind": "test",
+   "hash": "a7dffe3db94df9d9",
+   "asserts": 7,
+   "literals": [
+    "4ad71bc8ae0d280f"
    ],
    "precision": [],
    "skips": 0,
@@ -22674,6 +23332,201 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestHxdACaretIsTheOuterRecordOnlyAsTheFirstStepOfAPathThatOpensAnArray": {
+   "kind": "test",
+   "hash": "bc9a25e64a88b9dc",
+   "asserts": 3,
+   "literals": [
+    "a186a227bcf49f6c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdACaretWhereNothingIsOpenedAndAKeyThatReadsTheOuterRecordFirstAreRefused": {
+   "kind": "test",
+   "hash": "65b6678bb881311f",
+   "asserts": 6,
+   "literals": [
+    "77f207d959767e20"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdAFileOfJSONLinesHasARecordsPathInTheFlowOfTheAdaptersOnly": {
+   "kind": "test",
+   "hash": "c53f65d4b24b827b",
+   "asserts": 9,
+   "literals": [
+    "20e0329e8d65daf2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-907"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdAFileOfJSONLinesThatHadALineItCouldNotReadIsNotComplete": {
+   "kind": "test",
+   "hash": "a0cd514b5ac845f9",
+   "asserts": 2,
+   "literals": [
+    "317c9c7ca8ade072"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-907"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdAFileOfJSONLinesThatOpensAnArray": {
+   "kind": "test",
+   "hash": "9b7d2abf50082d7f",
+   "asserts": 12,
+   "literals": [
+    "87dc3ebfb12ef132"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-907"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdAFileOfJSONLinesWithARecordsPathOfOneRecord": {
+   "kind": "test",
+   "hash": "d9e76e12dbe96394",
+   "asserts": 4,
+   "literals": [
+    "43680af08ad3ee2f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-907"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdRecordsPathWithAStarIsReadOnceAndTheOtherFormsAreRefused": {
+   "kind": "test",
+   "hash": "7914fa14bb6dc900",
+   "asserts": 3,
+   "literals": [
+    "b9eff4cd6ac345db"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdTheDefinitionOfADatasetThatOpensAnArrayIsChecked": {
+   "kind": "test",
+   "hash": "f2c27861a445a5d5",
+   "asserts": 6,
+   "literals": [
+    "588274d5c0694fab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdTheGrammarOfAPathIsLeftAsItWas": {
+   "kind": "test",
+   "hash": "585bbdf599b416b2",
+   "asserts": 3,
+   "literals": [
+    "0228482cbacbcfc8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-903"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdTheNewFieldsAreClassified": {
+   "kind": "test",
+   "hash": "2f799ba5a894aad6",
+   "asserts": 3,
+   "literals": [
+    "cb3ba6c965779e45"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-908"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdTheOldReadingOfAFileIgnoresARecordsPath": {
+   "kind": "test",
+   "hash": "b330b547bc2b1de7",
+   "asserts": 1,
+   "literals": [
+    "3d2d5741eac3d465"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-907"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdTheResponseFormatIsOneOfTwoAndLinesHaveNoPages": {
+   "kind": "test",
+   "hash": "6d2c42c661de9a1a",
+   "asserts": 4,
+   "literals": [
+    "45c950ffc447e692"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-900"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestHxdWhatARecordHasAtTheArrayIsToldApart": {
+   "kind": "test",
+   "hash": "3301caad2c9d2b5f",
+   "asserts": 2,
+   "literals": [
+    "fb961d81a98ed08f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-905"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestIdentifiersOfAFeedAreBoundAndAClashIsReported": {
    "kind": "test",
    "hash": "da032af2375dc7e8",
@@ -23095,6 +23948,45 @@
     "REQ-320"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestN5FileJSONLinesCaretWithoutAnArrayIsAPathError": {
+   "kind": "test",
+   "hash": "d95a3c5a813c16fa",
+   "asserts": 2,
+   "literals": [
+    "693f9ac10e5f224d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestN5NaturalKeyColumnWithElementFirstIsAccepted": {
+   "kind": "test",
+   "hash": "719e8777226d2167",
+   "asserts": 2,
+   "literals": [
+    "d9069b61fcaae2d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestN5NaturalKeyColumnWithOuterFirstIsRefused": {
+   "kind": "test",
+   "hash": "dcd59009ec599820",
+   "asserts": 2,
+   "literals": [
+    "96b81dee917a0b04"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestNaturalKeyCandidatesAreTheColumnsFilledInEveryRowAndDifferentInEach": {
@@ -23526,6 +24418,45 @@
     "REQ-264"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowBudgetBoundIsExactlyTheFactor": {
+   "kind": "test",
+   "hash": "8bcb1fc4b979cc9f",
+   "asserts": 2,
+   "literals": [
+    "8d0e9205e67d74be"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowBudgetFileExpansionWithASmallOuterValueIsRead": {
+   "kind": "test",
+   "hash": "cf6d4279566ee9a1",
+   "asserts": 3,
+   "literals": [
+    "a376aba59b19bfe0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRowBudgetFileStopsRowsBeyondFourTimesTheBytesRead": {
+   "kind": "test",
+   "hash": "323e9d4b6a6fb28d",
+   "asserts": 4,
+   "literals": [
+    "2177cc5ca252fac6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [],
+   "added": "2026-11-25",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestRowProblemsOfAWorkbookCarryTheRangeOfTheRow": {
@@ -30534,10 +31465,10 @@
   },
   "go:backend/internal/pgsource::TestPgsHxbTheOnlyWayToTheTLSSettingsIsTheRegistrationOfEgress": {
    "kind": "test",
-   "hash": "55867004cddd34c6",
+   "hash": "92de003284c971c2",
    "asserts": 3,
    "literals": [
-    "eeae75afbcbdd38f"
+    "136fb1e67407cd70"
    ],
    "precision": [],
    "skips": 0,
@@ -30546,7 +31477,7 @@
     "REQ-660"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsHxbThePinnedFailureIsWordedAsOne": {
    "kind": "test",
@@ -30565,10 +31496,10 @@
   },
   "go:backend/internal/pgsource::TestPgsHxbTheScanFailsForTheWaysAround": {
    "kind": "test",
-   "hash": "07538cc25be67479",
+   "hash": "1d788ebd6bc0802c",
    "asserts": 8,
    "literals": [
-    "e7b4b3d2d15e2ff1"
+    "024f27bbdd387bef"
    ],
    "precision": [],
    "skips": 0,
@@ -30576,7 +31507,7 @@
     "REQ-659"
    ],
    "added": "2026-11-25",
-   "amended_by": null
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsKeepsRowsOfOneKeyOnOnePage": {
    "kind": "test",
@@ -30995,7 +31926,7 @@
   },
   "go:backend/internal/pgsource::TestPgsStatementsNameTheSchemaOfTheirFunctions": {
    "kind": "test",
-   "hash": "9e18d4361a743d0f",
+   "hash": "ca1da89320b1b945",
    "asserts": 2,
    "literals": [
     "a055edde8139b6b8"
@@ -31006,7 +31937,7 @@
     "REQ-679"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsStatementsQuoteNamesAndTakeValuesAsArguments": {
    "kind": "test",
@@ -31089,7 +32020,7 @@
   },
   "go:backend/internal/pgsource::TestPgsTheCodeHasNoWayAroundTheDefence": {
    "kind": "test",
-   "hash": "bc367477e5e1b8f4",
+   "hash": "a3293917b6ca6b22",
    "asserts": 5,
    "literals": [
     "83ddf40c2eb59700"
@@ -31103,7 +32034,7 @@
     "REQ-660"
    ],
    "added": "2026-11-25",
-   "amended_by": "0105-http-source-extension-plaintext-ranges-and-certificate-pins.md"
+   "amended_by": "0110-scan-gaps-allowed-imports-and-the-driver-mode-config-literal.md"
   },
   "go:backend/internal/pgsource::TestPgsTLSModeAgainstAServerWithoutTLSRefusesAndDoesNotFallBack": {
    "kind": "test",
@@ -34075,7 +35006,7 @@
   },
   "go:backend/internal/secrets::TestHkaADeletedSecretStopsCheckingAtOnceAndAnIssueTwiceIsAConflict": {
    "kind": "test",
-   "hash": "ca85896272efdcba",
+   "hash": "9d1b605978c4bd0c",
    "asserts": 9,
    "literals": [
     "049cfac6e90feaba"
@@ -34090,10 +35021,10 @@
   },
   "go:backend/internal/secrets::TestHkaAKindOfTheWebhooksIsNeverOpenedForAUseAndAKindOfTheSourcesNeverChecked": {
    "kind": "test",
-   "hash": "b9e3c08ad7f592d7",
-   "asserts": 10,
+   "hash": "5824ccdcc3e1f3eb",
+   "asserts": 15,
    "literals": [
-    "33f47dcc30c12d3e"
+    "da4d20f3b473ca1b"
    ],
    "precision": [],
    "skips": 0,
@@ -34105,7 +35036,7 @@
   },
   "go:backend/internal/secrets::TestHkaAnIssuedSignedSecretChecksASignatureAndNothingElse": {
    "kind": "test",
-   "hash": "d55509616e0a2e14",
+   "hash": "6f05008ff70ef23b",
    "asserts": 6,
    "literals": [
     "394fb11505bf9557"
@@ -34120,7 +35051,7 @@
   },
   "go:backend/internal/secrets::TestHkaAnOpenedKeyStaysInMemoryAMinuteAtMostAndIsAuditedWhenItIsOpened": {
    "kind": "test",
-   "hash": "14e375ed79671a83",
+   "hash": "2dd208f420dfdb46",
    "asserts": 10,
    "literals": [
     "dcd23fb19103f6b5"
@@ -34135,7 +35066,7 @@
   },
   "go:backend/internal/secrets::TestHkaAProgramWithoutAUsableWebhookKeyIssuesAndChecksNothing": {
    "kind": "test",
-   "hash": "b8812bd7c420d221",
+   "hash": "dae341957622bc2b",
    "asserts": 4,
    "literals": [
     "400ef782e9d20b07"
@@ -34150,7 +35081,7 @@
   },
   "go:backend/internal/secrets::TestHkaARecordThatWasChangedByHandIsRefusedAndTheKeyOfAnotherStoreIsToo": {
    "kind": "test",
-   "hash": "24ac040fe7f93a4a",
+   "hash": "9374803fb87cf282",
    "asserts": 4,
    "literals": [
     "5185d173110e3f99"
@@ -34165,7 +35096,7 @@
   },
   "go:backend/internal/secrets::TestHkaARetirementNamesAVersionThatIsThereAndNotRetiredAndTheNamesAreIDs": {
    "kind": "test",
-   "hash": "fea4e5cb9091d81c",
+   "hash": "a09d831e798f3148",
    "asserts": 7,
    "literals": [
     "306a85c781cbf0e7"
@@ -34178,9 +35109,24 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestHkaASecretOfASourceCannotTakeTheIDOfAWebhookAndTheWebhookDeleteTouchesOnlyWebhooks": {
+   "kind": "test",
+   "hash": "220b4ace7a42e64d",
+   "asserts": 3,
+   "literals": [
+    "66d479760c03a6eb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestHkaATokenIsKeptAsItsHashAndIsCheckedWithoutBeingKept": {
    "kind": "test",
-   "hash": "69fea3cb1b0d0b42",
+   "hash": "35f2fbf6b7ad71d4",
    "asserts": 6,
    "literals": [
     "6e39a9f6c6edb126"
@@ -34195,7 +35141,7 @@
   },
   "go:backend/internal/secrets::TestHkaAWebhookSecretWhoseScopeLacksTheSourceProvesNothingEvenWhenItIsSealed": {
    "kind": "test",
-   "hash": "99a9fbe70a0457b3",
+   "hash": "691bc179e9c7c16b",
    "asserts": 6,
    "literals": [
     "5dff9432b5337807"
@@ -34210,10 +35156,25 @@
   },
   "go:backend/internal/secrets::TestHkaTheDummyCheckAnswersNothingAndTheListShowsTheSecretsOfTheWebhooksWithoutValues": {
    "kind": "test",
-   "hash": "0d8748c3c193f587",
+   "hash": "7ff72c11f1c8c373",
    "asserts": 6,
    "literals": [
-    "c7cb4dbf410f18c6"
+    "dc517de86e0685a6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheKeyIsKeptInMemoryForAMinuteAtMostWhateverTimeIsAskedFor": {
+   "kind": "test",
+   "hash": "33aa0d1636c1d249",
+   "asserts": 5,
+   "literals": [
+    "b19a9e8a5a67606e"
    ],
    "precision": [],
    "skips": 0,
@@ -34225,7 +35186,7 @@
   },
   "go:backend/internal/secrets::TestHkaTheKeysAreTwoAndOneDoesNotStandInForTheOther": {
    "kind": "test",
-   "hash": "b2c5d8c3ccb63c3c",
+   "hash": "de2343017f7550a6",
    "asserts": 12,
    "literals": [
     "b4bc3b79e3466e4c"
@@ -34238,9 +35199,84 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/secrets::TestHkaTheKeyThatLeavesTheCacheIsOverwrittenAndACheckThatIsRunningIsNotHurtByIt": {
+   "kind": "test",
+   "hash": "4b21029b0cd6ef1d",
+   "asserts": 9,
+   "literals": [
+    "bd778f7d5a4a7b09"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheStoredHashOfATokenIsNotASigningKeyAndTheKindOfASecretIsKept": {
+   "kind": "test",
+   "hash": "21035d39f6cae9d1",
+   "asserts": 6,
+   "literals": [
+    "0b23ed40bb78cdbd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheStoreOfTheSourcesKeepsNoWebhookKindAndTheStoreOfTheWebhooksNoOtherKind": {
+   "kind": "test",
+   "hash": "ca738a4f4710ec9a",
+   "asserts": 15,
+   "literals": [
+    "740e0911b65b29b0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheValueThatWasIssuedIsNotPrintedByAnyOfTheWaysAValueIsPrinted": {
+   "kind": "test",
+   "hash": "9a31a9dd6de1a998",
+   "asserts": 5,
+   "literals": [
+    "c68d16e414b624a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secrets::TestHkaTheWebhookDeleteRefusesARecordThatIsNotTheSecretOfAWebhook": {
+   "kind": "test",
+   "hash": "fb68acd9c9a2312f",
+   "asserts": 7,
+   "literals": [
+    "eaafeff2c4ef8bcb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
   "go:backend/internal/secrets::TestHkaTwoVersionsCheckWhileTheOldOneIsNotRetiredAndARetiredOneAtOnceNoLonger": {
    "kind": "test",
-   "hash": "5dc7b13378d76eb5",
+   "hash": "a6908f5055895286",
    "asserts": 10,
    "literals": [
     "ee5db1096e9f2e14"
@@ -34270,7 +35306,7 @@
   },
   "go:backend/internal/secrets::TestHkaWhatGoesWrongInTheStoreOrTheKeyIsAnErrorAndNeverAProof": {
    "kind": "test",
-   "hash": "6e4b272b6c9722c1",
+   "hash": "cf5fdff3daf91d75",
    "asserts": 12,
    "literals": [
     "daa02b7eaae4e1e2"
@@ -34794,12 +35830,42 @@
    "added": "2026-11-16",
    "amended_by": null
   },
-  "go:backend/internal/secretsfile::TestHkaTheSecretsOfTheWebhooksSurviveARestartAndAreCheckedWithTheWebhookKeyAlone": {
+  "go:backend/internal/secretsfile::TestHkaEachFileIsReadOnlyAsItsOwnAndAWebhookRecordInTheFileOfTheSourcesIsRefused": {
    "kind": "test",
-   "hash": "60e5914de67cf242",
-   "asserts": 11,
+   "hash": "cf60d3179ed3f96c",
+   "asserts": 9,
    "literals": [
-    "842aa1df44d77714"
+    "e62101785764863a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestHkaTheFileOfTheSourcesIsNotTouchedByTheWebhooksAndHasOnlyTheFormOfAlwaysAndNoKindOfAWebhook": {
+   "kind": "test",
+   "hash": "18ffed0763d75900",
+   "asserts": 13,
+   "literals": [
+    "34ae0b5b8535b12c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-860"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/secretsfile::TestHkaTheSecretsOfTheWebhooksSurviveARestartAndAreCheckedWithTheWebhookFileAndKeyAlone": {
+   "kind": "test",
+   "hash": "0cf81e08c8267db4",
+   "asserts": 13,
+   "literals": [
+    "2ed420068a77c5f2"
    ],
    "precision": [],
    "skips": 0,
@@ -34986,6 +36052,21 @@
    "skips": 0,
    "reqs": [
     "REQ-826"
+   ],
+   "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/sourcecheck::TestHxdTheEndMarkOfARealConnectionDecidesWhatIsWhole": {
+   "kind": "test",
+   "hash": "f19c580c085ea756",
+   "asserts": 3,
+   "literals": [
+    "88e650b462a572bb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-901"
    ],
    "added": "2026-11-25",
    "amended_by": null

@@ -19,6 +19,8 @@ type reply struct {
 	header map[string][]string
 	url    *url.URL
 	rc     io.ReadCloser
+	// ended says that the protocol marks the end of the body (egress.Response.Ended).
+	ended bool
 	// started is when the request was sent, for the time the answer took.
 	started time.Time
 }

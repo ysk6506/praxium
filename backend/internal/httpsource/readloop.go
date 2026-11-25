@@ -30,7 +30,24 @@ type loop struct {
 	// tail is the record added last, whose token a page that ends with it takes (mint).
 	tail tail
 	mint func() []byte
+	// lines says that the response is read as JSON lines: it has no token. bad counts the records that could not be read, missing
+	// the records that had no array where records_path opens one, and cut says that a body ended without a mark of its end or broke;
+	// the first makes the read not complete, the other two make it read as what was seen (ADR-0109). early says that a check
+	// stopped after the lines it is given.
+	lines, early, cut         bool
+	bad, missing, outers, fed int
+	// noLines says that a body of JSON lines had no value. recs counts the records the answers gave (the elements, or the records
+	// that have none to open) and rows the rows they made; a read that had records and no row did not see what it was meant to.
+	// cells is the bytes of the cells of the rows of the response being read, and over says it passed the limit of ingest.RowBytesFactor.
+	noLines    bool
+	recs, rows int
+	cells      int
+	over       bool
 }
+
+// checkLines is how many records a check reads of a response of JSON lines: the answer of an export may be very long, and a check
+// looks at the first of it.
+const checkLines = 100
 
 // tail is what the token of a record is made of: where the record is in its response, and the response.
 type tail struct {
@@ -38,6 +55,10 @@ type tail struct {
 	at   pos
 	seen int
 	end  *respEnd
+	// mid says that elements of the same record come after, so that a read goes on from the start of the record. count is how many
+	// records before the position had no array, and had their array looked for.
+	mid   bool
+	count arrayCount
 }
 
 // respEnd is what the end of a response says, which is known when the whole answer is read: how many records it had and
@@ -47,6 +68,8 @@ type respEnd struct {
 	done bool
 	n    int
 	sp   step
+	// count is the same as the one of a tail, at the end of the response.
+	count arrayCount
 }
 
 // read gives the pages of a dataset to yield. It ends with a page that has Last set, or with an error.
@@ -63,12 +86,17 @@ func (rn *run) read(ctx context.Context, ds ingest.Dataset, opts ingest.PageOpti
 		return yield(p, err)
 	}
 	fp := fingerprint(rn.set, ds)
-	l := &loop{rn: rn, ctx: ctx, ds: ds, rb: rb, pw: ingest.NewPageWriter(ds, opts), yield: out, fp: fp}
+	lines := ds.JSONLines()
+	if lines {
+		opts.Resume = nil // a response of JSON lines is not sent again to be passed over
+	}
+	l := &loop{rn: rn, ctx: ctx, ds: ds, rb: rb, pw: ingest.NewPageWriter(ds, opts), yield: out, fp: fp, lines: lines}
 	l.mint = l.tokenOfTail
 	start := rn.startAt(fp, opts.Resume)
 	l.at, l.skip, l.seen = start.at, start.skip, start.base
+	l.missing, l.outers = start.miss, start.outers
 	if start.done {
-		l.finish(ingest.Completeness{Complete: true})
+		l.finish(l.endOf(step{complete: true}))
 		return
 	}
 	l.run()
@@ -110,14 +138,28 @@ func (l *loop) fetch() bool {
 	}
 	l.requests++
 	end := &respEnd{}
-	w, err := a.records(l.ctx, l.skip, func(rec any, i int) bool { return l.feed(rec, i, end) })
-	if err != nil {
+	l.cells = 0
+	w, err := a.records(l.ctx, l.skip, func(it item) bool {
+		it.missing, it.outers = it.missing+a.missing, it.outers+a.outers
+		return l.feed(it, end)
+	})
+	switch {
+	case l.over:
+		l.fail(l.rn.answerError(l.ctx, errRowsTooBig))
+		return false
+	case err != nil:
 		l.fail(err)
 		return false
 	}
 	if w.stopped {
+		if l.early {
+			l.finish(ingest.Completeness{Reason: reasonFirstOnly})
+		}
 		return false
 	}
+	l.missing += w.missing
+	l.outers += w.outers
+	l.cut, l.noLines = l.cut || w.cut, l.noLines || w.noLines
 	return l.take(w, end)
 }
 
@@ -133,11 +175,11 @@ func (l *loop) take(w *walked, end *respEnd) bool {
 		l.fail(l.rn.pageValueError(l.ctx, err))
 		return false
 	}
-	end.n, end.sp, end.done = w.n, sp, true
+	end.n, end.sp, end.done, end.count = w.n, sp, true, arrayCount{l.missing, l.outers}
 	l.at, l.skip, l.seen = sp.next, 0, l.seen+w.n
 	switch {
 	case !sp.more:
-		l.finish(ingest.Completeness{Complete: sp.complete, Reason: sp.reason})
+		l.finish(l.endOf(sp))
 	case l.rn.firstOnly:
 		l.finish(ingest.Completeness{Reason: reasonFirstOnly})
 	default:
@@ -146,31 +188,99 @@ func (l *loop) take(w *walked, end *respEnd) bool {
 	return false
 }
 
+// endOf is how the dataset ends when the pages are over. A read that stopped short, or that had a record it could not read in a
+// response of JSON lines, is not complete. One that did not see all there is (a record that had no array where records_path opens one,
+// unless the definition says that is none, or a body of JSON lines that ended with no mark of its end or broke) is read as what
+// was seen. Else it is complete as the pages say.
+func (l *loop) endOf(sp step) ingest.Completeness {
+	switch {
+	case !sp.complete:
+		return ingest.Completeness{Reason: sp.reason}
+	case l.bad > 0:
+		return ingest.Completeness{Reason: strconv.Itoa(l.bad) + " records of the answer could not be read (not an object, or with no natural key), and the lines of an export are not read again, so the dataset is not complete"}
+	}
+	if end, ok := l.seenOnly(); ok {
+		return end
+	}
+	return ingest.Completeness{Complete: true}
+}
+
+// seenOnly says whether the read did not see all there is, and so ends as what was seen (see endOf).
+func (l *loop) seenOnly() (ingest.Completeness, bool) {
+	switch {
+	case l.missing > 0 && l.missing == l.outers:
+		// Not one record has an array: with missing_array empty that would be a dataset of no records that is complete, and every
+		// object of it would be closed. A records_path that is wrong reads the same, so it is read as what was seen.
+		return ingest.Completeness{SeenOnly: true, Reason: "none of the " + strconv.Itoa(l.outers) + " records had an array (or null) where records_path opens one; check the records_path"}, true
+	case l.missing > 0 && !l.ds.MissingIsEmpty():
+		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.missing) + " records had no array (or null) where records_path opens one, so what they may have had was not seen"}, true
+	case l.noLines:
+		return ingest.Completeness{SeenOnly: true, Reason: "the answer has no value at all: an export with no record and one that was not sent cannot be told apart, so nothing is taken as seen"}, true
+	case l.cut:
+		return ingest.Completeness{SeenOnly: true, Reason: "the answer ended with no mark of its end, or broke, so the lines that were read to their end are what was seen"}, true
+	case l.recs > 0 && l.rows == 0 && (l.lines || l.ds.OpensArray()):
+		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.recs) + " records were read and none made a row (all were passed over, as a row with no natural key is when the definition says so), so the answer may not be what the definition reads"}, true
+	}
+	return ingest.Completeness{}, false
+}
+
 // feed puts a record of the response on the pages. The values of the open secrets are taken out of it first, and the token
 // of the position after it is made only if a page is cut there. It tells whether to go on.
-func (l *loop) feed(rec any, i int, end *respEnd) bool {
-	where := "page " + strconv.Itoa(l.requests) + ", record " + strconv.Itoa(i+1)
-	table := l.rb.Record(l.rn.cleanValue(rec), l.seen+i+1, where)
+func (l *loop) feed(it item, end *respEnd) bool {
+	table := l.table(it)
+	if l.lines {
+		l.bad += len(table.Unreadable)
+	}
+	l.recs += table.Received() + skipped(table)
+	l.rows += len(table.Rows)
+	if l.cells += ingest.CellBytes(table); ingest.RowsOver(l.cells, l.rn.set.maxBytes, 0) {
+		l.over = true
+		return false
+	}
 	var after func() []byte
-	if l.rn.pager.resumable() {
+	if l.rn.pager.resumable() && !l.lines {
 		after = l.mint
 	}
 	ok := l.pw.AddLazy(l.ctx, table, after, l.yield)
-	l.tail = tail{i: i, at: l.at, seen: l.seen, end: end}
+	l.tail = tail{i: it.index, at: l.at, seen: l.seen, end: end, mid: !it.last, count: l.countAt(it)}
+	if l.rn.firstOnly && l.lines && it.last && it.index+1 >= checkLines {
+		l.early = true
+		return false
+	}
 	return ok
+}
+
+// table makes the Table of one record of the response, with the words that say where it was.
+func (l *loop) table(it item) ingest.Table {
+	where := "page " + strconv.Itoa(l.requests) + ", record " + strconv.Itoa(it.index+1)
+	if l.lines {
+		where = "line " + strconv.Itoa(it.index+1)
+	}
+	line := l.seen + it.index + 1
+	if !it.expanded {
+		return l.rb.Record(l.rn.cleanValue(it.rec), line, where)
+	}
+	if it.elem == 0 {
+		l.rn.cleanValue(it.outer) // the record is cleaned once, and the elements are in it
+	}
+	return l.rb.Element(it.outer, it.rec, line, where+", element "+strconv.Itoa(it.elem+1))
 }
 
 // tokenOfTail is the token of the position after the record added last, made when a page ends with it. A record in the
 // middle of a response is followed by the next of it; the last is followed by the next response. The last record of the
-// last response ends no page that is cut, so no token is made for it.
+// last response ends no page that is cut, so no token is made for it. An element that is not the last of its record is followed by
+// the rest of the record, and a read that goes on from there starts at the record again (the order of the elements of a record that
+// is sent again is not known, so none of them is passed over).
 func (l *loop) tokenOfTail() []byte {
 	l.rn.tokens++
 	t := l.tail
 	switch {
+	case t.mid:
+		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i, t.seen, t.count), t.at.cursor)
 	case !t.end.done || t.i < t.end.n-1:
-		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i+1, t.seen), t.at.cursor)
+		return l.rn.safeToken(tokenAt(l.fp, t.at, t.i+1, t.seen, t.count), t.at.cursor)
 	case t.end.sp.more:
-		return l.rn.safeToken(tokenAt(l.fp, t.end.sp.next, 0, t.seen+t.end.n), t.end.sp.next.cursor)
+		return l.rn.safeToken(tokenAt(l.fp, t.end.sp.next, 0, t.seen+t.end.n, t.end.count), t.end.sp.next.cursor)
 	}
 	return nil
 }
@@ -188,4 +298,23 @@ func (l *loop) fail(err error) {
 		l.rn.emit(ingest.Event{Kind: ingest.EventFailed, Class: se.Class, ErrorKind: se.Kind})
 	}
 	l.yield(ingest.Page{}, err)
+}
+
+// countAt is how many records before the position after the record it was given had no array, and had their array looked for. A
+// record that has more elements after this one is read again from its start, so it is not counted.
+func (l *loop) countAt(it item) arrayCount {
+	c := arrayCount{missing: l.missing + it.missing, outers: l.outers + it.outers}
+	if !it.last && c.outers > 0 {
+		c.outers--
+	}
+	return c
+}
+
+// skipped is how many records of a table were passed over by a rule of the definition (a row with no key, when it says so).
+func skipped(t ingest.Table) int {
+	n := 0
+	for _, c := range t.Skipped {
+		n += c
+	}
+	return n
 }
