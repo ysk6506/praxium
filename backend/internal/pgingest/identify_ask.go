@@ -69,7 +69,7 @@ func (s *Store) PutAnswers(ctx context.Context, lease ingest.RunLease, answers [
 			labels, refs, missing = append(labels, strconv.FormatInt(a.Label, 10)), append(refs, a.Ref), append(missing, strconv.FormatBool(a.Missing))
 		}
 		if len(answers) > 0 {
-			if err := r.settleAnswers(ctx, tx, textArray(labels), textArray(refs), textArray(missing), len(answers), top); err != nil {
+			if err := r.settleAnswers(ctx, tx, answerSet{textArray(labels), textArray(refs), textArray(missing), len(answers), top}); err != nil {
 				return err
 			}
 			st.Cur = top
@@ -83,9 +83,17 @@ func (s *Store) PutAnswers(ctx context.Context, lease ingest.RunLease, answers [
 	})
 }
 
-// settleAnswers writes the answers and does for the groups they name what decide does for the groups it makes ids of itself. The
-// parameters are the labels, the ids and whether each has no name, as the text of arrays.
-func (r *identRun) settleAnswers(ctx context.Context, tx *sql.Tx, labels, refs, missing string, asked int, top int64) error {
+// answerSet is the answers of a page: the labels, the ids and whether each has no name, as the text of arrays, how many there are and
+// the last label.
+type answerSet struct {
+	labels, refs, missing string
+	asked                 int
+	top                   int64
+}
+
+// settleAnswers writes the answers and does for the groups they name what decide does for the groups it makes ids of itself.
+func (r *identRun) settleAnswers(ctx context.Context, tx *sql.Tx, a answerSet) error {
+	labels, refs, missing, asked, top := a.labels, a.refs, a.missing, a.asked, a.top
 	const un = "unnest($1::text::bigint[], $2::text::text[], $3::text::boolean[]) AS u(label, ref, missing)"
 	// the pairs of the groups of the page, by one probe of the labels for each of them (that is not a test of each label against the whole
 	// array, which is the square of the page)
