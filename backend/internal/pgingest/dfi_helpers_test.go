@@ -30,8 +30,16 @@ func dfiDo(s *rdfSetup, t *testing.T, l ingest.RunLease, rows, chunk int) ingest
 // sizes of a unit of the difference and of a chunk given (0 is the default of each).
 func dfiRunTo(s *rdfSetup, t *testing.T, texts pgiTexts, at time.Time, full bool, rows, chunk int) (ingest.RunLease, ingest.DiffCounts) {
 	t.Helper()
+	return dfiRunToWith(s, t, texts, at, full, 2, rows, chunk)
+}
+
+// dfiRunToWith is dfiRunTo with the most rows of a page the receiving cuts.
+func dfiRunToWith(s *rdfSetup, t *testing.T, texts pgiTexts, at time.Time, full bool, pageRows, rows, chunk int) (ingest.RunLease, ingest.DiffCounts) {
+	t.Helper()
 	plans := rclPlans(s)
-	l := rclPrepare(s, t, texts, at, full)
+	l, _ := idnPipelineWith(s, t, texts, at, pageRows, 0, 0, 0, 0)
+	rcpExpand(s, t, l, full)
+	rclObjects(s, t, l, plans, at.UTC().Format(time.RFC3339), 0)
 	rclDo(s, t, l, plans, 0)
 	isoDo(s, t, l, plans, 0)
 	return l, dfiDo(s, t, l, rows, chunk)
@@ -187,8 +195,14 @@ func dfiSettle(s *rdfSetup, t *testing.T, l ingest.RunLease) {
 // dfiStep does a run of the texts to the end: up to its difference, the staged apply and the cleaning.
 func dfiStep(s *rdfSetup, t *testing.T, k *dfiKG, texts pgiTexts, at time.Time, full bool) ingest.DiffCounts {
 	t.Helper()
-	l, counts := dfiRunTo(s, t, texts, at, full, 0, 0)
-	dfiShape(s, t, counts, 0)
+	return dfiStepWith(s, t, k, texts, at, full, 2, 0, 0)
+}
+
+// dfiStepWith is dfiStep with the most rows of a page the receiving cuts, the rows of a unit of the difference and of a chunk.
+func dfiStepWith(s *rdfSetup, t *testing.T, k *dfiKG, texts pgiTexts, at time.Time, full bool, pageRows, rows, chunk int) ingest.DiffCounts {
+	t.Helper()
+	l, counts := dfiRunToWith(s, t, texts, at, full, pageRows, rows, chunk)
+	dfiShape(s, t, counts, chunk)
 	p := dfiApply(s, t, k, l)
 	if counts.Rows > 0 && (p.State != graph.StagedDone || p.Chain != counts.Fingerprint) || counts.Rows == 0 && p.State != graph.StagedEmpty {
 		t.Fatalf("the apply ended at %+v and the difference has %d rows and the fingerprint %s", p, counts.Rows, counts.Fingerprint)

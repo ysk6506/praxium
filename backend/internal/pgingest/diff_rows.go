@@ -21,10 +21,12 @@ type diffSource struct {
 	do              func(r *diffRun, ctx context.Context, tx *sql.Tx, lo, hi int64) error
 }
 
-// diffSources are the sources read by a number (the keys are read by their own place).
+// diffSources are the sources read by a number (the keys are read by their own place). The objects the run retires are read as a range of
+// the objects of the run whatever their reason (the statements take the ones that retire), so that a unit reads the rows of its range
+// however few of them retire.
 var diffSources = map[string]diffSource{
 	diffPartObjects: {"obj_no", "{stobj}", "", (*diffRun).objects},
-	diffPartRetire:  {"obj_no", "{objrun}", "why = {RETIRE} AND ", (*diffRun).retire},
+	diffPartRetire:  {"obj_no", "{objrun}", "", (*diffRun).retire},
 	diffPartLinks:   {"link_no", "{stlink}", "", (*diffRun).links},
 	diffPartRefs:    {"rid", "{rec}", "", (*diffRun).refLinks},
 	diffPartIso:     {"entity_no", "{iso}", "kind = {KLINK} AND ", (*diffRun).isoLinks},
