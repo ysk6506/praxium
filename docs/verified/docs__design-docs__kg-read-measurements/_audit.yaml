@@ -1,0 +1,4 @@
+doc: "docs/design-docs/kg-read-measurements.md"
+date: "2026-11-26"
+note: "measure_test.go, devload, cmd/praxium의 dev load-truth, ADR-0026/0027/0032/0057, 부채 대장과 대조. 틀린 곳 넷 고침(시계, 닫힌 TD-0011, 인용, Go 버전). 측정값은 Go 1.27.4 도구가 없어 다시 재지 못함"
+doc_hash: "a2d434c990046f16"

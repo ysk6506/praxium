@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-read-measurements.md"
 target: "docs/design-docs/adr/0027-reading-the-kg-through-the-api-and-the-command-line.md"
 hash: "53de10c2f2349e2e"
-date: "2026-11-14"
-note: "main 대비 절 번호와 순서, REQ·ADR 참조, 인라인 코드 식별자, 숫자를 대조해 표기 외 변경이 없고 문서 용어 검사 0건임을 확인했다. 스냅숏을 스냅샷으로 통일했다."
-text_changed: true
-doc_hash: "e3f96dcc40acf2d0"
+date: "2026-11-26"
+note: "감사에서 ADR-0027의 적재기 항목과 dev load-truth를 대조: 문서와 같음. ADR-0026 인용을 원문대로 고치고 Go 버전이 측정 때의 것임을 밝힘"
+text_changed: false
+doc_hash: "a2d434c990046f16"
