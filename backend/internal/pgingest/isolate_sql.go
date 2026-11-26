@@ -88,7 +88,7 @@ const (
 	// isoClaimsOf is the references of the claims of the run of each line that lost: the claims of its object of the scheme and the value.
 	isoClaimsOf    = " CROSS JOIN LATERAL (SELECT f.ctid AS at, f.rid, f.sub FROM {cref} f WHERE f.role = {CLAIM} AND f.target_no = u.obj AND f.def_no = u.no AND f.lookup_hash = decode(u.hash, 'hex') AND f.state = {FOUND} OFFSET 0) f"
 	isoClaimRunSQL = "WITH x AS (UPDATE {cref} SET state = {LOST} WHERE ctid = ANY(ARRAY(SELECT f.at FROM " + isoIdentArgs + isoClaimsOf + ")) RETURNING rid, sub) " +
-		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, sub, '', '{KCONFLICT}', " + isoIdentReason + " FROM x"
+		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, {DEFSUB}, '', '{KCONFLICT}', " + isoIdentReason + " FROM x"
 )
 
 // isoClaimKeptSQL writes the references of the claims that are kept for the lines that lost as lost references of the records of the run.
@@ -96,7 +96,7 @@ var isoClaimKeptSQL = "WITH x AS (INSERT INTO {cref} (rid, role, def_no, sub, lo
 	"FROM " + isoIdentArgs + " CROSS JOIN LATERAL (SELECT s.* FROM {rref} s WHERE s.role = {CLAIM} AND s.def_no = u.no AND s.lookup_hash = decode(u.hash, 'hex') AND s.target_no = u.obj AND s.state = {FOUND} OFFSET 0) s " +
 	"CROSS JOIN LATERAL (SELECT c.rid FROM {rec} c WHERE c.src_no = s.src_no AND c.dataset_no = s.dataset_no AND c.key = s.key OFFSET 0) c WHERE NOT " + expReplaced("s") +
 	" AND NOT " + isoHas("{cref}", "x.rid = c.rid AND x.role = {CLAIM} AND x.def_no = s.def_no AND x.sub = s.sub") + " RETURNING rid, sub) " +
-	"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, sub, '', '{KCONFLICT}', " + isoIdentReason + " FROM x"
+	"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, {DEFSUB}, '', '{KCONFLICT}', " + isoIdentReason + " FROM x"
 
 // isoLinkExtentSQL is how many of the next $2 links after the number $1 there are, and the number of the last.
 const isoLinkExtentSQL = "SELECT count(*), COALESCE(max(link_no), 0) FROM (SELECT link_no FROM {stlink} WHERE link_no > $1 ORDER BY link_no LIMIT $2) z"
@@ -115,7 +115,7 @@ var isoEndsSQL = "WITH e AS (SELECT l.link_no, l.ref, " + isoMissing("l.src") + 
 const (
 	isoTakenRows = "unnest($1::text::bigint[]) AS u(no) CROSS JOIN LATERAL (SELECT i.ref, i.why, i.reason FROM {iso} i WHERE i.kind = {KLINK} AND i.entity_no = u.no OFFSET 0) i " +
 		"CROSS JOIN LATERAL (SELECT w.rid, w.def_no, w.held FROM {win} w WHERE w.ref = i.ref OFFSET 0) w"
-	isoTakeProblemsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT w.rid, w.def_no, '', CASE WHEN i.why = {MISSING} THEN '{KMISSING}' ELSE '{KCARD}' END, i.reason " +
+	isoTakeProblemsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT w.rid, {DEFLINK}, '', CASE WHEN i.why = {MISSING} THEN '{KMISSING}' ELSE '{KCARD}' END, i.reason " +
 		"FROM " + isoTakenRows + " WHERE i.why IN ({MISSING}, {CARD}) AND NOT w.held"
 	isoTakeRefsSQL = "WITH r AS (SELECT x.at, CASE WHEN w.held THEN {HELD} WHEN i.why = {CARD} THEN {LOST} ELSE {UNRES} END AS state FROM " + isoTakenRows +
 		" CROSS JOIN LATERAL (SELECT x.ctid AS at FROM {cref} x WHERE x.role = {FROM} AND x.target_no = u.no AND x.rid = w.rid OFFSET 0) x) " +

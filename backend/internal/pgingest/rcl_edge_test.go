@@ -122,7 +122,7 @@ func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastACellThatGaveNoValu
 	}
 	cells := expList(s.e, t, fmt.Sprintf(`SELECT c.key || '/' || p.kind || '/' || p.def_no || '/' || p.field FROM "s_%[1]d".calc_problem p JOIN "s_%[1]d".calc_record c ON c.rid = p.rid
 		WHERE p.kind = 'invalid_value' ORDER BY 1`, s.ref.KGNo))
-	if strings.Join(cells, " ") != "S2/invalid_value/0/" {
+	if strings.Join(cells, " ") != "S2/invalid_value/-1/" {
 		t.Errorf("the problems of the cells are %v: a cell that is blank gives none", cells)
 	}
 	refs := strings.Join(rclRefs(s, t), "\n")

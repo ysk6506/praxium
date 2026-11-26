@@ -100,7 +100,7 @@ const (
 		"UNION SELECT k.obj_no FROM g JOIN {newkey} k ON k.ctx_no = g.obj_no JOIN {newobj} n ON n.obj_no = k.obj_no) SELECT obj_no FROM g ORDER BY obj_no"
 	rcpLeftPutSQL = "INSERT INTO {left} (obj_no, why, lines, is_new, reason) SELECT u.obj, u.why, u.lines, EXISTS (SELECT 1 FROM {newobj} n WHERE n.obj_no = u.obj), u.reason " +
 		"FROM unnest($1::text::bigint[], $2::text::int[], $3::text::int[], $4::text::text[]) AS u(obj, why, lines, reason)"
-	rcpLeftProblemsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT f.rid, f.def_no, '', k.kind, l.reason FROM {cref} f JOIN {left} l ON l.obj_no = f.target_no " +
+	rcpLeftProblemsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT f.rid, {DEFF}, '', k.kind, l.reason FROM {cref} f JOIN {left} l ON l.obj_no = f.target_no " +
 		"JOIN unnest($2::text::int[], $3::text::text[]) AS k(why, kind) ON k.why = l.why WHERE f.role = {IDENT} AND f.state = {FOUND} AND f.target_no = ANY($1::text::bigint[])"
 	rcpUnresolveSQL = "UPDATE {cref} SET target_no = NULL, state = {UNRES}, retirable = false WHERE (role = {IDENT} OR role = {CLAIM}) AND target_no = ANY($1::text::bigint[])"
 )

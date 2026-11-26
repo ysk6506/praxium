@@ -229,22 +229,25 @@ func (s *Store) EndRun(ctx context.Context, l ingest.RunLease, end ingest.RunEnd
 	if err := end.Validate(); err != nil {
 		return err
 	}
+	return s.tx(ctx, roleApplier, func(tx *sql.Tx) error { return endIn(ctx, tx, l, end) })
+}
+
+// endIn is EndRun in a transaction the caller holds (the last job of the cleaning ends the run in its own transaction, ADR-0128).
+func endIn(ctx context.Context, tx *sql.Tx, l ingest.RunLease, end ingest.RunEnd) error {
 	var class any
 	if end.Class != "" {
 		class = string(end.Class)
 	}
-	return s.tx(ctx, roleApplier, func(tx *sql.Tx) error {
-		res, err := tx.ExecContext(ctx, "UPDATE "+pgschema.TableSyncRun+" SET "+pgschema.ColStage+" = $3, "+pgschema.ColEndedAt+" = now(), "+
-			pgschema.ColUpdatedAt+" = now(), "+pgschema.ColLeaseUntil+" = NULL, "+pgschema.ColEndClass+" = $4, "+pgschema.ColEndCode+" = $5, "+
-			pgschema.ColEndReason+" = $6 WHERE "+guard(), l.No, l.Attempt, string(end.Stage), class, nullIfEmpty(end.Code), nullIfEmpty(end.Reason))
-		if err != nil {
-			return dbErr(err, "end the run")
-		}
-		if n, _ := res.RowsAffected(); n == 0 {
-			return miss(ctx, tx, l)
-		}
-		return nil
-	})
+	res, err := tx.ExecContext(ctx, "UPDATE "+pgschema.TableSyncRun+" SET "+pgschema.ColStage+" = $3, "+pgschema.ColEndedAt+" = now(), "+
+		pgschema.ColUpdatedAt+" = now(), "+pgschema.ColLeaseUntil+" = NULL, "+pgschema.ColEndClass+" = $4, "+pgschema.ColEndCode+" = $5, "+
+		pgschema.ColEndReason+" = $6 WHERE "+guard(), l.No, l.Attempt, string(end.Stage), class, nullIfEmpty(end.Code), nullIfEmpty(end.Reason))
+	if err != nil {
+		return dbErr(err, "end the run")
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return miss(ctx, tx, l)
+	}
+	return nil
 }
 
 func nullIfEmpty(v string) any {

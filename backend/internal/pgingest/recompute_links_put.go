@@ -127,7 +127,8 @@ func (r *rclRun) putEndProblems(ctx context.Context, tx *sql.Tx, problems []inge
 	c := &r.st.Counts
 	for _, p := range problems {
 		srcs, dss, keys = append(srcs, strconv.FormatInt(p.SrcNo, 10)), append(dss, strconv.FormatInt(p.DatasetNo, 10)), append(keys, p.Key)
-		feeds, fields, kinds, reasons = append(feeds, strconv.Itoa(p.Feed)), append(fields, p.Field), append(kinds, p.Kind), append(reasons, p.Reason)
+		// the problem of an end is of its link definition (ADR-0128)
+		feeds, fields, kinds, reasons = append(feeds, strconv.Itoa(pgschema.ProblemDefOfLink(p.Feed))), append(fields, p.Field), append(kinds, p.Kind), append(reasons, p.Reason)
 		switch p.Kind {
 		case ingest.ProblemLinkTarget:
 			c.Missing++
