@@ -22,6 +22,9 @@ amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
 test_change_reason: 생성기 버전이 7에서 8로 오른다(이 결정 10). 이 테스트는 생성기 버전의 번호를 단언하므로 숫자만 8로 바꾼다. 파티션 접두어를 예약한다는 단언은 그대로이고 줄지 않는다.
 decision_hash: cb7e3e89eb849f88
+amended_by:
+  - adr: "0119"
+    what: 건너뛴 객체의 규칙(4항, 8항), 한도의 값과 메모리 근거(8항), 이어받은 서버가 쓰는 시각과 체계(3항), 4단계가 가진 문제 종류(9항), 생성기 버전(10항)
 ---
 # ADR-0115 새 수집 흐름의 객체 다시 계산(4단계)과 해시·인코딩의 공개
 

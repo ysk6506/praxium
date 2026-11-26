@@ -53,7 +53,7 @@ func rcpWorldFull(t *testing.T, size int) (*expWorld, map[string]rcpObject) {
 func rcpReset(s *rdfSetup, t *testing.T, l ingest.RunLease) {
 	t.Helper()
 	expReset(s, t, l)
-	for _, table := range []string{pgschema.TableStageObject, pgschema.TableStageVolat, pgschema.TableStageIdent} {
+	for _, table := range []string{pgschema.TableStageObject, pgschema.TableStageVolat, pgschema.TableStageIdent, pgschema.TableCalcLeft} {
 		s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d"."%s"`, s.ref.KGNo, table))
 	}
 	s.e.exec(t, `UPDATE sync_run SET counts = counts - 'recompute' WHERE run_no = $1`, l.No)

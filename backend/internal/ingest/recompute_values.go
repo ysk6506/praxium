@@ -108,23 +108,26 @@ func identBefore(a, b identLine) bool {
 	return a.value < b.value
 }
 
-// Make makes the rows of the objects of a page.
+// Make makes the rows of the objects of a page. An object it does not make is in Left with the reason: the ones no line stands under
+// are in Empty, the ones that cannot be read (or have no name) in Unreadable, and the ones the page did not read for having too many
+// lines come last.
 func (c *ObjectComputer) Make(page RecomputePage) (RecomputedPage, error) {
 	out := RecomputedPage{Unit: page.Unit, Through: page.Through, Last: page.Last, TooMany: len(page.TooMany)}
 	seen := map[RecomputedRecord]bool{}
 	for i := range page.Objects {
 		o := &page.Objects[i]
 		out.Lines += len(o.Lines)
-		if len(o.Lines) == 0 {
-			out.Empty = append(out.Empty, o.ObjNo)
-			continue
-		}
-		made, probs, ok, err := c.object(o)
+		made, probs, left, err := c.object(o)
 		if err != nil {
 			return RecomputedPage{}, err
 		}
-		if !ok {
-			out.Unreadable = append(out.Unreadable, o.ObjNo)
+		if left != nil {
+			out.Left = append(out.Left, *left)
+			if left.Why == LeftEmpty {
+				out.Empty = append(out.Empty, o.ObjNo)
+			} else {
+				out.Unreadable = append(out.Unreadable, o.ObjNo)
+			}
 			continue
 		}
 		out.Objects = append(out.Objects, made)
@@ -136,6 +139,9 @@ func (c *ObjectComputer) Make(page RecomputePage) (RecomputedPage, error) {
 				out.Records = append(out.Records, r)
 			}
 		}
+	}
+	for _, no := range page.TooMany {
+		out.Left = append(out.Left, RecomputedLeft{ObjNo: no, Why: LeftTooMany})
 	}
 	return out, nil
 }
@@ -152,21 +158,32 @@ type lineRead struct {
 }
 
 func (c *ObjectComputer) readLine(ln *RecomputeLine) (lineRead, bool) {
+	r, why := c.readLineWhy(ln)
+	return r, why == ""
+}
+
+// readLineWhy reads a line, and says why when it cannot be read (the reason is empty when it can). The reason names the record by its
+// dataset and key, not by its cells.
+func (c *ObjectComputer) readLineWhy(ln *RecomputeLine) (lineRead, string) {
+	where := "the record " + ln.Dataset + "/" + strings.ReplaceAll(ln.Key, keySep, "|")
 	pr, ok := c.preparer(ln.SrcNo, ln.Dataset)
-	if !ok || len(ln.Fields) != len(pr.dataset.Columns) {
-		return lineRead{}, false
+	if !ok {
+		return lineRead{}, where + " is of a source or dataset that has no plan"
+	}
+	if len(ln.Fields) != len(pr.dataset.Columns) {
+		return lineRead{}, where + " keeps cells that are not the columns the dataset declares now"
 	}
 	pf, ok := pr.feedByIndex(ln.Feed)
 	if !ok {
-		return lineRead{}, false
+		return lineRead{}, where + " is read by a feed the source does not have"
 	}
 	row, err := pr.rowOf(ln.Key, ln.Fields)
 	if err != nil {
-		return lineRead{}, false
+		return lineRead{}, where + " cannot be read as a row of its dataset"
 	}
 	views, _ := pr.refine(row)
 	v := views[pr.ids[pf.fp.feed.Dataset]]
-	return lineRead{ln: ln, pf: pf, pr: pr, row: v.row, held: v.held}, true
+	return lineRead{ln: ln, pf: pf, pr: pr, row: v.row, held: v.held}, ""
 }
 
 // valuesOf converts the cells the feed of a line maps. A cell that is wrong gives no value and, for a feed that only attaches values
@@ -210,34 +227,44 @@ func (c *ObjectComputer) claimsOf(r *lineRead, into map[string][]identLine) {
 	}
 }
 
-// object makes one object. ok is false when a line of it cannot be read, or its name is not known: the object is then left as it is.
-func (c *ObjectComputer) object(o *RecomputeObject) (RecomputedObject, []RecomputedProblem, bool, error) {
-	in, ok := c.readLines(o)
-	if !ok {
-		return RecomputedObject{}, nil, false, nil
+// object makes one object. The third value is not nil when the object is not made, and says why (no line stands under it, a line of it
+// cannot be read, or its name is not known): the object is then left as it is, or, for one the run makes, not made.
+func (c *ObjectComputer) object(o *RecomputeObject) (RecomputedObject, []RecomputedProblem, *RecomputedLeft, error) {
+	left := func(why, reason string) *RecomputedLeft {
+		return &RecomputedLeft{ObjNo: o.ObjNo, Why: why, Lines: len(o.Lines), Reason: reason}
+	}
+	switch {
+	case o.Ref == "":
+		return RecomputedObject{}, nil, left(LeftUnreadable, "the object is not in the registry and no object the run makes has its number"), nil
+	case len(o.Lines) == 0:
+		return RecomputedObject{}, nil, left(LeftEmpty, "no record stands under the object and it is not a candidate for retirement"), nil
+	}
+	in, why := c.readLines(o)
+	if why != "" {
+		return RecomputedObject{}, nil, left(LeftUnreadable, why), nil
 	}
 	firstKey, ok := c.firstKeyOf(o, in.reads)
 	if !ok {
-		return RecomputedObject{}, nil, false, nil
+		return RecomputedObject{}, nil, left(LeftUnreadable, "the key the object was first seen with cannot be made again from its records"), nil
 	}
 	ch, err := c.choose(in.byAttr)
 	if err != nil {
-		return RecomputedObject{}, nil, false, err
+		return RecomputedObject{}, nil, nil, err
 	}
 	if ch.name == "" {
 		ch.name = nameFallback(o, firstKey)
 	}
 	if ch.name == "" {
-		return RecomputedObject{}, nil, false, nil
+		return RecomputedObject{}, nil, left(LeftNameless, "the attribute name has no value for the object and the key it was first seen with has no part but its context"), nil
 	}
 	probs := append(in.probs, conflictsOf(o, ch, in.byAttr)...)
 	made, err := c.rows(o, ch.name, ch.attrs, in.refs, firstKey)
 	if err != nil {
-		return RecomputedObject{}, nil, false, err
+		return RecomputedObject{}, nil, nil, err
 	}
 	made.Volatile = ch.volatile
 	made.Idents = identsOf(in.claims)
-	return made, probs, true, nil
+	return made, probs, nil, nil
 }
 
 // objectLines is what the lines of an object give: the values by attribute, the references of the sources, the claims, the problems of
@@ -250,13 +277,13 @@ type objectLines struct {
 	reads  []lineRead
 }
 
-// readLines reads every line of an object; ok is false when one cannot be read.
-func (c *ObjectComputer) readLines(o *RecomputeObject) (*objectLines, bool) {
+// readLines reads every line of an object; the reason is not empty when one cannot be read (the first one by the order of the lines).
+func (c *ObjectComputer) readLines(o *RecomputeObject) (*objectLines, string) {
 	in := &objectLines{byAttr: map[int][]*valueLine{}, refs: map[string]bool{}, claims: map[string][]identLine{}}
 	for i := range o.Lines {
-		r, ok := c.readLine(&o.Lines[i])
-		if !ok {
-			return nil, false
+		r, why := c.readLineWhy(&o.Lines[i])
+		if why != "" {
+			return nil, why
 		}
 		c.valuesOf(&r, &in.probs)
 		c.claimsOf(&r, in.claims)
@@ -267,7 +294,7 @@ func (c *ObjectComputer) readLines(o *RecomputeObject) (*objectLines, bool) {
 		in.refs[c.plans[r.ln.SrcNo].Source.ID+"/"+r.ln.Dataset+"/"+strings.ReplaceAll(r.ln.Key, keySep, "|")] = true
 		in.reads = append(in.reads, r)
 	}
-	return in, true
+	return in, ""
 }
 
 // chosen is the value that wins each attribute, as the document, the volatile entries and the name they give. Its numbers are the

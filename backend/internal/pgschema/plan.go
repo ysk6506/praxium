@@ -21,7 +21,9 @@ import (
 // object: Diff follows the step from 7 to 8.
 // Version 9 adds, for the expansion of the set of a run (ADR-0118), the table of the objects that are held to retire for good and the table
 // of the keys the expansion has read: Diff follows the step from 8 to 9.
-const GeneratorVersion = 9
+// Version 10 adds, for the objects the computation of the objects left (ADR-0119), the table of them (calc_left): Diff follows the step
+// from 9 to 10.
+const GeneratorVersion = 10
 
 // Phase says where a step may run.
 type Phase int

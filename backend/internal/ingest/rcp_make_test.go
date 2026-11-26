@@ -104,7 +104,7 @@ func (f *rcpFake) RecomputePlace(context.Context, RunLease) (RecomputePlace, err
 	if f.failAt == "stage" {
 		stage = RunStage("done")
 	}
-	return RecomputePlace{Stage: stage, Begun: f.begun, Finished: f.pages == 2}, nil
+	return RecomputePlace{Stage: stage, Begun: f.begun, Finished: f.pages == 2, Seen: rcpSeenAt}, nil
 }
 
 func (f *rcpFake) RecomputePage(context.Context, RunLease) (RecomputePage, error) {

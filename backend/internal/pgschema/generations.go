@@ -6,13 +6,14 @@ import "strings"
 // make them in a schema that an older version made. A version that changed a table that was already there, or
 // took one away, has no entry, and a schema of an older version is not followed past it (Diff refuses it).
 var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, error){
-	3: func(schema string, _ Manifest) ([]Step, error) { return ingestSteps(schema), nil },
-	4: func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
-	5: valueSteps,
-	6: func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
-	7: func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
-	8: func(schema string, _ Manifest) ([]Step, error) { return recomputeSteps(schema), nil },
-	9: func(schema string, _ Manifest) ([]Step, error) { return expandSteps(schema), nil },
+	3:  func(schema string, _ Manifest) ([]Step, error) { return ingestSteps(schema), nil },
+	4:  func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
+	5:  valueSteps,
+	6:  func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
+	7:  func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
+	8:  func(schema string, _ Manifest) ([]Step, error) { return recomputeSteps(schema), nil },
+	9:  func(schema string, _ Manifest) ([]Step, error) { return expandSteps(schema), nil },
+	10: func(schema string, _ Manifest) ([]Step, error) { return leftSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -171,6 +172,14 @@ func expandSteps(schema string) []Step {
 			SQL: strings.Replace(d.sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1)})
 	}
 	return steps
+}
+
+// leftSteps is what generator version 10 adds (ADR-0119): the table of the objects the computation of the objects left. A schema made by
+// this build has it already, so the step is made to be run twice, and a schema that has no computation tables is left as it is.
+func leftSteps(schema string) []Step {
+	return []Step{{Phase: InTx, What: WhatTable, Name: TableCalcLeft,
+		SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
+			strings.Replace(leftTableDef().sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"}}
 }
 
 // createIfNotExists is the statement of an index made to be run again.

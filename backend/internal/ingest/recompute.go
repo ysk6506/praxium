@@ -1,7 +1,11 @@
 package ingest
 
 import (
+	"cmp"
 	"context"
+	"sort"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/ysk6506/praxium/backend/internal/kernel"
@@ -17,15 +21,17 @@ import (
 
 const (
 	// DefaultRecomputeLines is how many lines of records (one for each record and feed that stands under an object) a page of the
-	// computation reads: a page is the objects, in the order of their numbers, up to this many lines in all (an object that has more is
-	// a page of its own). A line is the cells of a record, so a page is a few ten megabytes of memory.
+	// computation reads: a page is the objects, in the order of their numbers, up to this many lines in all. The page is what bounds the
+	// memory of the step: Make of 10,000 lines of one object peaks at about 30 MB of heap above the lines themselves (measured by
+	// TestRcpTheMemoryOfAnObjectThatHasTheMostLinesAPageHoldsIsBounded).
 	DefaultRecomputeLines = 10_000
-	// DefaultRecomputeObjectMax is the most lines one object may have for the computation to make it. An object that has more is left
-	// as it is for this run and counted (RecomputeCounts.TooMany), and nothing is written for it: a page holds the lines of one object
-	// whole, so the number is what bounds the memory of a page (100,000 records of a few hundred bytes of cells are tens of
-	// megabytes). An object that many records stand under is not a case of the intended use but a mapping that makes one object of too
-	// many rows, and the run says so instead of making an object of part of them.
-	DefaultRecomputeObjectMax = 100_000
+	// DefaultRecomputeObjectMax is the most lines one object may have for the computation to make it, and it is the number of lines of a
+	// page, so that an object is always inside one page (ADR-0119). An object that has more is left as it is for this run and counted
+	// (RecomputeCounts.TooMany), a calc_left row says so, and nothing is written for it; one the run would have made is not made and what
+	// pointed at it is taken back (its records are unresolved, with a problem each). An object that many records stand under is not a
+	// case of the intended use but a mapping that makes one object of too many rows, and the run says so instead of making an object of
+	// part of them. A full computation after the limit is raised makes it.
+	DefaultRecomputeObjectMax = DefaultRecomputeLines
 )
 
 // RecomputeStart is what begins the step: the sizes (0 is the default), the time the records were seen (written as the time of the
@@ -39,10 +45,28 @@ type RecomputeStart struct {
 	Schemes map[string]int
 }
 
-// Validate checks what the step cannot begin without.
+// SchemesText is the numbers of the schemes as one text in the order of the names, to compare two starts and to keep in a place.
+func (s RecomputeStart) SchemesText() string {
+	names := make([]string, 0, len(s.Schemes))
+	for name := range s.Schemes {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	var b strings.Builder
+	for _, name := range names {
+		b.WriteString(name + "=" + strconv.Itoa(s.Schemes[name]) + ";")
+	}
+	return b.String()
+}
+
+// Validate checks what the step cannot begin without. A limit of the lines of an object that is given is not more than the lines of
+// a page, so that an object is always inside one page.
 func (s RecomputeStart) Validate() error {
 	if s.Lines < 0 || s.ObjectMax < 0 {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the sizes of the computation of the objects are not negative")
+	}
+	if lines := cmp.Or(s.Lines, DefaultRecomputeLines); s.ObjectMax > lines {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the limit of %d lines of an object is more than the %d lines of a page", s.ObjectMax, lines)
 	}
 	t, err := time.Parse(time.RFC3339, s.Seen)
 	if err != nil || t.UTC().Format(time.RFC3339) != s.Seen {
@@ -51,13 +75,16 @@ func (s RecomputeStart) Validate() error {
 	return nil
 }
 
-// RecomputePlace is where the step stands: Unit is how many pages are done, and the next page is the objects after Cursor.
+// RecomputePlace is where the step stands: Unit is how many pages are done, and the next page is the objects after Cursor. Seen and
+// Schemes (as SchemesText) are the ones the step began with, which a server that takes the run over must be given again (ADR-0119).
 type RecomputePlace struct {
 	Stage    RunStage
 	Begun    bool
 	Finished bool
 	Unit     int
 	Cursor   int64
+	Seen     string
+	Schemes  string
 }
 
 // Done says whether every page is done.
@@ -69,7 +96,8 @@ func (p RecomputePlace) Done() bool { return p.Begun && p.Finished }
 // Empty is the objects that no record stands under and that are no candidates (they are left as they are). Left is the objects that
 // were not computed and are left as they are: TooMany of them have more lines than the limit, Unreadable have a record that cannot be
 // read (its source has no plan, or its cells are not the ones the dataset declares now); the run says so, and does not make an object of
-// part of its records.
+// part of its records. Isolated is the objects the run would have made that were not made (a calc_left row each, ADR-0119): the ones that
+// are in Left and are new, and the ones that stand under a parent that was left.
 type RecomputeCounts struct {
 	Objects    int `json:"objects"`
 	Volatile   int `json:"volatile"`
@@ -82,6 +110,7 @@ type RecomputeCounts struct {
 	Left       int `json:"left"`
 	TooMany    int `json:"too_many"`
 	Unreadable int `json:"unreadable"`
+	Isolated   int `json:"isolated"`
 }
 
 // RecomputeClaim is an identifier claim of a line that was decided for the object: the scheme (its number), by the hash of the value.
@@ -183,8 +212,26 @@ type RecomputedRecord struct {
 	Key       string
 }
 
+// The reasons an object is left (RecomputedLeft.Why).
+const (
+	LeftEmpty      = "empty"      // no record stands under it
+	LeftUnreadable = "unreadable" // a line of it cannot be read
+	LeftNameless   = "nameless"   // no name is known for it
+	LeftTooMany    = "too_many"   // it has more lines than the limit (the page did not read them)
+)
+
+// RecomputedLeft is an object that Go did not make, and why. Lines is how many lines it had when they were read. The reason of one that
+// has too many lines is given by the store, which knows the limit.
+type RecomputedLeft struct {
+	ObjNo  int64
+	Why    string
+	Lines  int
+	Reason string
+}
+
 // RecomputedPage is what Go made of a page: the objects, the problems of the records, the records to make records of the run, the
-// objects that no line stands under (Empty) and the ones that cannot be read (Unreadable).
+// objects that no line stands under (Empty) and the ones that cannot be read (Unreadable). Left says why for every object that was not
+// made: the ones of Empty and Unreadable and the ones that have too many lines; the numbers of the three must agree with it.
 type RecomputedPage struct {
 	Unit       int
 	Through    int64
@@ -194,6 +241,7 @@ type RecomputedPage struct {
 	Records    []RecomputedRecord
 	Empty      []int64
 	Unreadable []int64
+	Left       []RecomputedLeft
 	// Lines is how many lines the page read and TooMany how many objects it left out for having too many.
 	Lines   int
 	TooMany int
@@ -236,6 +284,11 @@ func RunRecompute(ctx context.Context, d Recomputer, lease RunLease, start Recom
 		if err := d.BeginRecompute(ctx, lease, start); err != nil {
 			return RecomputeCounts{}, err
 		}
+	} else if place.Seen != start.Seen || place.Schemes != start.SchemesText() {
+		// a server that takes the run over is given what the run began with, or the documents of one run would say two times and the
+		// identifiers of a scheme it does not know would be left out (ADR-0119)
+		return RecomputeCounts{}, kernel.Errorf(kernel.CodeConflict, "the computation of the objects of the run %d began with the time %q and the schemes %q, not %q and %q",
+			lease.No, place.Seen, place.Schemes, start.Seen, start.SchemesText())
 	}
 	for {
 		done, err := recomputeOnePage(ctx, d, lease, maker)
