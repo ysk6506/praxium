@@ -265,6 +265,9 @@ func TestQscTheLinksOfAnObjectAreReadFromTheIndexAloneByTheirNumber(t *testing.T
 	if !strings.Contains(cols, "src") || !strings.Contains(cols, "dst") || !strings.Contains(cols, "type_no") {
 		t.Fatalf("the columns of the links: %s", cols)
 	}
+	if got := sxText(t, w.admin, `SELECT string_agg(indexname, ',' ORDER BY indexname) FROM pg_indexes WHERE schemaname = $1 AND tablename = 'link'`, w.schema); got != "link_dst,link_pkey,link_ref,link_src" {
+		t.Errorf("the indexes of the links: %s", got)
+	}
 	sxRun(t, w.admin, `VACUUM `+link)
 	tx, err := w.admin.BeginTx(context.Background(), nil)
 	if err != nil {

@@ -40,6 +40,15 @@ func TestQscThePlanOfTheStandardModelHasTheStepsOfTheQuerySchemaAndTheRolesOnlyW
 	if kinds[pgschema.WhatGrant] != 3 || kinds[pgschema.WhatSchema] < 6 || kinds[pgschema.WhatView] == 0 || kinds[pgschema.WhatRows] < 4 {
 		t.Errorf("the steps by kind: %v", kinds)
 	}
+	again := qscStandardPlan(t)
+	if len(again.Query) != len(plan.Query) {
+		t.Fatalf("the plan has %d steps, and %d the second time", len(plan.Query), len(again.Query))
+	}
+	for i := range plan.Query {
+		if plan.Query[i] != again.Query[i] {
+			t.Fatalf("the step %d (%s %s) is not the same the second time: the order of the statements depends on the run", i, plan.Query[i].What, plan.Query[i].Name)
+		}
+	}
 	if got, want := len(plan.Roles), 3; got != want {
 		t.Errorf("%d roles", got)
 	}

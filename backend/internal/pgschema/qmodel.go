@@ -107,6 +107,41 @@ func toAttr(reg *model.Registry, grades map[int]model.Sensitivity, p model.Prope
 
 func sortAttrs(as []qAttr) { sort.Slice(as, func(i, j int) bool { return as[i].No < as[j].No }) }
 
+// gatherType reads one object type: its versioned and its own volatile properties, its parent and the types below it. The volatile
+// properties that every type has are put into the model once, in qm.Common.
+func gatherType(reg *model.Registry, grades map[int]model.Sensitivity, t model.ObjectType, common, seenCommon map[int]bool, qm *qModel) (qType, error) {
+	qt := qType{No: t.TypeNo, Name: t.Name, View: TypeViewName(t.Name), Layer: string(t.Layer), Desc: t.Description, Subtree: []int{t.TypeNo}}
+	for _, p := range reg.EffectiveProperties(t.ID) {
+		a, err := toAttr(reg, grades, p)
+		if err != nil {
+			return qType{}, err
+		}
+		switch {
+		case common[a.No]:
+			if !seenCommon[a.No] {
+				seenCommon[a.No] = true
+				qm.Common = append(qm.Common, a)
+			}
+		case a.Volatile:
+			qt.Own = append(qt.Own, a)
+		default:
+			qt.Docs = append(qt.Docs, a)
+		}
+	}
+	sortAttrs(qt.Docs)
+	sortAttrs(qt.Own)
+	if !t.Parent.IsZero() {
+		if parent, ok := reg.ObjectType(t.Parent); ok {
+			qt.Parent, qt.ParentNo = TypeViewName(parent.Name), parent.TypeNo
+		}
+	}
+	for _, s := range reg.Subtypes(t.ID) {
+		qt.Subtree = append(qt.Subtree, s.TypeNo)
+	}
+	sort.Ints(qt.Subtree)
+	return qt, nil
+}
+
 // gatherModel reads the registry into the names and numbers the views are made from. It refuses a model whose names cannot be
 // views of one schema: a name that is taken, one that is too long for PostgreSQL, one that a column of the view already has, or
 // a text that PostgreSQL cannot keep.
@@ -122,35 +157,10 @@ func gatherModel(reg *model.Registry, sh shape, search SearchSet) (qModel, error
 	seenCommon := map[int]bool{}
 	grades := attrGrades(reg)
 	for _, t := range reg.ObjectTypes() {
-		qt := qType{No: t.TypeNo, Name: t.Name, View: TypeViewName(t.Name), Layer: string(t.Layer), Desc: t.Description, Subtree: []int{t.TypeNo}}
-		for _, p := range reg.EffectiveProperties(t.ID) {
-			a, err := toAttr(reg, grades, p)
-			if err != nil {
-				return qModel{}, err
-			}
-			switch {
-			case common[a.No]:
-				if !seenCommon[a.No] {
-					seenCommon[a.No] = true
-					qm.Common = append(qm.Common, a)
-				}
-			case a.Volatile:
-				qt.Own = append(qt.Own, a)
-			default:
-				qt.Docs = append(qt.Docs, a)
-			}
+		qt, err := gatherType(reg, grades, t, common, seenCommon, &qm)
+		if err != nil {
+			return qModel{}, err
 		}
-		sortAttrs(qt.Docs)
-		sortAttrs(qt.Own)
-		if !t.Parent.IsZero() {
-			if parent, ok := reg.ObjectType(t.Parent); ok {
-				qt.Parent, qt.ParentNo = TypeViewName(parent.Name), parent.TypeNo
-			}
-		}
-		for _, s := range reg.Subtypes(t.ID) {
-			qt.Subtree = append(qt.Subtree, s.TypeNo)
-		}
-		sort.Ints(qt.Subtree)
 		qm.Types = append(qm.Types, qt)
 	}
 	sortAttrs(qm.Common)

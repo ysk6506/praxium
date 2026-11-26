@@ -1,9 +1,10 @@
 package pgschema_test
 
 import (
-	"os"
-	"path/filepath"
-	"regexp"
+	"go/ast"
+	"go/parser"
+	"go/token"
+	"io/fs"
 	"strings"
 	"testing"
 
@@ -15,23 +16,26 @@ import (
 
 // [REQ-573] [REQ-626]
 func TestQscTheSensitivityOfAPropertyIsReadInOneFileOfTheGenerator(t *testing.T) {
-	files, err := filepath.Glob("*.go")
-	if err != nil || len(files) == 0 {
+	fset := token.NewFileSet()
+	pkgs, err := parser.ParseDir(fset, ".", func(fi fs.FileInfo) bool {
+		return !strings.HasSuffix(fi.Name(), "_test.go") && fi.Name() != "qgrade.go"
+	}, 0)
+	if err != nil || len(pkgs) == 0 {
 		t.Fatalf("no files: %v", err)
 	}
-	use := regexp.MustCompile(`(\w+)\.(Sensitivity|EffectiveSensitivity)\b`)
-	for _, f := range files {
-		if strings.HasSuffix(f, "_test.go") || f == "qgrade.go" {
-			continue
-		}
-		raw, err := os.ReadFile(f)
-		if err != nil {
-			t.Fatal(err)
-		}
-		for _, m := range use.FindAllStringSubmatch(string(raw), -1) {
-			if m[1] != "model" {
-				t.Errorf("%s reads %s: the sensitivity of a property is read in qgrade.go only", f, m[0])
-			}
+	for _, pkg := range pkgs {
+		for name, file := range pkg.Files {
+			ast.Inspect(file, func(n ast.Node) bool {
+				sel, ok := n.(*ast.SelectorExpr)
+				if !ok || (sel.Sel.Name != "Sensitivity" && sel.Sel.Name != "EffectiveSensitivity") {
+					return true
+				}
+				// model.Sensitivity is the name of a type; anything else reads the sensitivity of a property
+				if id, ok := sel.X.(*ast.Ident); !ok || id.Name != "model" {
+					t.Errorf("%s reads %s: the sensitivity of a property is read in qgrade.go only", name, sel.Sel.Name)
+				}
+				return true
+			})
 		}
 	}
 }

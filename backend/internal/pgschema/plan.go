@@ -107,15 +107,9 @@ func Build(reg *model.Registry, opts Options) (Plan, error) {
 	}
 	schema := SchemaName(opts.KGNo)
 	steps := []Step{{Phase: InTx, What: WhatSchema, Name: schema, SQL: "CREATE SCHEMA " + QuoteIdent(schema)}}
-	fixed, err := fixedTableDefs(sh.Common)
+	steps, err = fixedSteps(steps, schema, sh)
 	if err != nil {
 		return Plan{}, err
-	}
-	for _, d := range fixed {
-		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name, SQL: d.sql(schema)})
-	}
-	for _, d := range fixedIndexDefs(sh.Common) {
-		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, false)})
 	}
 	var stats []Step
 	for _, ts := range sh.Types {
@@ -140,13 +134,38 @@ func Build(reg *model.Registry, opts Options) (Plan, error) {
 	if len(plan.Deferred) > 0 {
 		plan.Manifest.State = StateStatsPending
 	}
-	if opts.InstallToken != "" {
-		if plan.Query, err = buildQuery(reg, sh, opts, search); err != nil {
-			return Plan{}, err
-		}
-		plan.Roles = QueryRoleNames(opts.InstallToken, opts.KGNo)
+	if err := plan.addQuery(reg, sh, opts, search); err != nil {
+		return Plan{}, err
 	}
 	return plan, nil
+}
+
+// fixedSteps adds the steps of the fixed tables and their indexes to the steps.
+func fixedSteps(steps []Step, schema string, sh shape) ([]Step, error) {
+	fixed, err := fixedTableDefs(sh.Common)
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range fixed {
+		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name, SQL: d.sql(schema)})
+	}
+	for _, d := range fixedIndexDefs(sh.Common) {
+		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, false)})
+	}
+	return steps, nil
+}
+
+// addQuery gives the plan the steps of the query schema and the names of its roles, when the options carry the token of the installation.
+func (p *Plan) addQuery(reg *model.Registry, sh shape, opts Options, search SearchSet) error {
+	if opts.InstallToken == "" {
+		return nil
+	}
+	var err error
+	if p.Query, err = buildQuery(reg, sh, opts, search); err != nil {
+		return err
+	}
+	p.Roles = QueryRoleNames(opts.InstallToken, opts.KGNo)
+	return nil
 }
 
 // typeSteps are the steps that make the tables of a new type: its tables, its indexes and its statistics.

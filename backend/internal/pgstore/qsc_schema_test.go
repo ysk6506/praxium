@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"context"
+	"database/sql"
 	"testing"
 	"time"
 
@@ -15,12 +16,12 @@ import (
 func TestQscTheQuerySchemaOfTheStandardModelHasAViewForEveryTypeAndEveryLinkTypeAndTheTimeToBuildItIsKnown(t *testing.T) {
 	st, admin := sxOpen(t)
 	m := sxStandard(t, false)
-	start := time.Now()
+	start := qscClock(t, admin)
 	rec, err := st.CreateStorageSchema(context.Background(), sxKG(t, 1), m)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("a KG of the standard model with its query schema is made in %v", time.Since(start))
+	t.Logf("a KG of the standard model with its query schema is made in %v", qscClock(t, admin).Sub(start))
 	open := pgschema.QuerySchemaName(rec.KGNo, model.SensitivityOpen, false)
 	has := func(name string) bool {
 		return sxInt(t, admin, `SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = $1 AND c.relname = $2 AND c.relkind = 'v'`, open, name) == 1
@@ -52,7 +53,7 @@ func TestQscTheQuerySchemaOfTheStandardModelHasAViewForEveryTypeAndEveryLinkType
 	}
 }
 
-// [REQ-561]
+// [REQ-561] [REQ-562]
 func TestQscTheTimeToBuildAllTheViewsAgainIsMeasuredByKindOfStatement(t *testing.T) {
 	_, admin := sxOpen(t)
 	ctx := context.Background()
@@ -79,20 +80,44 @@ func TestQscTheTimeToBuildAllTheViewsAgainIsMeasuredByKindOfStatement(t *testing
 		t.Fatal(err)
 	}
 	byKind := map[string]time.Duration{}
-	start := time.Now()
+	start := qscClock(t, tx)
 	for _, s := range plan.Query {
-		t0 := time.Now()
+		t0 := qscClock(t, tx)
 		if _, err := tx.ExecContext(ctx, s.SQL); err != nil {
 			t.Fatalf("%s %s: %v", s.What, s.Name, err)
 		}
-		byKind[s.What] += time.Since(t0)
+		byKind[s.What] += qscClock(t, tx).Sub(t0)
 	}
-	t.Logf("all the views of the standard model are built in %v (%d statements); by kind: %v", time.Since(start), len(plan.Query), byKind)
-	start = time.Now()
+	t.Logf("all the views of the standard model are built in %v (%d statements); by kind: %v", qscClock(t, tx).Sub(start), len(plan.Query), byKind)
+	var views int
+	if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname LIKE 'q\_5\_%' AND c.relkind = 'v'`).Scan(&views); err != nil {
+		t.Fatal(err)
+	}
+	start = qscClock(t, tx)
 	for _, s := range plan.Query {
 		if _, err := tx.ExecContext(ctx, s.SQL); err != nil {
 			t.Fatalf("again %s %s: %v", s.What, s.Name, err)
 		}
 	}
-	t.Logf("and built again over the ones that are there in %v", time.Since(start))
+	t.Logf("and built again over the ones that are there in %v", qscClock(t, tx).Sub(start))
+	var after int
+	if err := tx.QueryRowContext(ctx, `SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname LIKE 'q\_5\_%' AND c.relkind = 'v'`).Scan(&after); err != nil {
+		t.Fatal(err)
+	}
+	if after != views {
+		t.Errorf("building the query schema twice left %d views, the first time %d", after, views)
+	}
+}
+
+// qscClock is the clock of the database server (clock_timestamp advances inside a transaction), so a test measures a time without
+// reading the clock of the process.
+func qscClock(t *testing.T, q interface {
+	QueryRowContext(ctx context.Context, query string, args ...any) *sql.Row
+}) time.Time {
+	t.Helper()
+	var now time.Time
+	if err := q.QueryRowContext(context.Background(), `SELECT clock_timestamp()`).Scan(&now); err != nil {
+		t.Fatal(err)
+	}
+	return now
 }

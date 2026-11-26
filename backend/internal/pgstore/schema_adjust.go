@@ -72,14 +72,7 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 	if err := adjustable(rec, found, err, kg); err != nil {
 		return adjustment{}, err
 	}
-	if m.token, err = readInstallToken(ctx, tx); err != nil {
-		return adjustment{}, err
-	}
-	next, err := plan(m, rec.KGNo)
-	if err != nil {
-		return adjustment{}, err
-	}
-	delta, err := pgschema.Diff(rec.Manifest, next.Manifest)
+	next, delta, err := adjustPlan(ctx, tx, rec, m, plan)
 	if err != nil {
 		return adjustment{}, err
 	}
@@ -103,6 +96,21 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 	}
 	rec, _, err = readRecord(ctx, tx, kg)
 	return adjustment{rec: rec, concurrent: concurrent, online: online}, err
+}
+
+// adjustPlan is the plan of the model as it is now (with the token of the installation, for the query schema) and the steps that take the
+// schema of the record to it.
+func adjustPlan(ctx context.Context, tx *sql.Tx, rec SchemaRecord, m SchemaModel, plan planner) (pgschema.Plan, pgschema.Delta, error) {
+	var err error
+	if m.token, err = readInstallToken(ctx, tx); err != nil {
+		return pgschema.Plan{}, pgschema.Delta{}, err
+	}
+	next, err := plan(m, rec.KGNo)
+	if err != nil {
+		return pgschema.Plan{}, pgschema.Delta{}, err
+	}
+	delta, err := pgschema.Diff(rec.Manifest, next.Manifest)
+	return next, delta, err
 }
 
 // adjustable says whether the record of a KG may be adjusted now.

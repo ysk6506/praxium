@@ -17,8 +17,12 @@ func (g qGen) objects() []qObject {
 	for _, l := range g.qm.Links {
 		out = append(out, g.linkView(l))
 	}
-	out = append(out, g.linkAll(), g.objectView(), g.attributeView(), g.identifierView())
-	return append(out, g.modelViews()...)
+	out = append(out, g.linkAll(), g.objectView(), g.attributeView(), g.identifierView(), g.versionView(), g.changeView(), g.valueChangeView())
+	out = append(out, g.modelViews()...)
+	for _, t := range g.qm.Types {
+		out = append(out, g.atFunction(t))
+	}
+	return append(out, g.objectDetail())
 }
 
 // queryBuild is what the steps of the query schema of one KG are made from.
@@ -52,7 +56,7 @@ func buildQuery(reg *model.Registry, sh shape, opts Options, search SearchSet) (
 	for _, name := range QuerySchemaNames(b.kgNo) {
 		steps = append(steps, Step{Phase: InTx, What: WhatSchema, Name: name, SQL: "DROP SCHEMA IF EXISTS " + QuoteIdent(name) + " CASCADE"})
 	}
-	for _, watermark := range []bool{false} {
+	for _, watermark := range []bool{false, true} {
 		made, err := b.schemas(watermark)
 		if err != nil {
 			return nil, err
@@ -94,7 +98,7 @@ func (b queryBuild) grants() []Step {
 		var sql strings.Builder
 		role := QuoteIdent(QueryRoleName(b.token, b.kgNo, g.grade))
 		for _, lower := range b.grades[:i+1] {
-			for _, watermark := range []bool{false} {
+			for _, watermark := range []bool{false, true} {
 				schema := QuoteIdent(QuerySchemaName(b.kgNo, lower.grade, watermark))
 				sql.WriteString("GRANT USAGE ON SCHEMA " + schema + " TO " + role + ";\n")
 				sql.WriteString("GRANT SELECT ON ALL TABLES IN SCHEMA " + schema + " TO " + role + ";\n")

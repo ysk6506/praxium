@@ -32165,16 +32165,16 @@
   },
   "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
    "kind": "test",
-   "hash": "e373c939d704b3c1",
+   "hash": "1ed2315b380cc1c8",
    "asserts": 2,
    "literals": [
-    "fc33bb4aea4f054a"
+    "580cc7248d3cc813"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-26",
-   "amended_by": "0108-identify-step-slots-rounds-and-groups-in-sql.md"
+   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -32570,6 +32570,128 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscAHigherGradeSeesEverythingALowerGradeSeesAndTheGradesAreNotTheSameSet": {
+   "kind": "test",
+   "hash": "f99de29309edb706",
+   "asserts": 6,
+   "literals": [
+    "d1f033511f05540e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscAModelThatCannotBeShownAsViewsIsRefusedWhenThePlanIsMade": {
+   "kind": "test",
+   "hash": "1417ed46a8192f55",
+   "asserts": 2,
+   "literals": [
+    "9f21bf58aafd2e29"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-574"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscTheNameOfARoleCarriesTheTokenAndATokenThatIsNotHexadecimalIsRefused": {
+   "kind": "test",
+   "hash": "6351c11ca10a9be7",
+   "asserts": 3,
+   "literals": [
+    "c6d5f4deb880ddb8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscThePlanOfTheStandardModelHasTheStepsOfTheQuerySchemaAndTheRolesOnlyWhenItIsGivenAToken": {
+   "kind": "test",
+   "hash": "ee0c4a5b312cbc0b",
+   "asserts": 12,
+   "literals": [
+    "eed606207178bb31"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-572"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscTheSearchPathPutsTheHighestGradeFirstAndStopsAtTheGradeOfTheCaller": {
+   "kind": "test",
+   "hash": "38af1cffcfcec23a",
+   "asserts": 2,
+   "literals": [
+    "ba2bc075da1fbba2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-572"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscTheSensitivityOfAPropertyIsReadInOneFileOfTheGenerator": {
+   "kind": "test",
+   "hash": "a75eae2986bdc334",
+   "asserts": 2,
+   "literals": [
+    "93e612fb8f420879"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573",
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscTheStatementsOfAGradeNameNoAttributeOfAHigherGradeAndTheRowsOfTheDescriptionAreCutByNumber": {
+   "kind": "test",
+   "hash": "2acfe08f04ba8b18",
+   "asserts": 7,
+   "literals": [
+    "4d030d787d9ae594"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573",
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestQscTheStatementsOfTheRolesMakeAnInertRoleLetTheExecutorSwitchToItAndDropThemAll": {
+   "kind": "test",
+   "hash": "6a2d14225249ae5a",
+   "asserts": 3,
+   "literals": [
+    "7fb4f6158f3bb11b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestRdfDiffFromGeneratorFiveAddsTheWaitsExpiredTheRowOfARecordTheProblemsThatHaveNoDefinitionTheOwnerOfTheComputationAndTheIndexOfTheRowsReceivedAndNothingElse": {
@@ -34447,6 +34569,405 @@
     "REQ-270"
    ],
    "added": "2026-11-14",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscACustomAttributeIsAColumnNamedLikeItIsAndTheModelViewsDescribeOnlyWhatTheGradeSees": {
+   "kind": "test",
+   "hash": "26294bf69b2b1b0e",
+   "asserts": 10,
+   "literals": [
+    "eb49f8faba28e7fc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-574",
+    "REQ-576"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAFunctionOfAPastTimeAnswersForTheNumberAndRaisesAnErrorForOneThatCannotBeRead": {
+   "kind": "test",
+   "hash": "af9400109047ec3a",
+   "asserts": 20,
+   "literals": [
+    "9cde5fbda1c3ce21"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-569",
+    "REQ-575"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAGradeRoleHasNoRightOnAnotherKGOnTheStorageSchemaOrOnAHigherGrade": {
+   "kind": "test",
+   "hash": "419635ca9ba62e73",
+   "asserts": 10,
+   "literals": [
+    "a25ad587f292f0a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAGradeRoleHasNoRightOnTheSetForALargeApplyOfAHigherGrade": {
+   "kind": "test",
+   "hash": "00b402ef473ab161",
+   "asserts": 3,
+   "literals": [
+    "0fa1677d97764559"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573",
+    "REQ-627"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAGradeRoleSeesNoColumnOfAnAttributeOfAHigherGrade": {
+   "kind": "test",
+   "hash": "ce4113016052c380",
+   "asserts": 6,
+   "literals": [
+    "4393880ed3686518"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573",
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAHigherGradeSchemaHoldsOnlyWhatDiffersFromTheGradeBelow": {
+   "kind": "test",
+   "hash": "f0aff976c9e056b7",
+   "asserts": 5,
+   "literals": [
+    "dde25fb7b081dd8c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-572"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAnInstallerThatMayMakeRolesButIsNoSuperuserMakesTheQuerySchemaAndCanSwitchToItsRoles": {
+   "kind": "test",
+   "hash": "027a99a6de2c4f2f",
+   "asserts": 18,
+   "literals": [
+    "5d28f86c13beb599"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscARenameOfAnAttributeBuildsEveryViewAgainWithTheNewName": {
+   "kind": "test",
+   "hash": "3f322e7e13669b36",
+   "asserts": 12,
+   "literals": [
+    "a85d7b0b5d30666c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-561"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscARenameWithAnAddedAttributeBuildsTheFunctionOfAPastTimeAgainWithTheNewName": {
+   "kind": "test",
+   "hash": "96f0a301553c8ed9",
+   "asserts": 8,
+   "literals": [
+    "a36192268e7b2faa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-561",
+    "REQ-575"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscAStatementOfTheQuerySchemaThatFailsLeavesTheKGAsItWasForTheMakingAndForTheAdjustment": {
+   "kind": "test",
+   "hash": "7f4deca6733bf410",
+   "asserts": 16,
+   "literals": [
+    "d8cee4bf2941831e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscATokenThatIsNotOneOfTheInstallationRefusesEveryWayToMakeAdjustOrDropTheQuerySchema": {
+   "kind": "test",
+   "hash": "00eccf828d479a72",
+   "asserts": 19,
+   "literals": [
+    "15cacde6a62c618a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscATypeViewHasTheObjectsOfTheTypeAndOfEveryTypeBelowItOnce": {
+   "kind": "test",
+   "hash": "952bae37f41a414b",
+   "asserts": 16,
+   "literals": [
+    "6af69e28873befa3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-574"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscATypeViewReadsOneObjectByAnIndexAndTheViewOfAParentIsAUnionAllOfTheTablesOfItsTypes": {
+   "kind": "test",
+   "hash": "e668c25484247396",
+   "asserts": 9,
+   "literals": [
+    "0d6b35aacd7dabb8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-574",
+    "REQ-623"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscDeletingAKGDropsItsQuerySchemasAndItsRoles": {
+   "kind": "test",
+   "hash": "b5758a3c6839a2f6",
+   "asserts": 8,
+   "literals": [
+    "6df20d4e4ad13e8f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscEverySurfaceOfAGradeIsCutByTheSameSetOfAttributeNumbers": {
+   "kind": "test",
+   "hash": "9525126f928594da",
+   "asserts": 9,
+   "literals": [
+    "3b804712fd232439"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscEveryViewAndColumnOfTheQuerySchemaHasAComment": {
+   "kind": "test",
+   "hash": "c2435e970c222f5d",
+   "asserts": 7,
+   "literals": [
+    "30c8d2420f2d3965"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-576"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscEveryWriteOfAGradeRoleIsRefused": {
+   "kind": "test",
+   "hash": "e038d9441427ef94",
+   "asserts": 5,
+   "literals": [
+    "86970d89ab18aa66"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheChangeRecordsAreViewsOfTheKGAndTheVersionsOfIt": {
+   "kind": "test",
+   "hash": "73efedf5093aad5e",
+   "asserts": 6,
+   "literals": [
+    "65ec0baed30ebd81"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-569"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheDetailOfAnObjectHasEveryAttributeTheGradeSeesWithItsEvidenceAndIsNullForAnObjectThatIsNotThere": {
+   "kind": "test",
+   "hash": "3960679ecf32ee19",
+   "asserts": 6,
+   "literals": [
+    "8e177f211e2b0a9e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-574",
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheFunctionsAndTheChangeViewsOfAGradeAreCutByTheSameSetOfAttributeNumbers": {
+   "kind": "test",
+   "hash": "ea17ce28c26fe506",
+   "asserts": 10,
+   "literals": [
+    "a63ca14c52578c2e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheLinksOfAnObjectAreReadFromTheIndexAloneByTheirNumber": {
+   "kind": "test",
+   "hash": "4e5a95efeaac54b1",
+   "asserts": 10,
+   "literals": [
+    "d5436233d534851d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-623"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheQuerySchemaOfTheStandardModelHasAViewForEveryTypeAndEveryLinkTypeAndTheTimeToBuildItIsKnown": {
+   "kind": "test",
+   "hash": "ccbbf305a140c25a",
+   "asserts": 14,
+   "literals": [
+    "42d9b83a44bf20c4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-574"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheSetForALargeApplyHasOnlyWhatIsReadableThroughTheWatermark": {
+   "kind": "test",
+   "hash": "891b8a27a881dee7",
+   "asserts": 10,
+   "literals": [
+    "ce7874312fbee907"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-627"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheStandardModelHasAFunctionOfAPastTimeForEveryTypeTheViewsOfTheChangesAndTheSixSchemas": {
+   "kind": "test",
+   "hash": "ce9cea716185fef1",
+   "asserts": 12,
+   "literals": [
+    "2b3d2dfbfa4a3d05"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-575",
+    "REQ-627"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheStepsOfTheQuerySchemaFailInATransactionThatIsOverAndAPlanWithoutThemDoesNothing": {
+   "kind": "test",
+   "hash": "bc1bf1857906a12a",
+   "asserts": 8,
+   "literals": [
+    "c7694e0c91475593"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-573"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestQscTheTimeToBuildAllTheViewsAgainIsMeasuredByKindOfStatement": {
+   "kind": "test",
+   "hash": "ad226a0232d9f200",
+   "asserts": 19,
+   "literals": [
+    "a5043d2d9aee68e0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-561",
+    "REQ-562"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestRdfAKGOfGeneratorFourGetsTheColumnsAndTheOwnerTableOfTheComparisonWhenItIsAdjustedAndKeepsWhatItHas": {
