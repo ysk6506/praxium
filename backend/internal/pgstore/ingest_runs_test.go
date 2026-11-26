@@ -294,29 +294,35 @@ func TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable(t
 	t.Logf("dropping the schema of a KG that has 9 sources in one transaction: %d locks held", igrLocksOf(t, admin, `DROP SCHEMA "s_2" CASCADE`))
 	// What the product does to delete a KG (ADR-0125), a KG of the server's model (its query schema too) with no source and one
 	// with 9: every transaction of DeleteKG is counted at its end, when it holds all it took, and none may take more than 80%.
-	for _, c := range []struct{ no, sources int }{{1, 0}, {2, 9}} {
-		kg := pgsrcKG(t, st, admin, c.no, c.sources)
-		steps := map[string]int{}
-		most := map[string]int{}
-		st.deleteSeen = func(_ context.Context, step string, tx *sql.Tx) error {
-			n := igrHeldLocks(t, tx)
-			steps[step]++
-			most[step] = max(most[step], n)
-			if n > limit {
-				t.Errorf("deleting a KG of %d sources: a transaction of the step %q holds %d locks, more than %d", c.sources, step, n, limit)
-			}
-			return nil
+	igrDeleteFits(t, st, admin, limit, 1, 0)
+	igrDeleteFits(t, st, admin, limit, 2, 9)
+}
+
+// igrDeleteFits makes the KG of number no with that many sources and deletes it with DeleteKG, counting the locks every
+// transaction of the delete holds at its end (when it holds all it took): none may hold more than limit.
+func igrDeleteFits(t *testing.T, st *Store, admin *sql.DB, limit, no, sources int) {
+	t.Helper()
+	kg := pgsrcKG(t, st, admin, no, sources)
+	steps := map[string]int{}
+	most := map[string]int{}
+	st.deleteSeen = func(_ context.Context, step string, tx *sql.Tx) error {
+		n := igrHeldLocks(t, tx)
+		steps[step]++
+		most[step] = max(most[step], n)
+		if n > limit {
+			t.Errorf("deleting a KG of %d sources: a transaction of the step %q holds %d locks, more than %d", sources, step, n, limit)
 		}
-		if err := st.DeleteKG(ctx, kg); err != nil {
-			t.Fatal(err)
-		}
-		st.deleteSeen = nil
-		t.Logf("deleting a KG of %d sources: the most locks a transaction held, by step: %v (transactions: %v)", c.sources, most, steps)
-		if steps[deleteStepMark] != 1 || steps[deleteStepSource] != c.sources || steps[deleteStepCompute] < 1 || steps[deleteStepQuery] != 1 || steps[deleteStepLast] != 1 {
-			t.Errorf("deleting a KG of %d sources ran the transactions %v", c.sources, steps)
-		}
-		if n := sxInt(t, admin, `SELECT count(*) FROM pg_namespace WHERE nspname = $1`, pgschema.SchemaName(int64(c.no))); n != 0 {
-			t.Errorf("the schema of the KG of %d sources is still there", c.sources)
-		}
+		return nil
+	}
+	defer func() { st.deleteSeen = nil }()
+	if err := st.DeleteKG(context.Background(), kg); err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("deleting a KG of %d sources: the most locks a transaction held, by step: %v (transactions: %v)", sources, most, steps)
+	if steps[deleteStepMark] != 1 || steps[deleteStepSource] != sources || steps[deleteStepCompute] < 1 || steps[deleteStepQuery] != 1 || steps[deleteStepLast] != 1 {
+		t.Errorf("deleting a KG of %d sources ran the transactions %v", sources, steps)
+	}
+	if n := sxInt(t, admin, `SELECT count(*) FROM pg_namespace WHERE nspname = $1`, pgschema.SchemaName(int64(no))); n != 0 {
+		t.Errorf("the schema of the KG of %d sources is still there", sources)
 	}
 }

@@ -68,22 +68,22 @@ func kgdState(t *testing.T, admin *sql.DB, kg graph.KGID, no int64) string {
 func kgdClosed(t *testing.T, st *Store, kg graph.KGID, name string) {
 	t.Helper()
 	ctx := context.Background()
-	notFound := func(what string, err error) {
+	refused := func(what string, err error) {
 		t.Helper()
 		if kernel.CodeOf(err) != graph.CodeKGNotFound {
 			t.Errorf("%s of a KG being deleted: %v, want %s", what, err, graph.CodeKGNotFound)
 		}
 	}
 	_, err := st.GetKG(ctx, kg.String())
-	notFound("GetKG by id", err)
+	refused("GetKG by id", err)
 	_, err = st.GetKG(ctx, name)
-	notFound("GetKG by name", err)
+	refused("GetKG by name", err)
 	_, err = st.Head(ctx, kg)
-	notFound("Head", err)
+	refused("Head", err)
 	_, err = st.Generations(ctx, kg)
-	notFound("Generations", err)
+	refused("Generations", err)
 	_, err = st.AcquireLease(ctx, graph.LeaseRequest{KG: kg, Owner: "w", TTL: time.Minute, Now: time.Unix(2000, 0)})
-	notFound("AcquireLease", err)
+	refused("AcquireLease", err)
 	kgs, err := st.ListKGs(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -132,6 +132,12 @@ func TestKgdADeleteThatStopsInTheMiddleKeepsTheKGClosedAndEndsWhenCalledAgainOrW
 		t.Errorf("after the stop in the tables of the computation: %s", got)
 	}
 	kgdClosed(t, st, second, "pgsrc2")
+	// a server whose end of the delete fails too says so and still starts; the next one ends it.
+	failing := kgdServer(t, dsn)
+	failing.StopDeleteAt(deleteStepLast, errKgdStop)
+	if resumed, err := failing.ResumeAllWork(ctx); !errors.Is(err, errKgdStop) || len(resumed) != 0 {
+		t.Errorf("the server whose end of the delete fails ended %v: %v", resumed, err)
+	}
 	resumed, err := kgdServer(t, dsn).ResumeAllWork(ctx)
 	if err != nil || len(resumed) != 1 || resumed[0] != second {
 		t.Errorf("the server that starts ended %v: %v", resumed, err)
@@ -139,37 +145,51 @@ func TestKgdADeleteThatStopsInTheMiddleKeepsTheKGClosedAndEndsWhenCalledAgainOrW
 	if got := kgdState(t, admin, second, 2); got != gone {
 		t.Errorf("after the server started: %s", got)
 	}
+}
 
+// [REQ-684]
+func TestKgdADeleteThatStopsInItsFirstTransactionLeavesTheKGOpenAndTheDropOfTheSchemaAloneGoesByTheSameSteps(t *testing.T) {
+	ctx := context.Background()
+	st, admin, _ := kgdOpen(t)
+	all := fmt.Sprintf("listed=1 marked=0 schema=1 compute=%d", len(pgschema.ComputeTables()))
+	gone := "listed=0 marked=0 schema=0 compute=0 sources=0"
 	// stopped in its first transaction: nothing happened and the KG is open.
-	third := pgsrcKG(t, st, admin, 3, 0)
+	third := pgsrcKG(t, st, admin, 1, 1)
 	st.StopDeleteAt(deleteStepMark, errKgdStop)
 	if err := st.DeleteKG(ctx, third); !errors.Is(err, errKgdStop) {
 		t.Fatalf("the delete that stops: %v", err)
 	}
-	if got := kgdState(t, admin, third, 3); got != all+" sources=0" {
+	if got := kgdState(t, admin, third, 1); got != all+" sources=1" {
 		t.Errorf("after the stop in the first transaction: %s", got)
 	}
 	if _, err := st.Head(ctx, third); err != nil {
 		t.Errorf("the KG whose delete did not begin: %v", err)
 	}
 	// the drop of the storage schema alone goes by the same steps and leaves the row of the list, unmarked, as before.
+	st.StopDeleteAt(deleteStepSource, errKgdStop)
+	if err := st.DropStorageSchema(ctx, third); !errors.Is(err, errKgdStop) {
+		t.Fatalf("the drop that stops: %v", err)
+	}
+	if got := kgdState(t, admin, third, 1); got != all+" sources=1" {
+		t.Errorf("after the drop stopped at the source: %s", got)
+	}
 	st.StopDeleteAt(deleteStepQuery, errKgdStop)
 	if err := st.DropStorageSchema(ctx, third); !errors.Is(err, errKgdStop) {
 		t.Fatalf("the drop that stops: %v", err)
 	}
-	if got := kgdState(t, admin, third, 3); got != "listed=1 marked=0 schema=1 compute=0 sources=0" {
+	if got := kgdState(t, admin, third, 1); got != "listed=1 marked=0 schema=1 compute=0 sources=0" {
 		t.Errorf("after the drop stopped at the query schema: %s", got)
 	}
 	if err := st.DropStorageSchema(ctx, third); err != nil {
 		t.Fatal(err)
 	}
-	if got := kgdState(t, admin, third, 3); got != "listed=1 marked=0 schema=0 compute=0 sources=0" {
+	if got := kgdState(t, admin, third, 1); got != "listed=1 marked=0 schema=0 compute=0 sources=0" {
 		t.Errorf("after the drop called again: %s", got)
 	}
 	if err := st.DeleteKG(ctx, third); err != nil {
 		t.Fatalf("deleting the KG whose schema was dropped: %v", err)
 	}
-	if got := kgdState(t, admin, third, 3); got != gone {
+	if got := kgdState(t, admin, third, 1); got != gone {
 		t.Errorf("after the delete: %s", got)
 	}
 }
