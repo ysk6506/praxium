@@ -109,27 +109,14 @@ func runSteps(ctx context.Context, tx *sql.Tx, steps []pgschema.Step, phase pgsc
 	return nil
 }
 
-// DropStorageSchema drops the storage schema of a KG with everything in it, and its record, in one transaction. A
-// KG that has none is left as it is. The number of the KG is not given again.
+// DropStorageSchema drops the storage schema of a KG with everything in it, and its record, in the steps of a delete
+// after the mark (ADR-0125): the sources, the tables of the computation, and the rest in the last transaction. It leaves
+// the row of the list, and writes no mark, as it always did; a call that stopped in the middle is ended by a call again.
+// A KG that has none is left as it is. The number of the KG is not given again.
 func (s *Store) DropStorageSchema(ctx context.Context, kg graph.KGID) error {
 	sh, err := s.rt.locate(kg)
 	if err != nil {
 		return err
 	}
-	if err := s.detachSources(ctx, sh, kg); err != nil {
-		return err
-	}
-	return locked(ctx, sh, kg, func(tx *sql.Tx) error {
-		rec, found, err := readRecord(ctx, tx, kg)
-		if err != nil || !found {
-			return err
-		}
-		if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(rec.Schema())+` CASCADE`); err != nil {
-			return dbErr(err, "drop the storage schema")
-		}
-		return dropStateRows(ctx, tx, kg)
-	})
+	return s.dropInSteps(ctx, sh, kg, func(tx *sql.Tx) error { return dropSchemaRest(ctx, tx, kg) })
 }
