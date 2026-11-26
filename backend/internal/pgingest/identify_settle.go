@@ -29,11 +29,16 @@ func (s *Store) settleAt(ctx context.Context, tx *sql.Tx, lease ingest.RunLease)
 }
 
 // SettleRead gives the pairs of the groups with the labels of a range, that are not whole, and the keys of each: see ingest.Identifier.
+// It extends the lease of the run as every unit does: Go reads all the pages before it writes one, and a run whose lease runs out
+// while Go reads would be taken over and read again from the start (ADR-0116).
 func (s *Store) SettleRead(ctx context.Context, lease ingest.RunLease, after int64) (ingest.SettlePage, error) {
 	page := ingest.SettlePage{}
 	err := s.tx(ctx, roleBulk, func(tx *sql.Tx) error {
 		r, err := s.settleAt(ctx, tx, lease)
 		if err != nil {
+			return err
+		}
+		if err := renewIn(ctx, tx, lease); err != nil {
 			return err
 		}
 		page.Written = r.st.Cur2
@@ -50,9 +55,9 @@ func (s *Store) SettleRead(ctx context.Context, lease ingest.RunLease, after int
 			hi = end.Int64
 		}
 		page.Next = hi
-		query := r.q("WITH " + unsettledSQL + "up AS (SELECT l.pid, s.type_no, s.ctx_no, encode(s.sig_hash, 'hex') AS h FROM bad" +
-			scan("x.pid", "{label}", "l", "x.round_no = {R} AND x.iter = {F} AND x.label = bad.label") +
-			scan("x.type_no, x.ctx_no, x.sig_hash", "{slot}", "s", "x.round_no = {R} AND x.pid = l.pid") + ") SELECT pid, type_no, ctx_no, h FROM up ORDER BY pid")
+		// the pairs of the page and their keys are the ones unsettledSQL read already (sk): the page is read once, by its range
+		query := r.q("WITH " + unsettledSQL + "up AS (SELECT sk.pid, sk.type_no, sk.ctx_no, encode(sk.sig_hash, 'hex') AS h FROM sk JOIN bad ON bad.label = sk.label) " +
+			"SELECT pid, type_no, ctx_no, h FROM up ORDER BY pid")
 		r.saw(tx, "read the pairs of the groups that are not whole", query, after, hi)
 		rows, err := tx.QueryContext(ctx, query, after, hi)
 		if err != nil {
@@ -103,6 +108,11 @@ func (s *Store) PutSettled(ctx context.Context, lease ingest.RunLease, rows []in
 		}
 		if end.Last {
 			st.Skipped, st.Phase, st.Cur = end.Skipped, phaseCopy, 0
+			// the copy probes the labels Go wrote for each pair: they are measured first, as the turns are, or the copy is planned on a turn
+			// the planner does not know and a unit of it reads the labels of the turn for each pair (ADR-0116)
+			if err := r.analyze(ctx, tx, pgschema.TableCalcLabel); err != nil {
+				return err
+			}
 		}
 		return writeIdent(ctx, tx, lease, st, false)
 	})

@@ -118,20 +118,25 @@ func (r *identRun) run(ctx context.Context, tx *sql.Tx, s unitStep, args ...any)
 
 // decideRange is the statements that decide the groups whose label is in the range.
 func (r *identRun) decideRange(ctx context.Context, tx *sql.Tx, lo, hi int64) error {
-	if r.st.Unsettled {
-		// the pairs of the groups that are not known to be whole are left, and are told: one more run may find them whole (the count is the
-		// report's, a line of a problem for each would be a line for every record of a chain)
-		c := &r.st.Counts
-		leave := unitStep{"leave the records of the groups that are not whole", "WITH " + unsettledSQL + "up AS (SELECT DISTINCT s.rid, s.feed_no FROM bad" +
-			scan("x.pid", "{label}", "l", "x.round_no = {R} AND x.iter = {F} AND x.label = bad.label") +
-			probe("x.rid, x.feed_no", "{slot}", "s", "x.round_no = {R} AND x.pid = l.pid") + ") " + refUnresolved("up"), []*int{&c.Unsettled, &c.Unresolved}, false}
+	st := r.st
+	neighbors := st.LeftRound > 0 && st.LeftRound < st.Round
+	leaving := st.Unsettled || neighbors
+	if leaving {
+		// the pairs of the groups that are not known to be whole, and of the groups that share a key with a pair an earlier round left,
+		// are left, and are told: the next run finds them whole, together (the count is the report's, a line of a problem for each would
+		// be a line for every record of a chain)
+		c := &st.Counts
+		leave := unitStep{"leave the records of the groups that are not whole", "WITH " + leftSQL(st.Unsettled, neighbors) +
+			"up AS (SELECT DISTINCT sk.rid, sk.feed_no FROM sk JOIN gone ON gone.label = sk.label) " + refUnresolved("up"), []*int{&c.Unsettled, &c.Unresolved}, false}
 		before := c.Unsettled
 		if err := r.run(ctx, tx, leave, lo, hi); err != nil {
 			return err
 		}
-		r.st.LeftKeys = r.st.LeftKeys || c.Unsettled > before
+		if c.Unsettled > before && st.LeftRound == 0 {
+			st.LeftRound = st.Round
+		}
 	}
-	for _, s := range r.decideSteps(pairsSQL(r.st.Unsettled)) {
+	for _, s := range r.decideSteps(pairsSQL(leaving)) {
 		if err := r.run(ctx, tx, s, lo, hi); err != nil {
 			return err
 		}
