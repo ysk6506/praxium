@@ -12,6 +12,11 @@ touches_protected:
 updates_docs:
   - docs/design-docs/harness-guide.md
 amends_tests:
+  - go:backend/internal/pgingest::TestExpAnObjectIsRetiredAsTheOldPipelineRetiresItWhenTheRecordOfAFeedThatAddsValuesChangesInEveryRun
+  - go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAFeedThatMakesObjectsStandsUnderBesideAChangedRecordOfAFeedThatAddsValuesIsNoCandidate
+  - go:backend/internal/pgingest::TestExpAnObjectThatOnlyAChangedRecordOfAFeedThatAddsValuesIsBoundToIsACandidateWhoeverGoesOnWithTheExpansion
+  - go:backend/internal/pgingest::TestExpWhatTheStatementsReadInThePlanTheServerChoosesGoesWithTheRecordsAndNotWithTheRestOfTheKG
+  - go:backend/internal/pgingest::TestIdnTheQuestionsOfARoundAreReadByTheirIndexWithTheStatisticsTheRunGivesThePlanner
   - go:backend/internal/pgingest::TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreOfTheRun
   - go:backend/internal/pgingest::TestExpAReferenceOfAFeedThatOnlyAddsValuesIsNoSupportAndOneOfAFeedThatIsNotKnownIs
   - go:backend/internal/pgingest::TestExpAnObjectThatOnlyARecordOfAFeedThatAddsValuesStandsUnderIsRetiredAsTheOldPipelineRetiresIt
@@ -274,7 +279,7 @@ amends_tests:
   - go:backend/internal/pgstore::TestVgateARefusedValueIsAProblemOfTheBatchAndALongestNameIsKept
   - go:backend/internal/pgstore::TestVgateWhatTheGateLetsThroughComesBackFromTheColumnAsItWent
   - go:backend/internal/pgstore::TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead
-test_change_reason: 요구사항이 아니라 테스트의 준비가 바뀐다. 준비 도우미(pgiOpen, rdfNew, v2rWorldWith)가 같은 상태를 한 번 만든 템플릿 데이터베이스를 복제해 받고, 이것과 newRig, sapLoadBothInto, sapStagedInto, sxOpen, igtOpenStandard가 테스트를 나란히 돌린다(계획·시간·잠금을 재는 테스트는 이름 목록으로 빼서 혼자 돈다). 적합성 스위트 넷과 TestV2mWritesAndFeedsFailWhenATableIsGone은 하위 테스트 첫 줄에 t.Parallel()만 더했다. 어느 테스트의 단언, 기대값, 사례, 테스트 수도 바뀌지 않았고, 복제본이 느린 길로 만든 데이터베이스와 같음을 Tpl 테스트가 비교한다. 지문은 도우미의 본문이 바뀌어 달라진다.
+test_change_reason: 요구사항이 아니라 테스트의 준비가 바뀐다. 준비 도우미(pgiOpen, rdfNew, v2rWorldWith)가 같은 상태를 한 번 만든 템플릿 데이터베이스를 복제해 받고, 이것과 newRig, sapLoadBothInto, sapStagedInto, sxOpen, igtOpenStandard가 테스트를 나란히 돌린다(계획·시간·잠금을 재는 테스트는 이름 목록으로 빼서 혼자 돈다). 적합성 스위트 넷과 TestV2mWritesAndFeedsFailWhenATableIsGone은 하위 테스트 첫 줄에 t.Parallel()만 더했다. 어느 테스트의 단언, 기대값, 사례, 테스트 수도 바뀌지 않았고, 복제본이 느린 길로 만든 데이터베이스와 같음을 Tpl 테스트가 비교한다. 지문은 도우미의 본문이 바뀌어 달라진다. main을 합칠 때 먼저 병합된 ADR-0121의 새 테스트 다섯도 같은 도우미를 거쳐 지문만 바뀌었고, 그중 계획과 읽은 행을 재는 둘(TestIdnTheQuestionsOfARound…, TestExpWhatTheStatementsReadInThePlan…)은 혼자 도는 목록(pgiSerial)에 더했다.
 decision_hash: 0d087e321c3ecdf9
 ---
 # ADR-0120 테스트 데이터베이스를 템플릿 데이터베이스의 복제로 준비하고 테스트를 나란히 돌린다

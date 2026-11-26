@@ -31268,6 +31268,141 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgconn::TestTplACopyOfTheMigratedTemplateIsTheDatabaseThatOpenMakesFromAnEmptyOne": {
+   "kind": "test",
+   "hash": "771be54e7f867a2b",
+   "asserts": 19,
+   "literals": [
+    "879643cebb602cc4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplACopyThatTheServerRefusesFailsTheTestAndIsNotMadeAnotherWay": {
+   "kind": "test",
+   "hash": "cb2e8f17a6db6ef0",
+   "asserts": 5,
+   "literals": [
+    "81cab6e24186aea1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplAProcessThatStopsWaitingOrCannotReachTheServerFailsAndMakesNothing": {
+   "kind": "test",
+   "hash": "8b10ddc98c109314",
+   "asserts": 12,
+   "literals": [
+    "864f12977d15318e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplAProcessWaitsForTheOneThatMakesTheTemplateAndThenCopiesWhatItMade": {
+   "kind": "test",
+   "hash": "adca41e609854c51",
+   "asserts": 8,
+   "literals": [
+    "6cabb2b855e07823"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplATemplateIsMadeOnceAndEveryCopyIsADatabaseOfItsOwnWithWhatTheTemplateHas": {
+   "kind": "test",
+   "hash": "3a6591706cf2702e",
+   "asserts": 20,
+   "literals": [
+    "7727c91e06f3fa71"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplATemplateNeedsTheTestServerAsATestDatabaseDoes": {
+   "kind": "test",
+   "hash": "afb5be082116f7ff",
+   "asserts": 4,
+   "literals": [
+    "e06cf64e12ed10a4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplATemplateThatCannotBeMadeFailsTheTestAndLeavesNothingBehind": {
+   "kind": "test",
+   "hash": "0f75d753dc203341",
+   "asserts": 10,
+   "literals": [
+    "3f31317fcd6398ce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplATestIsMadeParallelOnceWhateverHelpersAskAndASubtestIsLeftAsItIs": {
+   "kind": "test",
+   "hash": "6872df4b0512758d",
+   "asserts": 2,
+   "literals": [
+    "6d9be039a4b20c02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgconn::TestTplTestsOfOneProcessThatAskForATemplateAtOnceMakeItOnce": {
+   "kind": "test",
+   "hash": "94bfb48a95e1b361",
+   "asserts": 4,
+   "literals": [
+    "0c2b39720fe2fe50"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgconn::TestWhatMayNotStayOnASessionIsFoundInTheSourcesOfThisUnit": {
    "kind": "test",
    "hash": "4c2d6cf2f915e47e",
@@ -31285,10 +31420,10 @@
   },
   "go:backend/internal/pgingest::TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreOfTheRun": {
    "kind": "test",
-   "hash": "6e13e4ec169f2984",
+   "hash": "745cd3012c95ba8c",
    "asserts": 6,
    "literals": [
-    "9dc24d8d2f1c0fdd"
+    "fd3b127a547e102a"
    ],
    "precision": [],
    "skips": 0,
@@ -31297,14 +31432,14 @@
     "REQ-957"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectIsOnlyACandidateForRetirementWhenAFeedThatRetiresMadeIt": {
    "kind": "test",
-   "hash": "4c79e1aab1244ca3",
+   "hash": "75a6f83576413378",
    "asserts": 5,
    "literals": [
-    "4e57c13d2c438564"
+    "62b5937cc7f2129d"
    ],
    "precision": [],
    "skips": 0,
@@ -31313,14 +31448,14 @@
     "REQ-891"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectIsRetiredAsTheOldPipelineRetiresItWhenTheRecordOfAFeedThatAddsValuesChangesInEveryRun": {
    "kind": "test",
-   "hash": "41d7b230cbfa7acc",
+   "hash": "bcd4829b846f06b5",
    "asserts": 1,
    "literals": [
-    "adeab0de61da204e"
+    "e8bce57597966c14"
    ],
    "precision": [],
    "skips": 0,
@@ -31330,14 +31465,14 @@
     "REQ-980"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAFeedThatMakesObjectsStandsUnderBesideAChangedRecordOfAFeedThatAddsValuesIsNoCandidate": {
    "kind": "test",
-   "hash": "85743f8e0f7dfe8b",
+   "hash": "9fb0a2d403a3211d",
    "asserts": 4,
    "literals": [
-    "f1a9292963104178"
+    "fb7fb93add041578"
    ],
    "precision": [],
    "skips": 0,
@@ -31346,14 +31481,14 @@
     "REQ-980"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAnotherSourceStandsUnderIsNotACandidateAndOneThatNoRecordStandsUnderIs": {
    "kind": "test",
-   "hash": "b535ae92e3746514",
+   "hash": "a1f972975601b3c4",
    "asserts": 26,
    "literals": [
-    "7b1add743c0595dc"
+    "1b9cdbcaeabe7f0a"
    ],
    "precision": [],
    "skips": 0,
@@ -31362,14 +31497,14 @@
     "REQ-898"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectThatOnlyAChangedRecordOfAFeedThatAddsValuesIsBoundToIsACandidateWhoeverGoesOnWithTheExpansion": {
    "kind": "test",
-   "hash": "05e04fdce6f69113",
+   "hash": "b59f1758a9260d33",
    "asserts": 29,
    "literals": [
-    "8831bab142b6bf12"
+    "c0640f6d65efc088"
    ],
    "precision": [],
    "skips": 0,
@@ -31379,14 +31514,14 @@
     "REQ-980"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectThatOnlyARecordOfAFeedThatAddsValuesStandsUnderIsRetiredAsTheOldPipelineRetiresIt": {
    "kind": "test",
-   "hash": "197bda7bc03c2bf3",
+   "hash": "c2a481eb88e0a0bb",
    "asserts": 1,
    "literals": [
-    "e7575d25040d71ca"
+    "5a6e532ea70d8862"
    ],
    "precision": [],
    "skips": 0,
@@ -31396,14 +31531,14 @@
     "REQ-950"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectTwoFeedsMakeOfWhichOneRetiresIsRetiredAsTheOldPipelineRetiresItWhicheverFeedLetsGoOfItFirst": {
    "kind": "test",
-   "hash": "b254485bbefde177",
+   "hash": "6b7f11d562d2cc0b",
    "asserts": 2,
    "literals": [
-    "84274421c2ec4f51"
+    "a530135ddc2c31f6"
    ],
    "precision": [],
    "skips": 0,
@@ -31413,14 +31548,14 @@
     "REQ-951"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAReferenceOfAFeedThatOnlyAddsValuesIsNoSupportAndOneOfAFeedThatIsNotKnownIs": {
    "kind": "test",
-   "hash": "b504c4db719c9cea",
+   "hash": "9508a5e3b2ccdadb",
    "asserts": 17,
    "literals": [
-    "547fabaee31c010c"
+    "ed0fe5f3a0cf9975"
    ],
    "precision": [],
    "skips": 0,
@@ -31429,14 +31564,14 @@
     "REQ-954"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpAStatementThatFailsInAUnitLeavesTheUnitUndoneAndTheRunGoesOnFromIt": {
    "kind": "test",
-   "hash": "daf54a2061c1d4c2",
+   "hash": "1d41b14233bc9289",
    "asserts": 9,
    "literals": [
-    "6e04af1442240a71"
+    "7413e50e150180d0"
    ],
    "precision": [],
    "skips": 0,
@@ -31445,14 +31580,14 @@
     "REQ-896"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheCandidatesForRetirementAreTheObjectsTheOldPipelineRetiresInTheSameCaptures": {
    "kind": "test",
-   "hash": "61099637a36df75a",
+   "hash": "639a23a152f11c46",
    "asserts": 26,
    "literals": [
-    "cef46ab244c655fe"
+    "34cc9ae016d69ac3"
    ],
    "precision": [],
    "skips": 0,
@@ -31461,14 +31596,14 @@
     "REQ-897"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionDoesNotBeginOnARunWhoseIdentificationIsNotDoneAndTheComputationOfEverythingGoesByUnitsOfRecords": {
    "kind": "test",
-   "hash": "571934440ae81c30",
+   "hash": "e5cbe154f7fa8c35",
    "asserts": 21,
    "literals": [
-    "424c473c0c6666b4"
+    "e62dba2ae2849d73"
    ],
    "precision": [],
    "skips": 0,
@@ -31477,14 +31612,14 @@
     "REQ-896"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionOfARunOfAWorldThatHasACaseForEveryRule": {
    "kind": "test",
-   "hash": "a7ed5aac35b515e7",
+   "hash": "f2bee55c32a460e0",
    "asserts": 11,
    "literals": [
-    "8c9cf703ed6298af"
+    "5e60604ef1f24dd0"
    ],
    "precision": [],
    "skips": 0,
@@ -31498,14 +31633,14 @@
     "REQ-896"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionOfEverythingTakesTheRecordsTheIdentificationReadsAndNoOther": {
    "kind": "test",
-   "hash": "72f4289382ca79cc",
+   "hash": "e65f7cdc62e348f9",
    "asserts": 13,
    "literals": [
-    "7c61758afa807d95"
+    "c76ca08e5e5b02a4"
    ],
    "precision": [],
    "skips": 0,
@@ -31514,14 +31649,14 @@
     "REQ-953"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheMarkOfTheRegistryIsOnTheObjectsThatARetirableReferenceOfTheRunPointsAtAndStays": {
    "kind": "test",
-   "hash": "9655ac07f6f13d35",
+   "hash": "0b0a697b71630c6d",
    "asserts": 12,
    "literals": [
-    "91d9a5894b7e15cf"
+    "af1ef5d3750493b8"
    ],
    "precision": [],
    "skips": 0,
@@ -31530,14 +31665,14 @@
     "REQ-951"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheNumbersOfTheRecordsOfARunAreAsManyAsTheRecordsWhateverTheRulesLookedAt": {
    "kind": "test",
-   "hash": "ab9552ba596d3c5d",
+   "hash": "ed2d6e44a482082f",
    "asserts": 8,
    "literals": [
-    "69282bc4646bedef"
+    "74538bca849189dd"
    ],
    "precision": [],
    "skips": 0,
@@ -31546,14 +31681,14 @@
     "REQ-957"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheRecordOfALinkThatEndsAtTheObjectAnEndKeyOfARecordFindsIsReadAgain": {
    "kind": "test",
-   "hash": "82679a3c902ee133",
+   "hash": "b22419e704cbb023",
    "asserts": 17,
    "literals": [
-    "3c04dbcf08521bf9"
+    "0012ccab1634025f"
    ],
    "precision": [],
    "skips": 0,
@@ -31562,14 +31697,14 @@
     "REQ-955"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheRecordOfALinkThatStartsAtTheObjectAChangedRecordIsNowBoundToIsReadAgain": {
    "kind": "test",
-   "hash": "63447208b2fbd3d1",
+   "hash": "6de6b4e4a61faa18",
    "asserts": 17,
    "literals": [
-    "5851d7a040cd44f5"
+    "f93023d2038c5dbf"
    ],
    "precision": [],
    "skips": 0,
@@ -31578,14 +31713,14 @@
     "REQ-955"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheRecordOfASecondLinkThatEndsWhereTheLinkOfAChangedRecordEndedIsReadAgain": {
    "kind": "test",
-   "hash": "24892a3e9768d456",
+   "hash": "381e053731733417",
    "asserts": 17,
    "literals": [
-    "b00c95d230ed550e"
+    "bef7b307a7f3a6f5"
    ],
    "precision": [],
    "skips": 0,
@@ -31594,14 +31729,14 @@
     "REQ-955"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheReferencesOfRecordsOfTwoSourcesWhoseFeedsHaveTheSameNumberAreRetirableByTheFeedOfTheirOwnSource": {
    "kind": "test",
-   "hash": "582400280d1edf1a",
+   "hash": "d02e74bb200ab6f8",
    "asserts": 12,
    "literals": [
-    "e605862670e418a9"
+    "250d8a0c1ef55dc7"
    ],
    "precision": [],
    "skips": 0,
@@ -31610,14 +31745,14 @@
     "REQ-954"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheSetIsTheSameForAnyOrderOfTheRowsReceivedAndOfTheNumbersOfTheRecords": {
    "kind": "test",
-   "hash": "6e1156855504b459",
+   "hash": "1c6d1588e53a3a03",
    "asserts": 7,
    "literals": [
-    "2c4056d6d5d72eda"
+    "ccee065e36fc77d1"
    ],
    "precision": [],
    "skips": 0,
@@ -31626,14 +31761,14 @@
     "REQ-895"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpTheUnitsDoneAreTheUnitsTheExpansionWentByAndTheRunBeginsAtTheFirstRule": {
    "kind": "test",
-   "hash": "20c6dd86eb1e9816",
+   "hash": "f2103aabdf30ee4e",
    "asserts": 8,
    "literals": [
-    "fcd79a330b07c9b9"
+    "99f9b6eade47b9f7"
    ],
    "precision": [],
    "skips": 0,
@@ -31642,14 +31777,14 @@
     "REQ-956"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpWhatManyRecordsOfARunShareIsReadOnceForAUnitSoTheRowsReadGoWithTheNumberOfRecords": {
    "kind": "test",
-   "hash": "de5c49815a13d418",
+   "hash": "cc5e0a28909119e8",
    "asserts": 6,
    "literals": [
-    "d68e9c6ddd2d4728"
+    "abf809c6f223414c"
    ],
    "precision": [],
    "skips": 0,
@@ -31657,14 +31792,14 @@
     "REQ-899"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpWhatTheStatementsReadInThePlanTheServerChoosesGoesWithTheRecordsAndNotWithTheRestOfTheKG": {
    "kind": "test",
-   "hash": "7596aad6e2228146",
+   "hash": "73e0531ad922305b",
    "asserts": 5,
    "literals": [
-    "a91963624a7d3d81"
+    "2c9277d2572adf30"
    ],
    "precision": [],
    "skips": 0,
@@ -31673,14 +31808,14 @@
     "REQ-983"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestExpWhileTheIdentificationLeavesPairsNoObjectIsACandidateForRetirementWhoeverGoesOnWithTheExpansion": {
    "kind": "test",
-   "hash": "91d8371304483236",
+   "hash": "3a6918eef5a2be95",
    "asserts": 20,
    "literals": [
-    "df3fd20a409f9b4c"
+    "0387d77f04d40696"
    ],
    "precision": [],
    "skips": 0,
@@ -31689,14 +31824,14 @@
     "REQ-952"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestHkaASignalIsMarkedOnceOnEveryRowOfTheSourceAndNeverTwice": {
    "kind": "test",
-   "hash": "abd43b7376cc1f06",
+   "hash": "6d84931a7e046f2e",
    "asserts": 21,
    "literals": [
-    "ef22281f1ca5eb39"
+    "6faad7db1c48c025"
    ],
    "precision": [],
    "skips": 0,
@@ -31704,14 +31839,14 @@
     "REQ-863"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAChainOfRecordsInAnyOrderIsOneObjectWhenTheTurnsEndBeforeItsEndAndGoEndsTheSearchAndNothingIsLeftWhenItCannotHoldIt": {
    "kind": "test",
-   "hash": "b6efde7a6a5ca436",
+   "hash": "0b861f710841f35d",
    "asserts": 7,
    "literals": [
-    "15b492b8d2932657"
+    "1c903248dc7c5442"
    ],
    "precision": [],
    "skips": 0,
@@ -31719,14 +31854,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAChainOfRecordsLongerThanTheTurnsOfTheDefaultIsOneObjectAndTheTurnsItTakesGrowMoreSlowlyThanItsLength": {
    "kind": "test",
-   "hash": "880ebbb4c534be4c",
+   "hash": "86cbde92b4ef37b8",
    "asserts": 7,
    "literals": [
-    "15ea5a842c008da4"
+    "0b4f14d3b996ec00"
    ],
    "precision": [],
    "skips": 0,
@@ -31734,14 +31869,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAChainThatIsLeftAndARecordOfALaterRoundThatSharesAKeyWithItAreLeftTogetherAndThenMadeOneObject": {
    "kind": "test",
-   "hash": "ee65649456554f6a",
+   "hash": "f2c2790d2a06c247",
    "asserts": 18,
    "literals": [
-    "3ecd59cd99efc5fe"
+    "1bd1c21e77d7135c"
    ],
    "precision": [],
    "skips": 0,
@@ -31749,14 +31884,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAGroupOfSeveralObjectsIsReadOnceForEachKeyAndWhatAUnitReadsOfItGrowsWithTheGroupAndNoFaster": {
    "kind": "test",
-   "hash": "856c6ecb203179fd",
+   "hash": "0d8328dab1ea5090",
    "asserts": 5,
    "literals": [
-    "0a6e246076a7bd50"
+    "7dd5a57675480e80"
    ],
    "precision": [],
    "skips": 0,
@@ -31764,14 +31899,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAnObjectWhoseKeyHasAParentIsMadeOnceTheParentIsAndItsIdComesFromGo": {
    "kind": "test",
-   "hash": "31f29acab2138d33",
+   "hash": "45075cd41e3d594a",
    "asserts": 11,
    "literals": [
-    "1c94b12307b91be7"
+    "b943fe71db566180"
    ],
    "precision": [],
    "skips": 0,
@@ -31780,14 +31915,14 @@
     "REQ-881"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAnUnresolvedRecordOfAnotherSourceIsIdentifiedByTheFeedsOfItsOwnSourceAndFindsTheObjectOfThisRun": {
    "kind": "test",
-   "hash": "6103e3b08c51bda8",
+   "hash": "779f9f2a9996899f",
    "asserts": 5,
    "literals": [
-    "2dd6d678dbafbc9f"
+    "b11d233f723aca7d"
    ],
    "precision": [],
    "skips": 0,
@@ -31796,14 +31931,14 @@
     "REQ-884"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAnUnresolvedRecordOfAnotherSourceWhoseFeedMakesNoObjectAndFindsNoneStaysUnresolvedWhileTheFeedOfThisSourceThatMakesObjectsDoesNotRead": {
    "kind": "test",
-   "hash": "c720267b6607e413",
+   "hash": "8ccbc39efb916632",
    "asserts": 5,
    "literals": [
-    "a5c623876c205023"
+    "dce1d7f8b536aaf3"
    ],
    "precision": [],
    "skips": 0,
@@ -31812,14 +31947,14 @@
     "REQ-884"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnAnUnresolvedRecordOfASourceThatHasNoPlanInTheRunIsLeftAloneAndCountedAndDoesNotStopTheRunOfAnotherSource": {
    "kind": "test",
-   "hash": "95831527a9f1e2b3",
+   "hash": "421383f9c3ac68ff",
    "asserts": 5,
    "literals": [
-    "594a3538205702bc"
+    "7199611abe47fe66"
    ],
    "precision": [],
    "skips": 0,
@@ -31828,14 +31963,14 @@
     "REQ-884"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARecordThatGivesNoKeyKeepsItsClaimsOnceAndIsNotReadAgainFromItsCellsWhenItCameInTheRowsReceived": {
    "kind": "test",
-   "hash": "7783c2bbe99b433d",
+   "hash": "856266a6537c1c5a",
    "asserts": 8,
    "literals": [
-    "80ba1e4395c7de46"
+    "d7ba9f821ec77119"
    ],
    "precision": [],
    "skips": 0,
@@ -31844,14 +31979,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARecordThatRepeatsItsKeyIsIdentifiedAsTheRecordItIsAndMakesOneObjectNotTwo": {
    "kind": "test",
-   "hash": "6010e35b80afaa9b",
+   "hash": "15a2355081cf4f22",
    "asserts": 14,
    "literals": [
-    "f13eaff94bbd3846"
+    "ca672633dc2312d6"
    ],
    "precision": [],
    "skips": 0,
@@ -31860,14 +31995,14 @@
     "REQ-885"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARecordTheComparisonClosedOrLetGoOfTakesNoPartAndMakesNoObjectKeyOrIdentifierWhileTheOtherRecordsAreIdentified": {
    "kind": "test",
-   "hash": "f7390de463f16817",
+   "hash": "c599982d75e5a93e",
    "asserts": 13,
    "literals": [
-    "50682b40daa69ed0"
+    "7432939517ea4464"
    ],
    "precision": [],
    "skips": 0,
@@ -31876,14 +32011,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARecordWhoseReferenceIsNotSolvedIsReadAgainFromItsCellsAndBoundWithoutTouchingTheOnesThatAre": {
    "kind": "test",
-   "hash": "f76b61863c3b5a45",
+   "hash": "9df499b5a437d314",
    "asserts": 11,
    "literals": [
-    "474e3724d1b4615f"
+    "d2350abc59eb8656"
    ],
    "precision": [],
    "skips": 0,
@@ -31892,14 +32027,14 @@
     "REQ-884"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARoundWhoseSearchIsStoppedByItsLimitBindsNoGroupThatIsNotWholeAndLeavesTheRecordsOfItUnresolvedAndCounted": {
    "kind": "test",
-   "hash": "bdc6f7c21e05e2bd",
+   "hash": "121d4d9230b871f7",
    "asserts": 10,
    "literals": [
-    "c484354d8acad6c1"
+    "67bc4c3f40ceacc1"
    ],
    "precision": [],
    "skips": 0,
@@ -31907,14 +32042,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARunThatDoesNotOwnTheTablesOfTheComputationNeitherBeginsNorGoesOnWithTheIdentification": {
    "kind": "test",
-   "hash": "2bc45752e4ef0445",
+   "hash": "3f9f613e94fc5ffa",
    "asserts": 12,
    "literals": [
-    "123bcea04c769c1a"
+    "55fba7e1ecf1215f"
    ],
    "precision": [],
    "skips": 0,
@@ -31922,14 +32057,14 @@
     "REQ-886"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARunThatHasFewerRoundsThanTheKeysNeedLeavesTheRecordsUnresolvedAndSaysSo": {
    "kind": "test",
-   "hash": "32e1011e16d9c91d",
+   "hash": "45e80b7acb84ee40",
    "asserts": 5,
    "literals": [
-    "667031abdb57dc46"
+    "7d7dccfbbc5775b8"
    ],
    "precision": [],
    "skips": 0,
@@ -31937,14 +32072,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARunThatStopsGoesOnFromTheNextUnitAndMakesWhatARunThatDoesNotStopMakes": {
    "kind": "test",
-   "hash": "296928f9a80ea68e",
+   "hash": "ad9ac9677df453dc",
    "asserts": 20,
    "literals": [
-    "d90711cb1d5db8d4"
+    "224e189f729a9653"
    ],
    "precision": [],
    "skips": 0,
@@ -31952,14 +32087,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnARunThatStopsWhileGoEndsTheSearchForTheGroupsGoesOnAndMakesWhatARunThatDoesNotStopMakes": {
    "kind": "test",
-   "hash": "93cd0fe10627418e",
+   "hash": "04fbe20b96b1b0ef",
    "asserts": 23,
    "literals": [
-    "66984611114cba26"
+    "979b65f07bbf1eb6"
    ],
    "precision": [],
    "skips": 0,
@@ -31967,14 +32102,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource": {
    "kind": "test",
-   "hash": "906d1c8d6851c10a",
+   "hash": "074476f14c316092",
    "asserts": 5,
    "literals": [
-    "921d819717d68978"
+    "6593ade8f1cb8c71"
    ],
    "precision": [],
    "skips": 0,
@@ -31982,14 +32117,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitThatFailsLeavesTheRunWhereItWasAndTheRunGoesOnToTheSameEnd": {
    "kind": "test",
-   "hash": "c061b05f9a71b1f3",
+   "hash": "c837dddbf4e2a140",
    "asserts": 5,
    "literals": [
-    "99a9dab198935f36"
+    "d5b71a93a44b0c98"
    ],
    "precision": [],
    "skips": 0,
@@ -31997,14 +32132,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfTheClaimsAndOfTheLookupThatFailsIsReportedAndTheNextRunIsTheSame": {
    "kind": "test",
-   "hash": "4905b8da5d9e70d2",
+   "hash": "497e4898b3c9df69",
    "asserts": 7,
    "literals": [
-    "f93f96d6ed8bbc26"
+    "c3d3a05d688e25f4"
    ],
    "precision": [],
    "skips": 0,
@@ -32013,14 +32148,14 @@
     "REQ-885"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfAGroupOfManyObjects": {
    "kind": "test",
-   "hash": "1644fe1bc58f52f5",
+   "hash": "ebe0b27c78368137",
    "asserts": 1,
    "literals": [
-    "4f1c223abfe5730f"
+    "9f36576b616f925c"
    ],
    "precision": [],
    "skips": 0,
@@ -32028,14 +32163,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen": {
    "kind": "test",
-   "hash": "a672a4aefa6fd7af",
+   "hash": "cda71a996bdd4031",
    "asserts": 1,
    "literals": [
-    "42c425ac4ed83a3f"
+    "0909030128ad3a12"
    ],
    "precision": [],
    "skips": 1,
@@ -32043,14 +32178,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheCallsOfTheIdentificationThatAreMadeOutOfOrderOrOnARunThereIsNotAreRefused": {
    "kind": "test",
-   "hash": "70c5a64bb95b4d5f",
+   "hash": "8b4c816c36a475a8",
    "asserts": 19,
    "literals": [
-    "7a947a842eb6f88e"
+    "be1fa4d8e28d8bb1"
    ],
    "precision": [],
    "skips": 0,
@@ -32058,7 +32193,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheCellsOfARecordAreReadBackWhateverTheyHold": {
    "kind": "test",
@@ -32077,10 +32212,10 @@
   },
   "go:backend/internal/pgingest::TestIdnTheEndsOfTheLinksAndTheClaimsOfARecordGoErasedFromItsCellsAreKeptWithTheKeys": {
    "kind": "test",
-   "hash": "7ffa8b6bf77f6de7",
+   "hash": "31cff1ce3762e8cc",
    "asserts": 14,
    "literals": [
-    "7eb58c8cfa4a6b24"
+    "4e20f56ffc408e17"
    ],
    "precision": [],
    "skips": 0,
@@ -32089,14 +32224,14 @@
     "REQ-885"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheFeedsOfTheIdentificationAreNamedBySourceAndNumberAndTheRunsOwnSourceMustHaveSome": {
    "kind": "test",
-   "hash": "2a235930a81aa18b",
+   "hash": "d03e6e4de8a91935",
    "asserts": 6,
    "literals": [
-    "1c01976d3d36629e"
+    "0f8a9fc8f31341ba"
    ],
    "precision": [],
    "skips": 0,
@@ -32104,14 +32239,14 @@
     "REQ-880"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheIdentificationOfARunThatHasBegunOrWhoseComparisonIsNotDoneIsNotBegunAndWhatItMadeIsNotChanged": {
    "kind": "test",
-   "hash": "5a56a6231873407e",
+   "hash": "805dadd7c3b23d4e",
    "asserts": 25,
    "literals": [
-    "0f1e5cd55c73ee12"
+    "7ae32cc03f16bd63"
    ],
    "precision": [],
    "skips": 0,
@@ -32119,14 +32254,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheKeysOfARecordFindNoObjectOneObjectOrSeveralAndTheGroupsAreMadeWhateverTheOrder": {
    "kind": "test",
-   "hash": "d385aa2a833ff704",
+   "hash": "9dcf7999b394f68d",
    "asserts": 15,
    "literals": [
-    "e85324d8439f7288"
+    "7589650f1a6b6ca2"
    ],
    "precision": [],
    "skips": 0,
@@ -32135,14 +32270,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheLabelsOfTheTurnsBeforeTheLastTwoAreTakenAwayAndTheRowsOfThemAreAtMostTwoForEachPair": {
    "kind": "test",
-   "hash": "c1be8819acbd2fb1",
+   "hash": "7521ce4310fcd3b7",
    "asserts": 10,
    "literals": [
-    "97295cf9cc006aa3"
+    "82cd46b0bc486cf8"
    ],
    "precision": [],
    "skips": 0,
@@ -32150,14 +32285,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheObjectsTheIdentificationMakesAreTheObjectsTheOldPipelineMakesForTheSameCaptures": {
    "kind": "test",
-   "hash": "a50a9b8e9e137844",
+   "hash": "f39f647c027db31f",
    "asserts": 22,
    "literals": [
-    "19269b19de5f0c6d"
+    "22d87f11a189501a"
    ],
    "precision": [],
    "skips": 0,
@@ -32165,7 +32300,7 @@
     "REQ-885"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheOldPipelineDoesNotCompileTheMappingOfTheKeysOfAContextThatTheWitnessIsChosenFor": {
    "kind": "test",
@@ -32184,10 +32319,10 @@
   },
   "go:backend/internal/pgingest::TestIdnTheQuestionsOfARoundAreReadByTheirIndexWithTheStatisticsTheRunGivesThePlanner": {
    "kind": "test",
-   "hash": "9f8da0c1a5e4b01a",
+   "hash": "005be5aebfb80b1d",
    "asserts": 15,
    "literals": [
-    "2fd9ed3e9f20c78d"
+    "847699737f25a149"
    ],
    "precision": [],
    "skips": 0,
@@ -32196,14 +32331,14 @@
     "REQ-982"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheRecordsOfARunAreBoundToObjectsWhoseIdsAreTheOnesTheKeysGive": {
    "kind": "test",
-   "hash": "3a1c5c47035fd007",
+   "hash": "1335467f0a928510",
    "asserts": 10,
    "literals": [
-    "9d6c49d96a2aa413"
+    "58aa1b326d947a18"
    ],
    "precision": [],
    "skips": 0,
@@ -32211,14 +32346,14 @@
     "REQ-880"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheRecordsOfSmallUnitsWithReferencesNotSolvedAndWithEndsAreAllBound": {
    "kind": "test",
-   "hash": "43b85c3f17af7811",
+   "hash": "a454b3c5f1600b60",
    "asserts": 11,
    "literals": [
-    "38d756e09f6f8809"
+    "52fb72ffe33c7682"
    ],
    "precision": [],
    "skips": 0,
@@ -32227,14 +32362,14 @@
     "REQ-884"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheRecordThatNamesAnObjectWhenTheRecordsGiveTheSameKeyIsTheOneWhoseDatasetAndKeyComeFirstWhateverTheOrderOfTheRows": {
    "kind": "test",
-   "hash": "cbf7b94fea56dddf",
+   "hash": "35df51282d65e812",
    "asserts": 6,
    "literals": [
-    "87b624aaec88fafc"
+    "90b2ae8ed7550d23"
    ],
    "precision": [],
    "skips": 0,
@@ -32243,14 +32378,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheRecordThatNamesTheObjectOfAGroupIsTheOneThatHasANameWhateverTheKeysOfTheOthersAndTheOrderOfTheRows": {
    "kind": "test",
-   "hash": "fbcc5b87cc28da3e",
+   "hash": "16b8882ae660c9f9",
    "asserts": 7,
    "literals": [
-    "cede817b6b671e6c"
+    "aad6c2836de546c8"
    ],
    "precision": [],
    "skips": 0,
@@ -32258,14 +32393,14 @@
     "REQ-880"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTheSameChainWithTheLimitOfTheTurnsRaisedIsOneObjectAndMakesTheSameObjectInAnyOrderOfTheRows": {
    "kind": "test",
-   "hash": "40bc0c9f5f2d150a",
+   "hash": "9cd217dae35597d5",
    "asserts": 7,
    "literals": [
-    "1d52669b9118dd49"
+    "508d5b5a504dc92c"
    ],
    "precision": [],
    "skips": 0,
@@ -32273,14 +32408,14 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTwoDatasetsThreeKindsOfKeyARepeatedKeyAndARecordThatIsClosedMakeTheObjectsTheOldPipelineMakes": {
    "kind": "test",
-   "hash": "8360612ad666ea1d",
+   "hash": "0a26580f5b88d76f",
    "asserts": 24,
    "literals": [
-    "4ea45f289835e1c6"
+    "da9aa75fb55278c4"
    ],
    "precision": [],
    "skips": 0,
@@ -32288,14 +32423,14 @@
     "REQ-885"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnTwoObjectsThatSayTheyHaveOneIdentifierGetItByTheRuleAndTheLoserIsToldAndAFeedThatMakesNoObjectFindsTheOnesThereAre": {
    "kind": "test",
-   "hash": "47d6dcd372aee456",
+   "hash": "b9e392c16ef13ca6",
    "asserts": 19,
    "literals": [
-    "0d16900601093b69"
+    "793ec728e747852c"
    ],
    "precision": [],
    "skips": 0,
@@ -32303,14 +32438,14 @@
     "REQ-885"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnWhatTheTestsWatchOfTheStatementsOfAUnitIsOfTheStoreTheyAskItOfAndNotOfAnother": {
    "kind": "test",
-   "hash": "00c2caf7d590d339",
+   "hash": "04047d1ebf878e26",
    "asserts": 8,
    "literals": [
-    "54f7cf111c03107e"
+    "0a471a18c4735725"
    ],
    "precision": [],
    "skips": 0,
@@ -32318,14 +32453,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestIdnWhenEveryRecordIsInTheSamePlaceAUnitReadsOfTheRegistryWhatItDidWhenTheyWereInManyAndNoMore": {
    "kind": "test",
-   "hash": "e500718a0686d3b2",
+   "hash": "9c8a2a1fffd2158f",
    "asserts": 4,
    "literals": [
-    "4d27130e82e90e77"
+    "3fa402a85f58dd04"
    ],
    "precision": [],
    "skips": 0,
@@ -32333,14 +32468,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiACallThatNeedsATableThatIsDamagedFailsWithAnError": {
    "kind": "test",
-   "hash": "816d973fc4b2361c",
+   "hash": "a9de2dd397373c58",
    "asserts": 29,
    "literals": [
-    "f7f0884e7f729dea"
+    "e381b2c644874349"
    ],
    "precision": [],
    "skips": 0,
@@ -32348,14 +32483,14 @@
     "REQ-700"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiAKeyAnEndAndAClaimOfARowThatARuleFilteredOutAreHeldAndKeepTheNumberOfTheirFeed": {
    "kind": "test",
-   "hash": "2917c0657fa1e8ba",
+   "hash": "9834dd921e60e3e7",
    "asserts": 15,
    "literals": [
-    "fab427036a406247"
+    "d0ed09d7dca7295c"
    ],
    "precision": [],
    "skips": 0,
@@ -32363,14 +32498,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiAPageOfTenThousandRowsGoesInWithOneCopyOfEachTable": {
    "kind": "test",
-   "hash": "8cf67a698ef4a4f5",
+   "hash": "21eceedb5cdffcdd",
    "asserts": 14,
    "literals": [
-    "7d2b4c5ea2766fe1"
+    "ca97ee6ff9d9b61c"
    ],
    "precision": [],
    "skips": 0,
@@ -32378,14 +32513,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiAPageThatFailsHalfWayLeavesNothingNotEvenItsPlaceAndNoRowIsHalfWritten": {
    "kind": "test",
-   "hash": "aec09c89f348508d",
+   "hash": "8e1e0f532165e9a5",
    "asserts": 25,
    "literals": [
-    "4153ac387f4b2892"
+    "445b52817c589ca9"
    ],
    "precision": [],
    "skips": 0,
@@ -32393,14 +32528,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiAPageWhoseRowOneTableRefusesLeavesNothingWhicheverTableItIsAndTheSinkGoesOn": {
    "kind": "test",
-   "hash": "1304daf721b40cc5",
+   "hash": "d3625d081e69e1eb",
    "asserts": 13,
    "literals": [
-    "37f48a6d2ff2fd97"
+    "adf88714e64a5379"
    ],
    "precision": [],
    "skips": 0,
@@ -32408,14 +32543,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiARecordIsNewChangedOrTheSameAndOnlyNewAndChangedOnesCarryCellsKeysEndsAndClaims": {
    "kind": "test",
-   "hash": "fabab146156a251a",
+   "hash": "8526b3f1997fb476",
    "asserts": 33,
    "literals": [
-    "15a640772220d4bf"
+    "c67389f2aef107fe"
    ],
    "precision": [],
    "skips": 0,
@@ -32423,7 +32558,7 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiArraysAreWrittenInTheTextFormPostgreSQLReads": {
    "kind": "test",
@@ -32440,10 +32575,10 @@
   },
   "go:backend/internal/pgingest::TestPgiARunMovesOnlyAlongTheStagesAndTheGateOfTheKGHoldsOneRunAtWork": {
    "kind": "test",
-   "hash": "6e920d14cb2d13e8",
+   "hash": "de8ff414eb8d77a8",
    "asserts": 26,
    "literals": [
-    "f64d27a0281c9236"
+    "58366fff06d8b93a"
    ],
    "precision": [],
    "skips": 0,
@@ -32451,14 +32586,14 @@
     "REQ-700"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiASourceHasOneRunThatIsNotOver": {
    "kind": "test",
-   "hash": "dd81851dccd615d6",
+   "hash": "542be47ce8994829",
    "asserts": 20,
    "literals": [
-    "9068961c808077ee"
+    "1dcae0e5dc317b19"
    ],
    "precision": [],
    "skips": 0,
@@ -32466,14 +32601,14 @@
     "REQ-700"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiASourcePutToAKGHasItsRowsAndItsPartitionsAndPuttingItAgainChangesNothingButTheDatasetsItAdds": {
    "kind": "test",
-   "hash": "2d1323bea01cd0ac",
+   "hash": "8a7d3b9f5afcbf0b",
    "asserts": 28,
    "literals": [
-    "b69deeaafe0a472c"
+    "b9eb374c2b3c6c74"
    ],
    "precision": [],
    "skips": 0,
@@ -32481,14 +32616,14 @@
     "REQ-703"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiAWriteOfAnAttemptThatIsNotTheRunsIsRefusedAndChangesNothing": {
    "kind": "test",
-   "hash": "6682b2c7fa4e01b2",
+   "hash": "aebe1e73381c307f",
    "asserts": 25,
    "literals": [
-    "7ae21f1ae6140223"
+    "5f785f699c612640"
    ],
    "precision": [],
    "skips": 0,
@@ -32496,14 +32631,14 @@
     "REQ-700"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiAWriteOfAnOldAttemptAfterAnotherServerTookTheRunOverWritesNothing": {
    "kind": "test",
-   "hash": "faa5f7e7b3066550",
+   "hash": "3967cd0f0282fce1",
    "asserts": 27,
    "literals": [
-    "c020f1c8d45eb9fb"
+    "baa4e840820c37c8"
    ],
    "precision": [],
    "skips": 0,
@@ -32511,14 +32646,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiDeletingAKGTakesItsSourcesOffFirstWithTheirRunsAndAKGWithNoSourcesIsDeletedAsBefore": {
    "kind": "test",
-   "hash": "c6484fdcf65168a2",
+   "hash": "b9a40e69aed109ab",
    "asserts": 24,
    "literals": [
-    "9546464da9813313"
+    "df95737b10304a90"
    ],
    "precision": [],
    "skips": 0,
@@ -32526,14 +32661,14 @@
     "REQ-684"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiEveryCallWithAContextThatHasEndedFailsAndChangesNothing": {
    "kind": "test",
-   "hash": "bb153b899f87fccf",
+   "hash": "3a18759220cd149d",
    "asserts": 16,
    "literals": [
-    "35cf9e083222599e"
+    "8250dd5b69b3a007"
    ],
    "precision": [],
    "skips": 0,
@@ -32541,7 +32676,7 @@
     "REQ-700"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiNothingOfThisUnitLeavesStateOnASessionAndOnlyTheCopyPreparesAStatement": {
    "kind": "test",
@@ -32560,10 +32695,10 @@
   },
   "go:backend/internal/pgingest::TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable": {
    "kind": "test",
-   "hash": "e5f88768d367cc3b",
+   "hash": "e55058f8c7644124",
    "asserts": 24,
    "literals": [
-    "38ef52c040f30a85"
+    "9dd37369642b7583"
    ],
    "precision": [],
    "skips": 0,
@@ -32571,14 +32706,14 @@
     "REQ-683"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiReceiveStoresEveryPageWithItsPlaceAndMovesTheRunToComputing": {
    "kind": "test",
-   "hash": "7fa496eb39df664a",
+   "hash": "80c48da0f4607ac5",
    "asserts": 19,
    "literals": [
-    "982192f0966e66d9"
+    "7bbd1db8b0d849ad"
    ],
    "precision": [],
    "skips": 0,
@@ -32586,14 +32721,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiReceivingAgainEmptiesTheSourcesPartitionAndBeginsAtTheFirstPageAndTheOtherSourcesAreLeftAlone": {
    "kind": "test",
-   "hash": "1d07875a0acfface",
+   "hash": "7b2679057f17d55a",
    "asserts": 32,
    "literals": [
-    "6af433ed69832f3c"
+    "32fa3c983ae5f6e6"
    ],
    "precision": [],
    "skips": 0,
@@ -32601,14 +32736,14 @@
     "REQ-702"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiReceivingIsRefusedForAWrongPlanARunThatIsNotThereAndADatasetTheSourceWasNotPutWith": {
    "kind": "test",
-   "hash": "7e5249b34a16ffea",
+   "hash": "e22abf65e0f8735d",
    "asserts": 13,
    "literals": [
-    "d9222be681d32675"
+    "8e60874805e9df67"
    ],
    "precision": [],
    "skips": 0,
@@ -32616,14 +32751,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiTakingASourceOffDropsItsPartitionsAndRowsInChunksAndRefusesASourceWithARunThatIsNotOver": {
    "kind": "test",
-   "hash": "b101770e4a4c2a0d",
+   "hash": "d476602d0dd5f0dc",
    "asserts": 35,
    "literals": [
-    "51af1ba00e023cdb"
+    "91e0c4b7f5beaf47"
    ],
    "precision": [],
    "skips": 0,
@@ -32631,7 +32766,7 @@
     "REQ-703"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiTheColumnsOfEachCopyAreTheColumnsOfItsTable": {
    "kind": "test",
@@ -32665,10 +32800,10 @@
   },
   "go:backend/internal/pgingest::TestPgiThePlaceOfARecordIsItsRangeOnTheSheetElseItsLineAndTheLinesPassedOverAreCounted": {
    "kind": "test",
-   "hash": "341a75fdd4f6b301",
+   "hash": "66ee6b0144d4f40d",
    "asserts": 14,
    "literals": [
-    "117781419bbb5791"
+    "a3226ad9925ace39"
    ],
    "precision": [],
    "skips": 0,
@@ -32676,14 +32811,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiTheProblemsOfARecordAreOnItsRowAndTheProblemsOfAPageOnTheRowMinusOneAndAnIncompleteDatasetIsToldToo": {
    "kind": "test",
-   "hash": "5483b748e554fbaf",
+   "hash": "d735a3e39fc49043",
    "asserts": 23,
    "literals": [
-    "709dc8a7cf0755f9"
+    "0925b70cf3e00048"
    ],
    "precision": [],
    "skips": 0,
@@ -32691,14 +32826,14 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiTheRowsOfAPageAreTheRowsThePreparerGaveWithTheCellsAndTheKeysIntact": {
    "kind": "test",
-   "hash": "b48183747fb27859",
+   "hash": "3bfc2eec6ef83834",
    "asserts": 24,
    "literals": [
-    "10a0d66f524ebb8f"
+    "891b65368aef1e59"
    ],
    "precision": [],
    "skips": 0,
@@ -32706,11 +32841,11 @@
     "REQ-701"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestPgiTheTokenOfAPageIsWrittenAsTextAndReadBack": {
    "kind": "test",
-   "hash": "acbef1fb4a97fed7",
+   "hash": "8f09e8f1421c8e52",
    "asserts": 6,
    "literals": [
     "931024d7831349f0"
@@ -32718,15 +32853,15 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpACellAFeedThatMakesNoObjectCannotReadIsAProblemOfTheRecordAndTheValueIsLeftOut": {
    "kind": "test",
-   "hash": "1e7f33f23a1d332d",
+   "hash": "be0898b00b8ed589",
    "asserts": 10,
    "literals": [
-    "43b7713d5d7ddcc0"
+    "63362e49062c18e1"
    ],
    "precision": [],
    "skips": 0,
@@ -32734,14 +32869,14 @@
     "REQ-943"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectOfTheRunThatNoRegistryAndNoNewObjectHasIsLeftAndDoesNotStopTheStep": {
    "kind": "test",
-   "hash": "f6eda21cce34fdbb",
+   "hash": "8eeffaa13a6e0f56",
    "asserts": 9,
    "literals": [
-    "cbd42a9ef83cabd2"
+    "bff0760879a22685"
    ],
    "precision": [],
    "skips": 0,
@@ -32749,14 +32884,14 @@
     "REQ-972"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectThatHasMoreLinesThanTheLimitIsLeftAsItIsAndCounted": {
    "kind": "test",
-   "hash": "b334ca78aca2b74b",
+   "hash": "811be7e6eea47a62",
    "asserts": 10,
    "literals": [
-    "d846c519db952924"
+    "81337f7238fc709f"
    ],
    "precision": [],
    "skips": 0,
@@ -32764,14 +32899,14 @@
     "REQ-939"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectThatNoRecordGivesANameKeepsTheNameTheRegistryHasAndOneThatARecordNamesTakesTheValue": {
    "kind": "test",
-   "hash": "9c396af1e03a11f3",
+   "hash": "a6279bf7270efc41",
    "asserts": 10,
    "literals": [
-    "c7400cfe6618f456"
+    "cda5e618af34c037"
    ],
    "precision": [],
    "skips": 0,
@@ -32779,14 +32914,14 @@
     "REQ-932"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectTheKGHasThatIsLeftIsToldAndIsNeverACandidateForRetirement": {
    "kind": "test",
-   "hash": "42ff6fb9e73b7beb",
+   "hash": "98ef8b3ef73df490",
    "asserts": 20,
    "literals": [
-    "80fbc6dd60050815"
+    "ba671edeec0c3b34"
    ],
    "precision": [],
    "skips": 0,
@@ -32794,14 +32929,14 @@
     "REQ-973"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectTheRunWouldMakeThatHasTooManyLinesIsTakenBackWithEverythingThatNamedItAndTheRecordsUnderItAreProblems": {
    "kind": "test",
-   "hash": "0e2f37912414a16d",
+   "hash": "98237696f24b54db",
    "asserts": 17,
    "literals": [
-    "57a2e27fccb6f211"
+    "4b1c3febf6295ef3"
    ],
    "precision": [],
    "skips": 0,
@@ -32809,14 +32944,14 @@
     "REQ-971"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectWhoseContextParentIsTakenBackIsTakenBackToo": {
    "kind": "test",
-   "hash": "7ec91fe3b2a478d5",
+   "hash": "b2c4878617e794d4",
    "asserts": 14,
    "literals": [
-    "9a83a125d12347fe"
+    "a6acc793893922b9"
    ],
    "precision": [],
    "skips": 0,
@@ -32824,14 +32959,14 @@
     "REQ-971"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToRead": {
    "kind": "test",
-   "hash": "187f5cb067ff6d4d",
+   "hash": "b75881a9822b1332",
    "asserts": 18,
    "literals": [
-    "d616308906385c30"
+    "35bda551d9b3f59f"
    ],
    "precision": [],
    "skips": 0,
@@ -32839,14 +32974,14 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpARunStoppedBetweenPagesGoesOnFromTheNextPageAndStagesWhatOneThatDidNotStopStages": {
    "kind": "test",
-   "hash": "c7fe6cd88127b850",
+   "hash": "3ed20be7e2d9c59c",
    "asserts": 21,
    "literals": [
-    "4b288a9aff0d9e11"
+    "595ab188bbb1133a"
    ],
    "precision": [],
    "skips": 0,
@@ -32854,14 +32989,14 @@
     "REQ-938"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAServerThatTakesTheRunOverUsesWhatTheRunBeganWithAndRefusesWhatIsDifferent": {
    "kind": "test",
-   "hash": "116daad4af53af05",
+   "hash": "e1aff0d67da543e9",
    "asserts": 9,
    "literals": [
-    "ef750b3fd96bbbfc"
+    "c9a93d850752379c"
    ],
    "precision": [],
    "skips": 0,
@@ -32869,14 +33004,14 @@
     "REQ-972"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAStatementThatFailsLeavesTheRunWhereItWasAndWhatIsWrittenIsNotKept": {
    "kind": "test",
-   "hash": "5c72e5e8923acf6c",
+   "hash": "2099577ebf92ffb6",
    "asserts": 20,
    "literals": [
-    "1824989d647a02b0"
+    "498eae1e1f74c0c8"
    ],
    "precision": [],
    "skips": 0,
@@ -32884,14 +33019,14 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpAVolatileValueIsStagedAsAnEntryAndLeftOutOfTheDocument": {
    "kind": "test",
-   "hash": "5bdb990fe00d5f00",
+   "hash": "a3b9a40eb23b87b9",
    "asserts": 13,
    "literals": [
-    "d83ed768a05afb12"
+    "748647c1bdb2a162"
    ],
    "precision": [],
    "skips": 0,
@@ -32899,14 +33034,14 @@
     "REQ-942"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheClaimRuleOfTheExpansionIsNeededForTheObjectsThatHoldAClaimToBeComputed": {
    "kind": "test",
-   "hash": "a606f0b21a1c170d",
+   "hash": "8776394663377015",
    "asserts": 10,
    "literals": [
-    "ab1e45909768f65b"
+    "bcc24de2fa6e1ee9"
    ],
    "precision": [],
    "skips": 0,
@@ -32914,14 +33049,14 @@
     "REQ-935"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheComputationIsRefusedBeforeTheExpansionIsDoneAndAPageThatIsNotTheNextOneIsRefused": {
    "kind": "test",
-   "hash": "01d4e81ad445824e",
+   "hash": "6c7c5584ba31a7e4",
    "asserts": 19,
    "literals": [
-    "002080c91cafaebd"
+    "a51092ce9bd7da6f"
    ],
    "precision": [],
    "skips": 0,
@@ -32929,14 +33064,14 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheComputationRefusesToBeginTwiceAndToRunOnTablesThatAreNotTheRunsAndAPageAfterTheEnd": {
    "kind": "test",
-   "hash": "e462e174120d501e",
+   "hash": "6c6617a8b5d935ed",
    "asserts": 20,
    "literals": [
-    "2b72ef4bee9e2bd4"
+    "38278561bd3d31c0"
    ],
    "precision": [],
    "skips": 0,
@@ -32944,14 +33079,14 @@
     "REQ-976"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheObjectsThatAreTakenBackAreTheSameWhateverThePageSizeIs": {
    "kind": "test",
-   "hash": "373e414aaa84b557",
+   "hash": "d7d6e3ace2e8431a",
    "asserts": 14,
    "literals": [
-    "65cbff29f924b332"
+    "f2a4b3c8a8002db1"
    ],
    "precision": [],
    "skips": 0,
@@ -32959,14 +33094,14 @@
     "REQ-971"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheObjectsTheRunTouchedAreTheSameWhenEveryRecordIsComputedAndTheOthersAreWhatTheRunBeforeMade": {
    "kind": "test",
-   "hash": "6db27b0627aed51d",
+   "hash": "6fc905ec22fd2ce4",
    "asserts": 13,
    "literals": [
-    "ef020658962386f2"
+    "808827e2bf8aa131"
    ],
    "precision": [],
    "skips": 0,
@@ -32974,14 +33109,14 @@
     "REQ-935"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpThePageSizeDoesNotChangeWhatIsStaged": {
    "kind": "test",
-   "hash": "e19fa65758f53fa2",
+   "hash": "8f50205682e8f01b",
    "asserts": 8,
    "literals": [
-    "1fbb61cdf72907fd"
+    "54473f1ab9a91174"
    ],
    "precision": [],
    "skips": 0,
@@ -32989,14 +33124,14 @@
     "REQ-938"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheReportIsWhatTheStatementsWroteAndAnObjectWithoutRecordsOrWithOnesThatCannotBeReadIsLeft": {
    "kind": "test",
-   "hash": "4e08860884e1cdd6",
+   "hash": "347825f6734002ab",
    "asserts": 25,
    "literals": [
-    "0dea2f74d4c9ac4c"
+    "20a0a254f1172872"
    ],
    "precision": [],
    "skips": 0,
@@ -33004,14 +33139,14 @@
     "REQ-940"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheSourceConflictsAreTheOnesTheOldPipelineReportsFromTheSameCaptures": {
    "kind": "test",
-   "hash": "c78ce07e0376821c",
+   "hash": "d1412f8844dede92",
    "asserts": 17,
    "literals": [
-    "dc1d29e1823212e4"
+    "ee97d91e16df7e15"
    ],
    "precision": [],
    "skips": 0,
@@ -33019,14 +33154,14 @@
     "REQ-974"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTheStagedObjectsAreTheOnesTheOldPipelineMakesFromTheSameCaptures": {
    "kind": "test",
-   "hash": "2dd4ef435418ea96",
+   "hash": "1079938202e03eae",
    "asserts": 11,
    "literals": [
-    "4c06b1fad43f758c"
+    "fb38ce9ca5a431d6"
    ],
    "precision": [],
    "skips": 0,
@@ -33034,14 +33169,14 @@
     "REQ-934"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpTwoRecordsOfOneObjectThatSayDifferentThingsHaveOneValueAndTheLosingOneIsAProblem": {
    "kind": "test",
-   "hash": "6eccbccc151d1f05",
+   "hash": "6435f0fac2ebdb10",
    "asserts": 11,
    "literals": [
-    "ebc42adf7058d810"
+    "d0c73935ffb19d2c"
    ],
    "precision": [],
    "skips": 0,
@@ -33049,14 +33184,14 @@
     "REQ-933"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpWhatManyRecordsOfAnObjectShareIsReadOnceSoTheRowsReadGoWithTheNumberOfLines": {
    "kind": "test",
-   "hash": "a20ff9fcb0e4199b",
+   "hash": "2d6d9a27a61dc0cf",
    "asserts": 5,
    "literals": [
-    "e7621c3fec456b70"
+    "93b7a36fa912e872"
    ],
    "precision": [],
    "skips": 0,
@@ -33064,14 +33199,14 @@
     "REQ-936"
    ],
    "added": "2026-11-26",
-   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRcpWhatTheRunReadsIsTheReferencesThatStandAndOnlyOfTheObjectsThatAreNotCandidatesForRetirement": {
    "kind": "test",
-   "hash": "512bd011b9b49c58",
+   "hash": "e68f2c0d6e6bb5e3",
    "asserts": 21,
    "literals": [
-    "a392dbea03837907"
+    "4ea004b773d12463"
    ],
    "precision": [],
    "skips": 0,
@@ -33079,14 +33214,14 @@
     "REQ-975"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfABucketReadsTheIndexRangeItCoversAndNotTheWholeTableAndWhatItReadsDoesNotGrowWithTheSource": {
    "kind": "test",
-   "hash": "df9fc1eb2177e010",
+   "hash": "53a4f26ed24e3a85",
    "asserts": 7,
    "literals": [
-    "7cc933992a5acd45"
+    "0b698c6548b3f24f"
    ],
    "precision": [],
    "skips": 0,
@@ -33094,14 +33229,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfABucketThatFailsLeavesNothingAndThePlaceStaysAtIt": {
    "kind": "test",
-   "hash": "7d3db065be1b51ab",
+   "hash": "2c01cdf9d2d24f89",
    "asserts": 16,
    "literals": [
-    "2eb222cef1c76dd6"
+    "9883927f45ef846f"
    ],
    "precision": [],
    "skips": 0,
@@ -33109,14 +33244,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfACallWithACanceledContextIsRefusedByEveryStepOfTheComparison": {
    "kind": "test",
-   "hash": "220d765f6f0a7c83",
+   "hash": "4a1ac6554921d316",
    "asserts": 9,
    "literals": [
-    "2c20252424360a9c"
+    "7113416a9b967736"
    ],
    "precision": [],
    "skips": 0,
@@ -33124,14 +33259,14 @@
     "REQ-780"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfADatasetReadAsWhatWasSeenCountsNoAbsenceAndADatasetLeftOutWholeCountsNothingAndADatasetThatNeverRetiresWaitsForNothing": {
    "kind": "test",
-   "hash": "1eb5daa6edc39a6c",
+   "hash": "f1d4533b3e55eebe",
    "asserts": 12,
    "literals": [
-    "b71b5bc3518af1d1"
+    "189d0faa346b2d8b"
    ],
    "precision": [],
    "skips": 0,
@@ -33139,14 +33274,14 @@
     "REQ-781"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfADatasetTheReceivingDidNotGiveIsLeftOutWhole": {
    "kind": "test",
-   "hash": "8e08a5b7bacc1390",
+   "hash": "fe833ceff3c51f0a",
    "asserts": 11,
    "literals": [
-    "e74375cc4f4732b4"
+    "a2134f963bad4287"
    ],
    "precision": [],
    "skips": 0,
@@ -33154,14 +33289,14 @@
     "REQ-781"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfAKeyHasOneReasonByOrderOfWeightSoWhatIsLetGoOfIsToldByTheWaitAndWhatIsShownAgainByTheCounts": {
    "kind": "test",
-   "hash": "41f89619480ee1a4",
+   "hash": "9a566ed3ebe2c2ea",
    "asserts": 13,
    "literals": [
-    "f4c4cc3676c5b946"
+    "6d4a2cb6d4f880f9"
    ],
    "precision": [],
    "skips": 0,
@@ -33169,14 +33304,14 @@
     "REQ-780"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfAKeyThatRepeatsKeepsItsProblemFromItsStartThroughTheRunsThatDoNotChangeItToItsEnd": {
    "kind": "test",
-   "hash": "cd141f259da49f66",
+   "hash": "d1270947f231c8fd",
    "asserts": 7,
    "literals": [
-    "990eaa0b340420cf"
+    "ed081f8e3bd53422"
    ],
    "precision": [],
    "skips": 0,
@@ -33184,14 +33319,14 @@
     "REQ-784"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfARowWhoseHashIsTheSameAndWhoseFilteringTurnsOverMakesTheObjectsTheOldPipelineMakes": {
    "kind": "test",
-   "hash": "21ee52346849bdf0",
+   "hash": "83a4152218ce75dd",
    "asserts": 4,
    "literals": [
-    "1be498c35cfed7f6"
+    "783e4ef2e35ad446"
    ],
    "precision": [],
    "skips": 0,
@@ -33199,14 +33334,14 @@
     "REQ-784"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfARunThatFindsTheTablesOfTheComputationAnotherRunsHasNotBegunAndDoesTheComparisonAgainFromItsStart": {
    "kind": "test",
-   "hash": "9e1b35a30b2e8cdf",
+   "hash": "32462ae0c0a578c7",
    "asserts": 26,
    "literals": [
-    "bb33ef96d4d5a7f2"
+    "3b8780d85f3da906"
    ],
    "precision": [],
    "skips": 0,
@@ -33214,14 +33349,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfAServerThatTakesTheRunOverGoesOnFromTheBucketTheRunIsAtAndCountsAtTheTimeTheComparisonBeganAt": {
    "kind": "test",
-   "hash": "9af14b978b5de221",
+   "hash": "85c2cd3d579d1de7",
    "asserts": 17,
    "literals": [
-    "6fad78be4fbd30cf"
+    "45e437f1a937c1fd"
    ],
    "precision": [],
    "skips": 0,
@@ -33229,14 +33364,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfAStepThatTheDatabaseRefusesIsToldAndTheBucketLeavesNothing": {
    "kind": "test",
-   "hash": "124322c97d047700",
+   "hash": "389e3cea101f4e3b",
    "asserts": 11,
    "literals": [
-    "4df0cb4a4c6bbfe6"
+    "413f3572d07e96a7"
    ],
    "precision": [],
    "skips": 0,
@@ -33244,14 +33379,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfAWordOfCoverageThatIsNotOneOfThreeIsReadAsIncompleteAndALineWithNoWordIsReadByItsCompleteFlag": {
    "kind": "test",
-   "hash": "9ac64d8aae32b5c0",
+   "hash": "33d1deab1295b8d9",
    "asserts": 8,
    "literals": [
-    "b847e907fed3a9d3"
+    "a44d0c91769a216c"
    ],
    "precision": [],
    "skips": 0,
@@ -33259,14 +33394,14 @@
     "REQ-781"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfEveryFateOfAKeyIsToldAndTheWaitsAreCountedAtTheTimeOfTheRun": {
    "kind": "test",
-   "hash": "d0d2bbb56b75f375",
+   "hash": "e94f6e73261259bf",
    "asserts": 16,
    "literals": [
-    "e9c26345afa92db9"
+    "fa2414bd279e33da"
    ],
    "precision": [],
    "skips": 0,
@@ -33274,14 +33409,14 @@
     "REQ-780"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfTheBucketsAreRangesOfDatasetAndKeyThatFollowOneAnotherAndTheLastHasNoEnd": {
    "kind": "test",
-   "hash": "26332281bdebb2af",
+   "hash": "e278f50f996ead26",
    "asserts": 13,
    "literals": [
-    "d2f2ff0effb797f9"
+    "70c18f314bd41849"
    ],
    "precision": [],
    "skips": 0,
@@ -33289,14 +33424,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonDoesNotBeginForARunThatIsNotComputingOrForAnotherAttempt": {
    "kind": "test",
-   "hash": "361fdc5a60060143",
+   "hash": "1b4ed040071ec10f",
    "asserts": 16,
    "literals": [
-    "cc4948914670ad6c"
+    "a8ed6141b5c6e081"
    ],
    "precision": [],
    "skips": 0,
@@ -33304,14 +33439,14 @@
     "REQ-780"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonGivesTheRawRecordsTheWaitsTheCountsAndTheLiveObjectsTheOldPipelineGivesForTheSameCaptures": {
    "kind": "test",
-   "hash": "5bb5c07faef808bf",
+   "hash": "d3668218ef3b86b1",
    "asserts": 3,
    "literals": [
-    "0241a379d9f12a18"
+    "a6d6d76ba66187a3"
    ],
    "precision": [],
    "skips": 0,
@@ -33319,14 +33454,14 @@
     "REQ-784"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonGivesWhatTheOldPipelineGivesForRandomCapturesAndAnyCutOfTheBuckets": {
    "kind": "test",
-   "hash": "90b7379842c9aca7",
+   "hash": "0a23dfd944ac8367",
    "asserts": 3,
    "literals": [
-    "a76baf637c246d7f"
+    "e4f6024a8910e522"
    ],
    "precision": [],
    "skips": 0,
@@ -33334,14 +33469,14 @@
     "REQ-784"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfTheComparisonReadsTheCoverageOfTheReceivingFromTheCountsAndTakesTheOldFlagWhereThereIsNone": {
    "kind": "test",
-   "hash": "3297949bf2d25631",
+   "hash": "89046f8febfe068c",
    "asserts": 8,
    "literals": [
-    "f158538906cc8e28"
+    "3c364562e35548f2"
    ],
    "precision": [],
    "skips": 0,
@@ -33349,14 +33484,14 @@
     "REQ-783"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfTheCountsOfTheRunSayForEachDatasetHowMuchOfItTheNextStepMayCount": {
    "kind": "test",
-   "hash": "e3f87b08d133a28e",
+   "hash": "22b63d3fdfd37f94",
    "asserts": 14,
    "literals": [
-    "1afa9cd21b0e5073"
+    "87c1ced28649f4fb"
    ],
    "precision": [],
    "skips": 0,
@@ -33364,14 +33499,14 @@
     "REQ-783"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfWhatIsMadeDoesNotDependOnHowTheWorkIsCutIntoBuckets": {
    "kind": "test",
-   "hash": "08307aef148b6832",
+   "hash": "3c28c5044be4df6b",
    "asserts": 14,
    "literals": [
-    "d85221d4c8fea4ec"
+    "50187597fbf46ab2"
    ],
    "precision": [],
    "skips": 0,
@@ -33379,14 +33514,14 @@
     "REQ-782"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgingest::TestRdfWhatTheComparisonMadeOfARunIsWhatTheNextRunStartsFrom": {
    "kind": "test",
-   "hash": "ba22cfe9aacc4701",
+   "hash": "378a97559838812d",
    "asserts": 25,
    "literals": [
-    "b54723623ca9e3a3"
+    "181adcf8f51f70fa"
    ],
    "precision": [],
    "skips": 0,
@@ -33394,7 +33529,22 @@
     "REQ-780"
    ],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0120-test-databases-copied-from-templates.md"
+  },
+  "go:backend/internal/pgingest::TestTplTheDatabaseATestOfTheReceivingStartsFromIsTheOneOpenCreateKGAndAttachSourceMakeTheSlowWay": {
+   "kind": "test",
+   "hash": "22d06e67e0555950",
+   "asserts": 22,
+   "literals": [
+    "244ad926ea6ee149"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgschema::TestBuildMakesTheTablesOfASmallModel": {
    "kind": "test",
@@ -35413,20 +35563,20 @@
   },
   "go:backend/internal/pgstore::TestAChangeThatIsNotAnAdditionIsRefusedAndTheDatabaseIsAsItWas": {
    "kind": "test",
-   "hash": "c39ac2b5b464b280",
+   "hash": "6af59fad42046fa1",
    "asserts": 12,
    "literals": [
-    "fd10abb564492e48"
+    "6ca96960ab0d36df"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAChunkLargerThanOneStatementIsWrittenWhole": {
    "kind": "test",
-   "hash": "5e5f50afd49d9fbd",
+   "hash": "8c0bdf46b64a0890",
    "asserts": 5,
    "literals": [
     "3c800b488e46b17f"
@@ -35438,8 +35588,8 @@
     "REQ-249",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAClosedPoolFailsEveryOperationWithAnError": {
    "kind": "test",
@@ -35473,31 +35623,31 @@
   },
   "go:backend/internal/pgstore::TestAMoreCompleteModelIsFollowedByAdditionsAndTheTablesThatHadRowsAreNotRewritten": {
    "kind": "test",
-   "hash": "e37ff09bd96cf98f",
+   "hash": "a436a8f3d84c6a55",
    "asserts": 28,
    "literals": [
-    "1ea5af3fc14f61d7"
+    "0297fe06045fd71a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-565"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAnAdjustmentThatCannotMakeATableOrBuildAnIndexLeavesTheSchemaUsable": {
    "kind": "test",
-   "hash": "8024e94ce5bd00ef",
+   "hash": "3ab95888da4b303c",
    "asserts": 18,
    "literals": [
-    "0007a7b2d202d926"
+    "7741c67cdee6ef3b"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
    "kind": "test",
@@ -35517,16 +35667,16 @@
   },
   "go:backend/internal/pgstore::TestAnIndexThatCannotBeBuiltLeavesTheStateIndexPendingAndTheNextRunFinishesIt": {
    "kind": "test",
-   "hash": "20543d52480317dc",
+   "hash": "9f43604d37124179",
    "asserts": 17,
    "literals": [
-    "18bce48fe15e2079"
+    "a741f260e172e9eb"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAnUnknownKGIsRefusedByEveryOperation": {
    "kind": "test",
@@ -35560,42 +35710,42 @@
   },
   "go:backend/internal/pgstore::TestARunThatStoppedWhileBuildingLeavesInvalidAndStrayIndexesThatTheNextRunCleansUp": {
    "kind": "test",
-   "hash": "514f23447b47ead8",
+   "hash": "6036e8bef7ad5ef3",
    "asserts": 15,
    "literals": [
-    "2deec53763da7b36"
+    "edf43901898213c4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAServerWhoseModelIsNotTheOneTheSchemaWasMadeFromIsTold": {
    "kind": "test",
-   "hash": "48b173cded36c4d1",
+   "hash": "557e3dac84bca565",
    "asserts": 12,
    "literals": [
-    "19759fa299885aed"
+    "e9b39f58051039fa"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAStorageSchemaThatFailsHalfWayLeavesNoSchemaAndNoRecord": {
    "kind": "test",
-   "hash": "230b2d88b8cf88f2",
+   "hash": "60b9fd520227cd68",
    "asserts": 15,
    "literals": [
-    "b40bc02c29d38f3d"
+    "b732d0acb3dd6e93"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestAStoreClosesItsPoolAndReportsTheFirstFailure": {
    "kind": "test",
@@ -35614,29 +35764,29 @@
   },
   "go:backend/internal/pgstore::TestCreatingAStorageSchemaTwiceOrAtTheSameTimeLeavesOneSchema": {
    "kind": "test",
-   "hash": "9a4610909b7ea9f0",
+   "hash": "4c90c822cf430979",
    "asserts": 18,
    "literals": [
-    "7f9fc8f962222ea4"
+    "1826a920f1645fd0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestCreatingRefusesWhatItCannotMakeASchemaFrom": {
    "kind": "test",
-   "hash": "bd60dad19644c874",
+   "hash": "66f537986fbaa844",
    "asserts": 18,
    "literals": [
-    "6dfc34ae70a188e7"
+    "2851c71bd9247bbc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestDriverErrorsGetTheCodesOfThisBackend": {
    "kind": "test",
@@ -35655,20 +35805,20 @@
   },
   "go:backend/internal/pgstore::TestDroppingAStorageSchemaRemovesItAndItsNumberIsNotGivenAgain": {
    "kind": "test",
-   "hash": "2d2b726bf07312ce",
+   "hash": "ba31be885e305cb9",
    "asserts": 18,
    "literals": [
-    "fa3893e6c33ea7c9"
+    "c109949a91bb8493"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestFeedsStopAtReadableThroughAndWaitsEndWhenTheyShould": {
    "kind": "test",
-   "hash": "049b0f2883d11967",
+   "hash": "d58e7270c508a0cb",
    "asserts": 7,
    "literals": [
     "39baebbb505fcee4"
@@ -35680,27 +35830,27 @@
     "REQ-249",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestHeldAKGOfGeneratorThreeGetsTheColumnHeldOnItsTablesAndItsSourcePartitionsWhenItIsAdjusted": {
    "kind": "test",
-   "hash": "e8d782ce1cd50b93",
+   "hash": "2d0326dd475f8c8c",
    "asserts": 19,
    "literals": [
-    "f8918bad5a350cd3"
+    "74a1e3cf172817dd"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIdentifiersOfListsTheLiveIdentifiersOfOneObject": {
    "kind": "test",
-   "hash": "cb78967e9bbff573",
+   "hash": "ca98c2927f8b4293",
    "asserts": 5,
    "literals": [
     "3d1869159f4a52b2"
@@ -35711,8 +35861,8 @@
     "REQ-251",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIdentityRecordsAreKeptWithTheirVersionsAndFirstWriterWins": {
    "kind": "test",
@@ -35761,10 +35911,10 @@
   },
   "go:backend/internal/pgstore::TestIdnAKGOfGeneratorSixGetsTheHeldColumnsTheFeedOfABindTheWorkingTablesAndTheIndexesOfTheIdentificationWhenItIsAdjustedAndKeepsWhatItHas": {
    "kind": "test",
-   "hash": "df69188f1bfa3ab0",
+   "hash": "5b571bc32f1dc40e",
    "asserts": 33,
    "literals": [
-    "5a3e19de0086bcf6"
+    "021a3a86477cfc7b"
    ],
    "precision": [],
    "skips": 0,
@@ -35772,142 +35922,142 @@
     "REQ-880"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestAKGMadeByTheGeneratorBeforeIsAdjustedByAddingTheTablesWithoutClosingIt": {
    "kind": "test",
-   "hash": "c56c1a98fe57aa0d",
+   "hash": "82cea09e95e60fb6",
    "asserts": 23,
    "literals": [
-    "919c6fbe1185e4aa"
+    "19276674456da78e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestARunKeepsToTheClosedStagesAndSaysHowItFailedInThreeWays": {
    "kind": "test",
-   "hash": "b6868b64305287b7",
+   "hash": "d4021f64e1a65877",
    "asserts": 10,
    "literals": [
-    "4746ab0d7c24b9f9"
+    "f7c1a875a7bbe7b0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-682"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestASourceHasPartitionsThatAreAttachedEmptiedAndDroppedOneByOne": {
    "kind": "test",
-   "hash": "babb744161aa4686",
+   "hash": "8231cc133d588681",
    "asserts": 21,
    "literals": [
-    "d23168f35879f196"
+    "42ad9ec9d54be7d4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable": {
    "kind": "test",
-   "hash": "3225145d7c1b3747",
+   "hash": "d5010018bf837278",
    "asserts": 18,
    "literals": [
-    "5c7ddda778695699"
+    "fd568cd39a7f6cc9"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-683"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestPuttingASourceToAKGDoesNotWaitForAnotherSourceThatIsBeingReceived": {
    "kind": "test",
-   "hash": "aca3a5f5cea9f516",
+   "hash": "38f6e8d6f5c6c6cd",
    "asserts": 12,
    "literals": [
-    "f7a98c99f1bb9284"
+    "060113fbdb61bf43"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestSharedTablesHaveTheColumnsTheNamesSay": {
    "kind": "test",
-   "hash": "613084757c535880",
+   "hash": "db8f975c5aeb4886",
    "asserts": 7,
    "literals": [
-    "7a7cd3ec2dfc7af5"
+    "e6f679f73408991a"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-682"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestTablesOfANewKGAreLoggedAndHaveTheColumnsTheNamesSay": {
    "kind": "test",
-   "hash": "b56dbf544a513129",
+   "hash": "37e2b800770f27a4",
    "asserts": 16,
    "literals": [
-    "f21c722d4f832b3f"
+    "0816770989e95183"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-680"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestTheDigestOfAChunkInSQLIsTheDigestTheGoCodeGives": {
    "kind": "test",
-   "hash": "052fe52a3021c0b2",
+   "hash": "6e33c8140d965c8c",
    "asserts": 12,
    "literals": [
-    "777a7dd6920bf51a"
+    "b803e28236350629"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-681"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestIngestTheGateOfTheRunsAllowsOneOpenRunPerSourceAndOneWorkingRunPerKG": {
    "kind": "test",
-   "hash": "414fcb53d957478a",
+   "hash": "e7163959f1968819",
    "asserts": 14,
    "literals": [
-    "81fd6a66aa3c72b1"
+    "b1d327043083c9d4"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-682"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestLeasesRefuseBadInputAndStaleHolders": {
    "kind": "test",
@@ -35928,18 +36078,18 @@
   },
   "go:backend/internal/pgstore::TestNumformTheSameNumberInAnotherFormIsTheSameValueInTheRowPathToo": {
    "kind": "test",
-   "hash": "034744345f830d84",
+   "hash": "ac81636f4bd29d9f",
    "asserts": 9,
    "literals": [
-    "62a6605418d7518b"
+    "7971a6bf71c726de"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestOpenFailuresDoNotShowThePassword": {
    "kind": "test",
@@ -35958,22 +36108,22 @@
   },
   "go:backend/internal/pgstore::TestPgsrcDeletingAKGOrDroppingItsSchemaTakesTheSourcesOffFirstEvenWithARunThatIsNotOver": {
    "kind": "test",
-   "hash": "1b6e7fa61c7380a8",
+   "hash": "5709884aaff332e4",
    "asserts": 17,
    "literals": [
-    "4c266c627d3b1dca"
+    "bec2f95797f8200d"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-684"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestPostgresStorePassesThePreviewSuite": {
    "kind": "test",
-   "hash": "fa1eb342cde3df7f",
+   "hash": "d58633822ea0d143",
    "asserts": 1,
    "literals": [
     "44481bf4a77cf729"
@@ -35983,12 +36133,12 @@
    "reqs": [
     "REQ-410"
    ],
-   "added": "2026-11-16",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestPostgresStorePassesTheSuite": {
    "kind": "test",
-   "hash": "c54c0c4b5a7bbd94",
+   "hash": "7f8ce2030e89c9f2",
    "asserts": 3,
    "literals": [
     "0426dbd802b2e5a6"
@@ -36004,15 +36154,15 @@
     "REQ-249",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscACustomAttributeIsAColumnNamedLikeItIsAndTheModelViewsDescribeOnlyWhatTheGradeSees": {
    "kind": "test",
-   "hash": "26294bf69b2b1b0e",
+   "hash": "196f8911b33f1ddb",
    "asserts": 10,
    "literals": [
-    "eb49f8faba28e7fc"
+    "e0de5255693ff152"
    ],
    "precision": [],
    "skips": 0,
@@ -36021,14 +36171,14 @@
     "REQ-576"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscADescriptionWithQuotesBackslashesAndStatementsComesBackAsTheTextItWasAndRunsNothing": {
    "kind": "test",
-   "hash": "19cb7979f7ded03a",
+   "hash": "9867d22cc77a7614",
    "asserts": 15,
    "literals": [
-    "57e8053350aeb0e6"
+    "064f8c0070426d73"
    ],
    "precision": [],
    "skips": 0,
@@ -36037,14 +36187,14 @@
     "REQ-576"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAFunctionOfAPastTimeAnswersForTheNumberAndRaisesAnErrorForOneThatCannotBeRead": {
    "kind": "test",
-   "hash": "af9400109047ec3a",
+   "hash": "8b152739de4a5d10",
    "asserts": 20,
    "literals": [
-    "9cde5fbda1c3ce21"
+    "810303598625a65b"
    ],
    "precision": [],
    "skips": 0,
@@ -36053,14 +36203,14 @@
     "REQ-575"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAFunctionOfTheCallerThatTheCostPutsFirstNeverSeesTheValueOfAnAttributeOfAHigherGradeOnAnySurface": {
    "kind": "test",
-   "hash": "03038b6fb516f120",
+   "hash": "520400ffec820dfb",
    "asserts": 8,
    "literals": [
-    "eef1d6401a49ab37"
+    "6a87d79753b34fb7"
    ],
    "precision": [],
    "skips": 0,
@@ -36068,14 +36218,14 @@
     "REQ-626"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAGradeRoleHasNoRightOnAnotherKGOnTheStorageSchemaOrOnAHigherGrade": {
    "kind": "test",
-   "hash": "419635ca9ba62e73",
+   "hash": "54428b6c8633203f",
    "asserts": 10,
    "literals": [
-    "a25ad587f292f0a5"
+    "bf1837ddd754fe99"
    ],
    "precision": [],
    "skips": 0,
@@ -36083,14 +36233,14 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAGradeRoleHasNoRightOnTheSetForALargeApplyOfAHigherGrade": {
    "kind": "test",
-   "hash": "00b402ef473ab161",
+   "hash": "239895cc6a0cc2c1",
    "asserts": 3,
    "literals": [
-    "0fa1677d97764559"
+    "f53e3a1c6bb3eefa"
    ],
    "precision": [],
    "skips": 0,
@@ -36099,14 +36249,14 @@
     "REQ-627"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAGradeRoleSeesNoColumnOfAnAttributeOfAHigherGrade": {
    "kind": "test",
-   "hash": "ce4113016052c380",
+   "hash": "99f416b0adf78c41",
    "asserts": 6,
    "literals": [
-    "4393880ed3686518"
+    "3f24f08bb9f134b4"
    ],
    "precision": [],
    "skips": 0,
@@ -36115,14 +36265,14 @@
     "REQ-626"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAHigherGradeSchemaHoldsOnlyWhatDiffersFromTheGradeBelow": {
    "kind": "test",
-   "hash": "f0aff976c9e056b7",
+   "hash": "98a0ef217138164b",
    "asserts": 5,
    "literals": [
-    "dde25fb7b081dd8c"
+    "e77250af966163d3"
    ],
    "precision": [],
    "skips": 0,
@@ -36130,14 +36280,14 @@
     "REQ-572"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAKGMadeByTheCatalogHasItsQuerySchemaAndRolesAndAServerThatStartsMakesThemForAKGOfAnOlderGenerator": {
    "kind": "test",
-   "hash": "c3bb0a0b2eef0d92",
+   "hash": "adf185d581ef9b57",
    "asserts": 20,
    "literals": [
-    "8cc2e61635937bb5"
+    "cd0129cf04d83d93"
    ],
    "precision": [],
    "skips": 0,
@@ -36146,14 +36296,14 @@
     "REQ-685"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAnErrorOfAConditionOfTheCallerNeverShowsOrTellsTheValueOrTheNameOfAnAttributeOfAHigherGrade": {
    "kind": "test",
-   "hash": "85f7d090de105be1",
+   "hash": "237eee108b426612",
    "asserts": 8,
    "literals": [
-    "2308501bf56951d7"
+    "d1091d9e50e6ba45"
    ],
    "precision": [],
    "skips": 0,
@@ -36161,7 +36311,7 @@
     "REQ-626"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAnInstallerThatMayMakeRolesButIsNoSuperuserMakesTheQuerySchemaAndCanSwitchToItsRoles": {
    "kind": "test",
@@ -36180,10 +36330,10 @@
   },
   "go:backend/internal/pgstore::TestQscARenameOfAnAttributeBuildsEveryViewAgainWithTheNewName": {
    "kind": "test",
-   "hash": "3f322e7e13669b36",
+   "hash": "8673b450ac2dd8a0",
    "asserts": 12,
    "literals": [
-    "a85d7b0b5d30666c"
+    "a025609711ee6686"
    ],
    "precision": [],
    "skips": 0,
@@ -36191,14 +36341,14 @@
     "REQ-561"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscARenameWithAnAddedAttributeBuildsTheFunctionOfAPastTimeAgainWithTheNewName": {
    "kind": "test",
-   "hash": "96f0a301553c8ed9",
+   "hash": "de318ddc3f92cb50",
    "asserts": 8,
    "literals": [
-    "a36192268e7b2faa"
+    "d4a18e824bab9ee9"
    ],
    "precision": [],
    "skips": 0,
@@ -36207,14 +36357,14 @@
     "REQ-575"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscAStatementOfTheQuerySchemaThatFailsLeavesTheKGAsItWasForTheMakingAndForTheAdjustment": {
    "kind": "test",
-   "hash": "7f4deca6733bf410",
+   "hash": "2b83c8d7fec5b9d0",
    "asserts": 16,
    "literals": [
-    "d8cee4bf2941831e"
+    "84e2a76678746e8c"
    ],
    "precision": [],
    "skips": 0,
@@ -36222,14 +36372,14 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscATokenThatIsNotOneOfTheInstallationRefusesEveryWayToMakeAdjustOrDropTheQuerySchema": {
    "kind": "test",
-   "hash": "00eccf828d479a72",
+   "hash": "88c6f257d1c14ad6",
    "asserts": 19,
    "literals": [
-    "15cacde6a62c618a"
+    "cf9c5a1802973cd5"
    ],
    "precision": [],
    "skips": 0,
@@ -36237,14 +36387,14 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscATypeViewHasTheObjectsOfTheTypeAndOfEveryTypeBelowItOnce": {
    "kind": "test",
-   "hash": "952bae37f41a414b",
+   "hash": "d72cdf9bcb231e9e",
    "asserts": 16,
    "literals": [
-    "6af69e28873befa3"
+    "ac6f9b4fdbd45eb0"
    ],
    "precision": [],
    "skips": 0,
@@ -36252,14 +36402,14 @@
     "REQ-574"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscATypeViewReadsOneObjectByAnIndexAndTheViewOfAParentIsAUnionAllOfTheTablesOfItsTypes": {
    "kind": "test",
-   "hash": "e668c25484247396",
+   "hash": "285c8569ba0fe9ed",
    "asserts": 9,
    "literals": [
-    "0d6b35aacd7dabb8"
+    "cdd9ca9a03930723"
    ],
    "precision": [],
    "skips": 0,
@@ -36268,14 +36418,14 @@
     "REQ-623"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscDeletingAKGDropsItsQuerySchemasAndItsRoles": {
    "kind": "test",
-   "hash": "b5758a3c6839a2f6",
+   "hash": "871627f2159a0b16",
    "asserts": 8,
    "literals": [
-    "6df20d4e4ad13e8f"
+    "3c632f767b9de071"
    ],
    "precision": [],
    "skips": 0,
@@ -36283,14 +36433,14 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscEveryFunctionOfTheQuerySchemaHasAFixedSearchPathAndNoRightForThePublicAndNoRoleCanLogInOrMakeRoles": {
    "kind": "test",
-   "hash": "3fc4f7b65a4c3d70",
+   "hash": "9eb9a240fcd7c4e8",
    "asserts": 10,
    "literals": [
-    "50c985518be04306"
+    "9f51981895134213"
    ],
    "precision": [],
    "skips": 0,
@@ -36298,14 +36448,14 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscEverySurfaceOfAGradeIsCutByTheSameSetOfAttributeNumbers": {
    "kind": "test",
-   "hash": "9525126f928594da",
+   "hash": "6174d6435c5bf92e",
    "asserts": 9,
    "literals": [
-    "3b804712fd232439"
+    "6fa0baacf41d52fe"
    ],
    "precision": [],
    "skips": 0,
@@ -36313,14 +36463,14 @@
     "REQ-626"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscEveryViewAndColumnOfTheQuerySchemaHasAComment": {
    "kind": "test",
-   "hash": "c2435e970c222f5d",
+   "hash": "cf8c309af3890ed5",
    "asserts": 7,
    "literals": [
-    "30c8d2420f2d3965"
+    "e51557ce1ea61b1f"
    ],
    "precision": [],
    "skips": 0,
@@ -36328,14 +36478,14 @@
     "REQ-576"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscEveryWriteOfAGradeRoleIsRefused": {
    "kind": "test",
-   "hash": "e038d9441427ef94",
+   "hash": "b85b7b4dd5f9269b",
    "asserts": 5,
    "literals": [
-    "86970d89ab18aa66"
+    "193bc8fb5547751c"
    ],
    "precision": [],
    "skips": 0,
@@ -36343,7 +36493,7 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscNoFileOfAServerMakesTheLightModelThatHasNoQuerySchema": {
    "kind": "test",
@@ -36362,10 +36512,10 @@
   },
   "go:backend/internal/pgstore::TestQscTheChangeRecordsAreViewsOfTheKGAndTheVersionsOfIt": {
    "kind": "test",
-   "hash": "73efedf5093aad5e",
+   "hash": "2580b6e8c5b7cceb",
    "asserts": 6,
    "literals": [
-    "65ec0baed30ebd81"
+    "69c40d1ab9478036"
    ],
    "precision": [],
    "skips": 0,
@@ -36373,14 +36523,14 @@
     "REQ-569"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheDetailOfAnObjectHasEveryAttributeTheGradeSeesWithItsEvidenceAndIsNullForAnObjectThatIsNotThere": {
    "kind": "test",
-   "hash": "3960679ecf32ee19",
+   "hash": "942796a9ab2b91e8",
    "asserts": 6,
    "literals": [
-    "8e177f211e2b0a9e"
+    "55c38fc144232d9a"
    ],
    "precision": [],
    "skips": 0,
@@ -36389,14 +36539,14 @@
     "REQ-626"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheFunctionsAndTheChangeViewsOfAGradeAreCutByTheSameSetOfAttributeNumbers": {
    "kind": "test",
-   "hash": "ea17ce28c26fe506",
+   "hash": "893002265aae39e5",
    "asserts": 10,
    "literals": [
-    "a63ca14c52578c2e"
+    "14f9b1cf4a06d28f"
    ],
    "precision": [],
    "skips": 0,
@@ -36404,14 +36554,14 @@
     "REQ-626"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheLinksOfAnObjectAreReadFromTheIndexAloneByTheirNumber": {
    "kind": "test",
-   "hash": "4e5a95efeaac54b1",
+   "hash": "4c6aec5fd0c8dc6e",
    "asserts": 10,
    "literals": [
-    "d5436233d534851d"
+    "0c0a290d6f683c8a"
    ],
    "precision": [],
    "skips": 0,
@@ -36419,7 +36569,7 @@
     "REQ-623"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheModelOfTheTestsOfOtherPackagesIsTheModelOfAServerWithItsStatisticsAndWithoutTheQuerySchema": {
    "kind": "test",
@@ -36438,10 +36588,10 @@
   },
   "go:backend/internal/pgstore::TestQscTheQuerySchemaOfTheStandardModelHasAViewForEveryTypeAndEveryLinkTypeAndTheTimeToBuildItIsKnown": {
    "kind": "test",
-   "hash": "ccbbf305a140c25a",
+   "hash": "aae14999cc267dfa",
    "asserts": 14,
    "literals": [
-    "42d9b83a44bf20c4"
+    "d5833a06963adb74"
    ],
    "precision": [],
    "skips": 0,
@@ -36449,14 +36599,14 @@
     "REQ-574"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheSetForALargeApplyHasOnlyWhatIsReadableThroughTheWatermark": {
    "kind": "test",
-   "hash": "891b8a27a881dee7",
+   "hash": "1fa7f0f84c2c9502",
    "asserts": 10,
    "literals": [
-    "ce7874312fbee907"
+    "72b2d45ac0f17f80"
    ],
    "precision": [],
    "skips": 0,
@@ -36464,14 +36614,14 @@
     "REQ-627"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheSetForALargeApplyHasTheObjectAtTheWatermarkAndNotTheObjectAfterItInTheViewsOfEveryObject": {
    "kind": "test",
-   "hash": "f094f276d102d641",
+   "hash": "dd0666270979a934",
    "asserts": 11,
    "literals": [
-    "73f42befa14d3e43"
+    "a72056c2c1a600ce"
    ],
    "precision": [],
    "skips": 0,
@@ -36479,14 +36629,14 @@
     "REQ-627"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheStandardModelHasAFunctionOfAPastTimeForEveryTypeTheViewsOfTheChangesAndTheSixSchemas": {
    "kind": "test",
-   "hash": "ce9cea716185fef1",
+   "hash": "ba0f43feb98b8ac0",
    "asserts": 12,
    "literals": [
-    "2b3d2dfbfa4a3d05"
+    "8fa80035691c0f38"
    ],
    "precision": [],
    "skips": 0,
@@ -36495,14 +36645,14 @@
     "REQ-627"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheStepsOfTheQuerySchemaFailInATransactionThatIsOverAndAPlanWithoutThemDoesNothing": {
    "kind": "test",
-   "hash": "bc1bf1857906a12a",
+   "hash": "8324e76ed290ea33",
    "asserts": 8,
    "literals": [
-    "c7694e0c91475593"
+    "d8f185f87b45e273"
    ],
    "precision": [],
    "skips": 0,
@@ -36510,14 +36660,14 @@
     "REQ-573"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestQscTheTimeToBuildAllTheViewsAgainIsMeasuredByKindOfStatement": {
    "kind": "test",
-   "hash": "ad226a0232d9f200",
+   "hash": "65aeabc2fd64a17c",
    "asserts": 19,
    "literals": [
-    "a5043d2d9aee68e0"
+    "152416bce946030b"
    ],
    "precision": [],
    "skips": 0,
@@ -36526,26 +36676,26 @@
     "REQ-562"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestRdfAKGOfGeneratorFourGetsTheColumnsAndTheOwnerTableOfTheComparisonWhenItIsAdjustedAndKeepsWhatItHas": {
    "kind": "test",
-   "hash": "38e4f21611286940",
+   "hash": "014ca22b597091d4",
    "asserts": 24,
    "literals": [
-    "a3f3bffc82320173"
+    "14d02967c19bb1ef"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-785"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestRowsThatDoNotMatchTheHeadAreRefusedAndLeaveNothingBehind": {
    "kind": "test",
-   "hash": "909b9b82d447097c",
+   "hash": "8a2c01f82cb091b3",
    "asserts": 8,
    "literals": [
     "4c6bc7cd1201282e"
@@ -36557,390 +36707,390 @@
     "REQ-249",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheAbandonThatWasCutIsEnded": {
    "kind": "test",
-   "hash": "e94925b04a35d354",
+   "hash": "ed415d2479453c11",
    "asserts": 10,
    "literals": [
-    "414e95a90f8b2db1"
+    "a6dea8fe8939318d"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseIsGivenAfterTheRestoreThatWasCutIsEndedAndTheKGIsOpenAgain": {
    "kind": "test",
-   "hash": "ca1f8bfc70fda7ee",
+   "hash": "14e3de256d025ac3",
    "asserts": 13,
    "literals": [
-    "234da0119393c34d"
+    "0da5e7145a1f7125"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestRsmALeaseOfAKGWithNoWorkHalfDoneIsGivenAtOnce": {
    "kind": "test",
-   "hash": "2450f3a75b7b3abf",
+   "hash": "13c69b235e405d52",
    "asserts": 5,
    "literals": [
-    "7740c1491fde259d"
+    "cf90cec68c19a18f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestRsmTheServerEndsTheWorkOfEveryKGAndOneThatCannotBeEndedDoesNotStopTheOthers": {
    "kind": "test",
-   "hash": "91da8bf32eddec98",
+   "hash": "26e46bd47be7d2de",
    "asserts": 17,
    "literals": [
-    "7c54f0fbd139084b"
+    "b4941ecc00f03659"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapAbandonBetweenChunksUndoesKeysAndTheApplyCanStartAgain": {
    "kind": "test",
-   "hash": "f3225b1c9d89438d",
+   "hash": "5c86406b4c0cc43c",
    "asserts": 19,
    "literals": [
-    "98fcc52d5492e5e7"
+    "6ac541e53269c557"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-725"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapAbandonCutInTheMiddleStopsTheStagedApplyUntilItIsEnded": {
    "kind": "test",
-   "hash": "1a1d1e51fc4b4ab3",
+   "hash": "f9752690a0e6de74",
    "asserts": 5,
    "literals": [
-    "66c32c64440af26b"
+    "7fcce0a09a2cb466"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-725"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapAChunkThatWasNotCommittedIsApplyAgain": {
    "kind": "test",
-   "hash": "08d97b950d4008b4",
+   "hash": "f9fc4226ea1e623c",
    "asserts": 9,
    "literals": [
-    "d36b9ef3e2a161a1"
+    "486bd32f3ab0070f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-723"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapAChunkWhoseCommitGotNoAnswerIsJudgedByTheHead": {
    "kind": "test",
-   "hash": "5ef8c16e663b426d",
+   "hash": "6c605ed647d2d360",
    "asserts": 9,
    "literals": [
-    "bf5ec3b7140c47a5"
+    "140854dfe1c0aafc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-723"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapChunkDigestsOfSQLAreThoseOfGo": {
    "kind": "test",
-   "hash": "a012cde8d817f028",
+   "hash": "461b4288a66d0c94",
    "asserts": 11,
    "literals": [
-    "ca16b7a2b7d5ba98"
+    "df735ecebadca917"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapDamagedDifferenceFailsTheChainOfAnOpenApply": {
    "kind": "test",
-   "hash": "14b3f7028ea4c00e",
+   "hash": "76452c016c67b806",
    "asserts": 7,
    "literals": [
-    "19479435a1867fd4"
+    "a0a75360cd182bf6"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapDamagedTablesFailTheStagedApplyWithAnErrorAndLeaveTheHeadAlone": {
    "kind": "test",
-   "hash": "015406e7bfc8373e",
+   "hash": "11fb685053591c70",
    "asserts": 15,
    "literals": [
-    "1066f3c4307c6af2"
+    "bd7d44fbd8cd2b44"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapDifferenceThatDoesNotStartAtItsFirstChunkIsRefused": {
    "kind": "test",
-   "hash": "5c0f953269d0ef91",
+   "hash": "96e15305e8498c21",
    "asserts": 7,
    "literals": [
-    "8a7ad2b4754a0e2c"
+    "e6b204d3cc423bbb"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapEmptyDifferenceLeavesTheHeadAlone": {
    "kind": "test",
-   "hash": "08cd797368abd874",
+   "hash": "7d8fc1b61e75bbd8",
    "asserts": 17,
    "literals": [
-    "3eeff62a7b1c5cfd"
+    "6707570ce4732023"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-722"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapLocksOfAChunkDoNotGrowWithItsRows": {
    "kind": "test",
-   "hash": "98579e9cf2aec7c4",
+   "hash": "d03e2cb4ccfc4358",
    "asserts": 6,
    "literals": [
-    "809912231a19bb6b"
+    "de24fa3a9fe5d0c0"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-728"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapRetiredObjectTakesItsLinksWithIt": {
    "kind": "test",
-   "hash": "816059a34806986f",
+   "hash": "6db6387f97cd8dfb",
    "asserts": 15,
    "literals": [
-    "e33335a762c12fb9"
+    "a9d1600444bbee04"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-724"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapRowHashExpressionsGiveTheValuesOfTheGoFunctions": {
    "kind": "test",
-   "hash": "35588d9f83042bfa",
+   "hash": "171bb3f0afdeebee",
    "asserts": 6,
    "literals": [
-    "fc01a2ad675c9fb8"
+    "a0a3db263305db65"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-726"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapStagedApplyAndRowsPathGiveTheSameStateAndReads": {
    "kind": "test",
-   "hash": "d0ab8ab12b7e2d5f",
+   "hash": "0b8f86ecd7ca1033",
    "asserts": 19,
    "literals": [
-    "e8d7159af3f76e17"
+    "03d25e5b130dd14c"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-720"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapStagedApplyGoesOnAfterACrashBetweenChunks": {
    "kind": "test",
-   "hash": "e4d8d81d80fb9eb8",
+   "hash": "540c45db05ff0e60",
    "asserts": 15,
    "literals": [
-    "f6e3c56bc5ca9737"
+    "0481b6bbb0575cdf"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapStagedApplyRefusesWhatIsNotTheCallers": {
    "kind": "test",
-   "hash": "142a44384ed5d9a3",
+   "hash": "f3dd90577ed6abd2",
    "asserts": 13,
    "literals": [
-    "8cdb8253d88f1316"
+    "0f41ec17a1ef8302"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapStagedChunkOfAStalePositionIsRefused": {
    "kind": "test",
-   "hash": "1733963b5a2ec502",
+   "hash": "c09f7272fc18665d",
    "asserts": 7,
    "literals": [
-    "6481dfb9ab8095db"
+    "a3605495f95e9596"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-721"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapStagedVolatileValueThatCannotBeWrittenIsRefused": {
    "kind": "test",
-   "hash": "8c1e40d805004e99",
+   "hash": "cee95fc89c9b4c0b",
    "asserts": 6,
    "literals": [
-    "559e225799406ec7"
+    "bb6f125c4ddada91"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-727"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSapVolatileValuesGoInIntervalsAndAreWrittenOnlyWhenTheyDiffer": {
    "kind": "test",
-   "hash": "4c0f615448ea294b",
+   "hash": "b073504d3e62c2fb",
    "asserts": 16,
    "literals": [
-    "5e5ea95715d3e0d9"
+    "d2b7527bd1eadb4e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-727"
    ],
-   "added": "2026-11-20",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSchemaStartupAdjustsAKGOfTheGeneratorBeforeAndOpensIt": {
    "kind": "test",
-   "hash": "d67f4c447300b85c",
+   "hash": "cd462127df98ef78",
    "asserts": 11,
    "literals": [
-    "3e253284cea8a767"
+    "004d8f32cd298a53"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-685"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSchemaStartupLeavesAKGThatDiffersInMoreThanTheGeneratorRefused": {
    "kind": "test",
-   "hash": "252f4b78344d6845",
+   "hash": "b1b640d75eb70172",
    "asserts": 10,
    "literals": [
-    "6a3856160228c027"
+    "93b23e633fc59568"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-685"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSchemaStartupReportsAFailureAndLeavesANewerKGAlone": {
    "kind": "test",
-   "hash": "713efc78c082b0a0",
+   "hash": "9b4991e2faa555c8",
    "asserts": 12,
    "literals": [
-    "09a93c88b6d7bfa4"
+    "38ea642c431aa483"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-685"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSchemaStartupSkipsAKGThatAnotherRunIsBuilding": {
    "kind": "test",
-   "hash": "c513d34521aa54f3",
+   "hash": "c76c584f7bad24c6",
    "asserts": 8,
    "literals": [
-    "2f38872c72b31431"
+    "9f0c4f13254086b2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-685"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestStatisticsThatCannotBeMadeAndATableThatIsInUseStopTheirRunWithAnError": {
    "kind": "test",
@@ -36957,16 +37107,16 @@
   },
   "go:backend/internal/pgstore::TestStatisticsThatWereLeftForLaterAreMadeOnceAndAnAdjustmentWaitsForThem": {
    "kind": "test",
-   "hash": "0d4e7ca2e96798af",
+   "hash": "595f5c64921a96ea",
    "asserts": 12,
    "literals": [
-    "9424737d510afd55"
+    "d1eaf56ad59e0392"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestStoredValuesRoundTripAndDamageIsRefused": {
    "kind": "test",
@@ -37000,78 +37150,78 @@
   },
   "go:backend/internal/pgstore::TestSvmAKGThatKeptItsValuesInProvHasThemMovedIntoTheColumnsAndTheNameIndexesBuilt": {
    "kind": "test",
-   "hash": "17843d7004356622",
+   "hash": "afc2b0030130844a",
    "asserts": 35,
    "literals": [
-    "64728c9b9de7d010"
+    "b5bfdd9c0bdd6b65"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSvmAnIndexThatAnAdjustmentLeftInvalidIsBuiltAgainByTheNextRun": {
    "kind": "test",
-   "hash": "acee539e9b2caed7",
+   "hash": "20a76c013ce555f1",
    "asserts": 12,
    "literals": [
-    "88196ce1aadfd301"
+    "b06447fbec65a11f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSvmAWriteIsRefusedWhenAnotherBuildAdjustedTheSchemaToAnotherGenerator": {
    "kind": "test",
-   "hash": "a34d909d7b42f641",
+   "hash": "a503b4c02dae8543",
    "asserts": 4,
    "literals": [
-    "c7b31d17e4998793"
+    "4865383ffbd66de7"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSvmTheAdjustmentKeepsWhatHasNoColumnAndTakesOldTimesAndEmptiesAsTheyAre": {
    "kind": "test",
-   "hash": "48c6fa897a7b14d2",
+   "hash": "5dd4e5d263156644",
    "asserts": 18,
    "literals": [
-    "7bb8407b263e0fdb"
+    "0fae3b8f0aa98217"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestSvmTheStartOfAServerFinishesTheIndexesOfAKGThatIsOfThisGeneratorButNotSettled": {
    "kind": "test",
-   "hash": "d830eb35049c4983",
+   "hash": "8e77c0db12d67365",
    "asserts": 19,
    "literals": [
-    "3412c5848a0734b0"
+    "9ce9f16d146dc3a6"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-763"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestTestDatabasesNeedTheServerAndNeverSkip": {
    "kind": "test",
@@ -37107,16 +37257,16 @@
   },
   "go:backend/internal/pgstore::TestTheIndexOfTheSearchSetIsTheOneTheQueryPlannerChooses": {
    "kind": "test",
-   "hash": "04a909a94c59ae14",
+   "hash": "b7eabf616ef204e3",
    "asserts": 8,
    "literals": [
-    "5ff4d3114aa7d819"
+    "f59a825f9e1d824d"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestThePollIntervalOfTheStoreHasItsDefaultAndTheRestGoesToTheConnectionBase": {
    "kind": "test",
@@ -37135,16 +37285,16 @@
   },
   "go:backend/internal/pgstore::TestTheSchemaExecutorFailsWithAnErrorOnAClosedPoolAndOnDamagedRecords": {
    "kind": "test",
-   "hash": "7cc8bfb94d9ca189",
+   "hash": "e018c33ae5ed15b7",
    "asserts": 12,
    "literals": [
-    "554b564e34665c03"
+    "6e03a719592cf14f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestTheSourcesOfTheStoreLeaveNothingOnASessionAndWriteOnlyInTransactions": {
    "kind": "test",
@@ -37163,47 +37313,107 @@
   },
   "go:backend/internal/pgstore::TestTheStorageSchemaOfAKGHasTheTablesOfThePlanAndNoIndexThatWasNotMarked": {
    "kind": "test",
-   "hash": "3a08524f6dced2cf",
+   "hash": "c4b925cbe66411dc",
    "asserts": 20,
    "literals": [
-    "841c0295c59d7b6d"
+    "7984db5f1142cddc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-565"
    ],
-   "added": "2026-11-19",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestTixAnObjectIsInTheTableOfItsOwnTypeOnlyAndAParentTypeHasAnEmptyTable": {
    "kind": "test",
-   "hash": "5fe55270803cb4fd",
+   "hash": "21f6d7d6669c2f81",
    "asserts": 11,
    "literals": [
-    "ab6d0fa1bf65a204"
+    "30b9decb92e25eee"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-764"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestTixTheNameIndexesAnswerTheExactNameAndTheStartOfTheNameWithoutCase": {
    "kind": "test",
-   "hash": "17de51e76048f918",
+   "hash": "75408c1a38d1b076",
    "asserts": 14,
    "literals": [
-    "6c2eb2fe79d5b927"
+    "d337650936704283"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-761"
    ],
-   "added": "2026-11-24",
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
+  },
+  "go:backend/internal/pgstore::TestTplACopyOfAKGTemplateIsTheDatabaseThatOpenAndCreateKGMakeTheSlowWay": {
+   "kind": "test",
+   "hash": "e5294af2a940f97a",
+   "asserts": 12,
+   "literals": [
+    "69a08d2de2db46cd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestTplAKGTemplateThatCannotBeMadeFailsTheTestAndIsNotMadeAnotherWay": {
+   "kind": "test",
+   "hash": "1796430439ecde7a",
+   "asserts": 11,
+   "literals": [
+    "0dcd428e46a63a00"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestTplTheKeyOfAKGTemplateChangesWithEverythingThatDecidesWhatTheTemplateHolds": {
+   "kind": "test",
+   "hash": "93437a3e1e751359",
+   "asserts": 16,
+   "literals": [
+    "cc22febaba829a6e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestTplTwoCopiesOfATemplateMakeAndDeleteKGsWithAQuerySchemaWithoutMeetingTheirRoles": {
+   "kind": "test",
+   "hash": "e53fd2a6a137fc3b",
+   "asserts": 6,
+   "literals": [
+    "a741d9e2c91ba6b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-270"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestV2cCodecsOfGradesAndKeys": {
@@ -37221,146 +37431,146 @@
   },
   "go:backend/internal/pgstore::TestV2cGuardChecksInOrderAndTheHeadRoundTrips": {
    "kind": "test",
-   "hash": "66d8de513d89af08",
+   "hash": "462c290155f57d62",
    "asserts": 15,
    "literals": [
-    "918369b3088dfeb2"
+    "9f75fa2253b9c5ff"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2cLeaseIsTakenRenewedAndReleasedByTheDatabaseClock": {
    "kind": "test",
-   "hash": "58d652792ab9ba22",
+   "hash": "4c82fd3de265cbdb",
    "asserts": 21,
    "literals": [
-    "2498a7bb8fc1c424"
+    "cc86a7e94df5f3df"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2cLeaseRunsOutByTheClockOfTheCallerWhenTheStoreIsAskedTo": {
    "kind": "test",
-   "hash": "5ecb5e10ded2a825",
+   "hash": "a813e09f5adc3c53",
    "asserts": 7,
    "literals": [
-    "2a49c73d8e2ec7f5"
+    "f3ff36e38f4867ec"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2cResolveDecidesAnUnknownCommitByTheHead": {
    "kind": "test",
-   "hash": "028c301d4c7043b0",
+   "hash": "89cf3bd2d348d0c4",
    "asserts": 6,
    "literals": [
-    "76ed82925919bd64"
+    "6f866d2c24e1ff72"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2dEveryOperationFailsOnAClosedPool": {
    "kind": "test",
-   "hash": "4335eecbdcc27a13",
+   "hash": "d1b9e71c365a4ff9",
    "asserts": 7,
    "literals": [
-    "c38c0a6c5ad66d25"
+    "23d7269948569178"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2dReadsFailOnRowsThatHoldWhatTheStoreDidNotWrite": {
    "kind": "test",
-   "hash": "b0929790962652ca",
+   "hash": "43431f776208f088",
    "asserts": 6,
    "literals": [
-    "d21fca1cc3550c92"
+    "cb7c4cf36d60cf19"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2dReadsFailWhenATableTheyNeedIsMissing": {
    "kind": "test",
-   "hash": "c438efa9121d4e9a",
+   "hash": "568c8e2a77c99e6c",
    "asserts": 15,
    "literals": [
-    "facdbc0e263c5788"
+    "b2af70d59de551a9"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2eALeaseAndAHeadThatAreDamagedFail": {
    "kind": "test",
-   "hash": "ef7c6a20c18ac58a",
+   "hash": "f358b119210c0d0f",
    "asserts": 11,
    "literals": [
-    "540aa997ebc58564"
+    "8d17bbae7f240930"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2eAServerThatHoldsAnotherModelRefusesTheKG": {
    "kind": "test",
-   "hash": "aaf68b055490752e",
+   "hash": "568d594270a3d915",
    "asserts": 5,
    "literals": [
-    "d8a184a6cd82de8e"
+    "e886722090242919"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2eReadPointsAndVersions": {
    "kind": "test",
-   "hash": "a1ba0914f66cc6a4",
+   "hash": "a47d5ce34e5562bd",
    "asserts": 18,
    "literals": [
-    "3b72a2f053380c9f"
+    "b24ac4674d46e44e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2eTheCatalogRefusesDamagedRowsAndAnUnknownModel": {
    "kind": "test",
-   "hash": "de69c4b40838eb80",
+   "hash": "407b7c9d12b6c00a",
    "asserts": 12,
    "literals": [
-    "1a3f67f53ade3bba"
+    "e90c375fe46ddf77"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2eTheTestStoreMakesKGsAndTheCatalogFindsThemByIdNameAndMain": {
    "kind": "test",
@@ -37377,55 +37587,55 @@
   },
   "go:backend/internal/pgstore::TestV2mAChunkWithAValueThatHasNoPlaceIsRefused": {
    "kind": "test",
-   "hash": "ad444ac3d15a78b5",
+   "hash": "4d9b6b2040707b4d",
    "asserts": 9,
    "literals": [
-    "d45986879ee8f3ff"
+    "4dd2d287217f11e2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2mAnUnknownOutcomeOfTheStartOfAWorkIsDecidedByTheHead": {
    "kind": "test",
-   "hash": "7ef25dfd8b72ff43",
+   "hash": "823fa78da3ebc839",
    "asserts": 9,
    "literals": [
-    "06c1357bd1dcfa61"
+    "00c1d8d500a726da"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2mASealThatIsNotReadyOrDoesNotFollowIsRefused": {
    "kind": "test",
-   "hash": "3c0670326a197e33",
+   "hash": "79fbac615bb09ced",
    "asserts": 12,
    "literals": [
-    "ac38741886e2219a"
+    "3c53b1d944d3fb9e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2mWritesAndFeedsFailWhenATableIsGone": {
    "kind": "test",
-   "hash": "2902865944ebaf61",
+   "hash": "c414f11ee2dad5b2",
    "asserts": 6,
    "literals": [
-    "6a74802fb3ef8dba"
+    "bac06aaa6a70ca02"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2oAnApplyWhoseCommitGotNoAnswerIsCheckedAgainstTheHeadAndCanBeRepeated": {
    "kind": "test",
@@ -37442,55 +37652,55 @@
   },
   "go:backend/internal/pgstore::TestV2rCatalogListsGetsAndDeletesAKG": {
    "kind": "test",
-   "hash": "5c6537cfc3baa1e6",
+   "hash": "d290d4e402102e86",
    "asserts": 11,
    "literals": [
-    "9bf736a37da96d8d"
+    "df06702dafd1ca4b"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2rReadsLinksIdentifiersAndVolatileValues": {
    "kind": "test",
-   "hash": "9b32005a657757a7",
+   "hash": "357d9014ac8fbaf1",
    "asserts": 28,
    "literals": [
-    "4adf5f1037cae49b"
+    "131360f5f7dbbace"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2rReadsTheNewestAndThePastStates": {
    "kind": "test",
-   "hash": "e0821482452220eb",
+   "hash": "55a9f454c815f54b",
    "asserts": 20,
    "literals": [
-    "23daab742c21b087"
+    "b560f17740b58ad7"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2rRefusesReadsThatCannotBeAnswered": {
    "kind": "test",
-   "hash": "f9d2b8374f6c450c",
+   "hash": "12439a60cbc50510",
    "asserts": 9,
    "literals": [
-    "e0775921dc7513ed"
+    "60cd0c677c0fa741"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2sOpenWithoutModelsHoldsTheStandardModelWithItsStatistics": {
    "kind": "test",
@@ -37509,7 +37719,7 @@
   },
   "go:backend/internal/pgstore::TestV2StorePassesThePreviewSuite": {
    "kind": "test",
-   "hash": "e2714db502e80873",
+   "hash": "07b6f49a612c558e",
    "asserts": 1,
    "literals": [
     "44481bf4a77cf729"
@@ -37519,12 +37729,12 @@
    "reqs": [
     "REQ-410"
    ],
-   "added": "2026-11-19",
-   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2StorePassesTheSuite": {
    "kind": "test",
-   "hash": "82681eaf1da0fa77",
+   "hash": "9c6079dd07c1c2dc",
    "asserts": 1,
    "literals": [
     "b0683ad31d32e641"
@@ -37540,176 +37750,176 @@
     "REQ-249",
     "REQ-270"
    ],
-   "added": "2026-11-19",
-   "amended_by": "0096-drop-the-old-storage-names-open-is-the-one-way-in.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wAbandonTakesTheChunksOutOneNumberAtATimeAndLeavesNoTraceAndAnInterruptedOneIsEnded": {
    "kind": "test",
-   "hash": "95288781170ede97",
+   "hash": "46b7ed712b6a7ca1",
    "asserts": 23,
    "literals": [
-    "a77241fc01e5abe5"
+    "85b4f88b86f63ffc"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wAChangeOfValuesAloneDoesNotTouchTheRowsOfTheObjectAndTheRowsAreWrittenInOrder": {
    "kind": "test",
-   "hash": "9a26b88d0014a736",
+   "hash": "e6737f078b831a78",
    "asserts": 13,
    "literals": [
-    "ff6785d2baa74cbe"
+    "01360736b608b13f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wARefThatCameBackWithAnotherTypeIsRefused": {
    "kind": "test",
-   "hash": "fc951cc4683f2ce6",
+   "hash": "55fc50aa25ae0734",
    "asserts": 6,
    "literals": [
-    "8679643afd927e08"
+    "3b5e8c0ac76b0c1e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wARetiredObjectComesBackWithTheSameNumberAndTheKeyStaysBound": {
    "kind": "test",
-   "hash": "df03ec1a7a8d1b4d",
+   "hash": "02b0bbbbcb18c5b7",
    "asserts": 18,
    "literals": [
-    "a67bd3c404829ffc"
+    "7026063ba5fa8b7f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wAWriteIsRefusedWhenTheSchemaWasMadeFromAnotherModel": {
    "kind": "test",
-   "hash": "01fd71a3d767cc85",
+   "hash": "49a3cb1431721619",
    "asserts": 5,
    "literals": [
-    "78da423c5b69becd"
+    "2ea5bda225bd7ff5"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wBulkReadsGiveWhatReadsOneAtATimeGive": {
    "kind": "test",
-   "hash": "efbad8a483e6bbbc",
+   "hash": "f993c027bef74baa",
    "asserts": 10,
    "literals": [
-    "bab6fe0833e2ab7e"
+    "275eb5e196a636e7"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wRestoreClosesTheKGUntilItEndsAndAnInterruptedOneIsResumed": {
    "kind": "test",
-   "hash": "ba98762eb782cd29",
+   "hash": "e43c2493350792d5",
    "asserts": 25,
    "literals": [
-    "49580f01be163d25"
+    "e363dc6a047ddbf2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestV2wTheSettingsOfTheTablesAreInForce": {
    "kind": "test",
-   "hash": "9c3063bb94c82fc0",
+   "hash": "af9d9487d897ef01",
    "asserts": 5,
    "literals": [
-    "a1e316cb2995871c"
+    "68a68c3a15b0bf8f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-24",
-   "amended_by": "0101-storage-shape-for-queries-value-column-name-indexes-utc-times-generator-5.md"
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVcolAnUnknownValueIsAnEntryWithAnEmptyColumn": {
    "kind": "test",
-   "hash": "9741e5b7fef27030",
+   "hash": "97022f025026ddb1",
    "asserts": 9,
    "literals": [
-    "9bea728fd30154f7"
+    "74138b89dd8cf742"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVcolEveryKindOfValueGoesThroughItsColumnAndComesBack": {
    "kind": "test",
-   "hash": "f8861b93f9c09ab5",
+   "hash": "74c76145b3a07073",
    "asserts": 9,
    "literals": [
-    "8bed9b7ae47705cd"
+    "101cfcfada0341e5"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVcolTheStagedApplyComparesTheColumnAndTheGradeAndTheBasis": {
    "kind": "test",
-   "hash": "d680d44817165854",
+   "hash": "92a4f413871bc30b",
    "asserts": 9,
    "literals": [
-    "0bd656d272dade18"
+    "e6e15d74ad070f10"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVcolTheWriterPutsTheValueInItsColumnAndTheReaderGivesItBack": {
    "kind": "test",
-   "hash": "cf4f69b7f57b1e5e",
+   "hash": "55e6b16d25d9cc26",
    "asserts": 13,
    "literals": [
-    "001e2d9dfde7c7ca"
+    "6f95fa27be031acf"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-760"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVersionsCarryTheirPartsAndRestoreDropsTheLaterOnes": {
    "kind": "test",
-   "hash": "27addde091c1e120",
+   "hash": "b40a5a5f8f295a6d",
    "asserts": 9,
    "literals": [
     "6b3352939f35bead"
@@ -37720,15 +37930,15 @@
     "REQ-135",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVgateARefusedValueIsAProblemOfTheBatchAndALongestNameIsKept": {
    "kind": "test",
-   "hash": "471a8799997b4af5",
+   "hash": "1cd75a8188c09328",
    "asserts": 6,
    "literals": [
-    "25ae0a28105dc646"
+    "a9d317a195b5fdf4"
    ],
    "precision": [],
    "skips": 0,
@@ -37736,15 +37946,15 @@
     "REQ-761",
     "REQ-762"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestVgateWhatTheGateLetsThroughComesBackFromTheColumnAsItWent": {
    "kind": "test",
-   "hash": "ceb72486f5f29b64",
+   "hash": "c3e16fec49c0a9c0",
    "asserts": 8,
    "literals": [
-    "80e9b09d1cf4c336"
+    "7b36569722851452"
    ],
    "precision": [],
    "skips": 0,
@@ -37752,12 +37962,12 @@
     "REQ-760",
     "REQ-762"
    ],
-   "added": "2026-11-24",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/pgstore::TestWritesAndOldReadersAreHeldToTheirGenerationLeaseAndHead": {
    "kind": "test",
-   "hash": "be68889759d46328",
+   "hash": "d7c03efbf2f15a66",
    "asserts": 20,
    "literals": [
     "c4b2954109314656"
@@ -37770,8 +37980,8 @@
     "REQ-248",
     "REQ-270"
    ],
-   "added": "2026-11-14",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0120-test-databases-copied-from-templates.md"
   },
   "go:backend/internal/query::TestACursorOfAnotherGenerationOrWithABadVersionIsRefused": {
    "kind": "test",

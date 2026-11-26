@@ -131,6 +131,9 @@ var pgiSerial = map[string]bool{
 	"TestRdfABucketReadsTheIndexRangeItCoversAndNotTheWholeTableAndWhatItReadsDoesNotGrowWithTheSource":      true,
 	"TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable": true,
 	"TestTplTheDatabaseATestOfTheReceivingStartsFromIsTheOneOpenCreateKGAndAttachSourceMakeTheSlowWay":       true,
+	// ADR-0121 (#113): the plan the planner chooses with the statistics the run gives it, and what the statements read in that plan
+	"TestIdnTheQuestionsOfARoundAreReadByTheirIndexWithTheStatisticsTheRunGivesThePlanner":            true,
+	"TestExpWhatTheStatementsReadInThePlanTheServerChoosesGoesWithTheRecordsAndNotWithTheRestOfTheKG": true,
 }
 
 // pgiParallel lets the test run beside the other tests of this unit, each on its own database, unless it is one of pgiSerial.
