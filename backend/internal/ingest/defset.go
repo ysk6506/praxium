@@ -212,7 +212,26 @@ func datasetsRead(m Mapping) []string {
 // pairSource finds the source a mapping is compiled with, or records why there is none.
 func pairSource(c *collector, m Mapping, sources []Source, owners map[string][]string) (Source, bool) {
 	reads := datasetsRead(m)
-	var known, defining []string
+	known, defining := definingSources(reads, sources, owners)
+	byID := map[string]Source{}
+	for _, s := range sources {
+		byID[s.ID] = s
+	}
+	// A mapping beside the source of its id (an old mapping takes the id of its source): its compile says what of the
+	// source it does not find, which is more than this could.
+	if same, ok := byID[m.ID]; ok && m.ID != "" && (len(defining) == 0 || slices.Contains(defining, m.ID)) {
+		return same, true
+	}
+	if len(defining) == 1 {
+		return byID[defining[0]], true
+	}
+	unpaired(c, m, reads, known, defining, owners)
+	return Source{}, false
+}
+
+// definingSources are the datasets a mapping reads that some source defines, and the sources (in their order) that
+// define every one of them.
+func definingSources(reads []string, sources []Source, owners map[string][]string) (known, defining []string) {
 	count := map[string]int{}
 	for _, ds := range reads {
 		if len(owners[ds]) == 0 {
@@ -228,18 +247,12 @@ func pairSource(c *collector, m Mapping, sources []Source, owners map[string][]s
 			defining = append(defining, s.ID)
 		}
 	}
-	byID := map[string]Source{}
-	for _, s := range sources {
-		byID[s.ID] = s
-	}
-	// A mapping beside the source of its id (an old mapping takes the id of its source): its compile says what of the
-	// source it does not find, which is more than this could.
-	if same, ok := byID[m.ID]; ok && m.ID != "" && (len(defining) == 0 || slices.Contains(defining, m.ID)) {
-		return same, true
-	}
+	return known, defining
+}
+
+// unpaired records why a mapping has no source to be compiled with.
+func unpaired(c *collector, m Mapping, reads, known, defining []string, owners map[string][]string) {
 	switch {
-	case len(defining) == 1:
-		return byID[defining[0]], true
 	case len(known) == 0:
 		c.add(ecSetNoSource, "", Params{"mapping": m.ID, "datasets": nonNil(reads)},
 			"no source defines the datasets mapping %s reads (%s); import the source with it", m.ID, strings.Join(reads, ", "))
@@ -259,7 +272,6 @@ func pairSource(c *collector, m Mapping, sources []Source, owners map[string][]s
 		c.add(ecSetAmbiguous, "", Params{"mapping": m.ID, "sources": defining},
 			"the sources %s all define the datasets mapping %s reads; give the mapping the id of its source", strings.Join(defining, ", "), m.ID)
 	}
-	return Source{}, false
 }
 
 // checkTaken records the refinements, feeds and link definitions of a mapping whose ids an earlier mapping of the set

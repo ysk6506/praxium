@@ -168,14 +168,15 @@ func (e inputProblem) Error() string { return e.msg }
 
 // runIngest is `praxium ingest ...`: run, inspect and init.
 func runIngest(args []string, stdout, stderr io.Writer, w wiring) int {
-	if len(args) >= 1 && args[0] == "inspect" {
-		return runInspect(args[1:], stdout, stderr, w)
-	}
-	if len(args) >= 1 && args[0] == "init" {
-		return runInit(args[1:], stdout, stderr)
-	}
-	if len(args) >= 1 && args[0] == "import" {
-		return runIngestImport(args[1:], stdout, stderr, w)
+	if len(args) >= 1 {
+		switch args[0] {
+		case "inspect":
+			return runInspect(args[1:], stdout, stderr, w)
+		case "init":
+			return runInit(args[1:], stdout, stderr)
+		case "import":
+			return runIngestImport(args[1:], stdout, stderr, w)
+		}
 	}
 	if len(args) < 1 || args[0] != "run" {
 		fmt.Fprint(stderr, "praxium: ingest needs init, inspect, run or import\n"+commandHelps()["ingest"].usage+"\nFor details: praxium ingest --help\n")
