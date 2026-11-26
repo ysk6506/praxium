@@ -25413,6 +25413,171 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestRclALinkWithNoAttributesIsSaidSoAnEmptyCellGivesNoValueAndAWrongOneIsSaid": {
+   "kind": "test",
+   "hash": "79a0e4fd1151e11e",
+   "asserts": 5,
+   "literals": [
+    "76202069eb46aeb6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-867"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclAnEndThatFindsNoObjectOrMoreThanOneIsAProblemOfItsRecordAndMakesNoLink": {
+   "kind": "test",
+   "hash": "ab99ff82d82d6b47",
+   "asserts": 3,
+   "literals": [
+    "7ff555cf500024bf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-866"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclAnEndThatFindsOneObjectMakesTheLinkWithTheValuesOfTheOldFlow": {
+   "kind": "test",
+   "hash": "5bb5f89b4292c0a6",
+   "asserts": 11,
+   "literals": [
+    "c6638c8a32c97d5d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-867"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclAnEndWhoseCellsAreNotTheOnesTheDatasetDeclaresOrWhoseKeyIsEmptyOrWhoseDefinitionIsNotKnownMakesNothing": {
+   "kind": "test",
+   "hash": "c464f0a51f918d2f",
+   "asserts": 3,
+   "literals": [
+    "5d767d8d8a572ebe"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-872"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclAnObjectThatIsNotAnIdOfAnObjectIsAnErrorAndNotALink": {
+   "kind": "test",
+   "hash": "19e3f0f94353cdfc",
+   "asserts": 3,
+   "literals": [
+    "d31d65ef54faa442"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-867"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclARecordOfALaterPageTakesTheLinkOfTheHolderAndOneBeforeItLosesAtOnce": {
+   "kind": "test",
+   "hash": "b7e206031e472313",
+   "asserts": 3,
+   "literals": [
+    "3266a4a7a4797f9f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-869"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclTheChoiceIsTheSameWhateverPagesTheCandidatesComeIn": {
+   "kind": "test",
+   "hash": "9bd1b792d8dfd8a9",
+   "asserts": 2,
+   "literals": [
+    "18e9dd4255d6bc93"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-869"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclTheOrderOfTheRecordsOfALinkGoesBySourceDefinitionHeldDatasetAndKey": {
+   "kind": "test",
+   "hash": "2f05a12c6df64d75",
+   "asserts": 3,
+   "literals": [
+    "ac2af6fae39ba45f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-869"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclTheRecordThatComesLastMakesTheLinkAndTheOthersLoseItWhateverTheOrderTheyComeIn": {
+   "kind": "test",
+   "hash": "ba0be1d9fbcf4a69",
+   "asserts": 4,
+   "literals": [
+    "e797539269bf074a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-869"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclTheRunDrivesTheStepFromWhereItIsAndRefusesARunThatIsNotComputingOrAnotherDefinitionOrAStoppedContext": {
+   "kind": "test",
+   "hash": "9837ba06a298cd64",
+   "asserts": 7,
+   "literals": [
+    "fa8005f8d24ab015"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-874"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestRclTheStartOfTheStepRefusesTwoDefinitionsOfOneAndANegativePageAndTheDefinitionsAreTheSameTextInAnyOrder": {
+   "kind": "test",
+   "hash": "e50ce0635260d6c2",
+   "asserts": 5,
+   "literals": [
+    "3240ef6d9dcbea71"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-874"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestRcpACellAFeedThatMakesNoObjectCannotReadIsAProblemOfARecordReceivedNowAndOfNoOtherRecord": {
    "kind": "test",
    "hash": "f17c7355af64a072",
@@ -32623,6 +32788,177 @@
    "added": "2026-11-20",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestRclALinkTheRegistryHasKeepsItsNumberAndANewOneGetsANumberNoLinkHas": {
+   "kind": "test",
+   "hash": "38cb03e136b27b92",
+   "asserts": 18,
+   "literals": [
+    "0d02f3dbc2c62819"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-868"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclALinkToAnObjectThatIsALeftAsItIsOrACandidateForRetirementIsMade": {
+   "kind": "test",
+   "hash": "b3d8bcb317b50c79",
+   "asserts": 23,
+   "literals": [
+    "87ec05400132b505"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-871"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclALinkToAnObjectThatWasRolledBackIsNoLinkAndALinkFromOneIsNoLinkAndNoProblem": {
+   "kind": "test",
+   "hash": "11cc304ca26247a2",
+   "asserts": 14,
+   "literals": [
+    "553ab32f9e9bb6cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-871",
+    "REQ-879"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToReadAndTheCallsInTheWrongOrderAreRefused": {
+   "kind": "test",
+   "hash": "54b1a536606dd86a",
+   "asserts": 25,
+   "literals": [
+    "750adfb3b56286f2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-874"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclARecordThatTheRunOnlyReadsAgainBecauseItsEndMovedIsResolvedByTheEndsItsReferencesSay": {
+   "kind": "test",
+   "hash": "721eb22e00515134",
+   "asserts": 14,
+   "literals": [
+    "d15fbf6d317cb484"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-878"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclARunTakenOverInThePhasesStagesWhatOneThatDidNotStopStagesAndAnEndInTheRunAlreadyIsKept": {
+   "kind": "test",
+   "hash": "3057bb052e3ee1e1",
+   "asserts": 17,
+   "literals": [
+    "7ecf5fa56c601f51"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-874",
+    "REQ-878"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastACellThatGaveNoValueIsSaidAndAHeldRecordOrABlankKeyIsNoProblem": {
+   "kind": "test",
+   "hash": "6f904c7e5ff2ba67",
+   "asserts": 14,
+   "literals": [
+    "b0a3438f308d348b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-869",
+    "REQ-870",
+    "REQ-872"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclThePageSizeAndTheOrderOfTheRowsDoNotChangeWhatIsStagedAndTheReportCountsTheRowsThatWereWritten": {
+   "kind": "test",
+   "hash": "905e648535322480",
+   "asserts": 8,
+   "literals": [
+    "725530add9f2dd5c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-873",
+    "REQ-875"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclTheSameLinkMadeByTheRecordsOfTwoSourcesIsMadeByTheLaterSourceAndTheOtherIsUnresolvedAndTold": {
+   "kind": "test",
+   "hash": "531649e63c6788a8",
+   "asserts": 17,
+   "literals": [
+    "a0cc934de1b87f19"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-869",
+    "REQ-870"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclTheStagedLinksAreTheOnesTheOldPipelineMakesFromTheSameCaptures": {
+   "kind": "test",
+   "hash": "0ffbe2e3518b109d",
+   "asserts": 21,
+   "literals": [
+    "cf23468b811c8751"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-864"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestRclWhatManyEndsOfOneKeyShareIsReadOnceSoTheRowsReadGoWithTheNumberOfEnds": {
+   "kind": "test",
+   "hash": "855b23bfa389c33d",
+   "asserts": 7,
+   "literals": [
+    "469d0eb4fd439e8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-865"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestRcpACellAFeedThatMakesNoObjectCannotReadIsAProblemOfTheRecordAndTheValueIsLeftOut": {
    "kind": "test",
    "hash": "1e7f33f23a1d332d",
@@ -33352,16 +33688,16 @@
   },
   "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
    "kind": "test",
-   "hash": "65d0768d01c32a06",
+   "hash": "2f5be5c93acf0927",
    "asserts": 2,
    "literals": [
-    "fcb1282398018ac8"
+    "4d5d773e1a70f7cf"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-26",
-   "amended_by": "0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md"
+   "amended_by": "0122-recompute-links-step-of-the-new-ingestion-flow.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -33942,6 +34278,66 @@
    "added": "2026-11-26",
    "amended_by": null
   },
+  "go:backend/internal/pgschema::TestRclDiffFromGeneratorElevenToTwelveAddsTheThreeTablesAndTheTwoIndexesAndNothingElse": {
+   "kind": "test",
+   "hash": "55b6d2f89f52e856",
+   "asserts": 6,
+   "literals": [
+    "89eb828e1b36f5ff"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-877"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestRclDiffFromGeneratorTenToTwelveHasTheStepsOfBothVersions": {
+   "kind": "test",
+   "hash": "345d10f993b363d8",
+   "asserts": 3,
+   "literals": [
+    "aadae21c0b58cd0e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-877"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestRclTheKindsOfProblemTheFourthStepOwnsAreTheOnesTheLinksMakeAndTheClosedListHasThem": {
+   "kind": "test",
+   "hash": "a10a8d8fb3c35b07",
+   "asserts": 3,
+   "literals": [
+    "f2c9239a03322a54"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-876"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestRclTheTablesOfTheComputationOfTheLinksAreCalcTablesAndAreEmptiedWithTheOthers": {
+   "kind": "test",
+   "hash": "72b6f72d83f823e5",
+   "asserts": 1,
+   "literals": [
+    "5946e7337c586138"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-877"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgschema::TestRcpDiffFromGeneratorNineToTenAddsTheTableOfTheObjectsThatWereLeftAndNothingElse": {
    "kind": "test",
    "hash": "3421c4e0ceb279da",
@@ -34004,7 +34400,7 @@
   },
   "go:backend/internal/pgschema::TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList": {
    "kind": "test",
-   "hash": "89ccd49c1292a0ad",
+   "hash": "37ee9aa189039062",
    "asserts": 3,
    "literals": [
     "74ae00d5835d411a"
@@ -34015,7 +34411,7 @@
     "REQ-941"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0122-recompute-links-step-of-the-new-ingestion-flow.md"
   },
   "go:backend/internal/pgschema::TestRcpTheTableOfTheObjectsThatWereLeftIsOneOfTheTablesOfTheComputationAndOfANewPlan": {
    "kind": "test",
