@@ -32968,6 +32968,36 @@
    "added": "2026-11-26",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestIsoAStepOfTheIdentifiersThatNeedsATableThatIsDamagedFailsWithAnError": {
+   "kind": "test",
+   "hash": "f468cc39a870655c",
+   "asserts": 9,
+   "literals": [
+    "e7250d0b2fd12a2e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAStepOfTheLinksThatNeedsATableThatIsDamagedFailsWithAnError": {
+   "kind": "test",
+   "hash": "ead5cce8a5b3e510",
+   "asserts": 2,
+   "literals": [
+    "1721b2f973accbe1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestIsoTheIdentifiersTakenOutHangNeitherOnThePagesNorOnTheNumbersOfTheObjects": {
    "kind": "test",
    "hash": "092cb38bf1257f9c",
