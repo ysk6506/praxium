@@ -26,6 +26,8 @@ func rcpReplacer(r *rcpRun) *strings.Replacer {
 		"{prob}", r.t(pgschema.TableCalcProblem), "{stobj}", r.t(pgschema.TableStageObject), "{stvol}", r.t(pgschema.TableStageVolat),
 		"{stid}", r.t(pgschema.TableStageIdent), "{left}", r.t(pgschema.TableCalcLeft), "{newkey}", r.t(pgschema.TableCalcNewKey), "{bind}", r.t(pgschema.TableCalcBind),
 		"{UNRES}", strconv.Itoa(int(pgschema.RefUnresolved)), "{RETIRE}", whyRetire, "{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)), "{IDENT}", roleIdent, "{CLAIM}", roleClaim, "{FOUND}", stateFound,
+		// the number a problem of the feed of an identity reference keeps (ADR-0128)
+		"{DEFF}", pgschema.ProblemDefFeedSQL("f.def_no"),
 	)
 }
 
@@ -145,7 +147,7 @@ func (r *rcpRun) putProblems(ctx context.Context, tx *sql.Tx, problems []ingest.
 	var srcs, dss, keys, feeds, fields, kinds, reasons []string
 	for _, p := range problems {
 		srcs, dss, keys = append(srcs, strconv.FormatInt(p.SrcNo, 10)), append(dss, strconv.FormatInt(p.DatasetNo, 10)), append(keys, p.Key)
-		feeds, fields, kinds, reasons = append(feeds, strconv.Itoa(p.Feed)), append(fields, p.Field), append(kinds, p.Kind), append(reasons, p.Reason)
+		feeds, fields, kinds, reasons = append(feeds, strconv.Itoa(pgschema.ProblemDefOfFeed(p.Feed))), append(fields, p.Field), append(kinds, p.Kind), append(reasons, p.Reason)
 	}
 	n, err := r.exec(ctx, tx, "write the problems of the records", rcpProblemsSQL, textArray(srcs), textArray(dss), textArray(keys), textArray(feeds), textArray(fields), textArray(kinds), textArray(reasons))
 	if err != nil {

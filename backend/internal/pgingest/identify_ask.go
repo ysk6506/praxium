@@ -112,7 +112,7 @@ func (r *identRun) settleAnswers(ctx context.Context, tx *sql.Tx, a answerSet) e
 		{"bind the new keys", r.newKeysSQL(pl), []*int{&c.NewKeys, &c.Dropped}, true},
 		{"leave the records of the objects with no name", "WITH " + pl + ", p AS (SELECT DISTINCT s.rid, s.feed_no FROM ps s" +
 			absent("{ask}", "ha", "x.round_no = {R} AND x.label = s.label AND x.answer AND x.missing") + " WHERE ha.hit IS NOT NULL), " +
-			"r AS (" + refUnresolved("p") + " RETURNING 1) INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', '" + pgschema.ProblemMissingName +
+			"r AS (" + refUnresolved("p") + " RETURNING 1) INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, " + pgschema.ProblemDefFeedSQL("feed_no") + ", '', '" + pgschema.ProblemMissingName +
 			"', 'the object this record would make has no name: the attribute name has no value and the key has no part but its context' FROM p", []*int{&c.Unresolved}, false},
 	}
 	args := [][]any{{labels, refs, missing}, {labels, refs, missing}, {labels}, {labels}}

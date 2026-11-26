@@ -251,6 +251,8 @@ func (r *isoRun) q(query string) string {
 		"{CARD}", isoNum(pgschema.IsolatedCardinality), "{OUT}", isoNum(ingest.SeatOut), "{IN}", isoNum(ingest.SeatIn),
 		// the kinds of problem are the list the step owns, by its place in it (an identifier, an end, the cardinality)
 		"{KCONFLICT}", isoKinds[0], "{KMISSING}", isoKinds[1], "{KCARD}", isoKinds[2],
+		// the number a problem keeps: of the feed of a claim, of the link definition of a link (ADR-0128)
+		"{DEFSUB}", pgschema.ProblemDefFeedSQL("sub"), "{DEFLINK}", pgschema.ProblemDefLinkSQL("w.def_no"),
 	).Replace(query)
 }
 
