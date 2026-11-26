@@ -208,28 +208,34 @@ func RunIsolate(ctx context.Context, d Isolator, lease RunLease, start IsolateSt
 		}
 	}
 	for {
-		if err := ctx.Err(); err != nil {
-			return IsolateCounts{}, err
-		}
-		place, err := d.IsolatePlace(ctx, lease)
+		done, err := isolateOnePage(ctx, d, lease, maker)
 		if err != nil {
 			return IsolateCounts{}, err
 		}
-		if place.Done() {
+		if done {
 			return d.IsolateReport(ctx, lease)
 		}
-		page, err := d.IsolatePage(ctx, lease)
-		if err != nil {
-			return IsolateCounts{}, err
-		}
-		made, err := maker.MakeIsolated(page)
-		if err != nil {
-			return IsolateCounts{}, err
-		}
-		if err := d.PutIsolated(ctx, lease, made); err != nil {
-			return IsolateCounts{}, err
-		}
 	}
+}
+
+// isolateOnePage does the page the place says, and says when there is none left.
+func isolateOnePage(ctx context.Context, d Isolator, lease RunLease, maker IsolateMaker) (bool, error) {
+	if err := ctx.Err(); err != nil {
+		return false, err
+	}
+	place, err := d.IsolatePlace(ctx, lease)
+	if err != nil || place.Done() {
+		return place.Done(), err
+	}
+	page, err := d.IsolatePage(ctx, lease)
+	if err != nil {
+		return false, err
+	}
+	made, err := maker.MakeIsolated(page)
+	if err != nil {
+		return false, err
+	}
+	return false, d.PutIsolated(ctx, lease, made)
 }
 
 // ElectIdent decides who keeps an identifier that more than one object has (ingestion-at-scale-identity.md 2.4): the object that has it in

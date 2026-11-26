@@ -27,7 +27,10 @@ func isoPages(f *isoFix, t *testing.T, l ingest.RunLease, n, lines int) int {
 		}
 	}
 	for i := 0; i < n; i++ {
-		if place, err = st.IsolatePlace(ctx, l); err != nil || place.Done() {
+		if place, err = st.IsolatePlace(ctx, l); err != nil {
+			t.Fatal(err)
+		}
+		if place.Done() {
 			break
 		}
 		page, err := st.IsolatePage(ctx, l)
@@ -128,7 +131,10 @@ func TestIsoTheStepBeginsAfterTheFourthStepOncePutsAPageOnceAndRefusesAServerTha
 	}
 	// the pages up to the first of the cardinality that is not the last of its pass, each put twice
 	for i := 0; i < 40; i++ {
-		if place, err = st.IsolatePlace(ctx, l); err != nil || (place.Phase == ingest.IsolatePhaseSeats && place.Cursor.Ref != "") {
+		if place, err = st.IsolatePlace(ctx, l); err != nil {
+			t.Fatal(err)
+		}
+		if place.Phase == ingest.IsolatePhaseSeats && place.Cursor.Ref != "" {
 			break
 		}
 		page, err := st.IsolatePage(ctx, l)

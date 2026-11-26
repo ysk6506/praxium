@@ -164,14 +164,8 @@ func (m *IsolationMaker) seats(page IsolatePage) ([]Seat, []SeatLoss) {
 		b, places := m.placesOf(l)
 		free := true
 		for _, p := range places {
-			at := isoPlace{p.Side, p.EndNo, p.BindID}
-			if taken[at] {
+			if isoTaken(isoPlace{p.Side, p.EndNo, p.BindID}, l, taken, fixed) {
 				free = false
-			}
-			for _, f := range fixed[at] {
-				if f.LinkNo != l.LinkNo && (!f.Kept || (!l.Kept && f.Ref > l.Ref)) {
-					free = false
-				}
 			}
 		}
 		if !free {
@@ -184,6 +178,20 @@ func (m *IsolationMaker) seats(page IsolatePage) ([]Seat, []SeatLoss) {
 		}
 	}
 	return seats, lost
+}
+
+// isoTaken says whether the place at is taken for the link l: by a link that took it before l, by a link the KG keeps that the run does not
+// touch, or (for a link the KG does not have) by a link the KG has that the run staged again and that comes after l.
+func isoTaken(at isoPlace, l SeatLink, taken map[isoPlace]bool, fixed map[isoPlace][]SeatLink) bool {
+	if taken[at] {
+		return true
+	}
+	for _, f := range fixed[at] {
+		if f.LinkNo != l.LinkNo && (!f.Kept || (!l.Kept && f.Ref > l.Ref)) {
+			return true
+		}
+	}
+	return false
 }
 
 // cardinalityReason is the reason of the old flow (cardinalityReason of linkbuild.go): the link by the names of its type and of its objects.
