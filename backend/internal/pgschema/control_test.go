@@ -63,7 +63,7 @@ func TestControlReservesThePartitionPrefix(t *testing.T) {
 	if !pgschema.IsReservedName(pgschema.ReservedPrefixPartition + "object_hist_1") {
 		t.Fatal("the prefix of the partitions is not reserved")
 	}
-	if pgschema.GeneratorVersion != 8 {
+	if pgschema.GeneratorVersion != 9 {
 		t.Fatalf("the generator version is %d", pgschema.GeneratorVersion)
 	}
 }

@@ -9,11 +9,11 @@ import (
 )
 
 // [REQ-951] [REQ-957]
-func TestExpDiffFromGeneratorSevenToEightAddsTheTableOfTheMarksAndTheTableOfTheKeysTheExpansionReadAndAltersNoTable(t *testing.T) {
+func TestExpDiffFromGeneratorEightToNineAddsTheTableOfTheMarksAndTheTableOfTheKeysTheExpansionReadAndAltersNoTable(t *testing.T) {
 	next := igtPlan(t).Manifest
-	next.GeneratorVersion = 8
+	next.GeneratorVersion = 9
 	old := next
-	old.GeneratorVersion = 7
+	old.GeneratorVersion = 8
 	delta, err := pgschema.Diff(old, next)
 	if err != nil {
 		t.Fatal(err)
@@ -37,7 +37,7 @@ func TestExpDiffFromGeneratorSevenToEightAddsTheTableOfTheMarksAndTheTableOfTheK
 	if strings.Join(got, ",") != strings.Join(want, ",") {
 		t.Errorf("the steps are %v, want %v", got, want)
 	}
-	if delta.Result.GeneratorVersion != 8 {
+	if delta.Result.GeneratorVersion != 9 {
 		t.Errorf("the generator to keep is %d", delta.Result.GeneratorVersion)
 	}
 }
