@@ -26459,6 +26459,52 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestStlTheFeedsOfAPlanAreGivenToTheCleaningAndTheConfirmationSealsTheKGOnce": {
+   "kind": "test",
+   "hash": "b69e26e2b1f0ae3c",
+   "asserts": 13,
+   "literals": [
+    "b8a872ac6aed8806"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-985",
+    "REQ-988"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStlTheRunnerOfTheCleaningBeginsItOnceAndDoesTheBucketsInOrderUntilTheRunIsOver": {
+   "kind": "test",
+   "hash": "cbbfc13ed11114ab",
+   "asserts": 4,
+   "literals": [
+    "1c3326f6f1f2c1d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestStlTheRunnerOfTheCleaningRefusesWhatItCannotCleanAndStopsAtTheFirstError": {
+   "kind": "test",
+   "hash": "c0625ed7f7bf5277",
+   "asserts": 2,
+   "literals": [
+    "cbafbff906b1df8d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestStreamPagesCutsPagesByBytesAndKeepsAHugeRowOnAPageOfItsOwn": {
    "kind": "test",
    "hash": "7b6119e67d8a0dc9",
@@ -33584,10 +33630,10 @@
   },
   "go:backend/internal/pgingest::TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastACellThatGaveNoValueIsSaidAndAHeldRecordOrABlankKeyIsNoProblem": {
    "kind": "test",
-   "hash": "90743d86b348d0b9",
+   "hash": "be0a3b61f2a8f383",
    "asserts": 14,
    "literals": [
-    "ddac512d8bcab81c"
+    "8f068298ae2fa52a"
    ],
    "precision": [],
    "skips": 0,
@@ -33597,7 +33643,7 @@
     "REQ-872"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0128-cleaning-step-of-the-new-ingestion-flow-and-the-apply-side.md"
   },
   "go:backend/internal/pgingest::TestRclThePageSizeAndTheOrderOfTheRowsDoNotChangeWhatIsStagedAndTheReportCountsTheRowsThatWereWritten": {
    "kind": "test",
@@ -34336,6 +34382,249 @@
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
   },
+  "go:backend/internal/pgingest::TestStlABucketOfTheCleaningReadsTheLinesOfItsRecordsAndNotTheRestOfTheTablesSoWhatItReadsDoesNotGrowWithTheSource": {
+   "kind": "test",
+   "hash": "cf5a5ea801714390",
+   "asserts": 12,
+   "literals": [
+    "f9efde3f683000cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlACleaningCutOffIsTakenOverFromItsBucketAndEndsAsOneThatWasNotAndABucketIsDoneOnce": {
+   "kind": "test",
+   "hash": "eba9fcb136046cc6",
+   "asserts": 22,
+   "literals": [
+    "f3bc653a9ee36b41"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlADatasetLeftOutWholeKeepsItsRawRecordsAndWaitsAndARunThatChangedNothingIsStillCleaned": {
+   "kind": "test",
+   "hash": "a5732d0dd52c4ae9",
+   "asserts": 12,
+   "literals": [
+    "c6b48eab09425cea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlAfterTheCleaningTheRecordsNotSolvedAreTheStartOfTheNextRunAndNoReferencePointsAtWhatTheKGHasNot": {
+   "kind": "test",
+   "hash": "b40bdceb1c0a7497",
+   "asserts": 13,
+   "literals": [
+    "d5da5b9d57aa905f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-984",
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlARecordOfTheRunThatTheCleaningDidNotWriteIsRefused": {
+   "kind": "test",
+   "hash": "11835c2909cd840b",
+   "asserts": 10,
+   "literals": [
+    "026159e2d88ea84d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986",
+    "REQ-988"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlARecordThatOnlyMakesALinkIsUsedAndTheNextRunOfItsSourceDoesNotReadItAgain": {
+   "kind": "test",
+   "hash": "535ac784415cf5ad",
+   "asserts": 15,
+   "literals": [
+    "e20b08eb7b26d033"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-985"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlARecordUnderTwoObjectsOfWhichOneIsComputedKeepsTheLinesOfTheOtherAndAFeedAndALinkDefinitionOfOneNumberAreApart": {
+   "kind": "test",
+   "hash": "787e1f47d3a17eb6",
+   "asserts": 18,
+   "literals": [
+    "1353d32b2ae96d73"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-984"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlAStatementThatFailsLeavesThePlaceWhereItWasAndTheCleaningGoesOnToWhatOneThatDidNotFailLeaves": {
+   "kind": "test",
+   "hash": "d3c2ef598e942a59",
+   "asserts": 17,
+   "literals": [
+    "6603a43ac5787fd4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlEachKindOfRecordOfTheRunHasTheLinesTheTableOfTheCleaningSaysAndItsFate": {
+   "kind": "test",
+   "hash": "0cedf5dc8d93d37d",
+   "asserts": 31,
+   "literals": [
+    "799710b50b891f71"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-984",
+    "REQ-985"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlTheCleaningBeginsOnceForARunThatIsSettlingWhoseComputingIsDoneAndWhoseTablesAreItsOwn": {
+   "kind": "test",
+   "hash": "fc453ca9b98bbfb7",
+   "asserts": 21,
+   "literals": [
+    "21e47965f2b2a3b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlTheCleaningLeavesTheRawRecordsTheWaitsAndTheRepeatedKeysTheTestCleaningOfTheComparisonLeft": {
+   "kind": "test",
+   "hash": "c628f6c7a8b40950",
+   "asserts": 19,
+   "literals": [
+    "a54c9545d23681ee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-985"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlTheProblemsOfALinkDefinitionKeepANumberBelowZeroAndTheOnesOfAFeedOneOfZeroAndUp": {
+   "kind": "test",
+   "hash": "e0e2dece2f33f2be",
+   "asserts": 10,
+   "literals": [
+    "cc638920691639dd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-984"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlTheSizeOfABucketAndTheOrderOfTheRowsDoNotChangeWhatTheCleaningLeaves": {
+   "kind": "test",
+   "hash": "ecac93b0b8a8c2ca",
+   "asserts": 7,
+   "literals": [
+    "b2235bc7924bf6cb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlTheStagedRowsOfAnotherSourceAreNotEmptiedAndItsRunWaitsAtTheGateWhileOneIsCleaned": {
+   "kind": "test",
+   "hash": "a30dd5d40c8a8b36",
+   "asserts": 12,
+   "literals": [
+    "95326557a3d50a96"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-986"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlTheStateOfARunSaysItsStageItsJobsAndWhichStepsAreDoneAsTheRunGoes": {
+   "kind": "test",
+   "hash": "5829ba8873443dc4",
+   "asserts": 27,
+   "literals": [
+    "74585f791ba3692b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-988"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestStlWhatLivesAfterARunCleanedToTheEndIsWhatTheOldPipelineLeavesAndIsFrozen": {
+   "kind": "test",
+   "hash": "0a2d847724e8ceb3",
+   "asserts": 14,
+   "literals": [
+    "8a026668f32f9477"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-985"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestTplTheDatabaseATestOfTheReceivingStartsFromIsTheOneOpenCreateKGAndAttachSourceMakeTheSlowWay": {
    "kind": "test",
    "hash": "22d06e67e0555950",
@@ -34901,6 +35190,36 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestPdfAFeedAndALinkDefinitionOfOneNumberKeepTwoNumbersThatReadBackAsWhatTheyWere": {
+   "kind": "test",
+   "hash": "4b40b1dc5d5bd171",
+   "asserts": 4,
+   "literals": [
+    "9eb27eef99e18270"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-984"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestPdfTheStatementsOfTheMarkNameTheTablesOfTheSchemaTheyAreGiven": {
+   "kind": "test",
+   "hash": "c3097d9509dd9a34",
+   "asserts": 2,
+   "literals": [
+    "c616fc410ee921f8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-987"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestQscAHigherGradeSeesEverythingALowerGradeSeesAndTheGradesAreNotTheSameSet": {
@@ -38314,6 +38633,21 @@
    "reqs": [],
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
+  },
+  "go:backend/internal/pgstore::TestStmTheApplyMarksTheObjectsOfAChunkARetirableReferencePointsAtAndTakesTheMarkAwayWhenItRetiresThem": {
+   "kind": "test",
+   "hash": "e78ef2ad6e8b4527",
+   "asserts": 28,
+   "literals": [
+    "600d6c34be702fd1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-987"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgstore::TestStoredValuesRoundTripAndDamageIsRefused": {
    "kind": "test",
