@@ -127,7 +127,7 @@ follows:
 | I-3 | 테이블(스키마 관리기의 계획). 구현했어요([ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md)) |
 | I-6 (I-4와 I-5와 나란히) | `StagedApplier`와 변동 값의 단계와 정답을 바로 싣는 적재기(합성 세계의 정답을 `stage_object`와 `stage_link`로). **저장의 3천만 측정이 여기서 먼저 서요** |
 | I-4 | 수신, 원본의 차이, 식별(문맥 키) |
-| I-5 | 영향 집합, 다시 계산, 차이, 격리. 영향 집합의 확장과 퇴역 후보는 구현했어요([ADR-0114](adr/0114-expansion-of-the-affected-set-and-retire-candidates.md)) |
+| I-5 | 영향 집합, 다시 계산, 차이, 격리. 영향 집합의 확장과 퇴역 후보는 구현했어요([ADR-0114](adr/0114-expansion-of-the-affected-set-and-retire-candidates.md)), 객체 다시 계산도 구현했어요([ADR-0115](adr/0115-recompute-objects-step-of-the-new-ingestion-flow.md)) |
 | I-7 | 실행의 상태 기계, 정리, 실행 기록, "정리를 버림", 잠정 규칙, `ingestpgcheck`의 테스트 |
 | I-8 | 수집 서비스와 REST, 안전장치와 확인 뒤 적용 |
 | I-9 | 여러 소스의 순위 규칙, 수집 경로의 3천만 측정(문맥 키가 있어야 뜻이 있어요. 첫 키가 문맥 키인 타입이 88개예요) |
