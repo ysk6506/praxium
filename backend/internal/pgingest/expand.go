@@ -114,9 +114,9 @@ func (e *expRun) q(query string) string {
 	feeds, sources := e.feeds()
 	return strings.NewReplacer(
 		"{rec}", e.t(pgschema.TableCalcRecord), "{objrun}", e.t(pgschema.TableCalcObject), "{bind}", e.t(pgschema.TableCalcBind),
-		"{end}", e.t(pgschema.TableCalcEnd), "{claim}", e.t(pgschema.TableCalcClaim), "{rref}", e.t(pgschema.TableRecordRef),
+		"{end}", e.t(pgschema.TableCalcEnd), "{claim}", e.t(pgschema.TableCalcClaim), "{rref}", e.t(pgschema.TableRecordRef), "{cref}", e.t(pgschema.TableCalcRef),
 		"{raw}", e.t(pgschema.TableRawRecord), "{link}", e.t(pgschema.TableLink), "{ds}", pgschema.TableSourceDataset, "{cards}", cards,
-		"{retire}", e.t(pgschema.TableObjectRetire), "{xkey}", e.t(pgschema.TableCalcXKey), "{feeds}", feeds, "{sources}", sources,
+		"{retire}", e.t(pgschema.TableObjectRetire), "{obj}", e.t(pgschema.TableObject), "{xkey}", e.t(pgschema.TableCalcXKey), "{feeds}", feeds, "{sources}", sources,
 		"{canretire}", strconv.FormatBool(e.unsettled == 0), "{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)),
 	).Replace(query)
 }
