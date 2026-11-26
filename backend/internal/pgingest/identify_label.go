@@ -139,7 +139,9 @@ func (r *identRun) keyLabels(ctx context.Context, tx *sql.Tx) error {
 
 // pairsSQL is the pairs of the groups of a range of labels of the last turn of the round (pl), and the slot of each (ps). When the
 // round leaves some groups (leftSQL), the first statement of a unit leaves them, and they are not in pl: a group that is left has a
-// reference of each of its pairs, so one probe of the reference of the pair that is its label tells it.
+// reference of each of its pairs, so one probe of the reference of the pair that is its label tells it. (When the search was stopped,
+// the pair whose number is the label of a piece may have a smaller label: it is in a piece that is not whole either, whose label is
+// smaller, so it was left by this unit or an earlier one.)
 func pairsSQL(leaving bool) string {
 	base := "SELECT l.pid, l.label FROM {label} l"
 	cond := " WHERE l.round_no = {R} AND l.iter = {F} AND l.label > $1 AND l.label <= $2"

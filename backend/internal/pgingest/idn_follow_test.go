@@ -61,6 +61,12 @@ func TestIdnARecordThatSharesAKeyOnlyWithARecordThatIsLeftWithAChainIsLeftWithTh
 			t.Errorf("%+v: bound in the run that left its group", b)
 		}
 	}
+	// the same run with the rows in the other order (other numbers of the records, other units) leaves the same
+	other := idnfFirstRun(t)
+	_, countsR := idnPipelineWith(other, t, idnPlacesTexts(idnReversed(second)...), rdfT0.Add(time.Hour), 2, 0, 1, 0, 1)
+	if got, want := idnState(other, t), idnState(s, t); got != want || countsR != counts2 {
+		t.Errorf("the rows in the other order make\n%s %+v\nand in this order\n%s %+v", got, countsR, want, counts2)
+	}
 	idnApply(s, t)
 	s.rdfSettle(t, l2)
 	_, counts3 := idnPipelineWith(s, t, idnPlacesTexts(second...), rdfT0.Add(2*time.Hour), 2, 0, 0, 0, 0)
