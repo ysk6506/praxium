@@ -17,6 +17,7 @@ const (
 	EventPage       EventKind = "page"       // a page was given
 	EventIncomplete EventKind = "incomplete" // the dataset will not be read to its end
 	EventFailed     EventKind = "failed"     // the read ended with an error
+	EventSkipped    EventKind = "skipped"    // values of a parent were not used (their number, never the values; ADR-0111)
 )
 
 // Event is what an adapter may tell about one thing that happened. It is made only of what a log may hold: where (the
@@ -103,6 +104,9 @@ type Preview struct {
 	Pages     []Page
 	Exchanges []Exchange
 	Masked    bool
+	// Note says what the preview did not do, in the reader's words: that a dataset that has a parent was read for the first values
+	// of the parent only.
+	Note string
 }
 
 // Previewer is the optional port of a reader that can read the first pages of a dataset for a person to look at. A

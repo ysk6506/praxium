@@ -99,12 +99,17 @@ func legacyKind(authKind string) (secrets.Kind, []string) {
 
 // needs says what a read of the dataset asks of the secret: the fields it must have and, when the placeholders and the
 // kind of authentication make it known, the kind of secret that has them.
-func needs(set settings, ds ingest.Dataset) (secrets.Kind, bool, []string) {
+func needs(set settings, ds ingest.Dataset, more ...ingest.Dataset) (secrets.Kind, bool, []string) {
 	var body map[string]any
 	if ds.Request != nil {
 		body = ds.Request.Body
 	}
 	used := ingest.CredentialFields(set.auth, body)
+	for _, m := range more { // the parent of a child is read with the same secret
+		if m.Request != nil {
+			used = unionOf(used, ingest.CredentialFields(set.auth, m.Request.Body))
+		}
+	}
 	switch set.auth.Kind {
 	case ingest.AuthBearer, ingest.AuthHeader, ingest.AuthBasic:
 		kind, fields := legacyKind(set.auth.Kind)
@@ -122,36 +127,19 @@ func needs(set settings, ds ingest.Dataset) (secrets.Kind, bool, []string) {
 	return kind, len(used) > 0, used
 }
 
-func containsText(list []string, s string) bool {
-	for _, e := range list {
-		if e == s {
-			return true
-		}
-	}
-	return false
-}
-
-func unionOf(a, b []string) []string {
-	out := append([]string{}, a...)
-	for _, s := range b {
-		if !containsText(out, s) {
-			out = append(out, s)
-		}
-	}
-	return out
-}
-
 // openSigner opens the secret of the authentication for this source, at the host and the port the requests go to. A kind
 // of authentication that has no secret gives a signer that signs nothing.
-func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ingest.Dataset, purpose secrets.Purpose) (*signer, error) {
+func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ingest.Dataset, purpose secrets.Purpose, more ...ingest.Dataset) (*signer, error) {
 	s := &signer{auth: set.auth}
 	if !set.needsSecret() {
 		return s, nil
 	}
 	// Before the secret is opened and before any request, the token request included: a definition that puts a value of the
 	// secret in a request of the API, when the token is asked for at another host, is refused with nothing sent anywhere.
-	if err := noSecretInTheRequestsOfTheAPI(set, ds); err != nil {
-		return nil, err
+	for _, d := range append([]ingest.Dataset{ds}, more...) {
+		if err := noSecretInTheRequestsOfTheAPI(set, d); err != nil {
+			return nil, err
+		}
 	}
 	opened, err := opener.Open(ctx, set.auth.Credential.SecretID, secrets.Use{SourceID: set.id, Host: set.host, Port: set.port, Purpose: purpose})
 	if err != nil {
@@ -161,19 +149,9 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ing
 	if err := s.openForTokenHost(ctx, opener, set, purpose); err != nil {
 		return nil, err
 	}
-	kind, known, fields := needs(set, ds)
-	for _, o := range s.openeds() {
-		if known && o.Kind() != kind {
-			s.close()
-			return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret is not of the kind this authentication needs ("+string(kind)+")", nil)
-		}
-		for _, f := range fields {
-			v, ok := o.Value(f)
-			if !ok || v.Reveal() == "" {
-				s.close()
-				return nil, ingest.NewSourceError(ingest.SrcSecretUnusable, "the secret has no value in a field this authentication needs", nil)
-			}
-		}
+	kind, known, fields := needs(set, ds, more...)
+	if err := s.checkOpened(kind, known, fields); err != nil {
+		return nil, err
 	}
 	if !s.headerValuesSafe() {
 		s.close()
@@ -182,6 +160,25 @@ func openSigner(ctx context.Context, opener secrets.Opener, set settings, ds ing
 	s.fields = fields
 	s.setMasks()
 	return s, nil
+}
+
+// checkOpened checks that what was opened is of the kind the authentication needs and has a value in each field it reads.
+func (s *signer) checkOpened(kind secrets.Kind, known bool, fields []string) error {
+	fail := func(why string) error {
+		s.close()
+		return unusable(why)
+	}
+	for _, o := range s.openeds() {
+		if known && o.Kind() != kind {
+			return fail("the secret is not of the kind this authentication needs (" + string(kind) + ")")
+		}
+		for _, f := range fields {
+			if v, ok := o.Value(f); !ok || v.Reveal() == "" {
+				return fail("the secret has no value in a field this authentication needs")
+			}
+		}
+	}
+	return nil
 }
 
 // openForTokenHost opens the secret a second time for the host of the token request, when that is another host than the API's.

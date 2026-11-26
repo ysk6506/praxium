@@ -60,6 +60,7 @@ type item struct {
 	elem       int
 	last       bool
 	expanded   bool
+	whole      bool // the record is the whole answer of a request of a child (the detail of one value of the parent)
 	// missing and outers are how many records of the response, up to this one, had no array (missing) and had their array looked
 	// for (outers); the token of a read that goes on from here carries them (ADR-0109).
 	missing, outers int
@@ -142,6 +143,7 @@ type walker struct {
 	stack  []frame
 	done   bool
 	depths []int
+	single bool // an object at records_path is one record: the detail of one thing, as a child reads it (ADR-0111)
 }
 
 // walk reads the body of an answer: the records go to each one at a time, from the one at place skip on (the ones before
@@ -157,6 +159,7 @@ type recordSpec struct {
 	maxElements int
 	caps        []ingest.Path
 	skip        int
+	single      bool
 }
 
 // walkRecords is walk with the most elements one record may have (for a records_path that opens an array in each record).
@@ -169,7 +172,8 @@ func walkRecords(body io.Reader, limit int, spec recordSpec, each func(it item) 
 	win := &window{src: body, sum: sha256.New(), limit: limit}
 	dec := json.NewDecoder(win)
 	dec.UseNumber()
-	w := &walker{dec: dec, win: win, rp: rp, recs: rp.Outer, limit: maxElements, caps: caps, skip: skip, each: each, out: walked{doc: map[string]any{}}}
+	w := &walker{dec: dec, win: win, rp: rp, recs: rp.Outer, limit: maxElements, caps: caps, skip: skip, each: each, out: walked{doc: map[string]any{}},
+		single: spec.single && !rp.Expand}
 	w.depths = append(w.depths, len(w.recs))
 	for _, c := range caps {
 		w.depths = append(w.depths, len(c))
@@ -351,6 +355,7 @@ func (w *walker) readRecords() error {
 	if w.out.found {
 		return errTwice
 	}
+	start := w.dec.InputOffset()
 	tok, err := w.dec.Token()
 	if err != nil {
 		return err
@@ -361,6 +366,10 @@ func (w *walker) readRecords() error {
 		if v == '[' {
 			w.out.found = true
 			return w.records()
+		}
+		if v == '{' && w.single {
+			w.out.found = true
+			return w.object(start)
 		}
 	case nil:
 		if len(w.recs) > 0 {

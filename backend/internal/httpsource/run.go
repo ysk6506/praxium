@@ -57,6 +57,12 @@ type run struct {
 	open *reply
 	// tokens is how many tokens of pages the read made, and cleaned how many texts had a value of a secret taken out.
 	tokens, cleaned int
+	// child is what the read of a dataset that has a parent may spend, and unit the values its request is made with now (nil for
+	// a dataset that has no parent; child.go).
+	child *childBudget
+	unit  *unit
+	// sentOfChild is how many requests of the child (its pages, and a request sent again) a preview or a check sent.
+	sentOfChild int
 }
 
 // maxExchanges is the most exchanges a preview keeps.
@@ -71,7 +77,11 @@ func (r *Reader) begin(ctx context.Context, source string, ds ingest.Dataset, pu
 	if err := ctx.Err(); err != nil {
 		return nil, err
 	}
-	sg, err := openSigner(ctx, r.cfg.Secrets, r.set, ds, purpose)
+	var parents []ingest.Dataset
+	if pd, ok := r.parentOf(ds); ok {
+		parents = append(parents, pd)
+	}
+	sg, err := openSigner(ctx, r.cfg.Secrets, r.set, ds, purpose, parents...)
 	if err != nil {
 		return nil, err
 	}
@@ -190,6 +200,6 @@ func (rn *run) record(p plan, rep *reply) {
 	}
 	to := rn.destination(p)
 	rn.exchanges = append(rn.exchanges, ingest.Exchange{
-		Method: p.method, Host: to.host, Port: to.port, Path: rn.clean(p.url.Path), Query: rn.cleanNames(p.shown), Status: rep.status,
+		Method: p.method, Host: to.host, Port: to.port, Path: rn.clean(p.logPath()), Query: rn.cleanNames(p.shown), Status: rep.status,
 		Headers: rn.cleanNames(ingest.MaskHeaders(rep.header))})
 }

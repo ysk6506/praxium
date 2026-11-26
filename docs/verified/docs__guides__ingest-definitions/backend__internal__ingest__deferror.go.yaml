@@ -1,7 +1,7 @@
 doc: "docs/guides/ingest-definitions.md"
 target: "backend/internal/ingest/deferror.go"
-hash: "b9b82901a6d1b7bf"
+hash: "a1667e9d4b91c66b"
 date: "2026-11-25"
-note: "파일 소스 정의 가이드가 다루는 옛 흐름은 그대로임을 확인함. 새 필드(response_format, records_path의 [*], missing_array, max_elements)는 어댑터 흐름에서만 받고 옛 흐름의 ParseSource는 거절함"
+note: "ADR-0111은 HTTP 소스의 자식 데이터셋(collect, parent, on_not_found)만 더했고 파일 소스 정의의 필드와 동작은 바뀌지 않았다"
 text_changed: false
 doc_hash: "06592884ef5fe37a"

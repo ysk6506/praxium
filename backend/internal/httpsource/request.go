@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"net/url"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/egress"
@@ -34,6 +35,17 @@ type plan struct {
 	// shown lists the query as a person may see it in a record of the exchange: the names, and the values that are the
 	// definition's own.
 	shown []ingest.NameValue
+	// label is the path as the definition writes it, with {parent.<name>} where a value of the parent goes; the events and the
+	// exchanges say it and never the value (ADR-0111).
+	label string
+}
+
+// logPath is the path that is told in the events and the exchanges of a request.
+func (p plan) logPath() string {
+	if p.label != "" {
+		return p.label
+	}
+	return p.url.Path
 }
 
 // retryable says whether the request may be sent again when the source fails in a passing way: a GET only (ADR-0090,
@@ -106,6 +118,10 @@ func copyBody(v any) any {
 func (rn *run) dataPlan(ds ingest.Dataset, at pos) (plan, error) {
 	req := ds.Request
 	p := newParams(req)
+	child := ds.IsChild() && rn.unit != nil
+	if child {
+		rn.unit.fill(p, req)
+	}
 	rn.pager.apply(p, at)
 	pl := plan{method: req.Method, shown: p.shown, identity: ds.JSONLines()}
 	if pl.method == "" {
@@ -117,9 +133,17 @@ func (rn *run) dataPlan(ds ingest.Dataset, at pos) (plan, error) {
 		pl.shown = serverQuery(&u)
 	} else {
 		u := *rn.origin
-		u.Path += unescape(req.Path)
+		if child && ingest.HasParentVar(req.Path) {
+			u.Path, u.RawPath = rn.unit.path(rn.origin.Path, req.Path)
+			pl.label = rn.origin.Path + parentLabel(req.Path)
+		} else {
+			u.Path += unescape(req.Path)
+		}
 		u.RawQuery = p.query.Encode()
 		pl.url = &u
+	}
+	if child && len(pl.url.String()) > rn.r.ceil.URLBytes {
+		return plan{}, &limitError{"a request of the dataset would have an address longer than " + strconv.Itoa(rn.r.ceil.URLBytes) + " bytes; use a smaller batch"}
 	}
 	if pl.method == ingest.MethodPost && p.body != nil {
 		pl.tmpl = p.body
@@ -152,6 +176,9 @@ func (rn *run) build(p plan) (egress.Request, error) {
 	body, ctype, err := rn.signer.bodyOf(p)
 	if err != nil {
 		return egress.Request{}, err
+	}
+	if rn.unit != nil && len(body) > rn.r.ceil.BodyBytes {
+		return egress.Request{}, &limitError{"a request of the dataset would have a body longer than " + strconv.Itoa(rn.r.ceil.BodyBytes) + " bytes; use a smaller batch"}
 	}
 	if ctype != "" {
 		setHeader(h, "Content-Type", ctype)

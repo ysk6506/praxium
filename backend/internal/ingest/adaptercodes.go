@@ -82,4 +82,15 @@ var (
 	ecAdTable        = regAdapter("source.dataset.table_invalid", inv, "The table is not a name, or a schema and a name, of plain identifiers.", "source,dataset,table")
 	ecAdSQL          = regAdapter("source.dataset.sql_invalid", inv, "The statement is empty or has a character a statement cannot have.", "source,dataset,reason")
 	ecAdCollation    = regAdapter("source.dataset.key_collation_invalid", inv, "The key_collation is not a name of plain identifiers.", "source,dataset,key_collation")
+
+	// The datasets that ask with the values of another dataset (ADR-0111).
+	ecAdParentInvalid         = regAdapter("source.parent_invalid", inv, "The parent block of a dataset, or on_not_found, is not valid: a field is empty, outside its range or not one of its values.", "source,dataset,field,reason")
+	ecAdParentUnknown         = regAdapter("source.parent_unknown", inv, "The parent of a dataset is no dataset of the same source.", "source,dataset,parent")
+	ecAdParentDepth           = regAdapter("source.parent_depth", inv, "The parent of a dataset has a parent of its own; one level is read.", "source,dataset,parent")
+	ecAdParentCycle           = regAdapter("source.parent_cycle", inv, "A dataset is its own parent, or two datasets are each other's.", "source,dataset,parent")
+	ecAdParentTemplateUnknown = regAdapter("source.parent_template_unknown", inv, "A request has a {parent.<name>} that parent.values does not declare.", "source,dataset,field,name")
+	ecAdParentTemplatePlace   = regAdapter("source.parent_template_place", inv, "A {parent.<name>} is where it may not be: a batch of values in the path or in a part of a text, or a variable with other text in a value of the body.", "source,dataset,field,reason")
+	ecAdParentValueUnused     = regAdapter("source.parent_value_unused", inv, "A value declared in parent.values is used by no place of the request.", "source,dataset,name")
+	ecAdBatchInvalid          = regAdapter("source.batch_invalid", inv, "The batch of values is not valid: its size, its separator, the value it joins, or the match that says which value an answer record is for.", "source,dataset,field,reason")
+	ecAdCollectHelperMapped   = regAdapter("source.collect_helper_mapped", inv, "A dataset with collect false has columns, a natural key or a rule of deletion, which only a dataset that makes rows has.", "source,dataset,field")
 )

@@ -54,7 +54,11 @@ func (r *Reader) Check(ctx context.Context, source string, ds ingest.Dataset) (r
 	if end != nil && !end.Complete && end.Reason != reasonFirstOnly {
 		return ingest.CheckResult{Kind: ingest.CheckTransient, Message: end.Reason, Rows: rows, Steps: steps}
 	}
-	return ingest.CheckResult{Kind: ingest.CheckOK, Message: "the first page was read: " + strconv.Itoa(rows) + " rows", Rows: rows, Steps: steps}
+	msg := "the first page was read: " + strconv.Itoa(rows) + " rows"
+	if ds.IsChild() {
+		msg += "; " + noteFirstValues
+	}
+	return ingest.CheckResult{Kind: ingest.CheckOK, Message: msg, Rows: rows, Steps: steps}
 }
 
 // firstPage reads the first response and gives the lines it had and how the read ended.
