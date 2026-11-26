@@ -62,8 +62,9 @@ type identState struct {
 	RoundSlots int  `json:"round_slots"`
 	Changed    int  `json:"changed"`
 	Unsettled  bool `json:"unsettled"`
-	// LeftKeys says that a round left some groups, so the rounds after it look for the pairs that share a key with them.
-	LeftKeys bool `json:"left_keys"`
+	// LeftRound is the first round that left some groups (0 when none has), so that the rounds after it leave the groups that share a
+	// key with them (ADR-0116). It is set once, so every unit of a later round sees the same.
+	LeftRound int `json:"left_round"`
 	// Skipped says that Go did not end the search for the groups of the round because they were more than it holds.
 	Skipped bool                  `json:"skipped"`
 	AskLeft int                   `json:"ask_left"`

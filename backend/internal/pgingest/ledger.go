@@ -128,17 +128,20 @@ func miss(ctx context.Context, tx *sql.Tx, l ingest.RunLease) error {
 
 // RenewRun extends the lease of a run by its term, counted from the clock of the database.
 func (s *Store) RenewRun(ctx context.Context, l ingest.RunLease) error {
-	return s.tx(ctx, roleApplier, func(tx *sql.Tx) error {
-		res, err := tx.ExecContext(ctx, "UPDATE "+pgschema.TableSyncRun+" SET "+pgschema.ColLeaseUntil+" = "+lease("$3")+", "+
-			pgschema.ColUpdatedAt+" = now() WHERE "+guard(), l.No, l.Attempt, l.Term.Seconds())
-		if err != nil {
-			return dbErr(err, "renew the lease")
-		}
-		if n, _ := res.RowsAffected(); n == 0 {
-			return miss(ctx, tx, l)
-		}
-		return nil
-	})
+	return s.tx(ctx, roleApplier, func(tx *sql.Tx) error { return renewIn(ctx, tx, l) })
+}
+
+// renewIn is RenewRun in a transaction a unit already holds (ADR-0116: Go's read of the end of a search extends the lease as it goes).
+func renewIn(ctx context.Context, tx *sql.Tx, l ingest.RunLease) error {
+	res, err := tx.ExecContext(ctx, "UPDATE "+pgschema.TableSyncRun+" SET "+pgschema.ColLeaseUntil+" = "+lease("$3")+", "+
+		pgschema.ColUpdatedAt+" = now() WHERE "+guard(), l.No, l.Attempt, l.Term.Seconds())
+	if err != nil {
+		return dbErr(err, "renew the lease")
+	}
+	if n, _ := res.RowsAffected(); n == 0 {
+		return miss(ctx, tx, l)
+	}
+	return nil
 }
 
 // The token of the page last stored is written to the run as text: nothing when the reader gave none, "t:" and the token in
