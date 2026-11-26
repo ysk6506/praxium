@@ -17,6 +17,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	11: func(schema string, _ Manifest) ([]Step, error) { return modelTableSteps(schema), nil },
 	12: func(schema string, _ Manifest) ([]Step, error) { return linkSteps(schema), nil },
 	13: func(schema string, _ Manifest) ([]Step, error) { return isolateSteps(schema), nil },
+	14: func(schema string, _ Manifest) ([]Step, error) { return diffSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -214,6 +215,11 @@ func besideSteps(schema string, tables []tableDef, indexes []indexDef) []Step {
 func isolateSteps(schema string) []Step {
 	return besideSteps(schema, isolateTableDefs(), isolateIndexDefs())
 }
+
+// diffSteps is what generator version 14 adds (ADR-0127): the two tables of the difference of the fifth step. As for version 13, they are
+// made beside the others (no table that is there is altered, REQ-680), each step can be run twice, and a schema that has no computation
+// tables is left as it is. They need no index besides their keys.
+func diffSteps(schema string) []Step { return besideSteps(schema, diffTableDefs(), nil) }
 
 // createIfNotExists is the statement of an index made to be run again.
 func createIfNotExists(sql string) string {
