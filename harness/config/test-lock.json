@@ -35076,10 +35076,10 @@
   },
   "go:backend/internal/pgstore::TestQscNoFileOfAServerMakesTheLightModelThatHasNoQuerySchema": {
    "kind": "test",
-   "hash": "454c3e86a45faad9",
+   "hash": "98a99910df2cb50d",
    "asserts": 2,
    "literals": [
-    "7a25dd56c75881a7"
+    "e5ae88727ca654a4"
    ],
    "precision": [],
    "skips": 0,

@@ -179,8 +179,9 @@ func TestQscAKGMadeByTheCatalogHasItsQuerySchemaAndRolesAndAServerThatStartsMake
 	}
 }
 
-// Only the tests make a model that has the tables and no query schema: a file of a server that calls StandardModels with anything
-// but true would make KGs that no role can read through, and that is the one way the plan is cut.
+// Only the tests make a model that has no query schema: a file of a server that calls StandardModels with anything but true, calls
+// TestOnlyModelsWithoutQuerySchema or sets SchemaModel.noQuery would make KGs that no role can read through, and those are the ways
+// the plan is cut.
 //
 // [REQ-626]
 func TestQscNoFileOfAServerMakesTheLightModelThatHasNoQuerySchema(t *testing.T) {
@@ -200,6 +201,9 @@ func TestQscNoFileOfAServerMakesTheLightModelThatHasNoQuerySchema(t *testing.T) 
 			return err
 		}
 		ast.Inspect(file, func(n ast.Node) bool {
+			if qscWritesNoQuery(path == filepath.Join(root, "internal", "pgstore", "kgstore.go"), n) {
+				calls = append(calls, path)
+			}
 			call, ok := n.(*ast.CallExpr)
 			if !ok {
 				return true
@@ -234,4 +238,36 @@ func TestQscNoFileOfAServerMakesTheLightModelThatHasNoQuerySchema(t *testing.T) 
 	if len(calls) > 0 {
 		t.Errorf("a file that is not a test helper makes the model that has no query schema: %v", calls)
 	}
+}
+
+// qscWritesNoQuery says whether a node gives SchemaModel.noQuery a value: as a field of a composite literal, in a SchemaModel literal
+// without field names, or by an assignment. The one write a file of a server may have is the `noQuery: !withStats` of StandardModels
+// (inKGStore), which is true only for StandardModels(false), and the scan above keeps that call to the tests.
+func qscWritesNoQuery(inKGStore bool, n ast.Node) bool {
+	switch x := n.(type) {
+	case *ast.KeyValueExpr:
+		if key, ok := x.Key.(*ast.Ident); !ok || key.Name != "noQuery" {
+			return false
+		}
+		not, isNot := x.Value.(*ast.UnaryExpr)
+		if !inKGStore || !isNot || not.Op != token.NOT {
+			return true
+		}
+		arg, isIdent := not.X.(*ast.Ident)
+		return !isIdent || arg.Name != "withStats"
+	case *ast.CompositeLit:
+		typ, ok := x.Type.(*ast.Ident)
+		if !ok || typ.Name != "SchemaModel" || len(x.Elts) == 0 {
+			return false
+		}
+		_, keyed := x.Elts[0].(*ast.KeyValueExpr)
+		return !keyed
+	case *ast.AssignStmt:
+		for _, lhs := range x.Lhs {
+			if sel, ok := lhs.(*ast.SelectorExpr); ok && sel.Sel.Name == "noQuery" {
+				return true
+			}
+		}
+	}
+	return false
 }

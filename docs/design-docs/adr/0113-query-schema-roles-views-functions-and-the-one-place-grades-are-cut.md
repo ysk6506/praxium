@@ -133,8 +133,8 @@ amends_tests:
   - go:backend/internal/pgingest::TestRdfTheCountsOfTheRunSayForEachDatasetHowMuchOfItTheNextStepMayCount
   - go:backend/internal/pgingest::TestRdfWhatIsMadeDoesNotDependOnHowTheWorkIsCutIntoBuckets
   - go:backend/internal/pgingest::TestRdfWhatTheComparisonMadeOfARunIsWhatTheNextRunStartsFrom
-test_change_reason: 생성기 버전이 7에서 8이 되었다. 테스트는 단언을 한 글자도 약하게 하지 않고 버전 숫자만 맞춘다(버전 8이 더하는 단계는 그 버전의 테스트에 있다). pgingest 테스트들(Exp, Hka, Idn, Pgi, Rdf 89개)은 본문이 그대로이고 지문만 바뀌었다. 모두가 부르는 도우미 `pgiOpen`이 KG를 질의 스키마 없는 테스트 전용 모델(`pgstore.TestOnlyModelsWithoutQuerySchema`, `StandardModels(false)`)로 만든다. 이 모델은 통계 객체도 뒤로 미루며, pgstore의 `NewTestStore`가 이미 쓰던 모델과 같다. 이 테스트들이 보는 것은 수집이고 질의 스키마는 `Qsc` 테스트가 덮는다. 도우미는 모델을 얻다 실패하면 `t.Fatal`로 끝나는 검사 하나를 더했을 뿐이고 단언과 리터럴은 하나도 바뀌지 않았다.
-decision_hash: 3fbce30bfc1c7f4e
+test_change_reason: 생성기 버전이 7에서 8이 되었다. 테스트는 단언을 한 글자도 약하게 하지 않고 버전 숫자만 맞춘다(버전 8이 더하는 단계는 그 버전의 테스트에 있다). pgingest 테스트들(Exp, Hka, Idn, Pgi, Rdf 89개)은 본문이 그대로이고 지문만 바뀌었다. 모두가 부르는 도우미 `pgiOpen`이 KG를 테스트 전용 모델 `pgstore.TestOnlyModelsWithoutQuerySchema`로 만든다. 이 모델은 서버의 모델(`StandardModels(true)`)과 같고 질의 스키마만 없다. 통계 객체는 서버처럼 함께 만들므로 실행 계획과 읽은 행을 보는 테스트(`idn_plan_test.go`, `rdf_plan_test.go`, `exp_scale_test.go`)는 서버와 같은 조건에서 계획을 본다. 이 테스트들이 보는 것은 수집이고 질의 스키마는 `Qsc` 테스트가 덮는다. 도우미는 모델을 얻다 실패하면 `t.Fatal`로 끝나는 검사 하나를 더했을 뿐이고 단언과 리터럴은 하나도 바뀌지 않았다.
+decision_hash: 0315e0d9de88e997
 ---
 # ADR-0113 질의 스키마 — 등급마다의 스키마와 역할, 뷰와 함수, 등급을 거르는 한 곳
 
@@ -178,7 +178,7 @@ ADR-0080이 사용자가 SQL로 KG를 묻는 질의 스키마를 정했고, ADR-
 - 이름만 바뀐 모델은 모델 해시가 같아(이름은 해시에 들지 않는다) 스키마 관리기가 일을 하지 않으므로 뷰가 다시 만들어지지 않는다. 다른 변경과 함께 관리기가 돌 때는 모든 뷰가 새 이름으로 다시 만들어진다. 이름만 바뀐 경우에 다시 만드는 길은 아직 없고 [질의 스키마](../query-schema.md) 12절의 미결이다.
 - 표준 모델의 KG 하나를 만드는 시간이 약 1.6초에서 약 2.7초로 는다(질의 스키마의 836문장, 측정 1.66초: 뷰 0.89초, 권한 0.38초, 함수 0.19초이고, 이미 있는 위에 다시 만들면 1.43초. 같은 기계에서도 부하에 따라 1.4~1.7초로 달라진다).
 - 질의 스키마를 쓰는 처리 경로(질의 실행기, `SET LOCAL ROLE`, `search_path`, 그래프 함수, REST와 MCP)은 뒤의 변경이다.
-- 테스트의 시간: 표준 모델의 KG 하나를 만들 때마다 질의 스키마가 약 2초를 더하므로, KG를 여러 번 만드는 일반 모음은 질의 스키마 없는 모델(`StandardModels(false)`와 `NewTestStore`)로 돈다. 질의 스키마를 실제로 만드는 길(`CreateStorageSchema`, `CreateKG`, 조정, 삭제, 서버 시작)은 `Qsc` 테스트가 각각 덮고, 서버의 어떤 파일도 그 모델을 만들지 않음을 소스를 훑는 테스트가 잠근다.
+- 테스트의 시간: 표준 모델의 KG 하나를 만들 때마다 질의 스키마가 약 2초를 더하므로, KG를 여러 번 만드는 일반 모음은 질의 스키마 없는 모델로 돈다. 두 갈래다: pgstore의 일반 모음(`NewTestStore`)은 원래 쓰던 `StandardModels(false)`(통계 객체도 없음)에서 질의 스키마도 빠지고, 다른 패키지의 테스트(pgingest의 `pgiOpen`)는 서버의 모델에서 질의 스키마만 뺀 `TestOnlyModelsWithoutQuerySchema`를 쓴다. 질의 스키마를 실제로 만드는 길(`CreateStorageSchema`, `CreateKG`, 조정, 삭제, 서버 시작)은 `Qsc` 테스트가 각각 덮고, 서버의 어떤 파일도 그 모델을 만들지 않음(`StandardModels(false)`나 `TestOnlyModelsWithoutQuerySchema`를 부르거나 `noQuery`를 쓰지 않음)을 소스를 훑는 테스트가 잠근다.
 
 ## 미결 사항
 

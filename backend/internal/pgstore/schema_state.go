@@ -44,9 +44,10 @@ type SchemaModel struct {
 	// token is the token of the installation that the executor reads from the database before it plans, for the names of the roles of
 	// the query schema (ADR-0113). A caller does not give it.
 	token string
-	// noQuery says that the plan is the tables only, with no query schema (views, functions and roles). Only StandardModels(false) sets
-	// it, for the tests that make a KG for each case and are not about the query schema (it costs about two seconds for each KG); a server
-	// never holds such a model (a test locks that no file of a server calls StandardModels(false)).
+	// noQuery says that the plan has no query schema (views, functions and roles). Only StandardModels(false) (with no statistics
+	// objects either) and TestOnlyModelsWithoutQuerySchema (with them) set it, for the tests that make a KG for each case and are not
+	// about the query schema (it costs about two seconds for each KG); a server never holds such a model (a test locks that no file of a
+	// server calls either of them with anything that makes it, or sets this field).
 	noQuery bool
 }
 

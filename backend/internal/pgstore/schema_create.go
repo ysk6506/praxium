@@ -18,7 +18,8 @@ func buildPlan(m SchemaModel, kgNo int64) (pgschema.Plan, error) {
 }
 
 // readToken gives the model the token of the installation, which makes the plan have a query schema (ADR-0113). A model that has no
-// query schema (SchemaModel.noQuery) is left without it, and its plan is the tables only.
+// query schema (SchemaModel.noQuery) is left without it, and its plan has no query schema (the tables, and the statistics objects
+// when the model makes them).
 func readToken(ctx context.Context, tx *sql.Tx, m SchemaModel) (SchemaModel, error) {
 	if m.noQuery {
 		return m, nil
