@@ -1,7 +1,7 @@
 doc: "docs/design-docs/ingestion-at-scale.md"
 target: "docs/design-docs/adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md"
 hash: "469b52616d0e1a3f"
-date: "2026-11-19"
-note: "용어집 표기(WORD003)에 맞춰 낱말을 고쳤다. 뜻은 그대로"
+date: "2026-11-26"
+note: "4단계 객체 쪽 구현 상태를 ADR-0115에 맞춰 고침"
 text_changed: true
-doc_hash: "dffd7cb77ec7ca41"
+doc_hash: "833de60b9d623964"

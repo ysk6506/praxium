@@ -289,7 +289,17 @@ func ingestIndexDefs() []indexDef {
 		// takes the last row of a key by the place.
 		stageRecordKeyIndex(),
 	}
-	return append(out, identifyIndexDefs()...)
+	return append(append(out, identifyIndexDefs()...), recomputeIndexDefs()...)
+}
+
+// recomputeIndexDefs are the indexes the computation of the objects reads by (generator version 8, ADR-0115): from an object to the
+// references of the records of the run that are bound to it (the identity and the identifier claims), as record_ref_target is for the
+// references that are kept; and from the record and the feed of a new object to the question that asked for its parent's id.
+func recomputeIndexDefs() []indexDef {
+	return []indexDef{
+		{Name: "calc_ref_target", Table: TableCalcRef, Expr: ColRole + ", " + ColTargetNo, Where: ColTargetNo + " IS NOT NULL"},
+		{Name: "calc_ask_pair", Table: TableCalcAsk, Expr: ColRid + ", " + ColFeedNo, Where: ColParentRef + " IS NOT NULL"},
+	}
 }
 
 // identifyIndexDefs are the indexes the identification reads by (ADR-0108). The rows received are read by a range of pages, which is

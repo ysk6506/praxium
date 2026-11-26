@@ -40,6 +40,8 @@ type Store struct {
 	identSeen identObserver
 	// expTest is the hook the tests of the expansion use (expand.go); it is nil in the code that runs.
 	expTest *expHook
+	// rcpSeen is the hook the tests of the computation of the objects watch its statements by; it is nil in the code that runs.
+	rcpSeen identObserver
 }
 
 var _ ingest.RunLedger = (*Store)(nil)

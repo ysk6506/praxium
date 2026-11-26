@@ -29,16 +29,23 @@ import (
 // are kept (the ones there are when the run begins) say it for the object that was made in a run that has not been applied yet.
 // MarkRetirableObjects writes the mark; the step that applies the run calls it.
 
-// expRetirable is the condition that the object named by the column obj (an expression of the statement) is a candidate for retirement.
-func expRetirable(obj string) string {
+// expReplaced is the condition that the record of the reference named by the alias (a row of the references with the key of a record)
+// is a record that the run read again and wrote the references of anew (or ended): what it had does not stand now. The computation of
+// the objects (step 4) reads the references that stand by the same judgement.
+func expReplaced(alias string) string {
 	changed := strconv.Itoa(int(pgschema.CalcWhyChanged))
 	isNew := strconv.Itoa(int(pgschema.CalcWhyNew))
 	closed := strconv.Itoa(int(pgschema.CalcWhyClosed))
 	released := strconv.Itoa(int(pgschema.CalcWhyReleased))
 	expanded := strconv.Itoa(int(pgschema.CalcWhyExpanded))
-	// the record of a reference that the run read again and wrote the references of anew (or ended): what it had does not stand now
-	replaced := "EXISTS (SELECT 1 FROM {rec} c JOIN {ds} d ON d.dataset_no = c.dataset_no WHERE c.src_no = s.src_no AND c.dataset_no = s.dataset_no AND c.key = s.key " +
+	a := alias + "."
+	return "EXISTS (SELECT 1 FROM {rec} c JOIN {ds} d ON d.dataset_no = c.dataset_no WHERE c.src_no = " + a + "src_no AND c.dataset_no = " + a + "dataset_no AND c.key = " + a + "key " +
 		"AND c.why <> " + expanded + " AND (c.why IN (" + changed + ", " + isNew + ", " + closed + ", " + released + ") OR c.decl_rev = d.decl_rev))"
+}
+
+// expRetirable is the condition that the object named by the column obj (an expression of the statement) is a candidate for retirement.
+func expRetirable(obj string) string {
+	replaced := expReplaced("s")
 	// the feed of the reference (the number of the feed is the def_no of an identity reference) is known not to make objects
 	valueOnly := "EXISTS (SELECT 1 FROM feeds f WHERE f.src_no = s.src_no AND f.feed_no = s.def_no AND NOT f.creates)"
 	return "(NOT EXISTS (SELECT 1 FROM {objrun} i WHERE i.obj_no = " + obj + " AND i.why = " + whyIdent + ")" +

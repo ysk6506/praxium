@@ -199,6 +199,9 @@ const (
 	// CalcJobIdentify is the job that finds the objects of the records of the run (step 3, ADR-0108); its place is in the counts.
 	CalcJobIdentify int16 = 2
 
+	// CalcJobRecompute is the job that computes the objects again (step 4, ADR-0115); its place is in the counts.
+	CalcJobRecompute int16 = 4
+
 	// ObjectWhyIdentified is why an object is in calc_object: a record of the run was bound to it, or made it, in the identification.
 	ObjectWhyIdentified int16 = 1
 
@@ -250,6 +253,14 @@ func ProblemKinds() []string {
 		ProblemLinkAmbiguous, ProblemCardinality, ProblemExtraColumn, ProblemCellError, ProblemFormulaNoValue,
 		ProblemContextParent, ProblemMissingName,
 	}
+}
+
+// StepFourProblemKinds lists the kinds of problem that the fourth step (the new computation of the objects and the links) owns: the
+// problems of a record that the step gives again for every record it reads again, the records that were read again only because they
+// feed an object that is computed again included. The kinds of the receiving and of the identification are given for the records that
+// changed alone. The objects' side is source_conflict; the links' side is the kinds that follow it.
+func StepFourProblemKinds() []string {
+	return []string{ProblemSourceConflict, ProblemLinkTarget, ProblemLinkAmbiguous, ProblemCardinality}
 }
 
 // The stages of a run and how it ended (sync_run.stage). The first group is the work of a run; the second is how it
