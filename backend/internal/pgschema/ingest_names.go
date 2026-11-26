@@ -61,6 +61,14 @@ const (
 	// the same columns (generator version 12, ADR-0122).
 	TableCalcLinkWin  = "calc_linkwin"
 	TableCalcLinkLost = "calc_linklost"
+	// TableCalcIsolated has a row for each identifier line and each link that the fifth step took out of what the run staged before the
+	// difference reads it (generator version 13, ADR-0123): in which check (the phase: the identifiers, the ends of the links, the
+	// cardinality), why, what it was and the reason as a person reads it. A link that goes with an object that retires is there too, with
+	// its own reason, and is no problem.
+	TableCalcIsolated = "calc_isolated"
+	// TableCalcSeat has a row for each place a binding holds to one link (the side, the object at that end, the binding) that a link of the
+	// run took in the check of the cardinality (generator version 13, ADR-0123): its key is the place, so a place has one link.
+	TableCalcSeat = "calc_seat"
 	// TableCalcOwner holds the number of the run that the tables of the computation are of (one row, written when the computation
 	// begins, emptied with the others): the tables are one set per KG, so a run that comes back to the KG after another source
 	// began its computation finds that they are not its own (ADR-0102).
@@ -166,6 +174,9 @@ const (
 	ColLeft        = "left_cells"
 	ColLinkName    = "link_name"
 	ColDefID       = "def_id"
+	ColPhase       = "phase"
+	ColEndNo       = "end_no"
+	ColBindID      = "bind_id"
 )
 
 // The codes of the small enumerations the ingestion tables keep as numbers, where a table has many rows.
@@ -242,6 +253,24 @@ const (
 	ObjectWhyClaim  int16 = 3
 	ObjectWhyRetire int16 = 4
 
+	// CalcJobIsolate is the job that takes out of what the run staged the rows the KG cannot have (step 5, ADR-0123): the identifiers
+	// another object keeps, the links whose end is not there, and the links that break the cardinality. Its place is in the counts.
+	CalcJobIsolate int16 = 5
+
+	// The checks of the fifth step (calc_isolated.phase), in the order they are made, each once (ingestion-at-scale-identity.md 4).
+	IsolatePhaseIdents int16 = 1
+	IsolatePhaseEnds   int16 = 2
+	IsolatePhaseCard   int16 = 3
+
+	// Why a row is in calc_isolated: an identifier that another object of the run keeps, one that an object the KG has keeps, a link whose
+	// end is neither an object of the KG nor one the run makes, a link whose end retires (it goes with the object, and is no problem), and a
+	// link that a place held to one link has given to another.
+	IsolatedIdentRun    int16 = 1
+	IsolatedIdentKG     int16 = 2
+	IsolatedEndMissing  int16 = 3
+	IsolatedEndRetires  int16 = 4
+	IsolatedCardinality int16 = 5
+
 	// The kinds of a row of ingest_diff, in the order the apply writes them: the objects (the registry, the type
 	// tables, the history, the retirement), the identification keys, the links, the identifiers.
 	DiffKindObject     int16 = 0
@@ -294,6 +323,13 @@ func ProblemKinds() []string {
 // steps' kinds, so they are not owned here.
 func StepFourProblemKinds() []string {
 	return []string{ProblemSourceConflict, ProblemLinkTarget, ProblemLinkAmbiguous}
+}
+
+// StepFiveProblemKinds lists the kinds of problem the fifth step writes when it takes a row out (ADR-0123): an identifier that another
+// object keeps, a link whose end is not there, and a link that breaks the cardinality. No kind is added (REQ-680): they are in the closed
+// list already.
+func StepFiveProblemKinds() []string {
+	return []string{ProblemIdentityConflict, ProblemLinkTarget, ProblemCardinality}
 }
 
 // The stages of a run and how it ended (sync_run.stage). The first group is the work of a run; the second is how it
@@ -355,7 +391,7 @@ func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcOwner, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
 		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableCalcXKey, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
-		TableCalcProblem, TableCalcRef, TableCalcLeft, TableCalcToKey, TableCalcLinkWin, TableCalcLinkLost, TableIngestDiff,
+		TableCalcProblem, TableCalcRef, TableCalcLeft, TableCalcToKey, TableCalcLinkWin, TableCalcLinkLost, TableCalcIsolated, TableCalcSeat, TableIngestDiff,
 	}
 }
 
