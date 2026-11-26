@@ -238,25 +238,35 @@ func RunRecompute(ctx context.Context, d Recomputer, lease RunLease, start Recom
 		}
 	}
 	for {
-		if err := ctx.Err(); err != nil {
+		done, err := recomputeOnePage(ctx, d, lease, maker)
+		if err != nil {
 			return RecomputeCounts{}, err
 		}
-		if place, err = d.RecomputePlace(ctx, lease); err != nil {
-			return RecomputeCounts{}, err
-		}
-		if place.Done() {
+		if done {
 			return d.RecomputeReport(ctx, lease)
 		}
-		page, err := d.RecomputePage(ctx, lease)
-		if err != nil {
-			return RecomputeCounts{}, err
-		}
-		made, err := maker.Make(page)
-		if err != nil {
-			return RecomputeCounts{}, err
-		}
-		if err := d.PutRecomputed(ctx, lease, made); err != nil {
-			return RecomputeCounts{}, err
-		}
 	}
+}
+
+// recomputeOnePage does the page the place says, and says when there is none left.
+func recomputeOnePage(ctx context.Context, d Recomputer, lease RunLease, maker ObjectMaker) (bool, error) {
+	if err := ctx.Err(); err != nil {
+		return false, err
+	}
+	place, err := d.RecomputePlace(ctx, lease)
+	if err != nil {
+		return false, err
+	}
+	if place.Done() {
+		return true, nil
+	}
+	page, err := d.RecomputePage(ctx, lease)
+	if err != nil {
+		return false, err
+	}
+	made, err := maker.Make(page)
+	if err != nil {
+		return false, err
+	}
+	return false, d.PutRecomputed(ctx, lease, made)
 }

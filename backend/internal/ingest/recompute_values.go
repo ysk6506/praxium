@@ -212,90 +212,132 @@ func (c *ObjectComputer) claimsOf(r *lineRead, into map[string][]identLine) {
 
 // object makes one object. ok is false when a line of it cannot be read, or its name is not known: the object is then left as it is.
 func (c *ObjectComputer) object(o *RecomputeObject) (RecomputedObject, []RecomputedProblem, bool, error) {
-	var probs []RecomputedProblem
-	byAttr := map[int][]*valueLine{}
-	refs := map[string]bool{}
-	claims := map[string][]identLine{}
-	var reads []lineRead
-	for i := range o.Lines {
-		r, ok := c.readLine(&o.Lines[i])
-		if !ok {
-			return RecomputedObject{}, nil, false, nil
-		}
-		c.valuesOf(&r, &probs)
-		c.claimsOf(&r, claims)
-		for _, v := range r.values {
-			byAttr[v.attr.prop.AttrNo] = append(byAttr[v.attr.prop.AttrNo], v)
-			refs[v.ref] = true
-		}
-		refs[c.plans[r.ln.SrcNo].Source.ID+"/"+r.ln.Dataset+"/"+strings.ReplaceAll(r.ln.Key, keySep, "|")] = true
-		reads = append(reads, r)
-	}
-	firstKey, ok := c.firstKeyOf(o, reads)
+	in, ok := c.readLines(o)
 	if !ok {
 		return RecomputedObject{}, nil, false, nil
 	}
-	nos := make([]int, 0, len(byAttr))
-	for no := range byAttr {
-		nos = append(nos, no)
+	firstKey, ok := c.firstKeyOf(o, in.reads)
+	if !ok {
+		return RecomputedObject{}, nil, false, nil
 	}
-	sort.Ints(nos)
-	attrs := map[int]graph.Attr{}
-	var volatile []RecomputedVolatile
-	name := ""
-	winners := map[int]*valueLine{}
-	for _, no := range nos {
+	ch, err := c.choose(in.byAttr)
+	if err != nil {
+		return RecomputedObject{}, nil, false, err
+	}
+	if ch.name == "" {
+		ch.name = nameFallback(o, firstKey)
+	}
+	if ch.name == "" {
+		return RecomputedObject{}, nil, false, nil
+	}
+	probs := append(in.probs, conflictsOf(o, ch, in.byAttr)...)
+	made, err := c.rows(o, ch.name, ch.attrs, in.refs, firstKey)
+	if err != nil {
+		return RecomputedObject{}, nil, false, err
+	}
+	made.Volatile = ch.volatile
+	made.Idents = identsOf(in.claims)
+	return made, probs, true, nil
+}
+
+// objectLines is what the lines of an object give: the values by attribute, the references of the sources, the claims, the problems of
+// the cells and the lines as they were read.
+type objectLines struct {
+	byAttr map[int][]*valueLine
+	refs   map[string]bool
+	claims map[string][]identLine
+	probs  []RecomputedProblem
+	reads  []lineRead
+}
+
+// readLines reads every line of an object; ok is false when one cannot be read.
+func (c *ObjectComputer) readLines(o *RecomputeObject) (*objectLines, bool) {
+	in := &objectLines{byAttr: map[int][]*valueLine{}, refs: map[string]bool{}, claims: map[string][]identLine{}}
+	for i := range o.Lines {
+		r, ok := c.readLine(&o.Lines[i])
+		if !ok {
+			return nil, false
+		}
+		c.valuesOf(&r, &in.probs)
+		c.claimsOf(&r, in.claims)
+		for _, v := range r.values {
+			in.byAttr[v.attr.prop.AttrNo] = append(in.byAttr[v.attr.prop.AttrNo], v)
+			in.refs[v.ref] = true
+		}
+		in.refs[c.plans[r.ln.SrcNo].Source.ID+"/"+r.ln.Dataset+"/"+strings.ReplaceAll(r.ln.Key, keySep, "|")] = true
+		in.reads = append(in.reads, r)
+	}
+	return in, true
+}
+
+// chosen is the value that wins each attribute, as the document, the volatile entries and the name they give. Its numbers are the
+// attributes in order.
+type chosen struct {
+	nos      []int
+	winners  map[int]*valueLine
+	attrs    map[int]graph.Attr
+	volatile []RecomputedVolatile
+	name     string
+}
+
+// choose sorts the values of each attribute by the order and takes the first.
+func (c *ObjectComputer) choose(byAttr map[int][]*valueLine) (*chosen, error) {
+	ch := &chosen{winners: map[int]*valueLine{}, attrs: map[int]graph.Attr{}}
+	for no := range byAttr {
+		ch.nos = append(ch.nos, no)
+	}
+	sort.Ints(ch.nos)
+	for _, no := range ch.nos {
 		vs := byAttr[no]
 		sort.Slice(vs, func(i, j int) bool { return valueBefore(vs[i], vs[j]) })
 		win := vs[0]
-		winners[no] = win
+		ch.winners[no] = win
 		if win.attr.volatile {
 			entry, err := graph.EncodeVolatileEntry(graph.VolatileWrite{Value: win.value, Grade: win.grade, Basis: win.basis, SeenAt: c.seen, Ref: win.ref})
 			if err != nil {
-				return RecomputedObject{}, nil, false, err
+				return nil, err
 			}
-			volatile = append(volatile, RecomputedVolatile{AttrNo: no, Entry: entry})
+			ch.volatile = append(ch.volatile, RecomputedVolatile{AttrNo: no, Entry: entry})
 		} else {
-			attrs[no] = graph.Attr{Value: win.value, Grade: win.grade, Basis: win.basis, SourceTime: c.seen, SourceRef: win.ref}
+			ch.attrs[no] = graph.Attr{Value: win.value, Grade: win.grade, Basis: win.basis, SourceTime: c.seen, SourceRef: win.ref}
 		}
-		if win.attr.prop.Name == "name" {
-			if s, isText := win.value.(string); isText && s != "" {
-				name = s
-			}
+		if s, isText := win.value.(string); isText && s != "" && win.attr.prop.Name == "name" {
+			ch.name = s
 		}
 	}
-	if name == "" {
-		name = nameFallback(o, firstKey)
-	}
-	if name == "" {
-		return RecomputedObject{}, nil, false, nil
-	}
-	for _, no := range nos {
-		win := winners[no]
+	return ch, nil
+}
+
+// conflictsOf is the problems of the values that lost to a value of another text.
+func conflictsOf(o *RecomputeObject, ch *chosen, byAttr map[int][]*valueLine) []RecomputedProblem {
+	var probs []RecomputedProblem
+	for _, no := range ch.nos {
+		win := ch.winners[no]
 		for _, l := range byAttr[no][1:] {
 			if l.text != win.text {
 				probs = append(probs, RecomputedProblem{SrcNo: l.srcNo, DatasetNo: l.datasetNo, Key: l.key, Feed: l.feed, Field: l.column, Kind: ProblemSourceConflict,
-					Reason: fmt.Sprintf("attribute %s of the object %s (%s): %q from %s lost to %q from %s (dataset %s, key %s)", l.attr.prop.Name, name, o.Ref,
+					Reason: fmt.Sprintf("attribute %s of the object %s (%s): %q from %s lost to %q from %s (dataset %s, key %s)", l.attr.prop.Name, ch.name, o.Ref,
 						l.text, l.feedID, win.text, win.feedID, win.dataset, strings.ReplaceAll(win.key, keySep, "|"))})
 			}
 		}
 	}
-	made, err := c.rows(o, name, attrs, refs, firstKey)
-	if err != nil {
-		return RecomputedObject{}, nil, false, err
-	}
-	made.Volatile = volatile
+	return probs
+}
+
+// identsOf is the identifier of each scheme that the lines won: the first by the order of the identifiers.
+func identsOf(claims map[string][]identLine) []RecomputedIdent {
 	schemes := make([]string, 0, len(claims))
 	for s := range claims {
 		schemes = append(schemes, s)
 	}
 	sort.Strings(schemes)
+	var out []RecomputedIdent
 	for _, s := range schemes {
 		ls := claims[s]
 		sort.Slice(ls, func(i, j int) bool { return identBefore(ls[i], ls[j]) })
-		made.Idents = append(made.Idents, RecomputedIdent{Scheme: s, Value: ls[0].value})
+		out = append(out, RecomputedIdent{Scheme: s, Value: ls[0].value})
 	}
-	return made, probs, true, nil
+	return out
 }
 
 // rows makes the row of the object: the document, the references of its sources, the lowest grade and the hashes (graph, the meaning

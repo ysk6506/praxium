@@ -159,14 +159,18 @@ func (r *rcpRun) lines(ctx context.Context, tx *sql.Tx, through int64, skip stri
 	if len(objs) == 0 {
 		return nil
 	}
-	return r.claims(ctx, tx, where, objs, srcs, dss, keys, rids)
+	return r.claims(ctx, tx, where, rcpLineCols{objs, srcs, dss, keys, rids})
 }
 
+// rcpLineCols are the columns of the lines that were read, one list for each, to ask for their claims.
+type rcpLineCols struct{ objs, srcs, dss, keys, rids []string }
+
 // claims reads the claims of the lines and gives each line the ones that were decided for its object.
-func (r *rcpRun) claims(ctx context.Context, tx *sql.Tx, where map[rcpLineKey]*ingest.RecomputeLine, objs, srcs, dss, keys, rids []string) error {
+func (r *rcpRun) claims(ctx context.Context, tx *sql.Tx, where map[rcpLineKey]*ingest.RecomputeLine, c rcpLineCols) error {
 	query := r.q(rcpClaimsSQL)
-	r.saw(tx, "read the claims of the lines", query, textArray(objs), textArray(srcs), textArray(dss), textArray(keys), textArray(rids))
-	rows, err := tx.QueryContext(ctx, query, textArray(objs), textArray(srcs), textArray(dss), textArray(keys), textArray(rids))
+	args := []any{textArray(c.objs), textArray(c.srcs), textArray(c.dss), textArray(c.keys), textArray(c.rids)}
+	r.saw(tx, "read the claims of the lines", query, args...)
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return dbErr(err, "read the claims of the lines")
 	}
