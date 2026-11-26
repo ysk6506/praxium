@@ -109,6 +109,21 @@ func rclRows(s *rdfSetup, t *testing.T, counts ingest.RecomputeLinksCounts) {
 	}
 }
 
+// rclNotOwned makes the tables of the computation another run's for a while: the run cannot begin the computation of the links, nor read
+// where it is.
+func rclNotOwned(s *rdfSetup, t *testing.T, l ingest.RunLease, start ingest.RecomputeLinksStart) {
+	t.Helper()
+	st, ctx, k := s.e.st, s.e.ctx, s.ref.KGNo
+	s.e.exec(t, fmt.Sprintf(`UPDATE "s_%d".calc_owner SET run_no = run_no + 1000`, k))
+	defer s.e.exec(t, fmt.Sprintf(`UPDATE "s_%d".calc_owner SET run_no = run_no - 1000`, k))
+	if err := st.BeginRecomputeLinks(ctx, l, start); kernel.CodeOf(err) != ingest.CodeRunStage {
+		t.Errorf("the links of a run whose tables are another's: %v", err)
+	}
+	if _, err := st.RecomputeLinksPlace(ctx, l); kernel.CodeOf(err) != ingest.CodeRunStage {
+		t.Errorf("the place of a run whose tables are another's: %v", err)
+	}
+}
+
 // [REQ-874]
 func TestRclAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToReadAndTheCallsInTheWrongOrderAreRefused(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
@@ -129,6 +144,7 @@ func TestRclAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToReadAndTheCa
 	if err := st.BeginRecomputeLinks(ctx, l, ingest.RecomputeLinksStart{Lines: -1}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Errorf("a start that cannot work: %v", err)
 	}
+	rclNotOwned(s, t, l, start)
 	if err := st.BeginRecomputeLinks(ctx, l, start); err != nil {
 		t.Fatal(err)
 	}
@@ -207,7 +223,8 @@ func TestRclALinkTheRegistryHasKeepsItsNumberAndANewOneGetsANumberNoLinkHas(t *t
 	s.rdfSettle(t, l)
 	texts = rclTextsA([]string{"RA,RK1", "RB,RK2"}, []string{"SV1,Zorvane,sn1,RK1,7,on", "SV2,Zorvane,sn2,RK2,2,on"}, []string{"u1"})
 	l = rclPrepare(s, t, texts, rclAt(1), true)
-	rclDo(s, t, l, rclPlans(s), 0)
+	// pages of one end: the page of the link the registry has takes no new number, the one of the new link takes one
+	rclDo(s, t, l, rclPlans(s), 1)
 	got := rclStaged(s, t)
 	if len(got) != 2 {
 		t.Fatalf("%d links: %s", len(got), rclText(got))

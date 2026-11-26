@@ -103,16 +103,111 @@ func rclTakeOver(s *rdfSetup, t *testing.T, l ingest.RunLease, owner string) ing
 	return next
 }
 
+// The tables the reading of a page of each phase reads, and the ones the writing of a page writes or reads.
+var (
+	rclReadTables = map[string][]string{
+		ingest.LinksPhaseEnds: {pgschema.TableCalcRecord}, ingest.LinksPhaseTo: {pgschema.TableCalcEnd},
+		ingest.LinksPhaseFrom:      {pgschema.TableCalcEnd, pgschema.TableCalcRecord, pgschema.TableCalcToKey, pgschema.TableCalcBind},
+		ingest.LinksPhaseConflicts: {pgschema.TableCalcLinkLost}, ingest.LinksPhaseCells: {pgschema.TableCalcLinkWin},
+	}
+	rclWriteTables = map[string][]string{
+		ingest.LinksPhaseEnds: {pgschema.TableCalcEnd}, ingest.LinksPhaseTo: {pgschema.TableCalcRef},
+		ingest.LinksPhaseFrom: {pgschema.TableCalcToKey, pgschema.TableCalcProblem, pgschema.TableCalcLinkWin, pgschema.TableLink, pgschema.TableStageLink,
+			pgschema.TableCalcLinkLost, pgschema.TableCalcRef},
+		ingest.LinksPhaseConflicts: {pgschema.TableCalcProblem}, ingest.LinksPhaseCells: {pgschema.TableCalcProblem},
+	}
+)
+
+// rclRowsNow is the number of rows of the tables the computation of the links writes.
+func rclRowsNow(s *rdfSetup, t *testing.T) string {
+	t.Helper()
+	var out []string
+	for _, table := range []string{pgschema.TableCalcEnd, pgschema.TableCalcRef, pgschema.TableCalcToKey, pgschema.TableCalcProblem, pgschema.TableCalcLinkWin,
+		pgschema.TableCalcLinkLost, pgschema.TableStageLink} {
+		out = append(out, fmt.Sprintf("%s=%d", table, s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d"."%s"`, s.ref.KGNo, table))))
+	}
+	return strings.Join(out, " ")
+}
+
+// rclLeft is the tables of a phase that are left to be tried gone, and how many tries there were and failed.
+type rclLeft struct {
+	reads, writes []string
+	tries, failed int
+}
+
+// rclFailing tries the page the place says with the tables left of its phase gone, one at a time. A try of the reading that fails is
+// counted. A try of the writing that fails is counted and leaves the place and the rows as they were; one that does not fail has put the
+// page (the page uses no such table), and the tables after it are left to the next page. It says whether the page was put.
+func rclFailing(s *rdfSetup, t *testing.T, l ingest.RunLease, maker ingest.LinkMaker, left *rclLeft) bool {
+	t.Helper()
+	st, ctx := s.e.st, s.e.ctx
+	place, err := st.RecomputeLinksPlace(ctx, l)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, table := range left.reads {
+		rcpWithout(s, t, table, func() {
+			if _, err := st.RecomputeLinksPage(ctx, l); err != nil {
+				left.failed++
+			}
+		})
+		left.tries++
+	}
+	left.reads = nil
+	page, err := st.RecomputeLinksPage(ctx, l)
+	if err != nil {
+		t.Fatal(err)
+	}
+	made, err := maker.MakeLinks(page)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rows := rclRowsNow(s, t)
+	for len(left.writes) > 0 {
+		table, put := left.writes[0], false
+		left.writes, left.tries = left.writes[1:], left.tries+1
+		rcpWithout(s, t, table, func() { put = st.PutRecomputedLinks(ctx, l, made) == nil })
+		if put {
+			return true
+		}
+		left.failed++
+		after, err := st.RecomputeLinksPlace(ctx, l)
+		if now := rclRowsNow(s, t); err != nil || fmt.Sprintf("%+v", after) != fmt.Sprintf("%+v", place) || now != rows {
+			t.Fatalf("%s: a page of the phase %s that failed moved the run or wrote rows: %+v and %+v, %s and %s", table, place.Phase, place, after, rows, now)
+		}
+	}
+	return false
+}
+
 // rclStopTwice does the computation of the links of the second run, stopped in the phase ends after a page (the next page is read and
-// made and the server is gone before it is put) and taken over, and stopped again in the phase from and taken over again.
+// made and the server is gone before it is put) and taken over, and stopped again in the phase from and taken over again. The first page
+// of each phase is tried with a table gone first (rclFailing).
 func rclStopTwice(s *rdfSetup, t *testing.T, l ingest.RunLease) (ingest.RunLease, ingest.RecomputeLinksCounts) {
 	t.Helper()
 	st, ctx, plans := s.e.st, s.e.ctx, rclPlans(s)
 	maker := rclMaker(t, s, plans)
+	tried := map[string]*rclLeft{}
+	step := func(l ingest.RunLease) ingest.RecomputeLinksPlace {
+		p, err := st.RecomputeLinksPlace(ctx, l)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if tried[p.Phase] == nil {
+			tried[p.Phase] = &rclLeft{reads: rclReadTables[p.Phase], writes: rclWriteTables[p.Phase]}
+		}
+		if rclFailing(s, t, l, maker, tried[p.Phase]) {
+			after, err := st.RecomputeLinksPlace(ctx, l)
+			if err != nil {
+				t.Fatal(err)
+			}
+			return after
+		}
+		return rclOnePage(s, t, l, maker)
+	}
 	if err := st.BeginRecomputeLinks(ctx, l, rclStart(plans, 2)); err != nil {
 		t.Fatal(err)
 	}
-	if p := rclOnePage(s, t, l, maker); p.Phase != ingest.LinksPhaseEnds || p.Unit != 1 || p.Done() {
+	if p := step(l); p.Phase != ingest.LinksPhaseEnds || p.Unit != 1 || p.Done() {
 		t.Fatalf("the place after a page: %+v", p)
 	}
 	page, err := st.RecomputeLinksPage(ctx, l)
@@ -129,15 +224,26 @@ func rclStopTwice(s *rdfSetup, t *testing.T, l ingest.RunLease) (ingest.RunLease
 		t.Errorf("a takeover with other definitions: %v", err)
 	}
 	// the second server goes on to a page of the phase from, and is gone
-	for p, n := rclOnePage(s, t, l2, maker), 0; p.Phase != ingest.LinksPhaseFrom; p, n = rclOnePage(s, t, l2, maker), n+1 {
+	for p, n := step(l2), 0; p.Phase != ingest.LinksPhaseFrom; p, n = step(l2), n+1 {
 		if n > 50 || p.Done() {
 			t.Fatalf("the phase from is not reached: %+v", p)
 		}
 	}
-	if p := rclOnePage(s, t, l2, maker); p.Phase != ingest.LinksPhaseFrom {
+	if p := step(l2); p.Phase != ingest.LinksPhaseFrom {
 		t.Fatalf("the phase from has one page: %+v", p)
 	}
+	// the third server goes on to the end, a page after another, and the run of the step gives the report
 	l3 := rclTakeOver(s, t, l2, "server-c")
+	for p, n := step(l3), 0; !p.Done(); p, n = step(l3), n+1 {
+		if n > 100 {
+			t.Fatalf("the step does not end: %+v", p)
+		}
+	}
+	for _, phase := range []string{ingest.LinksPhaseEnds, ingest.LinksPhaseTo, ingest.LinksPhaseFrom, ingest.LinksPhaseConflicts, ingest.LinksPhaseCells} {
+		if left := tried[phase]; left == nil || left.failed == 0 || left.failed*2 < left.tries {
+			t.Errorf("the phase %s: of the tries with a table gone, too few failed: %+v", phase, left)
+		}
+	}
 	counts, err := ingest.RunRecomputeLinks(ctx, st, l3, rclStart(plans, 2), maker)
 	if err != nil {
 		t.Fatal(err)

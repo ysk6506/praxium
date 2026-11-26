@@ -97,33 +97,14 @@ func TestRclALinkToAnObjectThatIsALeftAsItIsOrACandidateForRetirementIsMade(t *t
 	}
 }
 
-// [REQ-872]
-func TestRclARecordThatARuleHoldsMakesItsLinkAndReportsNothingAndABlankOrWrongKeyMakesNoLinkAndNoProblem(t *testing.T) {
+// [REQ-869] [REQ-870] [REQ-872]
+func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastACellThatGaveNoValueIsSaidAndAHeldRecordOrABlankKeyIsNoProblem(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-	// S1 shows twice: the later row, which a rule holds, says a rack that is not there (no problem, and no link); S4 says no rack at all
-	texts := rclTextsA([]string{"RA,RK1"}, []string{"S1,Zorvane,sn1,RK1,1,on", "S1h,Zorvane,sn1,RK9,2,off", "S2,Zorvane,sn2,RK1,3,off", "S4,Zorvane,sn4,,4,on"}, []string{"u1"})
-	l := rclPrepare(s, t, texts, rclAt(0), true)
-	counts := rclDo(s, t, l, rclPlans(s), 0)
-	got := rclStaged(s, t)
-	problems := rclProblems(s, t)
-	if len(problems) != 0 {
-		t.Errorf("a held record or a blank key is a problem: %v", problems)
-	}
-	if counts.Links != 1 || len(got) != 1 {
-		t.Errorf("the links: %s (%+v)", rclText(got), counts)
-	}
-	refs := strings.Join(rclRefs(s, t), "\n")
-	if strings.Contains(refs, "/S4/2/") || !strings.Contains(refs, "/S1h/2/3/-") {
-		t.Errorf("the references:\n%s", refs)
-	}
-}
-
-// [REQ-869] [REQ-870]
-func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastAndACellThatGaveNoValueIsSaidOfTheRecordThatMadeTheLink(t *testing.T) {
-	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-	// three records of the server sn1 make one link; the place of S2 is a word (no value), the one of S3 is blank (none, and no problem)
+	// three records of the server sn1 make one link; the place of S2 is a word (no value), the one of S3 is blank (none, and no problem).
+	// The server sn1 shows a fourth time in a row a rule holds, which says a rack that is not there (no problem, and no link); S4 says no
+	// rack at all (no link, no reference); S5 is held and was never an object (nothing)
 	texts := rclTextsA([]string{"RA,RK1", "RB,RK2"}, []string{"S1,Zorvane,sn1,RK1,1,on", "S1b,Zorvane,sn1,RK1,5,on", "S1c,Zorvane,sn1,RK1,5,on",
-		"S2,Zorvane,sn2,RK2,front,on", "S3,Zorvane,sn3,RK2,,on"}, []string{"u1"})
+		"S2,Zorvane,sn2,RK2,front,on", "S3,Zorvane,sn3,RK2,,on", "S1h,Zorvane,sn1,RK9,2,off", "S4,Zorvane,sn4,,4,on", "S5,Zorvane,sn5,RK1,3,off"}, []string{"u1"})
 	l := rclPrepare(s, t, texts, rclAt(0), true)
 	counts := rclDo(s, t, l, rclPlans(s), 0)
 	got := rclStaged(s, t)
@@ -144,14 +125,17 @@ func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastAndACellThatGaveNoV
 	if strings.Join(cells, " ") != "S2/invalid_value/0/" {
 		t.Errorf("the problems of the cells are %v: a cell that is blank gives none", cells)
 	}
-	refs := rclRefs(s, t)
-	want := []string{"ds_sv/S1/2/1/-", "ds_sv/S1b/2/1/-", "ds_sv/S1c/2/0/" + link.Ref}
-	for _, w := range want {
-		if !strings.Contains(strings.Join(refs, "\n"), w) {
-			t.Errorf("no reference %s in:\n%s", w, strings.Join(refs, "\n"))
+	refs := strings.Join(rclRefs(s, t), "\n")
+	for _, w := range []string{"ds_sv/S1/2/1/-", "ds_sv/S1b/2/1/-", "ds_sv/S1c/2/0/" + link.Ref, "ds_sv/S1h/2/3/-"} {
+		if !strings.Contains(refs, w) {
+			t.Errorf("no reference %s in:\n%s", w, refs)
 		}
 	}
-	// the chain of the records: S1 and S1b made it with other attributes (S1b is told), S1b and S1c with the same (nobody is)
+	if strings.Contains(refs, "/S4/2/") || strings.Contains(refs, "/S5/") {
+		t.Errorf("a record with a blank key, or one that was never an object, has a reference of a link:\n%s", refs)
+	}
+	// the chain of the records: S1 and S1b made it with other attributes (S1 is told), S1b and S1c with the same (nobody is); the held
+	// record and the blank key are no problem
 	if problems := strings.Join(rclProblems(s, t), " "); problems != "link_conflict/ds_sv/S1" {
 		t.Errorf("the problems are %v", problems)
 	}
