@@ -33,7 +33,7 @@ func rclOldNew(t *testing.T) *rclOldPipeline {
 		t.Fatal(err)
 	}
 	o := &rclOldPipeline{clock: kernel.NewManualClock(rdfT0), fetch: &idnDsFetcher{text: map[string]string{}}}
-	for _, p := range [][2]string{{rclSourceA, rclMappingA}, {rclSourceB, rclMappingB}} {
+	for _, p := range [][2]string{{rclSourceA, rclMappingA}, {rclSourceB, rclMappingBOwn}} {
 		src, err := ingest.ParseSource(strings.NewReader(p[0]))
 		if err != nil {
 			t.Fatal(err)
@@ -79,17 +79,44 @@ func (o *rclOldPipeline) rclLinks(t *testing.T) map[string]graph.LinkRow {
 	return out
 }
 
-// rclProblemsOf is the problems of the link kinds of a report, as kind/dataset/key.
-func rclProblemsOf(r ingest.Report) []string {
-	var out []string
+// rclProblemsOf is the problems of the link kinds of a report, as kind/dataset/key, but the ones of the records of the keys held (records a
+// rule filtered out), which are given apart. The old pipeline gives a record a rule filtered out the problems of the ends that find no
+// object or more than one; ADR-0052 (decision 3) and REQ-435 say such a record reports nothing, and the new flow keeps to them (ADR-0122,
+// the differences from the old flow).
+func rclProblemsOf(r ingest.Report, held map[string]bool) (out, ofHeld []string) {
 	for _, p := range r.Problems {
 		for _, k := range rclKinds {
-			if p.Kind == k {
+			switch {
+			case p.Kind != k:
+			case held[p.Key]:
+				ofHeld = append(ofHeld, p.Kind+"/"+p.Dataset+"/"+p.Key)
+			default:
 				out = append(out, p.Kind+"/"+p.Dataset+"/"+p.Key)
 			}
 		}
 	}
 	sort.Strings(out)
+	return out, ofHeld
+}
+
+// rclHeldKeys is the keys of the rows of the servers that the rule of the first source filters out (the flag is not on).
+func rclHeldKeys(servers []string) map[string]bool {
+	out := map[string]bool{}
+	for _, row := range servers {
+		cells := strings.Split(row, ",")
+		if cells[len(cells)-1] != "on" {
+			out[cells[0]] = true
+		}
+	}
+	return out
+}
+
+// rclOwnRacks is the racks of the second source: the same tags under ids of its own.
+func rclOwnRacks(racks []string) []string {
+	out := make([]string, len(racks))
+	for i, r := range racks {
+		out[i] = "B" + r
+	}
 	return out
 }
 
@@ -130,8 +157,8 @@ func rclDiff(t *testing.T, old graph.LinkRow, got rclLink) []string {
 type rclStep struct{ racks, servers, vms, mounts []string }
 
 // rclSteps are seven steps: a server that finds no rack, two racks of one tag, two records of one server (the later wins and the attributes
-// differ), a server a rule holds, an empty cell, a rack that goes and comes back, and what the second source says about two more servers
-// (it finds the racks and the servers the first source made, and makes the same ambiguous and missing ends).
+// differ), a server a rule holds, an empty cell, a rack that goes and comes back, and what the second source says about servers of its own
+// on racks of its own of the same tags (two records of one server with other attributes, a missing rack, an empty cell and a wrong one).
 func rclSteps() []rclStep {
 	racks := []string{"RA,RK1", "RB,RK2", "RC,RK3"}
 	more := []string{"SV7,Zorvane,sn7,,,on", "SV8,Zorvane,sn8,,,on"} // servers the first source does not mount: it says no rack
@@ -143,7 +170,14 @@ func rclSteps() []rclStep {
 	held := with("SV1,Zorvane,sn1,RK1,1,on", "SV2,Zorvane,sn2,RK2,2,on", "SV3,Zorvane,sn3,RK3,3,on", "SV2h,Zorvane,sn2,RK1,9,off", "SV4,Zorvane,sn4,RK9,4,on")
 	gone := with("SV1,Zorvane,sn1,RK1,1,on", "SV2,Zorvane,sn2,RK2,2,on", "SV2h,Zorvane,sn2,RK1,9,off", "SV4,Zorvane,sn4,RK9,4,on")
 	empty := with("SV1,Zorvane,sn1,RK1,1,on", "SV2,Zorvane,sn2,RK2,2,on", "SV3,Zorvane,sn3,RK3,,on", "SV2h,Zorvane,sn2,RK1,9,off", "SV4,Zorvane,sn4,RK3,4,on")
-	m := func(rows ...string) []string { return rows }
+	// the mounts of the second source are servers of its own: their serials are not the first source's
+	m := func(rows ...string) []string {
+		out := make([]string, len(rows))
+		for i, r := range rows {
+			out[i] = strings.Replace(r, ",sn", ",bn", 1)
+		}
+		return out
+	}
 	return []rclStep{
 		{racks, sv, vms, m("M7,Zorvane,sn7,RK1,7", "M8,Zorvane,sn8,RK2,8")},
 		{racks, dup, vms, m("M7,Zorvane,sn7,RK1,7", "M8,Zorvane,sn8,RK2,8", "M9,Zorvane,sn7,RK1,9")},
@@ -158,11 +192,12 @@ func rclSteps() []rclStep {
 // [REQ-864]
 func TestRclTheStagedLinksAreTheOnesTheOldPipelineMakesFromTheSameCaptures(t *testing.T) {
 	o := rclOldNew(t)
-	k := rclTwo(t)
-	compared, problems, held := 0, 0, 0
+	k := rclTwo(t, rclMappingBOwn)
+	compared, problems, held, ofHeld, ofB := 0, 0, 0, 0, 0
 	for n, st := range rclSteps() {
 		at := rdfT0.Add(time.Duration(n) * 13 * time.Hour)
-		ta, tb := rclTextsA(st.racks, st.servers, st.vms), rclTextsB(st.racks, st.mounts)
+		ta, tb := rclTextsA(st.racks, st.servers, st.vms), rclTextsB(rclOwnRacks(st.racks), st.mounts)
+		heldKeys := rclHeldKeys(st.servers)
 		for _, m := range []pgiTexts{ta, tb} {
 			for name, text := range m {
 				o.fetch.text[name] = text
@@ -188,10 +223,17 @@ func TestRclTheStagedLinksAreTheOnesTheOldPipelineMakesFromTheSameCaptures(t *te
 			for ref, row := range staged {
 				union[ref] = row
 			}
-			old, got := rclProblemsOf(report), rclProblems(s, t)
+			if i == 1 {
+				ofB += len(staged)
+			}
+			old, oldHeld := rclProblemsOf(report, heldKeys)
+			got := rclProblems(s, t)
 			problems += len(got)
+			ofHeld += len(oldHeld)
+			// the records a rule filtered out are not told in the new flow: the list of the new flow has none of them, and is the old
+			// one without them
 			if strings.Join(old, " ") != strings.Join(got, " ") {
-				t.Errorf("step %d source %d: the old pipeline reports %v, the new flow %v", n, i, old, got)
+				t.Errorf("step %d source %d: the old pipeline reports %v (and %v of the held records), the new flow %v", n, i, old, oldHeld, got)
 			}
 			rcpApply(s, t)
 			s.rdfSettle(t, l)
@@ -217,7 +259,9 @@ func TestRclTheStagedLinksAreTheOnesTheOldPipelineMakesFromTheSameCaptures(t *te
 			held = len(union)
 		}
 	}
-	if compared == 0 || problems == 0 || held == 0 {
-		t.Fatalf("the case compares nothing: links %d, problems %d", compared, problems)
+	// the case has links, problems, a step with a held record, and a held record the old pipeline told (the difference is there to be seen)
+	if compared == 0 || problems == 0 || held == 0 || ofHeld == 0 || ofB == 0 {
+		t.Fatalf("the case compares nothing: links %d (of the second source %d), problems %d, links of the step with a held record %d, problems of held records %d",
+			compared, ofB, problems, held, ofHeld)
 	}
 }

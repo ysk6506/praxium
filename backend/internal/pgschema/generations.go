@@ -185,12 +185,9 @@ func leftSteps(schema string) []Step {
 }
 
 // linkSteps is what generator version 12 adds (ADR-0122): the three tables of the computation of the links and the indexes they and the
-// ends of the computation are read by, and the kind of problem link_conflict for the two tables of problems. The tables and the indexes
-// are made beside the others (a table that a reader may have open is not altered). The two tables of problems are not read by a reader
-// (the query schema has no view of them), and their check of the kind is the closed list: the step takes the check and puts it back
-// with the new word, not validated again (it holds for the rows that are written from now on, and no row of a kind it did not allow is
-// there), so that it does not read the table. A schema made by this build has all of it already, so each step is made to be run twice,
-// and a schema that has no such table is left as it is.
+// ends of the computation are read by. The tables and the indexes are made beside the others: no table that is there is altered (a reader
+// may have it open, REQ-680), and no kind of problem is added. A schema made by this build has all of it already, so each step is made to
+// be run twice, and a schema that has no such table is left as it is.
 func linkSteps(schema string) []Step {
 	var steps []Step
 	for _, d := range linkTableDefs() {

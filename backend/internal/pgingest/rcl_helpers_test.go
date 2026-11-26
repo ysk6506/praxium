@@ -40,6 +40,17 @@ const rclSourceB = `{"id":"src_rcl_b","name":"rcl b","adapter":"file","datasets"
  {"id":"ds_rkb","parser":"csv","natural_key":["rack_id"],"columns":[{"name":"rack_id"},{"name":"tag"}]},
  {"id":"ds_mt","parser":"csv","natural_key":["mount_id"],"columns":[{"name":"mount_id"},{"name":"mfr"},{"name":"serial"},{"name":"rack_tag"},{"name":"pos"}]}]}`
 
+// rclMappingBOwn is the second source with racks and servers of its own (its feeds make objects): the old pipeline keeps the identities of
+// a source apart from the other sources', so this is the second source the old pipeline can be held to.
+const rclMappingBOwn = `{"feeds":[
+ {"id":"f_rkb","dataset":"ds_rkb","object_type":"Rack","creates_objects":true,"basis":"declared",
+  "attributes":[{"attribute":"name","column":"rack_id"},{"attribute":"asset_tag","column":"rack_id"}],
+  "identity":[{"components":[{"property":"asset_tag","column":"rack_id"}],"priority":1}]},
+ {"id":"f_mt","dataset":"ds_mt","object_type":"PhysicalServer","creates_objects":true,"basis":"observed","attributes":[{"attribute":"name","column":"mount_id"}],
+  "identity":[{"components":[{"property":"manufacturer","column":"mfr"},{"property":"serial_number","column":"serial"}],"priority":1}]}],
+"links":[{"id":"l_mount_b","link_type":"MOUNTED_IN","from":{"feed":"f_mt","columns":["rack_tag"]},"to":{"feed":"f_rkb","columns":["tag"]},"condition":"same_key","basis":"declared",
+  "attributes":[{"attribute":"position_u","column":"pos"}]}]}`
+
 // the second source finds the racks and the servers the first one made (its feeds make no object) and says where more servers are mounted
 const rclMappingB = `{"feeds":[
  {"id":"f_rkb","dataset":"ds_rkb","object_type":"Rack","basis":"declared","attributes":[],
@@ -177,11 +188,11 @@ type rclKnown struct {
 	plans map[int64]*ingest.Plan
 }
 
-// rclTwo is a KG with the two sources attached.
-func rclTwo(t *testing.T) rclKnown {
+// rclTwo is a KG with the two sources attached, the second one with the mapping given.
+func rclTwo(t *testing.T, mappingB string) rclKnown {
 	t.Helper()
 	a := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-	planB := pgiPlan(t, rclSourceB, rclMappingB)
+	planB := pgiPlan(t, rclSourceB, mappingB)
 	b := &rdfSetup{e: a.e, kg: a.kg, plan: planB, ref: a.e.attach(t, a.kg, planB)}
 	return rclKnown{a: a, b: b, plans: map[int64]*ingest.Plan{a.ref.SrcNo: a.plan, b.ref.SrcNo: b.plan}}
 }

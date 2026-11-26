@@ -81,6 +81,11 @@ func TestRclALinkToAnObjectThatIsALeftAsItIsOrACandidateForRetirementIsMade(t *t
 	if retiring := s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d".calc_object WHERE why = %d`, k, pgschema.ObjectWhyRetire)); retiring != 1 {
 		t.Fatalf("%d objects are candidates for retirement", retiring)
 	}
+	// the record of the rack T1 is one the run only reads again (it did not change): its To end is the one its reference says (the phase
+	// ends) and its object the one its reference of the identification says, so the candidate for retirement is found that way too
+	if again := s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d".calc_record WHERE key = 'R1' AND why = %d`, k, pgschema.CalcWhyExpanded)); again != 1 {
+		t.Fatalf("the record of the rack T1 is not one the run only reads again (%d)", again)
+	}
 	counts := rclDo(s, t, l, rclPlans(s), 0)
 	got := rclStaged(s, t)
 	if counts.Links != 2 || len(got) != 2 || len(rclProblems(s, t)) != 0 || rclDangling(s, t) != 0 {
@@ -113,22 +118,31 @@ func TestRclARecordThatARuleHoldsMakesItsLinkAndReportsNothingAndABlankOrWrongKe
 	}
 }
 
-// [REQ-879]
-func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastAndTheOneThatLostIsUnresolved(t *testing.T) {
+// [REQ-869] [REQ-870]
+func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastAndACellThatGaveNoValueIsSaidOfTheRecordThatMadeTheLink(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-	texts := rclTextsA([]string{"RA,RK1"}, []string{"S1,Zorvane,sn1,RK1,1,on", "S1b,Zorvane,sn1,RK1,5,on", "S1c,Zorvane,sn1,RK1,5,on"}, []string{"u1"})
+	// three records of the server sn1 make one link; the place of S2 is a word (no value), the one of S3 is blank (none, and no problem)
+	texts := rclTextsA([]string{"RA,RK1", "RB,RK2"}, []string{"S1,Zorvane,sn1,RK1,1,on", "S1b,Zorvane,sn1,RK1,5,on", "S1c,Zorvane,sn1,RK1,5,on",
+		"S2,Zorvane,sn2,RK2,front,on", "S3,Zorvane,sn3,RK2,,on"}, []string{"u1"})
 	l := rclPrepare(s, t, texts, rclAt(0), true)
 	counts := rclDo(s, t, l, rclPlans(s), 0)
 	got := rclStaged(s, t)
-	if len(got) != 1 || counts.Links != 1 || counts.Lost != 2 {
+	if len(got) != 3 || counts.Links != 3 || counts.Lost != 2 || counts.Cells != 1 {
 		t.Fatalf("the links: %s (%+v)", rclText(got), counts)
 	}
 	var link rclLink
 	for _, g := range got {
-		link = g
+		if strings.Contains(g.SourceRefs, "/S1") {
+			link = g
+		}
 	}
 	if !strings.Contains(link.Doc, "5") || !strings.Contains(link.SourceRefs, "S1c") {
 		t.Errorf("the record that comes last does not make the link: %s", link.rclText())
+	}
+	cells := expList(s.e, t, fmt.Sprintf(`SELECT c.key || '/' || p.kind || '/' || p.def_no || '/' || p.field FROM "s_%[1]d".calc_problem p JOIN "s_%[1]d".calc_record c ON c.rid = p.rid
+		WHERE p.kind = 'invalid_value' ORDER BY 1`, s.ref.KGNo))
+	if strings.Join(cells, " ") != "S2/invalid_value/0/" {
+		t.Errorf("the problems of the cells are %v: a cell that is blank gives none", cells)
 	}
 	refs := rclRefs(s, t)
 	want := []string{"ds_sv/S1/2/1/-", "ds_sv/S1b/2/1/-", "ds_sv/S1c/2/0/" + link.Ref}
@@ -140,22 +154,6 @@ func TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastAndTheOneThatLostIs
 	// the chain of the records: S1 and S1b made it with other attributes (S1b is told), S1b and S1c with the same (nobody is)
 	if problems := strings.Join(rclProblems(s, t), " "); problems != "link_conflict/ds_sv/S1" {
 		t.Errorf("the problems are %v", problems)
-	}
-}
-
-// [REQ-870]
-func TestRclACellThatGaveNoValueToTheLinkThatIsMadeIsSaidOfTheRecordThatMadeIt(t *testing.T) {
-	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-	texts := rclTextsA([]string{"RA,RK1", "RB,RK2"}, []string{"S1,Zorvane,sn1,RK1,front,on", "S2,Zorvane,sn2,RK2,2,on", "S3,Zorvane,sn3,RK2,,on"}, []string{"u1"})
-	l := rclPrepare(s, t, texts, rclAt(0), true)
-	counts := rclDo(s, t, l, rclPlans(s), 0)
-	if counts.Links != 3 || counts.Cells != 1 {
-		t.Errorf("%+v", counts)
-	}
-	got := expList(s.e, t, fmt.Sprintf(`SELECT c.key || '/' || p.kind || '/' || p.def_no || '/' || p.field FROM "s_%[1]d".calc_problem p JOIN "s_%[1]d".calc_record c ON c.rid = p.rid
-		WHERE p.kind = 'invalid_value' ORDER BY 1`, s.ref.KGNo))
-	if strings.Join(got, " ") != "S1/invalid_value/0/" {
-		t.Errorf("the problems of the cells are %v: a cell that is blank gives none", got)
 	}
 }
 

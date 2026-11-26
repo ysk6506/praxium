@@ -7,11 +7,14 @@ package pgingest
 
 // rclObjOf is the object the record rec (an alias of the table of the records) is bound to for the feed (an expression): the binding the run
 // made, and for a record that the run only reads again (its identification was not redone, so it has no binding) the object its reference
-// of the identification says.
+// of the identification says. A record has one object for a feed (the rows of a binding of several keys say the same one); the smallest is
+// taken, so that the choice does not hang on the order rows are found in. It is an aggregate of the rows of the record and not the first
+// row found: the planner reads the rows of the record by the index, and does not read the table from the start for each end of a page
+// (which a small table invites, and which makes the rows read go with the square of the ends).
 func rclObjOf(rec, feed string) string {
-	return "COALESCE((SELECT b.obj_no FROM {bind} b WHERE b.rid = " + rec + ".rid AND b.feed_no = " + feed + " LIMIT 1), " +
-		"(SELECT y.target_no FROM {rref} y WHERE " + rec + ".why = {WHY} AND y.src_no = " + rec + ".src_no AND y.dataset_no = " + rec + ".dataset_no AND y.key = " + rec +
-		".key AND y.role = {IDENT} AND y.def_no = " + feed + " AND y.target_no IS NOT NULL LIMIT 1))"
+	return "COALESCE((SELECT min(b.obj_no) FROM {bind} b WHERE b.rid = " + rec + ".rid AND b.feed_no = " + feed + "), " +
+		"(SELECT min(y.target_no) FROM {rref} y WHERE " + rec + ".why = {WHY} AND y.src_no = " + rec + ".src_no AND y.dataset_no = " + rec + ".dataset_no AND y.key = " + rec +
+		".key AND y.role = {IDENT} AND y.def_no = " + feed + "))"
 }
 
 // rclRecordsExtentSQL is the next $2 records after $1 that the run only reads again: their ends are the references that are kept.

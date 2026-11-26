@@ -16,6 +16,10 @@ import (
 // are read once by the index of the keys and what the To side has for a key is counted once, so the rows read go with m. The world is made
 // in SQL, and the statements are asked how they went (EXPLAIN ANALYZE) with the plan as it is.
 
+// rclRowsPerEnd is the most rows a statement of the computation of the links may read for an end of the From side of the world of
+// rclShared (the end, its record, its binding, the To records of its key and the ends of them, counted once for a key).
+const rclRowsPerEnd = 16
+
 // rclShared makes the world of m From records and m To records of one key, in a run whose objects are computed.
 func rclShared(t *testing.T, m int) (*rdfSetup, ingest.RunLease) {
 	t.Helper()
@@ -69,13 +73,16 @@ func rclRowsRead(t *testing.T, m int) (map[string]float64, ingest.RecomputeLinks
 		for _, n := range read.rows {
 			out[what] += n
 		}
+		t.Logf("m %d, %s: %v by %v", m, what, read.rows, read.scans)
 	}
 	return out, counts
 }
 
 // [REQ-865]
 func TestRclWhatManyEndsOfOneKeyShareIsReadOnceSoTheRowsReadGoWithTheNumberOfEnds(t *testing.T) {
-	const m = 150
+	// m is big enough that the planner reads the bindings of a record by their index at both sizes (with a table of a few pages it reads the
+	// table from the start for each row, which is the square of the ends; the bound of each size below fails then)
+	const m = 300
 	small, counts := rclRowsRead(t, m)
 	big, bigCounts := rclRowsRead(t, 3*m)
 	// every server says the rack of the tag, one link each (m servers, m links, one more for each record that wins none: the servers are
@@ -89,6 +96,12 @@ func TestRclWhatManyEndsOfOneKeyShareIsReadOnceSoTheRowsReadGoWithTheNumberOfEnd
 		t.Logf("%s: m %.0f rows, 3m %.0f rows", what, a, b)
 		if b > 3.4*a {
 			t.Errorf("%s: %.0f rows for %d ends and %.0f for %d: more than three times as many", what, a, m, b, 3*m)
+		}
+		// and a bound of its own for each size, so that a plan that reads the square at the small size and not at the big one (the
+		// planner reads a small table from the start for each row) is not taken for one that goes with the ends: a statement reads a
+		// few rows for each end, and the references of the other keys (thirty times the ends) are not read
+		if a > rclRowsPerEnd*float64(m) || b > rclRowsPerEnd*float64(3*m) {
+			t.Errorf("%s: %.0f rows for %d ends and %.0f for %d: more than %d rows for an end", what, a, m, b, 3*m, rclRowsPerEnd)
 		}
 		checked++
 	}

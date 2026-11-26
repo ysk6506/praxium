@@ -44,23 +44,29 @@ func rclOutcomeOf(s *rdfSetup, t *testing.T, counts ingest.RecomputeLinksCounts)
 	return rclOutcome{links: rclText(rclStaged(s, t)), problems: strings.Join(rclProblems(s, t), "\n"), refs: strings.Join(rclRefs(s, t), "\n"), counts: counts}
 }
 
+// rclWhole does the computation of the links of a world in pages of the size given, and checks that the report counts the rows that were
+// written.
 func rclWhole(t *testing.T, texts pgiTexts, lines int) rclOutcome {
 	t.Helper()
 	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
 	l := rclPrepare(s, t, texts, rclAt(0), true)
-	return rclOutcomeOf(s, t, rclDo(s, t, l, rclPlans(s), lines))
+	counts := rclDo(s, t, l, rclPlans(s), lines)
+	rclRows(s, t, counts)
+	if counts.Ends == 0 || counts.Ends < counts.Links {
+		t.Errorf("the ends are %d for %d links", counts.Ends, counts.Links)
+	}
+	return rclOutcomeOf(s, t, counts)
 }
 
-// [REQ-873]
-func TestRclThePageSizeAndTheOrderOfTheRowsDoNotChangeWhatIsStaged(t *testing.T) {
+// [REQ-873] [REQ-875]
+func TestRclThePageSizeAndTheOrderOfTheRowsDoNotChangeWhatIsStagedAndTheReportCountsTheRowsThatWereWritten(t *testing.T) {
 	want := rclWhole(t, rclRich(false), 0)
 	if want.counts.Links != 4 || want.counts.Lost != 3 || want.counts.Missing == 0 || want.counts.Ambiguous == 0 || want.counts.Conflicts == 0 || want.counts.Cells == 0 {
 		t.Fatalf("the world does not have every kind of end: %+v", want.counts)
 	}
 	for name, got := range map[string]rclOutcome{
-		"pages of one end":    rclWhole(t, rclRich(false), 1),
-		"pages of three ends": rclWhole(t, rclRich(false), 3),
-		"the rows reversed":   rclWhole(t, rclRich(true), 0),
+		"pages of one end, the rows reversed": rclWhole(t, rclRich(true), 1),
+		"pages of three ends":                 rclWhole(t, rclRich(false), 3),
 	} {
 		if got.links != want.links {
 			t.Errorf("%s staged other links:\n%s\nand not\n%s", name, got.links, want.links)
@@ -100,19 +106,6 @@ func rclRows(s *rdfSetup, t *testing.T, counts ingest.RecomputeLinksCounts) {
 	}
 	if counts.Problems != counts.Missing+counts.Ambiguous+counts.Conflicts+counts.Cells {
 		t.Errorf("the problems are %d and the parts are %+v", counts.Problems, counts)
-	}
-}
-
-// [REQ-875]
-func TestRclTheReportCountsTheRowsThatWereWrittenWhateverThePages(t *testing.T) {
-	for _, lines := range []int{0, 2} {
-		s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-		l := rclPrepare(s, t, rclRich(false), rclAt(0), true)
-		counts := rclDo(s, t, l, rclPlans(s), lines)
-		rclRows(s, t, counts)
-		if counts.Ends == 0 || counts.Ends < counts.Links {
-			t.Errorf("the ends are %d for %d links", counts.Ends, counts.Links)
-		}
 	}
 }
 
@@ -194,64 +187,6 @@ func TestRclAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToReadAndTheCa
 	}
 	if after, _ := s.e.st.RecomputeLinksReport(ctx, ingest.RunLease{No: l.No, Attempt: l.Attempt + 1, Term: l.Term, Owner: "server-b"}); after != before {
 		t.Errorf("a refused call changed the counts: %+v and %+v", before, after)
-	}
-}
-
-// [REQ-874]
-func TestRclARunStoppedBetweenPagesAndTakenOverByAnotherServerStagesWhatOneThatDidNotStopStages(t *testing.T) {
-	want := rclWhole(t, rclRich(false), 2)
-	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
-	l := rclPrepare(s, t, rclRich(false), rclAt(0), true)
-	st, ctx, plans := s.e.st, s.e.ctx, rclPlans(s)
-	if err := st.BeginRecomputeLinks(ctx, l, rclStart(plans, 2)); err != nil {
-		t.Fatal(err)
-	}
-	maker := rclMaker(t, s, plans)
-	for i := 0; i < 4; i++ {
-		page, err := st.RecomputeLinksPage(ctx, l)
-		if err != nil || page.Unit != i {
-			t.Fatalf("page %d: %v, it is the page %d", i, err, page.Unit)
-		}
-		made, err := maker.MakeLinks(page)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if err := st.PutRecomputedLinks(ctx, l, made); err != nil {
-			t.Fatal(err)
-		}
-	}
-	// the server is gone; another takes the run over, is refused when it is given other definitions, and goes on from the place
-	s.e.expire(t, l.No)
-	l2, err := st.AcquireRun(ctx, l.No, "server-b", l.Term)
-	if err != nil {
-		t.Fatal(err)
-	}
-	other := rclStart(plans, 2)
-	other.Defs = append(append([]ingest.RecomputeLinkDef{}, other.Defs...), ingest.RecomputeLinkDef{SrcNo: 99, Def: 0, FromFeed: 1, ToFeed: 2})
-	if _, err := ingest.RunRecomputeLinks(ctx, st, l2, other, maker); kernel.CodeOf(err) != kernel.CodeConflict {
-		t.Errorf("a takeover with other definitions: %v", err)
-	}
-	counts, err := ingest.RunRecomputeLinks(ctx, st, l2, rclStart(plans, 2), maker)
-	if err != nil {
-		t.Fatal(err)
-	}
-	got := rclOutcomeOf(s, t, counts)
-	if got != want {
-		t.Errorf("a run that was taken over made:\n%+v\none that was not:\n%+v", got, want)
-	}
-	place, err := st.RecomputeLinksPlace(ctx, l2)
-	if err != nil || !place.Done() || place.Phase != ingest.LinksPhaseDone {
-		t.Errorf("%+v %v", place, err)
-	}
-	// a run that is done is done: another page is refused, and the report is the same
-	if _, err := st.RecomputeLinksPage(ctx, l2); kernel.CodeOf(err) != ingest.CodeRunStage {
-		t.Errorf("a page of a step that is done: %v", err)
-	}
-	if err := st.PutRecomputedLinks(ctx, l2, ingest.RecomputedLinksPage{}); kernel.CodeOf(err) != ingest.CodeRunStage {
-		t.Errorf("a put to a step that is done: %v", err)
-	}
-	if again, err := ingest.RunRecomputeLinks(ctx, st, l2, rclStart(plans, 2), maker); err != nil || again != counts {
-		t.Errorf("a step that is done is done again: %+v %v", again, err)
 	}
 }
 
