@@ -48,7 +48,7 @@ type fileKeys struct {
 var _ secrets.KeyProvider = (*fileKeys)(nil)
 
 // MasterKey gives the master key. The path of the key file is made one clean absolute path (the links resolved) once,
-// and that path is the one that is checked, read, made and printed.
+// and that path is the one that is checked, read, made and printed (keyPath).
 func (k *fileKeys) MasterKey() (*secrets.MasterKey, error) {
 	ctx := context.Background()
 	create, err := k.creationAllowed(ctx)
@@ -59,11 +59,8 @@ func (k *fileKeys) MasterKey() (*secrets.MasterKey, error) {
 	if err != nil {
 		return nil, err
 	}
-	path, err := normalizePath(raw)
+	path, err := k.keyPath(raw)
 	if err != nil {
-		return nil, err
-	}
-	if err := k.checkOutside(path); err != nil {
 		return nil, err
 	}
 	key, err := readMasterKey(path)

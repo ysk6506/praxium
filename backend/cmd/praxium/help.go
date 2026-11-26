@@ -41,7 +41,8 @@ Bring in your data
   model show       Show the stored properties (also: model export, model history)
 
 Secrets for sources (passwords and tokens that sources need; a value is never shown)
-  secret     Put them in the data folder, add versions, retire, delete, say which sources and addresses may use them
+  secret     Put them in the data folder, add versions, retire, delete, say which sources and addresses may use them;
+             secret keygen makes the master key file before any secret
 
 Run a server
   api serve    The REST API server: production with built-in sign-in (access tokens), or development mode
