@@ -24,8 +24,8 @@ func rcpReplacer(r *rcpRun) *strings.Replacer {
 		"{cref}", r.t(pgschema.TableCalcRef), "{raw}", r.t(pgschema.TableRawRecord), "{ds}", pgschema.TableSourceDataset,
 		"{obj}", r.t(pgschema.TableObject), "{newobj}", r.t(pgschema.TableCalcNewObj), "{ask}", r.t(pgschema.TableCalcAsk),
 		"{prob}", r.t(pgschema.TableCalcProblem), "{stobj}", r.t(pgschema.TableStageObject), "{stvol}", r.t(pgschema.TableStageVolat),
-		"{stid}", r.t(pgschema.TableStageIdent),
-		"{RETIRE}", whyRetire, "{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)), "{IDENT}", roleIdent, "{CLAIM}", roleClaim, "{FOUND}", stateFound,
+		"{stid}", r.t(pgschema.TableStageIdent), "{left}", r.t(pgschema.TableCalcLeft), "{newkey}", r.t(pgschema.TableCalcNewKey), "{bind}", r.t(pgschema.TableCalcBind),
+		"{UNRES}", strconv.Itoa(int(pgschema.RefUnresolved)), "{RETIRE}", whyRetire, "{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)), "{IDENT}", roleIdent, "{CLAIM}", roleClaim, "{FOUND}", stateFound,
 	)
 }
 
@@ -114,7 +114,10 @@ func (r *rcpRun) exec(ctx context.Context, tx *sql.Tx, what, query string, args 
 // identifiers.
 func (r *rcpRun) put(ctx context.Context, tx *sql.Tx, page ingest.RecomputedPage) error {
 	c := &r.st.Counts
-	var err error
+	lefts, err := r.leftRows(page)
+	if err != nil {
+		return err
+	}
 	if len(page.Records) > 0 {
 		var srcs, dss, keys []string
 		for _, x := range page.Records {
@@ -129,7 +132,10 @@ func (r *rcpRun) put(ctx context.Context, tx *sql.Tx, page ingest.RecomputedPage
 	if err := r.putProblems(ctx, tx, page.Problems); err != nil {
 		return err
 	}
-	return r.putObjects(ctx, tx, page.Objects)
+	if err := r.putObjects(ctx, tx, page.Objects); err != nil {
+		return err
+	}
+	return r.leave(ctx, tx, lefts)
 }
 
 func (r *rcpRun) putProblems(ctx context.Context, tx *sql.Tx, problems []ingest.RecomputedProblem) error {

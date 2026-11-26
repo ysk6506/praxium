@@ -13,9 +13,10 @@ import (
 // [REQ-941]
 func TestRcpDiffFromGeneratorSevenToEightAddsTheTwoIndexesOfTheComputationOfTheObjectsAndNothingElse(t *testing.T) {
 	next := igtPlan(t).Manifest
-	if next.GeneratorVersion != 8 {
+	if next.GeneratorVersion < 8 {
 		t.Fatalf("the generator of this build is %d", next.GeneratorVersion)
 	}
+	next.GeneratorVersion = 8 // the steps of version 8 alone: what a later version adds is in the tests of that version
 	old := next
 	old.GeneratorVersion = 7
 	delta, err := pgschema.Diff(old, next)

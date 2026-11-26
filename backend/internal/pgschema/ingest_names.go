@@ -41,6 +41,10 @@ const (
 	TableStageIdent  = "stage_ident"
 	TableCalcProblem = "calc_problem"
 	TableCalcRef     = "calc_ref"
+	// TableCalcLeft has a row for each object of the run that the computation of the objects did not make (generator version 9,
+	// ADR-0119): why, how many lines it had and what the reason is. An object the KG has is left as it is; one the run would have
+	// made is not made, and what pointed at it is taken back.
+	TableCalcLeft = "calc_left"
 	// TableCalcOwner holds the number of the run that the tables of the computation are of (one row, written when the computation
 	// begins, emptied with the others): the tables are one set per KG, so a run that comes back to the KG after another source
 	// began its computation finds that they are not its own (ADR-0102).
@@ -137,6 +141,7 @@ const (
 	ColParentRef   = "parent_ref"
 	ColMissing     = "missing"
 	ColAnswer      = "answer"
+	ColLines       = "lines"
 )
 
 // The codes of the small enumerations the ingestion tables keep as numbers, where a table has many rows.
@@ -196,6 +201,14 @@ const (
 	// ObjectWhyIdentified is why an object is in calc_object: a record of the run was bound to it, or made it, in the identification.
 	ObjectWhyIdentified int16 = 1
 
+	// Why the computation of the objects left an object as it is (calc_left.why, ADR-0119): no record stands under it, a line of it
+	// cannot be read, no name is known for it, it has more lines than the limit, or it is made under a parent that was left.
+	LeftEmpty      int16 = 1
+	LeftUnreadable int16 = 2
+	LeftNameless   int16 = 3
+	LeftTooMany    int16 = 4
+	LeftParent     int16 = 5
+
 	// CalcJobExpand is the job that widens the set of the run (step 3 to 4, ADR-0114); its place is in the counts.
 	CalcJobExpand int16 = 3
 	// The other reasons an object is in calc_object, which the expansion gives: a record of the run had a reference to it before, a record
@@ -249,9 +262,12 @@ func ProblemKinds() []string {
 // StepFourProblemKinds lists the kinds of problem that the fourth step (the new computation of the objects and the links) owns: the
 // problems of a record that the step gives again for every record it reads again, the records that were read again only because they
 // feed an object that is computed again included. The kinds of the receiving and of the identification are given for the records that
-// changed alone. The objects' side is source_conflict; the links' side is the kinds that follow it.
+// changed alone. It is the kinds the step writes now: the objects' side is source_conflict. The kinds of the links (link_target_missing,
+// link_target_ambiguous, cardinality) are added by the step that makes the links. The problems of the records under an object that was
+// left (shape_changed, missing_name, identity_conflict, context_parent_missing) are of the records of the run and are the ones of
+// their own steps' kinds, so they are not owned here.
 func StepFourProblemKinds() []string {
-	return []string{ProblemSourceConflict, ProblemLinkTarget, ProblemLinkAmbiguous, ProblemCardinality}
+	return []string{ProblemSourceConflict}
 }
 
 // The stages of a run and how it ended (sync_run.stage). The first group is the work of a run; the second is how it
@@ -313,7 +329,7 @@ func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcOwner, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
 		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
-		TableCalcProblem, TableCalcRef, TableIngestDiff,
+		TableCalcProblem, TableCalcRef, TableCalcLeft, TableIngestDiff,
 	}
 }
 
