@@ -21,7 +21,7 @@ amends_tests:
   - go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported
   - go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted
 test_change_reason: 단언을 바꾼 것은 둘이다 — TestHxeADetailThatHasNoKeyIsAValueThatWasNotRead는 목록 꼴 오류 원소 세 행을 더하고(기대 seen), 모든 값에 빈 목록이 온 행의 기대를 complete에서 seen으로 바꾼다(R2 빈 응답 가드, 이 ADR의 결정 1). TestHxeABatchOfValuesThatJSONWritesLongerFitsTheBody는 본문 한도를 1000에서 4000 바이트로, 값을 10개에서 40개로 바꿔 3배 추정이 통과하지 않게 한다(단언은 그대로). TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported와 TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted는 단언과 금지 목록이 그대로이고, httpsource의 제품 코드를 글자로 읽으므로 child.go, parentscan.go, readloop.go, send.go의 변경으로 지문만 바뀌었다 (새 코드에 금지된 글자는 없다).
-decision_hash: 4e0470ba79b9af27
+decision_hash: b9c4ff5452b90480
 ---
 # ADR-0117 HTTP 소스 자식 데이터셋의 완결 판정 보완
 
@@ -63,4 +63,4 @@ ADR-0111(#104)이 자식 데이터셋의 두 단계 읽기, 건너뜀의 규칙,
 
 - 모든 값의 응답이 빈 성공이면 보인 것만이다. 최상위 데이터셋은 같은 응답을 완전으로 읽으므로(`{"items":null}`, 204, `[]`), 큰 지워짐은 확인 뒤 적용(I-8)의 안전장치가 맡는다.
 - 앞뒤 공백이 흔한 부모 값은 보내지 않으므로 자식이 불완전이 될 수 있다.
-- 값이 셋을 넘고 모든 응답이 비면 보인 것만으로 끝내므로, 건강할 때 늘 비는 자식(예: 호스트별 경보)은 옛 행이 지워지지 않는다. 정의로 끄는 스위치는 후속(1차 클로즈 베타 전).
+- 값이 셋을 넘고 모든 응답이 비면 보인 것만으로 끝내므로, 정상일 때도 늘 비는 자식(예: 호스트별 경보)은 옛 행이 지워지지 않는다. 정의로 끄는 스위치는 후속(1차 클로즈드 베타 전).
