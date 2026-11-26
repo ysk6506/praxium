@@ -156,6 +156,11 @@ func (rn *run) scanParent(ctx context.Context, ds, parent ingest.Dataset, sep st
 	return sc, rn.walkParent(ctx, parent, sc, add)
 }
 
+// previewParentCapped says whether a preview or a check has sent as many requests of the parent as it may (previewParentRequests).
+func (rn *run) previewParentCapped(requests int) bool {
+	return (rn.keep || rn.firstOnly) && requests >= previewParentRequests
+}
+
 // walkParent reads the pages of the parent and gives the records to add. A limit, or a parent that is not complete, is the reason
 // of the scan, and an error that is not one is the error of the read.
 func (rn *run) walkParent(ctx context.Context, parent ingest.Dataset, sc *scan, add func(it item) bool) error {
@@ -165,7 +170,7 @@ func (rn *run) walkParent(ctx context.Context, parent ingest.Dataset, sc *scan, 
 			sc.reason = "the parent has more than " + strconv.Itoa(rn.maxPages) + " pages (max_pages), so its values were not all read and no request of the dataset was made"
 			return nil
 		}
-		if (rn.keep || rn.firstOnly) && st.requests >= previewParentRequests {
+		if rn.previewParentCapped(st.requests) {
 			sc.partial = true // the values read so far are what the preview or the check uses
 			return nil
 		}

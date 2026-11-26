@@ -105,6 +105,16 @@ func (k *kid) end(l *loop) ingest.Completeness {
 	if over > 3 && over*20 > k.total {
 		return ingest.Completeness{Reason: strconv.Itoa(over) + " of " + strconv.Itoa(k.total) + " distinct values of the parent were not read (a 404 with on_not_found skip, a value that is not sent: source.parent_value_invalid, or an answer with no natural key), which is more than 5% and more than 3, so the path or the rights may be wrong"}
 	}
+	notes := k.notes(l, end, over)
+	if len(notes) == 0 {
+		return end
+	}
+	return ingest.Completeness{SeenOnly: true, Reason: strings.Join(notes, "; ")}
+}
+
+// notes is what says why a child that ends as what was seen was not read as all there is: the values that were not read, the values
+// of a batch that had no record, the parent, and the answers that were all empty.
+func (k *kid) notes(l *loop, end ingest.Completeness, over int) []string {
 	var notes []string
 	if end.SeenOnly {
 		notes = append(notes, end.Reason)
@@ -124,10 +134,7 @@ func (k *kid) end(l *loop) ingest.Completeness {
 	if k.parentNote != "" {
 		notes = append(notes, "the parent was read as what was seen: "+k.parentNote)
 	}
-	if len(notes) == 0 {
-		return end
-	}
-	return ingest.Completeness{SeenOnly: true, Reason: strings.Join(notes, "; ")}
+	return notes
 }
 
 // readChild reads the datasets of a child: the parent to its end, then the units.
