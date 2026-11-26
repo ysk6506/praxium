@@ -62,12 +62,13 @@ type made struct {
 	plan pgschema.Plan
 }
 
-// queryPart is one query schema of a plan: its name, the steps from the one that drops it to the one of its rights, and the mark
-// its comment carries once they ran.
+// queryPart is one query schema of a plan: its name, the steps from the one that drops it to the one of its rights, the mark its
+// comment carries once they ran, and the roles of the plan, which the steps give rights to.
 type queryPart struct {
 	name  string
 	steps []pgschema.Step
 	mark  string
+	roles []string
 }
 
 // queryParts cuts the steps of the query schema of a plan into its schemas: a part starts at a step of a schema of another name, and
@@ -102,6 +103,7 @@ func queryParts(p pgschema.Plan) ([]queryPart, error) {
 			text.WriteString(st.What + "\x00" + st.Name + "\x00" + st.SQL + "\x00")
 		}
 		parts[i].mark = queryMarkPrefix + kernel.HashBytes([]byte(text.String())).String()
+		parts[i].roles = p.Roles
 	}
 	return parts, nil
 }
@@ -126,7 +128,7 @@ func (s *Store) makeQuerySchemas(ctx context.Context, sh *shard, kg graph.KGID, 
 	}
 	for i, part := range parts {
 		last := making && i == len(parts)-1
-		if err := locked(ctx, sh, kg, func(tx *sql.Tx) error { return s.makeQueryPart(ctx, tx, kg, p.Roles, part, making, last) }); err != nil {
+		if err := locked(ctx, sh, kg, func(tx *sql.Tx) error { return s.makeQueryPart(ctx, tx, kg, part, making, last) }); err != nil {
 			return err
 		}
 	}
@@ -135,7 +137,7 @@ func (s *Store) makeQuerySchemas(ctx context.Context, sh *shard, kg graph.KGID, 
 
 // makeQueryPart is the transaction of one query schema: the roles (made when the cluster has none of the name), the steps and
 // the mark, unless the schema has its mark already.
-func (s *Store) makeQueryPart(ctx context.Context, tx *sql.Tx, kg graph.KGID, roles []string, part queryPart, making, last bool) error {
+func (s *Store) makeQueryPart(ctx context.Context, tx *sql.Tx, kg graph.KGID, part queryPart, making, last bool) error {
 	if err := partGoesOn(ctx, tx, kg, making); err != nil {
 		return err
 	}
@@ -146,7 +148,7 @@ func (s *Store) makeQueryPart(ctx context.Context, tx *sql.Tx, kg graph.KGID, ro
 	step := schemaStepFresh
 	if have != part.mark {
 		step = schemaStepQuery
-		if err := runQuerySteps(ctx, tx, pgschema.Plan{Query: part.steps, Roles: roles}); err != nil {
+		if err := runQuerySteps(ctx, tx, pgschema.Plan{Query: part.steps, Roles: part.roles}); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `COMMENT ON SCHEMA `+pgschema.QuoteIdent(part.name)+` IS `+pgschema.QuoteLiteral(part.mark)); err != nil {

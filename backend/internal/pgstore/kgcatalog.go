@@ -68,10 +68,7 @@ func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 	if err != nil {
 		return graph.KG{}, err
 	}
-	if err := s.endClashingDeletes(ctx, sh, kg); err != nil {
-		return graph.KG{}, err
-	}
-	if err := s.endClashingMakings(ctx, sh, kg.ID, kg.Name, kg.Role == graph.RoleProduction); err != nil {
+	if err := s.endClashing(ctx, sh, kg); err != nil {
 		return graph.KG{}, err
 	}
 	var out made
@@ -89,6 +86,15 @@ func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 		return graph.KG{}, err
 	}
 	return kg, nil
+}
+
+// endClashing ends what a new KG would clash with and is not there for the caller: the deletes that stopped (ADR-0125) and the
+// makings that stopped and whose term is over (ADR-0126), of its id, its name or the one production KG.
+func (s *Store) endClashing(ctx context.Context, sh *shard, kg graph.KG) error {
+	if err := s.endClashingDeletes(ctx, sh, kg); err != nil {
+		return err
+	}
+	return s.endClashingMakings(ctx, sh, kg.ID, kg.Name, kg.Role == graph.RoleProduction)
 }
 
 // madeKG is the KG that CreateKG makes, and returns, from the one it is given.
