@@ -41,6 +41,9 @@ amends_tests:
   - go:backend/internal/pgschema::TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix
 test_change_reason: 생성기 버전이 6에서 7이 되어, 버전 단언의 값이 바뀌고(6에서 7), 5에서 최신까지와 3에서 최신까지의 단계를 확인하던 두 테스트는 목표 버전(6)을 명시해 같은 단언을 한다. 6에서 7의 단계는 새 테스트(`ident_generation_test.go`)가 확인한다. 단언은 줄지 않았다.
 decision_hash: 6dd04dbdbea6eb21
+amended_by:
+  - adr: "0114"
+    what: 결정 1의 피드 표(`IdentifyFeed`)에 `Retires`를 더하고, 3단계의 끝내기가 `record_ref.retirable`을 그 표지로 쓰는 것
 ---
 # ADR-0108 새 수집 흐름의 3단계(영향 집합의 출발과 식별)
 

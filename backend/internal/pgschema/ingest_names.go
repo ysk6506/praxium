@@ -193,6 +193,15 @@ const (
 	// ObjectWhyIdentified is why an object is in calc_object: a record of the run was bound to it, or made it, in the identification.
 	ObjectWhyIdentified int16 = 1
 
+	// CalcJobExpand is the job that widens the set of the run (step 3 to 4, ADR-0114); its place is in the counts.
+	CalcJobExpand int16 = 3
+	// The other reasons an object is in calc_object, which the expansion gives: a record of the run had a reference to it before, a record
+	// that claims the same identifier as a record of the run has it, or it is a candidate for retirement (no open record supports it and
+	// a reference to it is retirable). An object is in the table once, so an object that is identified has the first reason of the run.
+	ObjectWhyOldRef int16 = 2
+	ObjectWhyClaim  int16 = 3
+	ObjectWhyRetire int16 = 4
+
 	// The kinds of a row of ingest_diff, in the order the apply writes them: the objects (the registry, the type
 	// tables, the history, the retirement), the identification keys, the links, the identifiers.
 	DiffKindObject     int16 = 0

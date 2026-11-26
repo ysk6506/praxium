@@ -127,8 +127,11 @@ func (r *identRun) finish(ctx context.Context, tx *sql.Tx) error {
 			"CASE WHEN ctx THEN '" + pgschema.ProblemContextParent + "' ELSE '" + pgschema.ProblemIdentityConflict + "' END, " +
 			"CASE WHEN ctx THEN 'the parent of this record is not found, so its key cannot be told' ELSE 'no key of this record could be bound to an object' END FROM p",
 			[]*int{&st.Counts.Unresolved}, false},
-		{"end the identification", "INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT rid, " + id + ", feed_no, 0, NULL, obj_no, " +
-			strconv.Itoa(int(pgschema.RefResolved)) + ", false FROM {bind} WHERE rid > $1 AND rid <= $2", []*int{&st.Counts.Bound}, false},
+		// the reference of a record to its object is retirable when the feed of the record may retire what it makes (the judge of what
+		// may be retired reads it: expand_retire.go)
+		{"end the identification", "WITH {feeds} INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT b.rid, " + id + ", b.feed_no, 0, NULL, b.obj_no, " +
+			strconv.Itoa(int(pgschema.RefResolved)) + ", COALESCE(f.retires, false) FROM {bind} b" + probe("x.src_no", "{rec}", "rc", "x.rid = b.rid") +
+			" LEFT JOIN feeds f ON f.src_no = rc.src_no AND f.feed_no = b.feed_no WHERE b.rid > $1 AND b.rid <= $2", []*int{&st.Counts.Bound}, false},
 		{"end the identification", "INSERT INTO {objrun} (obj_no, why) SELECT DISTINCT obj_no, " + strconv.Itoa(int(pgschema.ObjectWhyIdentified)) +
 			" FROM {bind} WHERE rid > $1 AND rid <= $2 ON CONFLICT DO NOTHING", nil, false},
 	}

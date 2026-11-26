@@ -103,7 +103,7 @@ func (r *identRun) t(table string) string { return pgschema.TableRef(r.kgNo, tab
 // feedSQL are the literals of the feeds that the statements of the identification use: the feeds that make objects, and the order of
 // the keys of the model, for the feeds of every source whose plan was given (a feed is by the source and its number).
 func (r *identRun) feedSQL() string {
-	var srcs, nos, creates, names, ks, kf, ko, km []string
+	var srcs, nos, creates, retires, names, ks, kf, ko, km []string
 	feeds := append([]ingest.IdentifyFeed(nil), r.st.Feeds...)
 	sort.Slice(feeds, func(i, j int) bool {
 		if feeds[i].SrcNo != feeds[j].SrcNo {
@@ -113,15 +113,15 @@ func (r *identRun) feedSQL() string {
 	})
 	for _, f := range feeds {
 		srcs, nos, creates = append(srcs, strconv.FormatInt(f.SrcNo, 10)), append(nos, strconv.Itoa(f.Feed)), append(creates, strconv.FormatBool(f.Creates))
-		names = append(names, strconv.Itoa(f.NameCol))
+		names, retires = append(names, strconv.Itoa(f.NameCol)), append(retires, strconv.FormatBool(f.Retires))
 		for _, k := range f.Keys {
 			ks, kf = append(ks, strconv.FormatInt(f.SrcNo, 10)), append(kf, strconv.Itoa(f.Feed))
 			ko, km = append(ko, strconv.Itoa(k.Ord)), append(km, strconv.Itoa(k.ModelOrd))
 		}
 	}
 	arr := func(items []string, typ string) string { return "'{" + strings.Join(items, ",") + "}'::" + typ + "[]" }
-	return "feeds AS (SELECT src_no, feed_no, creates, name_col FROM unnest(" + arr(srcs, "int") + ", " + arr(nos, "int") + ", " + arr(creates, "boolean") + ", " + arr(names, "int") +
-		") AS f(src_no, feed_no, creates, name_col)), " +
+	return "feeds AS (SELECT src_no, feed_no, creates, name_col, retires FROM unnest(" + arr(srcs, "int") + ", " + arr(nos, "int") + ", " + arr(creates, "boolean") + ", " + arr(names, "int") +
+		", " + arr(retires, "boolean") + ") AS f(src_no, feed_no, creates, name_col, retires)), " +
 		"kord AS (SELECT src_no, feed_no, key_ord, model_ord FROM unnest(" + arr(ks, "int") + ", " + arr(kf, "int") + ", " + arr(ko, "int") + ", " + arr(km, "int") +
 		") AS k(src_no, feed_no, key_ord, model_ord))"
 }

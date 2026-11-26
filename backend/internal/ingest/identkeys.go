@@ -27,7 +27,7 @@ func IdentifyFeedsOf(plans map[int64]*Plan) []IdentifyFeed {
 func (p *Plan) IdentifyFeeds(srcNo int64) []IdentifyFeed {
 	out := make([]IdentifyFeed, 0, len(p.feeds))
 	for _, fp := range p.feeds {
-		f := IdentifyFeed{SrcNo: srcNo, Feed: fp.index, TypeNo: fp.typ.TypeNo, Creates: fp.feed.CreatesObjects, NameCol: p.nameCell(fp)}
+		f := IdentifyFeed{SrcNo: srcNo, Feed: fp.index, TypeNo: fp.typ.TypeNo, Creates: fp.feed.CreatesObjects, Retires: fp.feed.CreatesObjects && fp.feed.RetiresObjects, NameCol: p.nameCell(fp)}
 		for ord := range fp.keys {
 			f.Keys = append(f.Keys, IdentifyKey{Ord: ord, ModelOrd: fp.keys[ord].modelOrd})
 		}
