@@ -26,7 +26,7 @@ func TestExpAnObjectThatARecordOfAnotherSourceStandsUnderIsNotACandidateAndOneTh
 		s.ref.KGNo, pgschema.RefRoleIdentity, pgschema.RefResolved), other.SrcNo, other.Datasets["ds_b"], obj)
 	// the record of the first source says another serial: it leaves the object
 	l, _ := idnPipeline(s, t, idnServers("A,sn1x,Zorvane,u1x"), rdfT0.Add(time.Hour), 0)
-	start := ingest.ExpandStart{}
+	start := ingest.ExpandStart{Feeds: expFeeds(s)}
 	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, start); err != nil {
 		t.Fatal(err)
 	}

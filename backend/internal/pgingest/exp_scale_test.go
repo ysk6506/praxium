@@ -146,7 +146,7 @@ func expRowsRead(t *testing.T, m, size int) (map[string]float64, ingest.ExpandCo
 	s, l := expShared(t, m)
 	total := map[string]float64{}
 	s.e.st.expTest = &expHook{Seen: expReadsInto(total)}
-	counts, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Rows: size, Cards: expCards()})
+	counts, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Rows: size, Cards: expCards(), Feeds: expFeeds(s)})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -186,7 +186,7 @@ func TestExpTheNumbersOfTheRecordsOfARunAreAsManyAsTheRecordsWhateverTheRulesLoo
 	var last [2]int
 	for i, m := range []int{40, 120} {
 		s, l := expShared(t, m)
-		if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Rows: 20, Cards: expCards()}); err != nil {
+		if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Rows: 20, Cards: expCards(), Feeds: expFeeds(s)}); err != nil {
 			t.Fatal(err)
 		}
 		n := s.e.count(t, fmt.Sprintf(`SELECT count(*) FROM "s_%d".calc_record`, s.ref.KGNo))
@@ -213,7 +213,7 @@ func TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreO
 	const m = 40
 	keysOf := func(size int) ([]string, ingest.ExpandCounts) {
 		s, l := expShared(t, m)
-		counts, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Rows: size, Cards: expCards()})
+		counts, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Rows: size, Cards: expCards(), Feeds: expFeeds(s)})
 		if err != nil {
 			t.Fatal(err)
 		}

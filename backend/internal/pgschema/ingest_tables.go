@@ -210,7 +210,7 @@ func identifyTableDefs() []tableDef {
 	}
 }
 
-// expandTableDefs is the working table of the expansion (generator version 8, ADR-0118): the keys whose shared rows a unit has read, by
+// expandTableDefs is the working table of the expansion (generator version 9, ADR-0118): the keys whose shared rows a unit has read, by
 // the rule (kind) and the key (a number and a hash). A unit writes its rows and the keys it read in one transaction, so a key is read by
 // the one unit that wrote it.
 func expandTableDefs() []tableDef {

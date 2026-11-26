@@ -88,7 +88,7 @@ func TestExpTheCandidatesForRetirementAreTheObjectsTheOldPipelineRetiresInTheSam
 			t.Fatalf("step %d: the old run: %v", n, err)
 		}
 		l, _ := idnPipeline(s, t, pgiTexts{"ds_a": fetch.text["ds_a"], "ds_b": fetch.text["ds_b"]}, at, 0)
-		counts, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: plan.ExpandCards()})
+		counts, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: plan.ExpandCards(), Feeds: expFeeds(s)})
 		if err != nil {
 			t.Fatal(err)
 		}

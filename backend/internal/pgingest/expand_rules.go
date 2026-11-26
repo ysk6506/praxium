@@ -42,6 +42,7 @@ const (
 	xkLimitKey int16 = 4 // an end key a record gives for the end of a link: the objects it finds
 	xkLimitIn  int16 = 5 // an object: its links that end at it
 	xkClaim    int16 = 6 // an identifier a record claims: the objects that claim it
+	xkIdent    int16 = 7 // an object the identification put in the run that the rule old judged: whether it is a candidate (ADR-0121)
 )
 
 // expRange is the records of the run of the range of a unit.
@@ -82,13 +83,24 @@ const expProducers = "pr AS (SELECT DISTINCT p.src_no, p.dataset_no, p.key FROM 
 // expOldSQL is the first rule: the objects the records of the run were bound to before (the references of the identity of their keys).
 // An object that no open record stands under now, and that a retirable reference points at, is a candidate for retirement: the judge of
 // that is the one expression of expand_retire.go. An object that is in calc_object already (the identification put it there, or an earlier
-// unit did) is decided and is left out before it is judged, so that the references an object has are read by the unit that decides it.
-// It gives the number of the candidates and of the objects it added. A run whose identification left pairs makes no candidate.
+// unit did for a reason of its own) is decided and is left out before it is judged, so that the references an object has are read by the
+// unit that decides it. The one the identification put there (a record of the run is bound to it, of any feed) is judged once, by the
+// first unit that finds it (the key xkIdent), and its reason becomes ObjectWhyRetire when it is a candidate (ADR-0121): the records of
+// the feeds that only add values are bound to it, and they do not keep it.
+// It gives the number of the candidates that are not retired yet (an object that is retired already and that a record of the run still
+// points at is a candidate again, so that it is not computed and stays retired, but the run does not retire it) and of the objects it
+// added or made candidates. A run whose identification left pairs makes no candidate.
 var expOldSQL = "WITH {feeds}, " + expRange + ", old AS (SELECT DISTINCT x.target_no AS obj_no FROM r" + expOf("x.target_no", roleIdent) +
-	"x WHERE x.target_no IS NOT NULL AND NOT EXISTS (SELECT 1 FROM {objrun} d WHERE d.obj_no = x.target_no)), " +
-	"j AS (SELECT o.obj_no, CASE WHEN {canretire} AND " + expRetirable("o.obj_no") + " THEN " + whyRetire + " ELSE " + whyOldRef + " END AS why FROM old o), " +
-	"ins AS (INSERT INTO {objrun} (obj_no, why) SELECT obj_no, why FROM j ON CONFLICT DO NOTHING RETURNING why) " +
-	"SELECT count(*) FILTER (WHERE why = " + whyRetire + "), count(*) FROM ins"
+	"x WHERE x.target_no IS NOT NULL AND NOT EXISTS (SELECT 1 FROM {objrun} d WHERE d.obj_no = x.target_no AND d.why <> " + whyIdent + ")), " +
+	"idn AS (SELECT o.obj_no FROM old o WHERE EXISTS (SELECT 1 FROM {objrun} d WHERE d.obj_no = o.obj_no)), " +
+	expFresh("fresh", xkIdent, "idn.obj_no, ''::bytea", "idn") + ", " +
+	"j AS (SELECT o.obj_no, CASE WHEN {canretire} AND " + expRetirable("o.obj_no") + " THEN " + whyRetire + " ELSE " + whyOldRef + " END AS why FROM old o " +
+	"WHERE NOT EXISTS (SELECT 1 FROM {objrun} d WHERE d.obj_no = o.obj_no)), " +
+	"ins AS (INSERT INTO {objrun} (obj_no, why) SELECT obj_no, why FROM j ON CONFLICT DO NOTHING RETURNING obj_no, why), " +
+	"up AS (UPDATE {objrun} d SET why = " + whyRetire + " FROM fresh WHERE d.obj_no = fresh." + pgschema.ColKeyNo + " AND d.why = " + whyIdent +
+	" AND {canretire} AND " + expRetirable("fresh."+pgschema.ColKeyNo) + " RETURNING d.obj_no, d.why) " +
+	"SELECT count(*) FILTER (WHERE z.why = " + whyRetire + " AND NOT EXISTS (SELECT 1 FROM {obj} x WHERE x.obj_no = z.obj_no AND x.retired_seq IS NOT NULL)), count(*) " +
+	"FROM (SELECT obj_no, why FROM ins UNION ALL SELECT obj_no, why FROM up) z"
 
 // expKeys is the records that read the link end keys of the CTE fresh (the number and the hash of each): the records whose ends point at
 // a link of the key, from the start of a link.
