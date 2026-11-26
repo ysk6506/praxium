@@ -150,7 +150,10 @@ func TestDfiAPlaceThatCannotBeReadIsAnErrorAndNotAGuess(t *testing.T) {
 	// a plan that does not agree with the rows there are
 	for i := 0; i < 100; i++ {
 		place, err := st.DiffPlace(ctx, l)
-		if err != nil || place.Phase == ingest.DiffPhaseOrder {
+		if err != nil {
+			t.Fatal(err)
+		}
+		if place.Phase == ingest.DiffPhaseOrder {
 			break
 		}
 		if err := st.DiffStep(ctx, l); err != nil {

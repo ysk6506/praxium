@@ -25,7 +25,7 @@ updates_docs:
 amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
 test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 13에서 14로 바꾼다(이 결정 7). 파티션 접두어를 예약한다는 단언은 그대로다.
-decision_hash: 7d3fb3b540311974
+decision_hash: d78d8e61dd140f03
 ---
 # ADR-0127 새 수집 흐름 5단계의 뒷부분 — 차이
 
@@ -65,7 +65,7 @@ decision_hash: 7d3fb3b540311974
 | 퇴역 후보인데 다시 기여가 생김 | 4단계가 정한다: 식별이 묶은 객체는 `why = 1`이고(한 객체는 `calc_object`에 한 번) 4단계는 `why = 4`를 계산하지 않는다. 차이는 `stage_object`에 있으면 견주고 없으면 닫는다 | `TestDfiEveryChangeOfEverySourceIsARowAndWhatIsTheSameIsNone`(돌아온 객체, 이미 퇴역한 후보), `TestDfiTheKGTheStagedApplyWritesIsTheOneTheOldPipelineMakesFromTheSameCaptures` |
 | 해시가 없는 자리 | NULL(빈 바이트가 아님). SQL 다이제스트가 Go 기준 구현(`InputDigest`)과 같음 | 모든 흐름 테스트의 `dfiShape` |
 | 격리된 링크·식별자, 되돌린 새 객체 | 줄이 없음. 격리된 KG 링크는 닫힘 | `TestDfiWhatTheIsolationTookOutHasNoRowAndANewObjectTakenBackHasNone` |
-| 두 소스의 레코드가 받치는 객체 | `stage_object`의 키가 객체라 줄 하나. `dfiShape`가 한 개체의 줄이 둘이 아님을 본다 | `dfiShape` |
+| 두 소스의 레코드가 받치는 객체 | `stage_object`의 키가 객체라 줄 하나. `dfiShape`가 한 객체, 링크, 키, 식별자의 줄이 둘이 아님을 본다 | `dfiShape` |
 | 이어받은 서버가 단위 가운데에서 이어 감 | 같은 줄, 같은 보고 | `TestDfiAServerThatTakesTheRunOverAtAnyUnitEndsWhereOneThatDidNotStopEnds` |
 
 ## 옛 흐름과 다른 점
