@@ -23465,6 +23465,22 @@
    "added": "2026-11-16",
    "amended_by": "0075-definition-id-grammar-and-schema-version.md"
   },
+  "go:backend/internal/ingest::TestExpAnExpansionOfTheRecordsOfTheRunIsRefusedWithoutTheFeedsAsTheExpansionOfEverythingIs": {
+   "kind": "test",
+   "hash": "ac42343f1e6fca4c",
+   "asserts": 3,
+   "literals": [
+    "3418d895ac71318e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-950",
+    "REQ-981"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestExpTheEndsThatALinkTypeHoldsToOneAreTheOnesItsOneToOneOneToManyAndManyToOneBindingsSay": {
    "kind": "test",
    "hash": "2479da6faefddfac",
@@ -23515,33 +23531,33 @@
   },
   "go:backend/internal/ingest::TestExpTheRunOfTheExpansionBeginsOnceDoesTheUnitsInOrderAndReportsAtTheEnd": {
    "kind": "test",
-   "hash": "a31a9225c78a3b25",
+   "hash": "9e05f16f7bae4f91",
    "asserts": 4,
    "literals": [
-    "7c4f083fc3881e5a"
+    "9f40ab9693c923a9"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-890"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/ingest::TestExpTheRunOfTheExpansionStopsAtAUnitThatFailsAtARunThatIsNotComputingAndAtACancelledContext": {
    "kind": "test",
-   "hash": "6e002d45f3704b37",
+   "hash": "68219d6cdeb35f8a",
    "asserts": 5,
    "literals": [
-    "8e9404f17f3a24de"
+    "ee0525c30180585e"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-890"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/ingest::TestFileStateStoreKeepsAStateAcrossOpens": {
    "kind": "test",
@@ -31044,7 +31060,7 @@
   },
   "go:backend/internal/pgingest::TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreOfTheRun": {
    "kind": "test",
-   "hash": "546fa1c8ec13d665",
+   "hash": "78ce1d3c60c0160a",
    "asserts": 6,
    "literals": [
     "9dc24d8d2f1c0fdd"
@@ -31056,7 +31072,7 @@
     "REQ-957"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectIsOnlyACandidateForRetirementWhenAFeedThatRetiresMadeIt": {
    "kind": "test",
@@ -31074,9 +31090,42 @@
    "added": "2026-11-26",
    "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
+  "go:backend/internal/pgingest::TestExpAnObjectIsRetiredAsTheOldPipelineRetiresItWhenTheRecordOfAFeedThatAddsValuesChangesInEveryRun": {
+   "kind": "test",
+   "hash": "f5adb7cb3329d395",
+   "asserts": 1,
+   "literals": [
+    "adeab0de61da204e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-897",
+    "REQ-980"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAFeedThatMakesObjectsStandsUnderBesideAChangedRecordOfAFeedThatAddsValuesIsNoCandidate": {
+   "kind": "test",
+   "hash": "ac94b76726160ab1",
+   "asserts": 4,
+   "literals": [
+    "f1a9292963104178"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-980"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAnotherSourceStandsUnderIsNotACandidateAndOneThatNoRecordStandsUnderIs": {
    "kind": "test",
-   "hash": "ecdf1321f93dec74",
+   "hash": "79302e479ac2b093",
    "asserts": 26,
    "literals": [
     "7b1add743c0595dc"
@@ -31088,7 +31137,24 @@
     "REQ-898"
    ],
    "added": "2026-11-26",
-   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+  },
+  "go:backend/internal/pgingest::TestExpAnObjectThatOnlyAChangedRecordOfAFeedThatAddsValuesIsBoundToIsACandidateWhoeverGoesOnWithTheExpansion": {
+   "kind": "test",
+   "hash": "ddde56861cfd47a8",
+   "asserts": 29,
+   "literals": [
+    "8831bab142b6bf12"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-952",
+    "REQ-980"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgingest::TestExpAnObjectThatOnlyARecordOfAFeedThatAddsValuesStandsUnderIsRetiredAsTheOldPipelineRetiresIt": {
    "kind": "test",
@@ -31158,7 +31224,7 @@
   },
   "go:backend/internal/pgingest::TestExpTheCandidatesForRetirementAreTheObjectsTheOldPipelineRetiresInTheSameCaptures": {
    "kind": "test",
-   "hash": "759f911292414db6",
+   "hash": "665fcb81a73eadca",
    "asserts": 26,
    "literals": [
     "cef46ab244c655fe"
@@ -31169,12 +31235,12 @@
     "REQ-891",
     "REQ-897"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionDoesNotBeginOnARunWhoseIdentificationIsNotDoneAndTheComputationOfEverythingGoesByUnitsOfRecords": {
    "kind": "test",
-   "hash": "14728b4281053012",
+   "hash": "7e494f4b0811fa82",
    "asserts": 21,
    "literals": [
     "424c473c0c6666b4"
@@ -31186,11 +31252,11 @@
     "REQ-896"
    ],
    "added": "2026-11-26",
-   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionOfARunOfAWorldThatHasACaseForEveryRule": {
    "kind": "test",
-   "hash": "77aa82e27de7bb52",
+   "hash": "efb7567ca7a11918",
    "asserts": 11,
    "literals": [
     "8c9cf703ed6298af"
@@ -31207,7 +31273,7 @@
     "REQ-896"
    ],
    "added": "2026-11-26",
-   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionOfEverythingTakesTheRecordsTheIdentificationReadsAndNoOther": {
    "kind": "test",
@@ -31243,7 +31309,7 @@
   },
   "go:backend/internal/pgingest::TestExpTheNumbersOfTheRecordsOfARunAreAsManyAsTheRecordsWhateverTheRulesLookedAt": {
    "kind": "test",
-   "hash": "c07274564d8ce128",
+   "hash": "0524d2965d9a3a24",
    "asserts": 8,
    "literals": [
     "69282bc4646bedef"
@@ -31255,11 +31321,11 @@
     "REQ-957"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheRecordOfALinkThatEndsAtTheObjectAnEndKeyOfARecordFindsIsReadAgain": {
    "kind": "test",
-   "hash": "86b14b998d46daba",
+   "hash": "8dd5a2bcdb502871",
    "asserts": 17,
    "literals": [
     "3c04dbcf08521bf9"
@@ -31271,11 +31337,11 @@
     "REQ-955"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheRecordOfALinkThatStartsAtTheObjectAChangedRecordIsNowBoundToIsReadAgain": {
    "kind": "test",
-   "hash": "942b2bb3aa05dcef",
+   "hash": "eb31deae23f2bb33",
    "asserts": 17,
    "literals": [
     "5851d7a040cd44f5"
@@ -31287,11 +31353,11 @@
     "REQ-955"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheRecordOfASecondLinkThatEndsWhereTheLinkOfAChangedRecordEndedIsReadAgain": {
    "kind": "test",
-   "hash": "a82757e9830e7e9a",
+   "hash": "2ab821a354290cf2",
    "asserts": 17,
    "literals": [
     "b00c95d230ed550e"
@@ -31303,7 +31369,7 @@
     "REQ-955"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpTheReferencesOfRecordsOfTwoSourcesWhoseFeedsHaveTheSameNumberAreRetirableByTheFeedOfTheirOwnSource": {
    "kind": "test",
@@ -31339,7 +31405,7 @@
   },
   "go:backend/internal/pgingest::TestExpTheUnitsDoneAreTheUnitsTheExpansionWentByAndTheRunBeginsAtTheFirstRule": {
    "kind": "test",
-   "hash": "d47699c8e28ece78",
+   "hash": "f5858dc7313c54d9",
    "asserts": 8,
    "literals": [
     "fcd79a330b07c9b9"
@@ -31351,11 +31417,11 @@
     "REQ-956"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestExpWhatManyRecordsOfARunShareIsReadOnceForAUnitSoTheRowsReadGoWithTheNumberOfRecords": {
    "kind": "test",
-   "hash": "065cee1eb4201929",
+   "hash": "07b7893ef1fefa91",
    "asserts": 6,
    "literals": [
     "d68e9c6ddd2d4728"
@@ -31366,7 +31432,23 @@
     "REQ-899"
    ],
    "added": "2026-11-26",
-   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
+  },
+  "go:backend/internal/pgingest::TestExpWhatTheStatementsReadInThePlanTheServerChoosesGoesWithTheRecordsAndNotWithTheRestOfTheKG": {
+   "kind": "test",
+   "hash": "1858fdf503c7ecb0",
+   "asserts": 5,
+   "literals": [
+    "a91963624a7d3d81"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-899",
+    "REQ-983"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgingest::TestExpWhileTheIdentificationLeavesPairsNoObjectIsACandidateForRetirementWhoeverGoesOnWithTheExpansion": {
    "kind": "test",
@@ -31446,10 +31528,10 @@
   },
   "go:backend/internal/pgingest::TestIdnAGroupOfSeveralObjectsIsReadOnceForEachKeyAndWhatAUnitReadsOfItGrowsWithTheGroupAndNoFaster": {
    "kind": "test",
-   "hash": "0ad97d57331e89c8",
+   "hash": "18515ebaba6242d0",
    "asserts": 5,
    "literals": [
-    "59286b315a1bc9ab"
+    "0a6e246076a7bd50"
    ],
    "precision": [],
    "skips": 0,
@@ -31457,7 +31539,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestIdnAnObjectWhoseKeyHasAParentIsMadeOnceTheParentIsAndItsIdComesFromGo": {
    "kind": "test",
@@ -31664,10 +31746,10 @@
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource": {
    "kind": "test",
-   "hash": "9c8087bf80114a17",
+   "hash": "b22714d66c2414c7",
    "asserts": 5,
    "literals": [
-    "458c23ec011f4b0b"
+    "921d819717d68978"
    ],
    "precision": [],
    "skips": 0,
@@ -31675,7 +31757,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitThatFailsLeavesTheRunWhereItWasAndTheRunGoesOnToTheSameEnd": {
    "kind": "test",
@@ -31710,10 +31792,10 @@
   },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfAGroupOfManyObjects": {
    "kind": "test",
-   "hash": "1f8115bfc4a9dcce",
+   "hash": "d9894531f85cc419",
    "asserts": 1,
    "literals": [
-    "0570ded499f8474c"
+    "4f1c223abfe5730f"
    ],
    "precision": [],
    "skips": 0,
@@ -31721,14 +31803,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen": {
    "kind": "test",
-   "hash": "559cc66d0e9f1917",
+   "hash": "1af89b34ee9386e1",
    "asserts": 1,
    "literals": [
-    "0927e10833b61565"
+    "42c425ac4ed83a3f"
    ],
    "precision": [],
    "skips": 1,
@@ -31736,7 +31818,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestIdnTheCallsOfTheIdentificationThatAreMadeOutOfOrderOrOnARunThereIsNotAreRefused": {
    "kind": "test",
@@ -31875,6 +31957,22 @@
    "added": "2026-11-26",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestIdnTheQuestionsOfARoundAreReadByTheirIndexWithTheStatisticsTheRunGivesThePlanner": {
+   "kind": "test",
+   "hash": "a8f5d3db05c430b8",
+   "asserts": 15,
+   "literals": [
+    "2fd9ed3e9f20c78d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-883",
+    "REQ-982"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestIdnTheRecordsOfARunAreBoundToObjectsWhoseIdsAreTheOnesTheKeysGive": {
    "kind": "test",
    "hash": "cd9b202376147a2a",
@@ -31999,10 +32097,10 @@
   },
   "go:backend/internal/pgingest::TestIdnWhenEveryRecordIsInTheSamePlaceAUnitReadsOfTheRegistryWhatItDidWhenTheyWereInManyAndNoMore": {
    "kind": "test",
-   "hash": "8419e711605c9972",
+   "hash": "8c610fdb13e1f519",
    "asserts": 4,
    "literals": [
-    "d205c3a9c94867f2"
+    "4d27130e82e90e77"
    ],
    "precision": [],
    "skips": 0,
@@ -32010,7 +32108,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestPgiACallThatNeedsATableThatIsDamagedFailsWithAnError": {
    "kind": "test",
@@ -32610,10 +32708,10 @@
   },
   "go:backend/internal/pgingest::TestRcpWhatManyRecordsOfAnObjectShareIsReadOnceSoTheRowsReadGoWithTheNumberOfLines": {
    "kind": "test",
-   "hash": "2f7ac7ba543f5803",
+   "hash": "018d2f8a379ee7ba",
    "asserts": 5,
    "literals": [
-    "69b6ff7f86b4d120"
+    "e7621c3fec456b70"
    ],
    "precision": [],
    "skips": 0,
@@ -32621,7 +32719,7 @@
     "REQ-936"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0121-expansion-second-follow-up-value-feeds-feed-table-question-statistics.md"
   },
   "go:backend/internal/pgingest::TestRdfABucketReadsTheIndexRangeItCoversAndNotTheWholeTableAndWhatItReadsDoesNotGrowWithTheSource": {
    "kind": "test",
