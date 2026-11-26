@@ -23810,7 +23810,7 @@
    "reqs": [
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnRunIdentifyBeginsOnceGivesTheRowsToTheKeyMakerByDatasetAndTheAsksOneByOneAndReportsAtTheEnd": {
@@ -23825,7 +23825,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnRunIdentifyRefusesARunThatIsNotComputingAndStopsAtTheFirstFailure": {
@@ -23840,7 +23840,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnSettlingReadsAllThePagesWritesTheLabelsInPagesAndTheLastPageEndsIt": {
@@ -23855,7 +23855,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnSettlingTheMostPairsGoHoldsTakesTheMemoryAndTheTimeTheDecisionSays": {
@@ -23870,7 +23870,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnSettlingWritesNothingWhenThePairsAreMoreThanGoHoldsAndSaysSo": {
@@ -23885,7 +23885,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnTheFeedsOfTheSourcesOfAKGAreInTheOrderOfTheirNumbersAndAFeedNumberMayBeInTwoSourcesButNotTwiceInOne": {
@@ -23900,7 +23900,7 @@
    "reqs": [
     "REQ-881"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnTheGroupsOfPairsThatShareKeysAreFoundWhateverTheNumbersAndEachGetsItsSmallestPair": {
@@ -23915,7 +23915,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnTheIdOfAnObjectIsTheOneTheKeyGivesAndARowWithNoKeyOrNoNameIsMissing": {
@@ -23931,7 +23931,7 @@
     "REQ-881",
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnThePlanGivesTheFeedsAndMakesTheKeysAgainFromTheCellsOfARecord": {
@@ -23946,7 +23946,7 @@
    "reqs": [
     "REQ-881"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestIdnTheStartOfTheIdentificationRefusesFeedsAndSizesThatCannotBe": {
@@ -23961,7 +23961,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/ingest::TestInAndNotInSetAsideTheSpacesAtTheEnds": {
@@ -30046,7 +30046,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAChainOfRecordsLongerThanTheTurnsOfTheDefaultIsOneObjectAndTheTurnsItTakesGrowMoreSlowlyThanItsLength": {
@@ -30061,7 +30061,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAChainThatIsLeftAndARecordOfALaterRoundThatSharesAKeyWithItAreLeftTogetherAndThenMadeOneObject": {
@@ -30076,7 +30076,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAGroupOfSeveralObjectsIsReadOnceForEachKeyAndWhatAUnitReadsOfItGrowsWithTheGroupAndNoFaster": {
@@ -30091,7 +30091,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAnObjectWhoseKeyHasAParentIsMadeOnceTheParentIsAndItsIdComesFromGo": {
@@ -30107,7 +30107,7 @@
     "REQ-880",
     "REQ-881"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAnUnresolvedRecordOfAnotherSourceIsIdentifiedByTheFeedsOfItsOwnSourceAndFindsTheObjectOfThisRun": {
@@ -30123,7 +30123,7 @@
     "REQ-880",
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAnUnresolvedRecordOfAnotherSourceWhoseFeedMakesNoObjectAndFindsNoneStaysUnresolvedWhileTheFeedOfThisSourceThatMakesObjectsDoesNotRead": {
@@ -30139,7 +30139,7 @@
     "REQ-880",
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAnUnresolvedRecordOfASourceThatHasNoPlanInTheRunIsLeftAloneAndCountedAndDoesNotStopTheRunOfAnotherSource": {
@@ -30155,7 +30155,7 @@
     "REQ-880",
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARecordThatGivesNoKeyKeepsItsClaimsOnceAndIsNotReadAgainFromItsCellsWhenItCameInTheRowsReceived": {
@@ -30171,7 +30171,7 @@
     "REQ-880",
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARecordThatRepeatsItsKeyIsIdentifiedAsTheRecordItIsAndMakesOneObjectNotTwo": {
@@ -30187,7 +30187,7 @@
     "REQ-880",
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARecordTheComparisonClosedOrLetGoOfTakesNoPartAndMakesNoObjectKeyOrIdentifierWhileTheOtherRecordsAreIdentified": {
@@ -30203,7 +30203,7 @@
     "REQ-880",
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARecordWhoseReferenceIsNotSolvedIsReadAgainFromItsCellsAndBoundWithoutTouchingTheOnesThatAre": {
@@ -30219,7 +30219,7 @@
     "REQ-880",
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARoundWhoseSearchIsStoppedByItsLimitBindsNoGroupThatIsNotWholeAndLeavesTheRecordsOfItUnresolvedAndCounted": {
@@ -30234,7 +30234,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARunThatDoesNotOwnTheTablesOfTheComputationNeitherBeginsNorGoesOnWithTheIdentification": {
@@ -30249,7 +30249,7 @@
    "reqs": [
     "REQ-886"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARunThatHasFewerRoundsThanTheKeysNeedLeavesTheRecordsUnresolvedAndSaysSo": {
@@ -30264,7 +30264,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARunThatStopsGoesOnFromTheNextUnitAndMakesWhatARunThatDoesNotStopMakes": {
@@ -30279,7 +30279,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARunThatStopsWhileGoEndsTheSearchForTheGroupsGoesOnAndMakesWhatARunThatDoesNotStopMakes": {
@@ -30294,22 +30294,22 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource": {
    "kind": "test",
-   "hash": "ce4882ee260fd674",
+   "hash": "9c8087bf80114a17",
    "asserts": 5,
    "literals": [
-    "5616e29083ab2e4c"
+    "458c23ec011f4b0b"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitThatFailsLeavesTheRunWhereItWasAndTheRunGoesOnToTheSameEnd": {
@@ -30324,7 +30324,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfTheClaimsAndOfTheLookupThatFailsIsReportedAndTheNextRunIsTheSame": {
@@ -30340,7 +30340,7 @@
     "REQ-883",
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfAGroupOfManyObjects": {
@@ -30355,22 +30355,22 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen": {
    "kind": "test",
-   "hash": "8fb987db73cfe7dd",
+   "hash": "559cc66d0e9f1917",
    "asserts": 1,
    "literals": [
-    "6f74a60f488ac039"
+    "0927e10833b61565"
    ],
    "precision": [],
-   "skips": 0,
+   "skips": 1,
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheCallsOfTheIdentificationThatAreMadeOutOfOrderOrOnARunThereIsNotAreRefused": {
@@ -30385,7 +30385,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheCellsOfARecordAreReadBackWhateverTheyHold": {
@@ -30400,7 +30400,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheEndsOfTheLinksAndTheClaimsOfARecordGoErasedFromItsCellsAreKeptWithTheKeys": {
@@ -30416,7 +30416,7 @@
     "REQ-880",
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheFeedsOfTheIdentificationAreNamedBySourceAndNumberAndTheRunsOwnSourceMustHaveSome": {
@@ -30431,7 +30431,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheIdentificationOfARunThatHasBegunOrWhoseComparisonIsNotDoneIsNotBegunAndWhatItMadeIsNotChanged": {
@@ -30446,7 +30446,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheKeysOfARecordFindNoObjectOneObjectOrSeveralAndTheGroupsAreMadeWhateverTheOrder": {
@@ -30462,7 +30462,7 @@
     "REQ-881",
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheLabelsOfTheTurnsBeforeTheLastTwoAreTakenAwayAndTheRowsOfThemAreAtMostTwoForEachPair": {
@@ -30477,7 +30477,7 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheObjectsTheIdentificationMakesAreTheObjectsTheOldPipelineMakesForTheSameCaptures": {
@@ -30492,7 +30492,7 @@
    "reqs": [
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheOldPipelineDoesNotCompileTheMappingOfTheKeysOfAContextThatTheWitnessIsChosenFor": {
@@ -30507,7 +30507,7 @@
    "reqs": [
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheRecordsOfARunAreBoundToObjectsWhoseIdsAreTheOnesTheKeysGive": {
@@ -30522,7 +30522,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheRecordsOfSmallUnitsWithReferencesNotSolvedAndWithEndsAreAllBound": {
@@ -30538,7 +30538,7 @@
     "REQ-880",
     "REQ-884"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheRecordThatNamesAnObjectWhenTheRecordsGiveTheSameKeyIsTheOneWhoseDatasetAndKeyComeFirstWhateverTheOrderOfTheRows": {
@@ -30554,7 +30554,7 @@
     "REQ-880",
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheRecordThatNamesTheObjectOfAGroupIsTheOneThatHasANameWhateverTheKeysOfTheOthersAndTheOrderOfTheRows": {
@@ -30569,7 +30569,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheSameChainWithTheLimitOfTheTurnsRaisedIsOneObjectAndMakesTheSameObjectInAnyOrderOfTheRows": {
@@ -30584,7 +30584,7 @@
    "reqs": [
     "REQ-882"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTwoDatasetsThreeKindsOfKeyARepeatedKeyAndARecordThatIsClosedMakeTheObjectsTheOldPipelineMakes": {
@@ -30599,7 +30599,7 @@
    "reqs": [
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTwoObjectsThatSayTheyHaveOneIdentifierGetItByTheRuleAndTheLoserIsToldAndAFeedThatMakesNoObjectFindsTheOnesThereAre": {
@@ -30614,7 +30614,7 @@
    "reqs": [
     "REQ-885"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnWhatTheTestsWatchOfTheStatementsOfAUnitIsOfTheStoreTheyAskItOfAndNotOfAnother": {
@@ -30629,22 +30629,22 @@
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnWhenEveryRecordIsInTheSamePlaceAUnitReadsOfTheRegistryWhatItDidWhenTheyWereInManyAndNoMore": {
    "kind": "test",
-   "hash": "30e9dd196e5b4492",
+   "hash": "8419e711605c9972",
    "asserts": 4,
    "literals": [
-    "2493505eeadb7577"
+    "d205c3a9c94867f2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-883"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestPgiACallThatNeedsATableThatIsDamagedFailsWithAnError": {
@@ -31410,7 +31410,7 @@
    "precision": [],
    "skips": 0,
    "reqs": [],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": "0108-identify-step-slots-rounds-and-groups-in-sql.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
@@ -31516,7 +31516,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestIdnDiffFromGeneratorTwoToSevenHasTheStepsOfEveryVersionAfterIt": {
@@ -31531,7 +31531,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestIngestComputeTablesAreEmptiedTogetherAndTheirNumbersStartAgain": {
@@ -31821,7 +31821,7 @@
    "reqs": [
     "REQ-785"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": "0108-identify-step-slots-rounds-and-groups-in-sql.md"
   },
   "go:backend/internal/pgschema::TestRdfDiffFromGeneratorThreeToTheNewestIsTheStepsOfFourAndThenSix": {
@@ -31836,7 +31836,7 @@
    "reqs": [
     "REQ-785"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": "0108-identify-step-slots-rounds-and-groups-in-sql.md"
   },
   "go:backend/internal/pgschema::TestSapChunkDigestsQueryGroupsTheChunksBeforeTheOneItIsGiven": {
@@ -33450,7 +33450,7 @@
    "reqs": [
     "REQ-880"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgstore::TestIngestAKGMadeByTheGeneratorBeforeIsAdjustedByAddingTheTablesWithoutClosingIt": {
