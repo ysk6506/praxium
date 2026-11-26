@@ -242,7 +242,7 @@ func igrSQL(steps []pgschema.Step) []string {
 // [REQ-683]
 func TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable(t *testing.T) {
 	ctx := context.Background()
-	_, admin := sxOpen(t)
+	st, admin := sxOpen(t)
 	var perTx, conns, prepared int
 	if err := admin.QueryRowContext(ctx, `SELECT current_setting('max_locks_per_transaction')::int, current_setting('max_connections')::int, current_setting('max_prepared_transactions')::int`).Scan(&perTx, &conns, &prepared); err != nil {
 		t.Fatal(err)
@@ -275,11 +275,9 @@ func TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable(t
 	} else {
 		t.Logf("taking a source off a KG: %d locks", n)
 	}
-	if drop := igrLocksOf(t, admin, `DROP SCHEMA "s_1" CASCADE`); drop > limit {
-		t.Errorf("dropping a KG holds %d locks, more than %d", drop, limit)
-	} else {
-		t.Logf("dropping the schema of a KG: %d locks held", drop)
-	}
+	// Dropping the whole schema in one transaction is kept as a number only: it locks every relation and the types of
+	// its tables, and the product does not do it (ADR-0125).
+	t.Logf("dropping the schema of a KG in one transaction: %d locks held", igrLocksOf(t, admin, `DROP SCHEMA "s_1" CASCADE`))
 	// A KG that still has its sources costs more to drop in one transaction: each source adds about 68. A drop
 	// that keeps to the default lock table takes the sources off one by one first (ADR-0095).
 	plan2, err := buildPlan(sxStandard(t, true), 2)
@@ -293,5 +291,32 @@ func TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable(t
 		sourceSteps = append(sourceSteps, igrSQL(more)...)
 	}
 	igrLocksOf(t, admin, sourceSteps...)
-	t.Logf("dropping the schema of a KG that has 9 sources: %d locks held", igrLocksOf(t, admin, `DROP SCHEMA "s_2" CASCADE`))
+	t.Logf("dropping the schema of a KG that has 9 sources in one transaction: %d locks held", igrLocksOf(t, admin, `DROP SCHEMA "s_2" CASCADE`))
+	// What the product does to delete a KG (ADR-0125), a KG of the server's model (its query schema too) with no source and one
+	// with 9: every transaction of DeleteKG is counted at its end, when it holds all it took, and none may take more than 80%.
+	for _, c := range []struct{ no, sources int }{{1, 0}, {2, 9}} {
+		kg := pgsrcKG(t, st, admin, c.no, c.sources)
+		steps := map[string]int{}
+		most := map[string]int{}
+		st.deleteSeen = func(_ context.Context, step string, tx *sql.Tx) error {
+			n := igrHeldLocks(t, tx)
+			steps[step]++
+			most[step] = max(most[step], n)
+			if n > limit {
+				t.Errorf("deleting a KG of %d sources: a transaction of the step %q holds %d locks, more than %d", c.sources, step, n, limit)
+			}
+			return nil
+		}
+		if err := st.DeleteKG(ctx, kg); err != nil {
+			t.Fatal(err)
+		}
+		st.deleteSeen = nil
+		t.Logf("deleting a KG of %d sources: the most locks a transaction held, by step: %v (transactions: %v)", c.sources, most, steps)
+		if steps[deleteStepMark] != 1 || steps[deleteStepSource] != c.sources || steps[deleteStepCompute] < 1 || steps[deleteStepQuery] != 1 || steps[deleteStepLast] != 1 {
+			t.Errorf("deleting a KG of %d sources ran the transactions %v", c.sources, steps)
+		}
+		if n := sxInt(t, admin, `SELECT count(*) FROM pg_namespace WHERE nspname = $1`, pgschema.SchemaName(int64(c.no))); n != 0 {
+			t.Errorf("the schema of the KG of %d sources is still there", c.sources)
+		}
+	}
 }

@@ -160,7 +160,7 @@ func NewTestStoreWith(tb TB, clock LeaseClock) *Store {
 func (s *Store) RecordChunks(fn func(graph.ChunkWrite)) { s.record = fn }
 
 // StopDeleteAt makes the next delete of a KG of this Store (DeleteKG, DropStorageSchema) stop with err in its first
-// transaction of the step ("mark", "source", "compute" or "last", ADR-0125), as a server that dies there does: that
+// transaction of the step ("mark", "source", "compute", "query" or "last", ADR-0125), as a server that dies there does: that
 // transaction is rolled back and the ones before it stay. Only tests use it, and they set it before the call; a call
 // again ends the delete.
 func (s *Store) StopDeleteAt(step string, err error) {

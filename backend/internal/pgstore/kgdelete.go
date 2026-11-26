@@ -22,8 +22,9 @@ import (
 //  2. the sources, one to a transaction (detachSources, ADR-0098), with their runs.
 //  3. the tables of the computation (pgschema.ComputeTables), computeDropBatch to a transaction. No run is left to write them:
 //     the runs went with their sources, and a transaction that was writing one holds its lock until it ends.
-//  4. last: the query schema and its roles, the rest of the storage schema, the state rows and the row of the list (the
-//     mark goes with it).
+//  4. the query schema and its roles (ADR-0113), in a transaction of their own: their views and functions lock about 2,200,
+//     and the storage schema with them would not fit.
+//  5. last: the rest of the storage schema, the state rows and the row of the list (the mark goes with it).
 //
 // Every step can be run again: a delete that stopped in the middle is ended by DeleteKG called again, by the server when it
 // starts (ResumeAllWork) and by CreateKG for a KG that would clash with the one being deleted.
@@ -37,6 +38,7 @@ const (
 	deleteStepMark    = "mark"
 	deleteStepSource  = "source"
 	deleteStepCompute = "compute"
+	deleteStepQuery   = "query"
 	deleteStepLast    = "last"
 )
 
@@ -99,13 +101,26 @@ func (s *Store) markDeleting(ctx context.Context, sh *shard, kg graph.KGID) (boo
 	return found, err
 }
 
-// dropInSteps runs the steps after the mark: the sources, the tables of the computation, and last, the work the caller gives
-// the last transaction.
+// dropInSteps runs the steps after the mark: the sources, the tables of the computation, the query schema, and last, the work
+// the caller gives the last transaction.
 func (s *Store) dropInSteps(ctx context.Context, sh *shard, kg graph.KGID, last func(tx *sql.Tx) error) error {
 	if err := s.detachSources(ctx, sh, kg); err != nil {
 		return err
 	}
 	if err := s.dropComputeTables(ctx, sh, kg); err != nil {
+		return err
+	}
+	err := locked(ctx, sh, kg, func(tx *sql.Tx) error {
+		rec, found, err := readRecord(ctx, tx, kg)
+		if err != nil || !found {
+			return err
+		}
+		if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
+			return err
+		}
+		return s.seen(ctx, deleteStepQuery, tx)
+	})
+	if err != nil {
 		return err
 	}
 	return locked(ctx, sh, kg, func(tx *sql.Tx) error {
@@ -143,14 +158,11 @@ func (s *Store) dropComputeTables(ctx context.Context, sh *shard, kg graph.KGID)
 	return nil
 }
 
-// dropSchemaRest is the last step but the row of the list: the query schema and its roles, the storage schema with what is
-// left in it, and the state rows. A KG without a storage schema has nothing of it to drop.
+// dropSchemaRest is the last step but the row of the list: the storage schema with what is left in it, and the state rows. A
+// KG without a storage schema has nothing of it to drop.
 func dropSchemaRest(ctx context.Context, tx *sql.Tx, kg graph.KGID) error {
 	rec, found, err := readRecord(ctx, tx, kg)
 	if err != nil || !found {
-		return err
-	}
-	if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
 		return err
 	}
 	if _, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(rec.Schema())+` CASCADE`); err != nil {
