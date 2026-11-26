@@ -29,7 +29,11 @@ import (
 // Version 12 adds, for the computation of the links (ADR-0122), the three tables of it (the objects found for a link end key, the record
 // that makes each link and the records that lost one) and the indexes of them and of the ends of the computation: Diff follows the step
 // from 11 to 12. No table that is there is changed.
-const GeneratorVersion = 12
+//
+// Version 13 adds, for the fifth step (ADR-0123), the table of what the step took out of the staged rows and the table of the places held
+// to one link, and the indexes the step reads the staged identifiers and links by: Diff follows the step from 12 to 13. No table that is
+// there is changed.
+const GeneratorVersion = 13
 
 // Phase says where a step may run.
 type Phase int

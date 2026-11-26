@@ -24974,6 +24974,96 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestIsoALinkTakesItsPlacesWhenAllAreFreeInTheOrderOfThePage": {
+   "kind": "test",
+   "hash": "7e896fd6db66b3a7",
+   "asserts": 5,
+   "literals": [
+    "2a587b2c528506d8"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-849"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIsoRunIsolateBeginsOnceDoesThePagesAndStopsWhereItFails": {
+   "kind": "test",
+   "hash": "d504166359607f0b",
+   "asserts": 7,
+   "literals": [
+    "f11f0aa7a553bd68"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIsoTheLinesThatLoseCarryTheNumberAndTheHashTheClaimsNameThemBy": {
+   "kind": "test",
+   "hash": "f84beca6365df3b3",
+   "asserts": 5,
+   "literals": [
+    "eeab680dc0dc12ef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-847"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIsoTheMakerIsOfTheModelOfThePlansAndTheCardsAreTheModels": {
+   "kind": "test",
+   "hash": "a05ff6988755dbbe",
+   "asserts": 7,
+   "literals": [
+    "81a828cb27de71cc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIsoTheObjectThatKeepsAnIdentifierIsTheOneTheKGHasItWithElseTheSmallestID": {
+   "kind": "test",
+   "hash": "c8a5683f8d0bf4ab",
+   "asserts": 2,
+   "literals": [
+    "3b4039cbd3218c7c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-847"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestIsoThePlacesHangOnTheOrderOfTheLinksAloneAndNotOnThePages": {
+   "kind": "test",
+   "hash": "519b3d402a0f9d84",
+   "asserts": 4,
+   "literals": [
+    "a6f53781c2e19d32"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-852"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestLinkAttributeNamesFollowTheRulesOfObjectAttributes": {
    "kind": "test",
    "hash": "88a29ab0ce6327de",
@@ -32740,6 +32830,250 @@
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
   },
+  "go:backend/internal/pgingest::TestIsoALinkWhoseEndIsNotThereIsTakenOutAndOneWhoseEndRetiresGoesWithItAndIsNoProblem": {
+   "kind": "test",
+   "hash": "a41b24ab30726c14",
+   "asserts": 13,
+   "literals": [
+    "92b0ae2c42b95fce"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-848",
+    "REQ-855"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAnIdentifierIsKeptByTheObjectTheKGHasItWithElseTheSmallestIDAndTheOthersLoseTheLineOnly": {
+   "kind": "test",
+   "hash": "6fcada054d3e3012",
+   "asserts": 13,
+   "literals": [
+    "134c790d9495a531"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-847",
+    "REQ-855"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAnIdentifierManyObjectsSayIsReadOnceSoTheRowsReadGoWithTheObjects": {
+   "kind": "test",
+   "hash": "6f96a330b1bb354a",
+   "asserts": 7,
+   "literals": [
+    "d5beafb2780ea070"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-853"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAPlaceHeldToOneLinkIsKeptByTheLinkTheKGHasElseBySmallestIDAndTheOthersAreTakenOut": {
+   "kind": "test",
+   "hash": "28bad89591b8cee8",
+   "asserts": 17,
+   "literals": [
+    "a02d9c7f1f726fcb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-849",
+    "REQ-855"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoARecordWhoseLinkWasTakenOutIsReadAgainByTheNextRunAsOneThatIsNotSolved": {
+   "kind": "test",
+   "hash": "bbdcffa7c778f485",
+   "asserts": 14,
+   "literals": [
+    "adf378e031ccf0cd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-854"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAServerThatTakesTheRunOverInThePhaseOfTheEndsEndsWhereOneThatDidNotStopEnds": {
+   "kind": "test",
+   "hash": "5118c33def351878",
+   "asserts": 2,
+   "literals": [
+    "d05f05c273a63d2a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAServerThatTakesTheRunOverInThePhaseOfTheIdentifiersEndsWhereOneThatDidNotStopEnds": {
+   "kind": "test",
+   "hash": "0a822854dfdd522b",
+   "asserts": 2,
+   "literals": [
+    "e478f8a33b306d92"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAServerThatTakesTheRunOverInThePhasesOfTheCardinalityEndsWhereOneThatDidNotStopEnds": {
+   "kind": "test",
+   "hash": "932e4ab56fcd3941",
+   "asserts": 2,
+   "literals": [
+    "aa699682377400dd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAStartManyLinksHaveIsReadOnceForAPageSoTheRowsReadGoWithTheLinks": {
+   "kind": "test",
+   "hash": "c83df399270c1ce2",
+   "asserts": 7,
+   "literals": [
+    "529867e9be83e87e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-853"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAStepOfTheIdentifiersThatNeedsATableThatIsDamagedFailsWithAnError": {
+   "kind": "test",
+   "hash": "f468cc39a870655c",
+   "asserts": 9,
+   "literals": [
+    "e7250d0b2fd12a2e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoAStepOfTheLinksThatNeedsATableThatIsDamagedFailsWithAnError": {
+   "kind": "test",
+   "hash": "ead5cce8a5b3e510",
+   "asserts": 2,
+   "literals": [
+    "1721b2f973accbe1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoTheIdentifiersTakenOutHangNeitherOnThePagesNorOnTheNumbersOfTheObjects": {
+   "kind": "test",
+   "hash": "092cb38bf1257f9c",
+   "asserts": 3,
+   "literals": [
+    "aa448848e1ab66b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-852"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoTheLinksTheCardinalityTakesOutAreTheOnesTheOldPipelineSetsAsideFromTheSameCaptures": {
+   "kind": "test",
+   "hash": "a9f6d6964c805043",
+   "asserts": 21,
+   "literals": [
+    "74a3a201d013ba3f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-849",
+    "REQ-853"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoThePlacesOfTheCardinalityHangNeitherOnThePagesNorOnTheNumbersOfTheLinks": {
+   "kind": "test",
+   "hash": "1f384b7cbd6def47",
+   "asserts": 3,
+   "literals": [
+    "45b5e95c895575d9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-852"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoTheStepBeginsAfterTheFourthStepOncePutsAPageOnceAndRefusesAServerThatLostItsLease": {
+   "kind": "test",
+   "hash": "49b7d026865a22cd",
+   "asserts": 19,
+   "literals": [
+    "082bfc24cc39f008"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-846"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIsoWhereTheOldPipelineKeptTheLinkOfTheSmallerIDTheNewFlowKeepsTheLinkTheKGHas": {
+   "kind": "test",
+   "hash": "30637dee1c461908",
+   "asserts": 24,
+   "literals": [
+    "f5b8573af0d63086"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-849"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestPgiACallThatNeedsATableThatIsDamagedFailsWithAnError": {
    "kind": "test",
    "hash": "a9de2dd397373c58",
@@ -34071,16 +34405,16 @@
   },
   "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
    "kind": "test",
-   "hash": "2f5be5c93acf0927",
+   "hash": "09c0b295a1b30a97",
    "asserts": 2,
    "literals": [
-    "4d5d773e1a70f7cf"
+    "943c7c7282e74a9f"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-26",
-   "amended_by": "0122-recompute-links-step-of-the-new-ingestion-flow.md"
+   "amended_by": "0123-isolation-of-the-fifth-step-identifiers-ends-and-cardinality.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -34442,6 +34776,66 @@
     "REQ-680"
    ],
    "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIsoDiffFromGeneratorElevenToThirteenHasTheStepsOfBothVersions": {
+   "kind": "test",
+   "hash": "709e623ed724f776",
+   "asserts": 2,
+   "literals": [
+    "b8db86d83be37e9c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-850"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIsoDiffFromGeneratorTwelveToThirteenAddsTheTwoTablesAndTheTwoIndexesAndNothingElse": {
+   "kind": "test",
+   "hash": "22ff7ef71176a2f3",
+   "asserts": 8,
+   "literals": [
+    "bd42ce05087220e9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-850"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIsoTheKindsOfProblemTheFifthStepWritesAreInTheClosedListAndNoneIsNew": {
+   "kind": "test",
+   "hash": "f828020c80465f2d",
+   "asserts": 4,
+   "literals": [
+    "13117d98feba25ba"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-851"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestIsoTheTablesOfTheFifthStepAreCalcTablesAndTheirKeysAreWhatIsTakenAndThePlace": {
+   "kind": "test",
+   "hash": "f16529f93c1b401f",
+   "asserts": 4,
+   "literals": [
+    "5081f95be850d742"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-850"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestManifestHashDoesNotDependOnTheOrderOfTheInput": {

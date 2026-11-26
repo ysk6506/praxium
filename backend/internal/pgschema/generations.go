@@ -16,6 +16,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	10: func(schema string, _ Manifest) ([]Step, error) { return leftSteps(schema), nil },
 	11: func(schema string, _ Manifest) ([]Step, error) { return modelTableSteps(schema), nil },
 	12: func(schema string, _ Manifest) ([]Step, error) { return linkSteps(schema), nil },
+	13: func(schema string, _ Manifest) ([]Step, error) { return isolateSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -188,19 +189,30 @@ func leftSteps(schema string) []Step {
 // ends of the computation are read by. The tables and the indexes are made beside the others: no table that is there is altered (a reader
 // may have it open, REQ-680), and no kind of problem is added. A schema made by this build has all of it already, so each step is made to
 // be run twice, and a schema that has no such table is left as it is.
-func linkSteps(schema string) []Step {
+func linkSteps(schema string) []Step { return besideSteps(schema, linkTableDefs(), linkIndexDefs()) }
+
+// besideSteps are the steps that make computation tables and indexes beside the others: each can be run twice, and a schema that has no
+// computation tables (or no table an index is on) is left as it is.
+func besideSteps(schema string, tables []tableDef, indexes []indexDef) []Step {
 	var steps []Step
-	for _, d := range linkTableDefs() {
+	for _, d := range tables {
 		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name,
 			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
 				strings.Replace(d.sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"})
 	}
-	for _, d := range linkIndexDefs() {
+	for _, d := range indexes {
 		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name,
 			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, d.Table) + "') IS NOT NULL THEN " +
 				createIfNotExists(d.sql(schema, false)) + "; END IF; END $$"})
 	}
 	return steps
+}
+
+// isolateSteps is what generator version 13 adds (ADR-0123): the two tables of the fifth step and the indexes it reads the staged
+// identifiers and links by. As for version 12, the tables and the indexes are made beside the others (no table that is there is altered,
+// REQ-680, and no kind of problem is added), each step can be run twice, and a schema that has no such table is left as it is.
+func isolateSteps(schema string) []Step {
+	return besideSteps(schema, isolateTableDefs(), isolateIndexDefs())
 }
 
 // createIfNotExists is the statement of an index made to be run again.

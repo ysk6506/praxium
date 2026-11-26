@@ -121,6 +121,7 @@ func computeTableDefs() []tableDef {
 	defs = append(defs, expandTableDefs()...)
 	defs = append(defs, computeResultDefs()...)
 	defs = append(defs, linkTableDefs()...)
+	defs = append(defs, isolateTableDefs()...)
 	return append(defs, ingestDiffDef())
 }
 
@@ -283,6 +284,37 @@ func linkTableDefs() []tableDef {
 	}
 }
 
+// isolateTableDefs are the tables of the fifth step (generator version 13, ADR-0123). calc_isolated has a row for what the step took out
+// of the staged rows: an identifier line (kind DiffKindIdentifier, the object in entity_no and the identifier in scheme, value and scope)
+// or a link (kind DiffKindLink, its number in entity_no and its id in ref), the check that took it (phase), why and the reason; its key is
+// what was taken, so a row is taken once. calc_seat has a row for each place held to one link that a link of the run took (the side, the
+// object at that end, the binding) and the link; its key is the place, so no place has two links.
+func isolateTableDefs() []tableDef {
+	empty := "text NOT NULL DEFAULT ''"
+	return []tableDef{
+		{Name: TableCalcIsolated, Cols: []string{
+			col(ColKind, typeSmall), col(ColEntityNo, typeBig), col(ColScheme, empty), col(ColValue, empty), col(ColScope, empty),
+			col(ColRef, `text COLLATE "C" NOT NULL DEFAULT ''`), col(ColPhase, typeSmall), col(ColWhy, typeSmall), col(ColReason, "text NOT NULL"),
+			"PRIMARY KEY (" + strings.Join([]string{ColKind, ColEntityNo, ColScheme, ColValue, ColScope}, ", ") + ")",
+		}},
+		{Name: TableCalcSeat, Cols: []string{
+			col(ColSide, typeSmall), col(ColEndNo, typeBig), col(ColBindID, `text COLLATE "C" NOT NULL`), col(ColLinkNo, typeBig),
+			"PRIMARY KEY (" + strings.Join([]string{ColSide, ColEndNo, ColBindID}, ", ") + ")",
+		}},
+	}
+}
+
+// isolateIndexDefs are the indexes the fifth step reads by (generator version 13, ADR-0123): the identifier lines of the run by the
+// identifier in the order of its bytes (the lines of one identifier are read together, a range of identifiers at a time, and the place
+// between pages is compared the same way in Go), and the links of the run by their id (the
+// check of the cardinality goes through them in that order).
+func isolateIndexDefs() []indexDef {
+	return []indexDef{
+		{Name: "stage_ident_value", Table: TableStageIdent, Expr: strings.Join([]string{ColScheme + ` COLLATE "C"`, ColValue + ` COLLATE "C"`, ColScope + ` COLLATE "C"`, ColObjNo}, ", ")},
+		{Name: "stage_link_ref", Table: TableStageLink, Expr: ColRef},
+	}
+}
+
 // leftTableDef is the table of the objects the computation of the objects left (generator version 10, ADR-0119): the object, why (Left*),
 // how many lines it had (for one that has more than the limit, the number counted up to the limit and one more), whether it is one the
 // run would have made, and the reason as a person reads it. A table of its own, so that the tables of the KG that readers have open
@@ -325,7 +357,7 @@ func ingestIndexDefs() []indexDef {
 		// takes the last row of a key by the place.
 		stageRecordKeyIndex(),
 	}
-	return append(append(append(out, identifyIndexDefs()...), recomputeIndexDefs()...), linkIndexDefs()...)
+	return append(append(append(append(out, identifyIndexDefs()...), recomputeIndexDefs()...), linkIndexDefs()...), isolateIndexDefs()...)
 }
 
 // linkIndexDefs are the indexes the computation of the links reads by (generator version 12, ADR-0122): the ends of the run by their
