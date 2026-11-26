@@ -107,7 +107,7 @@ Go 프로그램은 한 번 빌드해 임시 디렉터리에서 실행한다. 인
 
 ## PostgreSQL이 필요한 Go 테스트 (ADR-0032)
 
-`adapter.pgconn`과 `adapter.pgstore`의 테스트와 `api serve -store postgres`의 기동 테스트는 실제 PostgreSQL 18에서 돈다. 서버의 주소는 환경 변수 `PRAXIUM_TEST_PG_DSN`이 준다. **변수가 없으면 건너뛰지 않고 실패한다**(조용히 통과하는 경로를 두지 않는다). 테스트마다 새 데이터베이스를 만들고 끝나면 지운다.
+`adapter.pgconn`과 `adapter.pgstore`의 테스트와 `api serve -store postgres`의 기동 테스트는 실제 PostgreSQL 18에서 돈다. 서버의 주소는 환경 변수 `PRAXIUM_TEST_PG_DSN`이 준다. **변수가 없으면 건너뛰지 않고 실패한다**(조용히 통과하는 경로를 두지 않는다). 테스트마다 자기 데이터베이스를 쓰고 끝나면 지운다. 마이그레이션을 마친 데이터베이스나 KG를 만든 데이터베이스에서 시작하는 테스트는 그 상태를 서버에 한 번 만들어 둔 템플릿 데이터베이스(`praxium_tpl_`로 시작하는 이름)를 복제해 받는다. 템플릿은 서버를 버릴 때 함께 사라진다. 버리지 않는 자기 서버를 쓰면 코드를 바꾼 뒤 이 데이터베이스들을 지운다(지우지 않아 낡은 템플릿을 받으면 복제본을 새로 만든 것과 비교하는 테스트가 실패한다, ADR-0120).
 
 - 로컬: `scripts/with-postgres.sh <명령>`이 일회용 서버를 소켓에만 띄우고 변수를 정해 명령을 실행한 뒤 서버와 데이터를 지운다. 예: `scripts/with-postgres.sh pnpm check`, `scripts/with-postgres.sh bash -c 'cd backend && go test ./...'`. 서버 프로그램(`initdb`, `pg_ctl`)이 있는 PostgreSQL 18이 필요하다(찾는 순서는 `PG_BIN`, `pg_config`, PATH, `/usr/lib/postgresql/<버전>/bin`의 가장 새 것이고, 18 미만이면 이유를 알리고 실패한다). root이면 비특권 사용자로 띄운다. 변수가 이미 있으면(자기 서버, CI) 명령만 실행한다.
 - TCP 연결(원본 PostgreSQL에 붙는 어댑터의 테스트용): 일회용 서버는 소켓 외에 `127.0.0.1`의 빈 포트 하나도 연다(실행마다 고르고, 쓰이면 다른 포트로 다시 시도한다). 명령에는 네 변수가 함께 주어진다. `PRAXIUM_TEST_PG_TCP_HOST`는 `127.0.0.1`, `PRAXIUM_TEST_PG_TCP_PORT`는 그 포트, `PRAXIUM_TEST_PG_TCP_USER`는 `CREATEDB`만 가진 로그인 역할(슈퍼유저 아님), `PRAXIUM_TEST_PG_TCP_PASSWORD`는 실행마다 무작위로 만든 비밀번호다. TCP 연결은 `scram-sha-256` 비밀번호를 요구하고, 소켓 연결은 전과 같이 신뢰한다. TLS는 켜지 않는다. `PRAXIUM_TEST_PG_DSN`이 이미 있어 스크립트가 명령만 실행하면 이 네 변수는 주어지지 않는다.

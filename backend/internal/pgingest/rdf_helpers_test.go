@@ -1,6 +1,8 @@
 package pgingest
 
 import (
+	"context"
+	"database/sql"
 	"fmt"
 	"sort"
 	"strings"
@@ -10,7 +12,9 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/pgconn"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
+	"github.com/ysk6506/praxium/backend/internal/pgstore"
 )
 
 // The tests of the comparison of the received rows with the raw records (ADR-0102). Every helper, type and field they add starts
@@ -27,11 +31,47 @@ type rdfSetup struct {
 	ref  SourceRef
 }
 
+// rdfNew is a database with the first KG of the tests and the source of the plan put to it: a copy of a template made once
+// for the plan's source and datasets (ADR-0120), as pgiOpen, kg(t, 1) and attach would leave it.
 func rdfNew(t *testing.T, plan *ingest.Plan) *rdfSetup {
 	t.Helper()
-	e := pgiOpen(t)
-	kg := e.kg(t, 1)
-	return &rdfSetup{e: e, kg: kg, plan: plan, ref: e.attach(t, kg, plan)}
+	pgiParallel(t)
+	datasets := pgiDatasets(plan)
+	then := func(dsn string) error {
+		pool, err := pgconn.Open(context.Background(), pgconn.Config{DSN: dsn})
+		if err != nil {
+			return err
+		}
+		_, err = New(pool).AttachSource(context.Background(), pgiKG(t, 1).ID, plan.Source.ID, datasets)
+		if cerr := pool.Close(); err == nil {
+			err = cerr
+		}
+		return err
+	}
+	dsn, kg := pgstore.NewTestDatabaseWithKG(t, true, pgiKG(t, 1), "pgingest AttachSource "+plan.Source.ID+" "+strings.Join(datasets, ","), then)
+	e := pgiOpenOn(t, dsn)
+	return &rdfSetup{e: e, kg: kg, plan: plan, ref: rdfRefOf(t, e, kg, plan.Source.ID)}
+}
+
+// rdfRefOf reads what putting the source to the KG made, as AttachSource returned it, and changes nothing: AttachSource again
+// would take numbers of the sequences.
+func rdfRefOf(t *testing.T, e *pgiEnv, kg graph.KG, source string) SourceRef {
+	t.Helper()
+	ref := SourceRef{Datasets: map[string]int64{}}
+	q := "SELECT c." + catalogKGNo + ", s." + pgschema.ColSrcNo + " FROM " + catalogTable + " c JOIN " + pgschema.TableSourceState + " s ON s." + pgschema.ColKGID +
+		" = c." + catalogKGID + " WHERE c." + catalogKGID + " = $1 AND s." + pgschema.ColSourceID + " = $2"
+	if err := e.admin.QueryRowContext(e.ctx, q, kg.ID.String(), source).Scan(&ref.KGNo, &ref.SrcNo); err != nil {
+		t.Fatalf("the source of the template: %v", err)
+	}
+	tx, err := e.admin.BeginTx(e.ctx, &sql.TxOptions{ReadOnly: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() { _ = tx.Rollback() }()
+	if err := attachRead(e.ctx, tx, &ref); err != nil {
+		t.Fatal(err)
+	}
+	return ref
 }
 
 func rdfHash(text string) []byte {

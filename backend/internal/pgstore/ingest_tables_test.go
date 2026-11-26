@@ -311,6 +311,7 @@ func TestIngestAKGMadeByTheGeneratorBeforeIsAdjustedByAddingTheTablesWithoutClos
 // connection to its database.
 func igtOpenStandard(t *testing.T) (*Store, *sql.DB) {
 	t.Helper()
+	sxParallel(t)
 	dsn := NewTestDatabase(t)
 	models, err := StandardModels(true)
 	if err != nil {

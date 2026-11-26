@@ -11,6 +11,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/pgconn"
 	"github.com/ysk6506/praxium/backend/internal/worldgen"
 )
 
@@ -112,9 +113,21 @@ func sapLoadBoth(t *testing.T, reg *model.Registry, truth []byte, items int) *sa
 	return sapLoadBothInto(t, reg, truth, items, func(tb TB) (*Store, func()) { return NewTestStore(tb), func() {} })
 }
 
+// sapSerial are the tests of the staged apply that run alone, after the others of this unit (ADR-0120): the one that counts the
+// locks a chunk takes.
+var sapSerial = map[string]bool{"TestSapLocksOfAChunkDoNotGrowWithItsRows": true}
+
+// sapParallel lets the test run beside the other tests of this unit, each on stores of its own, unless it is one of sapSerial.
+func sapParallel(t *testing.T) {
+	if !sapSerial[t.Name()] {
+		pgconn.TestInParallel(t)
+	}
+}
+
 // sapLoadBothInto is sapLoadBoth with the store of the staged side made by open.
 func sapLoadBothInto(t *testing.T, reg *model.Registry, truth []byte, items int, open func(TB) (*Store, func())) *sapPair {
 	t.Helper()
+	sapParallel(t)
 	ctx := context.Background()
 	a := NewTestStore(t)
 	b, arm := open(t)
@@ -166,6 +179,7 @@ func sapFirstChunks(t *testing.T, reg *model.Registry, items int) []graph.ChunkW
 // of the rows path beside it: it is for the tests that look at the staged apply only.
 func sapStagedInto(t *testing.T, items int, open func(TB) (*Store, func())) *sapPair {
 	t.Helper()
+	sapParallel(t)
 	reg, err := model.LoadStandard()
 	noErr(t, "model", err)
 	first := sapFirstChunks(t, reg, items)

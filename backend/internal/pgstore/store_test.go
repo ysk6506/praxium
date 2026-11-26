@@ -7,6 +7,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/pgconn"
 	"github.com/ysk6506/praxium/backend/internal/pgstore"
 )
 
@@ -32,8 +33,10 @@ type rig struct {
 	clock *kernel.ManualClock
 }
 
+// newRig is a rig on a store of its own; the test runs beside the other tests of this unit (ADR-0120).
 func newRig(t *testing.T, opts graph.Options) *rig {
 	t.Helper()
+	pgconn.TestInParallel(t)
 	return newRigOn(t, pgstore.NewTestStore(t), opts)
 }
 
