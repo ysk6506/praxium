@@ -33,6 +33,7 @@ amends:
 amends_tests:
   - go:backend/internal/pgingest::TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastACellThatGaveNoValueIsSaidAndAHeldRecordOrABlankKeyIsNoProblem
 test_change_reason: 링크 정의의 문제가 남기는 정의 번호가 0에서 -1로 바뀐다(이 결정 1). 이 시험은 링크 칸의 invalid_value 줄을 키/종류/정의 번호/필드로 견주므로 기대 글의 번호만 0에서 -1로 바꾼다. 견주는 줄의 수와 다른 칸은 그대로이고 단언은 약해지지 않았다.
+decision_hash: 4b0074523351ee4c
 ---
 # ADR-0128 새 수집 흐름 9단계 정리와 적용 쪽 이음(표지), 실행 상태 읽기
 
