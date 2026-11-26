@@ -24,6 +24,8 @@ const (
 	catalogTable = "kg_catalog"
 	catalogKGID  = "kg_id"
 	catalogKGNo  = "kg_no"
+	// deletingTable is the mark of a KG that is being deleted (migration 0009 of adapter.pgconn, ADR-0125), keyed by catalogKGID.
+	deletingTable = "kg_deleting"
 )
 
 // The roles this unit runs its transactions under: the applier for the record of runs and the sources, bulk for the
@@ -67,5 +69,22 @@ func kgNoOf(ctx context.Context, tx *sql.Tx, kg graph.KGID) (int64, error) {
 	if isNoRows(err) {
 		return 0, kernel.Errorf(graph.CodeKGNotFound, "no KG %q", kg)
 	}
-	return no, dbErr(err, "read the number of the KG")
+	if err != nil {
+		return 0, dbErr(err, "read the number of the KG")
+	}
+	return no, refuseDeleting(ctx, tx, kg.String())
+}
+
+// refuseDeleting refuses a KG that is being deleted (ADR-0125): from the first transaction of a delete, the ingestion neither
+// starts nor goes on for it. Called after the statement that took the share lock on the row of the list, it is a statement of
+// its own and so sees a mark that the delete wrote before the lock was given (the delete locks the row to write it).
+func refuseDeleting(ctx context.Context, tx *sql.Tx, kgID string) error {
+	var deleting bool
+	if err := tx.QueryRowContext(ctx, "SELECT EXISTS (SELECT 1 FROM "+deletingTable+" WHERE "+catalogKGID+" = $1)", kgID).Scan(&deleting); err != nil {
+		return dbErr(err, "look for the mark of a KG that is being deleted")
+	}
+	if deleting {
+		return kernel.Errorf(graph.CodeKGNotFound, "KG %q is being deleted", kgID)
+	}
+	return nil
 }

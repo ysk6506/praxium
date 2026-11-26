@@ -64,8 +64,10 @@ func (s *Store) detachSource(ctx context.Context, sh *shard, kg graph.KGID, kgNo
 		if err := runSteps(ctx, tx, steps, pgschema.InTx); err != nil {
 			return err
 		}
-		_, err := tx.ExecContext(ctx, `DELETE FROM `+pgschema.TableSourceState+` WHERE `+pgschema.ColSrcNo+` = $1`, src)
-		return dbErr(err, "delete the state of the source")
+		if _, err := tx.ExecContext(ctx, `DELETE FROM `+pgschema.TableSourceState+` WHERE `+pgschema.ColSrcNo+` = $1`, src); err != nil {
+			return dbErr(err, "delete the state of the source")
+		}
+		return s.seen(ctx, deleteStepSource, tx)
 	})
 }
 

@@ -127,7 +127,7 @@ func kgNoOfRun(ctx context.Context, tx *sql.Tx, kgID string) (int64, error) {
 	if err != nil {
 		return 0, dbErr(err, "read the number of the KG")
 	}
-	return no, nil
+	return no, refuseDeleting(ctx, tx, kgID)
 }
 
 // receivedCoverage is the coverage the receiving wrote to the counts of the run for each dataset it gave; a run whose counts have no

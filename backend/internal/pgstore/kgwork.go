@@ -97,14 +97,15 @@ func (s *Store) ResumeWork(ctx context.Context, kg graph.KGID) error {
 
 // ResumeAllWork ends the work that any KG's head says is half done and returns the KGs it ended it for. A KG whose
 // work cannot be ended (the database failed, the KG is damaged) does not stop the others: its error is in the one
-// returned, which joins them, and the KG stays closed or refusing writes as the head says.
+// returned, which joins them, and the KG stays closed or refusing writes as the head says. The deletes of KGs that a
+// server left half done are ended first (ADR-0125), and those KGs are among the ones returned.
 func (s *Store) ResumeAllWork(ctx context.Context) ([]graph.KGID, error) {
+	resumed, deleteErr := s.endDeletes(ctx)
 	kgs, err := s.ListKGs(ctx)
 	if err != nil {
-		return nil, err
+		return resumed, errors.Join(deleteErr, err)
 	}
-	var resumed []graph.KGID
-	var failed []error
+	failed := []error{deleteErr}
 	for _, kg := range kgs {
 		done, err := s.resumeOne(ctx, kg.ID)
 		if err != nil {

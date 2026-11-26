@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -157,6 +158,21 @@ func NewTestStoreWith(tb TB, clock LeaseClock) *Store {
 // written. The tests of the staged apply use it to take the rows the rows path wrote (ADR-0099). Only tests use it, and
 // they set it before the calls that write.
 func (s *Store) RecordChunks(fn func(graph.ChunkWrite)) { s.record = fn }
+
+// StopDeleteAt makes the next delete of a KG of this Store (DeleteKG, DropStorageSchema) stop with err in its first
+// transaction of the step ("mark", "source", "compute" or "last", ADR-0125), as a server that dies there does: that
+// transaction is rolled back and the ones before it stay. Only tests use it, and they set it before the call; a call
+// again ends the delete.
+func (s *Store) StopDeleteAt(step string, err error) {
+	stopped := false
+	s.deleteSeen = func(_ context.Context, at string, _ *sql.Tx) error {
+		if at != step || stopped {
+			return nil
+		}
+		stopped = true
+		return err
+	}
+}
 
 // StopWorkAfter makes an abandon or a restore of this Store stop with err once it has done n steps (n of at least 1),
 // as a server that dies in the middle does: the head keeps the work and ResumeWork ends it. Only tests use it, and
