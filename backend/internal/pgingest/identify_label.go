@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/ysk6506/praxium/backend/internal/ingest"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
@@ -44,9 +45,11 @@ func (r *identRun) labels(ctx context.Context, tx *sql.Tx) error {
 		st.Phase, st.Cur, st.Cur2, st.CurKey = phaseKLabels, -1, 0, ""
 		return r.analyze(ctx, tx, pgschema.TableCalcLabel)
 	case st.Changed > 0:
-		// the turns did not end the search: Go ends it for the groups that are not whole
+		// the turns did not end the search: Go ends it for the groups that are not whole. The labels of the last turn are measured first,
+		// as at every turn: a page of Go's read is planned on them, and a plan made on a turn the planner does not know reads the labels
+		// that are left after the page (ADR-0116)
 		st.Phase, st.Cur, st.Cur2, st.Skipped = phaseSettle, 0, 0, false
-		return nil
+		return r.analyze(ctx, tx, pgschema.TableCalcLabel)
 	default:
 		st.Unsettled = false
 		st.Phase, st.Cur = phaseDecide, 0
@@ -135,16 +138,37 @@ func (r *identRun) keyLabels(ctx context.Context, tx *sql.Tx) error {
 }
 
 // pairsSQL is the pairs of the groups of a range of labels of the last turn of the round (pl), and the slot of each (ps). When the
-// search for the groups was stopped by its limit before it was done, a group is a piece of a group that is not whole yet if one of its
-// keys is also a key of a pair that has another label, and such a group is not in it: only the groups that no other group shares a key
-// with are known to be whole. The CTE bad names the labels of the groups that are not (it is there only when the search was not done).
-func pairsSQL(unsettled bool) string {
-	base := "SELECT l.pid, l.label FROM {label} l WHERE l.round_no = {R} AND l.iter = {F} AND l.label > $1 AND l.label <= $2"
-	pl := "pl AS (" + base + "), "
-	if unsettled {
-		pl = unsettledSQL + "pl AS (" + base + " AND NOT EXISTS (SELECT 1 FROM bad WHERE bad.label = l.label)), "
+// round leaves some groups (leftSQL), the first statement of a unit leaves them, and they are not in pl: a group that is left has a
+// reference of each of its pairs, so one probe of the reference of the pair that is its label tells it. (When the search was stopped,
+// the pair whose number is the label of a piece may have a smaller label: it is in a piece that is not whole either, whose label is
+// smaller, so it was left by this unit or an earlier one.)
+func pairsSQL(leaving bool) string {
+	base := "SELECT l.pid, l.label FROM {label} l"
+	cond := " WHERE l.round_no = {R} AND l.iter = {F} AND l.label > $1 AND l.label <= $2"
+	if leaving {
+		feeds := strconv.Itoa(ingest.MaxIdentifyFeeds)
+		base += absent("{ref}", "lr", "x.rid = l.label / "+feeds+" AND x.role = "+strconv.Itoa(int(roleIdentity))+" AND x.def_no = l.label % "+feeds)
+		cond += " AND lr.hit IS NULL"
 	}
-	return pl + psSQL
+	return "pl AS (" + base + cond + "), " + psSQL
+}
+
+// leftSQL are the CTEs that name the labels of the range whose groups the round leaves (gone): the groups that are not known to be
+// whole, when the search for the groups was stopped by its limit before it was done (bad), and the groups that share a key with a pair
+// an earlier round left, when one did (nb). A group is left whole, so what shares a key with a pair of it is left with it whatever the
+// round or the unit it is in (ADR-0116).
+func leftSQL(unsettled, neighbors bool) string {
+	ctes := keysSQL
+	var from []string
+	if unsettled {
+		ctes += wholeSQL
+		from = append(from, "SELECT label FROM bad")
+	}
+	if neighbors {
+		ctes += neighborsSQL()
+		from = append(from, "SELECT label FROM nb")
+	}
+	return ctes + "gone AS (" + strings.Join(from, " UNION ") + "), "
 }
 
 // psSQL is the slot of each pair of pl, by one probe of the slots for each (a range of the labels is a range of the pairs, and the
@@ -152,14 +176,33 @@ func pairsSQL(unsettled bool) string {
 const psSQL = "ps AS (SELECT pl.label, s.rid, s.src_no, s.feed_no, s.pid, s.key_ord, s.type_no, s.ctx_no, s.sig_hash, s.found_no FROM pl" +
 	" CROSS JOIN LATERAL (SELECT x.* FROM {slot} x WHERE x.round_no = {R} AND x.pid = pl.pid OFFSET 0) s)"
 
-// unsettledSQL are the CTEs that find the groups of a range of labels that are not known to be whole (see pairsSQL): the keys of the
-// pairs of the range, the keys among them that pairs of more than one label have, and the labels of the groups that have such a key.
-const unsettledSQL = "sk AS (SELECT s.type_no, s.ctx_no, s.sig_hash, l.label FROM {label} l" +
-	" CROSS JOIN LATERAL (SELECT x.type_no, x.ctx_no, x.sig_hash FROM {slot} x WHERE x.round_no = {R} AND x.pid = l.pid OFFSET 0) s" +
+// keysSQL are the pairs of a range of labels with their slots (sk: a row for each key of a pair) and the keys among them (kk). The range
+// of the labels is read by its index and each pair's slots by theirs, so what it reads is the pairs of the range.
+const keysSQL = "sk AS (SELECT l.pid, l.label, s.rid, s.feed_no, s.type_no, s.ctx_no, s.sig_hash FROM {label} l" +
+	" CROSS JOIN LATERAL (SELECT x.rid, x.feed_no, x.type_no, x.ctx_no, x.sig_hash FROM {slot} x WHERE x.round_no = {R} AND x.pid = l.pid OFFSET 0) s" +
 	" WHERE l.round_no = {R} AND l.iter = {F} AND l.label > $1 AND l.label <= $2), " +
-	"kk AS (SELECT DISTINCT type_no, ctx_no, sig_hash FROM sk), " +
-	"sp AS (SELECT kk.type_no, kk.ctx_no, kk.sig_hash FROM kk" +
+	"kk AS (SELECT DISTINCT type_no, ctx_no, sig_hash FROM sk), "
+
+// wholeSQL are the CTEs, after keysSQL, that find the groups of the range that are not known to be whole: when the search for the
+// groups was stopped by its limit before it was done, a group is a piece of a group that is not whole yet if one of its keys is also a
+// key of a pair that has another label (sp: each key's pairs by the index of the keys, and the label of each by the index of the pairs),
+// and bad is the labels of the groups that have such a key. Only the groups that no other group shares a key with are known to be whole.
+const wholeSQL = "sp AS (SELECT kk.type_no, kk.ctx_no, kk.sig_hash FROM kk" +
 	" CROSS JOIN LATERAL (SELECT x.pid FROM {slot} x WHERE x.round_no = {R} AND x.type_no = kk.type_no AND x.ctx_no = kk.ctx_no AND x.sig_hash = kk.sig_hash OFFSET 0) t" +
 	" CROSS JOIN LATERAL (SELECT x.label FROM {label} x WHERE x.round_no = {R} AND x.iter = {F} AND x.pid = t.pid LIMIT 1) u" +
 	" GROUP BY kk.type_no, kk.ctx_no, kk.sig_hash HAVING min(u.label) <> max(u.label)), " +
 	"bad AS (SELECT DISTINCT sk.label FROM sk JOIN sp ON sp.type_no = sk.type_no AND sp.ctx_no = sk.ctx_no AND sp.sig_hash = sk.sig_hash), "
+
+// unsettledSQL are the CTEs that find the groups of a range of labels that are not known to be whole, with the pairs of the range (sk).
+const unsettledSQL = keysSQL + wholeSQL
+
+// neighborsSQL are the CTEs, after keysSQL, that find the groups of the range that share a key with a pair an earlier round left: a key
+// is looked at once for each earlier round (at most sixteen), by the index of the keys of that round's slots, for a slot whose pair has
+// a reference of its identity (it was left, or no object could be told for it). The pairs of a round that share a key are one group and
+// a group is in one unit, so a key is read once in a round. nb is the labels of the groups that have such a key.
+func neighborsSQL() string {
+	return "lk AS (SELECT DISTINCT kk.type_no, kk.ctx_no, kk.sig_hash FROM kk CROSS JOIN LATERAL generate_series(1, {R} - 1) pr(r)" +
+		probe("1", "{slot}", "t", "x.round_no = pr.r AND x.type_no = kk.type_no AND x.ctx_no = kk.ctx_no AND x.sig_hash = kk.sig_hash AND EXISTS (SELECT 1 FROM {ref} z "+
+			"WHERE z.rid = x.rid AND z.role = "+strconv.Itoa(int(roleIdentity))+" AND z.def_no = x.feed_no)") + "), " +
+		"nb AS (SELECT DISTINCT sk.label FROM sk JOIN lk ON lk.type_no = sk.type_no AND lk.ctx_no = sk.ctx_no AND lk.sig_hash = sk.sig_hash), "
+}

@@ -74,14 +74,30 @@ func TestIdnMeasureTheIdentificationOfAGroupOfManyObjects(t *testing.T) {
 	t.Logf("a group of %d records of %d objects: %v, %+v", *idnGroup, *idnGroup, took, counts)
 }
 
-// idnShuffled is the rows of a chain of n records in a shuffled row order. It does not shuffle the pair numbers: those follow the keys, and
-// the keys run along the chain (the random-key chain is in ADR-0108).
+// idnShuffled is a chain of n records (each shares its serial with the record before it and its uuid with the one after it) whose
+// natural keys are a random permutation of the places in the chain, in a shuffled row order. The numbers of the pairs follow the natural
+// keys, so they are not the order of the chain either (ADR-0116). It is the same for the same seed (a step of a linear congruential
+// generator for each swap).
 func idnShuffled(n int, seed int64) []string {
-	rows := idnChain("c", n, n/2)
 	x := uint64(seed)*2862933555777941757 + 3037000493
-	for i := len(rows) - 1; i > 0; i-- {
+	swap := func(i int) int {
 		x = x*6364136223846793005 + 1442695040888963407
-		j := int((x >> 33) % uint64(i+1))
+		return int((x >> 33) % uint64(i+1))
+	}
+	names := make([]int, n)
+	for i := range names {
+		names[i] = i
+	}
+	for i := n - 1; i > 0; i-- {
+		j := swap(i)
+		names[i], names[j] = names[j], names[i]
+	}
+	rows := make([]string, n)
+	for i := range rows {
+		rows[i] = fmt.Sprintf("c%06d,csn%d,Zorvane,cu%d", names[i], i/2, (i+1)/2)
+	}
+	for i := n - 1; i > 0; i-- {
+		j := swap(i)
 		rows[i], rows[j] = rows[j], rows[i]
 	}
 	return rows
@@ -89,14 +105,22 @@ func idnShuffled(n int, seed int64) []string {
 
 // [REQ-882]
 func TestIdnAChainOfRecordsInAnyOrderIsOneObjectWhenTheTurnsEndBeforeItsEndAndGoEndsTheSearchAndNothingIsLeftWhenItCannotHoldIt(t *testing.T) {
+	// the numbers of the pairs are not the order of the chain, so the turns of the default do not end a chain of 400 records: Go ends it
+	// (a chain of 6,000 records takes Go eleven pages and about seventeen seconds, more than this test may take, so it is not here)
 	for _, tc := range []struct {
 		n, turns, settle int
 		whole            bool
-	}{{1600, 0, 0, true}, {6000, 0, 0, true}, {400, 2, 0, true}, {400, 2, 1, false}} {
+	}{{400, 0, 0, true}, {1600, 0, 0, true}, {400, 2, 0, true}, {400, 2, 1, false}} {
 		s := rdfNew(t, pgiPlan(t, idnServerSource, idnServerMapping))
+		pages := 0
+		s.e.st.identSeen = idnfCount("read the pairs of the groups that are not whole", &pages)
 		_, counts := idnPipelineWith(s, t, idnServers(idnShuffled(tc.n, int64(tc.n))...), rdfT0, 1000, 500, tc.turns, 0, tc.settle)
+		s.e.st.identSeen = nil
 		objs := idnObjectsOf(s, t)
-		t.Logf("a chain of %d records, turns %d, Go holds %d pairs: %d objects, %d turns, %+v", tc.n, tc.turns, tc.settle, len(objs), idnTurns(s, t), counts)
+		t.Logf("a chain of %d records, turns %d, Go holds %d pairs: %d objects, %d turns, Go read %d pages, %+v", tc.n, tc.turns, tc.settle, len(objs), idnTurns(s, t), pages, counts)
+		if pages == 0 {
+			t.Errorf("%+v: Go read no page: the turns ended the chain, which the test is not about", tc)
+		}
 		if tc.whole && (len(objs) != 1 || counts.NewObjects != 1 || counts.Unsettled != 0 || counts.Unresolved != 0) {
 			t.Errorf("%+v: a chain of %d records is %d objects", tc, tc.n, len(objs))
 		}
@@ -107,16 +131,28 @@ func TestIdnAChainOfRecordsInAnyOrderIsOneObjectWhenTheTurnsEndBeforeItsEndAndGo
 }
 
 // idnSettleCut gives the port to the run until it has done n calls, the reads and the writes of Go included, and then fails as a
-// server that dies does. It says which call it failed.
+// server that dies does. It says which call it failed, and lists every call the cut counts: the ones of idnCut it does not name (the
+// keys made again, the answers) are in the list too, so that the place of a call in the list is the n that stops the run there
+// (ADR-0116).
 type idnSettleCut struct {
 	idnCut
 	died  *string
 	calls *[]string
+	begun bool
+	last  int
 }
 
 func (c *idnSettleCut) fail(what string) error {
+	if !c.begun {
+		c.begun, c.last = true, c.left
+	}
+	for ; c.last > c.left; c.last-- {
+		*c.calls = append(*c.calls, "rebuilt or answers")
+	}
 	*c.calls = append(*c.calls, what)
-	if err := c.idnTick(); err != nil {
+	err := c.idnTick()
+	c.last = c.left
+	if err != nil {
 		*c.died = what
 		return err
 	}
@@ -159,7 +195,7 @@ func TestIdnARunThatStopsWhileGoEndsTheSearchForTheGroupsGoesOnAndMakesWhatARunT
 		}
 		keys := ingest.NewPlanKeys(map[int64]*ingest.Plan{s.ref.SrcNo: s.plan})
 		start := idnStart(s, 100, 1)
-		start.Turns = 2
+		start.Turns, start.SettlePut = 2, 100
 		died := ""
 		if cut >= 0 {
 			port := &idnSettleCut{idnCut: idnCut{Identifier: s.e.st, left: cut}, died: &died, calls: &calls}
@@ -188,8 +224,10 @@ func TestIdnARunThatStopsWhileGoEndsTheSearchForTheGroupsGoesOnAndMakesWhatARunT
 		if _, err := ingest.RunRawDiff(whole.e.ctx, whole.e.st, l, whole.rdfStart(rdfT0, 100)); err != nil {
 			t.Fatal(err)
 		}
+		// Go reads the chain in pages of 100 pairs and writes its labels in pages of 100, so a cut falls between two reads and between two
+		// writes
 		start := idnStart(whole, 100, 1)
-		start.Turns = 2
+		start.Turns, start.SettlePut = 2, 100
 		died := ""
 		port := &idnSettleCut{idnCut: idnCut{Identifier: whole.e.st, left: 1 << 30}, died: &died, calls: &calls}
 		if _, err := ingest.RunIdentify(whole.e.ctx, port, l, start, ingest.NewPlanKeys(map[int64]*ingest.Plan{whole.ref.SrcNo: whole.plan})); err != nil {
@@ -202,18 +240,26 @@ func TestIdnARunThatStopsWhileGoEndsTheSearchForTheGroupsGoesOnAndMakesWhatARunT
 	}
 	var cuts []int
 	for i, c := range calls {
-		if strings.HasPrefix(c, "settle") {
+		if strings.HasPrefix(c, "settle") && (len(cuts) == 0 || cuts[len(cuts)-1] < i) {
 			cuts = append(cuts, i, i+1)
+		} else if strings.HasPrefix(c, "settle") {
+			cuts = append(cuts, i+1)
 		}
 	}
 	if len(cuts) == 0 {
 		t.Fatalf("Go did not end the search: %v", calls)
 	}
+	deaths := map[string]int{}
 	for _, cut := range cuts {
 		s, died := run(cut)
+		deaths[died]++
 		if got := idnState(s, t); got != want {
 			t.Errorf("cut %d (%s): the run made\n%s\nand the whole one\n%s", cut, died, got, want)
 		}
+	}
+	// the cuts fall on every read and every write of Go: at least two of each, so a run is taken over between two pages of both
+	if deaths["settle read"] < 2 || deaths["settle write"] < 2 {
+		t.Errorf("the cuts stopped the run at %v: not between the pages of Go", deaths)
 	}
 }
 

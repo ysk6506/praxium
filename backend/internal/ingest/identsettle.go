@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-// settlePut is how many settled pairs a unit that writes them takes.
+// settlePut is how many settled pairs a unit that writes them takes, unless the start says another number (IdentifyStart.SettlePut).
 const settlePut = 5000
 
 // settleGroups ends the search for the groups of a round that its turns did not end (ADR-0108): it reads the pairs of the groups that
@@ -13,8 +13,16 @@ const settlePut = 5000
 // pair of the group). A run that was stopped goes on from the pairs not written yet: what is read is the same, so the labels are.
 // More pairs than the limit are not held: nothing is written then, and the groups are left.
 func settleGroups(ctx context.Context, d Identifier, lease RunLease, limit int) error {
+	return settleGroupsBy(ctx, d, lease, limit, settlePut)
+}
+
+// settleGroupsBy is settleGroups with the pairs a write takes given (0 is settlePut).
+func settleGroupsBy(ctx context.Context, d Identifier, lease RunLease, limit, put int) error {
 	if limit == 0 {
 		limit = DefaultSettlePairs
+	}
+	if put == 0 {
+		put = settlePut
 	}
 	var pairs []SettlePair
 	var written, after int64
@@ -37,7 +45,7 @@ func settleGroups(ctx context.Context, d Identifier, lease RunLease, limit int) 
 	i := sort.Search(len(rows), func(i int) bool { return rows[i].Pid > written })
 	rows = rows[i:]
 	for {
-		n := min(settlePut, len(rows))
+		n := min(put, len(rows))
 		last := n == len(rows)
 		if err := d.PutSettled(ctx, lease, rows[:n], SettleEnd{Last: last}); err != nil {
 			return err
