@@ -71,6 +71,11 @@ func TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneO
 	if !slices.Equal(owned, []string{pgschema.ProblemSourceConflict}) {
 		t.Errorf("the fourth step owns %v", owned)
 	}
+	for _, kind := range owned {
+		if !slices.Contains(pgschema.ProblemKinds(), kind) {
+			t.Errorf("%s is not in the closed list", kind)
+		}
+	}
 	for _, kind := range []string{pgschema.ProblemLinkTarget, pgschema.ProblemLinkAmbiguous, pgschema.ProblemCardinality} {
 		if slices.Contains(owned, kind) {
 			t.Errorf("%s is owned by the fourth step, which does not write it", kind)

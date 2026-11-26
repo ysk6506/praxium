@@ -31,7 +31,7 @@ amends_tests:
   - go:backend/internal/pgingest::TestRcpThePageSizeDoesNotChangeWhatIsStaged
   - go:backend/internal/pgingest::TestRcpTheReportIsWhatTheStatementsWroteAndAnObjectWithoutRecordsOrWithOnesThatCannotBeReadIsLeft
 test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. (1) TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 8에서 9로 바꾼다(이 결정 7). 파티션 접두어를 예약한다는 단언은 그대로다. (2) TestRcpDiffFromGeneratorSevenToEight…는 이제 빌드의 생성기가 9라서 "빌드의 매니페스트를 7과 견준다"가 단계 두 개만 나오지 않는다. 그래서 견주기 전에 다음 쪽 버전을 8로 두는 줄을 더하고, 빌드의 버전이 8 이상이라는 조건을 단언으로 더했다. 단계가 인덱스 둘이고 한 번 더 돌려도 같으며 표가 없는 스키마를 그대로 둔다는 단언은 그대로다. (3) TestRcpTheRunOfTheStepBeginsOnce…는 테스트용 가짜 저장소가 자리(RecomputePlace)에 시작 때의 시각을 돌려주게 했다. 이어받는 서버는 시작한 시각과 같은 것을 주어야 한다는 새 규칙(결정 4) 아래에서 가짜가 이전 시각 없이 자리를 돌려주면 이 테스트가 시작하지 않은 경우를 벗어난다. 단언은 그대로다. (4) pgingest의 rcpReset(도우미)은 이 단계가 새로 쓰는 표(calc_left)도 비운다. 이 도우미를 쓰는 여섯 테스트(TestRcpARunStopped…, TestRcpTheClaimRuleOfTheExpansion…, TestRcpTheComputationIsRefusedBefore…, TestRcpTheObjectsTheRunTouched…, TestRcpThePageSizeDoesNotChange…, TestRcpTheReportIsWhatTheStatementsWrote…)는 지문만 바뀌고 단언은 하나도 바뀌지 않았다. 도우미가 비우지 않으면 다시 도는 세계에서 calc_left의 기본키가 겹쳐 테스트가 실패한다.
-decision_hash: d6ff46438b65dade
+decision_hash: eb2f5d54cab0b44b
 ---
 # ADR-0119 객체 다시 계산에서 건너뛴 객체의 처리
 
@@ -87,6 +87,7 @@ ADR-0115(#110)가 4단계의 객체 쪽을 정했다. 독립 검토(F-1부터 F-
 - 한 객체가 한도를 넘는 것과 부모가 되돌려진 것이 겹칠 때 `calc_left`의 이유는 단계가 먼저 만난 쪽이다(페이지의 크기에 따라 다를 수 있다). 되돌려지는 객체의 집합은 같다. 테스트는 집합과 불변식을 단언하고 이유를 견주지 않는다.
 - 한도의 기본값은 `Lines`가 기본일 때 정해지고, 기본 `ObjectMax`를 쓰면서 `Lines`만 줄이면 한도가 페이지보다 클 수 있다(명시값만 거절한다). 이때 메모리의 상한은 `Lines`가 아니라 기본 한도다.
 - 링크의 문제 종류와 링크의 계산은 I-5b2다.
+- 변이 P25(`record_ref`에서 읽는 주장 가지가 `state = found`만 읽는 조건을 푼 것)는 동등 변이다. 잃은 주장을 가진 레코드는 `CalcWhyUnresolved`로 실행마다 다시 읽혀 `calc_ref`로 옮겨 가므로 그 가지에 닿을 수 없다. `calc_ref` 가지의 같은 변이는 테스트가 잡는다.
 - `Isolated`는 읽을 수 없는 객체(등록부에도 새 객체에도 없는 번호)와 연쇄로 되돌린 객체를 모두 센다.
 
 ## 결과

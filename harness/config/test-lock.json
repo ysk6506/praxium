@@ -33564,10 +33564,10 @@
   },
   "go:backend/internal/pgschema::TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList": {
    "kind": "test",
-   "hash": "b8485da61fa44d64",
-   "asserts": 2,
+   "hash": "89ccd49c1292a0ad",
+   "asserts": 3,
    "literals": [
-    "3dbbef3fac9727f5"
+    "74ae00d5835d411a"
    ],
    "precision": [],
    "skips": 0,
