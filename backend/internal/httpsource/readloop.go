@@ -2,6 +2,7 @@ package httpsource
 
 import (
 	"context"
+	"errors"
 	"strconv"
 
 	"github.com/ysk6506/praxium/backend/internal/ingest"
@@ -43,6 +44,10 @@ type loop struct {
 	recs, rows int
 	cells      int
 	over       bool
+	// A loop that reads a child dataset (child.go) reads one unit after the other, each with its own pages: halt says that the read
+	// has ended (the last page or an error was given, or the caller left), and unitDone that the unit being read has.
+	halt, unitDone bool
+	kid            *kid
 }
 
 // checkLines is how many records a check reads of a response of JSON lines: the answer of an export may be very long, and a check
@@ -74,6 +79,10 @@ type respEnd struct {
 
 // read gives the pages of a dataset to yield. It ends with a page that has Last set, or with an error.
 func (rn *run) read(ctx context.Context, ds ingest.Dataset, opts ingest.PageOptions, yield func(ingest.Page, error) bool) {
+	if ds.IsChild() {
+		rn.readChild(ctx, ds, opts, yield)
+		return
+	}
 	rb, err := ingest.NewRowBuilder(ds)
 	if err != nil {
 		yield(ingest.Page{}, err)
@@ -133,7 +142,7 @@ func (l *loop) pagesReason() string {
 func (l *loop) fetch() bool {
 	a, err := l.rn.data(l.ctx, l.ds, l.at)
 	if err != nil {
-		l.fail(err)
+		l.dataFailed(err)
 		return false
 	}
 	l.requests++
@@ -148,13 +157,14 @@ func (l *loop) fetch() bool {
 		l.fail(l.rn.answerError(l.ctx, errRowsTooBig))
 		return false
 	case err != nil:
-		l.fail(err)
+		l.dataFailed(err)
 		return false
 	}
 	if w.stopped {
 		if l.early {
 			l.finish(ingest.Completeness{Reason: reasonFirstOnly})
 		}
+		l.halt = true
 		return false
 	}
 	l.missing += w.missing
@@ -178,6 +188,8 @@ func (l *loop) take(w *walked, end *respEnd) bool {
 	end.n, end.sp, end.done, end.count = w.n, sp, true, arrayCount{l.missing, l.outers}
 	l.at, l.skip, l.seen = sp.next, 0, l.seen+w.n
 	switch {
+	case !sp.more && l.kid != nil && sp.complete:
+		l.unitDone = true // the next unit is read, and the dataset ends when the last one is (child.go)
 	case !sp.more:
 		l.finish(l.endOf(sp))
 	case l.rn.firstOnly:
@@ -218,7 +230,7 @@ func (l *loop) seenOnly() (ingest.Completeness, bool) {
 		return ingest.Completeness{SeenOnly: true, Reason: "the answer has no value at all: an export with no record and one that was not sent cannot be told apart, so nothing is taken as seen"}, true
 	case l.cut:
 		return ingest.Completeness{SeenOnly: true, Reason: "the answer ended with no mark of its end, or broke, so the lines that were read to their end are what was seen"}, true
-	case l.recs > 0 && l.rows == 0 && (l.lines || l.ds.OpensArray()):
+	case l.recs > 0 && l.rows == 0 && (l.lines || l.ds.OpensArray() || l.kid != nil):
 		return ingest.Completeness{SeenOnly: true, Reason: strconv.Itoa(l.recs) + " records were read and none made a row (all were passed over, as a row with no natural key is when the definition says so), so the answer may not be what the definition reads"}, true
 	}
 	return ingest.Completeness{}, false
@@ -237,9 +249,11 @@ func (l *loop) feed(it item, end *respEnd) bool {
 		l.over = true
 		return false
 	}
+	l.kid.matched(it)
+	l.kid.read(it, table)
 	var after func() []byte
-	if l.rn.pager.resumable() && !l.lines {
-		after = l.mint
+	if l.rn.pager.resumable() && !l.lines && l.kid == nil {
+		after = l.mint // a child dataset gives no token: a read of it starts again from its first value (ADR-0111)
 	}
 	ok := l.pw.AddLazy(l.ctx, table, after, l.yield)
 	l.tail = tail{i: it.index, at: l.at, seen: l.seen, end: end, mid: !it.last, count: l.countAt(it)}
@@ -286,6 +300,7 @@ func (l *loop) tokenOfTail() []byte {
 }
 
 func (l *loop) finish(end ingest.Completeness) {
+	l.halt = true
 	if !end.Complete {
 		l.rn.emit(ingest.Event{Kind: ingest.EventIncomplete, Reason: end.Reason})
 	}
@@ -294,10 +309,26 @@ func (l *loop) finish(end ingest.Completeness) {
 
 // fail ends the read with an error. The error of the caller's context is not a failure of the source.
 func (l *loop) fail(err error) {
+	l.halt = true
 	if se, ok := ingest.SourceErrorOf(err); ok {
 		l.rn.emit(ingest.Event{Kind: ingest.EventFailed, Class: se.Class, ErrorKind: se.Kind})
 	}
 	l.yield(ingest.Page{}, err)
+}
+
+// dataFailed ends the read of a request that failed. A limit that was reached is not a failure of the source: the dataset ends
+// not complete. A 404 for the value of a child is passed over when the definition says on_not_found skip, and is a dataset that is
+// not complete when it does not (child.go).
+func (l *loop) dataFailed(err error) {
+	if le, ok := limitOf(err); ok {
+		l.finish(ingest.Completeness{Reason: le.reason})
+		return
+	}
+	if l.kid != nil && errors.Is(err, errNotFound) {
+		l.kid.notFound(l)
+		return
+	}
+	l.fail(err)
 }
 
 // countAt is how many records before the position after the record it was given had no array, and had their array looked for. A

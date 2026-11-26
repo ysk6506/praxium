@@ -84,6 +84,10 @@ type collector struct {
 	// adapterFlow says that the document is read for the flow of the adapters (ParseAdapterSource): a file of JSON lines may
 	// have a records_path there, and the flow of the files of the command line does not read one.
 	adapterFlow bool
+	// dataset and pv are the id of the dataset being checked and the variables of its parent that its request may use (nil for a
+	// dataset that has none).
+	dataset string
+	pv      *parentVars
 }
 
 func newCollector(doc string) *collector { return &collector{doc: doc} }
