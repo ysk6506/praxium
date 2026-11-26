@@ -116,6 +116,34 @@ func TestStlADatasetLeftOutWholeKeepsItsRawRecordsAndWaitsAndARunThatChangedNoth
 	}
 }
 
+// [REQ-984]
+func TestStlTheProblemsOfALinkDefinitionKeepANumberBelowZeroAndTheOnesOfAFeedOneOfZeroAndUp(t *testing.T) {
+	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
+	// two records make one link with other attributes (a conflict of the link), one has a cell of the link that gives no value, one finds no
+	// rack, one cannot be told (no serial: the receiving's problem of its feed), and two servers want one rack place of a type held to one
+	texts := rclTextsA([]string{"RA,RK1", "RB,RK2"}, []string{"S1,Zorvane,sn1,RK1,1,on", "S1b,Zorvane,sn1,RK1,5,on", "S2,Zorvane,sn2,RK2,front,on",
+		"S4,Zorvane,sn4,RK9,4,on", "S6,Zorvane,,RK1,1,on"}, []string{"u1"})
+	l := stlCompute(s, t, texts, stlAt(0), false)
+	linkKinds := "('" + strings.Join([]string{pgschema.ProblemLinkTarget, pgschema.ProblemLinkAmbiguous, pgschema.ProblemCardinality}, "', '") + "')"
+	feedKinds := "('" + strings.Join([]string{pgschema.ProblemMissingIdentity, pgschema.ProblemOrphanValue, pgschema.ProblemMissingName, pgschema.ProblemContextParent}, "', '") + "')"
+	wrong := func(table string) string {
+		return fmt.Sprintf(`SELECT count(*) FROM "s_%d".%s WHERE (def_no >= 0 AND (kind IN %s OR reason LIKE 'the link %%')) OR (def_no < 0 AND kind IN %s)`, s.ref.KGNo, table, linkKinds, feedKinds)
+	}
+	if n := s.e.count(t, wrong("calc_problem")); n != 0 {
+		t.Errorf("%d problems the run computed keep a number of the other kind of definition", n)
+	}
+	stlCleanOf(s, t, l)
+	if n := s.e.count(t, wrong("record_problem")); n != 0 {
+		t.Errorf("%d problems of the records keep a number of the other kind of definition", n)
+	}
+	got := strings.Join(stlDump(s, t, false)["problem"], " ")
+	for _, w := range []string{"ds_sv/S1/-1/source_conflict/", "ds_sv/S2/-1/invalid_value/", "ds_sv/S4/-1/link_target_missing/", "ds_sv/S6/1/missing_identity/"} {
+		if !strings.Contains(got, w) {
+			t.Errorf("no problem %s in %s", w, got)
+		}
+	}
+}
+
 // [REQ-984] [REQ-986]
 func TestStlAfterTheCleaningTheRecordsNotSolvedAreTheStartOfTheNextRunAndNoReferencePointsAtWhatTheKGHasNot(t *testing.T) {
 	s := rdfNew(t, pgiPlan(t, rclSourceA, rclMappingA))
