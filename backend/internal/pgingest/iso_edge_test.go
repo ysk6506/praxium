@@ -9,15 +9,20 @@ import (
 
 // The cases of the three checks of the fifth step (ADR-0123), each made in SQL so that what each case needs is where the case says.
 
-// [REQ-847] [REQ-855]
-func TestIsoAnIdentifierIsKeptByTheObjectTheKGHasItWithElseTheSmallestIDAndTheOthersLoseTheLineOnly(t *testing.T) {
+// isoIdentWorld puts the cases of the identifiers, the objects in the order given or the reverse one.
+func isoIdentWorld(t *testing.T, reverse bool) *isoFix {
+	t.Helper()
 	f := isoNewFix(t)
-	sv := f.m.server
-	for _, o := range []struct{ ref, where string }{
+	objs := []struct{ ref, where string }{
 		{"obj-a", "both"}, {"obj-b", "new"}, {"obj-c", "kg"}, {"obj-d", "both"}, {"obj-e", "retiring"}, {"obj-f", "both"}, {"obj-g", "left"},
 		{"obj-h", "both"}, {"obj-r", "retired"},
-	} {
-		f.isoObj(t, o.ref, sv, o.where)
+	}
+	for i := range objs {
+		o := objs[i]
+		if reverse {
+			o = objs[len(objs)-1-i]
+		}
+		f.isoObj(t, o.ref, f.m.server, o.where)
 	}
 	// v1: two objects of the run, and no object of the KG: the smaller id keeps it
 	f.isoIdent(t, "obj-a", "v1", "ka1", true, false, "")
@@ -50,7 +55,12 @@ func TestIsoAnIdentifierIsKeptByTheObjectTheKGHasItWithElseTheSmallestIDAndTheOt
 	f.s.e.exec(t, f.isoQ(`DELETE FROM {k}.stage_ident WHERE value = 'v5x'`))
 	f.s.e.exec(t, f.isoQ(`UPDATE {k}.calc_ref SET lookup_hash = $1 WHERE lookup_hash = $2`), isoHash(t, "v5"), isoHash(t, "v5x"))
 	f.s.e.exec(t, f.isoQ(`INSERT INTO {k}.stage_ident (obj_no, scheme, value, scope) VALUES ($1, $2, 'v5', '') ON CONFLICT DO NOTHING`), f.no["obj-f"], isoScheme)
+	return f
+}
 
+// [REQ-847] [REQ-855]
+func TestIsoAnIdentifierIsKeptByTheObjectTheKGHasItWithElseTheSmallestIDAndTheOthersLoseTheLineOnly(t *testing.T) {
+	f := isoIdentWorld(t, false)
 	counts := f.isoRun(t, 0)
 	taken := strings.Join(isoTaken(f.s, t), "\n")
 	want := strings.Join([]string{
@@ -80,8 +90,9 @@ func TestIsoAnIdentifierIsKeptByTheObjectTheKGHasItWithElseTheSmallestIDAndTheOt
 	}
 }
 
-// [REQ-848] [REQ-855]
-func TestIsoALinkWhoseEndIsNotThereIsTakenOutAndOneWhoseEndRetiresGoesWithItAndIsNoProblem(t *testing.T) {
+// isoEndsWorld puts the cases of the ends of the links.
+func isoEndsWorld(t *testing.T) *isoFix {
+	t.Helper()
 	f := isoNewFix(t)
 	sv, rk := f.m.server, f.m.rack
 	for _, o := range []struct {
@@ -106,6 +117,13 @@ func TestIsoALinkWhoseEndIsNotThereIsTakenOutAndOneWhoseEndRetiresGoesWithItAndI
 	f.isoLink(t, "l7", mt, "s7", "gone", "k7", true, false, false)
 	f.isoLink(t, "l8", mt, "s8", "r3", "k8", true, false, true) // a record a rule filtered out: no problem
 	f.isoLink(t, "l9", mt, "s9", "r1", "k9", true, false, false)
+	return f
+}
+
+// [REQ-848] [REQ-855]
+func TestIsoALinkWhoseEndIsNotThereIsTakenOutAndOneWhoseEndRetiresGoesWithItAndIsNoProblem(t *testing.T) {
+	f := isoEndsWorld(t)
+	mt := f.m.mounted
 	counts := f.isoRun(t, 2)
 	if got := strings.Join(isoTaken(f.s, t), " "); got != "2/3/l4 2/3/l6 2/3/l7 2/3/l8 2/4/l3" {
 		t.Errorf("taken out: %s", got)
