@@ -26,6 +26,7 @@ amends_tests:
   - go:backend/internal/pgingest::TestIdnARunThatDoesNotOwnTheTablesOfTheComputationNeitherBeginsNorGoesOnWithTheIdentification
   - go:backend/internal/pgingest::TestIdnARunThatStopsGoesOnFromTheNextUnitAndMakesWhatARunThatDoesNotStopMakes
 test_change_reason: 단언을 지우거나 약하게 하거나 임계값을 넓힌 것은 없다. 두 갈래다. 첫째(결정 4) — 도우미 `idnShuffled`가 행 순서만이 아니라 자연 키를 무작위로 순열한다. 쌍 번호는 자연 키를 따르므로 이제 사슬의 순서와 무관하다. 이 도우미를 쓰는 세 테스트(`TestIdnAChainOfRecordsInAnyOrder...`, `TestIdnARunThatStopsWhileGoEnds...`, `TestIdnTheLabelsOfTheTurnsBeforeTheLastTwo...`)의 지문이 바뀌었다. 앞의 것은 사례를 바꿨다. 쌍 번호가 사슬 순서이던 1,600개와 6,000개(기본 회 안에 15회, 31회로 끝나 Go를 한 번도 타지 않던 가장 좋은 경우)를 무작위 400개와 1,600개(기본 회 40에 닿고 Go가 끝냄)로 바꾸고, 모든 사례에서 Go가 읽은 페이지가 하나 이상임을 새로 단언한다. 한 객체, `NewObjects`, `Unsettled`, `Unresolved`의 단언과 회 2·Go 상한 1의 두 사례는 그대로다. 무작위 6,000개는 Go가 열한 페이지를 읽어 약 17초라 테스트 시간 때문에 넣지 않았다(지시서). 둘째(결정 5) — 끊기 하네스 `idnSettleCut`이 이름을 붙이지 않던 호출(키 다시 만들기의 쓰기, 답의 쓰기)도 목록에 적어 목록의 자리가 끊는 번호와 같다. 전에는 번호가 어긋나 Go의 쓰기를 한 번도 끊지 않았다. `TestIdnARunThatStopsWhileGoEnds...`는 Go가 한 번에 쓰는 쌍 수를 100으로 낮춰(`IdentifyStart.SettlePut`) 라벨을 세 번에 나눠 쓰게 하고, 같은 끊는 번호를 두 번 돌지 않으며, 끊긴 곳에 Go의 읽기와 쓰기가 각각 둘 이상 있음을 새로 단언한다. 끊지 않은 실행과 같다는 단언은 그대로다. 이 하네스의 `fail`은 메서드 `IdentifyStep`에서 불려서, 잠금 도구가 이름으로 `IdentifyStep`을 따라가는 다른 넷(`TestIdnTheIdentificationOfARunThatHasBegun...`, `TestIdnTheCallsOfTheIdentificationThatAreMadeOutOfOrder...`, `TestIdnARunThatDoesNotOwnTheTables...`, `TestIdnARunThatStopsGoesOnFromTheNextUnit...`)도 지문만 바뀌었고 본문과 단언은 한 글자도 바뀌지 않았다. 새 테스트는 `pnpm lock-tests`가 더한다.
+decision_hash: 912ab22d6b61f5fb
 ---
 # ADR-0116 식별의 두 번째 검토 뒤 고침
 
@@ -38,8 +39,8 @@ ADR-0108(#103)의 독립 검토가 병합 전 재확인에서 일곱 가지(G1~G
 1. **남기는 단위는 묶음이다(G2).** 전에는 뒤 라운드가 슬롯을 만들 때, 앞 라운드에서 남긴 쌍과 키를 **직접** 나누는 쌍만 남겼다(`leaveNeighbors`). 남긴 쌍은 슬롯이 없어서, 그 쌍과만 키를 나누는 같은 라운드의 쌍은 찾지 못하고 혼자 새 객체를 만들었다. 다음 실행에서 사슬이 두 객체 사이에 끼어 갈라지고 `identity_conflict`가 났다(검토자의 재현: 셋째 실행에서 문제 6건). 그래서 슬롯 때 남기지 않고, **결정 단위의 첫 문장이 묶음(라벨)을 통째로 남긴다.** 뒤 라운드의 쌍도 모두 슬롯을 갖고 묶음 찾기에 들어가므로, 같은 라운드에서 키로 이어진 쌍은 이미 한 묶음이다. 그 묶음의 키 가운데 하나가 앞 라운드의 슬롯 중 신원 참조(남김 또는 묶을 수 없음)를 가진 쌍의 키이면 묶음 전체를 남긴다(`neighborsSQL`의 `nb`). 회가 끝나지 않아 온전하지 않은 묶음(`bad`)과 합쳐(`gone`) 한 문장으로 남기고 `Unsettled`와 `Unresolved`로 센다. 남긴 묶음의 쌍은 모두 슬롯이 있으므로 그 뒤의 라운드도 같은 방법으로 찾는다.
    - **고정점과 그 상한.** 같은 라운드 안의 고정점은 묶음 찾기(회와 Go의 정착)가 이미 구한다. 따로 반복하는 고리가 없다. 묶음 찾기가 회 한도와 Go의 상한 안에 끝나지 않으면 그 조각들은 `bad`로 남는다. 곧 키를 나누는 쌍이 끝없이 이어져도 반복의 상한은 회(40)와 Go의 상한(20만 쌍)이고, 그때의 결과는 "그 묶음 전체를 남김, 문제 없음"이다(`TestIdnAGroupOfALaterRound...`가 뒤 라운드의 사슬이 한 회에 끝나지 않고 Go가 한 쌍만 쥐는 경우를 본다). 라운드를 넘는 쪽은 라운드 수(16)가 상한이다.
    - **언제 하는가.** 처음 남긴 라운드를 `LeftRound`에 적고(전의 `LeftKeys` 대신), 그보다 뒤 라운드의 모든 단위가 이웃을 본다. 라운드 도중에 값이 바뀌지 않으므로 단위의 순서가 결과를 바꾸지 않는다. 앞 라운드의 묶을 수 없던 쌍(`identity_conflict`의 참조)도 "신원 참조를 가진 쌍"으로 보는 것은 전과 같다.
-   - **읽는 양.** 키마다 앞 라운드마다 한 번 슬롯의 키 인덱스로 본다(`kk`의 키, 라운드는 최대 16). 한 라운드에서 키를 나누는 쌍은 한 묶음이고 묶음은 한 단위라서 키는 라운드마다 한 번 읽힌다. 쌍마다 보면(전의 `leaveNeighbors`가 그랬다) 키를 m개 쌍이 나눌 때 m의 제곱이 된다(`TestIdnTheKeyOfAGroupIsLookedAtOnce...`, m=100과 300에서 3.5배 + 50 안, 측정 2.9배). 남긴 묶음은 결정의 나머지 문장에서 빠지는데, 문장마다 다시 구하지 않고 묶음의 라벨인 쌍(라벨은 묶음의 가장 작은 쌍 번호다)의 신원 참조를 인덱스로 한 번 본다(`pairsSQL`). 회가 멈춘 조각에서는 라벨인 쌍이 더 작은 라벨의 다른 조각에 있을 수 있는데, 그 조각도 온전하지 않아 같은 단위나 앞 단위가 이미 남겼다. 남기는 일이 없는 라운드의 문장은 전과 같다.
-   - **이어 가기.** 남기기는 결정 단위의 첫 문장이고 단위와 자리가 한 트랜잭션이다. 끊겨 이어받은 서버는 다음 단위부터 같은 일을 한다(새 테스트가 뒤 라운드의 여러 곳에서 끊고 이어받아 끊지 않은 실행과 같은 상태와 수를 확인).
+   - **읽는 양.** 키마다 앞 라운드마다 한 번 슬롯의 키 인덱스로 본다(`kk`의 키, 라운드는 최대 16). 한 라운드에서 키를 나누는 쌍은 한 묶음이고 묶음은 한 단위라서 키는 라운드마다 한 번 읽힌다. 쌍마다 보면(전의 `leaveNeighbors`가 그랬다) 키를 m개 쌍이 나눌 때 서버가 탐색을 캐시하지 않는 계획에서 m의 제곱이 된다. 테스트는 서버가 고르는 계획 그대로 잰다(`TestIdnTheKeyOfAGroupIsLookedAtOnce...`, m=100과 300에서 3.5배 + 50 안, 측정 2.9배. 이 크기에서는 서버가 쌍마다 보는 변이도 캐시로 같은 행을 읽어서 그 변이는 잡지 못한다, 아래 변이 테스트). 남긴 묶음은 결정의 나머지 문장에서 빠지는데, 문장마다 다시 구하지 않고 묶음의 라벨인 쌍(라벨은 묶음의 가장 작은 쌍 번호다)의 신원 참조를 인덱스로 한 번 본다(`pairsSQL`). 회가 멈춘 조각에서는 라벨인 쌍이 더 작은 라벨의 다른 조각에 있을 수 있는데, 그 조각도 온전하지 않아 같은 단위나 앞 단위가 이미 남겼다. 남기는 일이 없는 라운드의 문장은 전과 같다.
+   - **이어 가기.** 남기기는 결정 단위의 첫 문장이고 단위와 자리가 한 트랜잭션이다. 끊겨 이어받은 서버는 다음 단위부터 같은 일을 한다(새 테스트가 호출의 뒤 절반의 네 곳에서 끊고 이어받아 끊지 않은 실행과 같은 상태와 수를 확인).
    - **다음 실행.** 남긴 쌍은 미해결 참조라 다음 실행의 출발 레코드이고, 기본 한도에서 한 객체가 되며 문제가 없다(검토자의 재현을 그대로 단언).
 2. **Go의 정착 읽기는 페이지의 범위만 읽는다(G3).** 검토의 측정에서 첫 페이지가 `calc_label` 64만 행(5,000쌍)을 읽었다. 원인은 계획이었다. 회가 끝나 Go에게 넘어갈 때 `calc_label`을 분석하지 않아서, 서버가 마지막 회의 줄이 없다고 보고 쌍 번호로 라벨을 찾는 탐색을 라벨 인덱스(`calc_label_label`)의 범위 읽기와 필터링으로 했다(쌍마다 그 회의 라벨을 훑음). 그래서 (1) 회가 끝나 정착으로 넘어갈 때와 (2) Go가 마지막 페이지를 써서 복사로 넘어갈 때 `calc_label`을 분석한다(다른 국면 전환이 이미 하는 일, ADR-0108 결정 7). (2)가 없으면 복사의 단위가 같은 이유로 쌍마다 Go가 쓴 회를 훑었다(복사 문장의 합이 5,000쌍에서 1.0초, 15,000쌍에서 8.7초. 고친 뒤 5,000쌍에서 0.01초). (3) 정착 읽기는 `unsettledSQL`이 이미 읽은 페이지의 쌍과 키(`sk`)에서 바로 고르고, 라벨로 다시 찾지 않는다. 고친 뒤 페이지(500쌍)마다 `calc_label` 1,000행 남짓, `calc_slot` 2,000행 남짓이고 2,000쌍과 6,000쌍에서 같다(`TestIdnGoReadsAPage...`).
 3. **정착 읽기가 임대를 늘린다(G3).** Go는 모든 페이지를 읽은 뒤에 쓴다. 쓰기와 다른 단위는 이미 자리의 기록과 함께 임대를 늘리는데(ADR-0108 결정 1, `writeIdent`), 읽기는 늘리지 않아 큰 묶음을 읽는 동안 임대가 끝나면 다른 서버가 가져가 처음부터 다시 읽었다. 그래서 `SettleRead`가 같은 트랜잭션에서 `RenewRun`과 같은 문장(`renewIn`)으로 그 시도의 임대를 늘린다. 포트에 메서드를 더하지 않았다. 3단계 포트의 꼴(ADR-0108 결정 1)은 "모든 쓰기가 시도 번호를 대고, 단위가 자리와 함께 임대를 늘린다"이고, 읽기도 그 단위 가운데 하나가 된 것이다. 시도와 국면을 확인한 뒤에 늘린다. 시도가 다르면 `CodeRunLeaseLost`로 거절하고 임대를 건드리지 않으며, 국면이 정착이 아니면 `CodeRunStage`로 거절한다.
@@ -66,7 +67,7 @@ ADR-0108(#103)의 독립 검토가 병합 전 재확인에서 일곱 가지(G1~G
 | 검토자의 재현 | 이 저장소의 테스트 | 지키는 것 |
 |---|---|---|
 | `TestZzr2TheNeighborOfTheNeighborOfALeftChain` | `TestIdnARecordThatSharesAKeyOnlyWithARecordThatIsLeftWithAChainIsLeftWithThemAndTheNextRunMakesThemAllOneObject` | 결정 1. 입력 그대로: 둘째 실행은 사슬, p0, q0을 묶지 않고 문제 없음, 행 순서를 뒤집어도 같음, 셋째 실행에서 사슬·p0·q0·k0이 한 객체, 문제 없음, `Unsettled 0`, `Unresolved 0` |
-| (없음, 예외 상황) | `TestIdnAGroupOfALaterRoundThatSharesAKeyWithAChainThatIsLeftIsLeftWholeEvenWhenItsOwnSearchDoesNotEndAndARunTakenOverLeavesTheSame` | 결정 1의 상한(뒤 라운드의 사슬 자체도 끝나지 않음), 뒤 라운드에서 끊긴 실행을 이어받은 서버가 같은 것을 남김, 다음 실행에서 한 객체 |
+| (없음, 예외 상황) | `TestIdnAGroupOfALaterRoundThatSharesAKeyWithAChainThatIsLeftIsLeftWholeEvenWhenItsOwnSearchDoesNotEndAndARunTakenOverLeavesTheSame` | 결정 1의 상한(뒤 라운드의 사슬 자체도 끝나지 않음), 호출의 뒤 절반에서 끊긴 실행을 이어받은 서버가 같은 것을 남김, 다음 실행에서 한 객체 |
 | (없음, 제곱 테스트) | `TestIdnTheKeyOfAGroupIsLookedAtOnceInTheEarlierRoundsForAPairTheyLeftAndWhatThatReadsGrowsWithTheGroup` | 결정 1의 읽는 양 |
 | `TestZzr2SettleReadStatements`, `TestZzr2SettleReadTime` | `TestIdnGoReadsAPageOfTheGroupsThatAreNotWholeByItsRangeAndWhatAPageReadsDoesNotGrowWithThePairsThatAreLeftToRead` | 결정 2. 지시서의 5,000쌍과 15,000쌍은 이 기계에서 14초라 10초 규칙에 맞춰 2,000쌍과 6,000쌍(약 7초)으로 줄였다. 고치기 전 코드는 이 크기에서도 페이지마다 수십만 행을 읽는다(변이 테스트) |
 | `TestZzr2AStaleAttemptCannotReadOrWriteAtTheEndOfASearch` | `TestIdnGoReadsAndWritesTheEndOfASearchOnlyWhereTheRunIsAtItAndEachReadExtendsTheLeaseOfTheAttemptThatHoldsIt` | 결정 3과 국면 검사(M2k): 페이지마다 임대가 반 기간 넘게 남고 시도 번호가 같음, 잃은 시도는 거절되고 임대를 건드리지 않음 |
@@ -79,7 +80,18 @@ ADR-0108(#103)의 독립 검토가 병합 전 재확인에서 일곱 가지(G1~G
 
 작업 폴더의 `backend/`를 임시 폴더에 복사해 한 곳만 틀리게 고치고 위 테스트들을 돌렸다(저장소 소스는 그대로).
 
-(결과 표)
+| 변이 | 무엇을 바꿨나 | 잡은 테스트 | 결과 |
+|---|---|---|---|
+| M1b | `HAVING max(kt.c) = 1` 뺌 | `TestIdnARecordOfAGroupOfSeveralObjectsWhoseKeyThePairsOfTwoObjectsHave...` | 잡힘 |
+| M1c | `count(DISTINCT kt.obj) >= 1` | `TestIdnARecordOfAGroupOfSeveralObjectsWhoseKeysAreEachOfOneObjectButOfTwo...` | 잡힘 |
+| M2e | `PutSettled`가 `Cur2`를 0으로 | `TestIdnARunThatStopsWhileGoEnds...`(이어 쓴 라벨이 `calc_label_pid` 유일 키 위반) | 잡힘 |
+| M2k | `settleAt`의 국면 검사 제거 | `TestIdnGoReadsAndWritesTheEndOfASearchOnly...` | 잡힘 |
+| G2 되돌림 | `identify.go`, `identify_round.go`, `identify_decide.go`를 main의 것으로(슬롯 때 쌍 단위로 남김) | `TestIdnARecordThatSharesAKeyOnly...` | 잡힘 |
+| G2 끔 | 이웃을 보지 않음(`neighbors := false`) | 위 테스트와 `TestIdnAChainThatIsLeft...` | 잡힘 |
+| G2 쌍마다 | `nb`의 키를 `kk`가 아니라 쌍의 키(`sk`)마다 봄 | 없음 | 살아남음. 서버가 키마다의 탐색 결과를 캐시해서(계획의 Memoize, 300쌍에 적중 299, 실패 301) 읽은 행이 같다. 이 데이터에서는 서버의 계획으로 동치다 |
+| G3 정착 분석 | 정착으로 넘어갈 때 분석하지 않음 | `TestIdnGoReadsAPage...`(페이지마다 `calc_label` 117만/472만 행), 사슬 테스트들이 느려져 패키지 시한 10분 초과 | 잡힘 |
+| G3 복사 분석 | 복사로 넘어갈 때 분석하지 않음 | `TestIdnGoReadsAPage...`(복사 단위가 87만/281만 행) | 잡힘 |
+| G3 임대 | `SettleRead`의 `renewIn` 제거 | `TestIdnGoReadsAndWritesTheEndOfASearchOnly...` | 잡힘 |
 
 ## 이유
 

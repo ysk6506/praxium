@@ -31843,10 +31843,10 @@
   },
   "go:backend/internal/pgingest::TestIdnAChainOfRecordsInAnyOrderIsOneObjectWhenTheTurnsEndBeforeItsEndAndGoEndsTheSearchAndNothingIsLeftWhenItCannotHoldIt": {
    "kind": "test",
-   "hash": "0b861f710841f35d",
-   "asserts": 7,
+   "hash": "6c21acc2f6f11f15",
+   "asserts": 8,
    "literals": [
-    "1c903248dc7c5442"
+    "b10542bcf8329b0f"
    ],
    "precision": [],
    "skips": 0,
@@ -31854,7 +31854,7 @@
     "REQ-882"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
   },
   "go:backend/internal/pgingest::TestIdnAChainOfRecordsLongerThanTheTurnsOfTheDefaultIsOneObjectAndTheTurnsItTakesGrowMoreSlowlyThanItsLength": {
    "kind": "test",
@@ -31885,6 +31885,21 @@
    ],
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
+  },
+  "go:backend/internal/pgingest::TestIdnAGroupOfALaterRoundThatSharesAKeyWithAChainThatIsLeftIsLeftWholeEvenWhenItsOwnSearchDoesNotEndAndARunTakenOverLeavesTheSame": {
+   "kind": "test",
+   "hash": "cf25ab69981ad850",
+   "asserts": 16,
+   "literals": [
+    "6dd02e64784ee983"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-958"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnAGroupOfSeveralObjectsIsReadOnceForEachKeyAndWhatAUnitReadsOfItGrowsWithTheGroupAndNoFaster": {
    "kind": "test",
@@ -31965,6 +31980,36 @@
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
   },
+  "go:backend/internal/pgingest::TestIdnARecordOfAGroupOfSeveralObjectsWhoseKeysAreEachOfOneObjectButOfTwoIsNotBoundToEither": {
+   "kind": "test",
+   "hash": "db30e340deace300",
+   "asserts": 3,
+   "literals": [
+    "7e8854304f1b80f2"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-882"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnARecordOfAGroupOfSeveralObjectsWhoseKeyThePairsOfTwoObjectsHaveIsNotBoundToEitherAndIsAConflict": {
+   "kind": "test",
+   "hash": "772b588293f6a6d5",
+   "asserts": 3,
+   "literals": [
+    "ab327e2e8a604f23"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-882"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestIdnARecordThatGivesNoKeyKeepsItsClaimsOnceAndIsNotReadAgainFromItsCellsWhenItCameInTheRowsReceived": {
    "kind": "test",
    "hash": "856266a6537c1c5a",
@@ -31996,6 +32041,21 @@
    ],
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
+  },
+  "go:backend/internal/pgingest::TestIdnARecordThatSharesAKeyOnlyWithARecordThatIsLeftWithAChainIsLeftWithThemAndTheNextRunMakesThemAllOneObject": {
+   "kind": "test",
+   "hash": "1d270a08ba6af9b6",
+   "asserts": 18,
+   "literals": [
+    "8e6bc1c2d9e4ba61"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-958"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnARecordTheComparisonClosedOrLetGoOfTakesNoPartAndMakesNoObjectKeyOrIdentifierWhileTheOtherRecordsAreIdentified": {
    "kind": "test",
@@ -32046,10 +32106,10 @@
   },
   "go:backend/internal/pgingest::TestIdnARunThatDoesNotOwnTheTablesOfTheComputationNeitherBeginsNorGoesOnWithTheIdentification": {
    "kind": "test",
-   "hash": "3f9f613e94fc5ffa",
+   "hash": "dcbd183c79e2bfe9",
    "asserts": 12,
    "literals": [
-    "55fba7e1ecf1215f"
+    "567116267799f690"
    ],
    "precision": [],
    "skips": 0,
@@ -32057,7 +32117,7 @@
     "REQ-886"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
   },
   "go:backend/internal/pgingest::TestIdnARunThatHasFewerRoundsThanTheKeysNeedLeavesTheRecordsUnresolvedAndSaysSo": {
    "kind": "test",
@@ -32076,10 +32136,10 @@
   },
   "go:backend/internal/pgingest::TestIdnARunThatStopsGoesOnFromTheNextUnitAndMakesWhatARunThatDoesNotStopMakes": {
    "kind": "test",
-   "hash": "ad9ac9677df453dc",
+   "hash": "533250670f540d78",
    "asserts": 20,
    "literals": [
-    "224e189f729a9653"
+    "17e8a480fb46ded9"
    ],
    "precision": [],
    "skips": 0,
@@ -32087,14 +32147,14 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
   },
   "go:backend/internal/pgingest::TestIdnARunThatStopsWhileGoEndsTheSearchForTheGroupsGoesOnAndMakesWhatARunThatDoesNotStopMakes": {
    "kind": "test",
-   "hash": "04fbe20b96b1b0ef",
-   "asserts": 23,
+   "hash": "6e4e0ee8d2973fbb",
+   "asserts": 24,
    "literals": [
-    "979b65f07bbf1eb6"
+    "3051eddea1712c05"
    ],
    "precision": [],
    "skips": 0,
@@ -32102,7 +32162,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
   },
   "go:backend/internal/pgingest::TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource": {
    "kind": "test",
@@ -32150,6 +32210,36 @@
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
   },
+  "go:backend/internal/pgingest::TestIdnGoReadsAndWritesTheEndOfASearchOnlyWhereTheRunIsAtItAndEachReadExtendsTheLeaseOfTheAttemptThatHoldsIt": {
+   "kind": "test",
+   "hash": "7723e0d8f6ef519d",
+   "asserts": 31,
+   "literals": [
+    "ed2324cf4e72c7c4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-959"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestIdnGoReadsAPageOfTheGroupsThatAreNotWholeByItsRangeAndWhatAPageReadsDoesNotGrowWithThePairsThatAreLeftToRead": {
+   "kind": "test",
+   "hash": "22ffadba1334b3f8",
+   "asserts": 4,
+   "literals": [
+    "9a2c85a03045f303"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-959"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestIdnMeasureTheIdentificationOfAGroupOfManyObjects": {
    "kind": "test",
    "hash": "ebe0b27c78368137",
@@ -32182,10 +32272,10 @@
   },
   "go:backend/internal/pgingest::TestIdnTheCallsOfTheIdentificationThatAreMadeOutOfOrderOrOnARunThereIsNotAreRefused": {
    "kind": "test",
-   "hash": "8b4c816c36a475a8",
+   "hash": "177d12f8f35d0100",
    "asserts": 19,
    "literals": [
-    "be1fa4d8e28d8bb1"
+    "106969d3afd5398d"
    ],
    "precision": [],
    "skips": 0,
@@ -32193,7 +32283,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
   },
   "go:backend/internal/pgingest::TestIdnTheCellsOfARecordAreReadBackWhateverTheyHold": {
    "kind": "test",
@@ -32243,10 +32333,10 @@
   },
   "go:backend/internal/pgingest::TestIdnTheIdentificationOfARunThatHasBegunOrWhoseComparisonIsNotDoneIsNotBegunAndWhatItMadeIsNotChanged": {
    "kind": "test",
-   "hash": "805dadd7c3b23d4e",
+   "hash": "a337f2c3b698c207",
    "asserts": 25,
    "literals": [
-    "7ae32cc03f16bd63"
+    "9ec7892a378faa83"
    ],
    "precision": [],
    "skips": 0,
@@ -32254,7 +32344,22 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
+  },
+  "go:backend/internal/pgingest::TestIdnTheKeyOfAGroupIsLookedAtOnceInTheEarlierRoundsForAPairTheyLeftAndWhatThatReadsGrowsWithTheGroup": {
+   "kind": "test",
+   "hash": "699012af05a5b5e9",
+   "asserts": 5,
+   "literals": [
+    "b7755532902428bb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-958"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgingest::TestIdnTheKeysOfARecordFindNoObjectOneObjectOrSeveralAndTheGroupsAreMadeWhateverTheOrder": {
    "kind": "test",
@@ -32274,10 +32379,10 @@
   },
   "go:backend/internal/pgingest::TestIdnTheLabelsOfTheTurnsBeforeTheLastTwoAreTakenAwayAndTheRowsOfThemAreAtMostTwoForEachPair": {
    "kind": "test",
-   "hash": "7521ce4310fcd3b7",
+   "hash": "5d1847f1381891cf",
    "asserts": 10,
    "literals": [
-    "82cd46b0bc486cf8"
+    "ae8878dbe415ce67"
    ],
    "precision": [],
    "skips": 0,
@@ -32285,7 +32390,7 @@
     "REQ-883"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0116-identify-follow-up-groups-left-whole-and-the-reads-and-lease-of-go.md"
   },
   "go:backend/internal/pgingest::TestIdnTheObjectsTheIdentificationMakesAreTheObjectsTheOldPipelineMakesForTheSameCaptures": {
    "kind": "test",

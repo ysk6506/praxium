@@ -163,7 +163,7 @@ func TestIdnAGroupOfALaterRoundThatSharesAKeyWithAChainThatIsLeftIsLeftWholeEven
 			t.Errorf("%+v: bound in the run that left its group", b)
 		}
 	}
-	// a server that takes the run over where the other one stopped, in the rounds after the first, leaves the same
+	// a server that takes the run over where the other one stopped, at four places of the second half of its calls, leaves the same
 	for _, at := range []int{len(calls) / 2, len(calls) * 2 / 3, len(calls) * 5 / 6, len(calls) - 2} {
 		cut, _, cutCounts, _ := idnfLimited(t, rows, at)
 		if got := idnState(cut, t); got != want || cutCounts != counts {
