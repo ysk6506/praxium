@@ -158,6 +158,7 @@ func (s *Store) RecomputePlace(ctx context.Context, lease ingest.RunLease) (inge
 			return err
 		}
 		place.Begun, place.Finished, place.Unit, place.Cursor = true, r.st.Finished, r.st.Unit, r.st.Cursor
+		place.Seen, place.Schemes = r.st.Seen, ingest.RecomputeStart{Schemes: r.st.Schemes}.SchemesText()
 		return nil
 	})
 	return place, err

@@ -254,7 +254,18 @@ func computeResultDefs() []tableDef {
 			col(ColRid, typeBig), col(ColRole, typeSmall), col(ColDefNo, typeInt), col(ColSub, typeInt), col(ColLookupHash, "bytea"),
 			col(ColTargetNo, "bigint"), col(ColState, typeSmall), col(ColRetirable, "boolean NOT NULL DEFAULT false"),
 		}},
+		leftTableDef(),
 	}
+}
+
+// leftTableDef is the table of the objects the computation of the objects left (generator version 10, ADR-0119): the object, why (Left*),
+// how many lines it had (for one that has more than the limit, the number counted up to the limit and one more), whether it is one the
+// run would have made, and the reason as a person reads it. A table of its own, so that the tables of the KG that readers have open
+// are not changed.
+func leftTableDef() tableDef {
+	return tableDef{Name: TableCalcLeft, Cols: []string{
+		col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColWhy, typeSmall), col(ColLines, typeInt), col(ColIsNew, "boolean NOT NULL"), col(ColReason, "text NOT NULL"),
+	}}
 }
 
 // ingestDiffDef is the difference between the computed rows and the stored ones, in the order the apply writes

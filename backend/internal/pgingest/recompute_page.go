@@ -92,10 +92,14 @@ func (r *rcpRun) objects(ctx context.Context, tx *sql.Tx, through int64, skip st
 	for rows.Next() {
 		var o ingest.RecomputeObject
 		var first string
-		if err := rows.Scan(&o.ObjNo, &o.Ref, &o.TypeNo, &o.IsNew, &o.Name, &first, &o.OriginRid, &o.OriginFeed, &o.ParentRef); err != nil {
+		// an object that the KG does not have and no object of the run has the number of has no id and no type: it is read as an object
+		// that cannot be read (the reference is empty) and not as a reason for the step to stop
+		var ref sql.NullString
+		var typeNo sql.NullInt64
+		if err := rows.Scan(&o.ObjNo, &ref, &typeNo, &o.IsNew, &o.Name, &first, &o.OriginRid, &o.OriginFeed, &o.ParentRef); err != nil {
 			return nil, dbErr(err, "read an object")
 		}
-		o.FirstKey = []byte(first)
+		o.Ref, o.TypeNo, o.FirstKey = ref.String, int(typeNo.Int64), []byte(first)
 		out = append(out, o)
 	}
 	return out, dbErr(rows.Err(), "read the objects")

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/pgconn"
 )
 
@@ -24,9 +25,27 @@ func NewTestDatabase(tb TB) string {
 // withDatabase is the DSN with another database name (see pgconn.WithDatabase).
 func withDatabase(dsn, name string) string { return pgconn.WithDatabase(dsn, name) }
 
+// TestOnlyModelsWithoutQuerySchema is the provider of the model of a server (StandardModels(true), with the statistics objects) less the
+// query schema, for the tests of other packages that make KGs and are not about the query schema (ADR-0113): a test passes it as
+// Config.Models of Open, and the KGs it makes have the tables and the statistics objects a server makes, so the plans those tests watch
+// are the plans of a server, and no query schema, which costs about two seconds for each KG. Only a _test.go file or this file calls it;
+// a test locks that no other file does, or sets SchemaModel.noQuery, and no setting of a server (variable, flag or file) reaches it.
+func TestOnlyModelsWithoutQuerySchema() (ModelProvider, error) {
+	std, err := StandardModels(true)
+	if err != nil {
+		return nil, err
+	}
+	return func(h kernel.Hash) (SchemaModel, error) {
+		m, err := std(h)
+		m.noQuery = true
+		return m, err
+	}, nil
+}
+
 // NewTestStore opens a Store on a new empty test database with the standard model (without the statistics
 // objects). The lease runs out by the clock of the caller, as the tests move a clock of their own. The store is
-// closed and the database dropped when the test ends.
+// closed and the database dropped when the test ends. The KGs it makes have the tables and no query schema (views, functions and
+// roles; ADR-0113, see StandardModels): a test of the query schema opens the Store with Open and makes it.
 func NewTestStore(tb TB) *Store { return NewTestStoreWith(tb, LeaseClockCaller) }
 
 // NewTestStoreWith is NewTestStore with the clock that decides when a lease has run out (LeaseClockDB: the

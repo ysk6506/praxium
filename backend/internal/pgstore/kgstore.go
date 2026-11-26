@@ -25,7 +25,11 @@ type ModelProvider func(definitionSetHash kernel.Hash) (SchemaModel, error)
 
 // StandardModels is the provider of the standard model: every hash gets it, so a KG is made from it when its
 // definition set is the standard one (CreateKG refuses a KG whose hash is not the model's). withStats says
-// whether the statistics objects are made together with the tables.
+// whether the statistics objects are made together with the tables. A server passes true (it is what Open holds when it is given no
+// model). False is the light model of the tests that are not about the query schema or the statistics: a KG made from it has the
+// tables only, without the statistics objects and without the query schema (views, functions and roles; ADR-0113), which costs about
+// two seconds for each KG. No file of a server calls it with false. The tests of other packages take TestOnlyModelsWithoutQuerySchema
+// instead: this model with the statistics objects, less the query schema.
 func StandardModels(withStats bool) (ModelProvider, error) {
 	reg, err := model.LoadStandard()
 	if err != nil {
@@ -35,7 +39,7 @@ func StandardModels(withStats bool) (ModelProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-	m := SchemaModel{Registry: reg, Search: search, WithStats: withStats}
+	m := SchemaModel{Registry: reg, Search: search, WithStats: withStats, noQuery: !withStats}
 	return func(kernel.Hash) (SchemaModel, error) { return m, nil }, nil
 }
 
