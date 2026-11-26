@@ -30,6 +30,12 @@ func (r *stlRun) q(query string) string {
 	).Replace(query)
 }
 
+// stlHas is the condition that a row of the tables is there, read by an index for the row of the statement at hand: a scalar subquery that
+// stops at the first row, which the planner neither turns into a join nor reads as a hash of the whole table.
+func stlHas(from, cond string) string {
+	return "((SELECT true FROM " + from + " WHERE " + cond + " LIMIT 1) IS NOT NULL)"
+}
+
 // stlKinds is a list of kinds of problem as the text of an SQL list.
 func stlKinds(kinds ...string) string { return "'" + strings.Join(kinds, "', '") + "'" }
 
@@ -68,11 +74,11 @@ var (
 	stlProblemsGoneSQL = "WITH " + stlRecs + " DELETE FROM {rprob} WHERE ctid = ANY(ARRAY(SELECT p.at FROM r" + stlLinesOf("{rprob}", "x.def_no, x.kind") +
 		" WHERE r.received OR r.why = {CLOSED}" +
 		" OR (p.def_no IS NULL AND p.kind = '{DUPKIND}' AND r.why IN ({RET}, {REL}, {DUP}))" +
-		" OR ({ISLINK} AND (r.replaced OR EXISTS (SELECT 1 FROM {cend} e WHERE e.rid = r.rid AND {ENDDEF} = p.def_no)))" +
+		" OR ({ISLINK} AND (r.replaced OR " + stlHas("{cend} e", "e.rid = r.rid AND "+"{ENDDEF} = p.def_no") + "))" +
 		" OR ({ISFEED} AND ((r.replaced AND p.kind IN ({REPLACEDKINDS}))" +
-		" OR (p.kind = '{VALUEKIND}' AND r.why = {RET} AND NOT EXISTS (SELECT 1 FROM unnest($3::text::int[], $4::text::bool[]) AS f(feed_no, creates) WHERE f.feed_no = p.def_no AND f.creates))" +
-		" OR (p.kind IN ({OBJKINDS}) AND EXISTS (SELECT 1 FROM {rref} y JOIN {stobj} o ON o.obj_no = y.target_no WHERE y.src_no = r.src_no AND y.dataset_no = r.dataset_no " +
-		"AND y.key = r.key AND y.role = {IDENT} AND y.def_no = p.def_no AND y.state = {RES}))))))"
+		" OR (p.kind = '{VALUEKIND}' AND r.why = {RET} AND NOT " + stlHas("unnest($3::text::int[], $4::text::bool[]) AS f(feed_no, creates)", "f.feed_no = p.def_no AND f.creates") + ")" +
+		" OR (p.kind IN ({OBJKINDS}) AND " + stlHas("{rref} y JOIN {stobj} o ON o.obj_no = y.target_no", "y.src_no = r.src_no AND y.dataset_no = r.dataset_no "+
+		"AND y.key = r.key AND y.role = {IDENT} AND y.def_no = p.def_no AND y.state = {RES}") + ")))))"
 
 	// stlReceivedSQL writes the problems the receiving found of the records received now: the row of the record the comparison used (its
 	// page and place), with the feed named by its id given its number.
@@ -85,7 +91,7 @@ var (
 	// stlRefsGoneSQL takes away the references of a record the run read again whole or closed, and of the others the ones of a role and a
 	// definition the run wrote again.
 	stlRefsGoneSQL = "WITH " + stlRecs + " DELETE FROM {rref} WHERE ctid = ANY(ARRAY(SELECT p.at FROM r" + stlLinesOf("{rref}", "x.role, x.def_no") +
-		" WHERE r.replaced OR EXISTS (SELECT 1 FROM {cref} y WHERE y.rid = r.rid AND y.role = p.role AND y.def_no = p.def_no)))"
+		" WHERE r.replaced OR " + stlHas("{cref} y", "y.rid = r.rid AND y.role = p.role AND y.def_no = p.def_no") + "))"
 
 	// stlRefsSQL writes the references the run computed of the records that are open.
 	stlRefsSQL = "WITH " + stlRecs + " INSERT INTO {rref} (src_no, dataset_no, key, role, def_no, sub, lookup_hash, target_no, state, retirable) " +
@@ -105,8 +111,8 @@ var (
 // that was received now is written over with its cells.
 var (
 	stlFateOf = "CASE WHEN r.fate = {F_FILT} THEN {F_FILT} " +
-		"WHEN EXISTS (SELECT 1 FROM {rref} x WHERE x.src_no = r.src_no AND x.dataset_no = r.dataset_no AND x.key = r.key AND x.role IN ({IDENT}, {FROM}) AND x.state = {RES}) THEN {F_USED} " +
-		"WHEN EXISTS (SELECT 1 FROM {rprob} x WHERE x.src_no = r.src_no AND x.dataset_no = r.dataset_no AND x.key = r.key) THEN {F_PROB} ELSE {F_UNUSED} END"
+		"WHEN " + stlHas("{rref} x", "x.src_no = r.src_no AND x.dataset_no = r.dataset_no AND x.key = r.key AND x.role IN ({IDENT}, {FROM}) AND x.state = {RES}") + " THEN {F_USED} " +
+		"WHEN " + stlHas("{rprob} x", "x.src_no = r.src_no AND x.dataset_no = r.dataset_no AND x.key = r.key") + " THEN {F_PROB} ELSE {F_UNUSED} END"
 
 	stlClosedSQL = "WITH " + stlRecs + " DELETE FROM {rawp} WHERE ctid = ANY(ARRAY(SELECT p.at FROM r" + stlLinesOf("{rawp}", "x.key") + " WHERE r.why = {CLOSED}))"
 
