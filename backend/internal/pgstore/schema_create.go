@@ -14,7 +14,19 @@ import (
 type planner func(model SchemaModel, kgNo int64) (pgschema.Plan, error)
 
 func buildPlan(m SchemaModel, kgNo int64) (pgschema.Plan, error) {
-	return pgschema.Build(m.Registry, pgschema.Options{KGNo: kgNo, Search: m.Search, WithStats: m.WithStats})
+	return pgschema.Build(m.Registry, pgschema.Options{KGNo: kgNo, Search: m.Search, WithStats: m.WithStats, InstallToken: m.token})
+}
+
+// readToken gives the model the token of the installation, which makes the plan have a query schema (ADR-0113). A model that has no
+// query schema (SchemaModel.noQuery) is left without it, and its plan has no query schema (the tables, and the statistics objects
+// when the model makes them).
+func readToken(ctx context.Context, tx *sql.Tx, m SchemaModel) (SchemaModel, error) {
+	if m.noQuery {
+		return m, nil
+	}
+	var err error
+	m.token, err = readInstallToken(ctx, tx)
+	return m, err
 }
 
 // CreateStorageSchema makes the storage schema of a KG from the model: it takes the number of the KG from the
@@ -62,11 +74,17 @@ func createInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 	if err := tx.QueryRowContext(ctx, `SELECT nextval('kg_no_seq')`).Scan(&kgNo); err != nil {
 		return SchemaRecord{}, dbErr(err, "take the number of the KG")
 	}
+	if m, err = readToken(ctx, tx, m); err != nil {
+		return SchemaRecord{}, err
+	}
 	p, err := plan(m, kgNo)
 	if err != nil {
 		return SchemaRecord{}, err
 	}
 	if err := runSteps(ctx, tx, p.Steps, pgschema.InTx); err != nil {
+		return SchemaRecord{}, err
+	}
+	if err := runQuerySteps(ctx, tx, p); err != nil {
 		return SchemaRecord{}, err
 	}
 	state := string(p.Manifest.State)
@@ -104,6 +122,9 @@ func (s *Store) DropStorageSchema(ctx context.Context, kg graph.KGID) error {
 	return locked(ctx, sh, kg, func(tx *sql.Tx) error {
 		rec, found, err := readRecord(ctx, tx, kg)
 		if err != nil || !found {
+			return err
+		}
+		if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
 			return err
 		}
 		if _, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(rec.Schema())+` CASCADE`); err != nil {

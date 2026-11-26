@@ -151,7 +151,7 @@ func fixedTableDefs(common []Column) ([]tableDef, error) {
 		return nil, err
 	}
 	defs := append(append(registryTableDefs(state), recordTableDefs()...), controlTableDefs()...)
-	return append(defs, ingestTableDefs()...), nil
+	return append(append(defs, ingestTableDefs()...), modelTableDefs()...), nil
 }
 
 // registryTableDefs are the registry, the state, the links, the history and the identification index.
@@ -340,6 +340,7 @@ func fixedIndexDefs(common []Column) []indexDef {
 		defs = append(defs, indexDef{Name: TableObjectState + "_" + StateColumn(c.AttrNo), Table: TableObjectState, Expr: StateColumn(c.AttrNo)})
 	}
 	defs = append(defs, ingestIndexDefs()...)
+	defs = append(defs, modelIndexDefs()...)
 	return append(defs,
 		indexDef{Name: "link_ref", Table: TableLink, Expr: "ref", Unique: true},
 		indexDef{Name: "link_src", Table: TableLink, Expr: "src, type_no, dst"},

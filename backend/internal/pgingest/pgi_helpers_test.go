@@ -114,7 +114,11 @@ func pgiOpen(t *testing.T) *pgiEnv {
 	t.Helper()
 	ctx := context.Background()
 	dsn := pgconn.NewTestDatabase(t)
-	pst, err := pgstore.Open(ctx, pgstore.Config{DSN: dsn})
+	models, err := pgstore.TestOnlyModelsWithoutQuerySchema()
+	if err != nil {
+		t.Fatal(err)
+	}
+	pst, err := pgstore.Open(ctx, pgstore.Config{DSN: dsn, Models: models})
 	if err != nil {
 		t.Fatal(err)
 	}

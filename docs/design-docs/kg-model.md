@@ -56,7 +56,7 @@ follows:
 | enum_values | 열거 값. `snake_case` |
 | required | 반드시 있어야 하는 속성이에요. 품질의 채움률은 `required`인 속성을 분모로 계산해요 |
 | change_class | 변경 속도 `static`(식별자, 일련번호) / `slow`(구성, 위치) / `dynamic`(상태, 배치 위치). 이력의 종류와 기대 신선도의 기본값을 정해요 |
-| sensitivity | 민감 등급 `open` / `restricted` / `confidential` ([ADR-0012](adr/0012-access-control.md)). 비어 있으면 `open`이에요 |
+| sensitivity | 민감 등급 `open` / `restricted` / `confidential` ([ADR-0012](adr/0012-access-control.md)). 비어 있으면 `open`이에요. 객체의 이름을 주는 속성 `name`과 식별 키의 속성은 `open`이어야 해요(모든 등급의 질의 스키마에 보여서예요, [ADR-0113](adr/0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md)) |
 | history_kind | 이력의 종류 `versioned` / `volatile`. 비어 있으면 `change_class`가 정해요(`static`과 `slow`는 `versioned`, `dynamic`은 `volatile`) |
 | status, superseded_by | 속성도 지원 중단할 수 있어요. 조직 속성은 후속 없이 `deprecated`일 수 있어요 |
 

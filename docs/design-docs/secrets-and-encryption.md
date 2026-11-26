@@ -334,7 +334,7 @@ PostgreSQL 공식 문서가 드는 암호화 선택지는 비밀번호 해시, �
 |---|---|
 | `filter[<속성>]`으로 필터링, 정렬, 범위 | 안 돼요. `invalid_input.filter_on_encrypted_attribute`(가정)로 거절해요. 마스킹된 속성으로 필터링할 때와 같은 처리예요 |
 | 인덱스, 중복 객체 탐지, 선택값 집계 | 안 돼요. 암호화한 컬럼에는 인덱스를 두지 않아요 |
-| 식별 키로 쓰는 속성 | `confidential`은 식별 키가 될 수 없어요. 동일 객체 식별이 검색에 의존하기 때문이에요 |
+| 식별 키로 쓰는 속성 | `confidential`은 식별 키가 될 수 없어요. 동일 객체 식별이 검색에 의존하기 때문이에요. `restricted`도 안 돼요: 키의 값은 등급이 없는 `identifier` 뷰에 식별자로 나와서 `open` 호출자에게 보이기 때문이에요([ADR-0113](adr/0113-query-schema-roles-views-functions-and-the-one-place-grades-are-cut.md)) |
 | 컬럼 통계, 읽기 | `open`이 아닌 컬럼은 범위와 빈출 값을 지표에 저장하지 않아요(ADR-0013). 읽을 때마다 복호화 비용이 드는데 큰 읽기에서 얼마인지는 측정해서 정해요 |
 
 이것은 `confidential`로 표시한 컬럼에만 적용돼요. 표시하지 않은 속성은 DB를 읽는 사람에게 보여요. 어느 속성을 `confidential`로 두는지는 관리자의 몫이고 등급은 컬럼에서 속성으로 전파돼요(ingestion 8.5).
