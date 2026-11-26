@@ -32910,7 +32910,7 @@
   },
   "go:backend/internal/pgingest::TestIsoAServerThatTakesTheRunOverInThePhaseOfTheEndsEndsWhereOneThatDidNotStopEnds": {
    "kind": "test",
-   "hash": "ebc8ee4d4e522998",
+   "hash": "5118c33def351878",
    "asserts": 2,
    "literals": [
     "d05f05c273a63d2a"
@@ -32925,7 +32925,7 @@
   },
   "go:backend/internal/pgingest::TestIsoAServerThatTakesTheRunOverInThePhaseOfTheIdentifiersEndsWhereOneThatDidNotStopEnds": {
    "kind": "test",
-   "hash": "74ad42a1c75988b8",
+   "hash": "0a822854dfdd522b",
    "asserts": 2,
    "literals": [
     "e478f8a33b306d92"
@@ -32940,7 +32940,7 @@
   },
   "go:backend/internal/pgingest::TestIsoAServerThatTakesTheRunOverInThePhasesOfTheCardinalityEndsWhereOneThatDidNotStopEnds": {
    "kind": "test",
-   "hash": "b0131e2fea027679",
+   "hash": "932e4ab56fcd3941",
    "asserts": 2,
    "literals": [
     "aa699682377400dd"
@@ -33046,8 +33046,8 @@
   },
   "go:backend/internal/pgingest::TestIsoTheStepBeginsAfterTheFourthStepOncePutsAPageOnceAndRefusesAServerThatLostItsLease": {
    "kind": "test",
-   "hash": "4aebc560e159fa09",
-   "asserts": 18,
+   "hash": "49b7d026865a22cd",
+   "asserts": 19,
    "literals": [
     "082bfc24cc39f008"
    ],
