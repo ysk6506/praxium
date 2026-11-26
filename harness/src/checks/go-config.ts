@@ -131,10 +131,17 @@ function read(root: string, file: string): Omit<GoFile, "unit"> {
 
 const skipped = (file: string): boolean => /(^|\/)(testdata|vendor)\//.test(file);
 
-/** Every Go file of the module, parsed once while its text is unchanged. */
-export function goFiles(root: string, config: GoConfig): GoFile[] {
+/**
+ * Every Go file of the module, parsed once while its text is unchanged. `keep` picks files by path before they are
+ * read, for a check that needs only some of them (ADR-0124).
+ */
+export function goFiles(
+  root: string,
+  config: GoConfig,
+  keep: (file: string) => boolean = () => true,
+): GoFile[] {
   return listFiles(root, [config.root], (name) => name.endsWith(".go"))
-    .filter((file) => !skipped(file))
+    .filter((file) => !skipped(file) && keep(file))
     .map((file) => ({ ...read(root, file), unit: unitOfPath(config, file) }));
 }
 
