@@ -23,8 +23,9 @@ import path from "node:path";
 import { type Violation, violation } from "../common";
 import { sha16 } from "../ts-ast";
 import { type GoConfig, type GoFile, goFiles, loadGoConfig, moduleDir } from "./go-config";
-import { declsOf, type GoDecl, normalizedText } from "./go-decls";
-import { closeOf, type GoTok, localName } from "./go-lex";
+import { declsOf } from "./go-decls";
+import { type GoTok, localName } from "./go-lex";
+import { type Entry, entryOf, failingHelpers, isPunct } from "./go-test-entry";
 import { Files } from "./go-test-files";
 import type { Unit } from "./test-units";
 
@@ -44,27 +45,9 @@ export interface GoTestInfo {
 }
 
 const TEST_NAME = /^(Test|Fuzz|Example)($|[^a-z])/;
-const FAILING = new Set(["Error", "Errorf", "Fatal", "Fatalf", "Fail", "FailNow"]);
-const SKIPPING = new Set(["Skip", "Skipf", "SkipNow"]);
-const TESTING_TYPES = new Set(["T", "B", "F", "TB"]);
 const TAG = /\[(REQ-\d{3})\]/g;
 const LIST_TAG = /\[\s*REQ-\d{3}\s*[,;]/;
 const OUTPUT = /^\/\/\s*(unordered output|output):/i;
-
-/** A declaration of the package's test files with what it mentions. */
-interface Entry {
-  readonly decl: GoDecl;
-  readonly file: GoFile;
-  readonly text: string;
-  /** Identifiers that are not a member selector (`x.name`). */
-  readonly refs: ReadonlySet<string>;
-  /** Identifiers right after a dot: a method may hide behind them. */
-  readonly members: ReadonlySet<string>;
-  /** Names of the testing handles it declares: `t` in `t *testing.T`. */
-  readonly handles: ReadonlySet<string>;
-  /** The folder of the locked-support package this entry belongs to; undefined for a declaration of a test file. */
-  readonly supportDir?: string;
-}
 
 /** The declarations of one locked-support package folder, indexed the way a pool indexes its own. */
 class Support {
@@ -85,55 +68,17 @@ class Support {
   }
 }
 
-const isPunct = (tok: GoTok | undefined, text: string): boolean =>
-  tok?.kind === "punct" && tok.text === text;
-
-function handlesOf(toks: readonly GoTok[]): Set<string> {
-  const names = new Set<string>();
-  toks.forEach((tok, k) => {
-    if (tok.kind !== "ident") return;
-    const at = isPunct(toks[k + 1], "*") ? k + 2 : k + 1;
-    if (
-      toks[at]?.text === "testing" &&
-      isPunct(toks[at + 1], ".") &&
-      TESTING_TYPES.has(toks[at + 2]?.text ?? "")
-    )
-      names.add(tok.text);
-  });
-  return names;
-}
-
-/** Index of the name token of a function declaration: after `func`, or after the receiver of a method. */
-function nameAt(toks: readonly GoTok[]): number {
-  return isPunct(toks[1], "(") ? closeOf(toks, 1) + 1 : 1;
-}
-
-function entryOf(decl: GoDecl, file: GoFile, supportDir?: string): Entry {
-  const refs = new Set<string>();
-  const members = new Set<string>();
-  const own = decl.kind === "func" ? nameAt(decl.toks) : -1;
-  decl.toks.forEach((tok, k) => {
-    if (tok.kind !== "ident" || k === own) return;
-    (isPunct(decl.toks[k - 1], ".") ? members : refs).add(tok.text);
-  });
-  const kind = decl.recv ? `${decl.kind} (${decl.recv})` : decl.kind;
-  return {
-    decl,
-    file,
-    text: `${kind} ${normalizedText(decl.toks)}`,
-    refs,
-    members,
-    handles: handlesOf(decl.toks),
-    ...(supportDir === undefined ? {} : { supportDir }),
-  };
-}
-
-/** The test-only declarations of one package folder, and how they reach each other. */
+/**
+ * The test-only declarations of one package folder, and how they reach each other. The one-step reach of a declaration
+ * is worked out once and kept (ADR-0124); a search then walks those lists in the order it always did.
+ */
 class Pool {
   private readonly byName = new Map<string, Entry[]>();
   private readonly byMethod = new Map<string, Entry[]>();
   private readonly byRecv = new Map<string, Entry[]>();
   private readonly always: Entry[] = [];
+  private readonly steps = new Map<Entry, readonly Entry[]>();
+  private readonly methods = new Map<Entry, readonly Entry[]>();
 
   constructor(
     readonly entries: readonly Entry[],
@@ -164,7 +109,7 @@ class Pool {
    * Declarations of a locked-support package that `e` reaches: by bare name from inside the package (its own files and
    * the tests of the same folder), by `package.Name` from anywhere that imports it. Methods follow by member name.
    */
-  private reachSupport(e: Entry, visit: (e: Entry | undefined) => void): void {
+  private reachSupport(e: Entry, visit: (e: Entry) => void): void {
     for (const sup of this.supports) {
       const inside = e.supportDir === sup.dir || path.posix.dirname(e.file.path) === sup.dir;
       const qualifiers = importedAs(this.config, e.file, sup.dir);
@@ -175,25 +120,46 @@ class Pool {
     }
   }
 
+  /** What `e` reaches in one step by its names, members and locked-support references, in visiting order. */
+  private stepsOf(e: Entry): readonly Entry[] {
+    const hit = this.steps.get(e);
+    if (hit) return hit;
+    const out: Entry[] = [];
+    const add = (next: Entry): void => {
+      out.push(next);
+    };
+    for (const ref of e.refs) this.byName.get(ref)?.forEach(add);
+    for (const member of e.members) this.byMethod.get(member)?.forEach(add);
+    this.reachSupport(e, add);
+    this.steps.set(e, out);
+    return out;
+  }
+
+  /** The methods that come with a type when it is reached: those of the pool, then those of its support package. */
+  private methodsOf(e: Entry): readonly Entry[] {
+    const hit = this.methods.get(e);
+    if (hit) return hit;
+    const out: Entry[] = [];
+    if (e.decl.kind === "type")
+      for (const n of e.decl.names) {
+        out.push(...(this.byRecv.get(n) ?? []));
+        out.push(...(this.supportOf(e)?.byRecv.get(n) ?? []));
+      }
+    this.methods.set(e, out);
+    return out;
+  }
+
   /** Everything `start` reaches by name, `start` itself left out. Package hooks and blank variables are always in. */
   closure(start: Entry): Entry[] {
     const seen = new Set<Entry>([start, ...this.always]);
     const queue = [start, ...this.always];
-    const visit = (e: Entry | undefined): void => {
-      if (!e || seen.has(e)) return;
+    const visit = (e: Entry): void => {
+      if (seen.has(e)) return;
       seen.add(e);
       queue.push(e);
-      if (e.decl.kind === "type")
-        for (const n of e.decl.names) {
-          this.byRecv.get(n)?.forEach(visit);
-          this.supportOf(e)?.byRecv.get(n)?.forEach(visit);
-        }
+      for (const method of this.methodsOf(e)) visit(method);
     };
-    for (let e = queue.pop(); e; e = queue.pop()) {
-      for (const ref of e.refs) this.byName.get(ref)?.forEach(visit);
-      for (const member of e.members) this.byMethod.get(member)?.forEach(visit);
-      this.reachSupport(e, visit);
-    }
+    for (let e = queue.pop(); e; e = queue.pop()) for (const next of this.stepsOf(e)) visit(next);
     seen.delete(start);
     return [...seen];
   }
@@ -233,56 +199,6 @@ function push(map: Map<string, Entry[]>, key: string, entry: Entry): void {
   else map.set(key, [entry]);
 }
 
-/** Calls `handle.Method(` for a handle name and a method set. */
-function countCalls(
-  toks: readonly GoTok[],
-  handles: ReadonlySet<string>,
-  methods: ReadonlySet<string>,
-): number {
-  let count = 0;
-  toks.forEach((tok, k) => {
-    if (
-      tok.kind === "ident" &&
-      handles.has(tok.text) &&
-      isPunct(toks[k + 1], ".") &&
-      methods.has(toks[k + 2]?.text ?? "") &&
-      isPunct(toks[k + 3], "(")
-    )
-      count++;
-  });
-  return count;
-}
-
-/** `testing.Short(` gates a test the same way a skip does. */
-function shortGates(toks: readonly GoTok[]): number {
-  return toks.filter(
-    (tok, k) =>
-      tok.text === "Short" &&
-      isPunct(toks[k - 1], ".") &&
-      toks[k - 2]?.text === "testing" &&
-      isPunct(toks[k + 1], "("),
-  ).length;
-}
-
-/** Names of the functions and methods among `entries` that can fail a test, directly or through another one. */
-function failingHelpers(entries: readonly Entry[]): Set<string> {
-  const helpers = new Set<string>();
-  const funcs = entries.filter((e) => e.decl.kind === "func");
-  for (let changed = true; changed; ) {
-    changed = false;
-    for (const e of funcs) {
-      const name = e.decl.names[0] as string;
-      if (helpers.has(name)) continue;
-      const fails =
-        countCalls(e.decl.toks, e.handles, FAILING) > 0 ||
-        e.decl.toks.some((t) => t.kind === "ident" && helpers.has(t.text));
-      if (fails) helpers.add(name);
-      changed ||= fails;
-    }
-  }
-  return helpers;
-}
-
 const tagsIn = (text: string): string[] => [...text.matchAll(TAG)].map((m) => m[1] as string);
 
 /** Tags in the doc comment above a test and in the string literals of its body (subtest names, table rows). */
@@ -299,18 +215,10 @@ function describe(files: Files, dir: string, pool: Pool, test: Entry, key: strin
   const helpers = failingHelpers(reached);
   const reqs = requirementsOf(test);
   const decl = test.decl;
-  const own = countCalls(decl.toks, test.handles, FAILING);
   const useOfHelpers = decl.toks.filter((t) => t.kind === "ident" && helpers.has(t.text)).length;
   const outputs = decl.names[0]?.startsWith("Example") && hasOutput(test) ? 1 : 0;
-  const literals = all
-    .flatMap((e) => e.decl.toks)
-    .filter((t) => ["string", "raw", "rune", "number"].includes(t.kind))
-    .map((t) => t.text)
-    .sort();
-  const skips = all.reduce(
-    (sum, e) => sum + countCalls(e.decl.toks, e.handles, SKIPPING) + shortGates(e.decl.toks),
-    0,
-  );
+  const literals = all.flatMap((e) => e.literals).sort();
+  const skips = all.reduce((sum, e) => sum + e.skips, 0);
   const parts = [
     test.text,
     ...reached.map((e) => e.text).sort(),
@@ -323,7 +231,7 @@ function describe(files: Files, dir: string, pool: Pool, test: Entry, key: strin
     file: test.file.path,
     line: decl.line,
     digest: sha16(parts.join("\n")),
-    asserts: own + useOfHelpers + outputs,
+    asserts: test.fails + useOfHelpers + outputs,
     literals: sha16(literals.join("\u0000")),
     skips,
     reqs,
@@ -355,13 +263,15 @@ const isTestFunc = (e: Entry): boolean =>
   TEST_NAME.test(e.decl.names[0] ?? "") &&
   e.decl.names[0] !== "TestMain";
 
+const isTestPath = (file: string): boolean => file.endsWith("_test.go");
+
+/** A non-test file of a folder or file that `go.locked_support` names. */
+const isSupportPath = (config: GoConfig, file: string): boolean =>
+  !isTestPath(file) &&
+  config.lockedSupport.some((s) => file === s || path.posix.dirname(file) === s);
+
 /** The non-test declarations of every folder or file that `go.locked_support` names, grouped by package folder. */
-function supportsOf(root: string, config: GoConfig): Support[] {
-  const named = goFiles(root, config).filter(
-    (f) =>
-      !f.isTest &&
-      config.lockedSupport.some((s) => f.path === s || path.posix.dirname(f.path) === s),
-  );
+function supportsOf(named: readonly GoFile[]): Support[] {
   const byDir = new Map<string, Entry[]>();
   for (const file of named) {
     const dir = path.posix.dirname(file.path);
@@ -371,10 +281,12 @@ function supportsOf(root: string, config: GoConfig): Support[] {
   return [...byDir].map(([dir, entries]) => new Support(dir, entries));
 }
 
+/** The test packages of the module. Only test files and locked-support files are read, each once (ADR-0124). */
 function packagesOf(root: string, config: GoConfig): Pack[] {
   const byDir = new Map<string, GoFile[]>();
-  const supports = supportsOf(root, config);
-  for (const file of goFiles(root, config).filter((f) => f.isTest)) {
+  const read = goFiles(root, config, (f) => isTestPath(f) || isSupportPath(config, f));
+  const supports = supportsOf(read.filter((f) => !f.isTest));
+  for (const file of read.filter((f) => f.isTest)) {
     const dir = path.posix.dirname(file.path);
     byDir.set(dir, [...(byDir.get(dir) ?? []), file]);
   }

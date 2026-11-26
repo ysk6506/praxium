@@ -21,6 +21,7 @@ interface Declared {
 export class Files {
   private readonly listed = new Map<string, string[]>();
   private readonly hashes = new Map<string, string>();
+  private readonly reads = new Map<string, Map<Declared, readonly string[]>>();
 
   constructor(private readonly root: string) {}
 
@@ -70,11 +71,23 @@ export class Files {
     return out;
   }
 
+  /** The files one entry embeds or names, read against the package folder `dir`; kept, since many tests reach it. */
+  private readsOf(dir: string, entry: Declared): readonly string[] {
+    let byEntry = this.reads.get(dir);
+    if (!byEntry) {
+      byEntry = new Map();
+      this.reads.set(dir, byEntry);
+    }
+    const hit = byEntry.get(entry);
+    if (hit) return hit;
+    const value = [...this.embedded(dir, entry), ...this.named(dir, entry)];
+    byEntry.set(entry, value);
+    return value;
+  }
+
   /** `path:digest` lines of every file the entries embed or name, sorted. */
   fingerprint(dir: string, entries: readonly Declared[]): string[] {
-    const files = new Set(
-      entries.flatMap((e) => [...this.embedded(dir, e), ...this.named(dir, e)]),
-    );
+    const files = new Set(entries.flatMap((e) => this.readsOf(dir, e)));
     return [...files].sort().map((f) => `file ${f} ${this.hash(f)}`);
   }
 }
