@@ -68,6 +68,9 @@ type IdentifyStart struct {
 	Turns      int
 	// SettleMax is the most pairs Go ends the search for the groups of a round for (0 is DefaultSettlePairs).
 	SettleMax int
+	// SettlePut is how many pairs a write of the labels Go found takes (0 is the default, 5,000): a test makes it small, so that the
+	// labels of a chain take several writes (ADR-0116).
+	SettlePut int
 }
 
 // Validate checks what the step cannot begin without.
@@ -83,7 +86,7 @@ func (s IdentifyStart) Validate() error {
 			return kernel.Errorf(kernel.CodeInvalidValue, "the identification takes feeds numbered 0 to %d, not %d", MaxIdentifyFeeds-1, f.Feed)
 		case seen[feedAt{f.SrcNo, f.Feed}]:
 			return kernel.Errorf(kernel.CodeInvalidValue, "the feed %d of the source %d is named twice", f.Feed, f.SrcNo)
-		case s.BucketRows < 0 || s.Pages < 0 || s.Rounds < 0 || s.Turns < 0 || s.SettleMax < 0:
+		case s.BucketRows < 0 || s.Pages < 0 || s.Rounds < 0 || s.Turns < 0 || s.SettleMax < 0 || s.SettlePut < 0:
 			return kernel.Errorf(kernel.CodeInvalidValue, "the sizes and the limits of the identification are not negative")
 		}
 		seen[feedAt{f.SrcNo, f.Feed}] = true
@@ -288,7 +291,7 @@ func doUnit(ctx context.Context, d Identifier, lease RunLease, need IdentifyNeed
 		}
 		return d.PutRebuilt(ctx, lease, page.Unit, rows)
 	case NeedSettle:
-		return settleGroups(ctx, d, lease, start.SettleMax)
+		return settleGroupsBy(ctx, d, lease, start.SettleMax, start.SettlePut)
 	case NeedAsk:
 		asks, err := d.AskPage(ctx, lease)
 		if err != nil {

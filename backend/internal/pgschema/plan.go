@@ -25,7 +25,11 @@ import (
 // from 9 to 10.
 // Version 11 adds the tables that describe the model, under the query schema (views, functions and roles) that is made on top of them
 // (ADR-0113): Diff follows the step from 10 to 11 by making the tables, and the query schema is made whole by the steps of Plan.Query.
-const GeneratorVersion = 11
+//
+// Version 12 adds, for the computation of the links (ADR-0122), the three tables of it (the objects found for a link end key, the record
+// that makes each link and the records that lost one) and the indexes of them and of the ends of the computation: Diff follows the step
+// from 11 to 12. No table that is there is changed.
+const GeneratorVersion = 12
 
 // Phase says where a step may run.
 type Phase int

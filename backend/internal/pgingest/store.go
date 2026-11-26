@@ -45,6 +45,8 @@ type Store struct {
 	expTest *expHook
 	// rcpSeen is the hook the tests of the computation of the objects watch its statements by; it is nil in the code that runs.
 	rcpSeen identObserver
+	// rclSeen is the same for the computation of the links (ADR-0122); it is nil in the code that runs.
+	rclSeen identObserver
 }
 
 var _ ingest.RunLedger = (*Store)(nil)
