@@ -41,6 +41,3 @@ func ProblemDefIsLinkSQL(expr string) string { return "(" + expr + " < 0)" }
 
 // ProblemDefIsFeedSQL is the condition that the number a problem keeps is of a feed.
 func ProblemDefIsFeedSQL(expr string) string { return "(" + expr + " >= 0)" }
-
-// ProblemDefLinkNoSQL is the number of the link definition a number a problem keeps is of (the SQL expression is below 0).
-func ProblemDefLinkNoSQL(expr string) string { return "(-(" + expr + ") - 1)" }
