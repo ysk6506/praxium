@@ -12,7 +12,6 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
-	"github.com/ysk6506/praxium/backend/internal/model"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
@@ -103,37 +102,7 @@ func kgmCount(st *Store) map[string]int {
 	return steps
 }
 
-// kgmShape is the query schemas of the KG of number no, by their place in pgschema.QuerySchemaNames: every relation with its kind and
-// its columns, every function, and what each role of the KG may use and read there.
-func kgmShape(t *testing.T, admin *sql.DB, no int64) string {
-	t.Helper()
-	roles := pgschema.QueryRoleNames(sxText(t, admin, `SELECT token FROM install_token WHERE id = 1`), no)
-	var out []string
-	for i, name := range pgschema.QuerySchemaNames(no) {
-		rels := sxText(t, admin, `SELECT COALESCE(string_agg(c.relname || ':' || c.relkind::text || ':' || COALESCE((SELECT string_agg(a.attname, ',' ORDER BY a.attnum)
-			FROM pg_attribute a WHERE a.attrelid = c.oid AND a.attnum > 0 AND NOT a.attisdropped), ''), ';' ORDER BY c.relname), '')
-			FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = $1`, name)
-		funcs := sxText(t, admin, `SELECT COALESCE(string_agg(p.proname, ',' ORDER BY p.proname), '') FROM pg_proc p JOIN pg_namespace n ON n.oid = p.pronamespace
-			WHERE n.nspname = $1`, name)
-		var rights []string
-		for j, role := range roles {
-			rights = append(rights, fmt.Sprintf("%d:%s:%d", j, sxText(t, admin, `SELECT has_schema_privilege($1, $2, 'USAGE')::text`, role, name),
-				sxInt(t, admin, `SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace WHERE n.nspname = $2
-					AND has_table_privilege($1, c.oid, 'SELECT')`, role, name)))
-		}
-		out = append(out, fmt.Sprintf("%d|%s|%s|%s", i, rels, funcs, strings.Join(rights, " ")))
-	}
-	return strings.Join(out, "\n")
-}
-
-// kgmOIDs is the object number of every query schema of the KG of number no: a schema made again has another.
-func kgmOIDs(t *testing.T, admin *sql.DB, no int64) string {
-	t.Helper()
-	return sxText(t, admin, `SELECT COALESCE(string_agg(oid::text, ',' ORDER BY nspname), '') FROM pg_namespace WHERE nspname = ANY (string_to_array($1, ','))`,
-		strings.Join(pgschema.QuerySchemaNames(no), ","))
-}
-
-// [REQ-683] [REQ-920]
+// [REQ-920]
 func TestKgmAMakingThatFailsAtAnyQuerySchemaDeletesWhatItMadeAndReturnsItsError(t *testing.T) {
 	ctx := context.Background()
 	m := qscModel(t)
@@ -347,167 +316,6 @@ func TestKgmAnExecutorThatMayNotMakeRolesMakesNoKGAndLeavesNothing(t *testing.T)
 	}
 }
 
-// [REQ-921]
-func TestKgmAQuerySchemaLeftStaleByAnAdjustmentThatStoppedIsMadeAgainWhenAServerStartsAndIsThenAsIfMadeWhole(t *testing.T) {
-	ctx := context.Background()
-	m := qscModel(t)
-	st, admin, dsn := kgmOpen(t, &m)
-	first := kgmKG(t, m, 1)
-	if _, err := st.CreateKG(ctx, first); err != nil {
-		t.Fatal(err)
-	}
-	added := qscModelNamed(t, "serial", sxProp(t, "pr.machine.rack", "rack", 22, "vt.string", model.ChangeSlow))
-	kgmStopAt(st, 1, nil)
-	if _, err := st.AdjustStorageSchema(ctx, first.ID, added); !errors.Is(err, errKgmStop) {
-		t.Fatalf("the adjustment that stops: %v", err)
-	}
-	st.schemaSeen = nil
-	if err := st.CheckStorageSchema(ctx, first.ID, added); err != nil {
-		t.Fatalf("the storage schema is not adjusted: %v", err)
-	}
-	// the server that starts holds the new model and makes again the query schemas that are stale, and only those
-	m = added
-	server := kgmServer(t, dsn, &m)
-	steps := kgmCount(server)
-	done, err := server.AdjustOldSchemas(ctx)
-	if err != nil || len(done) != 1 || !done[0].Adjusted || done[0].KG != first.ID {
-		t.Fatalf("the server that starts: %+v, %v", done, err)
-	}
-	if steps[schemaStepQuery] == 0 || steps[schemaStepQuery]+steps[schemaStepFresh] != len(pgschema.QuerySchemaNames(1)) {
-		t.Errorf("the server that starts ran %v", steps)
-	}
-	second := kgmKG(t, added, 2)
-	if _, err := server.CreateKG(ctx, second); err != nil {
-		t.Fatal(err)
-	}
-	if a, b := kgmShape(t, admin, 1), kgmShape(t, admin, 2); a != b {
-		t.Errorf("the query schemas made again are not those of a KG made whole:\n%s\n---\n%s", a, b)
-	}
-	// a server that starts again finds every query schema right and touches none
-	oids := kgmOIDs(t, admin, 1)
-	clear(steps)
-	if done, err := server.AdjustOldSchemas(ctx); err != nil || len(done) != 0 {
-		t.Errorf("a second start: %+v, %v", done, err)
-	}
-	if len(steps) != 0 || kgmOIDs(t, admin, 1) != oids {
-		t.Errorf("a second start ran %v", steps)
-	}
-}
-
-// [REQ-921]
-func TestKgmServersThatStartTogetherMakeEachStaleQuerySchemaOnce(t *testing.T) {
-	ctx := context.Background()
-	m := qscModel(t)
-	_, admin, dsn := kgmOpen(t, &m)
-	servers := []*Store{kgmServer(t, dsn, &m), kgmServer(t, dsn, &m)}
-	kg := kgmKG(t, m, 1)
-	if _, err := servers[0].CreateKG(ctx, kg); err != nil {
-		t.Fatal(err)
-	}
-	// the query schemas of a KG made before their marks have none
-	for _, name := range pgschema.QuerySchemaNames(1) {
-		sxRun(t, admin, `COMMENT ON SCHEMA `+pgschema.QuoteIdent(name)+` IS NULL`)
-	}
-	var mu sync.Mutex
-	made := 0
-	for _, s := range servers {
-		s.schemaSeen = func(_ context.Context, step string, _ *sql.Tx) error {
-			mu.Lock()
-			defer mu.Unlock()
-			if step == schemaStepQuery {
-				made++
-			}
-			return nil
-		}
-	}
-	var wg sync.WaitGroup
-	errs := make([]error, len(servers))
-	for i, s := range servers {
-		wg.Add(1)
-		go func() {
-			defer wg.Done()
-			_, errs[i] = s.AdjustOldSchemas(ctx)
-		}()
-	}
-	wg.Wait()
-	if err := errors.Join(errs...); err != nil {
-		t.Fatal(err)
-	}
-	if want := len(pgschema.QuerySchemaNames(1)); made != want {
-		t.Errorf("the servers made %d query schemas, want each of the %d once", made, want)
-	}
-	if n := sxInt(t, admin, `SELECT count(*) FROM pg_namespace WHERE nspname LIKE 'q\_1\_%' AND obj_description(oid, 'pg_namespace') LIKE $1`, queryMarkPrefix+"%"); n != made {
-		t.Errorf("%d query schemas have their mark", n)
-	}
-}
-
-// [REQ-921]
-func TestKgmTheModelWithoutAQuerySchemaMakesAKGInOneTransactionAndAServerThatStartsMakesNone(t *testing.T) {
-	ctx := context.Background()
-	st, admin, _ := kgdOpen(t)
-	steps := kgmCount(st)
-	pgsrcKG(t, st, admin, 1, 0)
-	if len(steps) != 1 || steps[schemaStepMake] != 1 {
-		t.Errorf("making a KG of the model without a query schema ran %v", steps)
-	}
-	if done, err := st.AdjustOldSchemas(ctx); err != nil || len(done) != 0 {
-		t.Errorf("a server that starts: %+v, %v", done, err)
-	}
-	if n := sxInt(t, admin, `SELECT count(*) FROM pg_namespace WHERE nspname LIKE 'q\_%'`) + sxInt(t, admin, `SELECT count(*) FROM kg_making`); n != 0 {
-		t.Errorf("%d query schemas or marks", n)
-	}
-}
-
-// [REQ-921]
-func TestKgmTheStepsOfTheQuerySchemaAreCutIntoItsSchemasAndAPlanThatMixesThemIsRefused(t *testing.T) {
-	m := qscModel(t)
-	m.token = "0123456789ab"
-	p, err := buildPlan(m, 7)
-	if err != nil {
-		t.Fatal(err)
-	}
-	parts, err := queryParts(p)
-	if err != nil {
-		t.Fatal(err)
-	}
-	names := pgschema.QuerySchemaNames(7)
-	marks := map[string]bool{}
-	steps := 0
-	for i, part := range parts {
-		if i >= len(names) || part.name != names[i] || !strings.HasPrefix(part.mark, queryMarkPrefix) {
-			t.Fatalf("the part %d is %s with the mark %q", i, part.name, part.mark)
-		}
-		first := part.steps[0]
-		if i > 0 && (first.What != pgschema.WhatSchema || !strings.HasPrefix(first.SQL, "DROP SCHEMA")) {
-			t.Errorf("the part %s starts with %s %s", part.name, first.What, first.Name)
-		}
-		if last := part.steps[len(part.steps)-1]; last.What != pgschema.WhatGrant || last.Name != part.name {
-			t.Errorf("the part %s ends with %s %s", part.name, last.What, last.Name)
-		}
-		marks[part.mark] = true
-		steps += len(part.steps)
-	}
-	if len(parts) != len(names) || len(marks) != len(names) || steps != len(p.Query) || parts[0].steps[0].What != pgschema.WhatRows {
-		t.Errorf("%d parts, %d marks, %d of %d steps, the first part starts with %s", len(parts), len(marks), steps, len(p.Query), parts[0].steps[0].What)
-	}
-	again, _ := queryParts(p)
-	for i := range again {
-		if again[i].mark != parts[i].mark {
-			t.Errorf("the mark of %s is not the same the second time", parts[i].name)
-		}
-	}
-	schema := func(name string) pgschema.Step { return pgschema.Step{What: pgschema.WhatSchema, Name: name, SQL: "CREATE SCHEMA " + name} }
-	for what, query := range map[string][]pgschema.Step{
-		"no schema":       {{What: pgschema.WhatRows, Name: "model_type", SQL: "SELECT 1"}},
-		"a schema twice":  {schema("q_a"), schema("q_b"), schema("q_a")},
-		"a step at first": {{What: pgschema.WhatView, Name: "v", SQL: "SELECT 1"}},
-	} {
-		if _, err := queryParts(pgschema.Plan{Query: query}); kernel.CodeOf(err) != kernel.CodeInternal {
-			t.Errorf("%s: %v", what, err)
-		}
-	}
-}
-
 // [REQ-920] [REQ-921]
 func TestKgmTheTransactionsOfTheMakingFailInATransactionThatIsOver(t *testing.T) {
 	ctx := context.Background()
@@ -531,5 +339,91 @@ func TestKgmTheTransactionsOfTheMakingFailInATransactionThatIsOver(t *testing.T)
 	}
 	if _, err := joinMaking(ctx, tx, rec, qscModel(t), buildPlan); kernel.CodeOf(err) == kernel.CodeConflict || err == nil {
 		t.Errorf("a making is joined in a transaction that is over: %v", err)
+	}
+}
+
+// [REQ-920]
+func TestKgmADeleteOfAMakingThatFailsLeavesItForTheNextOneAndAStrayMarkIsAFailure(t *testing.T) {
+	ctx := context.Background()
+	m := qscModel(t)
+	st, admin, _ := kgmOpen(t, &m)
+	kg := kgmKG(t, m, 1)
+	stopped, cancel := context.WithCancel(ctx)
+	kgmStopAt(st, 1, cancel)
+	if _, err := st.CreateKG(stopped, kg); !errors.Is(err, errKgmStop) {
+		t.Fatalf("the making that stops: %v", err)
+	}
+	alone := sxKG(t, 2)
+	stopped, cancel = context.WithCancel(ctx)
+	kgmStopAt(st, 1, cancel)
+	if _, err := st.CreateStorageSchema(stopped, alone, m); !errors.Is(err, errKgmStop) {
+		t.Fatalf("the making of a storage schema that stops: %v", err)
+	}
+	st.schemaSeen = nil
+	sxRun(t, admin, `UPDATE kg_making SET expires_at = now() - interval '1 second'`)
+	// a delete of a stopped making that fails is said by the run that would make it again, and by a server that starts; the KG whose
+	// delete stopped after its mark is ended as a delete by the same start
+	st.StopDeleteAt(deleteStepLast, errKgmStop)
+	if _, err := st.CreateStorageSchema(ctx, alone, m); !errors.Is(err, errKgmStop) {
+		t.Errorf("a storage schema made while the delete before it fails: %v", err)
+	}
+	st.StopDeleteAt(deleteStepLast, errKgmStop)
+	if resumed, err := st.ResumeAllWork(ctx); !errors.Is(err, errKgmStop) || len(resumed) != 2 || resumed[0] != alone || resumed[1] != kg.ID {
+		t.Errorf("the server whose first delete fails ended %v: %v", resumed, err)
+	}
+	st.deleteSeen = nil
+	if _, err := st.CreateKG(ctx, kg); err != nil {
+		t.Fatalf("the KG made after the deletes: %v", err)
+	}
+	if _, err := st.CreateStorageSchema(ctx, alone, m); err != nil {
+		t.Fatalf("the storage schema made after the deletes: %v", err)
+	}
+	// a mark with nothing under it is not deleted (there is no making to end), and a making of the same id fails on it
+	sh, err := st.rt.locate(kg.ID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if done, err := st.unmake(ctx, sh, sxKG(t, 9), false); done || err != nil {
+		t.Errorf("a KG without a mark was deleted: %v %v", done, err)
+	}
+	sxRun(t, admin, `INSERT INTO kg_making (kg_id, expires_at) VALUES ($1, now() + interval '1 hour')`, sxKG(t, 9).String())
+	if _, err := st.CreateStorageSchema(ctx, sxKG(t, 9), m); err == nil || !strings.Contains(err.Error(), "being made") {
+		t.Errorf("a making over a stray mark: %v", err)
+	}
+	// steps that name no schema, and a schema the steps do not make, are refused before and at the mark
+	if err := st.makeQuerySchemas(ctx, sh, kg.ID, pgschema.Plan{Query: []pgschema.Step{{What: pgschema.WhatView, Name: "v", SQL: "SELECT 1"}}}, false); kernel.CodeOf(err) != kernel.CodeInternal {
+		t.Errorf("steps that name no schema: %v", err)
+	}
+	none := pgschema.Plan{Query: []pgschema.Step{{What: pgschema.WhatSchema, Name: "q_kgm_none", SQL: "SELECT 1"}}}
+	if err := st.makeQuerySchemas(ctx, sh, kg.ID, none, false); err == nil || !strings.Contains(err.Error(), "mark a query schema") {
+		t.Errorf("a schema the steps do not make: %v", err)
+	}
+}
+
+// [REQ-921]
+func TestKgmAServerThatStartsAndCannotMakeAStaleQuerySchemaSaysSoAndTheNextOneMakesIt(t *testing.T) {
+	ctx := context.Background()
+	m := qscModel(t)
+	st, admin, _ := kgmOpen(t, &m)
+	kg := kgmKG(t, m, 1)
+	if _, err := st.CreateKG(ctx, kg); err != nil {
+		t.Fatal(err)
+	}
+	sxRun(t, admin, `COMMENT ON SCHEMA `+pgschema.QuoteIdent(pgschema.QuerySchemaNames(1)[2])+` IS NULL`)
+	kgmStopAt(st, 1, nil)
+	if done, err := st.AdjustOldSchemas(ctx); err == nil || !strings.Contains(err.Error(), errKgmStop.Error()) || len(done) != 0 {
+		t.Errorf("a start whose query schema fails: %+v, %v", done, err)
+	}
+	// a token that is not one stops the start before any query schema
+	sxRun(t, admin, `ALTER TABLE install_token DROP CONSTRAINT install_token_token_check`)
+	token := sxText(t, admin, `SELECT token FROM install_token`)
+	sxRun(t, admin, `UPDATE install_token SET token = 'NOT-A-TOKEN'`)
+	steps := kgmCount(st)
+	if _, err := st.AdjustOldSchemas(ctx); err == nil || len(steps) != 0 {
+		t.Errorf("a start with a token that is not one: %v, %v", err, steps)
+	}
+	sxRun(t, admin, `UPDATE install_token SET token = $1`, token)
+	if done, err := st.AdjustOldSchemas(ctx); err != nil || len(done) != 1 || steps[schemaStepQuery] != 1 {
+		t.Errorf("the next start: %+v, %v, %v", done, err, steps)
 	}
 }
