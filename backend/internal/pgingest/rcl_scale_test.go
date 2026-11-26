@@ -1,7 +1,10 @@
 package pgingest
 
 import (
+	"database/sql"
+	"encoding/json"
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
@@ -15,6 +18,67 @@ import (
 // many more references of other keys. A statement that read what the To side has for each From end would read m squared rows; the ends
 // are read once by the index of the keys and what the To side has for a key is counted once, so the rows read go with m. The world is made
 // in SQL, and the statements are asked how they went (EXPLAIN ANALYZE) with the plan as it is.
+
+// rclOperatingPlan is a hook that asks each statement how it went in the plan the server chooses (EXPLAIN ANALYZE in a savepoint that is
+// rolled back) and keeps, for each statement, the most a unit read of each table into p. Unlike idnHook it leaves the planner as it is: the
+// joins and the reads of whole tables a small table invites are what this world holds (with a table of a few pages the planner read the
+// bindings from the start for each end, the square of the ends, which rclRowsPerEnd catches).
+func rclOperatingPlan(p *idnPlans) func(tx *sql.Tx, what, query string, args []any) {
+	return func(tx *sql.Tx, what, query string, args []any) {
+		if strings.HasPrefix(strings.TrimSpace(query), "SET ") {
+			return
+		}
+		if _, err := tx.Exec("SAVEPOINT rcl_plan"); err != nil {
+			panic(err)
+		}
+		defer func() {
+			if _, err := tx.Exec("ROLLBACK TO SAVEPOINT rcl_plan"); err != nil {
+				panic(err)
+			}
+		}()
+		var doc []byte
+		if err := tx.QueryRow("EXPLAIN (ANALYZE, COSTS OFF, TIMING OFF, FORMAT JSON) "+query, args...).Scan(&doc); err != nil {
+			panic(fmt.Sprintf("%s: %v", what, err))
+		}
+		var top []struct{ Plan map[string]any }
+		if err := json.Unmarshal(doc, &top); err != nil {
+			panic(err)
+		}
+		read := &idnRead{rows: map[string]float64{}}
+		var walk func(map[string]any)
+		walk = func(node map[string]any) {
+			if name, ok := node["Relation Name"].(string); ok {
+				actual, _ := node["Actual Rows"].(float64)
+				loops, _ := node["Actual Loops"].(float64)
+				removed, _ := node["Rows Removed by Filter"].(float64)
+				read.rows[name] += (actual + removed) * loops
+				read.scans = append(read.scans, fmt.Sprintf("%v on %s", node["Node Type"], name))
+			}
+			if kids, ok := node["Plans"].([]any); ok {
+				for _, k := range kids {
+					if m, ok := k.(map[string]any); ok {
+						walk(m)
+					}
+				}
+			}
+		}
+		for _, t := range top {
+			walk(t.Plan)
+		}
+		p.seen++
+		old := p.most[what]
+		if old == nil {
+			p.most[what] = read
+			return
+		}
+		for table, n := range read.rows {
+			if n > old.rows[table] {
+				old.rows[table] = n
+			}
+		}
+		old.scans = append(old.scans, read.scans...)
+	}
+}
 
 // rclRowsPerEnd is the most rows a statement of the computation of the links may read for an end of the From side of the world of
 // rclShared (the end, its record, its binding, the To records of its key and the ends of them, counted once for a key).
@@ -66,7 +130,7 @@ func rclRowsRead(t *testing.T, m int) (map[string]float64, ingest.RecomputeLinks
 	t.Helper()
 	s, l := rclShared(t, m)
 	p := &idnPlans{most: map[string]*idnRead{}}
-	s.e.st.rclSeen = p.idnHook
+	s.e.st.rclSeen = rclOperatingPlan(p)
 	counts := rclDo(s, t, l, rclPlans(s), 100*m)
 	out := map[string]float64{}
 	for what, read := range p.most {
