@@ -146,20 +146,9 @@ func RunSettle(ctx context.Context, d Settler, lease RunLease, start SettleStart
 	if confirm == nil {
 		return SettleCounts{}, kernel.Errorf(kernel.CodeInvalidValue, "the cleaning confirms the graph: it needs a confirmer")
 	}
-	place, err := d.SettlePlace(ctx, lease)
+	place, err := settleBegun(ctx, d, lease, start)
 	if err != nil {
 		return SettleCounts{}, err
-	}
-	if place.Stage != RunSettling {
-		return SettleCounts{}, kernel.Errorf(CodeRunStage, "the run %d is %s: the cleaning is the work of a run that is settling", lease.No, place.Stage)
-	}
-	if !place.Begun {
-		if err := d.BeginSettle(ctx, lease, start); err != nil {
-			return SettleCounts{}, err
-		}
-		if place, err = d.SettlePlace(ctx, lease); err != nil {
-			return SettleCounts{}, err
-		}
 	}
 	for {
 		if err := ctx.Err(); err != nil {
@@ -179,6 +168,24 @@ func RunSettle(ctx context.Context, d Settler, lease RunLease, start SettleStart
 		}
 		place = step.Next
 	}
+}
+
+// settleBegun is where the cleaning of a run that is settling stands, once it has begun: it begins it when it has not.
+func settleBegun(ctx context.Context, d Settler, lease RunLease, start SettleStart) (SettlePlace, error) {
+	place, err := d.SettlePlace(ctx, lease)
+	if err != nil {
+		return place, err
+	}
+	if place.Stage != RunSettling {
+		return place, kernel.Errorf(CodeRunStage, "the run %d is %s: the cleaning is the work of a run that is settling", lease.No, place.Stage)
+	}
+	if place.Begun {
+		return place, nil
+	}
+	if err := d.BeginSettle(ctx, lease, start); err != nil {
+		return place, err
+	}
+	return d.SettlePlace(ctx, lease)
 }
 
 // RunState is what the record of a run says of where it stands, for the runner that drives the steps (I-7b): the stage, the job of the
