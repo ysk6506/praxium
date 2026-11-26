@@ -13,6 +13,10 @@ const (
 	TableRecordWait    = "record_wait"
 	TableRecordRef     = "record_ref"
 	TableRecordProblem = "record_problem"
+	// TableObjectRetire holds the objects that a feed that retires made and that are held to for good: an object whose number is here is
+	// retired once nothing stands under it (the old flow's "once on, always on", ADR-0118). It is a table beside the registry of the
+	// objects and not a column of it, so that adjusting an older KG makes a table and does not take the registry from a reader.
+	TableObjectRetire = "object_retire"
 
 	// Staged, one set per source (a partition per source of each, see SourceTables).
 	TableStageRecord = "stage_record"
@@ -35,6 +39,9 @@ const (
 	TableCalcKLabel  = "calc_klabel"
 	TableCalcAsk     = "calc_ask"
 	TableCalcNewObj  = "calc_newobj"
+	// TableCalcXKey holds the keys (an end key, an object, an identifier) the expansion has read the rows of that records share, so that
+	// a key that many records of the run have is read by one unit and not by every unit that has a record of it (ADR-0118).
+	TableCalcXKey    = "calc_xkey"
 	TableStageObject = "stage_object"
 	TableStageLink   = "stage_link"
 	TableStageVolat  = "stage_volatile"
@@ -142,6 +149,8 @@ const (
 	ColMissing     = "missing"
 	ColAnswer      = "answer"
 	ColLines       = "lines"
+	ColKeyNo       = "key_no"
+	ColKeyHash     = "key_hash"
 )
 
 // The codes of the small enumerations the ingestion tables keep as numbers, where a table has many rows.
@@ -328,7 +337,7 @@ func SourcePartition(table string, srcNo int64) string {
 func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcOwner, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
-		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
+		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableCalcXKey, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
 		TableCalcProblem, TableCalcRef, TableCalcLeft, TableIngestDiff,
 	}
 }

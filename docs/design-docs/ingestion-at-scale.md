@@ -7,7 +7,7 @@ follows:
 ---
 # 수집의 규모 설계
 
-수집을 한 KG에 객체와 링크가 수천만 개인 규모로 다시 설계해요. 결정은 [ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md)에 있어요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요. 5절의 테이블은 스키마 계획에 들어갔어요([ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md)). 1단계(수신)와 실행 기록의 최소한, 소스를 KG에 붙이고 떼는 일은 구현했어요([ADR-0098](adr/0098-receiving-step-and-run-ledger-in-adapter-pgingest.md)). 7단계(적용)와 8단계(변동 값)도 구현했어요(`graph.StagedApplier`, [ADR-0099](adr/0099-staged-applier-and-the-volatile-step.md)). 2단계(원본 차이)도 구현했어요([ADR-0102](adr/0102-raw-diff-step-and-three-way-completeness.md)). 3단계(식별)도 구현했어요([ADR-0108](adr/0108-identify-step-slots-rounds-and-groups-in-sql.md)). 3단계와 4단계 사이의 영향 집합 확장과 퇴역 후보도 구현했어요([ADR-0114](adr/0114-expansion-of-the-affected-set-and-retire-candidates.md)). 4단계의 객체 쪽도 구현했어요([ADR-0115](adr/0115-recompute-objects-step-of-the-new-ingestion-flow.md)). 4단계의 링크 쪽부터 6단계까지는 아직 없어요.** 지금 구현은 [수집 설계](ingestion.md)와 [파이프라인 설계](pipeline.md)가 설명하는 코드이고, 새 흐름은 그 옆에 지어요. 식별과 영향 집합, 적용, 유닛, 범위, 원형 측정은 [식별과 영향 집합, 적용, 범위](ingestion-at-scale-identity.md)에 있어요. 예시의 이름과 숫자는 지어낸 것이에요. **시작 값**은 원형이나 어림에서 정한 값이고 측정으로 고쳐요.
+수집을 한 KG에 객체와 링크가 수천만 개인 규모로 다시 설계해요. 결정은 [ADR-0086](adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md)에 있어요. **이 문서는 대부분 아직 구현하지 않은 설계(예정)예요. 5절의 테이블은 스키마 계획에 들어갔어요([ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md)). 1단계(수신)와 실행 기록의 최소한, 소스를 KG에 붙이고 떼는 일은 구현했어요([ADR-0098](adr/0098-receiving-step-and-run-ledger-in-adapter-pgingest.md)). 7단계(적용)와 8단계(변동 값)도 구현했어요(`graph.StagedApplier`, [ADR-0099](adr/0099-staged-applier-and-the-volatile-step.md)). 2단계(원본 차이)도 구현했어요([ADR-0102](adr/0102-raw-diff-step-and-three-way-completeness.md)). 3단계(식별)도 구현했어요([ADR-0108](adr/0108-identify-step-slots-rounds-and-groups-in-sql.md)). 3단계와 4단계 사이의 영향 집합 확장과 퇴역 후보도 구현했어요([ADR-0114](adr/0114-expansion-of-the-affected-set-and-retire-candidates.md), 검토 뒤의 고침 [ADR-0118](adr/0118-expansion-follow-up-support-mark-and-units-after-review.md)). 4단계의 객체 쪽도 구현했어요([ADR-0115](adr/0115-recompute-objects-step-of-the-new-ingestion-flow.md)). 4단계의 링크 쪽부터 6단계까지는 아직 없어요.** 지금 구현은 [수집 설계](ingestion.md)와 [파이프라인 설계](pipeline.md)가 설명하는 코드이고, 새 흐름은 그 옆에 지어요. 식별과 영향 집합, 적용, 유닛, 범위, 원형 측정은 [식별과 영향 집합, 적용, 범위](ingestion-at-scale-identity.md)에 있어요. 예시의 이름과 숫자는 지어낸 것이에요. **시작 값**은 원형이나 어림에서 정한 값이고 측정으로 고쳐요.
 
 ## 1. 목적과 다루는 질문
 
@@ -85,6 +85,8 @@ follows:
 | `record_ref` (**레코드가 낸 찾기 키**) | `src_no`, `dataset_no`, `key`, `role`, `def_no`, `sub`, `lookup_hash`, `target_no`(NULL이면 미해결), `state`(해결, 미해결, 진 주장, 걸러짐), `retirable` | 기본키 (`src_no`, `dataset_no`, `key`, `role`, `def_no`, `sub`). 인덱스 ① (`target_no`) `role`이 식별인 줄만: 객체에서 기여 레코드로 ② (`role`, `def_no`, `lookup_hash`): 끝 키와 주장으로 찾기 ③ `state`가 해결이 아닌 줄의 부분 인덱스: 미해결 목록 | 정리 ④ |
 | `record_problem` | `src_no`, `dataset_no`, `key`, `def_no`, `field`, `kind`, `reason` | 인덱스 (`src_no`, `dataset_no`, `key`) | 정리 ④: 다시 계산한 레코드의 문제를 갈아 끼워요. 줄과 셀의 자리는 두지 않아요. 파일 맨 위에 한 줄이 끼면 모든 자리가 바뀌므로 이번 준비 행에서 읽어요 |
 
+`object_retire`(`obj_no`)는 객체를 만든 피드가 퇴역시키는 피드였던 객체를 영구히 적는 표예요. 한 번 적히면 지워지지 않고, 퇴역 후보의 조건 셋 가운데 마지막이 이 표를 읽어요([ADR-0118](adr/0118-expansion-follow-up-support-mark-and-units-after-review.md)). 객체 등록부에 열을 더하지 않고 옆에 표를 둬서, 옛 생성기의 KG를 맞출 때 독자가 연 표를 건드리지 않아요.
+
 `record_problem`의 `field`는 어느 필드가 문제인지예요. 매핑을 고치는 사람이 보는 것이 이것이고, `kind`는 고정 목록이에요.
 
 `record_ref`의 역할은 이래요.
@@ -101,7 +103,7 @@ follows:
 ### 5.2 KG의 저장 스키마: 준비(로그 있는 테이블)
 
 - **수신용: 소스마다의 파티션.** 소스를 KG에 붙일 때 만들어요(실행 중에 DDL을 하지 않아요). 소스의 끝나지 않은 실행은 하나뿐이라서 파티션을 통째로 `TRUNCATE`해요. `stage_record`(데이터셋, 페이지, 번호, 키, 걸러졌는지, 변화, 원본 해시, 필드, 문제)는 "그대로"인 행의 해시와 필드가 NULL이에요. `stage_key`(피드, 키 순서, 타입, 서명 해시, 후보 참조, 부모를 찾는 키), `stage_end`(링크 정의, 방향, 끝 키의 해시), `stage_claim`(체계, 피드, 값의 해시, 값)이 따라와요. 세 테이블은 걸러진 행의 것을 가려내는 `held`(참이면 걸러진 행)를 가져요(생성기 버전 4, ADR-0098).
-- **계산용: KG마다 한 벌.** 한 번에 한 실행이므로 `run_id`가 없어요. 계산을 시작할 때 `TRUNCATE`해요. `calc_record`(이번에 다시 보는 레코드), `calc_wait`, `calc_key`와 `calc_end`와 `calc_claim`(그대로인 레코드에서 다시 만든 키), `calc_bind`(행에서 객체 번호, 새것인가, 라운드), `calc_newkey`(새로 묶을 키), `stage_object`(번호, `ref`, 타입, 이름, 문서, 내용 해시, 행 합, `first_key`), `stage_link`, `stage_volatile`, `stage_ident`, `calc_problem`, `calc_ref`(새 `record_ref`의 줄), `ingest_diff`예요.
+- **계산용: KG마다 한 벌.** 한 번에 한 실행이므로 `run_id`가 없어요. 계산을 시작할 때 `TRUNCATE`해요. `calc_record`(이번에 다시 보는 레코드), `calc_wait`, `calc_key`와 `calc_end`와 `calc_claim`(그대로인 레코드에서 다시 만든 키), `calc_bind`(행에서 객체 번호, 새것인가, 라운드), `calc_newkey`(새로 묶을 키), `stage_object`(번호, `ref`, 타입, 이름, 문서, 내용 해시, 행 합, `first_key`), `stage_link`, `stage_volatile`, `stage_ident`, `calc_problem`, `calc_ref`(새 `record_ref`의 줄), `calc_xkey`(확장이 읽은 키: 종류, 번호, 해시. 먼저 쓴 단위가 읽는다는 표지, [ADR-0118](adr/0118-expansion-follow-up-support-mark-and-units-after-review.md)), `ingest_diff`예요.
 - `ingest_diff`(순서, 청크 번호, 종류, 타입 번호, 번호, `ref`, 변화, 옛 해시, 새 해시)의 종류는 객체, 키, 링크, 식별자예요(적용이 쓰는 순서이고 종류의 번호가 그 순서예요). 순서는 (종류, 타입 번호, id)이고 청크 번호는 저장된 컬럼이에요. 키 줄은 묶는 키의 `ctx_no`와 `sig_hash`를 함께 가져요. 이것이 미리 보기의 목록, 변경 지문, 대량 소실의 판단, 청크의 목록이에요.
 - 이 테이블들의 이름과 컬럼, 소스의 파티션을 만들고 떼는 문장, 입력 다이제스트의 줄의 바이트 배치는 `adapter.pgschema`가 한 곳에서 줘요(ADR-0095). 준비 테이블은 로그 있는 테이블이고 `calc_dropped`(한 실행에서 충돌로 버린 키)와 `calc_object`(다시 계산할 객체의 목록)가 위의 목록에 더 있어요.
 

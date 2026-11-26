@@ -8,17 +8,17 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
-// The generator version 9 (ADR-0119): the table of the objects the computation of the objects left.
+// The generator version 10 (ADR-0119): the table of the objects the computation of the objects left.
 
 // [REQ-971]
-func TestRcpDiffFromGeneratorEightToNineAddsTheTableOfTheObjectsThatWereLeftAndNothingElse(t *testing.T) {
+func TestRcpDiffFromGeneratorNineToTenAddsTheTableOfTheObjectsThatWereLeftAndNothingElse(t *testing.T) {
 	next := igtPlan(t).Manifest
-	if next.GeneratorVersion < 9 {
+	if next.GeneratorVersion < 10 {
 		t.Fatalf("the generator of this build is %d", next.GeneratorVersion)
 	}
-	next.GeneratorVersion = 9
+	next.GeneratorVersion = 10
 	old := next
-	old.GeneratorVersion = 8
+	old.GeneratorVersion = 9
 	delta, err := pgschema.Diff(old, next)
 	if err != nil {
 		t.Fatal(err)

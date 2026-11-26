@@ -30,8 +30,8 @@ amends_tests:
   - go:backend/internal/pgingest::TestRcpTheObjectsTheRunTouchedAreTheSameWhenEveryRecordIsComputedAndTheOthersAreWhatTheRunBeforeMade
   - go:backend/internal/pgingest::TestRcpThePageSizeDoesNotChangeWhatIsStaged
   - go:backend/internal/pgingest::TestRcpTheReportIsWhatTheStatementsWroteAndAnObjectWithoutRecordsOrWithOnesThatCannotBeReadIsLeft
-test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. (1) TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 8에서 9로 바꾼다(이 결정 7). 파티션 접두어를 예약한다는 단언은 그대로다. (2) TestRcpDiffFromGeneratorSevenToEight…는 이제 빌드의 생성기가 9라서 "빌드의 매니페스트를 7과 견준다"가 단계 두 개만 나오지 않는다. 그래서 견주기 전에 다음 쪽 버전을 8로 두는 줄을 더하고, 빌드의 버전이 8 이상이라는 조건을 단언으로 더했다. 단계가 인덱스 둘이고 한 번 더 돌려도 같으며 표가 없는 스키마를 그대로 둔다는 단언은 그대로다. (3) TestRcpTheRunOfTheStepBeginsOnce…는 테스트용 가짜 저장소가 자리(RecomputePlace)에 시작 때의 시각을 돌려주게 했다. 이어받는 서버는 시작한 시각과 같은 것을 주어야 한다는 새 규칙(결정 4) 아래에서 가짜가 이전 시각 없이 자리를 돌려주면 이 테스트가 시작하지 않은 경우를 벗어난다. 단언은 그대로다. (4) pgingest의 rcpReset(도우미)은 이 단계가 새로 쓰는 표(calc_left)도 비운다. 이 도우미를 쓰는 여섯 테스트(TestRcpARunStopped…, TestRcpTheClaimRuleOfTheExpansion…, TestRcpTheComputationIsRefusedBefore…, TestRcpTheObjectsTheRunTouched…, TestRcpThePageSizeDoesNotChange…, TestRcpTheReportIsWhatTheStatementsWrote…)는 지문만 바뀌고 단언은 하나도 바뀌지 않았다. 도우미가 비우지 않으면 다시 도는 세계에서 calc_left의 기본키가 겹쳐 테스트가 실패한다.
-decision_hash: eb2f5d54cab0b44b
+test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. (1) TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 9에서 10으로 바꾼다(이 결정 7 — 세대 9는 먼저 병합된 ADR-0118의 확장 표다). 파티션 접두어를 예약한다는 단언은 그대로다. (2) TestRcpDiffFromGeneratorSevenToEight…는 이제 빌드의 생성기가 8보다 커서 "빌드의 매니페스트를 7과 견준다"가 단계 두 개만 나오지 않는다. 그래서 견주기 전에 다음 쪽 버전을 8로 두는 줄을 더하고, 빌드의 버전이 8 이상이라는 조건을 단언으로 더했다. 단계가 인덱스 둘이고 한 번 더 돌려도 같으며 표가 없는 스키마를 그대로 둔다는 단언은 그대로다. (3) TestRcpTheRunOfTheStepBeginsOnce…는 테스트용 가짜 저장소가 자리(RecomputePlace)에 시작 때의 시각을 돌려주게 했다. 이어받는 서버는 시작한 시각과 같은 것을 주어야 한다는 새 규칙(결정 4) 아래에서 가짜가 이전 시각 없이 자리를 돌려주면 이 테스트가 시작하지 않은 경우를 벗어난다. 단언은 그대로다. (4) pgingest의 rcpReset(도우미)은 이 단계가 새로 쓰는 표(calc_left)도 비운다. 이 도우미를 쓰는 여섯 테스트(TestRcpARunStopped…, TestRcpTheClaimRuleOfTheExpansion…, TestRcpTheComputationIsRefusedBefore…, TestRcpTheObjectsTheRunTouched…, TestRcpThePageSizeDoesNotChange…, TestRcpTheReportIsWhatTheStatementsWrote…)는 지문만 바뀌고 단언은 하나도 바뀌지 않았다. 도우미가 비우지 않으면 다시 도는 세계에서 calc_left의 기본키가 겹쳐 테스트가 실패한다.
+decision_hash: 928419f282d1e307
 ---
 # ADR-0119 객체 다시 계산에서 건너뛴 객체의 처리
 
@@ -47,7 +47,7 @@ ADR-0115(#110)가 4단계의 객체 쪽을 정했다. 독립 검토(F-1부터 F-
 4. **이어받은 서버는 시작한 값을 쓴다.** 자리(`RecomputePlace`)가 시작 때의 시각(`Seen`)과 체계 번호(`Schemes`, 이름순의 `이름=번호;` 글)를 돌려준다(비교 가능한 값이다). `RunRecompute`가 이어받을 때 시작 값이 자리와 다르면 페이지를 읽기 전에 `kernel.CodeConflict`로 거절한다. 문서가 두 시각을 말하거나 모르는 체계의 식별자가 빠지는 일이 없다.
 5. **한도는 페이지다.** 한 객체의 줄 수 한도 기본값은 한 페이지의 줄 수(`DefaultRecomputeLines`)와 같고, 명시한 `ObjectMax`가 페이지의 줄 수보다 크면 `CodeInvalidValue`로 거절한다(`Lines`가 기본이면 기본 페이지와 견준다). 한 페이지는 한 객체의 줄을 모두 담으므로 페이지의 메모리가 한도로 묶인다. 측정(`TestRcpTheMemoryOfTheBiggestObjectAPageHoldsIsBoundedByTheNumberOfLinesOfAPage`, 줄 10,000개)은 가장 큰 객체를 만들 때 줄들이 차지하는 것 위로 23.5 MB(값이 모두 같을 때), 27.3 MB(모두 다를 때), 37.2 MB(셀이 200바이트일 때)가 더 들고 최대치는 30.8, 34.8, 46.4 MB다. ADR-0115의 "수십 MB"는 이 값으로 바꾸고, 테스트의 임계값은 줄 위로 100 MB다. 기계에 따라 다르므로 임계값에는 여유가 있다.
 6. **살아남은 변이를 죽이는 테스트를 더한다.** 변이 M04, M08, M09, M11, M16, M17(읽을 수 없음 사유 글로), M18, M19, M20, P08, P11, P13, P14, P16, P19, P20, P22b, P24, P25, G1b, G5를 죽이는 테스트이다(보고에 변이마다 테스트의 이름을 적는다). `source_conflict`는 옛 흐름이 같은 수집 사례에서 내는 문제와 같은 (데이터셋, 키) 목록을 낸다는 테스트(`TestRcpTheSourceConflictsAreTheOnesTheOldPipelineReportsFromTheSameCaptures`)을 더해 ADR-0115의 옛 흐름과 다른 점 5의 "옛 흐름과 견주지 않고"를 닫는다.
-7. **생성기를 9로 올린다.** `calc_left`를 만드는 단계(`leftSteps`, 두 번 해도 같고 `calc_record`가 없는 스키마는 그대로 둔다)를 더한다. `calc_left`는 계산 표라서 `ComputeTables()`에 들어 한 번의 실행이 끝나면 다른 계산 표와 함께 비워진다.
+7. **생성기를 10으로 올린다**(세대 9는 먼저 병합된 ADR-0118의 확장 표). `calc_left`를 만드는 단계(`leftSteps`, 두 번 해도 같고 `calc_record`가 없는 스키마는 그대로 둔다)를 더한다. `calc_left`는 계산 표라서 `ComputeTables()`에 들어 한 번의 실행이 끝나면 다른 계산 표와 함께 비워진다.
 8. **`StepFourProblemKinds()`는 단계가 실제로 내는 종류만 돌려준다.** 객체 쪽의 `source_conflict` 하나다. 링크의 `link_target_missing`, `link_target_ambiguous`, `cardinality`는 링크를 만드는 단계(I-5b2)가 더한다. 같은 상수에서 가져와 이름이 어긋날 수 없다. 건너뛴 객체의 레코드에 남는 `shape_changed` 등은 그 레코드가 속한 단계의 종류이고 여기서 소유하지 않는다.
 
 ## 고친 것 (ADR-0115의 바뀌는 문장)
@@ -60,7 +60,7 @@ ADR-0115(#110)가 4단계의 객체 쪽을 정했다. 독립 검토(F-1부터 F-
 | 8항 (한도) | 한도 100,000, 레코드 10만 개의 셀은 수십 MB | 한도는 페이지의 줄 수(기본 10,000)이고 측정은 줄 위로 23.5에서 37.2 MB다 (결정 5) |
 | 8항 (한도) | 한도는 페이지보다 크다 | 한도는 페이지와 같고 그보다 큰 명시값은 거절한다 (결정 5) |
 | 9항 (문제) | `StepFourProblemKinds`가 링크의 종류의 이름을 말한다 | 단계가 내는 종류만 돌려준다 (결정 8) |
-| 10항 (생성기) | 8로 올린다 | 9로 올린다. `calc_left`를 더한다 (결정 7). 다른 PR이 같은 번호를 쓰면 합치는 쪽이 다시 매긴다 |
+| 10항 (생성기) | 8로 올린다 | 10으로 올린다. `calc_left`를 더한다 (결정 7). 세대 9는 ADR-0118의 확장 표다 |
 | 알려진 한계 | 건너뛴 객체는 `Left`로 센다 | `Left`는 그대로이고 `calc_left`와 `Isolated`가 더해진다. 드러내는 일은 I-7이다 |
 
 ## 잠긴 테스트의 변경

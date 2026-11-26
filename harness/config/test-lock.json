@@ -16703,36 +16703,6 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/graph::TestRcpTheLowestGradeOfTheAttributesOfARowIsTheLowestOfThemAndNotTheBest": {
-   "kind": "test",
-   "hash": "3f566b0787366d1f",
-   "asserts": 2,
-   "literals": [
-    "fc1dc14280d2fe28"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-975"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/graph::TestRcpTheObjectsOfAContextPartOfAFirstKeyAreStoredInTheOrderOfTheirIdsWhateverTheOrderTheyAreGivenIn": {
-   "kind": "test",
-   "hash": "c515e2bd57882f6f",
-   "asserts": 6,
-   "literals": [
-    "b5df7a5b58159b67"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-975"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/graph::TestRcpTheStoredFormsOfTheRowsAreTheOnesTheyAreReadBackFrom": {
    "kind": "test",
    "hash": "19005600266c2b43",
@@ -23495,6 +23465,38 @@
    "added": "2026-11-16",
    "amended_by": "0075-definition-id-grammar-and-schema-version.md"
   },
+  "go:backend/internal/ingest::TestExpTheEndsThatALinkTypeHoldsToOneAreTheOnesItsOneToOneOneToManyAndManyToOneBindingsSay": {
+   "kind": "test",
+   "hash": "2479da6faefddfac",
+   "asserts": 11,
+   "literals": [
+    "4e6a7071f36a2569"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-891",
+    "REQ-956"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestExpTheFeedsOfTheExpansionAreTheOnesTheIdentificationIsGivenAndAFeedGivenTwiceOrNoFeedForTheExpansionOfEverythingIsRefused": {
+   "kind": "test",
+   "hash": "6d7bccaa3bcb9b9b",
+   "asserts": 7,
+   "literals": [
+    "a6e29719fdb5131d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-956"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestExpTheLinkTypesThatHoldAnEndToOneAreTheOnesTheBindingsOfTheModelSayAndTheFeedsSayWhichMayRetire": {
    "kind": "test",
    "hash": "b181dbe9ea6d2f4a",
@@ -25396,36 +25398,6 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestRcpACellAFeedThatMakesObjectsCannotReadIsNotAProblemOfTheStepForTheReceivingReportsIt": {
-   "kind": "test",
-   "hash": "c54a3465688bc5d2",
-   "asserts": 3,
-   "literals": [
-    "2b4c7224752787a7"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-934"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpALimitOfAnObjectThatIsMoreThanAPageIsRefusedAndTheDefaultLimitIsThePage": {
-   "kind": "test",
-   "hash": "5ab321e10430955f",
-   "asserts": 2,
-   "literals": [
-    "720347c6e0cdb497"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-972"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/ingest::TestRcpAnIdentifierThatARecordClaimsAndTheObjectWonIsTheIdentifierOfTheRowAndOneItDidNotWinIsNot": {
    "kind": "test",
    "hash": "6dfed49552ada5c1",
@@ -25501,21 +25473,6 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestRcpAServerThatIsGivenAnotherTimeOrOtherSchemesThanTheRunBeganWithIsRefusedBeforeItReadsAPage": {
-   "kind": "test",
-   "hash": "78826aaf35aeccc9",
-   "asserts": 4,
-   "literals": [
-    "2ab9eb842e239868"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-973"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/ingest::TestRcpAStartNeedsATimeInUTCAndSizesThatAreNotNegative": {
    "kind": "test",
    "hash": "0984daa007cae9c9",
@@ -25527,36 +25484,6 @@
    "skips": 0,
    "reqs": [
     "REQ-937"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpEveryObjectThePageDoesNotMakeIsLeftWithAReasonAndTheNumbersAgreeWithTheLists": {
-   "kind": "test",
-   "hash": "fd1f9f78d7ae844b",
-   "asserts": 8,
-   "literals": [
-    "82ee7c2fe5e17d6f"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpTheGradeOfAnObjectIsTheLowestOfTheFeedsThatGiveItsValuesAndAFeedThatIsApproximateGivesAssumed": {
-   "kind": "test",
-   "hash": "116db082242d1e77",
-   "asserts": 4,
-   "literals": [
-    "b8e69d6e10bc1c59"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-934"
    ],
    "added": "2026-11-26",
    "amended_by": null
@@ -25576,51 +25503,6 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestRcpTheIdentifierOfAnObjectIsTheOneOfTheRecordOpenedLastAndThenTheOneOfTheSmallerKey": {
-   "kind": "test",
-   "hash": "a459408e26ae25b0",
-   "asserts": 6,
-   "literals": [
-    "23f5e769880ad05f"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-931"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpTheMemoryOfTheBiggestObjectAPageHoldsIsBoundedByTheNumberOfLinesOfAPage": {
-   "kind": "test",
-   "hash": "911e8828cd66f273",
-   "asserts": 3,
-   "literals": [
-    "d0d1cd6b3af48910"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-972"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpTheNameAnObjectKeepsWhenNoValueNamesItIsTheFirstPartOfItsKeyThatIsNotItsContext": {
-   "kind": "test",
-   "hash": "d1cf7427c188cfab",
-   "asserts": 4,
-   "literals": [
-    "134893fb9d5ff1e5"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-932"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/ingest::TestRcpTheOrderOfTheValuesIsAStrictTotalOrder": {
    "kind": "test",
    "hash": "cdc1cc15a0797899",
@@ -25636,39 +25518,9 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestRcpTheReasonALineCannotBeReadNamesTheRecordAndWhatIsWrongWithItAndNeverItsCells": {
-   "kind": "test",
-   "hash": "25a4af35a7e29570",
-   "asserts": 4,
-   "literals": [
-    "49d9434021d711e0"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpTheReferencesOfAnObjectAreOfEveryRecordUnderItEvenOneThatGivesNoValue": {
-   "kind": "test",
-   "hash": "f6f313838cac8661",
-   "asserts": 4,
-   "literals": [
-    "e58dba3e3b4a82bf"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-934"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/ingest::TestRcpTheRunOfTheStepBeginsOnceDoesThePagesAndStopsAtTheFirstThingThatFails": {
    "kind": "test",
-   "hash": "5839b5c2da6005ba",
+   "hash": "1322c2ca8ecf6c84",
    "asserts": 8,
    "literals": [
     "0dfc967ca4f0dac3"
@@ -25679,7 +25531,7 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
+   "amended_by": null
   },
   "go:backend/internal/ingest::TestRcpTheStepIsRefusedForARunThatIsNotComputing": {
    "kind": "test",
@@ -25711,21 +25563,6 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/ingest::TestRcpTheValueTwoFeedsGiveOfOneRecordIsTheOneOfTheFeedWithTheSmallerNumber": {
-   "kind": "test",
-   "hash": "0e0c7165a0627483",
-   "asserts": 8,
-   "literals": [
-    "3f1fb31153da075c"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-930"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/ingest::TestRcpTwoRecordsOfAnObjectMakeOneRowAndTheOneThatLosesIsAProblemWhateverTheOrderOfTheLines": {
    "kind": "test",
    "hash": "c21c155a23b5e3ea",
@@ -25737,21 +25574,6 @@
    "skips": 0,
    "reqs": [
     "REQ-930"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/ingest::TestRcpTwoRecordsThatSayTheSameThingAreNotAProblemWhateverTheOrderOfThem": {
-   "kind": "test",
-   "hash": "abfa1398151ab52c",
-   "asserts": 4,
-   "literals": [
-    "dce5e8db7a7dcf54"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-933"
    ],
    "added": "2026-11-26",
    "amended_by": null
@@ -31220,12 +31042,28 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreOfTheRun": {
+   "kind": "test",
+   "hash": "546fa1c8ec13d665",
+   "asserts": 6,
+   "literals": [
+    "9dc24d8d2f1c0fdd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-899",
+    "REQ-957"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestExpAnObjectIsOnlyACandidateForRetirementWhenAFeedThatRetiresMadeIt": {
    "kind": "test",
-   "hash": "0597efabd0fe7f58",
+   "hash": "9c41cf021b1b7f1a",
    "asserts": 5,
    "literals": [
-    "65956f1aac6cd37f"
+    "4e57c13d2c438564"
    ],
    "precision": [],
    "skips": 0,
@@ -31233,15 +31071,15 @@
     "REQ-890",
     "REQ-891"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAnotherSourceStandsUnderIsNotACandidateAndOneThatNoRecordStandsUnderIs": {
    "kind": "test",
-   "hash": "7e286e099cc3037c",
+   "hash": "ecdf1321f93dec74",
    "asserts": 26,
    "literals": [
-    "5fabc9058c306729"
+    "7b1add743c0595dc"
    ],
    "precision": [],
    "skips": 0,
@@ -31249,15 +31087,65 @@
     "REQ-891",
     "REQ-898"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+  },
+  "go:backend/internal/pgingest::TestExpAnObjectThatOnlyARecordOfAFeedThatAddsValuesStandsUnderIsRetiredAsTheOldPipelineRetiresIt": {
+   "kind": "test",
+   "hash": "104a839e28544199",
+   "asserts": 1,
+   "literals": [
+    "e7575d25040d71ca"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-897",
+    "REQ-950"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpAnObjectTwoFeedsMakeOfWhichOneRetiresIsRetiredAsTheOldPipelineRetiresItWhicheverFeedLetsGoOfItFirst": {
+   "kind": "test",
+   "hash": "947ede0fd7c4a80b",
+   "asserts": 2,
+   "literals": [
+    "84274421c2ec4f51"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-897",
+    "REQ-951"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpAReferenceOfAFeedThatOnlyAddsValuesIsNoSupportAndOneOfAFeedThatIsNotKnownIs": {
+   "kind": "test",
+   "hash": "f20ac8cdece8f6ce",
+   "asserts": 17,
+   "literals": [
+    "547fabaee31c010c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-954"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestExpAStatementThatFailsInAUnitLeavesTheUnitUndoneAndTheRunGoesOnFromIt": {
    "kind": "test",
-   "hash": "92a3e12ff0bbb919",
+   "hash": "47bfc6570919da1e",
    "asserts": 9,
    "literals": [
-    "160ffde3b6365d64"
+    "6e04af1442240a71"
    ],
    "precision": [],
    "skips": 0,
@@ -31265,8 +31153,8 @@
     "REQ-890",
     "REQ-896"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestExpTheCandidatesForRetirementAreTheObjectsTheOldPipelineRetiresInTheSameCaptures": {
    "kind": "test",
@@ -31286,10 +31174,10 @@
   },
   "go:backend/internal/pgingest::TestExpTheExpansionDoesNotBeginOnARunWhoseIdentificationIsNotDoneAndTheComputationOfEverythingGoesByUnitsOfRecords": {
    "kind": "test",
-   "hash": "f715190198293bea",
+   "hash": "14728b4281053012",
    "asserts": 21,
    "literals": [
-    "46ac3c74f67761d2"
+    "424c473c0c6666b4"
    ],
    "precision": [],
    "skips": 0,
@@ -31297,15 +31185,15 @@
     "REQ-890",
     "REQ-896"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestExpTheExpansionOfARunOfAWorldThatHasACaseForEveryRule": {
    "kind": "test",
-   "hash": "4d23019b0fca9d62",
+   "hash": "77aa82e27de7bb52",
    "asserts": 11,
    "literals": [
-    "b7331766759a7f0e"
+    "8c9cf703ed6298af"
    ],
    "precision": [],
    "skips": 0,
@@ -31318,15 +31206,127 @@
     "REQ-895",
     "REQ-896"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+  },
+  "go:backend/internal/pgingest::TestExpTheExpansionOfEverythingTakesTheRecordsTheIdentificationReadsAndNoOther": {
+   "kind": "test",
+   "hash": "84d563209cd3a269",
+   "asserts": 13,
+   "literals": [
+    "7c61758afa807d95"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-891",
+    "REQ-953"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheMarkOfTheRegistryIsOnTheObjectsThatARetirableReferenceOfTheRunPointsAtAndStays": {
+   "kind": "test",
+   "hash": "67e8700a05103417",
+   "asserts": 12,
+   "literals": [
+    "91d9a5894b7e15cf"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-951"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheNumbersOfTheRecordsOfARunAreAsManyAsTheRecordsWhateverTheRulesLookedAt": {
+   "kind": "test",
+   "hash": "c07274564d8ce128",
+   "asserts": 8,
+   "literals": [
+    "69282bc4646bedef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-899",
+    "REQ-957"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheRecordOfALinkThatEndsAtTheObjectAnEndKeyOfARecordFindsIsReadAgain": {
+   "kind": "test",
+   "hash": "86b14b998d46daba",
+   "asserts": 17,
+   "literals": [
+    "3c04dbcf08521bf9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-894",
+    "REQ-955"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheRecordOfALinkThatStartsAtTheObjectAChangedRecordIsNowBoundToIsReadAgain": {
+   "kind": "test",
+   "hash": "942b2bb3aa05dcef",
+   "asserts": 17,
+   "literals": [
+    "5851d7a040cd44f5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-894",
+    "REQ-955"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheRecordOfASecondLinkThatEndsWhereTheLinkOfAChangedRecordEndedIsReadAgain": {
+   "kind": "test",
+   "hash": "a82757e9830e7e9a",
+   "asserts": 17,
+   "literals": [
+    "b00c95d230ed550e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-894",
+    "REQ-955"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestExpTheReferencesOfRecordsOfTwoSourcesWhoseFeedsHaveTheSameNumberAreRetirableByTheFeedOfTheirOwnSource": {
+   "kind": "test",
+   "hash": "c3f44451b7ab6384",
+   "asserts": 12,
+   "literals": [
+    "e605862670e418a9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-892",
+    "REQ-954"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestExpTheSetIsTheSameForAnyOrderOfTheRowsReceivedAndOfTheNumbersOfTheRecords": {
    "kind": "test",
-   "hash": "ef6260d420e0a8c0",
+   "hash": "10cdf17660b57d9c",
    "asserts": 7,
    "literals": [
-    "296306bd345e257e"
+    "2c4056d6d5d72eda"
    ],
    "precision": [],
    "skips": 0,
@@ -31334,22 +31334,54 @@
     "REQ-890",
     "REQ-895"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+  },
+  "go:backend/internal/pgingest::TestExpTheUnitsDoneAreTheUnitsTheExpansionWentByAndTheRunBeginsAtTheFirstRule": {
+   "kind": "test",
+   "hash": "d47699c8e28ece78",
+   "asserts": 8,
+   "literals": [
+    "fcd79a330b07c9b9"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-890",
+    "REQ-956"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestExpWhatManyRecordsOfARunShareIsReadOnceForAUnitSoTheRowsReadGoWithTheNumberOfRecords": {
    "kind": "test",
-   "hash": "53fee5cfe899e05b",
+   "hash": "065cee1eb4201929",
    "asserts": 6,
    "literals": [
-    "9037dece65e1b75b"
+    "d68e9c6ddd2d4728"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-899"
    ],
-   "added": "2026-11-25",
+   "added": "2026-11-26",
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
+  },
+  "go:backend/internal/pgingest::TestExpWhileTheIdentificationLeavesPairsNoObjectIsACandidateForRetirementWhoeverGoesOnWithTheExpansion": {
+   "kind": "test",
+   "hash": "f8e85d9c0d1f82cc",
+   "asserts": 20,
+   "literals": [
+    "df3fd20a409f9b4c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-891",
+    "REQ-952"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgingest::TestHkaASignalIsMarkedOnceOnEveryRowOfTheSourceAndNeverTwice": {
@@ -32368,7 +32400,7 @@
   },
   "go:backend/internal/pgingest::TestRcpACellAFeedThatMakesNoObjectCannotReadIsAProblemOfTheRecordAndTheValueIsLeftOut": {
    "kind": "test",
-   "hash": "fc655f714a56521d",
+   "hash": "a986a6f9d0570a40",
    "asserts": 10,
    "literals": [
     "43b7713d5d7ddcc0"
@@ -32379,22 +32411,7 @@
     "REQ-943"
    ],
    "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgingest::TestRcpAnObjectOfTheRunThatNoRegistryAndNoNewObjectHasIsLeftAndDoesNotStopTheStep": {
-   "kind": "test",
-   "hash": "28cd2cea8e6beed4",
-   "asserts": 9,
-   "literals": [
-    "cbd42a9ef83cabd2"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-972"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpAnObjectThatHasMoreLinesThanTheLimitIsLeftAsItIsAndCounted": {
    "kind": "test",
@@ -32426,57 +32443,12 @@
    "added": "2026-11-26",
    "amended_by": null
   },
-  "go:backend/internal/pgingest::TestRcpAnObjectTheKGHasThatIsLeftIsToldAndIsNeverACandidateForRetirement": {
-   "kind": "test",
-   "hash": "269f04c815494b2e",
-   "asserts": 20,
-   "literals": [
-    "80fbc6dd60050815"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-973"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgingest::TestRcpAnObjectTheRunWouldMakeThatHasTooManyLinesIsTakenBackWithEverythingThatNamedItAndTheRecordsUnderItAreProblems": {
-   "kind": "test",
-   "hash": "06e85e3e95dac0e0",
-   "asserts": 17,
-   "literals": [
-    "57a2e27fccb6f211"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgingest::TestRcpAnObjectWhoseContextParentIsTakenBackIsTakenBackToo": {
-   "kind": "test",
-   "hash": "60c9177358a458c2",
-   "asserts": 14,
-   "literals": [
-    "9a83a125d12347fe"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/pgingest::TestRcpAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToRead": {
    "kind": "test",
-   "hash": "6c3ac6152b5ea077",
+   "hash": "d7628d7a7b40cfcb",
    "asserts": 18,
    "literals": [
-    "83cdb06767e395a2"
+    "d616308906385c30"
    ],
    "precision": [],
    "skips": 0,
@@ -32484,14 +32456,14 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpARunStoppedBetweenPagesGoesOnFromTheNextPageAndStagesWhatOneThatDidNotStopStages": {
    "kind": "test",
-   "hash": "b9e1c4d7946c1bd5",
+   "hash": "cb78270a2d8c55be",
    "asserts": 21,
    "literals": [
-    "a0dd2ace4e0789ea"
+    "4b288a9aff0d9e11"
    ],
    "precision": [],
    "skips": 0,
@@ -32499,26 +32471,11 @@
     "REQ-938"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
-  },
-  "go:backend/internal/pgingest::TestRcpAServerThatTakesTheRunOverUsesWhatTheRunBeganWithAndRefusesWhatIsDifferent": {
-   "kind": "test",
-   "hash": "7300c67c862da37c",
-   "asserts": 9,
-   "literals": [
-    "ef750b3fd96bbbfc"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-972"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpAStatementThatFailsLeavesTheRunWhereItWasAndWhatIsWrittenIsNotKept": {
    "kind": "test",
-   "hash": "9fe9e7f6a82396d5",
+   "hash": "7cf3b58dd4e83a19",
    "asserts": 20,
    "literals": [
     "1824989d647a02b0"
@@ -32529,11 +32486,11 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpAVolatileValueIsStagedAsAnEntryAndLeftOutOfTheDocument": {
    "kind": "test",
-   "hash": "60d81cdb58b8ab3a",
+   "hash": "db4d02babe6b9b89",
    "asserts": 13,
    "literals": [
     "d83ed768a05afb12"
@@ -32544,14 +32501,14 @@
     "REQ-942"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpTheClaimRuleOfTheExpansionIsNeededForTheObjectsThatHoldAClaimToBeComputed": {
    "kind": "test",
-   "hash": "32e351fd4e9ed3f6",
+   "hash": "5df1091c84c7f4e6",
    "asserts": 10,
    "literals": [
-    "b3762e28a62d3bd4"
+    "ab1e45909768f65b"
    ],
    "precision": [],
    "skips": 0,
@@ -32559,14 +32516,14 @@
     "REQ-935"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpTheComputationIsRefusedBeforeTheExpansionIsDoneAndAPageThatIsNotTheNextOneIsRefused": {
    "kind": "test",
-   "hash": "ea2f75f9655399c1",
+   "hash": "18f312d77bbc7c55",
    "asserts": 19,
    "literals": [
-    "972a5c8651f36a06"
+    "002080c91cafaebd"
    ],
    "precision": [],
    "skips": 0,
@@ -32574,44 +32531,14 @@
     "REQ-937"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
-  },
-  "go:backend/internal/pgingest::TestRcpTheComputationRefusesToBeginTwiceAndToRunOnTablesThatAreNotTheRunsAndAPageAfterTheEnd": {
-   "kind": "test",
-   "hash": "718e9ed439080275",
-   "asserts": 20,
-   "literals": [
-    "2b72ef4bee9e2bd4"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-976"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgingest::TestRcpTheObjectsThatAreTakenBackAreTheSameWhateverThePageSizeIs": {
-   "kind": "test",
-   "hash": "352bd0301e3257df",
-   "asserts": 14,
-   "literals": [
-    "65cbff29f924b332"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpTheObjectsTheRunTouchedAreTheSameWhenEveryRecordIsComputedAndTheOthersAreWhatTheRunBeforeMade": {
    "kind": "test",
-   "hash": "6ed932e7efbd4b09",
+   "hash": "34ae7c631677a650",
    "asserts": 13,
    "literals": [
-    "c5ce524e27273cab"
+    "ef020658962386f2"
    ],
    "precision": [],
    "skips": 0,
@@ -32619,14 +32546,14 @@
     "REQ-935"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpThePageSizeDoesNotChangeWhatIsStaged": {
    "kind": "test",
-   "hash": "2674aa4719c2aa10",
+   "hash": "8e8fb74750ca343d",
    "asserts": 8,
    "literals": [
-    "febc57ef98c45f52"
+    "1fbb61cdf72907fd"
    ],
    "precision": [],
    "skips": 0,
@@ -32634,14 +32561,14 @@
     "REQ-938"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpTheReportIsWhatTheStatementsWroteAndAnObjectWithoutRecordsOrWithOnesThatCannotBeReadIsLeft": {
    "kind": "test",
-   "hash": "df78cb312394db0a",
+   "hash": "b3d8092b95352967",
    "asserts": 25,
    "literals": [
-    "2161c7e6c5461e18"
+    "0dea2f74d4c9ac4c"
    ],
    "precision": [],
    "skips": 0,
@@ -32649,26 +32576,11 @@
     "REQ-940"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
-  },
-  "go:backend/internal/pgingest::TestRcpTheSourceConflictsAreTheOnesTheOldPipelineReportsFromTheSameCaptures": {
-   "kind": "test",
-   "hash": "e83e84167f4f613d",
-   "asserts": 17,
-   "literals": [
-    "dc1d29e1823212e4"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-974"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpTheStagedObjectsAreTheOnesTheOldPipelineMakesFromTheSameCaptures": {
    "kind": "test",
-   "hash": "11e0811e2a67c11c",
+   "hash": "b03748889867ebba",
    "asserts": 11,
    "literals": [
     "4c06b1fad43f758c"
@@ -32679,11 +32591,11 @@
     "REQ-934"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpTwoRecordsOfOneObjectThatSayDifferentThingsHaveOneValueAndTheLosingOneIsAProblem": {
    "kind": "test",
-   "hash": "1c4aa9f44e1de43d",
+   "hash": "202d3f3880beb2b4",
    "asserts": 11,
    "literals": [
     "ebc42adf7058d810"
@@ -32694,7 +32606,7 @@
     "REQ-933"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgingest::TestRcpWhatManyRecordsOfAnObjectShareIsReadOnceSoTheRowsReadGoWithTheNumberOfLines": {
    "kind": "test",
@@ -32707,21 +32619,6 @@
    "skips": 0,
    "reqs": [
     "REQ-936"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgingest::TestRcpWhatTheRunReadsIsTheReferencesThatStandAndOnlyOfTheObjectsThatAreNotCandidatesForRetirement": {
-   "kind": "test",
-   "hash": "4e4bc0d410fcc05f",
-   "asserts": 21,
-   "literals": [
-    "987b3eb915321feb"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-975"
    ],
    "added": "2026-11-26",
    "amended_by": null
@@ -33104,7 +33001,7 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -33195,6 +33092,37 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestExpDiffFromGeneratorEightToNineAddsTheTableOfTheMarksAndTheTableOfTheKeysTheExpansionReadAndAltersNoTable": {
+   "kind": "test",
+   "hash": "3c98102e78c198af",
+   "asserts": 7,
+   "literals": [
+    "4bf9a384eb1cbaa0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-951",
+    "REQ-957"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestExpTheSchemaOfThisBuildHasTheTableOfTheMarksAndTheTableOfTheKeysTheExpansionReadForTheKnowledgeGraph": {
+   "kind": "test",
+   "hash": "c43de8ada0b445bf",
+   "asserts": 4,
+   "literals": [
+    "14d4efd65a464d7d"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-951"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestIdnDiffFromGeneratorSixToSevenAddsTheHeldColumnsTheFeedOfABindTheFourWorkingTablesAndTheirIndexesAndNothingElse": {
@@ -33502,27 +33430,12 @@
    "added": "2026-11-19",
    "amended_by": null
   },
-  "go:backend/internal/pgschema::TestRcpDiffFromGeneratorEightToNineAddsTheTableOfTheObjectsThatWereLeftAndNothingElse": {
-   "kind": "test",
-   "hash": "83131e88ad279382",
-   "asserts": 6,
-   "literals": [
-    "2f2e2ce6fdf4edff"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
   "go:backend/internal/pgschema::TestRcpDiffFromGeneratorSevenToEightAddsTheTwoIndexesOfTheComputationOfTheObjectsAndNothingElse": {
    "kind": "test",
-   "hash": "86deadcc0777f4ff",
-   "asserts": 6,
+   "hash": "7b87aa1d41a32c28",
+   "asserts": 5,
    "literals": [
-    "bdbe30ed6990aa72"
+    "ac3bc8fa5f6d74be"
    ],
    "precision": [],
    "skips": 0,
@@ -33530,7 +33443,7 @@
     "REQ-941"
    ],
    "added": "2026-11-26",
-   "amended_by": "0119-recompute-objects-left-objects-and-limits-after-review.md"
+   "amended_by": "0118-expansion-follow-up-support-mark-and-units-after-review.md"
   },
   "go:backend/internal/pgschema::TestRcpDiffFromGeneratorTwoToEightHasTheStepsOfEveryVersionAfterIt": {
    "kind": "test",
@@ -33558,36 +33471,6 @@
    "skips": 0,
    "reqs": [
     "REQ-941"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgschema::TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList": {
-   "kind": "test",
-   "hash": "89ccd49c1292a0ad",
-   "asserts": 3,
-   "literals": [
-    "74ae00d5835d411a"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-941"
-   ],
-   "added": "2026-11-26",
-   "amended_by": null
-  },
-  "go:backend/internal/pgschema::TestRcpTheTableOfTheObjectsThatWereLeftIsOneOfTheTablesOfTheComputationAndOfANewPlan": {
-   "kind": "test",
-   "hash": "ef5752e64527e7f4",
-   "asserts": 5,
-   "literals": [
-    "465f52ca8d6e4c41"
-   ],
-   "precision": [],
-   "skips": 0,
-   "reqs": [
-    "REQ-971"
    ],
    "added": "2026-11-26",
    "amended_by": null

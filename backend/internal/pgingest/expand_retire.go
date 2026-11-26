@@ -4,22 +4,30 @@ import (
 	"context"
 	"database/sql"
 	"strconv"
+	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
-// Which objects may be retired is decided here and nowhere else (ADR-0114): the expansion marks the candidates (ObjectWhyRetire in
-// calc_object) and the computation of the objects (step 4) makes no row for them and reads only that mark. An object is a candidate when
+// Which objects may be retired is decided here and nowhere else (ADR-0114, ADR-0118): the expansion marks the candidates
+// (ObjectWhyRetire in calc_object) and the computation of the objects (step 4) makes no row for them and reads only that mark. An object
+// is a candidate when
 //
 //  1. no record of the run was bound to it (the identification wrote it to calc_object as ObjectWhyIdentified: a record that is bound to
 //     an object stands under it, and so does a record whose row a rule filters out and whose wait is not over),
 //  2. no record that is not in the run, or that is in it only because it is read again, and that is open, has a reference to it that is
-//     solved: the references of the records that are in the run for the reason that they changed or are closed are not what stands now,
-//     and a record that was set aside by the identification (read by a declaration it was not made by) keeps what it had, and
-//  3. a reference to it that is kept now says that it is retirable: the feed of the record may retire what it makes.
+//     solved and that a feed that makes objects gave: the references of the records that are in the run for the reason that they changed
+//     or are closed are not what stands now, a record that was set aside by the identification (read by a declaration it was not made
+//     by) keeps what it had, and the record of a feed that only adds values does not keep an object (REQ-643). A reference of a feed that
+//     is not known (the source has no plan in the run) is kept as a support: what it stands for is not known, and the object is not
+//     retired for want of knowing, and
+//  3. the object is marked retirable for good (it is in object_retire: a feed that retires made it once), or a reference to it that is
+//     kept now says so.
 //
-// The third is where the old flow and this one differ: that one kept "retirable" for an object for good once a feed that retires saw it,
-// this one reads it of the references there are when the run begins, that is, of the records that stood under the object until now.
+// The third is the old flow's "once on, always on": the mark is of the object, so that an object that two feeds make, only one of which
+// retires, is retired when the last record of the other feed is gone, whichever feed lets go of it first (ADR-0118). The references that
+// are kept (the ones there are when the run begins) say it for the object that was made in a run that has not been applied yet.
+// MarkRetirableObjects writes the mark; the step that applies the run calls it.
 
 // expReplaced is the condition that the record of the reference named by the alias (a row of the references with the key of a record)
 // is a record that the run read again and wrote the references of anew (or ended): what it had does not stand now. The computation of
@@ -38,9 +46,31 @@ func expReplaced(alias string) string {
 // expRetirable is the condition that the object named by the column obj (an expression of the statement) is a candidate for retirement.
 func expRetirable(obj string) string {
 	replaced := expReplaced("s")
+	// the feed of the reference (the number of the feed is the def_no of an identity reference) is known not to make objects
+	valueOnly := "EXISTS (SELECT 1 FROM feeds f WHERE f.src_no = s.src_no AND f.feed_no = s.def_no AND NOT f.creates)"
 	return "(NOT EXISTS (SELECT 1 FROM {objrun} i WHERE i.obj_no = " + obj + " AND i.why = " + whyIdent + ")" +
-		" AND NOT EXISTS (SELECT 1 FROM {rref} s WHERE s.target_no = " + obj + " AND s.role = " + roleIdent + " AND s.state = " + stateFound + " AND NOT " + replaced + ")" +
-		" AND EXISTS (SELECT 1 FROM {rref} t WHERE t.target_no = " + obj + " AND t.role = " + roleIdent + " AND t.retirable))"
+		" AND NOT EXISTS (SELECT 1 FROM {rref} s WHERE s.target_no = " + obj + " AND s.role = " + roleIdent + " AND s.state = " + stateFound + " AND NOT " + replaced + " AND NOT " + valueOnly + ")" +
+		" AND (EXISTS (SELECT 1 FROM {retire} p WHERE p.obj_no = " + obj + ")" +
+		" OR EXISTS (SELECT 1 FROM {rref} t WHERE t.target_no = " + obj + " AND t.role = " + roleIdent + " AND t.retirable)))"
+}
+
+// markRetirableSQL marks the objects that a retirable reference of the run points at (the references the identification wrote,
+// calc_ref), for good.
+const markRetirableSQL = "INSERT INTO {retire} (obj_no) SELECT DISTINCT r.target_no FROM {ref} r JOIN {obj} o ON o.obj_no = r.target_no WHERE r.role = {role} " +
+	"AND r.state = {state} AND r.retirable ON CONFLICT DO NOTHING"
+
+// MarkRetirableObjects puts the mark (a row of object_retire) on every object that a retirable reference of the run points at, and says
+// how many it marked. The step that applies the run calls it in the transaction that writes the registry, after the objects the run made
+// are in it (so that the next run reads the mark). A mark stays: nothing takes it away.
+func MarkRetirableObjects(ctx context.Context, tx *sql.Tx, kgNo int64) (int, error) {
+	q := strings.NewReplacer("{retire}", pgschema.TableRef(kgNo, pgschema.TableObjectRetire), "{obj}", pgschema.TableRef(kgNo, pgschema.TableObject), "{ref}", pgschema.TableRef(kgNo, pgschema.TableCalcRef),
+		"{role}", roleIdent, "{state}", stateFound).Replace(markRetirableSQL)
+	res, err := tx.ExecContext(ctx, q)
+	if err != nil {
+		return 0, dbErr(err, "mark the objects that may be retired")
+	}
+	n, _ := res.RowsAffected()
+	return int(n), nil
 }
 
 // retireOutSQL and retireInSQL are the records that made the links that start (or end) at an object to retire: the objects go with their
