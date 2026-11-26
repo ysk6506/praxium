@@ -68,7 +68,8 @@ func TestRcpTheTableOfTheObjectsThatWereLeftIsOneOfTheTablesOfTheComputationAndO
 // [REQ-941]
 func TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList(t *testing.T) {
 	owned := pgschema.StepFourProblemKinds()
-	if !slices.Equal(owned, []string{pgschema.ProblemSourceConflict}) {
+	// the objects' side gives source_conflict, and the links' side (ADR-0122) the two kinds of the ends it writes
+	if !slices.Equal(owned, []string{pgschema.ProblemSourceConflict, pgschema.ProblemLinkTarget, pgschema.ProblemLinkAmbiguous}) {
 		t.Errorf("the fourth step owns %v", owned)
 	}
 	for _, kind := range owned {
@@ -76,7 +77,7 @@ func TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneO
 			t.Errorf("%s is not in the closed list", kind)
 		}
 	}
-	for _, kind := range []string{pgschema.ProblemLinkTarget, pgschema.ProblemLinkAmbiguous, pgschema.ProblemCardinality} {
+	for _, kind := range []string{pgschema.ProblemCardinality} {
 		if slices.Contains(owned, kind) {
 			t.Errorf("%s is owned by the fourth step, which does not write it", kind)
 		}
