@@ -15,6 +15,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	9:  func(schema string, _ Manifest) ([]Step, error) { return expandSteps(schema), nil },
 	10: func(schema string, _ Manifest) ([]Step, error) { return leftSteps(schema), nil },
 	11: func(schema string, _ Manifest) ([]Step, error) { return modelTableSteps(schema), nil },
+	12: func(schema string, _ Manifest) ([]Step, error) { return linkSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -181,6 +182,28 @@ func leftSteps(schema string) []Step {
 	return []Step{{Phase: InTx, What: WhatTable, Name: TableCalcLeft,
 		SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
 			strings.Replace(leftTableDef().sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"}}
+}
+
+// linkSteps is what generator version 12 adds (ADR-0122): the three tables of the computation of the links and the indexes they and the
+// ends of the computation are read by, and the kind of problem link_conflict for the two tables of problems. The tables and the indexes
+// are made beside the others (a table that a reader may have open is not altered). The two tables of problems are not read by a reader
+// (the query schema has no view of them), and their check of the kind is the closed list: the step takes the check and puts it back
+// with the new word, not validated again (it holds for the rows that are written from now on, and no row of a kind it did not allow is
+// there), so that it does not read the table. A schema made by this build has all of it already, so each step is made to be run twice,
+// and a schema that has no such table is left as it is.
+func linkSteps(schema string) []Step {
+	var steps []Step
+	for _, d := range linkTableDefs() {
+		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
+				strings.Replace(d.sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"})
+	}
+	for _, d := range linkIndexDefs() {
+		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, d.Table) + "') IS NOT NULL THEN " +
+				createIfNotExists(d.sql(schema, false)) + "; END IF; END $$"})
+	}
+	return steps
 }
 
 // createIfNotExists is the statement of an index made to be run again.

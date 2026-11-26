@@ -52,6 +52,15 @@ const (
 	// ADR-0119): why, how many lines it had and what the reason is. An object the KG has is left as it is; one the run would have
 	// made is not made, and what pointed at it is taken back.
 	TableCalcLeft = "calc_left"
+	// TableCalcToKey has a row for each link end key (source, link definition, key hash) that the ends of the From side of the run
+	// were resolved by: how many objects the To side has for it (none, one, or more than one) and one of them. The To records that
+	// share a key are read once, whatever the number of the From records that look for it (generator version 12, ADR-0122).
+	TableCalcToKey = "calc_tokey"
+	// TableCalcLinkWin has a row for each link the run makes: the record whose end made it (the one that wins when several make it),
+	// the number it has and what the later steps need to say why another record lost. TableCalcLinkLost has the records that lost, in
+	// the same columns (generator version 12, ADR-0122).
+	TableCalcLinkWin  = "calc_linkwin"
+	TableCalcLinkLost = "calc_linklost"
 	// TableCalcOwner holds the number of the run that the tables of the computation are of (one row, written when the computation
 	// begins, emptied with the others): the tables are one set per KG, so a run that comes back to the KG after another source
 	// began its computation finds that they are not its own (ADR-0102).
@@ -151,6 +160,12 @@ const (
 	ColLines       = "lines"
 	ColKeyNo       = "key_no"
 	ColKeyHash     = "key_hash"
+	ColTargets     = "targets"
+	ColSig         = "sig"
+	ColShown       = "shown"
+	ColLeft        = "left_cells"
+	ColLinkName    = "link_name"
+	ColDefID       = "def_id"
 )
 
 // The codes of the small enumerations the ingestion tables keep as numbers, where a table has many rows.
@@ -271,12 +286,14 @@ func ProblemKinds() []string {
 // StepFourProblemKinds lists the kinds of problem that the fourth step (the new computation of the objects and the links) owns: the
 // problems of a record that the step gives again for every record it reads again, the records that were read again only because they
 // feed an object that is computed again included. The kinds of the receiving and of the identification are given for the records that
-// changed alone. It is the kinds the step writes now: the objects' side is source_conflict. The kinds of the links (link_target_missing,
-// link_target_ambiguous, cardinality) are added by the step that makes the links. The problems of the records under an object that was
-// left (shape_changed, missing_name, identity_conflict, context_parent_missing) are of the records of the run and are the ones of
-// their own steps' kinds, so they are not owned here.
+// changed alone. It is the kinds the step writes: the objects' side gives source_conflict, the links' side gives link_target_missing and
+// link_target_ambiguous, and source_conflict for a link that two records make with other attributes (ADR-0122: no kind is added, as in
+// ADR-0119). cardinality is the fifth step's (it holds back a link that would give an object a
+// second one of a link type that allows one), so it is not owned here. The problems of the records under an object that was left
+// (shape_changed, missing_name, identity_conflict, context_parent_missing) are of the records of the run and are the ones of their own
+// steps' kinds, so they are not owned here.
 func StepFourProblemKinds() []string {
-	return []string{ProblemSourceConflict}
+	return []string{ProblemSourceConflict, ProblemLinkTarget, ProblemLinkAmbiguous}
 }
 
 // The stages of a run and how it ended (sync_run.stage). The first group is the work of a run; the second is how it
@@ -338,7 +355,7 @@ func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcOwner, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
 		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableCalcXKey, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
-		TableCalcProblem, TableCalcRef, TableCalcLeft, TableIngestDiff,
+		TableCalcProblem, TableCalcRef, TableCalcLeft, TableCalcToKey, TableCalcLinkWin, TableCalcLinkLost, TableIngestDiff,
 	}
 }
 

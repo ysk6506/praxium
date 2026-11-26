@@ -120,6 +120,7 @@ func computeTableDefs() []tableDef {
 	defs = append(defs, identifyTableDefs()...)
 	defs = append(defs, expandTableDefs()...)
 	defs = append(defs, computeResultDefs()...)
+	defs = append(defs, linkTableDefs()...)
 	return append(defs, ingestDiffDef())
 }
 
@@ -258,6 +259,30 @@ func computeResultDefs() []tableDef {
 	}
 }
 
+// linkTableDefs are the tables the computation of the links makes beside the others (generator version 12, ADR-0122). calc_tokey is the
+// count of the objects the To side has for a link end key (targets is 0, 1, or 2 for more than one, and obj_no is one of them), made once
+// for each key. calc_linkwin has a row for each link the run makes, and calc_linklost one for each record whose end made a link that
+// another record's end made too and that was not used: both have the record (rid), the place of it in the order that decides which of
+// them is used (src_no, def_no, held, dataset_no, key) and what a problem about the other attributes says.
+func linkTableDefs() []tableDef {
+	who := func(extra ...string) []string {
+		cols := []string{
+			col(ColRef, typeKeyText), col(ColRid, typeBig), col(ColDefNo, "integer NOT NULL"), col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt),
+			col(ColKey, typeKeyText), col(ColHeld, "boolean NOT NULL"), col(ColSig, "text NOT NULL"), col(ColShown, "text NOT NULL"),
+			col(ColLinkName, "text NOT NULL"), col(ColDefID, "text NOT NULL"), col(ColDatasetID, "text NOT NULL"),
+		}
+		return append(cols, extra...)
+	}
+	return []tableDef{
+		{Name: TableCalcToKey, Cols: []string{
+			col(ColSrcNo, typeSrc), col(ColDefNo, "integer NOT NULL"), col(ColLookupHash, typeHash16), col(ColTargets, typeSmall), col(ColObjNo, "bigint"),
+			"PRIMARY KEY (" + ColSrcNo + ", " + ColDefNo + ", " + ColLookupHash + ")",
+		}},
+		{Name: TableCalcLinkWin, Cols: who(col(ColLinkNo, typeBig), col(ColLeft, "jsonb NOT NULL DEFAULT '[]'"), "PRIMARY KEY ("+ColRef+")")},
+		{Name: TableCalcLinkLost, Cols: who()},
+	}
+}
+
 // leftTableDef is the table of the objects the computation of the objects left (generator version 10, ADR-0119): the object, why (Left*),
 // how many lines it had (for one that has more than the limit, the number counted up to the limit and one more), whether it is one the
 // run would have made, and the reason as a person reads it. A table of its own, so that the tables of the KG that readers have open
@@ -300,7 +325,17 @@ func ingestIndexDefs() []indexDef {
 		// takes the last row of a key by the place.
 		stageRecordKeyIndex(),
 	}
-	return append(append(out, identifyIndexDefs()...), recomputeIndexDefs()...)
+	return append(append(append(out, identifyIndexDefs()...), recomputeIndexDefs()...), linkIndexDefs()...)
+}
+
+// linkIndexDefs are the indexes the computation of the links reads by (generator version 12, ADR-0122): the ends of the run by their
+// side, the link definition and the key (the order the ends are read in, a page after another, and how the ends that have a key are found
+// without reading the others), and the records that lost a link by the link.
+func linkIndexDefs() []indexDef {
+	return []indexDef{
+		{Name: "calc_end_key", Table: TableCalcEnd, Expr: strings.Join([]string{ColSide, ColDefNo, ColLookupHash, ColRid}, ", ")},
+		{Name: "calc_linklost_ref", Table: TableCalcLinkLost, Expr: ColRef},
+	}
 }
 
 // recomputeIndexDefs are the indexes the computation of the objects reads by (generator version 8, ADR-0115): from an object to the
