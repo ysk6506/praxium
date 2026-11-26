@@ -153,7 +153,7 @@ func (r *identRun) decideSteps(pl string) []unitStep {
 		{"bind the records that are known", "WITH " + pl + " INSERT INTO {bind} (rid, feed_no, key_ord, obj_no, is_new, round_no) " +
 			"SELECT DISTINCT ON (s.pid) s.rid, s.feed_no, s.key_ord, s.found_no, false, {R} FROM ps s WHERE s.found_no IS NOT NULL ORDER BY s.pid, s.key_ord", nil, false},
 		{"report the keys that stand for another object", "WITH " + pl + " INSERT INTO {prob} (rid, def_no, field, kind, reason) " +
-			"SELECT s.rid, s.feed_no, '', '" + conflict + "', (count(DISTINCT s.found_no) - 1) || ' key(s) of the record stand for other objects than the one it is' " +
+			"SELECT s.rid, " + pgschema.ProblemDefFeedSQL("s.feed_no") + ", '', '" + conflict + "', (count(DISTINCT s.found_no) - 1) || ' key(s) of the record stand for other objects than the one it is' " +
 			"FROM ps s WHERE s.found_no IS NOT NULL GROUP BY s.rid, s.feed_no HAVING count(DISTINCT s.found_no) > 1", nil, false},
 		// a group the index knows nothing of is a new object whose id is the candidate of its key
 		{"make the new objects", "WITH {feeds}, " + pl + ", " + groupsSQL + ", ex AS (SELECT w.label, w.rid, w.feed_no, w.key_ord, w.type_no, w.cand_ref AS ref, o.obj_no AS reg " +
@@ -211,6 +211,6 @@ func (r *identRun) unboundSQL(pl string) string {
 	return "WITH " + pl + ", u AS (SELECT DISTINCT s.rid, s.feed_no FROM ps s" + unboundOf("s", "hb") +
 		absent("{ask}", "ha", "x.round_no = {R} AND x.label = s.label AND x.answer = false") + " WHERE hb.hit IS NULL AND ha.hit IS NULL), " +
 		"r AS (" + refUnresolved("u") + " RETURNING 1) " +
-		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', '" + pgschema.ProblemIdentityConflict +
+		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, " + pgschema.ProblemDefFeedSQL("feed_no") + ", '', '" + pgschema.ProblemIdentityConflict +
 		"', 'no object could be told for this record: every key it gives stands for more than one object' FROM u"
 }

@@ -28,6 +28,9 @@ amends_tests:
   - go:backend/internal/pgschema::TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList
 test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. (1) TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 11에서 12로 바꾼다(이 결정 9). (2) TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList는 4단계가 가진 종류의 목록을 정확히 견주는 단언이라 목록에 link_target_missing과 link_target_ambiguous가 들어가고(결정 8, 같은 상수), 그 둘이 "4단계가 아직 쓰지 않는 종류"의 목록에서 빠진다. 견주는 쪽은 여전히 목록 전체를 정확히 같게 단언하고, 쓰지 않는 종류로 남은 cardinality는 그대로 가진 것이 아니라고 단언한다.
 decision_hash: bac7ee57e748a7ec
+amended_by:
+  - adr: "0128"
+    what: 링크 쪽 문제가 남기는 정의 번호(링크 정의는 -(n+1))
 ---
 # ADR-0122 새 수집 흐름 4단계의 링크 쪽
 

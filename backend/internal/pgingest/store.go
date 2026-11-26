@@ -51,6 +51,8 @@ type Store struct {
 	isoSeen identObserver
 	// diffSeen is the same for the difference of the fifth step (ADR-0127); it is nil in the code that runs.
 	diffSeen identObserver
+	// stlSeen is the same for the cleaning (ADR-0128); it is nil in the code that runs.
+	stlSeen identObserver
 }
 
 var _ ingest.RunLedger = (*Store)(nil)

@@ -123,7 +123,7 @@ var (
 	// from the conflicts of the objects) says, of the records that made a link (the one used and the ones that lost, in the order that decides), that a record
 	// whose next one made the link with other attributes made it with other attributes (the attributes are compared as the old flow did, and
 	// a record that a rule filtered out is not told). The links are the ones of the range ($1, $2].
-	rclConflictsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT y.rid, y.def_no, '', 'source_conflict', 'the link ' || y.link_name || ' from ' || COALESCE(a.name, ao.name, '') || " +
+	rclConflictsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT y.rid, {DEFY}, '', 'source_conflict', 'the link ' || y.link_name || ' from ' || COALESCE(a.name, ao.name, '') || " +
 		"' to ' || COALESCE(b.name, bo.name, '') || ' is made again by ' || y.n_def_id || ' (dataset ' || y.n_dataset_id || ', row ' || replace(y.n_key, chr(31), '|') || ') with other attributes: ' || " +
 		"y.shown || ' here, ' || y.n_shown || ' there; the later one is used and the attributes are not merged' FROM (" +
 		"SELECT x.ref, x.rid, x.def_no, x.held, x.sig, x.shown, x.link_name, lead(x.held) OVER w AS n_held, lead(x.sig) OVER w AS n_sig, lead(x.shown) OVER w AS n_shown, " +
@@ -137,6 +137,6 @@ var (
 
 	// rclCellsSQL says, for the links of the range ($1, $2], the cells of the record that is used that gave no value (the record's cells are
 	// the ones a link's attributes are read from).
-	rclCellsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT w.rid, w.def_no, '', 'invalid_value', l.reason FROM {win} w " +
+	rclCellsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT w.rid, {DEFW}, '', 'invalid_value', l.reason FROM {win} w " +
 		"CROSS JOIN LATERAL jsonb_array_elements_text(w.left_cells) AS l(reason) WHERE w.ref > $1 AND w.ref <= $2 AND NOT w.held"
 )

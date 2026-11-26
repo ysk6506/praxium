@@ -265,6 +265,8 @@ func (r *rclRun) q(query string) string {
 		"{stobj}", r.t(pgschema.TableStageObject), "{prob}", r.t(pgschema.TableCalcProblem), "{ds}", pgschema.TableSourceDataset, "{defs}", r.defs(),
 		"{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)), "{FROM}", strconv.Itoa(int(pgschema.RefRoleLinkFrom)), "{TO}", strconv.Itoa(int(pgschema.RefRoleLinkTo)), "{IDENT}", roleIdent,
 		"{RES}", strconv.Itoa(int(pgschema.RefResolved)), "{UNRES}", strconv.Itoa(int(pgschema.RefUnresolved)), "{HELD}", strconv.Itoa(int(pgschema.RefHeld)),
+		// a problem of a link keeps the number of its definition as a link definition's (ADR-0128)
+		"{DEFY}", pgschema.ProblemDefLinkSQL("y.def_no"), "{DEFW}", pgschema.ProblemDefLinkSQL("w.def_no"),
 	).Replace(query)
 }
 

@@ -33,7 +33,7 @@ func (r *identRun) lookup(ctx context.Context, tx *sql.Tx) error {
 		"nb AS (SELECT rid, feed_no, bool_or(held) AS held, bool_or(creates) AS creates FROM fk GROUP BY rid, feed_no HAVING bool_or(found IS NOT NULL) = false), " +
 		"ir AS (INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT rid, " + none + ", feed_no, 0, NULL, NULL, " +
 		"CASE WHEN held THEN " + strconv.Itoa(int(pgschema.RefHeld)) + " ELSE " + strconv.Itoa(int(pgschema.RefUnresolved)) + " END, false FROM nb RETURNING 1), " +
-		"ip AS (INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', '" + pgschema.ProblemOrphanValue + "', 'no object of the type has this identity' FROM nb WHERE NOT held AND NOT creates RETURNING 1) " +
+		"ip AS (INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, " + pgschema.ProblemDefFeedSQL("feed_no") + ", '', '" + pgschema.ProblemOrphanValue + "', 'no object of the type has this identity' FROM nb WHERE NOT held AND NOT creates RETURNING 1) " +
 		"SELECT count(*) FROM ir"
 	n, err := r.scanInt(ctx, tx, "find the objects of the records that make none", r.q(query), st.Cur, hi)
 	if err != nil {
@@ -104,7 +104,7 @@ func (r *identRun) claimsSQL(cond string) string {
 		"ins AS (INSERT INTO {ref} (rid, role, def_no, sub, lookup_hash, target_no, state, retirable) SELECT cl.rid, " + strconv.Itoa(int(pgschema.RefRoleClaim)) + ", cl.scheme_no, cl.feed_no, cl.value_hash, cl.obj_no, " +
 		"CASE WHEN cl.obj_no = win.obj_no THEN " + strconv.Itoa(int(pgschema.RefResolved)) + " ELSE " + strconv.Itoa(int(pgschema.RefLostClaim)) + " END, false " +
 		"FROM cl JOIN win ON win.scheme_no = cl.scheme_no AND win.value_hash = cl.value_hash RETURNING rid, sub, state) " +
-		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, sub, '', '" + pgschema.ProblemIdentityConflict + "', 'an identifier of the record already names another object' FROM ins WHERE state = " + strconv.Itoa(int(pgschema.RefLostClaim))
+		"INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, " + pgschema.ProblemDefFeedSQL("sub") + ", '', '" + pgschema.ProblemIdentityConflict + "', 'an identifier of the record already names another object' FROM ins WHERE state = " + strconv.Itoa(int(pgschema.RefLostClaim))
 }
 
 // finish ends the identification, a range of the records at a time: the records that no key could bind are references that are not
@@ -123,7 +123,7 @@ func (r *identRun) finish(ctx context.Context, tx *sql.Tx) error {
 			" JOIN feeds f ON f.src_no = rc.src_no AND f.feed_no = k.feed_no AND f.creates" +
 			absent("{bind}", "hb", "x.rid = k.rid AND x.feed_no = k.feed_no") + absent("{ref}", "hr", "x.rid = k.rid AND x.def_no = k.feed_no AND x.role = "+id) +
 			" WHERE NOT k.held AND k.rid > $1 AND k.rid <= $2 AND hb.hit IS NULL AND hr.hit IS NULL GROUP BY k.rid, k.feed_no), " +
-			"r AS (" + refUnresolved("p") + " RETURNING 1) INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, feed_no, '', " +
+			"r AS (" + refUnresolved("p") + " RETURNING 1) INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT rid, " + pgschema.ProblemDefFeedSQL("feed_no") + ", '', " +
 			"CASE WHEN ctx THEN '" + pgschema.ProblemContextParent + "' ELSE '" + pgschema.ProblemIdentityConflict + "' END, " +
 			"CASE WHEN ctx THEN 'the parent of this record is not found, so its key cannot be told' ELSE 'no key of this record could be bound to an object' END FROM p",
 			[]*int{&st.Counts.Unresolved}, false},

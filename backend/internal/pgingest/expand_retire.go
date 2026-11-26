@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"strconv"
-	"strings"
 
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
@@ -29,7 +28,8 @@ import (
 // The third is the old flow's "once on, always on": the mark is of the object, so that an object that two feeds make, only one of which
 // retires, is retired when the last record of the other feed is gone, whichever feed lets go of it first (ADR-0118). The references that
 // are kept (the ones there are when the run begins) say it for the object that was made in a run that has not been applied yet.
-// MarkRetirableObjects writes the mark; the step that applies the run calls it.
+// The apply of each chunk writes the mark of the objects of the chunk and takes it away from the ones it retires (pgschema, ADR-0128);
+// MarkRetirableObjects writes it for the whole run.
 //
 // The identification puts every object a record of the run is bound to in calc_object (ObjectWhyIdentified), whatever the feed of the
 // record, and an object is in the table once. So an object that only records of feeds that add values were bound to is judged too: the
@@ -64,18 +64,12 @@ func expRetirable(obj string) string {
 		" OR EXISTS (SELECT 1 FROM {rref} t WHERE t.target_no = " + obj + " AND t.role = " + roleIdent + " AND t.retirable)))"
 }
 
-// markRetirableSQL marks the objects that a retirable reference of the run points at (the references the identification wrote,
-// calc_ref), for good.
-const markRetirableSQL = "INSERT INTO {retire} (obj_no) SELECT DISTINCT r.target_no FROM {ref} r JOIN {obj} o ON o.obj_no = r.target_no WHERE r.role = {role} " +
-	"AND r.state = {state} AND r.retirable ON CONFLICT DO NOTHING"
-
-// MarkRetirableObjects puts the mark (a row of object_retire) on every object that a retirable reference of the run points at, and says
-// how many it marked. The step that applies the run calls it in the transaction that writes the registry, after the objects the run made
-// are in it (so that the next run reads the mark). A mark stays: nothing takes it away.
+// MarkRetirableObjects puts the mark (a row of object_retire) on every object of the registry that a retirable reference of the run (the
+// references the identification wrote, calc_ref) points at, and says how many it marked. The statement is pgschema's, which the apply of a
+// chunk shares (ADR-0128): the apply marks the objects of each chunk after it writes the registry and takes the mark of an object it
+// retires away in the same transaction, so a mark lasts until the object is retired.
 func MarkRetirableObjects(ctx context.Context, tx *sql.Tx, kgNo int64) (int, error) {
-	q := strings.NewReplacer("{retire}", pgschema.TableRef(kgNo, pgschema.TableObjectRetire), "{obj}", pgschema.TableRef(kgNo, pgschema.TableObject), "{ref}", pgschema.TableRef(kgNo, pgschema.TableCalcRef),
-		"{role}", roleIdent, "{state}", stateFound).Replace(markRetirableSQL)
-	res, err := tx.ExecContext(ctx, q)
+	res, err := tx.ExecContext(ctx, pgschema.MarkRetirableSQL(pgschema.SchemaName(kgNo)))
 	if err != nil {
 		return 0, dbErr(err, "mark the objects that may be retired")
 	}
