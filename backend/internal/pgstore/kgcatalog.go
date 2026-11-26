@@ -48,7 +48,8 @@ func scanCatalog(sc scanner) (catalogRow, error) {
 
 // CreateKG implements graph.Catalog: the row of the list, the storage schema made from the model, and the control
 // rows of the KG (generation 1, an empty head, a lease row nobody holds), all in one transaction. A KG that was
-// not made leaves nothing behind.
+// not made leaves nothing behind. A KG that is being deleted and has the id, the name or the production role of the
+// new one is deleted to the end first (ADR-0125).
 func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
 		return graph.KG{}, kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
@@ -63,6 +64,9 @@ func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 	}
 	sh, err := s.rt.locate(kg.ID)
 	if err != nil {
+		return graph.KG{}, err
+	}
+	if err := s.endClashingDeletes(ctx, sh, kg); err != nil {
 		return graph.KG{}, err
 	}
 	err = locked(ctx, sh, kg.ID, func(tx *sql.Tx) error { return createKGInTx(ctx, tx, kg, m) })
@@ -123,42 +127,6 @@ func createKGInTx(ctx context.Context, tx *sql.Tx, kg graph.KG, m SchemaModel) e
 	return nil
 }
 
-// DeleteKG deletes a KG: its storage schema with everything in it, its state record and its row of the list, in
-// one transaction. A KG that is not there is graph.CodeKGNotFound. The number of the KG is not given again.
-func (s *Store) DeleteKG(ctx context.Context, kg graph.KGID) error {
-	sh, err := s.rt.locate(kg)
-	if err != nil {
-		return err
-	}
-	defer s.forget(kg)
-	if err := s.detachSources(ctx, sh, kg); err != nil {
-		return err
-	}
-	return locked(ctx, sh, kg, func(tx *sql.Tx) error {
-		rec, found, err := readRecord(ctx, tx, kg)
-		if err != nil {
-			return err
-		}
-		res, err := tx.ExecContext(ctx, `DELETE FROM kg_catalog WHERE kg_id = $1`, kg.String())
-		if err != nil {
-			return dbErr(err, "delete the KG from the list")
-		}
-		if n, _ := res.RowsAffected(); n == 0 && !found {
-			return kernel.Errorf(graph.CodeKGNotFound, "no KG %q", kg)
-		}
-		if !found {
-			return nil
-		}
-		if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
-			return err
-		}
-		if _, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(rec.Schema())+` CASCADE`); err != nil {
-			return dbErr(err, "drop the storage schema")
-		}
-		return dropStateRows(ctx, tx, kg)
-	})
-}
-
 // kgOf is the KG of a row of the list with the state and the generation of its head.
 func (s *Store) kgOf(ctx context.Context, a *kgAccess) (graph.KG, error) {
 	var h kgHeadRow
@@ -179,8 +147,8 @@ func (s *Store) GetKG(ctx context.Context, ref string) (graph.KG, error) {
 	for _, sh := range s.rt.all() {
 		var id string
 		err := sh.tx(ctx, RoleAPIRead, true, func(tx *sql.Tx) error {
-			return tx.QueryRowContext(ctx, `SELECT kg_id FROM kg_catalog WHERE kg_id = $1 OR name = $1 OR ($1 = 'main' AND role = 'production')
-				ORDER BY kg_no LIMIT 1`, ref).Scan(&id)
+			return tx.QueryRowContext(ctx, `SELECT kg_id FROM kg_catalog c WHERE (kg_id = $1 OR name = $1 OR ($1 = 'main' AND role = 'production'))
+				AND NOT EXISTS (SELECT 1 FROM kg_deleting d WHERE d.kg_id = c.kg_id) ORDER BY kg_no LIMIT 1`, ref).Scan(&id)
 		})
 		if isNoRows(err) {
 			continue
@@ -201,13 +169,15 @@ func (s *Store) GetKG(ctx context.Context, ref string) (graph.KG, error) {
 	return graph.KG{}, kernel.Errorf(graph.CodeKGNotFound, "no KG %q", ref)
 }
 
-// ListKGs implements graph.Catalog: the KGs in the order they were created.
+// ListKGs implements graph.Catalog: the KGs in the order they were created. A KG that is being deleted is not in it
+// (ADR-0125): it is closed to reads and writes and goes when its delete ends.
 func (s *Store) ListKGs(ctx context.Context) ([]graph.KG, error) {
 	var out []graph.KG
 	for _, sh := range s.rt.all() {
 		var ids []graph.KGID
 		err := sh.tx(ctx, RoleAPIRead, true, func(tx *sql.Tx) error {
-			rows, err := tx.QueryContext(ctx, `SELECT kg_id FROM kg_catalog ORDER BY kg_no`)
+			rows, err := tx.QueryContext(ctx, `SELECT kg_id FROM kg_catalog c WHERE NOT EXISTS (SELECT 1 FROM kg_deleting d WHERE d.kg_id = c.kg_id)
+				ORDER BY kg_no`)
 			if err != nil {
 				return dbErr(err, "list the KGs")
 			}
@@ -243,7 +213,7 @@ func (s *Store) ListKGs(ctx context.Context) ([]graph.KG, error) {
 	return out, nil
 }
 
-// Generations implements graph.Catalog.
+// Generations implements graph.Catalog. A KG that is being deleted is not found (ADR-0125).
 func (s *Store) Generations(ctx context.Context, id graph.KGID) ([]graph.GenerationEvent, error) {
 	a, err := s.access(ctx, id)
 	if err != nil {
@@ -251,6 +221,13 @@ func (s *Store) Generations(ctx context.Context, id graph.KGID) ([]graph.Generat
 	}
 	var out []graph.GenerationEvent
 	err = a.sh.tx(ctx, RoleAPIRead, true, func(tx *sql.Tx) error {
+		var deleting bool
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM kg_deleting WHERE kg_id = $1)`, id.String()).Scan(&deleting); err != nil {
+			return dbErr(err, "look for the mark of a KG being deleted")
+		}
+		if deleting {
+			return errKGDeleting(id)
+		}
 		rows, err := tx.QueryContext(ctx, `SELECT generation, restored_to_seq, at FROM `+a.t(pgschema.TableGenerationEvent)+` ORDER BY generation`)
 		if err != nil {
 			return dbErr(err, "list the generations")
