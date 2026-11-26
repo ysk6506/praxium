@@ -146,7 +146,7 @@ func (r *stlRun) waitsBucket(ctx context.Context, tx *sql.Tx) (bool, error) {
 // source writes what the source keeps of the run (⑤): the definition set it applied, and the time of the run for every dataset the run
 // read whole. The capture hash stays as it is: the receiving reads a source by pages and makes none.
 func (r *stlRun) source(ctx context.Context, tx *sql.Tx) error {
-	if _, err := r.exec(ctx, tx, "write the definition set the source applied", "UPDATE "+pgschema.TableSourceState+" SET applied_definition_set = $2 WHERE "+
+	if _, err := r.exec(ctx, tx, "write the definition set the source applied", "UPDATE "+pgschema.TableSourceState+" AS s SET applied_definition_set = $2 WHERE s."+
 		pgschema.ColSrcNo+" = $1", r.srcNo, r.defSet); err != nil {
 		return err
 	}
@@ -156,8 +156,8 @@ func (r *stlRun) source(ctx context.Context, tx *sql.Tx) error {
 			complete = append(complete, strconv.FormatInt(d.DatasetNo, 10))
 		}
 	}
-	n, err := r.exec(ctx, tx, "write the time of the datasets read whole", "UPDATE "+pgschema.TableSourceDataset+" SET captured_at = $2::timestamptz WHERE "+
-		pgschema.ColSrcNo+" = $3 AND "+pgschema.ColDatasetNo+" = ANY($1::text::int[])", textArray(complete), r.at, r.srcNo)
+	n, err := r.exec(ctx, tx, "write the time of the datasets read whole", "UPDATE "+pgschema.TableSourceDataset+" AS d SET captured_at = $2::timestamptz WHERE d."+
+		pgschema.ColSrcNo+" = $3 AND d."+pgschema.ColDatasetNo+" = ANY($1::text::int[])", textArray(complete), r.at, r.srcNo)
 	r.st.Counts.DatasetsMarked += n
 	return err
 }
