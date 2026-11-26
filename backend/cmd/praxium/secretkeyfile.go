@@ -93,6 +93,59 @@ func (k *fileKeys) checkOutside(keyPath string) error {
 	}
 }
 
+// keyPath is the one clean absolute path of a key file, outside the data folder. A key file the person named
+// (-secrets-key-file) may be a link, and that one link is followed (followNamedLink, ADR-0132); a key file in its
+// default place is never followed, so a link there is refused when it is read.
+func (k *fileKeys) keyPath(raw string) (string, error) {
+	path, err := normalizePath(raw)
+	if err != nil {
+		return "", err
+	}
+	if err := k.checkOutside(path); err != nil {
+		return "", err
+	}
+	if k.loc.keyFile == "" {
+		return path, nil
+	}
+	return k.followNamedLink(path)
+}
+
+// followNamedLink follows a named key file that is a link, as the volume of secrets of an orchestrator gives every file:
+// one link, whose target is outside the data folder and is not a link itself (the folders on its way are resolved as
+// in any path). The target is then read as every key file is: a plain file that only its owner can read. A key is never
+// made through a link, so a link whose target is not there is refused.
+func (k *fileKeys) followNamedLink(path string) (string, error) {
+	info, err := os.Lstat(path)
+	if err != nil || info.Mode()&os.ModeSymlink == 0 {
+		return path, nil
+	}
+	// A link that is gone since it was looked at reads as "", which is the folder of the link: no key file, refused
+	// when it is read.
+	dest, _ := os.Readlink(path)
+	if !filepath.IsAbs(dest) {
+		dest = filepath.Dir(path) + string(filepath.Separator) + dest
+	}
+	target, err := normalizePath(dest)
+	if err != nil {
+		return "", err
+	}
+	if err := k.checkOutside(target); err != nil {
+		return "", err
+	}
+	tinfo, err := os.Lstat(target)
+	switch {
+	case err != nil && isNotExist(err):
+		return "", kernel.Errorf(secrets.CodeMasterKeyMissing,
+			"the key file %s is a link to %s, which is not there; a key is never made through a link: put the key file there, or name the file itself with -secrets-key-file", path, target)
+	case err != nil:
+		return "", kernel.Wrap(secrets.CodeMasterKeyInvalid, err, "cannot look at "+target)
+	case tinfo.Mode()&os.ModeSymlink != 0:
+		return "", kernel.Errorf(secrets.CodeMasterKeyInvalid,
+			"the key file %s is a link to another link (%s); only one link is followed: name the key file itself, or one link to it", path, target)
+	}
+	return target, nil
+}
+
 // readMasterKey reads a key file that only its owner may read. A file that is not there is an error that is
 // fs.ErrNotExist; every other trouble is the code of a key that cannot be used.
 func readMasterKey(path string) (*secrets.MasterKey, error) {

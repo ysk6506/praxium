@@ -17,7 +17,7 @@ import (
 // data folder and look at them, without a server. A value is never an argument of a command: it comes from a file
 // (-field <name>=<file>) or from the standard input, so it is in no list of processes and no shell history.
 
-const secretUsage = "usage: praxium secret put|rotate|list|show|retire|delete|set-scope|set-hosts|webhook-issue|webhook-rotate|webhook-retire|webhook-delete ..."
+const secretUsage = "usage: praxium secret put|rotate|list|show|retire|delete|set-scope|set-hosts|keygen|webhook-issue|webhook-rotate|webhook-retire|webhook-delete ..."
 
 const secretBody = `Secrets for the sources: the passwords and tokens that Praxium needs to read your databases and APIs. They are kept in the
 data folder (secrets.json) encrypted, and the key that opens them is a file of its own outside the data folder.
@@ -29,6 +29,7 @@ data folder (secrets.json) encrypted, and the key that opens them is a file of i
   delete      delete a secret with all its versions
   set-scope   replace the sources that may use a secret
   set-hosts   replace the addresses (host:port) a secret may be used for
+  keygen      make the master key file alone, before any secret (to put it where the server reads it)
   webhook-issue, webhook-rotate, webhook-retire, webhook-delete   the secrets of the receiving webhooks, which the server makes (praxium secret webhook-issue --help)
 
 A value is written and never read back: no command shows it. It is never an argument either, so it does not end up in
@@ -43,6 +44,9 @@ The master key: a file that is made the first time you put a secret in. Without 
 <your configuration folder>/praxium/keys/<identifier of the data folder>.key (the identifier is in the file FOLDER_ID of the
 data folder, so a data folder that is moved finds its key). It is never inside the data folder. Keep a copy of it
 somewhere safe: secrets cannot be opened without it. A secret whose key is lost can be deleted and put in again.
+"praxium secret keygen" makes the file before any secret. A file named with -secrets-key-file may be one link to the
+key file (as a volume of secrets of an orchestrator gives it): that link is followed once, to a plain file outside the
+data folder that only its owner can read. A link to a link, and a link in the default place, are refused.
 `
 
 const (
@@ -183,6 +187,7 @@ func splitList(v string) []string {
 // secretHelpEntries are the help entries of this file's commands.
 func secretHelpEntries(out map[string]helpEntry) {
 	out["secret"] = helpEntry{usage: secretUsage, body: secretBody}
+	keygenHelpEntry(out)
 	for name, spec := range secretCommands {
 		out["secret "+name] = helpEntry{usage: spec.usage, body: spec.body, flags: func() *flag.FlagSet { return newSecretFlags(spec, name, &secretFlags{}) }}
 	}
@@ -291,9 +296,12 @@ func parseAddresses(list []string) ([]secrets.Address, error) {
 // runSecret is `praxium secret ...`.
 func runSecret(args []string, stdout, stderr io.Writer, w wiring) int {
 	if len(args) == 0 {
-		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "secret needs put, rotate, list, show, retire, delete, set-scope, set-hosts or a webhook command"), "secret")
+		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "secret needs put, rotate, list, show, retire, delete, set-scope, set-hosts, keygen or a webhook command"), "secret")
 	}
 	name := args[0]
+	if name == "keygen" {
+		return runSecretKeygen(args[1:], stdout, stderr)
+	}
 	if _, ok := secretCommands[name]; !ok {
 		return usageFail(stderr, kernel.Errorf(kernel.CodeInvalidValue, "secret has no command %q", name), "secret")
 	}

@@ -18,6 +18,9 @@ updates_docs:
 amends_tests: []
 amends: []
 decision_hash: 8427b6995e7373a2
+amended_by:
+  - adr: "0132"
+    what: 결정 4의 마지막 요소가 링크인 키 파일을 읽지 않음과 결정 10 한계의 둘째 중 링크인 키 파일의 거절 — -secrets-key-file로 명시한 키 파일은 링크 하나를 따라간다
 ---
 # ADR-0076 시크릿 저장소를 디스크와 명령줄에 조립한다
 

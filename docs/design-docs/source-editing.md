@@ -8,7 +8,7 @@ follows:
 ---
 # 정의의 쓰기, 시크릿, 경로, 화면
 
-[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스와 매핑을 편집하는 길이에요. **이 문서는 아직 구현하지 않은 설계(예정)예요.** 소스 정의의 모양은 [소스와 어댑터](sources-and-adapters.md)에, 수집을 돌리는 쪽은 [수집 서비스와 실행](ingestion-service.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 화면을 이 저장소에서 만든다는 것은 [ADR-0069](adr/0069-screens-live-in-this-repo-and-stay-replaceable.md)가 정했어요. 예시의 이름과 주소는 지어낸 것이에요.
+[ADR-0058](adr/0058-sources-from-db-and-api-worker-ingestion-and-editing-screens.md)의 자세한 내용 가운데 소스와 매핑을 편집하는 길이에요. **이 문서는 아직 구현하지 않은 설계(예정)예요.** 명령줄의 가져오기(1.5)와 그 값 거절(1.4)만 구현됐어요. 소스 정의의 모양은 [소스와 어댑터](sources-and-adapters.md)에, 수집을 돌리는 쪽은 [수집 서비스와 실행](ingestion-service.md)에 있어요. 정의 오류의 구조화는 [ADR-0070](adr/0070-definition-errors-with-place-and-code-many-at-once.md)으로 병합됐고, 시크릿 저장소, 화면의 쓰기 기반, 쓰지 않고 차이를 내는 길은 별도의 변경이 구현하고 있어요. 화면을 이 저장소에서 만든다는 것은 [ADR-0069](adr/0069-screens-live-in-this-repo-and-stay-replaceable.md)가 정했어요. 예시의 이름과 주소는 지어낸 것이에요.
 
 ## 1. 정의 저장소의 종류 둘과 직접 적용
 
@@ -76,8 +76,11 @@ follows:
 
 `ca_pem`(인증서)은 통과시켜요. 거절하지 못하는 것(값처럼 안 보이는 값)은 시크릿 참조를 쓰라는 안내와 한계로 적어요.
 
+명령줄의 가져오기(1.5)가 이 거절을 구현했어요(`core.ingest`의 `SecretValues`, ADR-0132). 헤더의 거절 목록은 소스를 읽을 때의 검사가 이미 거절해요. 이름 목록은 `password`, `passwd`, `token`, `access_token`, `refresh_token`, `api_key`, `apikey`, `x_api_key`, `secret`, `client_secret`, `authorization`(대소문자와 `-`·`_`를 가리지 않는 온 이름)이고, 문자열 속의 `이름=값`(사이에 빈칸이 없는 것)과 소스 정의에서 그 이름의 필드에 적은 글을 거절해요. 값이 자리표시(`{{…}}`)나 SQL의 매개변수(`?`, `$1`, `:이름`, `%s`)이거나 비었으면 거절하지 않아요. 오류는 자리와 이름만 말하고 값을 되풀이하지 않아요.
+
 ### 1.5 파일과의 왕복
 - 가져오기는 저장 경로 그대로예요(파일의 문서를 항목으로 저장). 내보내기는 읽기 경로예요.
+- **명령줄의 가져오기는 구현됐어요**([ADR-0132](adr/0132-import-of-definitions-key-generation-and-a-named-key-link.md)). `praxium ingest import -data-dir -source -mapping [-message]`가 소스와 매핑을 종류 `source`와 `mapping`의 항목으로 저장해요(이름은 문서의 id, 출처는 `import`). 저장하기 전에 저장소의 모든 소스와 매핑에 새 문서를 얹어 새 흐름의 컴파일로 함께 컴파일하고, 같은 종류 안에서 이름이 겹치는 항목, 문서의 id와 다른 이름의 항목, 매핑 사이에서 겹치는 피드·정제·링크 정의의 id를 거절하고, 1.4의 값처럼 보이는 것을 거절해요. 여러 소스를 한 계획으로 읽는 처리 경로(`<소스 id>.<데이터셋 id>`)이 생기기 전이라 매핑 하나는 소스 하나(id가 같은 소스, 아니면 읽는 데이터셋을 모두 정의하는 소스 하나)와 짝지어 컴파일해요. 서버의 REST 쓰기(1.2), 소스·매핑의 삭제, 내보내기, `ingest run`이 저장소에 직접 적용하는 일(아래)은 아직 예정이에요.
 - 명령줄의 `ingest run -source -mapping`은 데이터 폴더가 있으면 그 문서들을 저장소에 직접 적용한 뒤 그 소스를 수집해요. 옛 매핑 파일(id 없음)을 적용할 때의 매핑 id는 `-source`의 id와 같아요(다시 실행하면 같은 항목이 바뀌어요. 종류가 다르면 이름이 같아도 되는 것을 코드로 확인했어요). 피드 id가 다른 문서의 것과 겹치면 어느 문서의 무엇과 겹치는지를 말해요.
 - 가져온 정의가 없는 시크릿을 가리켜도 저장은 돼요. 실행과 점검이 "이 시크릿을 넣으라"로 답해요(저장을 막으면 가져오기의 순서가 꼬여요).
 

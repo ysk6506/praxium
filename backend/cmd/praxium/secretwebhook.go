@@ -158,11 +158,7 @@ func (k *fileHookKeys) path(create bool) (string, error) {
 		}
 		raw = filepath.Join(cfg, "praxium", "keys", id+webhookKeyFileSuffix)
 	}
-	path, err := normalizePath(raw)
-	if err != nil {
-		return "", err
-	}
-	return path, k.checkOutside(path)
+	return k.keyPath(raw)
 }
 
 func readHookKey(path string) (*secrets.MasterKey, error) {

@@ -35,12 +35,14 @@ Bring in your data
   ingest init      Write example definitions and sample files (CSV and Excel) to try the steps
   ingest inspect   Look at a CSV, JSON Lines or Excel file before writing a mapping for it
   ingest run       Read files into a KG, with -data-dir so the result is kept
+  ingest import    Store a source definition and its mapping in the definition store of a data folder
   model check      Check a file of your own properties for the standard types (organization properties)
   model apply      Store them in the data folder, so ingest run, local and api serve use them
   model show       Show the stored properties (also: model export, model history)
 
 Secrets for sources (passwords and tokens that sources need; a value is never shown)
-  secret     Put them in the data folder, add versions, retire, delete, say which sources and addresses may use them
+  secret     Put them in the data folder, add versions, retire, delete, say which sources and addresses may use them;
+             secret keygen makes the master key file before any secret
 
 Run a server
   api serve    The REST API server: production with built-in sign-in (access tokens), or development mode

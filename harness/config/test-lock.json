@@ -10157,6 +10157,114 @@
    "added": "2026-11-16",
    "amended_by": null
   },
+  "go:backend/cmd/praxium::TestImpCommandLineAndFiles": {
+   "kind": "test",
+   "hash": "706016cc499c28fa",
+   "asserts": 9,
+   "literals": [
+    "0771f953f9c2d670"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpRefusesAFolderAnotherProcessHolds": {
+   "kind": "test",
+   "hash": "31595f6724adfccb",
+   "asserts": 8,
+   "literals": [
+    "01d2f35cbf8d6323"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpRefusesASetThatDoesNotCompileAndKeepsTheStore": {
+   "kind": "test",
+   "hash": "3585bc87ef2ab00e",
+   "asserts": 7,
+   "literals": [
+    "0064b799d5580663"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpRefusesSecretValuesWithoutRepeatingThemAndStoresReferences": {
+   "kind": "test",
+   "hash": "fb6a84f995589ee5",
+   "asserts": 6,
+   "literals": [
+    "ed6ea91d8ff1a7cd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-440",
+    "REQ-705"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpRefusesWhatTheStoreHoldsWrongWithTheItem": {
+   "kind": "test",
+   "hash": "011f828c8454810f",
+   "asserts": 10,
+   "literals": [
+    "a1967390d7d07c15"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpSaysWhatCannotBeStored": {
+   "kind": "test",
+   "hash": "ead702a6ea7bcc77",
+   "asserts": 8,
+   "literals": [
+    "4f23a1cac68bdd41"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestImpStoresTheDocumentsBesideTheOrgPropertiesAndAgainChangesNothing": {
+   "kind": "test",
+   "hash": "35a84dfc616c8841",
+   "asserts": 18,
+   "literals": [
+    "8977cda628723226"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-438",
+    "REQ-476",
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/cmd/praxium::TestIngestDataDirKeepsTheKGAndTheStateAcrossRuns": {
    "kind": "test",
    "hash": "5110c5556164b595",
@@ -12179,6 +12287,66 @@
     "REQ-498"
    ],
    "added": "2026-11-18",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSklANamedKeyFileThatIsOneLinkIsFollowedAndNothingMore": {
+   "kind": "test",
+   "hash": "d8742615bdd6b2ec",
+   "asserts": 20,
+   "literals": [
+    "6390e34e3a94dedf"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-707"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSklKeygenCommandLine": {
+   "kind": "test",
+   "hash": "a0ade39542a34116",
+   "asserts": 6,
+   "literals": [
+    "e8f280ec447d4f02"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-706"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSklKeygenMakesTheKeyFileAloneAndNeverOverAnother": {
+   "kind": "test",
+   "hash": "44244a3ff5626448",
+   "asserts": 18,
+   "literals": [
+    "e97fa59b5206fd4b"
+   ],
+   "precision": [],
+   "skips": 1,
+   "reqs": [
+    "REQ-706"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/cmd/praxium::TestSklTheWebhookKeyIsFoundThroughOneLinkToo": {
+   "kind": "test",
+   "hash": "27606f8b996fc8bf",
+   "asserts": 3,
+   "literals": [
+    "accf21dbbe7f05c4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-707"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/cmd/praxium::TestStartsWithoutDefinitionsAreAsBeforeAndNothingIsWrittenForThem": {
@@ -23521,6 +23689,67 @@
    "skips": 0,
    "reqs": [
     "REQ-966"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestDsetEachMappingIsCompiledWithItsSourceInAnyOrder": {
+   "kind": "test",
+   "hash": "dfeb3f75e66396ca",
+   "asserts": 7,
+   "literals": [
+    "d5608364d8ce79a5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestDsetEveryCodeOfTheSetTableIsGivenAtItsPlace": {
+   "kind": "test",
+   "hash": "b6e88167379474eb",
+   "asserts": 10,
+   "literals": [
+    "cc0ce18821a7a5b5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704",
+    "REQ-705"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestDsetSecretValuesAreRefusedWithoutTheValue": {
+   "kind": "test",
+   "hash": "604e4ba12ddb4208",
+   "asserts": 3,
+   "literals": [
+    "5323f42614db4d16"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-705"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestDsetTheErrorsOfACompileNameTheirDocument": {
+   "kind": "test",
+   "hash": "85575ade0c474d27",
+   "asserts": 10,
+   "literals": [
+    "9a4e96fa85914b55"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-704"
    ],
    "added": "2026-11-26",
    "amended_by": null

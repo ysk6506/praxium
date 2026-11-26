@@ -129,16 +129,18 @@ func newIngestRunFlags(f *ingestFlags) *flag.FlagSet {
 
 // ingestHelpEntries are the help entries of this file's commands.
 func ingestHelpEntries(out map[string]helpEntry) {
-	out["ingest"] = helpEntry{usage: "usage: praxium ingest init|inspect|run ...", body: `Bring in your data: files in, a KG out.
+	out["ingest"] = helpEntry{usage: "usage: praxium ingest init|inspect|run|import ...", body: `Bring in your data: files in, a KG out.
   init      write example definitions and sample files, to try the steps
   inspect   look at a file before writing a mapping for it (-emit-source drafts its source definition)
   run       read files into a KG (-data-dir keeps the result)
+  import    store a source definition and its mapping in the definition store of a data folder
 The two definition files (source.json: the datasets and how each file is read; mapping.json: the objects and links they
 make) are described field by field in docs/guides/ingest-definitions.md of the Praxium repository
 ("praxium ingest init" writes a copy of it).
 Run "praxium ingest <command> --help" for the flags.
 `}
 	out["ingest run"] = helpEntry{usage: ingestRunUsage, body: ingestRunBody, flags: func() *flag.FlagSet { return newIngestRunFlags(&ingestFlags{inputs: inputList{}}) }}
+	importHelpEntry(out)
 }
 
 func parseIngestRun(args []string) (ingestFlags, error) {
@@ -166,14 +168,18 @@ func (e inputProblem) Error() string { return e.msg }
 
 // runIngest is `praxium ingest ...`: run, inspect and init.
 func runIngest(args []string, stdout, stderr io.Writer, w wiring) int {
-	if len(args) >= 1 && args[0] == "inspect" {
-		return runInspect(args[1:], stdout, stderr, w)
-	}
-	if len(args) >= 1 && args[0] == "init" {
-		return runInit(args[1:], stdout, stderr)
+	if len(args) >= 1 {
+		switch args[0] {
+		case "inspect":
+			return runInspect(args[1:], stdout, stderr, w)
+		case "init":
+			return runInit(args[1:], stdout, stderr)
+		case "import":
+			return runIngestImport(args[1:], stdout, stderr, w)
+		}
 	}
 	if len(args) < 1 || args[0] != "run" {
-		fmt.Fprint(stderr, "praxium: ingest needs init, inspect or run\n"+commandHelps()["ingest"].usage+"\nFor details: praxium ingest --help\n")
+		fmt.Fprint(stderr, "praxium: ingest needs init, inspect, run or import\n"+commandHelps()["ingest"].usage+"\nFor details: praxium ingest --help\n")
 		return exitUsage
 	}
 	f, err := parseIngestRun(args[1:])
