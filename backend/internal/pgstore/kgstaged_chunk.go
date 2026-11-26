@@ -78,6 +78,7 @@ func (c *stagedChunk) run() {
 		return
 	}
 	c.registry()
+	c.marks()
 	for _, t := range c.typesOf(pgschema.DiffKindObject) {
 		c.closeObjects(t)
 		c.openObjects(t)
@@ -133,6 +134,21 @@ func (c *stagedChunk) registry() {
 	retired := c.exec("retire in the registry", c.q(`UPDATE {object} o SET retired_seq = $2 FROM {ingest_diff} d
 		WHERE d.{chunk_no} = $1 AND d.{kind} = {KO} AND d.{change_kind} = {CR} AND o.obj_no = d.{entity_no}`), c.from.NextChunk, c.seq)
 	c.expect("the registry of the objects that are retired", int(retired), retires)
+}
+
+// marks keeps the mark of the objects that are held to retire for good (object_retire, ADR-0128): the objects of the chunk that a
+// retirable reference of the run points at are marked, and then the objects the chunk retires lose their mark, in that order, so an object
+// that the chunk both marks and retires has none, and one that comes back later by a feed that does not retire is not retired by a mark
+// that stayed.
+func (c *stagedChunk) marks() {
+	if c.total(pgschema.DiffKindObject) == 0 {
+		return
+	}
+	schema := c.a.rec.Schema()
+	c.exec("mark the objects held to retire", pgschema.MarkRetirableChunkSQL(schema), c.from.NextChunk)
+	if c.n(pgschema.DiffKindObject, pgschema.ChangeKindRetired) > 0 {
+		c.exec("take the mark of the objects retired away", pgschema.UnmarkRetiredChunkSQL(schema), c.from.NextChunk)
+	}
 }
 
 // hashed is the row hash of a row that went in or out of the table, with the type it is of.
