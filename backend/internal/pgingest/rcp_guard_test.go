@@ -23,7 +23,8 @@ func TestRcpTheComputationIsRefusedBeforeTheExpansionIsDoneAndAPageThatIsNotTheN
 		t.Errorf("begun before the expansion: %v", err)
 	}
 	// the expansion begun and not done: it is at a rule
-	s.e.exec(t, `UPDATE sync_run SET calc_job = 3, counts = counts || '{"expand":{"rule":"claim"}}'::jsonb WHERE run_no = $1`, w.l.No)
+	// the unit size is the one BeginExpand writes when the start gives no rows (as the expansion below does)
+	s.e.exec(t, fmt.Sprintf(`UPDATE sync_run SET calc_job = 3, counts = counts || '{"expand":{"rule":"claim","size":%d}}'::jsonb WHERE run_no = $1`, ingest.DefaultExpandRows), w.l.No)
 	if err := st.BeginRecompute(ctx, w.l, start); kernel.CodeOf(err) != ingest.CodeRunStage {
 		t.Errorf("begun at a rule of the expansion: %v", err)
 	}

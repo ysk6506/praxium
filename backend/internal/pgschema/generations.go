@@ -12,6 +12,7 @@ var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, erro
 	6: func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
 	7: func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
 	8: func(schema string, _ Manifest) ([]Step, error) { return recomputeSteps(schema), nil },
+	9: func(schema string, _ Manifest) ([]Step, error) { return expandSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -155,6 +156,19 @@ func recomputeSteps(schema string) []Step {
 		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name,
 			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, d.Table) + "') IS NOT NULL THEN " +
 				createIfNotExists(d.sql(schema, false)) + "; END IF; END $$"})
+	}
+	return steps
+}
+
+// expandSteps is what generator version 9 adds for the expansion of the set of a run (ADR-0118): the table of the objects that are held to
+// retire for good (an object that a feed that retires made is retired once nothing stands under it: the old flow's "once on, always on"),
+// and the table of the keys the expansion has read. Both are tables made beside the others: no table that a reader may have open is
+// altered. A schema made by this build has them already, so each step is made to be run twice.
+func expandSteps(schema string) []Step {
+	var steps []Step
+	for _, d := range append([]tableDef{objectRetireDef()}, expandTableDefs()...) {
+		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name,
+			SQL: strings.Replace(d.sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1)})
 	}
 	return steps
 }

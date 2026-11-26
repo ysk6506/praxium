@@ -19,7 +19,9 @@ import (
 // step from 6 to 7.
 // Version 8 adds, for the new computation of the objects (ADR-0115), the index by which the references of the computation are read from an
 // object: Diff follows the step from 7 to 8.
-const GeneratorVersion = 8
+// Version 9 adds, for the expansion of the set of a run (ADR-0118), the table of the objects that are held to retire for good and the table
+// of the keys the expansion has read: Diff follows the step from 8 to 9.
+const GeneratorVersion = 9
 
 // Phase says where a step may run.
 type Phase int

@@ -71,7 +71,13 @@ func permanentIngestDefs() []tableDef {
 			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColDefNo, typeDefNo),
 			col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
 		}},
+		objectRetireDef(),
 	}
+}
+
+// objectRetireDef is the table of the objects that are held to retire for good (ADR-0118): the number of the object is its key.
+func objectRetireDef() tableDef {
+	return tableDef{Name: TableObjectRetire, With: vacuumBig, Cols: []string{col(ColObjNo, "bigint NOT NULL PRIMARY KEY")}}
 }
 
 // receiveTableDefs are the tables a source is received into, one partition per source. A page gives all its rows
@@ -112,6 +118,7 @@ func computeTableDefs() []tableDef {
 	defs := computeRecordDefs()
 	defs = append(defs, computeKeyDefs()...)
 	defs = append(defs, identifyTableDefs()...)
+	defs = append(defs, expandTableDefs()...)
 	defs = append(defs, computeResultDefs()...)
 	return append(defs, ingestDiffDef())
 }
@@ -199,6 +206,18 @@ func identifyTableDefs() []tableDef {
 		{Name: TableCalcNewObj, Cols: []string{
 			col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColRef, `text COLLATE "C" NOT NULL`), col(ColTypeNo, typeSmall),
 			col(ColRid, typeBig), col(ColFeedNo, typeInt), col(ColRound, typeSmall),
+		}},
+	}
+}
+
+// expandTableDefs is the working table of the expansion (generator version 8, ADR-0118): the keys whose shared rows a unit has read, by
+// the rule (kind) and the key (a number and a hash). A unit writes its rows and the keys it read in one transaction, so a key is read by
+// the one unit that wrote it.
+func expandTableDefs() []tableDef {
+	return []tableDef{
+		{Name: TableCalcXKey, Cols: []string{
+			col(ColKind, typeSmall), col(ColKeyNo, typeBig), col(ColKeyHash, typeHash16),
+			"PRIMARY KEY (" + ColKind + ", " + ColKeyNo + ", " + ColKeyHash + ")",
 		}},
 	}
 }

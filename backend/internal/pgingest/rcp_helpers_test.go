@@ -52,7 +52,7 @@ func rcpDo(s *rdfSetup, t *testing.T, l ingest.RunLease, lines, objectMax int) i
 // rcpExpand does the expansion of a run whose identification is done.
 func rcpExpand(s *rdfSetup, t *testing.T, l ingest.RunLease, full bool) {
 	t.Helper()
-	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Full: full, Cards: s.plan.ExpandCards()}); err != nil {
+	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Full: full, Cards: s.plan.ExpandCards(), Feeds: expFeeds(s)}); err != nil {
 		t.Fatal(err)
 	}
 }
