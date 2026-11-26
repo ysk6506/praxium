@@ -46,7 +46,7 @@ func TestStlARecordThatOnlyMakesALinkIsUsedAndTheNextRunOfItsSourceDoesNotReadIt
 	}
 	// the same captures again: the receiving finds the record the same, and the run does not read it
 	l := stlComputeOf(k.b, t, mounts, stlAt(2), k.plans)
-	if got := k.b.e.text(t,`SELECT string_agg(key || '=' || change_kind, ' ' ORDER BY key) FROM `+pgiTable(k.b.ref, pgschema.TableStageRecord)+` WHERE dataset_no = $1`, k.b.rdfNo("ds_mt")); got != fmt.Sprintf("M7=%d", pgschema.ReceiveSame) {
+	if got := k.b.e.text(t, `SELECT string_agg(key || '=' || change_kind, ' ' ORDER BY key) FROM `+pgiTable(k.b.ref, pgschema.TableStageRecord)+` WHERE dataset_no = $1`, k.b.rdfNo("ds_mt")); got != fmt.Sprintf("M7=%d", pgschema.ReceiveSame) {
 		t.Errorf("the receiving found the record %s", got)
 	}
 	if rs := k.b.rdfRecords(t); len(rdfByKey(rs, "ds_mt")) != 0 || len(rdfByKey(rs, "ds_rkb")) != 0 {
