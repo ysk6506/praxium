@@ -44,10 +44,16 @@ func stlGraph(s *rdfSetup, t *testing.T) {
 		`UPDATE "s_%[1]d".object SET retired_seq = 1 WHERE obj_no IN (SELECT obj_no FROM "s_%[1]d".calc_object WHERE why = 4)`,
 		`UPDATE "s_%[1]d".object SET retired_seq = NULL WHERE obj_no IN (SELECT obj_no FROM "s_%[1]d".calc_object WHERE why = 1)`,
 		`UPDATE "s_%[1]d".object o SET name = x.name, min_grade = x.min_grade, first_key = COALESCE(o.first_key, x.first_key) FROM "s_%[1]d".stage_object x WHERE x.obj_no = o.obj_no`,
+		// the links the records of the run made before and do not make any more go, and the links of an object that retires; the ones the
+		// run staged are there
+		`DELETE FROM "s_%[1]d".link k WHERE NOT EXISTS (SELECT 1 FROM "s_%[1]d".stage_link l WHERE l.link_no = k.link_no) AND (EXISTS (SELECT 1 FROM "s_%[1]d".record_ref x
+			JOIN "s_%[1]d".calc_record c ON c.src_no = x.src_no AND c.dataset_no = x.dataset_no AND c.key = x.key WHERE x.role = 2 AND x.target_no = k.link_no)
+			OR EXISTS (SELECT 1 FROM "s_%[1]d".calc_object o WHERE o.why = 4 AND o.obj_no IN (k.src, k.dst)))`,
+		`INSERT INTO "s_%[1]d".link (link_no, ref, type_no, src, dst, grade, basis, content_hash, row_hash, seq_from)
+			SELECT link_no, ref, type_no, src, dst, grade, basis, content_hash, row_hash, 1 FROM "s_%[1]d".stage_link ON CONFLICT (link_no) DO NOTHING`,
 	} {
 		s.e.exec(t, fmt.Sprintf(q, k))
 	}
-	isoApplyLinks(s, t)
 }
 
 // stlStart is the start of the cleaning of the source of the setup with buckets of the size given.
