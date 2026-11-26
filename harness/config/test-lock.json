@@ -36323,6 +36323,21 @@
    "added": "2026-11-26",
    "amended_by": null
   },
+  "go:backend/internal/pgstore::TestQscTheModelOfTheTestsOfOtherPackagesIsTheModelOfAServerWithItsStatisticsAndWithoutTheQuerySchema": {
+   "kind": "test",
+   "hash": "57dc2e79f9634432",
+   "asserts": 10,
+   "literals": [
+    "860aafda31baa938"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-626"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgstore::TestQscTheQuerySchemaOfTheStandardModelHasAViewForEveryTypeAndEveryLinkTypeAndTheTimeToBuildItIsKnown": {
    "kind": "test",
    "hash": "ccbbf305a140c25a",
