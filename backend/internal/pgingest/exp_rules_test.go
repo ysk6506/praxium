@@ -162,7 +162,7 @@ func expSteps(t *testing.T, w *expWorld, size, cut int, then *Store) expSnap {
 	expReset(w.s, t, w.l)
 	st := w.s.e.st
 	st.expTest = nil
-	start := ingest.ExpandStart{Rows: size, Cards: expCards()}
+	start := ingest.ExpandStart{Rows: size, Cards: expCards(), Feeds: expFeeds(w.s)}
 	if err := st.BeginExpand(w.s.e.ctx, w.l, start); err != nil {
 		t.Fatal(err)
 	}
@@ -190,7 +190,7 @@ func expCheckResume(t *testing.T, w *expWorld, full expSnap) {
 	for i, r := range expRules() {
 		order[r] = i
 	}
-	if err := w.s.e.st.BeginExpand(w.s.e.ctx, w.l, ingest.ExpandStart{Rows: 4, Cards: expCards()}); err != nil {
+	if err := w.s.e.st.BeginExpand(w.s.e.ctx, w.l, ingest.ExpandStart{Rows: 4, Cards: expCards(), Feeds: expFeeds(w.s)}); err != nil {
 		t.Fatal(err)
 	}
 	for {
@@ -231,17 +231,17 @@ func expCheckCalls(t *testing.T, w *expWorld) {
 	if err := st.ExpandStep(ctx, w.l); kernel.CodeOf(err) != ingest.CodeRunStage {
 		t.Errorf("a unit before the expansion begins: %v", err)
 	}
-	start := ingest.ExpandStart{Rows: 4, Cards: expCards()}
+	start := ingest.ExpandStart{Rows: 4, Cards: expCards(), Feeds: expFeeds(w.s)}
 	if err := st.BeginExpand(ctx, w.l, start); err != nil {
 		t.Fatal(err)
 	}
 	if err := st.BeginExpand(ctx, w.l, start); kernel.CodeOf(err) != ingest.CodeRunStage {
 		t.Errorf("the expansion begun twice: %v", err)
 	}
-	if err := st.BeginExpand(ctx, w.l, ingest.ExpandStart{Rows: -1}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
+	if err := st.BeginExpand(ctx, w.l, ingest.ExpandStart{Rows: -1, Feeds: expFeeds(w.s)}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Errorf("a size below nothing: %v", err)
 	}
-	if err := st.BeginExpand(ctx, w.l, ingest.ExpandStart{Cards: []ingest.ExpandCard{{LinkTypeNo: 1}, {LinkTypeNo: 1}}}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
+	if err := st.BeginExpand(ctx, w.l, ingest.ExpandStart{Cards: []ingest.ExpandCard{{LinkTypeNo: 1}, {LinkTypeNo: 1}}, Feeds: expFeeds(w.s)}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Errorf("a link type given twice: %v", err)
 	}
 	if err := st.ExpandStep(ctx, w.l); err != nil {

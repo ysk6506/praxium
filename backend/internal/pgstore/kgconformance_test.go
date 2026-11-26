@@ -13,7 +13,8 @@ func TestV2StorePassesTheSuite(t *testing.T) {
 	// The caller's clock decides when a lease has run out, as the suite moves a clock of its own.
 	factory := func(tb graphcheck.TB) graph.Store { return pgstore.NewTestStoreWith(tb, pgstore.LeaseClockCaller) }
 	for _, c := range graphcheck.Cases() {
-		t.Run(c.Name, func(t *testing.T) { c.Run(t, factory) })
+		// every case has a store and a database of its own, so the cases run side by side (ADR-0120)
+		t.Run(c.Name, func(t *testing.T) { t.Parallel(); c.Run(t, factory) })
 	}
 }
 
@@ -23,6 +24,6 @@ func TestV2StorePassesTheSuite(t *testing.T) {
 func TestV2StorePassesThePreviewSuite(t *testing.T) {
 	factory := func(tb graphcheck.TB) graph.Store { return pgstore.NewTestStoreWith(tb, pgstore.LeaseClockCaller) }
 	for _, c := range graphcheck.PreviewCases() {
-		t.Run("[REQ-410] "+c.Name, func(t *testing.T) { c.Run(t, factory) })
+		t.Run("[REQ-410] "+c.Name, func(t *testing.T) { t.Parallel(); c.Run(t, factory) })
 	}
 }

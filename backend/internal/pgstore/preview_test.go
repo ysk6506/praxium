@@ -14,6 +14,6 @@ import (
 func TestPostgresStorePassesThePreviewSuite(t *testing.T) {
 	factory := func(tb graphcheck.TB) graph.Store { return pgstore.NewTestStore(tb) }
 	for _, c := range graphcheck.PreviewCases() {
-		t.Run("[REQ-410] "+c.Name, func(t *testing.T) { c.Run(t, factory) })
+		t.Run("[REQ-410] "+c.Name, func(t *testing.T) { t.Parallel(); c.Run(t, factory) })
 	}
 }

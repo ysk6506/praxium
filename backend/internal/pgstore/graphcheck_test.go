@@ -55,7 +55,8 @@ func TestPostgresStorePassesTheSuite(t *testing.T) {
 		if c.Name != tagged[i].name {
 			t.Fatalf("case %d is %q, the table expects %q", i, c.Name, tagged[i].name)
 		}
-		t.Run(tagged[i].req+" "+c.Name, func(t *testing.T) { c.Run(t, factory) })
+		// every case has a store and a database of its own, so the cases run side by side (ADR-0120)
+		t.Run(tagged[i].req+" "+c.Name, func(t *testing.T) { t.Parallel(); c.Run(t, factory) })
 	}
 }
 

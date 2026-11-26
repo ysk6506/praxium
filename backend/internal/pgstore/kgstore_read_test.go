@@ -8,6 +8,7 @@ import (
 
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
+	"github.com/ysk6506/praxium/backend/internal/pgconn"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
@@ -39,10 +40,31 @@ func v2rExec(t *testing.T, db *sql.DB, query string, args ...any) {
 
 func v2rWorldOf(t *testing.T) *v2rWorld { return v2rWorldWith(t, LeaseClockDB) }
 
+// v2rSerial are the tests on a world that run alone, after the others of this unit (ADR-0120): the ones that hold the plans of the
+// planner to what they expect.
+var v2rSerial = map[string]bool{
+	"TestTixTheNameIndexesAnswerTheExactNameAndTheStartOfTheNameWithoutCase":   true,
+	"TestTixAnObjectIsInTheTableOfItsOwnTypeOnlyAndAParentTypeHasAnEmptyTable": true,
+}
+
+// v2rWorldWith is a world on a copy of a template that holds its KG, made once on the server (ADR-0120). The test runs beside the
+// other tests of this unit, each on its own database, unless it is one of v2rSerial.
 func v2rWorldWith(t *testing.T, clock LeaseClock) *v2rWorld {
 	t.Helper()
+	if !v2rSerial[t.Name()] {
+		pgconn.TestInParallel(t)
+	}
 	ctx := context.Background()
-	dsn := NewTestDatabase(t)
+	fx, err := graph.NewFixture()
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, err := kernel.NewID[graph.KGKind](kernel.NewRandomIDs(kernel.NewSeededRng(7)), "kg")
+	if err != nil {
+		t.Fatal(err)
+	}
+	dsn, kg := NewTestDatabaseWithKG(t, false, graph.KG{ID: id, Name: "v2r", Role: graph.RoleTest, State: graph.StateBuilding,
+		DefinitionSetHash: fx.Reg.Hash(), CreatedAt: time.Unix(1000, 0)}, "", nil)
 	models, err := StandardModels(false)
 	if err != nil {
 		t.Fatal(err)
@@ -57,19 +79,6 @@ func v2rWorldWith(t *testing.T, clock LeaseClock) *v2rWorld {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { _ = admin.Close() })
-	fx, err := graph.NewFixture()
-	if err != nil {
-		t.Fatal(err)
-	}
-	id, err := kernel.NewID[graph.KGKind](kernel.NewRandomIDs(kernel.NewSeededRng(7)), "kg")
-	if err != nil {
-		t.Fatal(err)
-	}
-	kg, err := st.CreateKG(ctx, graph.KG{ID: id, Name: "v2r", Role: graph.RoleTest, State: graph.StateBuilding,
-		DefinitionSetHash: fx.Reg.Hash(), CreatedAt: time.Unix(1000, 0)})
-	if err != nil {
-		t.Fatal(err)
-	}
 	a, err := st.access(ctx, kg.ID)
 	if err != nil {
 		t.Fatal(err)

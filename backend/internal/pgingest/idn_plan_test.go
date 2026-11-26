@@ -71,6 +71,14 @@ func (p *idnPlans) idnHook(tx *sql.Tx, what, query string, args []any) {
 			panic(err)
 		}
 	}()
+	// the tables of the test are small enough for a hash or a merge join over a whole table to cost less than an index; the tables of a run
+	// of millions of records are read by their indexes, so the plan is asked for the kind that wins there (ADR-0121; the plan of the
+	// questions that the statistics give is held by TestIdnTheQuestionsOfARoundAreReadByTheirIndexWithTheStatisticsTheRunGivesThePlanner)
+	for _, set := range []string{"SET LOCAL enable_hashjoin = off", "SET LOCAL enable_mergejoin = off", "SET LOCAL enable_seqscan = off"} {
+		if _, err := tx.Exec(set); err != nil {
+			panic(err)
+		}
+	}
 	var doc []byte
 	if err := tx.QueryRow("EXPLAIN (ANALYZE, COSTS OFF, TIMING OFF, FORMAT JSON) "+query, args...).Scan(&doc); err != nil {
 		panic(fmt.Sprintf("%s: %v", what, err))

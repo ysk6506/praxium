@@ -14,7 +14,7 @@ import (
 func TestExpTheExpansionDoesNotBeginOnARunWhoseIdentificationIsNotDoneAndTheComputationOfEverythingGoesByUnitsOfRecords(t *testing.T) {
 	w := expMakeWorld(t, pgiMappingJSON, 0, false)
 	st, ctx := w.s.e.st, w.s.e.ctx
-	start := ingest.ExpandStart{Cards: expCards()}
+	start := ingest.ExpandStart{Cards: expCards(), Feeds: expFeeds(w.s)}
 	// the job of the run is not the identification
 	w.s.e.exec(t, `UPDATE sync_run SET calc_job = $2 WHERE run_no = $1`, w.l.No, pgschema.CalcJobRawDiff)
 	if err := st.BeginExpand(ctx, w.l, start); kernel.CodeOf(err) != ingest.CodeRunStage {

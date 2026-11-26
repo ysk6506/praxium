@@ -44,6 +44,8 @@ decision_hash: 6dd04dbdbea6eb21
 amended_by:
   - adr: "0114"
     what: 결정 1의 피드 표(`IdentifyFeed`)에 `Retires`를 더하고, 3단계의 끝내기가 `record_ref.retirable`을 그 표지로 쓰는 것
+  - adr: "0121"
+    what: 결정 7의 국면이 바뀔 때 분석하는 작업 테이블(질문 표 `calc_ask`를 더함)과 계획 테스트가 재는 계획
 ---
 # ADR-0108 새 수집 흐름의 3단계(영향 집합의 출발과 식별)
 

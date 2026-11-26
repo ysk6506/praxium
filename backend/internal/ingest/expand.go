@@ -60,8 +60,8 @@ type ExpandStart struct {
 	Cards []ExpandCard
 	// Feeds are the feeds of every source whose plan the identification of the run was given (ExpandFeedsOf of the same plans): the
 	// sources whose records Full takes, and which references of a record support an object (the ones of the feeds that make objects; a
-	// reference of a feed that is not given supports the object too, because what it stands for is not known). The computation of
-	// everything needs them.
+	// reference of a feed that is not given supports the object too, because what it stands for is not known). Every expansion needs
+	// them, the computation of everything and the one of the records of the run alike (ADR-0121).
 	Feeds []ExpandFeed
 }
 
@@ -70,8 +70,12 @@ func (s ExpandStart) Validate() error {
 	if s.Rows < 0 {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the size of a unit of the expansion is not negative")
 	}
-	if s.Full && len(s.Feeds) == 0 {
-		return kernel.Errorf(kernel.CodeInvalidValue, "the expansion of everything is given the feeds of the sources whose plan the run was given")
+	// the feeds are given to every expansion (ADR-0121): without them every reference is of a feed that is not known and supports its
+	// object, so a caller that left them out would keep the objects that only a feed that adds values stands under, and say nothing. A
+	// run reads the records of a source by its plan, and a plan has a feed (a mapping without one is refused), so no expansion has a reason
+	// to be given none.
+	if len(s.Feeds) == 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the expansion is given the feeds of the sources whose plan the run was given")
 	}
 	type feedAt struct {
 		src  int64
@@ -131,7 +135,8 @@ type ExpandCounts struct {
 	// Everything is the records of the sources that the computation of everything made records of the run.
 	Everything int `json:"everything"`
 	// OldObjects is the objects that records of the run were bound to before, Retiring how many of them are candidates for retirement
-	// (no open record stands under them and a reference to them is retirable).
+	// (no open record of a feed that makes objects stands under them and a reference to them is retirable) that are not retired yet: the
+	// objects the run retires (ADR-0121). The identification's objects that the expansion made candidates are in both.
 	OldObjects int `json:"old_objects"`
 	Retiring   int `json:"retiring"`
 	// RetireRecords is the records that made the links of a candidate, KeyRecords the records that read a link end key that a record of
