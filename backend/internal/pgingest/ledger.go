@@ -40,6 +40,11 @@ func (s *Store) OpenRun(ctx context.Context, open ingest.RunOpen) (ingest.RunLea
 	}
 	out := ingest.RunLease{Attempt: 1, Owner: open.Owner, Term: open.Term}
 	err := s.tx(ctx, roleApplier, func(tx *sql.Tx) error {
+		// a KG that is being deleted starts no run (ADR-0125); one that is marked after this run is opened takes it off with
+		// its source.
+		if err := refuseDeleting(ctx, tx, open.KG.String()); err != nil {
+			return err
+		}
 		var src int64
 		err := tx.QueryRowContext(ctx, "SELECT "+pgschema.ColSrcNo+" FROM "+pgschema.TableSourceState+
 			" WHERE "+pgschema.ColKGID+" = $1 AND "+pgschema.ColSourceID+" = $2", open.KG.String(), open.Source).Scan(&src)

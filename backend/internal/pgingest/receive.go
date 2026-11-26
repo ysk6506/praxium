@@ -92,6 +92,9 @@ func (s *Store) loadSource(ctx context.Context, tx *sql.Tx, sink *Sink, kgID str
 	if err := tx.QueryRowContext(ctx, "SELECT "+catalogKGNo+" FROM "+catalogTable+" WHERE "+catalogKGID+" = $1 FOR SHARE", kgID).Scan(&sink.kgNo); err != nil {
 		return dbErr(err, "read the number of the KG")
 	}
+	if err := refuseDeleting(ctx, tx, kgID); err != nil {
+		return err
+	}
 	ref := SourceRef{SrcNo: sink.srcNo, Datasets: map[string]int64{}}
 	if err := attachRead(ctx, tx, &ref); err != nil {
 		return err
