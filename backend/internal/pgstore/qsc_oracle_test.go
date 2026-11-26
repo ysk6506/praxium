@@ -38,8 +38,9 @@ func qscNoSuperuser(t *testing.T, tx *sql.Tx) {
 	}
 }
 
-// qscWatched runs the queries as the role of a grade and says what the function that watches was called with.
-func (w *qscWorld) qscWatched(t *testing.T, grade model.Sensitivity, watermark bool, queries ...string) []string {
+// qscWatched runs the queries as the role of a grade and says what the function that watches was called with. It is a function and not
+// a method of qscWorld, so the tests that reach qscWorld do not reach it (their lock stays as it was).
+func qscWatched(t *testing.T, w *qscWorld, grade model.Sensitivity, watermark bool, queries ...string) []string {
 	t.Helper()
 	var seen []string
 	w.as(t, grade, watermark, func(tx *sql.Tx) {
@@ -97,7 +98,7 @@ func TestQscAFunctionOfTheCallerThatTheCostPutsFirstNeverSeesTheValueOfAnAttribu
 	for _, watermark := range []bool{false, true} {
 		for _, grade := range qscLowGrades {
 			hidden := qscHiddenFrom[grade]
-			seen := w.qscWatched(t, grade, watermark, qscSurfaces...)
+			seen := qscWatched(t, w, grade, watermark, qscSurfaces...)
 			if len(seen) < 10 {
 				t.Fatalf("[%s watermark %v] the function was called %d times: the surfaces were not read (%v)", grade, watermark, len(seen), seen)
 			}
@@ -113,7 +114,7 @@ func TestQscAFunctionOfTheCallerThatTheCostPutsFirstNeverSeesTheValueOfAnAttribu
 			}
 		}
 		// the same function sees them when the grade is the one that may: the test can tell
-		seen := w.qscWatched(t, model.SensitivityConfidential, watermark, qscSurfaces...)
+		seen := qscWatched(t, w, model.SensitivityConfidential, watermark, qscSurfaces...)
 		if !qscAny(seen, "boot-secret") || !qscAny(seen, `"boot"`) {
 			t.Errorf("[confidential watermark %v] the function does not see the value that the grade may see: %v", watermark, seen)
 		}
