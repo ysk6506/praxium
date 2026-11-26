@@ -29,8 +29,9 @@ func (c *checker) checkSchemes() {
 // checkIdentityKeys checks the identity keys in priority order. A key has a
 // component or a scheme. A property component names a property the type has,
 // once, neither confidential (a confidential value is hashed with a key and
-// cannot identify anything) nor volatile (a value that changes all the time
-// cannot recognise anything). A context component names a link type that
+// cannot identify anything) nor restricted (the value of a key is kept as an
+// identifier, which the query schema shows to every grade) nor volatile (a
+// value that changes all the time cannot recognise anything). A context component names a link type that
 // leads to the object this one is identified inside. No two keys are the
 // same. An org or ext type that builds on a parent keeps its identity keys.
 func (c *checker) checkIdentityKeys(what string, t *ObjectType, eff []*Property) {
@@ -122,6 +123,9 @@ func (c *checker) checkKeyProperty(what string, comp KeyComponent, byID map[Prop
 		c.fail(CodeIdentityKey, "%s has an identity key on %s, which is not one of its properties", what, id)
 	case p.EffectiveSensitivity() == SensitivityConfidential:
 		c.fail(CodeIdentityKey, "%s has an identity key on %s, which is confidential", what, id)
+	case p.EffectiveSensitivity() != SensitivityOpen:
+		c.fail(CodeIdentityKey, "%s has an identity key on %s, which is %s: the value of a key is kept as an identifier, and an identifier has no grade, so only an open property may be a key (ADR-0113)",
+			what, id, p.EffectiveSensitivity())
 	case p.EffectiveHistory() == HistoryVolatile:
 		c.fail(CodeIdentityKeyVolatile, "%s has an identity key on %s, which is volatile", what, id)
 	}

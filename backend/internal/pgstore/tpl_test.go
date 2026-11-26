@@ -51,7 +51,7 @@ func TestTplACopyOfAKGTemplateIsTheDatabaseThatOpenAndCreateKGMakeTheSlowWay(t *
 		thenKey string
 		then    func(string) error
 	}{{true, "", nil}, {false, "a second KG", tplSecond(t)}} {
-		models, err := StandardModels(c.stats)
+		models, err := testKGModels(c.stats)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -78,7 +78,7 @@ func TestTplACopyOfAKGTemplateIsTheDatabaseThatOpenAndCreateKGMakeTheSlowWay(t *
 		}
 		joined := strings.Join(want, "\n")
 		if !strings.Contains(joined, "row public.kg_catalog") || !strings.Contains(joined, "planner statistics rows 0") ||
-			strings.Contains(joined, "statistics object ") != c.stats {
+			strings.Contains(joined, "statistics object ") != c.stats || strings.Contains(joined, "\nview ") {
 			t.Errorf("stats %v: the dump does not show the KG, the empty statistics and the statistics objects: %d lines", c.stats, len(want))
 		}
 		st, err := Open(ctx, Config{DSN: copied, Models: models})
@@ -97,13 +97,47 @@ func TestTplACopyOfAKGTemplateIsTheDatabaseThatOpenAndCreateKGMakeTheSlowWay(t *
 	}
 }
 
+// Two copies of one template each make a KG of the model of a server, with its query schema and its roles, and delete it: the
+// roles are named by the token of the installation, which every copy has of its own (ADR-0113).
+//
 // [REQ-270]
-func TestTplTheKeyOfAKGTemplateChangesWithEverythingThatDecidesWhatTheTemplateHolds(t *testing.T) {
-	std, err := StandardModels(true)
+func TestTplTwoCopiesOfATemplateMakeAndDeleteKGsWithAQuerySchemaWithoutMeetingTheirRoles(t *testing.T) {
+	pgconn.TestInParallel(t)
+	ctx := context.Background()
+	server, err := StandardModels(true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	light, err := StandardModels(false)
+	var stores []*Store
+	for range 2 {
+		dsn, _ := NewTestDatabaseWithKG(t, false, tplKG(t, 1), "", nil)
+		st, err := Open(ctx, Config{DSN: dsn, Models: server})
+		if err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() { _ = st.Close() })
+		stores = append(stores, st)
+	}
+	for i, st := range stores {
+		kg, err := st.CreateKG(ctx, tplKG(t, 9))
+		if err != nil {
+			t.Fatalf("copy %d: %v", i, err)
+		}
+		defer func() {
+			if err := st.DeleteKG(ctx, kg.ID); err != nil {
+				t.Errorf("copy %d: the KG with a query schema cannot be deleted: %v", i, err)
+			}
+		}()
+	}
+}
+
+// [REQ-270]
+func TestTplTheKeyOfAKGTemplateChangesWithEverythingThatDecidesWhatTheTemplateHolds(t *testing.T) {
+	std, err := testKGModels(true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	light, err := testKGModels(false)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -111,7 +145,9 @@ func TestTplTheKeyOfAKGTemplateChangesWithEverythingThatDecidesWhatTheTemplateHo
 	if err != nil {
 		t.Fatal(err)
 	}
-	noSearch := func(kernel.Hash) (SchemaModel, error) { return SchemaModel{Registry: reg, WithStats: true}, nil }
+	noSearch := func(kernel.Hash) (SchemaModel, error) {
+		return SchemaModel{Registry: reg, WithStats: true, noQuery: true}, nil
+	}
 	kg := tplKG(t, 1)
 	key := func(models ModelProvider, kg graph.KG, then string) string {
 		t.Helper()
@@ -161,6 +197,18 @@ func TestTplTheKeyOfAKGTemplateChangesWithEverythingThatDecidesWhatTheTemplateHo
 	// a KG of another definition set is not made from the standard model: there is no key, as CreateKG would refuse it
 	if _, err := testKGKey(std, other(func(k *graph.KG) { k.DefinitionSetHash = kernel.HashBytes([]byte("other")) }), ""); err == nil {
 		t.Error("a key for a KG of another definition set")
+	}
+	// the model of a server makes a query schema, whose roles belong to the cluster: it has no template
+	server, err := StandardModels(true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := testKGKey(server, kg, ""); err == nil || !strings.Contains(err.Error(), "no query schema") {
+		t.Errorf("a key for a model that makes a query schema: %v", err)
+	}
+	if !strings.Contains(base, "model: statistics objects true, query schema false") ||
+		!strings.Contains(key(light, kg, "then"), "model: statistics objects false, query schema false") {
+		t.Error("the key does not name the model")
 	}
 }
 

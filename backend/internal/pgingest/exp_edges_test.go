@@ -74,7 +74,7 @@ func TestExpAStatementThatFailsInAUnitLeavesTheUnitUndoneAndTheRunGoesOnFromIt(t
 					_, _ = tx.ExecContext(ctx, "SELECT 1/0")
 				}
 			}}
-			start := ingest.ExpandStart{Full: full, Rows: 2, Cards: expCards()}
+			start := ingest.ExpandStart{Full: full, Rows: 2, Cards: expCards(), Feeds: expFeeds(w.s)}
 			if !full {
 				start.Rows = 0
 			}

@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -53,6 +54,8 @@ type expState struct {
 	Full  bool                `json:"full"`
 	Size  int                 `json:"size"`
 	Cards []ingest.ExpandCard `json:"cards"`
+	// Feeds are the feeds of the sources whose plan the run was given (ExpandStart.Feeds), kept so that a server that goes on knows the same.
+	Feeds []ingest.ExpandFeed `json:"feeds"`
 	Rule  string              `json:"rule"`
 	// Cur is the place in the range of the rule (the last record number or object number done; for the rule all, the last source and
 	// dataset and key), and Hi is where the range of the rule ends: the records of the run that the rules before it made are in it.
@@ -69,11 +72,38 @@ type expRun struct {
 	runNo int64
 	st    *expState
 	hook  *expHook
+	// unsettled is how many pairs the identification of the run left (read of the counts of the run, not kept in the place): a run that
+	// left some makes no candidate for retirement.
+	unsettled int
 }
 
 func (e *expRun) t(table string) string { return pgschema.TableRef(e.kgNo, table) }
 
-// q writes the names of the tables and the numbers of the unit into a statement, and the link types that hold an end to one.
+// feeds is the feeds of the sources the run was given, as the CTE feeds, and sources the sources they are of, as an array.
+func (e *expRun) feeds() (cte, sources string) {
+	feeds := append([]ingest.ExpandFeed(nil), e.st.Feeds...)
+	sort.Slice(feeds, func(i, j int) bool {
+		if feeds[i].SrcNo != feeds[j].SrcNo {
+			return feeds[i].SrcNo < feeds[j].SrcNo
+		}
+		return feeds[i].Feed < feeds[j].Feed
+	})
+	var srcs, nos, creates, planned []string
+	seen := map[int64]bool{}
+	for _, f := range feeds {
+		srcs, nos, creates = append(srcs, strconv.FormatInt(f.SrcNo, 10)), append(nos, strconv.Itoa(f.Feed)), append(creates, strconv.FormatBool(f.Creates))
+		if !seen[f.SrcNo] {
+			seen[f.SrcNo] = true
+			planned = append(planned, strconv.FormatInt(f.SrcNo, 10))
+		}
+	}
+	arr := func(items []string, typ string) string { return "'{" + strings.Join(items, ",") + "}'::" + typ + "[]" }
+	return "feeds AS (SELECT src_no, feed_no, creates FROM unnest(" + arr(srcs, "int") + ", " + arr(nos, "int") + ", " + arr(creates, "boolean") + ") AS f(src_no, feed_no, creates))",
+		arr(planned, "int")
+}
+
+// q writes the names of the tables and the numbers of the unit into a statement, and the link types that hold an end to one, the feeds
+// and whether an object may be a candidate for retirement.
 func (e *expRun) q(query string) string {
 	var types, from, to []string
 	for _, c := range e.st.Cards {
@@ -81,11 +111,13 @@ func (e *expRun) q(query string) string {
 	}
 	arr := func(items []string, typ string) string { return "'{" + strings.Join(items, ",") + "}'::" + typ + "[]" }
 	cards := "cards AS (SELECT type_no, from_one, to_one FROM unnest(" + arr(types, "int") + ", " + arr(from, "boolean") + ", " + arr(to, "boolean") + ") AS c(type_no, from_one, to_one))"
+	feeds, sources := e.feeds()
 	return strings.NewReplacer(
 		"{rec}", e.t(pgschema.TableCalcRecord), "{objrun}", e.t(pgschema.TableCalcObject), "{bind}", e.t(pgschema.TableCalcBind),
 		"{end}", e.t(pgschema.TableCalcEnd), "{claim}", e.t(pgschema.TableCalcClaim), "{rref}", e.t(pgschema.TableRecordRef),
 		"{raw}", e.t(pgschema.TableRawRecord), "{link}", e.t(pgschema.TableLink), "{ds}", pgschema.TableSourceDataset, "{cards}", cards,
-		"{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)),
+		"{retire}", e.t(pgschema.TableObjectRetire), "{xkey}", e.t(pgschema.TableCalcXKey), "{feeds}", feeds, "{sources}", sources,
+		"{canretire}", strconv.FormatBool(e.unsettled == 0), "{WHY}", strconv.Itoa(int(pgschema.CalcWhyExpanded)),
 	).Replace(query)
 }
 
@@ -148,8 +180,8 @@ func (s *Store) BeginExpand(ctx context.Context, lease ingest.RunLease, start in
 		if id.Phase != phaseDone {
 			return kernel.Errorf(ingest.CodeRunStage, "the identification of the run %d is at %s, so its records cannot be expanded", lease.No, id.Phase)
 		}
-		st := expState{Full: start.Full, Size: orInt(start.Rows, ingest.DefaultExpandRows), Cards: start.Cards}
-		e := &expRun{kgNo: kgNo, runNo: lease.No, st: &st, hook: s.expTest}
+		st := expState{Full: start.Full, Size: orInt(start.Rows, ingest.DefaultExpandRows), Cards: start.Cards, Feeds: start.Feeds}
+		e := &expRun{kgNo: kgNo, runNo: lease.No, st: &st, hook: s.expTest, unsettled: id.Counts.Unsettled}
 		if err := e.enter(ctx, tx, ""); err != nil {
 			return err
 		}
@@ -199,7 +231,13 @@ func (s *Store) loadExpand(ctx context.Context, tx *sql.Tx, lease ingest.RunLeas
 	if err := json.Unmarshal(run.counts, &in); err != nil {
 		return nil, kernel.Wrap(kernel.CodeInternal, err, "read the place of the expansion")
 	}
-	return &expRun{kgNo: kgNo, runNo: lease.No, st: &in.Expand, hook: s.expTest}, nil
+	// what the identification left is read of its counts every time (the place of the expansion does not keep it), so that a server that
+	// goes on judges the candidates as the one that began did
+	id, err := identOf(run.counts)
+	if err != nil {
+		return nil, err
+	}
+	return &expRun{kgNo: kgNo, runNo: lease.No, st: &in.Expand, hook: s.expTest, unsettled: id.Counts.Unsettled}, nil
 }
 
 // ExpandPlace says where the expansion stands: see ingest.Expander.
@@ -232,6 +270,7 @@ func (s *Store) ExpandReport(ctx context.Context, lease ingest.RunLease) (ingest
 			return err
 		}
 		out = e.st.Counts
+		out.Unsettled = e.unsettled
 		return nil
 	})
 	return out, err
@@ -301,9 +340,9 @@ func (e *expRun) unit(ctx context.Context, tx *sql.Tx) error {
 		return e.retireUnit(ctx, tx)
 	}
 	st := e.st
-	hi, last := st.Cur+int64(st.Size), false
-	if hi >= st.Hi {
-		hi, last = st.Hi, true
+	hi, last, err := e.recordEnd(ctx, tx)
+	if err != nil {
+		return err
 	}
 	if !e.skipped(st.Rule) {
 		if err := e.recordRange(ctx, tx, st.Cur, hi); err != nil {
@@ -315,6 +354,26 @@ func (e *expRun) unit(ctx context.Context, tx *sql.Tx) error {
 	}
 	st.Cur = hi
 	return nil
+}
+
+// recordEnd gives the end of the unit of a rule that goes through the records of the run: the number of the record that is Size records on
+// from the place, and whether there are no more than that before the end of the rule. The unit is a number of records, not of numbers:
+// the numbers of the records have gaps (a transaction that is rolled back leaves some), and a unit that is a range of numbers would
+// hold fewer records than it says.
+func (e *expRun) recordEnd(ctx context.Context, tx *sql.Tx) (hi int64, last bool, err error) {
+	st := e.st
+	var end sql.NullInt64
+	query := e.q("SELECT rid FROM {rec} WHERE rid > $1 AND rid <= $2 ORDER BY rid OFFSET $3 LIMIT 1")
+	e.saw(tx, "record range end", query, st.Cur, st.Hi, st.Size-1)
+	err = tx.QueryRowContext(ctx, query, st.Cur, st.Hi, st.Size-1).Scan(&end)
+	if isNoRows(err) {
+		return st.Hi, true, nil
+	}
+	if err != nil {
+		return 0, false, dbErr(err, "find the end of the unit")
+	}
+	// the record that ends the unit may be the last one of the rule
+	return end.Int64, end.Int64 >= st.Hi, nil
 }
 
 // recordRange does the rule the place is at for the records of the run whose numbers are in the range.
@@ -364,8 +423,11 @@ func (e *expRun) everything(ctx context.Context, tx *sql.Tx) error {
 		cond += " AND (w.src_no, w.dataset_no, w.key) <= ($4, $5, $6)"
 		args = append(args, src.Int64, ds.Int64, key.String)
 	}
+	// the records the identification reads: of the sources whose plan was given, kept under the declaration the dataset has now (the
+	// ones of another declaration are not read by a declaration they were not made by, and a source without a plan is not touched)
+	from, where := "{raw} w JOIN {ds} d ON d.dataset_no = w.dataset_no AND d.decl_rev = w.decl_rev", "w.src_no = ANY({sources}) AND "+cond
 	if !e.skipped(ruleAll) {
-		if err := e.addTo(ctx, tx, &st.Counts.Everything, "make every record a record of the run", expAddRecords("w", "{raw} w WHERE "+cond), args...); err != nil {
+		if err := e.addTo(ctx, tx, &st.Counts.Everything, "make every record a record of the run", expAddRecords("w", from, where), args...); err != nil {
 			return err
 		}
 	}

@@ -149,6 +149,9 @@ func (s *Store) DeleteKG(ctx context.Context, kg graph.KGID) error {
 		if !found {
 			return nil
 		}
+		if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
+			return err
+		}
 		if _, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(rec.Schema())+` CASCADE`); err != nil {
 			return dbErr(err, "drop the storage schema")
 		}

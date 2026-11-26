@@ -28,20 +28,61 @@ type ExpandCard struct {
 	ToOne   bool
 }
 
-// ExpandStart is what begins the expansion: the sizes of a unit (0 is the default), the link types that hold an end to one, and whether
-// it is the expansion of everything.
+// ExpandFeed is what the expansion needs to know of a feed (the one the identification is given as IdentifyFeed, by the same source and
+// feed number): whether a record of it may make an object, and whether the references it gives to what it makes are retirable. The
+// support of an object is the open records of the feeds that make it (REQ-643: a record that only adds values does not keep an object).
+type ExpandFeed struct {
+	SrcNo   int64
+	Feed    int
+	Creates bool
+	Retires bool
+}
+
+// ExpandFeedsOf says what the expansion needs of the feeds of the plans of the sources of a KG, by the number of the source: the same
+// feeds the identification of the run was given (IdentifyFeedsOf), so that the expansion and the identification see the same sources.
+func ExpandFeedsOf(plans map[int64]*Plan) []ExpandFeed {
+	var out []ExpandFeed
+	for _, f := range IdentifyFeedsOf(plans) {
+		out = append(out, ExpandFeed{SrcNo: f.SrcNo, Feed: f.Feed, Creates: f.Creates, Retires: f.Retires})
+	}
+	return out
+}
+
+// ExpandStart is what begins the expansion: the sizes of a unit (0 is the default), the link types that hold an end to one, the feeds of
+// the sources whose plan the run was given, and whether it is the expansion of everything.
 type ExpandStart struct {
 	// Full makes every open record of the sources of the KG a record of the run (the computation of everything, ingestion-at-scale.md
-	// P4): the rules then go through all of them, so that what is expanded is everything the records say.
-	Full  bool
-	Rows  int
+	// P4): the rules then go through all of them, so that what is expanded is everything the records say. The records are the ones the
+	// identification reads: of the sources whose plan was given, and kept under the declaration the dataset has now.
+	Full bool
+	Rows int
+	// Cards are the link types that hold an end to one.
 	Cards []ExpandCard
+	// Feeds are the feeds of every source whose plan the identification of the run was given (ExpandFeedsOf of the same plans): the
+	// sources whose records Full takes, and which references of a record support an object (the ones of the feeds that make objects; a
+	// reference of a feed that is not given supports the object too, because what it stands for is not known). The computation of
+	// everything needs them.
+	Feeds []ExpandFeed
 }
 
 // Validate checks what the step cannot begin without.
 func (s ExpandStart) Validate() error {
 	if s.Rows < 0 {
 		return kernel.Errorf(kernel.CodeInvalidValue, "the size of a unit of the expansion is not negative")
+	}
+	if s.Full && len(s.Feeds) == 0 {
+		return kernel.Errorf(kernel.CodeInvalidValue, "the expansion of everything is given the feeds of the sources whose plan the run was given")
+	}
+	type feedAt struct {
+		src  int64
+		feed int
+	}
+	feeds := map[feedAt]bool{}
+	for _, f := range s.Feeds {
+		if feeds[feedAt{f.SrcNo, f.Feed}] {
+			return kernel.Errorf(kernel.CodeInvalidValue, "the feed %d of the source %d is given twice to the expansion", f.Feed, f.SrcNo)
+		}
+		feeds[feedAt{f.SrcNo, f.Feed}] = true
 	}
 	seen := map[int]bool{}
 	for _, c := range s.Cards {
@@ -100,6 +141,11 @@ type ExpandCounts struct {
 	LimitRecords  int `json:"limit_records"`
 	// ClaimObjects is the objects that claim an identifier a record of the run claims.
 	ClaimObjects int `json:"claim_objects"`
+	// Unsettled is how many pairs of a record and a feed the identification left because the search for their groups was stopped by its
+	// limit (IdentifyCounts.Unsettled). The expansion does not take it for the end of a record: while there are some, it makes no object
+	// a candidate for retirement (Retiring is 0), because an object whose records are left may be the object of a record that is not
+	// found yet. The next run, which can bind them, decides.
+	Unsettled int `json:"unsettled"`
 }
 
 // Expander is the port of the expansion. Every call names the attempt of the lease, and a call whose attempt is not the run's any more

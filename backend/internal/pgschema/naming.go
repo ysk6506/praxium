@@ -31,6 +31,20 @@ const (
 	TableVersionHashPart = "version_hash_part"
 )
 
+// The tables that describe the model to the query schema (generator version 7, ADR-0113): the views of the same names in the query
+// schema read them. They are tables of the storage schema, filled from the model whenever the schema is made or follows the model.
+const (
+	TableModelType      = "model_type"
+	TableModelAttribute = "model_attribute"
+	TableModelLinkType  = "model_link_type"
+	TableModelLinkRule  = "model_link_rule"
+)
+
+// ModelTables lists the tables of the model description in the order they are created.
+func ModelTables() []string {
+	return []string{TableModelType, TableModelAttribute, TableModelLinkType, TableModelLinkRule}
+}
+
 // FixedTables lists the fixed tables in the order they are created.
 func FixedTables() []string {
 	base := []string{
@@ -38,7 +52,7 @@ func FixedTables() []string {
 		TableChangeBatch, TableChangeEntry, TableLightChange, TableObjectIdentifier, TableIdentityEvent, TableIngestOrder,
 		TableHead, TableLease, TableGenerationEvent, TableVersion, TableVersionHashPart,
 	}
-	return append(base, IngestTables()...)
+	return append(append(base, IngestTables()...), ModelTables()...)
 }
 
 // The names that the plan keeps for the tables of an apply that works from staged rows (the tables themselves are
@@ -56,7 +70,7 @@ const (
 // IngestTables lists the tables of the ingestion at scale in the order they are created: the permanent ones, the
 // ones a source is received into, and the ones of a computation.
 func IngestTables() []string {
-	out := []string{TableRawRecord, TableRecordWait, TableRecordRef, TableRecordProblem}
+	out := []string{TableRawRecord, TableRecordWait, TableRecordRef, TableRecordProblem, TableObjectRetire}
 	out = append(out, ReceiveTables()...)
 	return append(out, ComputeTables()...)
 }

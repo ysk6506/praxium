@@ -19,7 +19,13 @@ import (
 // step from 6 to 7.
 // Version 8 adds, for the new computation of the objects (ADR-0115), the index by which the references of the computation are read from an
 // object: Diff follows the step from 7 to 8.
-const GeneratorVersion = 8
+// Version 9 adds, for the expansion of the set of a run (ADR-0118), the table of the objects that are held to retire for good and the table
+// of the keys the expansion has read: Diff follows the step from 8 to 9.
+// Version 10 adds, for the objects the computation of the objects left (ADR-0119), the table of them (calc_left): Diff follows the step
+// from 9 to 10.
+// Version 11 adds the tables that describe the model, under the query schema (views, functions and roles) that is made on top of them
+// (ADR-0113): Diff follows the step from 10 to 11 by making the tables, and the query schema is made whole by the steps of Plan.Query.
+const GeneratorVersion = 11
 
 // Phase says where a step may run.
 type Phase int
@@ -39,6 +45,12 @@ const (
 	WhatColumn     = "column"
 	WhatIndex      = "index"
 	WhatStatistics = "statistics"
+	// The kinds of the steps of the query schema (ADR-0113): the filling of a table of the model description, a view, a function and the
+	// rights a role gets.
+	WhatRows     = "rows"
+	WhatView     = "view"
+	WhatFunction = "function"
+	WhatGrant    = "grant"
 )
 
 // Step is one statement of a plan.
@@ -58,12 +70,19 @@ type Options struct {
 	// WithStats puts the statistics objects in the steps. Without it they are in Plan.Deferred and the
 	// manifest says the statistics are pending, so they can be made after the first load.
 	WithStats bool
+	// InstallToken is the token of the installation (CheckInstallToken), which the names of the roles of the query schema carry. A plan
+	// made without one has the tables and no query schema: the executor always gives it, and a test of the tables alone need not.
+	InstallToken string
 }
 
-// Plan is what Build returns: the statements in the order they run, and the manifest to keep when they have.
+// Plan is what Build returns: the statements in the order they run, and the manifest to keep when they have. Query is the part that
+// gives the KG its query schemas (ADR-0113): it is made again, whole, whenever the schema is made or follows the model, and it runs
+// after the steps, in the same transaction, once the roles are there.
 type Plan struct {
 	Steps    []Step
 	Deferred []Step
+	Query    []Step
+	Roles    []string
 	Manifest Manifest
 }
 
@@ -94,15 +113,9 @@ func Build(reg *model.Registry, opts Options) (Plan, error) {
 	}
 	schema := SchemaName(opts.KGNo)
 	steps := []Step{{Phase: InTx, What: WhatSchema, Name: schema, SQL: "CREATE SCHEMA " + QuoteIdent(schema)}}
-	fixed, err := fixedTableDefs(sh.Common)
+	steps, err = fixedSteps(steps, schema, sh)
 	if err != nil {
 		return Plan{}, err
-	}
-	for _, d := range fixed {
-		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name, SQL: d.sql(schema)})
-	}
-	for _, d := range fixedIndexDefs(sh.Common) {
-		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, false)})
 	}
 	var stats []Step
 	for _, ts := range sh.Types {
@@ -127,7 +140,38 @@ func Build(reg *model.Registry, opts Options) (Plan, error) {
 	if len(plan.Deferred) > 0 {
 		plan.Manifest.State = StateStatsPending
 	}
+	if err := plan.addQuery(reg, sh, opts, search); err != nil {
+		return Plan{}, err
+	}
 	return plan, nil
+}
+
+// fixedSteps adds the steps of the fixed tables and their indexes to the steps.
+func fixedSteps(steps []Step, schema string, sh shape) ([]Step, error) {
+	fixed, err := fixedTableDefs(sh.Common)
+	if err != nil {
+		return nil, err
+	}
+	for _, d := range fixed {
+		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name, SQL: d.sql(schema)})
+	}
+	for _, d := range fixedIndexDefs(sh.Common) {
+		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name, SQL: d.sql(schema, false)})
+	}
+	return steps, nil
+}
+
+// addQuery gives the plan the steps of the query schema and the names of its roles, when the options carry the token of the installation.
+func (p *Plan) addQuery(reg *model.Registry, sh shape, opts Options, search SearchSet) error {
+	if opts.InstallToken == "" {
+		return nil
+	}
+	var err error
+	if p.Query, err = buildQuery(reg, sh, opts, search); err != nil {
+		return err
+	}
+	p.Roles = QueryRoleNames(opts.InstallToken, opts.KGNo)
+	return nil
 }
 
 // typeSteps are the steps that make the tables of a new type: its tables, its indexes and its statistics.

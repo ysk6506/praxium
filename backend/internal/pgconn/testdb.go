@@ -67,17 +67,32 @@ func makeTestDatabase(tb TB, base string, admin *sql.DB, template string) string
 	if template != "" {
 		create += ` TEMPLATE "` + template + `"`
 	}
-	if _, err := admin.ExecContext(context.Background(), create); err != nil {
+	_, err := admin.ExecContext(context.Background(), create)
+	if err == nil {
+		tb.Cleanup(func() {
+			if _, err := admin.ExecContext(context.Background(), `DROP DATABASE IF EXISTS "`+db+`" WITH (FORCE)`); err != nil {
+				tb.Logf("cannot drop the test database %s", db)
+			}
+		})
+		if template != "" {
+			_, err = testQueryLines(context.Background(), WithDatabase(base, db), testRenewToken)
+		}
+	}
+	if err != nil {
 		tb.Fatalf("%s", testServerError("cannot create a test database", err))
 		return ""
 	}
-	tb.Cleanup(func() {
-		if _, err := admin.ExecContext(context.Background(), `DROP DATABASE IF EXISTS "`+db+`" WITH (FORCE)`); err != nil {
-			tb.Logf("cannot drop the test database %s", db)
-		}
-	})
 	return WithDatabase(base, db)
 }
+
+// testRenewToken gives a copy of a template a token of the installation of its own (migration 0008): the token names the roles of
+// the query schema, which belong to the cluster, so two databases with one token would share them (ADR-0113, ADR-0120). A template
+// that the migrations did not run on has no token.
+const testRenewToken = `DO $$ BEGIN
+	IF to_regclass('public.install_token') IS NOT NULL THEN
+		UPDATE public.install_token SET token = substr(replace(gen_random_uuid()::text, '-', ''), 1, 12);
+	END IF;
+END $$`
 
 // testServerError says what went wrong with the test server. A driver error may repeat the DSN, so only the server's own
 // message is shown.

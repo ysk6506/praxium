@@ -144,7 +144,11 @@ func pgiParallel(t *testing.T) {
 func pgiOpenOn(t *testing.T, dsn string) *pgiEnv {
 	t.Helper()
 	ctx := context.Background()
-	pst, err := pgstore.Open(ctx, pgstore.Config{DSN: dsn})
+	models, err := pgstore.TestOnlyModelsWithoutQuerySchema()
+	if err != nil {
+		t.Fatal(err)
+	}
+	pst, err := pgstore.Open(ctx, pgstore.Config{DSN: dsn, Models: models})
 	if err != nil {
 		t.Fatal(err)
 	}

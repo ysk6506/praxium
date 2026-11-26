@@ -161,6 +161,7 @@ func expReset(s *rdfSetup, t *testing.T, l ingest.RunLease) {
 	t.Helper()
 	k := s.ref.KGNo
 	s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d".calc_object WHERE why <> %d`, k, pgschema.ObjectWhyIdentified))
+	s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d".%s`, k, pgschema.TableCalcXKey))
 	s.e.exec(t, fmt.Sprintf(`DELETE FROM "s_%d".calc_record WHERE why = %d`, k, pgschema.CalcWhyExpanded))
 	s.e.exec(t, `UPDATE sync_run SET calc_job = $2, calc_part = 0, counts = counts - 'expand' WHERE run_no = $1`, l.No, pgschema.CalcJobIdentify)
 }
@@ -225,6 +226,8 @@ func expMakeWorld(t *testing.T, mapping string, size int, reverse bool) *expWorl
 	for _, x := range []string{"X1", "X2", "X3", "X4", "X5"} {
 		s.rdfPutRaw(t, rdfRaw{dataset: "ds_servers", key: x, content: x})
 	}
+	// the records are kept under the declaration the dataset has, as the records of a run are (the computation of everything reads only those)
+	s.e.exec(t, fmt.Sprintf(`UPDATE %s r SET decl_rev = d.decl_rev FROM source_dataset d WHERE d.dataset_no = r.dataset_no AND r.key IN ('X1', 'X2', 'X3', 'X4', 'X5')`, pgiTable(s.ref, pgschema.TableRawRecord)))
 	expPutLink(s, t, 9003, expTypeFree, w.obj["SV1"], w.obj["SV2"])
 	expPutFrom(s, t, "ds_servers", "X1", 9003)
 	expPutLink(s, t, 9005, expTypeFree, w.obj["SV2"], w.obj["3"])
@@ -252,7 +255,7 @@ func (w *expWorld) expRun(t *testing.T, size int, full bool, skip ...string) (in
 		}
 		return false
 	}}
-	counts, err := ingest.RunExpand(w.s.e.ctx, w.s.e.st, w.l, ingest.ExpandStart{Full: full, Rows: size, Cards: expCards()})
+	counts, err := ingest.RunExpand(w.s.e.ctx, w.s.e.st, w.l, ingest.ExpandStart{Full: full, Rows: size, Cards: expCards(), Feeds: expFeeds(w.s)})
 	if err != nil {
 		t.Fatal(err)
 	}

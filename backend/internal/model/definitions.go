@@ -93,6 +93,10 @@ type Trait struct {
 	Needs       []Need     `json:"needs,omitempty"`
 }
 
+// ObjectNameProperty is the name of the property whose value is the name of an object: the ingestion puts it in the column name of the
+// table of the type, besides the document, and the query schema shows that column to every grade (ADR-0113).
+const ObjectNameProperty = "name"
+
 // Property is one attribute of an object type, a trait or a link type.
 //
 // Namespace is empty for a property of its owner's own namespace, which is

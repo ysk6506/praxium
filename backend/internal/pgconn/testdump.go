@@ -12,14 +12,16 @@ func notSystem(col string) string {
 }
 
 // testDumpRows gives one line: the statement that reads every row of every ordinary table as JSON, with a time within a day
-// of the server's clock written as recent.
+// of the server's clock written as recent and the token of the installation (migration 0008), which every database has of
+// its own, left out.
 var testDumpRows = `WITH t AS (
 	SELECT c.oid, quote_ident(n.nspname) || '.' || quote_ident(c.relname) AS name FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
 	WHERE c.relkind = 'r' AND ` + notSystem("n.nspname") + `),
 e AS (
 	SELECT t.name, 'to_jsonb(t)' || coalesce(string_agg(format(
 		' || jsonb_build_object(%L, CASE WHEN t.%I IS NOT NULL AND abs(extract(epoch FROM now() - t.%I::timestamptz)) < 86400 THEN to_jsonb(''recent''::text) ELSE to_jsonb(t.%I) END)',
-		a.attname, a.attname, a.attname, a.attname), '' ORDER BY a.attnum) FILTER (WHERE a.attname IS NOT NULL), '') AS expr
+		a.attname, a.attname, a.attname, a.attname), '' ORDER BY a.attnum) FILTER (WHERE a.attname IS NOT NULL), '')
+		|| CASE WHEN t.name = 'public.install_token' THEN ' || jsonb_build_object(''token'', ''a token of its own'')' ELSE '' END AS expr
 	FROM t LEFT JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum > 0 AND NOT a.attisdropped AND a.atttypid IN ('timestamptz'::regtype, 'timestamp'::regtype)
 	GROUP BY t.name)
 SELECT coalesce(string_agg(format('SELECT %L || '' '' || (%s)::text FROM %s t', 'row ' || e.name, e.expr, e.name), ' UNION ALL ' ORDER BY e.name),
@@ -53,6 +55,7 @@ const testStatisticsRows = `((SELECT count(*) FROM pg_stats WHERE schemaname NOT
 // idea of its size, every column, index, constraint, trigger, view, function and statistics object, the value of every
 // sequence, every row of every table, and how many rows of planner statistics there are. A time within a day of the
 // server's clock is shown as recent, so two databases made a moment apart compare equal; other times are shown as they are.
+// The token of the installation is left out, as every database has one of its own.
 func DumpTestDatabase(ctx context.Context, dsn string) ([]string, error) {
 	rows, err := testQueryLines(ctx, dsn, testDumpRows)
 	var out []string

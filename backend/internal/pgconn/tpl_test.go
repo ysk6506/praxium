@@ -335,6 +335,19 @@ func TestTplACopyOfTheMigratedTemplateIsTheDatabaseThatOpenMakesFromAnEmptyOne(t
 	if !strings.Contains(strings.Join(want, "\n"), "row public.schema_migrations") || len(steps) == 0 {
 		t.Fatalf("the dump does not show the migrations: %d lines", len(want))
 	}
+	// every copy has a token of the installation of its own, as a database made the slow way has (ADR-0113)
+	tokens := map[string]bool{}
+	for _, dsn := range []string{fresh, copied, NewMigratedTestDatabase(t)} {
+		var token string
+		noErr(t, "token", tplOpen(t, dsn).QueryRowContext(ctx, `SELECT token FROM install_token`).Scan(&token))
+		if len(token) != 12 || tokens[token] {
+			t.Errorf("the token %q is not one of its own", token)
+		}
+		tokens[token] = true
+	}
+	if !strings.Contains(strings.Join(want, "\n"), `row public.install_token {"id": 1, "token": "a token of its own"}`) {
+		t.Error("the dump shows the token of the installation")
+	}
 	key := TestMigrationsKey()
 	for _, m := range steps {
 		if !strings.Contains(key, m.checksum) || !strings.Contains(key, m.name) {
