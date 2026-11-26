@@ -158,6 +158,7 @@ func (c *checker) checkTypeParts(what string, t *ObjectType) {
 	c.checkNeeds(what, t.Needs)
 	for j := range t.Properties {
 		c.checkProperty(&t.Properties[j], what)
+		c.checkObjectName(what, &t.Properties[j])
 	}
 	eff := c.effectiveProps(t)
 	c.checkPropertyNames(what, eff)

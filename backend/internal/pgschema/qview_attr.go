@@ -28,7 +28,7 @@ func (g qGen) attributeView() qObject {
 // attributeOfDocs is the attributes of the objects of one type that are kept in the document.
 func (g qGen) attributeOfDocs(t qType) string {
 	return "SELECT t.obj_no AS id, ma.name AS name, e.value->'v' AS value, e.value->>'g' AS grade, e.value->>'b' AS basis, " + TimeFunc + "(e.value->>'t') AS seen_at FROM " +
-		g.objectRows(t.No, "t") + " CROSS JOIN LATERAL jsonb_each(t.doc) e JOIN " + g.tbl(TableModelAttribute) + " ma ON ma.type_no = " + strconv.Itoa(t.No) +
+		g.objectRows(t.No, "t") + " CROSS JOIN LATERAL jsonb_each(" + g.grade.withoutHidden("t.doc") + ") e JOIN " + g.tbl(TableModelAttribute) + " ma ON ma.type_no = " + strconv.Itoa(t.No) +
 		" AND ma.attr_no = e.key::integer WHERE " + g.grade.notHidden("ma.attr_no")
 }
 

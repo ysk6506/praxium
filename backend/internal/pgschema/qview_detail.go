@@ -32,7 +32,7 @@ func (g qGen) objectDetail() qObject {
 	body := "WITH o AS (SELECT o.obj_no, o.ref, o.type_no FROM " + g.tbl(TableObject) + " o WHERE o.obj_no = p_id AND " + g.alive("o") + "),\nr AS (" +
 		strings.Join(branches, "\n UNION ALL ") + ")\n" +
 		"SELECT jsonb_build_object('id', r.obj_no, 'ref', r.ref, 'type', mt.name, 'name', r.name, 'min_grade', " + gradeText("r.min_grade") + ", 'attributes', " +
-		"COALESCE((SELECT jsonb_object_agg(ma.name, e.value) FROM jsonb_each(r.doc) e JOIN " + g.tbl(TableModelAttribute) +
+		"COALESCE((SELECT jsonb_object_agg(ma.name, e.value) FROM jsonb_each(" + g.grade.withoutHidden("r.doc") + ") e JOIN " + g.tbl(TableModelAttribute) +
 		" ma ON ma.type_no = r.type_no AND ma.attr_no = e.key::integer WHERE " + g.grade.notHidden("ma.attr_no") + "), '{}'::jsonb) || " +
 		volatileEntries(g.shown(g.qm.Common), "os") + " || r.vol) FROM r JOIN " + g.tbl(TableModelType) + " mt ON mt.type_no = r.type_no LEFT JOIN " +
 		g.tbl(TableObjectState) + " os ON os.obj_no = r.obj_no"

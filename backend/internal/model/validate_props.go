@@ -61,6 +61,16 @@ func (c *checker) checkProperty(p *Property, owner string) {
 	c.checkPropertyLife(what, p)
 }
 
+// checkObjectName checks the property that gives an object its name. The name of an object is a column of the table of its type and
+// not a key of the document, so the query schema shows it to every grade and a grade cannot cut it (ADR-0113): the property must be
+// open.
+func (c *checker) checkObjectName(what string, p *Property) {
+	if p.Name == ObjectNameProperty && p.EffectiveSensitivity() != SensitivityOpen {
+		c.fail(CodeClosedList, "%s has sensitivity %q: the property %s gives an object its name, which every grade of the query schema sees, so want open",
+			what, p.EffectiveSensitivity(), ObjectNameProperty)
+	}
+}
+
 // checkPropertyNaming checks the namespace of a property and the form of its
 // name and aliases, which follow the namespace (names.go).
 func (c *checker) checkPropertyNaming(what string, p *Property) {
@@ -181,6 +191,7 @@ func (c *checker) checkTraits() {
 		var own []*Property
 		for j := range t.Properties {
 			c.checkProperty(&t.Properties[j], what)
+			c.checkObjectName(what, &t.Properties[j])
 			own = append(own, &t.Properties[j])
 		}
 		c.checkPropertyNames(what, own)

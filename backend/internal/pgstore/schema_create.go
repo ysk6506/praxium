@@ -17,6 +17,17 @@ func buildPlan(m SchemaModel, kgNo int64) (pgschema.Plan, error) {
 	return pgschema.Build(m.Registry, pgschema.Options{KGNo: kgNo, Search: m.Search, WithStats: m.WithStats, InstallToken: m.token})
 }
 
+// readToken gives the model the token of the installation, which makes the plan have a query schema (ADR-0113). A model that has no
+// query schema (SchemaModel.noQuery) is left without it, and its plan is the tables only.
+func readToken(ctx context.Context, tx *sql.Tx, m SchemaModel) (SchemaModel, error) {
+	if m.noQuery {
+		return m, nil
+	}
+	var err error
+	m.token, err = readInstallToken(ctx, tx)
+	return m, err
+}
+
 // CreateStorageSchema makes the storage schema of a KG from the model: it takes the number of the KG from the
 // sequence, runs the statements of the plan, and writes the record with the manifest last, all in one transaction
 // of the migration role on the write pool, under the lock of the KG's schema work. It either makes everything or
@@ -62,7 +73,7 @@ func createInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 	if err := tx.QueryRowContext(ctx, `SELECT nextval('kg_no_seq')`).Scan(&kgNo); err != nil {
 		return SchemaRecord{}, dbErr(err, "take the number of the KG")
 	}
-	if m.token, err = readInstallToken(ctx, tx); err != nil {
+	if m, err = readToken(ctx, tx, m); err != nil {
 		return SchemaRecord{}, err
 	}
 	p, err := plan(m, kgNo)

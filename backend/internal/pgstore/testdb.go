@@ -24,9 +24,16 @@ func NewTestDatabase(tb TB) string {
 // withDatabase is the DSN with another database name (see pgconn.WithDatabase).
 func withDatabase(dsn, name string) string { return pgconn.WithDatabase(dsn, name) }
 
+// TestOnlyModelsWithoutQuerySchema is the provider of the light standard model for the tests of other packages that make KGs and are not
+// about the query schema (ADR-0113): a test passes it as Config.Models of Open, and the KGs it makes have the tables only, without the
+// statistics objects and without the query schema, which costs about two seconds for each KG. Only a _test.go file or this file calls
+// it; a test locks that no other file does, and no setting of a server (variable, flag or file) reaches it.
+func TestOnlyModelsWithoutQuerySchema() (ModelProvider, error) { return StandardModels(false) }
+
 // NewTestStore opens a Store on a new empty test database with the standard model (without the statistics
 // objects). The lease runs out by the clock of the caller, as the tests move a clock of their own. The store is
-// closed and the database dropped when the test ends.
+// closed and the database dropped when the test ends. The KGs it makes have the tables and no query schema (views, functions and
+// roles; ADR-0113, see StandardModels): a test of the query schema opens the Store with Open and makes it.
 func NewTestStore(tb TB) *Store { return NewTestStoreWith(tb, LeaseClockCaller) }
 
 // NewTestStoreWith is NewTestStore with the clock that decides when a lease has run out (LeaseClockDB: the

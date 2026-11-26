@@ -102,7 +102,7 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 // schema of the record to it.
 func adjustPlan(ctx context.Context, tx *sql.Tx, rec SchemaRecord, m SchemaModel, plan planner) (pgschema.Plan, pgschema.Delta, error) {
 	var err error
-	if m.token, err = readInstallToken(ctx, tx); err != nil {
+	if m, err = readToken(ctx, tx, m); err != nil {
 		return pgschema.Plan{}, pgschema.Delta{}, err
 	}
 	next, err := plan(m, rec.KGNo)

@@ -116,9 +116,12 @@ func CreateRoleSQL(role string) string {
 	return "CREATE ROLE " + QuoteIdent(role) + " NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOREPLICATION NOBYPASSRLS"
 }
 
-// MemberSQL lets the role that runs the executor switch to the role of the query (SET ROLE), and nothing else: without it a role
-// that CREATEROLE made cannot be switched to. The executor does not take the rights of the role (NOINHERIT) and a query that
-// runs as the role has no way back.
+// MemberSQL lets the role that runs the executor switch to the role of the query (SET ROLE): without it a role that CREATEROLE made
+// cannot be switched to. The executor does not take the rights of the role (NOINHERIT), but it is a member of every grade's role, and
+// that is what SET ROLE and RESET ROLE look at: a statement that runs as the role of one grade can switch to the role of another
+// grade, or back to the executor, with SET ROLE or RESET ROLE. So the separation of the grades does not stand on the roles alone: it
+// stands on a query executor that lets no such statement through (SET, RESET, SET ROLE, more than one statement, DO, CREATE of
+// anything, a schema named in the query that is not the current set of the grade; ADR-0113, REQ-666).
 func MemberSQL(role string) string {
 	return "GRANT " + QuoteIdent(role) + " TO CURRENT_USER WITH SET TRUE, INHERIT FALSE"
 }

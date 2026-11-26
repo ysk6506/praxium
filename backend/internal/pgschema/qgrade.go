@@ -30,22 +30,24 @@ func gradeRank(g model.Sensitivity) int {
 // reads a sensitivity. A number that two properties share is as sensitive as the more sensitive of them.
 func attrGrades(reg *model.Registry) map[int]model.Sensitivity {
 	out := map[int]model.Sensitivity{}
-	note := func(p model.Property) {
-		if have, ok := out[p.AttrNo]; !ok || gradeRank(p.EffectiveSensitivity()) > gradeRank(have) {
-			out[p.AttrNo] = p.EffectiveSensitivity()
-		}
-	}
 	for _, t := range reg.ObjectTypes() {
 		for _, p := range reg.EffectiveProperties(t.ID) {
-			note(p)
+			noteGrade(out, p)
 		}
 	}
 	for _, l := range reg.LinkTypes() {
 		for _, p := range l.Properties {
-			note(p)
+			noteGrade(out, p)
 		}
 	}
 	return out
+}
+
+// noteGrade puts the sensitivity of a property into the grades by number: the more sensitive one stays when a number is noted twice.
+func noteGrade(out map[int]model.Sensitivity, p model.Property) {
+	if have, ok := out[p.AttrNo]; !ok || gradeRank(p.EffectiveSensitivity()) > gradeRank(have) {
+		out[p.AttrNo] = p.EffectiveSensitivity()
+	}
 }
 
 // VisibleAttrNos is the set of attribute numbers a grade sees: every property of an object type or of a link type whose
@@ -53,8 +55,13 @@ func attrGrades(reg *model.Registry) map[int]model.Sensitivity {
 // provenance, no row among the attributes, no key in the detail of an object, no column in a function of a past time and no row
 // among the changes of values.
 func VisibleAttrNos(reg *model.Registry, grade model.Sensitivity) map[int]bool {
+	return visibleOf(attrGrades(reg), grade)
+}
+
+// visibleOf is the numbers among the grades by number that a grade sees.
+func visibleOf(grades map[int]model.Sensitivity, grade model.Sensitivity) map[int]bool {
 	out := map[int]bool{}
-	for no, s := range attrGrades(reg) {
+	for no, s := range grades {
 		if gradeRank(s) <= gradeRank(grade) {
 			out[no] = true
 		}
@@ -85,8 +92,25 @@ func newGradeView(reg *model.Registry, grade model.Sensitivity) gradeView {
 // shows says whether the grade sees an attribute.
 func (g gradeView) shows(attrNo int) bool { return g.visible[attrNo] }
 
+// withoutHidden is the document (an SQL expression) with the keys of the attributes the grade does not see taken out. A statement that
+// spreads a document into rows (jsonb_each) spreads this and not the document, so the value of a hidden attribute is never a row,
+// and no condition of a caller can run on it. It is what keeps a value from the grade, and the condition of notHidden is not: a
+// condition on a row is not a guarantee, because the planner may run a condition of the caller, or an error of a cast, on the rows
+// before it. A statement that reads one key that the grade sees (doc->'11') opens no hidden key and needs no cut.
+func (g gradeView) withoutHidden(doc string) string {
+	if len(g.hidden) == 0 {
+		return doc
+	}
+	keys := make([]string, len(g.hidden))
+	for i, n := range g.hidden {
+		keys[i] = "'" + strconv.Itoa(n) + "'"
+	}
+	return "(" + doc + " - ARRAY[" + strings.Join(keys, ", ") + "]::text[])"
+}
+
 // notHidden is the condition that keeps the rows whose attribute number (an SQL expression) the grade sees; it is "true" when the
-// grade hides nothing.
+// grade hides nothing. It is the second fence (it drops the row of a model description or of a change that names a hidden
+// attribute) and not a guarantee for a value: see withoutHidden.
 func (g gradeView) notHidden(attrNo string) string {
 	if len(g.hidden) == 0 {
 		return "true"
