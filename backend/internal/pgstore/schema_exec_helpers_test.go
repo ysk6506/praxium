@@ -9,6 +9,7 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
+	"github.com/ysk6506/praxium/backend/internal/pgconn"
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
@@ -24,8 +25,30 @@ func sxKG(t *testing.T, n int) graph.KGID {
 	return id
 }
 
+// sxSerial are the tests on an empty database that run alone, after the others of this unit (ADR-0120): the ones that hold the plans
+// of the planner or a time to what they expect, and the ones that measure locks or wait for one with a time limit.
+var sxSerial = map[string]bool{
+	"TestTheIndexOfTheSearchSetIsTheOneTheQueryPlannerChooses":                                   true,
+	"TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable":                  true,
+	"TestIngestTheDigestOfAChunkInSQLIsTheDigestTheGoCodeGives":                                  true,
+	"TestIngestPuttingASourceToAKGDoesNotWaitForAnotherSourceThatIsBeingReceived":                true,
+	"TestQscATypeViewReadsOneObjectByAnIndexAndTheViewOfAParentIsAUnionAllOfTheTablesOfItsTypes": true,
+	"TestQscTheLinksOfAnObjectAreReadFromTheIndexAloneByTheirNumber":                             true,
+	"TestQscTheTimeToBuildAllTheViewsAgainIsMeasuredByKindOfStatement":                           true,
+}
+
+// sxParallel lets the test run beside the other tests of this unit, each on its own empty database, unless it is one of sxSerial.
+func sxParallel(t *testing.T) {
+	if !sxSerial[t.Name()] {
+		pgconn.TestInParallel(t)
+	}
+}
+
+// sxOpen is a store on a new empty database (not a copy of a template: the tests of the query schema make roles named by the
+// token of the installation that the migrations of this database made).
 func sxOpen(t *testing.T) (*Store, *sql.DB) {
 	t.Helper()
+	sxParallel(t)
 	dsn := NewTestDatabase(t)
 	st, err := Open(context.Background(), Config{DSN: dsn})
 	if err != nil {
