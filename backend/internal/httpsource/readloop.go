@@ -193,7 +193,7 @@ func (l *loop) take(w *walked, end *respEnd) bool {
 	case !sp.more:
 		l.finish(l.endOf(sp))
 	case l.rn.firstOnly:
-		l.finish(ingest.Completeness{Reason: reasonFirstOnly})
+		l.checkEnded()
 	default:
 		return true
 	}

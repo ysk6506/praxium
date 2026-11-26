@@ -47,6 +47,7 @@ func (rn *run) exchange(ctx context.Context, p plan) (*reply, error) {
 // exchangeFrom is exchange that begins at the attempt first (a read that broke goes on with the attempts it has left) and
 // says which attempt gave the answer. The body of the answer is open.
 func (rn *run) exchangeFrom(ctx context.Context, p plan, first int) (*reply, int, error) {
+	var before error // the failure of the attempt before this one, which a retry that a limit stops is about
 	for attempt := first; ; attempt++ {
 		if err := rn.pace.wait(ctx); err != nil {
 			return nil, attempt, err
@@ -55,10 +56,15 @@ func (rn *run) exchangeFrom(ctx context.Context, p plan, first int) (*reply, int
 		if err == nil {
 			return rep, attempt, nil
 		}
+		if le, ok := limitOf(err); ok && before != nil {
+			// The limit stopped the retry, so the reason says what the source answered before it, not only the limit.
+			err = &limitError{le.reason + "; the request before it failed with: " + plainText(before)}
+		}
 		wait, ok := rn.retryWait(rep, err, p, attempt)
 		if !ok {
 			return nil, attempt, err
 		}
+		before = err
 		rn.emit(ingest.Event{Kind: ingest.EventRetry, Attempt: attempt + 1, Reason: retryReason(err), Status: statusOf(rep)})
 		if err := rn.r.cfg.Sleep(ctx, wait); err != nil {
 			return nil, attempt, err
