@@ -46,10 +46,10 @@ func loadKGHead(ctx context.Context, tx *sql.Tx, a *kgAccess, lock bool) (kgHead
 	return h, nil
 }
 
-// loadKGHeadRaw reads the head row as it is. A KG that is being deleted (ADR-0125) is refused here, for every read and
-// write and for the work in the middle: the head is read beside the mark in one statement.
+// loadKGHeadRaw reads the head row as it is. A KG that is being deleted (ADR-0125) or made (ADR-0126) is refused here, for
+// every read and write and for the work in the middle: the head is read beside the marks in one statement.
 func loadKGHeadRaw(ctx context.Context, tx *sql.Tx, a *kgAccess, lock bool) (kgHeadRow, error) {
-	query := `SELECT ` + kgHeadColumns + `, EXISTS (SELECT 1 FROM kg_deleting WHERE kg_id = $1) FROM ` + a.t(pgschema.TableHead) + ` WHERE id = 1`
+	query := `SELECT ` + kgHeadColumns + `, EXISTS (SELECT 1 FROM ` + closedKGs + ` d WHERE d.kg_id = $1) FROM ` + a.t(pgschema.TableHead) + ` WHERE id = 1`
 	if lock {
 		query += ` FOR UPDATE`
 	}
@@ -59,16 +59,16 @@ func loadKGHeadRaw(ctx context.Context, tx *sql.Tx, a *kgAccess, lock bool) (kgH
 		state                         string
 		sum, parts, digest, rollbackJ []byte
 		rows                          int64
-		deleting                      bool
+		closed                        bool
 	)
 	err := tx.QueryRowContext(ctx, query, a.id.String()).Scan(&state, &out.generation, &h.AppliedSeq, &h.ReadableThrough, &h.IngestSeq, &sum, &rows,
 		&parts, &digest, &h.ApplyID, &h.NextChunkNo, &h.ChunkCount, &rollbackJ, &h.LastApplyID, &h.AppliedSemanticVersion,
-		&out.work, &out.workSeq, &out.workFloor, &out.workHead, &out.floor, &deleting)
+		&out.work, &out.workSeq, &out.workFloor, &out.workHead, &out.floor, &closed)
 	if err != nil {
 		return kgHeadRow{}, notFound(err, "read the head", a.id)
 	}
-	if deleting {
-		return kgHeadRow{}, errKGDeleting(a.id)
+	if closed {
+		return kgHeadRow{}, errKGClosed(a.id)
 	}
 	out.state = graph.State(state)
 	if h.Hash, err = hashStateOf(sum, rows, parts); err != nil {

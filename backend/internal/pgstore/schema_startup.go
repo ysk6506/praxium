@@ -2,6 +2,7 @@ package pgstore
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"fmt"
 
@@ -28,6 +29,10 @@ type SchemaStartup struct {
 // turns: the state "building" of ADR-0087 is the claim). A KG made by a newer generator than this build is not
 // touched. A KG that could not be adjusted because of a failure does not stop the others: the failures are
 // joined in the error returned, and the KG stays refused until it is adjusted.
+//
+// A KG of this generator whose query schemas are missing or stale (made by another plan, or left by an adjustment that
+// stopped) gets them made again, one to a transaction, and only those (ADR-0126); it is said as adjusted. Servers that
+// start together take turns over each query schema, and the one that comes second finds it made and leaves it.
 func (s *Store) AdjustOldSchemas(ctx context.Context) ([]SchemaStartup, error) {
 	kgs, err := s.ListKGs(ctx)
 	if err != nil {
@@ -48,14 +53,15 @@ func (s *Store) AdjustOldSchemas(ctx context.Context) ([]SchemaStartup, error) {
 	return done, errors.Join(failed...)
 }
 
-// adjustOldOne handles one KG; nil means it is not of an older generator and nothing was said about it.
+// adjustOldOne handles one KG; nil means it is not of an older generator, its query schemas are as the plan says, and
+// nothing was said about it.
 func (s *Store) adjustOldOne(ctx context.Context, kg graph.KGID) (*SchemaStartup, error) {
 	rec, err := s.StorageSchema(ctx, kg)
 	if err != nil {
 		return nil, err
 	}
 	if !needsAdjusting(rec) {
-		return nil, nil
+		return s.remakeQuery(ctx, kg, rec)
 	}
 	defer s.forget(kg)
 	a, err := s.access(ctx, kg)
@@ -80,6 +86,50 @@ func (s *Store) adjustOldOne(ctx context.Context, kg graph.KGID) (*SchemaStartup
 		return left(fmt.Sprintf("another run holds the schema: %v", err))
 	}
 	return nil, err
+}
+
+// remakeQuery makes again the query schemas of a KG that are missing or stale (ADR-0126). A KG whose schema was not made from the
+// model the server holds (D19 refuses it, and the plan of the model is not its plan) and a model without a query schema are left as
+// they are; so is a KG whose query schemas all have the mark of the plan. nil means nothing was made.
+func (s *Store) remakeQuery(ctx context.Context, kg graph.KGID, rec SchemaRecord) (*SchemaStartup, error) {
+	defer s.forget(kg)
+	a, err := s.access(ctx, kg)
+	if err != nil {
+		return nil, err
+	}
+	if CheckSchemaMatch(rec, a.model) != nil {
+		return nil, nil
+	}
+	var p pgschema.Plan
+	stale := false
+	err = a.sh.tx(ctx, RoleAPIRead, false, func(tx *sql.Tx) error {
+		m, err := readToken(ctx, tx, a.model)
+		if err != nil {
+			return err
+		}
+		if p, err = buildPlan(m, rec.KGNo); err != nil {
+			return err
+		}
+		parts, err := queryParts(p)
+		if err != nil {
+			return err
+		}
+		for _, part := range parts {
+			have, err := queryMark(ctx, tx, part.name)
+			if err != nil {
+				return err
+			}
+			stale = stale || have != part.mark
+		}
+		return nil
+	})
+	if err != nil || !stale {
+		return nil, err
+	}
+	if err := s.makeQuerySchemas(ctx, a.sh, kg, p, false); err != nil {
+		return nil, err
+	}
+	return &SchemaStartup{KG: kg, Adjusted: true}, nil
 }
 
 // needsAdjusting says whether a record is of an older generator, or of this one with the indexes not all built (the state is not ok: a

@@ -9,11 +9,13 @@ import (
 	"github.com/ysk6506/praxium/backend/internal/pgschema"
 )
 
-// adjustment is what the first transaction of an adjustment leaves for the second part.
+// adjustment is what the first transaction of an adjustment leaves for the rest: the record, the indexes to build after it, and
+// the plan whose query schemas are made after them.
 type adjustment struct {
 	rec        SchemaRecord
 	concurrent []pgschema.Step
 	online     bool
+	plan       pgschema.Plan
 }
 
 // AdjustStorageSchema brings the storage schema of a KG up to the model after the model changed. It compares the
@@ -22,6 +24,10 @@ type adjustment struct {
 // run inside a transaction run in one, under the lock of the KG's schema work; the indexes that are built or
 // dropped on tables that have rows run after it, one statement at a time, without blocking the writers. A
 // change that is not an addition is refused (pgschema.CodeNotAdditive) and the database is as it was.
+//
+// Last, the query schemas are made again, one to a transaction (ADR-0126), those that are missing or stale only. An
+// adjustment that fails there leaves the storage schema adjusted and some query schemas stale; the next adjustment,
+// or the next start of a server (AdjustOldSchemas), makes them.
 //
 // An index that a stopped run left half built (invalid) is dropped and built again, and an index that the
 // manifest does not know is dropped; the state is ok when no index is left to do. A KG whose statistics are
@@ -42,16 +48,23 @@ func (s *Store) adjustStorageSchema(ctx context.Context, kg graph.KGID, m Schema
 	var adj adjustment
 	err = locked(ctx, sh, kg, func(tx *sql.Tx) error {
 		var err error
-		adj, err = adjustInTx(ctx, tx, kg, m, plan)
-		return err
+		if adj, err = adjustInTx(ctx, tx, kg, m, plan); err != nil {
+			return err
+		}
+		return s.schemaStep(ctx, schemaStepAdjust, tx)
 	})
-	if err != nil || !adj.online {
+	if err != nil {
 		return adj.rec, err
 	}
-	if err := buildOnline(ctx, sh, adj); err != nil {
-		return adj.rec, err
+	if adj.online {
+		if err := buildOnline(ctx, sh, adj); err != nil {
+			return adj.rec, err
+		}
+		if adj.rec, err = settledRecord(ctx, sh, kg); err != nil {
+			return adj.rec, err
+		}
 	}
-	return settledRecord(ctx, sh, kg)
+	return adj.rec, s.makeQuerySchemas(ctx, sh, kg, adj.plan, false)
 }
 
 // settledRecord reads the record of a KG from the primary, after the indexes were built.
@@ -66,7 +79,7 @@ func settledRecord(ctx context.Context, sh *shard, kg graph.KGID) (SchemaRecord,
 }
 
 // adjustInTx is the first part: the checks, the steps that run in the transaction and the record. The record
-// is left alone when there is nothing to do.
+// is left alone when there is nothing to do; the plan is there for the query schemas either way.
 func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, plan planner) (adjustment, error) {
 	rec, found, err := readRecord(ctx, tx, kg)
 	if err := adjustable(rec, found, err, kg); err != nil {
@@ -79,12 +92,9 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 	inTx, concurrent := splitPhases(delta.Steps)
 	online := len(concurrent) > 0 || rec.State != string(pgschema.StateOK)
 	if len(inTx) == 0 && !online && CheckSchemaMatch(rec, m) == nil {
-		return adjustment{rec: rec}, nil
+		return adjustment{rec: rec, plan: next}, nil
 	}
 	if err := runSteps(ctx, tx, inTx, pgschema.InTx); err != nil {
-		return adjustment{}, err
-	}
-	if err := runQuerySteps(ctx, tx, next); err != nil {
 		return adjustment{}, err
 	}
 	state, result := string(pgschema.StateOK), delta.Result
@@ -95,7 +105,7 @@ func adjustInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, p
 		return adjustment{}, err
 	}
 	rec, _, err = readRecord(ctx, tx, kg)
-	return adjustment{rec: rec, concurrent: concurrent, online: online}, err
+	return adjustment{rec: rec, concurrent: concurrent, online: online, plan: next}, err
 }
 
 // adjustPlan is the plan of the model as it is now (with the token of the installation, for the query schema) and the steps that take the

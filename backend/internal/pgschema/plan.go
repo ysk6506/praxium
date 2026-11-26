@@ -77,7 +77,7 @@ type Options struct {
 
 // Plan is what Build returns: the statements in the order they run, and the manifest to keep when they have. Query is the part that
 // gives the KG its query schemas (ADR-0113): it is made again, whole, whenever the schema is made or follows the model, and it runs
-// after the steps, in the same transaction, once the roles are there.
+// after the steps, once the roles are there, one query schema to a transaction (ADR-0126).
 type Plan struct {
 	Steps    []Step
 	Deferred []Step
