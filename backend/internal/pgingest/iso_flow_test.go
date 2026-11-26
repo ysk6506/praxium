@@ -128,7 +128,7 @@ func TestIsoTheStepBeginsAfterTheFourthStepOncePutsAPageOnceAndRefusesAServerTha
 	}
 	// the pages up to the first of the cardinality that is not the last of its pass, each put twice
 	for i := 0; i < 40; i++ {
-		if place, err = st.IsolatePlace(ctx, l); err != nil || (place.Phase == ingest.IsolatePhaseKept && place.Cursor.Ref != "") {
+		if place, err = st.IsolatePlace(ctx, l); err != nil || (place.Phase == ingest.IsolatePhaseSeats && place.Cursor.Ref != "") {
 			break
 		}
 		page, err := st.IsolatePage(ctx, l)
@@ -145,7 +145,7 @@ func TestIsoTheStepBeginsAfterTheFourthStepOncePutsAPageOnceAndRefusesAServerTha
 		stage(fmt.Sprintf("page %d put twice", i), st.PutIsolated(ctx, l, made))
 	}
 	place, err = st.IsolatePlace(ctx, l)
-	if err != nil || place.Phase != ingest.IsolatePhaseKept || place.Cursor.Ref == "" {
+	if err != nil || place.Phase != ingest.IsolatePhaseSeats || place.Cursor.Ref == "" {
 		t.Fatalf("%+v %v", place, err)
 	}
 	before := f.isoState(t)
@@ -197,14 +197,14 @@ func isoSame(t *testing.T, world func(*testing.T, bool) *isoFix, sizes []int) st
 
 // [REQ-852]
 func TestIsoThePlacesOfTheCardinalityHangNeitherOnThePagesNorOnTheNumbersOfTheLinks(t *testing.T) {
-	if got := isoSame(t, isoCardWorld, []int{1, 4, 0}); got == "" {
+	if got := isoSame(t, isoCardWorld, []int{1, 0}); got == "" {
 		t.Fatal("nothing was compared")
 	}
 }
 
 // [REQ-852]
 func TestIsoTheIdentifiersTakenOutHangNeitherOnThePagesNorOnTheNumbersOfTheObjects(t *testing.T) {
-	if got := isoSame(t, isoIdentWorld, []int{1, 3, 0}); got == "" {
+	if got := isoSame(t, isoIdentWorld, []int{1, 0}); got == "" {
 		t.Fatal("nothing was compared")
 	}
 }

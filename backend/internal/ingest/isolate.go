@@ -16,12 +16,11 @@ import (
 // decides what wins (the rule of the identifiers and the order of the places are Go's, so a test holds them as pure functions) and
 // makes what is not SQL (the hash of an identifier, the binding of a link). This file is the port a state machine drives it by.
 
-// The phases of the step: the identifiers, the ends, and the cardinality in two passes (the links the KG has first, then the others).
+// The phases of the step: the identifiers, the ends, and the places of the cardinality.
 const (
 	IsolatePhaseIdents = "idents"
 	IsolatePhaseEnds   = "ends"
-	IsolatePhaseKept   = "kept"
-	IsolatePhaseFresh  = "fresh"
+	IsolatePhaseSeats  = "seats"
 	IsolatePhaseDone   = "done"
 )
 
@@ -102,7 +101,8 @@ type IdentKey struct {
 	Claimants            []IdentClaimant
 }
 
-// SeatLink is a link at a place of the cardinality: its number, id, type and ends, with the type and the name of each end object.
+// SeatLink is a link at a place of the cardinality: its number, id, type and ends, with the type and the name of each end object, and
+// whether the KG has it (Kept: the run staged a link the KG has, which keeps its place against a link the KG does not have).
 type SeatLink struct {
 	LinkNo           int64
 	Ref              string
@@ -110,6 +110,7 @@ type SeatLink struct {
 	Src, Dst         int64
 	SrcType, DstType int
 	SrcName, DstName string
+	Kept             bool
 }
 
 // Seat is a place that holds one link (the side of the link: SeatOut is its start, SeatIn its end; the object there; the binding) and the
@@ -127,10 +128,10 @@ const (
 	SeatIn  int16 = 2
 )
 
-// IsolatePage is a page of a phase. In the phase idents it has the identifiers of the page that more than one object has; in the phases
-// kept and fresh the links of the page in the order of their ids, the links the KG keeps at their ends that the run does not touch
-// (Fixed: they keep their places), and the places at their ends that earlier pages gave (Taken). Schemes are the numbers of the schemes
-// the references of the claims name them by.
+// IsolatePage is a page of a phase. In the phase idents it has the identifiers of the page that more than one object has; in the phase
+// seats the links of the page in the order of their ids, the links the KG has at their ends that stay (Fixed: the ones the run does not
+// touch, and the ones it staged again, Kept), and the places at their ends that earlier pages gave (Taken). Schemes are the numbers of the
+// schemes the references of the claims name them by.
 type IsolatePage struct {
 	Unit    int
 	Phase   string

@@ -169,9 +169,7 @@ func isoNextPhase(phase string) string {
 	case ingest.IsolatePhaseIdents:
 		return ingest.IsolatePhaseEnds
 	case ingest.IsolatePhaseEnds:
-		return ingest.IsolatePhaseKept
-	case ingest.IsolatePhaseKept:
-		return ingest.IsolatePhaseFresh
+		return ingest.IsolatePhaseSeats
 	}
 	return ingest.IsolatePhaseDone
 }

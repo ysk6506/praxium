@@ -70,7 +70,7 @@ func (m *IsolationMaker) MakeIsolated(page IsolatePage) (IsolatedPage, error) {
 	switch page.Phase {
 	case IsolatePhaseIdents:
 		return m.idents(page, out)
-	case IsolatePhaseKept, IsolatePhaseFresh:
+	case IsolatePhaseSeats:
 		out.Seats, out.Lost = m.seats(page)
 	}
 	return out, nil
@@ -139,19 +139,23 @@ type isoPlace struct {
 	bindID string
 }
 
-// seats goes through the links of a page in their order: a link whose places are all free takes them, and a link one of whose places a
-// link before it took (in an earlier page, in this page, or a link the KG keeps that the run does not touch) loses. Going through all the
-// links once in one order is what makes the outcome hang on the order alone (a link that loses takes no place, so it does not keep a
-// place from a link after it).
+// seats goes through the links of a page in the order of their ids, the order of the whole step: a link whose places are all free takes
+// them, and a link loses when one of its places is taken. A place is taken by a link before it that took it (in an earlier page or in this
+// page), by a link the KG has that the run does not touch, and, for a link the KG does not have, by a link the KG has that the run staged
+// again and that comes after it (it takes the place when its turn comes: the link the KG has keeps its place). Going through the links once
+// in one order is what makes the outcome hang on the order alone (a link that loses takes no place, so it does not keep a place from a link
+// after it).
 func (m *IsolationMaker) seats(page IsolatePage) ([]Seat, []SeatLoss) {
 	taken := map[isoPlace]bool{}
 	for _, s := range page.Taken {
 		taken[isoPlace{s.Side, s.EndNo, s.BindID}] = true
 	}
+	fixed := map[isoPlace][]SeatLink{}
 	for _, f := range page.Fixed {
 		_, places := m.placesOf(f)
 		for _, p := range places {
-			taken[isoPlace{p.Side, p.EndNo, p.BindID}] = true
+			at := isoPlace{p.Side, p.EndNo, p.BindID}
+			fixed[at] = append(fixed[at], f)
 		}
 	}
 	var seats []Seat
@@ -160,8 +164,14 @@ func (m *IsolationMaker) seats(page IsolatePage) ([]Seat, []SeatLoss) {
 		b, places := m.placesOf(l)
 		free := true
 		for _, p := range places {
-			if taken[isoPlace{p.Side, p.EndNo, p.BindID}] {
+			at := isoPlace{p.Side, p.EndNo, p.BindID}
+			if taken[at] {
 				free = false
+			}
+			for _, f := range fixed[at] {
+				if f.LinkNo != l.LinkNo && (!f.Kept || (!l.Kept && f.Ref > l.Ref)) {
+					free = false
+				}
 			}
 		}
 		if !free {

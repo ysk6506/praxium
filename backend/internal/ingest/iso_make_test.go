@@ -124,6 +124,10 @@ func TestIsoALinkTakesItsPlacesWhenAllAreFreeInTheOrderOfThePage(t *testing.T) {
 	m := NewIsolationMaker(reg)
 	mount := func(n, src, dst int64) SeatLink { return isoLink(ty, n, src, dst, ty.server, ty.rack, ty.mounted) }
 	host := func(n, src, dst int64) SeatLink { return isoLink(ty, n, src, dst, ty.host, ty.server, ty.runsOn) }
+	kept := func(l SeatLink) SeatLink {
+		l.Kept = true
+		return l
+	}
 	cases := []struct {
 		name  string
 		page  IsolatePage
@@ -137,11 +141,15 @@ func TestIsoALinkTakesItsPlacesWhenAllAreFreeInTheOrderOfThePage(t *testing.T) {
 		{"one to one", IsolatePage{Links: []SeatLink{host(1, 30, 40), host(2, 30, 41), host(3, 31, 41), host(4, 32, 40)}}, "l02 l04", 4},
 		// a link the KG keeps holds its place
 		{"a link the KG keeps", IsolatePage{Links: []SeatLink{mount(1, 10, 20)}, Fixed: []SeatLink{mount(9, 10, 22)}}, "l01", 0},
+		// a link the KG has that the run staged again keeps its place against a new link of a smaller id
+		{"a link the KG has and the run stages", IsolatePage{Links: []SeatLink{mount(1, 10, 20), kept(mount(2, 10, 21))}, Fixed: []SeatLink{kept(mount(2, 10, 21))}}, "l01", 1},
+		// two of them at one place (a KG that broke the rule): the smaller id keeps it
+		{"two links the KG has", IsolatePage{Links: []SeatLink{kept(mount(1, 10, 20)), kept(mount(2, 10, 21))}, Fixed: []SeatLink{kept(mount(1, 10, 20)), kept(mount(2, 10, 21))}}, "l02", 1},
 		// a link of a type the binding does not hold to one, and one of no binding, take nothing and lose nothing
 		{"no place", IsolatePage{Links: []SeatLink{isoLink(ty, 1, 30, 40, ty.vm, ty.vm, ty.runsOn), isoLink(ty, 2, 30, 41, ty.vm, ty.vm, ty.runsOn), isoLink(ty, 3, 10, 20, ty.rack, ty.rack, ty.mounted)}}, "", 0},
 	}
 	for _, c := range cases {
-		c.page.Phase = IsolatePhaseFresh
+		c.page.Phase = IsolatePhaseSeats
 		if c.name == "a place an earlier page took" {
 			b := m.bindOf(ty.mounted, ty.server, ty.rack)
 			c.page.Taken = []Seat{{Side: SeatOut, EndNo: 10, BindID: b.id, LinkNo: 1}}
@@ -156,7 +164,7 @@ func TestIsoALinkTakesItsPlacesWhenAllAreFreeInTheOrderOfThePage(t *testing.T) {
 			t.Errorf("%s: lost %q with %d places, want %q with %d", c.name, got, len(out.Seats), c.lost, c.seats)
 		}
 	}
-	out, _ := m.MakeIsolated(IsolatePage{Phase: IsolatePhaseKept, Links: []SeatLink{mount(1, 10, 20), mount(2, 10, 21)}})
+	out, _ := m.MakeIsolated(IsolatePage{Phase: IsolatePhaseSeats, Links: []SeatLink{mount(1, 10, 20), mount(2, 10, 21)}})
 	if len(out.Lost) != 1 || !strings.HasPrefix(out.Lost[0].Reason, "the link MOUNTED_IN from o10 to o21 would break the cardinality N:1, so it was not made") {
 		t.Errorf("the reason of the old flow: %+v", out.Lost)
 	}
@@ -173,12 +181,12 @@ func TestIsoThePlacesHangOnTheOrderOfTheLinksAloneAndNotOnThePages(t *testing.T)
 		src, dst := 100+(i+1)/2, 200+i/2
 		links = append(links, isoLink(ty, i, src, dst, ty.host, ty.server, ty.runsOn))
 	}
-	whole, _ := m.MakeIsolated(IsolatePage{Phase: IsolatePhaseFresh, Links: links})
+	whole, _ := m.MakeIsolated(IsolatePage{Phase: IsolatePhaseSeats, Links: links})
 	for size := 1; size <= 4; size++ {
 		var taken []Seat
 		var lost []SeatLoss
 		for at := 0; at < len(links); at += size {
-			out, _ := m.MakeIsolated(IsolatePage{Phase: IsolatePhaseFresh, Links: links[at:min(at+size, len(links))], Taken: taken})
+			out, _ := m.MakeIsolated(IsolatePage{Phase: IsolatePhaseSeats, Links: links[at:min(at+size, len(links))], Taken: taken})
 			taken, lost = append(taken, out.Seats...), append(lost, out.Lost...)
 		}
 		if isoLostText(lost) != isoLostText(whole.Lost) || len(taken) != len(whole.Seats) {

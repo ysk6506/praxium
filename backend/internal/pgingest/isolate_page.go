@@ -48,7 +48,18 @@ func (r *isoRun) identPage(ctx context.Context, tx *sql.Tx, page *ingest.Isolate
 	}
 	page.Through = end
 	var key *ingest.IdentKey
-	return r.query(ctx, tx, "read the identifiers that more than one object has", isoIdentKeysSQL, func(rows *sql.Rows) error {
+	// the page is the lines up to the end of the identifier its last line is of: the lines before it and all the lines of that identifier
+	args := []any{cur.Scheme, cur.Value, cur.Scope, r.st.Size}
+	if !page.Last {
+		var n int
+		q := r.q(isoIdentRowsSQL)
+		r.saw(tx, "count the lines of the last identifier of the page", q, end.Scheme, end.Value, end.Scope)
+		if err := tx.QueryRowContext(ctx, q, end.Scheme, end.Value, end.Scope).Scan(&n); err != nil {
+			return dbErr(err, "count the lines of the last identifier of the page")
+		}
+		args = append(args[:3], r.st.Size+n, end.Scheme, end.Value, end.Scope)
+	}
+	return r.query(ctx, tx, "read the identifiers that more than one object has", isoIdentKeysSQL(page.Last), func(rows *sql.Rows) error {
 		var scheme, value, scope string
 		var c ingest.IdentClaimant
 		if err := rows.Scan(&scheme, &value, &scope, &c.ObjNo, &c.Ref, &c.Staged, &c.Holds); err != nil {
@@ -60,7 +71,7 @@ func (r *isoRun) identPage(ctx context.Context, tx *sql.Tx, page *ingest.Isolate
 		}
 		key.Claimants = append(key.Claimants, c)
 		return nil
-	}, cur.Scheme, cur.Value, cur.Scope, end.Scheme, end.Value, end.Scope, page.Last)
+	}, args...)
 }
 
 // endsPage reads where a page of the links by their number ends.
@@ -90,20 +101,19 @@ func (r *isoRun) cardTypes() (all []string, out, in map[int]bool) {
 
 func isoScanLink(rows *sql.Rows) (ingest.SeatLink, error) {
 	var l ingest.SeatLink
-	err := rows.Scan(&l.LinkNo, &l.Ref, &l.TypeNo, &l.Src, &l.Dst, &l.SrcType, &l.DstType, &l.SrcName, &l.DstName)
+	err := rows.Scan(&l.LinkNo, &l.Ref, &l.TypeNo, &l.Src, &l.Dst, &l.SrcType, &l.DstType, &l.SrcName, &l.DstName, &l.Kept)
 	return l, err
 }
 
-// seatPage reads a page of the links of the run of the pass (the ones the KG has, or the others) in the order of their ids, the links the
-// KG keeps at their ends, and the places earlier pages took there.
+// seatPage reads a page of the links of the run in the order of their ids, the links the KG has at their ends that stay, and the places
+// earlier pages took there.
 func (r *isoRun) seatPage(ctx context.Context, tx *sql.Tx, page *ingest.IsolatePage) error {
 	all, out, in := r.cardTypes()
-	kept := r.st.Phase == ingest.IsolatePhaseKept
 	err := r.query(ctx, tx, "read the links of a page", isoSeatLinksSQL, func(rows *sql.Rows) error {
 		l, err := isoScanLink(rows)
 		page.Links = append(page.Links, l)
 		return err
-	}, r.st.Cur.Ref, r.st.Size, textArray(all), kept)
+	}, r.st.Cur.Ref, r.st.Size, textArray(all))
 	if err != nil {
 		return err
 	}
