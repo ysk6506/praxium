@@ -33,7 +33,7 @@ func hashOf(b []byte) (kernel.Hash, error) {
 	return h, nil
 }
 
-// attrJSON is the stored form of one attribute: the value and what says how far it can be trusted.
+// attrJSON is the stored form of one attribute (the same as graph.EncodeAttrs writes): the value and what says how far it can be trusted.
 type attrJSON struct {
 	Value      any    `json:"v"`
 	Grade      string `json:"g"`
@@ -42,15 +42,8 @@ type attrJSON struct {
 	SourceRef  string `json:"r,omitempty"`
 }
 
-// encodeAttrs turns the versioned attributes of a row into JSON. Keys are the attribute numbers.
-func encodeAttrs(attrs map[int]graph.Attr) ([]byte, error) {
-	out := make(map[string]attrJSON, len(attrs))
-	for no, a := range attrs {
-		out[strconv.Itoa(no)] = attrJSON{Value: a.Value, Grade: string(a.Grade), Basis: string(a.Basis),
-			SourceTime: a.SourceTime, SourceRef: a.SourceRef}
-	}
-	return marshal(out)
-}
+// encodeAttrs turns the versioned attributes of a row into JSON (graph.EncodeAttrs, one meaning for both paths).
+func encodeAttrs(attrs map[int]graph.Attr) ([]byte, error) { return graph.EncodeAttrs(attrs) }
 
 // decodeAttrs is the reverse of encodeAttrs. An empty object is a nil map.
 func decodeAttrs(raw []byte) (map[int]graph.Attr, error) {
@@ -141,12 +134,7 @@ func plainValue(v any) (any, error) {
 }
 
 // refsJSON stores the source references of a row; nil is an empty list.
-func refsJSON(refs []string) ([]byte, error) {
-	if refs == nil {
-		refs = []string{}
-	}
-	return marshal(refs)
-}
+func refsJSON(refs []string) ([]byte, error) { return graph.EncodeRefs(refs) }
 
 // refsOf reads them back; an empty list is nil.
 func refsOf(raw []byte) ([]string, error) {

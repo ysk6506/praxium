@@ -17,7 +17,9 @@ import (
 // Version 7 adds, for the identification of the records of a run (ADR-0108), the column held to the keys, ends and claims of the
 // computation, the feed of a bound record, five working tables and the indexes they and the rows received are read by: Diff follows the
 // step from 6 to 7.
-const GeneratorVersion = 7
+// Version 8 adds, for the new computation of the objects (ADR-0115), the index by which the references of the computation are read from an
+// object: Diff follows the step from 7 to 8.
+const GeneratorVersion = 8
 
 // Phase says where a step may run.
 type Phase int

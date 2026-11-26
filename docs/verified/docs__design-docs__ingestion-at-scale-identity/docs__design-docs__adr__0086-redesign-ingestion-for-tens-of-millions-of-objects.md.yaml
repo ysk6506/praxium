@@ -1,7 +1,7 @@
 doc: "docs/design-docs/ingestion-at-scale-identity.md"
 target: "docs/design-docs/adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md"
 hash: "469b52616d0e1a3f"
-date: "2026-11-19"
-note: "용어집 표기(WORD003)에 맞춰 낱말을 고쳤다. 뜻은 그대로"
+date: "2026-11-26"
+note: "I-5 행에 객체 다시 계산 구현을 더함"
 text_changed: true
-doc_hash: "db301c2d24dc0978"
+doc_hash: "2a65b8464dcbe38e"
