@@ -23480,6 +23480,51 @@
    "added": "2026-11-14",
    "amended_by": null
   },
+  "go:backend/internal/ingest::TestDfiTheRunOfTheDifferenceBeginsOnceDoesTheUnitsInOrderAndReportsAtTheEnd": {
+   "kind": "test",
+   "hash": "cbeffb1e6f81273f",
+   "asserts": 3,
+   "literals": [
+    "24e0811171b2cdb4"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-968"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestDfiTheRunOfTheDifferenceStopsAtWhatFailsAtARunThatIsNotComputingAndAtACancelledContext": {
+   "kind": "test",
+   "hash": "87d9aa4e17dd67f9",
+   "asserts": 6,
+   "literals": [
+    "23318c1dde095aaa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-968"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/ingest::TestDfiTheTallyIsInTheOrderOfTheApplyAndCountsAKindAndAChangeInEveryType": {
+   "kind": "test",
+   "hash": "59aa53555ec3b958",
+   "asserts": 3,
+   "literals": [
+    "272670f035b73107"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-966"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/ingest::TestEveryCodeOfTheTableIsGivenByACaseAtItsPlace": {
    "kind": "test",
    "hash": "59b2cd1e3d687dbb",
@@ -31719,6 +31764,288 @@
    "added": "2026-11-19",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestDfiAFirstRunAddsWhatItStagedAndTheApplyMakesTheKGTheHeadSays": {
+   "kind": "test",
+   "hash": "698d180a65d7afe7",
+   "asserts": 22,
+   "literals": [
+    "15d922dd6576de57"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-960",
+    "REQ-966",
+    "REQ-967"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAfterRandomChangesTheComputationOfEverythingFindsNothingToChangeAndTheSameProblems": {
+   "kind": "test",
+   "hash": "0636512fbaeda780",
+   "asserts": 12,
+   "literals": [
+    "568ec1767670ecd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-970"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAnObjectThatRetiresWithMLinksIsReadWithRowsThatGoWithM": {
+   "kind": "test",
+   "hash": "3ad23e5e99fb25c4",
+   "asserts": 6,
+   "literals": [
+    "1f90ccbd1f5cf8dd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-969"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAnObjectWhoseTypeChangesIsRetiredInTheChunkOfItsOldTypeAndAddedInTheChunkOfItsNew": {
+   "kind": "test",
+   "hash": "b3ddf9cc89c5bbd9",
+   "asserts": 15,
+   "literals": [
+    "622a91c2ae1453e5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-960",
+    "REQ-961",
+    "REQ-964"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAPlaceThatCannotBeReadIsAnErrorAndNotAGuess": {
+   "kind": "test",
+   "hash": "a028dc144073d886",
+   "asserts": 13,
+   "literals": [
+    "708b3ffc6d816850"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-968"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiARunThatChangesNothingHasNoRowNoChunkTheFingerprintOfNothingAndAnEmptyApply": {
+   "kind": "test",
+   "hash": "149a8ba9b6a561d2",
+   "asserts": 20,
+   "literals": [
+    "a163c08173754460"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-964",
+    "REQ-967"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAServerThatTakesTheRunOverAtAnyUnitEndsWhereOneThatDidNotStopEnds": {
+   "kind": "test",
+   "hash": "6ffb1896f8c87c1e",
+   "asserts": 14,
+   "literals": [
+    "8add748cdf0c7d89"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-968"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiATypeOfMoreRowsThanAChunkIsCutInTheOrderOfTheIdsAndAChunkHasOneKindAndOneType": {
+   "kind": "test",
+   "hash": "df0e399a50e18e36",
+   "asserts": 8,
+   "literals": [
+    "1d0793fca85f5c20"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-964"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAUnitReadsTheRangeOfItsSourceOrOfItsTypeAndNotTheRowsOfTheType": {
+   "kind": "test",
+   "hash": "408455ab335d0c69",
+   "asserts": 7,
+   "literals": [
+    "403f629ba6930459"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-969"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiAUnitWhoseStatementFailsChangesNothingAndTheRunGoesOnFromIt": {
+   "kind": "test",
+   "hash": "afe8fb810eaa40c5",
+   "asserts": 11,
+   "literals": [
+    "fb6599783842a771"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-968"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiEveryChangeOfEverySourceIsARowAndWhatIsTheSameIsNone": {
+   "kind": "test",
+   "hash": "25a741fb54cec40c",
+   "asserts": 14,
+   "literals": [
+    "c208737ad23d0db1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-960",
+    "REQ-961",
+    "REQ-963",
+    "REQ-964"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiTheDifferenceAndTheKGHangNeitherOnTheOrderOfTheRowsNorOnThePagesNorOnTheUnits": {
+   "kind": "test",
+   "hash": "1fff6849f9081b09",
+   "asserts": 4,
+   "literals": [
+    "d1d6c6900f49bdf5"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-965",
+    "REQ-970"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiTheDifferenceAndTheKGHangNotOnTheOrderOfTheDatasets": {
+   "kind": "test",
+   "hash": "78157e7ecaaa270e",
+   "asserts": 3,
+   "literals": [
+    "d6a87aa34a3063d1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-965",
+    "REQ-970"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiTheKGTheStagedApplyWritesIsTheOneTheOldPipelineMakesFromTheSameCaptures": {
+   "kind": "test",
+   "hash": "6f4097828de8967e",
+   "asserts": 17,
+   "literals": [
+    "3c2a12e4da5c6c0c"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-961",
+    "REQ-970"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiTheLinksTheDifferenceClosesAreTheOnesTheCheckOfTheCardinalityLetsGoAndTheKGKeepsItsPlaces": {
+   "kind": "test",
+   "hash": "a2bb76bff675e255",
+   "asserts": 17,
+   "literals": [
+    "8e818c311f9c6635"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-962"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiTheRowsAndTheChunksHangNeitherOnTheNumbersNorOnTheSizeOfAUnitAndTheFingerprintOnTheNumbersAlone": {
+   "kind": "test",
+   "hash": "de4322d578f89a18",
+   "asserts": 9,
+   "literals": [
+    "37fe6378a161a36a"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-965",
+    "REQ-967"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiTheStepBeginsAfterTheIsolationOnceAndRefusesAStepWhenItIsDoneAndAServerThatLostItsLease": {
+   "kind": "test",
+   "hash": "3e92532b18c8117b",
+   "asserts": 15,
+   "literals": [
+    "c05c6f74262d96ef"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-968"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgingest::TestDfiWhatTheIsolationTookOutHasNoRowAndANewObjectTakenBackHasNone": {
+   "kind": "test",
+   "hash": "2a8816f4bea85a4d",
+   "asserts": 11,
+   "literals": [
+    "3b32924e984ed72e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-960"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreOfTheRun": {
    "kind": "test",
    "hash": "745cd3012c95ba8c",
@@ -34694,16 +35021,16 @@
   },
   "go:backend/internal/pgschema::TestControlReservesThePartitionPrefix": {
    "kind": "test",
-   "hash": "09c0b295a1b30a97",
+   "hash": "3c133cae0d69268a",
    "asserts": 2,
    "literals": [
-    "943c7c7282e74a9f"
+    "9f988a84588ef8d3"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [],
    "added": "2026-11-26",
-   "amended_by": "0123-isolation-of-the-fifth-step-identifiers-ends-and-cardinality.md"
+   "amended_by": "0127-difference-of-the-fifth-step-order-chunks-counts-and-fingerprint.md"
   },
   "go:backend/internal/pgschema::TestControlTablesAreInTheStorageSchemaOfTheKG": {
    "kind": "test",
@@ -34716,6 +35043,36 @@
    "skips": 0,
    "reqs": [],
    "added": "2026-11-19",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDfiDiffFromGeneratorThirteenToFourteenAddsTheTwoTablesOfTheDifferenceAndNothingElse": {
+   "kind": "test",
+   "hash": "1fcb32180e01da95",
+   "asserts": 5,
+   "literals": [
+    "c726173138529dcc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-964"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgschema::TestDfiTheTablesOfTheDifferenceAreCalcTablesKeyedByTheOrderOfTheDifference": {
+   "kind": "test",
+   "hash": "63a14e806de1587d",
+   "asserts": 5,
+   "literals": [
+    "2ff7349a80294ab0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-964"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/pgschema::TestDiffDropsAnIndexWhenTheMarkGoes": {

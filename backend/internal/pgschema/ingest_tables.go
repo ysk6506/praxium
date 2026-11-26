@@ -122,7 +122,28 @@ func computeTableDefs() []tableDef {
 	defs = append(defs, computeResultDefs()...)
 	defs = append(defs, linkTableDefs()...)
 	defs = append(defs, isolateTableDefs()...)
+	defs = append(defs, diffTableDefs()...)
 	return append(defs, ingestDiffDef())
+}
+
+// diffTableDefs are the tables of the difference of the fifth step (generator version 14, ADR-0127). calc_diffrow has a row for each row of
+// the difference before it is numbered: its key is the order the rows are numbered in (the kind, the type, the id in the order of its bytes
+// and, for the rows of one id, the tie: the hash of the key or of the identifier), so the rows of a kind and a type are read in that order a
+// range at a time. calc_diffplan has a row for each kind and type that has rows: how many (lines), the number in the order before its first
+// row (ord) and its first chunk (chunk_no).
+func diffTableDefs() []tableDef {
+	return []tableDef{
+		{Name: TableCalcDiffRow, Cols: []string{
+			col(ColKind, typeSmall), col(ColTypeNo, typeSmall), col(ColRef, typeKeyText), col(ColTie, "bytea NOT NULL DEFAULT '\\x'"),
+			col(ColEntityNo, typeBig), col(ColChangeKind, typeSmall), col(ColOldHash, "bytea"), col(ColNewHash, "bytea"),
+			col(ColCtxNo, "bigint NOT NULL DEFAULT 0"), col(ColSigHash, "bytea"),
+			"PRIMARY KEY (" + strings.Join([]string{ColKind, ColTypeNo, ColRef, ColTie}, ", ") + ")",
+		}},
+		{Name: TableCalcDiffPlan, Cols: []string{
+			col(ColKind, typeSmall), col(ColTypeNo, typeSmall), col(ColLines, typeInt), col(ColOrd, typeBig), col(ColChunkNo, typeInt),
+			"PRIMARY KEY (" + ColKind + ", " + ColTypeNo + ")",
+		}},
+	}
 }
 
 func computeRecordDefs() []tableDef {

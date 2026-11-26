@@ -138,11 +138,21 @@ var isoSeatLinksSQL = "SELECT " + isoLinkCols + ", " + isoHas("{link}", "x.link_
 var isoFixedSQL = "WITH k AS (SELECT k.* FROM unnest($1::text::int[], $2::text::bigint[]) AS e(typ, obj) CROSS JOIN LATERAL (SELECT k.* FROM {link} k WHERE k.src = e.obj AND k.type_no = e.typ OFFSET 0) k " +
 	"UNION SELECT k.* FROM unnest($3::text::int[], $4::text::bigint[]) AS e(typ, obj) CROSS JOIN LATERAL (SELECT k.* FROM {link} k WHERE k.dst = e.obj AND k.type_no = e.typ OFFSET 0) k), " +
 	"s AS (SELECT k.*, " + isoHas("{stlink}", "x.link_no = k.link_no") + " AS kept FROM k) " +
-	"SELECT " + isoLinkCols + ", l.kept FROM s l WHERE l.kept OR (NOT " + isoHas("{iso}", "x.kind = {KLINK} AND x.entity_no = l.link_no") +
-	" AND NOT " + isoRetiring("l.src") + " AND NOT " + isoRetiring("l.dst") + " AND (" +
-	"((SELECT count(*) FROM {rref} f WHERE f.role = {FROM} AND f.target_no = l.link_no AND f.state = {FOUND} AND (SELECT count(*) FROM {rec} c " +
-	"WHERE c.src_no = f.src_no AND c.dataset_no = f.dataset_no AND c.key = f.key) = 0) > 0) OR NOT " +
-	isoHas("{rref}", "x.role = {FROM} AND x.target_no = l.link_no AND x.state = {FOUND}") + ")) ORDER BY l.ref"
+	"SELECT " + isoLinkCols + ", l.kept FROM s l WHERE l.kept OR " + isoKGLinkStays("l") + " ORDER BY l.ref"
+
+// isoKGLinkStays is the condition that a link l of the KG that the run did not stage stays as it is: the step did not take it out, no end of
+// it retires, and a record the run does not read stands under it (a resolved reference of its From end), or no record of an ingestion does (a
+// link that was put by another way). A link whose records are all read by the run and that the run did not make again does not stay. It is the
+// one place this is said: the check of the cardinality counts the places such links hold (isoFixedSQL), and the difference closes every link
+// of the KG that the run did not stage and that does not stay (ADR-0127), so the two cannot disagree on a link. It names {iso}, {rref},
+// {rec}, {stobj}, {objrun} and the codes the statements of the step replace.
+func isoKGLinkStays(l string) string {
+	return "(NOT " + isoHas("{iso}", "x.kind = {KLINK} AND x.entity_no = "+l+".link_no") +
+		" AND NOT " + isoRetiring(l+".src") + " AND NOT " + isoRetiring(l+".dst") + " AND (" +
+		"((SELECT count(*) FROM {rref} f WHERE f.role = {FROM} AND f.target_no = " + l + ".link_no AND f.state = {FOUND} AND (SELECT count(*) FROM {rec} c " +
+		"WHERE c.src_no = f.src_no AND c.dataset_no = f.dataset_no AND c.key = f.key) = 0) > 0) OR NOT " +
+		isoHas("{rref}", "x.role = {FROM} AND x.target_no = "+l+".link_no AND x.state = {FOUND}") + "))"
+}
 
 // isoTakenSQL is the places the links of earlier pages took at the starts ($1) and the ends ($2) of the links of a page.
 const isoTakenSQL = "SELECT side, end_no, bind_id, link_no FROM {seat} WHERE (side = {OUT} AND end_no = ANY($1::text::bigint[])) OR (side = {IN} AND end_no = ANY($2::text::bigint[]))"

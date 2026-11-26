@@ -33,7 +33,11 @@ import (
 // Version 13 adds, for the fifth step (ADR-0123), the table of what the step took out of the staged rows and the table of the places held
 // to one link, and the indexes the step reads the staged identifiers and links by: Diff follows the step from 12 to 13. No table that is
 // there is changed.
-const GeneratorVersion = 13
+//
+// Version 14 adds, for the difference of the fifth step (ADR-0127), the table of the rows of the difference in the order of their kind,
+// type and id before they are numbered, and the table of the plan of the order (the rows of a kind and a type, where their order and
+// their chunks begin): Diff follows the step from 13 to 14. No table that is there is changed.
+const GeneratorVersion = 14
 
 // Phase says where a step may run.
 type Phase int
