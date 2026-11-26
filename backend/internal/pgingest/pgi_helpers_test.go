@@ -110,10 +110,40 @@ type pgiEnv struct {
 	admin *sql.DB
 }
 
+// pgiOpen opens the stores on a new database the migrations ran on (a copy of a template, ADR-0120).
 func pgiOpen(t *testing.T) *pgiEnv {
 	t.Helper()
+	pgiParallel(t)
+	return pgiOpenOn(t, pgconn.NewMigratedTestDatabase(t))
+}
+
+// pgiSerial are the tests that run alone, after the others of this unit (ADR-0120): the ones that hold what the planner reads to
+// bounds, whose plans come from the statistics ANALYZE and the autovacuum make, and the one that measures the lock table every
+// connection of the server shares.
+var pgiSerial = map[string]bool{
+	"TestExpWhatManyRecordsOfARunShareIsReadOnceForAUnitSoTheRowsReadGoWithTheNumberOfRecords":               true,
+	"TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource":     true,
+	"TestIdnWhenEveryRecordIsInTheSamePlaceAUnitReadsOfTheRegistryWhatItDidWhenTheyWereInManyAndNoMore":      true,
+	"TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen":                                             true,
+	"TestIdnAGroupOfSeveralObjectsIsReadOnceForEachKeyAndWhatAUnitReadsOfItGrowsWithTheGroupAndNoFaster":     true,
+	"TestIdnMeasureTheIdentificationOfAGroupOfManyObjects":                                                   true,
+	"TestRcpWhatManyRecordsOfAnObjectShareIsReadOnceSoTheRowsReadGoWithTheNumberOfLines":                     true,
+	"TestRdfABucketReadsTheIndexRangeItCoversAndNotTheWholeTableAndWhatItReadsDoesNotGrowWithTheSource":      true,
+	"TestPgiPuttingASourceToAKGAndTakingItOffHoldFewLocksAndDeletingAKGOfManySourcesFitsTheDefaultLockTable": true,
+	"TestTplTheDatabaseATestOfTheReceivingStartsFromIsTheOneOpenCreateKGAndAttachSourceMakeTheSlowWay":       true,
+}
+
+// pgiParallel lets the test run beside the other tests of this unit, each on its own database, unless it is one of pgiSerial.
+func pgiParallel(t *testing.T) {
+	if !pgiSerial[t.Name()] {
+		pgconn.TestInParallel(t)
+	}
+}
+
+// pgiOpenOn opens the stores on a test database the test has made.
+func pgiOpenOn(t *testing.T, dsn string) *pgiEnv {
+	t.Helper()
 	ctx := context.Background()
-	dsn := pgconn.NewTestDatabase(t)
 	pst, err := pgstore.Open(ctx, pgstore.Config{DSN: dsn})
 	if err != nil {
 		t.Fatal(err)
@@ -135,6 +165,16 @@ func pgiOpen(t *testing.T) *pgiEnv {
 // kg makes a KG of the standard model.
 func (e *pgiEnv) kg(t *testing.T, n int) graph.KG {
 	t.Helper()
+	kg, err := e.pst.CreateKG(e.ctx, pgiKG(t, n))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return kg
+}
+
+// pgiKG is the n-th KG of the standard model the tests make, as CreateKG is given it.
+func pgiKG(t *testing.T, n int) graph.KG {
+	t.Helper()
 	reg, err := model.LoadStandard()
 	if err != nil {
 		t.Fatal(err)
@@ -143,11 +183,7 @@ func (e *pgiEnv) kg(t *testing.T, n int) graph.KG {
 	if err != nil {
 		t.Fatal(err)
 	}
-	kg, err := e.pst.CreateKG(e.ctx, graph.KG{ID: id, Name: fmt.Sprintf("pgi%d", n), Role: graph.RoleTest, DefinitionSetHash: reg.Hash(), CreatedAt: time.Unix(1000, 0)})
-	if err != nil {
-		t.Fatal(err)
-	}
-	return kg
+	return graph.KG{ID: id, Name: fmt.Sprintf("pgi%d", n), Role: graph.RoleTest, DefinitionSetHash: reg.Hash(), CreatedAt: time.Unix(1000, 0)}
 }
 
 // attach puts the source of a plan to the KG.

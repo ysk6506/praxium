@@ -94,6 +94,7 @@ func TestV2mWritesAndFeedsFailWhenATableIsGone(t *testing.T) {
 	for _, table := range []string{"object", "link", "object_hist", "link_hist", "object_key", "change_batch", "change_entry",
 		"light_change", "object_identifier", "identity_event", "ingest_order", "version", "version_hash_part", "generation_event"} {
 		t.Run(table, func(t *testing.T) {
+			t.Parallel() // every table has a world of its own (ADR-0120)
 			r := v2wRigOf(t, graph.Options{ChunkRows: 7})
 			r.v2wApply(t, r.fx.World(1, 1, 1))
 			v2wHalfDone(t, r)

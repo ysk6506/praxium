@@ -53,10 +53,7 @@ func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 	if kg.ID.IsZero() || kg.Name == "" || !kg.Role.Valid() {
 		return graph.KG{}, kernel.Errorf(kernel.CodeInvalidValue, "a KG needs an id, a name and a role")
 	}
-	if kg.State == "" {
-		kg.State = graph.StateBuilding
-	}
-	kg.Generation, kg.CreatedAt = 1, pgTime(kg.CreatedAt)
+	kg = madeKG(kg)
 	m, err := s.models(kg.DefinitionSetHash)
 	if err != nil {
 		return graph.KG{}, err
@@ -73,6 +70,15 @@ func (s *Store) CreateKG(ctx context.Context, kg graph.KG) (graph.KG, error) {
 		return graph.KG{}, err
 	}
 	return kg, nil
+}
+
+// madeKG is the KG that CreateKG makes, and returns, from the one it is given.
+func madeKG(kg graph.KG) graph.KG {
+	if kg.State == "" {
+		kg.State = graph.StateBuilding
+	}
+	kg.Generation, kg.CreatedAt = 1, pgTime(kg.CreatedAt)
+	return kg
 }
 
 func createKGInTx(ctx context.Context, tx *sql.Tx, kg graph.KG, m SchemaModel) error {
