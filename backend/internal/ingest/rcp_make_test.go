@@ -83,7 +83,7 @@ type rcpFake struct {
 	failAt string
 }
 
-func (f *rcpFake) fail(what string) error {
+func (f *rcpFake) rcpBreak(what string) error {
 	f.calls = append(f.calls, what)
 	if f.failAt == what {
 		return errors.New(what + " fails")
@@ -93,11 +93,11 @@ func (f *rcpFake) fail(what string) error {
 
 func (f *rcpFake) BeginRecompute(context.Context, RunLease, RecomputeStart) error {
 	f.begun = true
-	return f.fail("begin")
+	return f.rcpBreak("begin")
 }
 
 func (f *rcpFake) RecomputePlace(context.Context, RunLease) (RecomputePlace, error) {
-	if err := f.fail("place"); err != nil {
+	if err := f.rcpBreak("place"); err != nil {
 		return RecomputePlace{}, err
 	}
 	stage := RunComputing
@@ -108,22 +108,22 @@ func (f *rcpFake) RecomputePlace(context.Context, RunLease) (RecomputePlace, err
 }
 
 func (f *rcpFake) RecomputePage(context.Context, RunLease) (RecomputePage, error) {
-	return RecomputePage{Unit: f.pages}, f.fail("page")
+	return RecomputePage{Unit: f.pages}, f.rcpBreak("page")
 }
 
 func (f *rcpFake) PutRecomputed(context.Context, RunLease, RecomputedPage) error {
 	f.pages++
-	return f.fail("put")
+	return f.rcpBreak("put")
 }
 
 func (f *rcpFake) RecomputeReport(context.Context, RunLease) (RecomputeCounts, error) {
-	return RecomputeCounts{Lines: f.pages}, f.fail("report")
+	return RecomputeCounts{Lines: f.pages}, f.rcpBreak("report")
 }
 
-type rcpMakerFake struct{ fail bool }
+type rcpMakerFake struct{ broken bool }
 
 func (m rcpMakerFake) Make(RecomputePage) (RecomputedPage, error) {
-	if m.fail {
+	if m.broken {
 		return RecomputedPage{}, errors.New("make fails")
 	}
 	return RecomputedPage{}, nil
@@ -151,7 +151,7 @@ func TestRcpTheRunOfTheStepBeginsOnceDoesThePagesAndStopsAtTheFirstThingThatFail
 			t.Errorf("%s fails and the step does not", at)
 		}
 	}
-	if _, err := RunRecompute(ctx, &rcpFake{}, lease, RecomputeStart{Seen: rcpSeenAt}, rcpMakerFake{fail: true}); err == nil {
+	if _, err := RunRecompute(ctx, &rcpFake{}, lease, RecomputeStart{Seen: rcpSeenAt}, rcpMakerFake{broken: true}); err == nil {
 		t.Error("the maker fails and the step does not")
 	}
 	stopped, cancel := context.WithCancel(ctx)

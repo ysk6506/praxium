@@ -19,7 +19,7 @@ updates_docs:
   - docs/design-docs/ingestion-at-scale.md
   - docs/product-specs/requirements-ingestion.md
 amends_tests:
-  - backend/internal/pgschema/control_test.go::TestControlReservesThePartitionPrefix
+  - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
 test_change_reason: 생성기 버전이 7에서 8로 오른다(이 결정 10). 이 시험은 생성기 버전의 번호를 단언하므로 숫자만 8로 바꾼다. 파티션 접두어를 예약한다는 단언은 그대로이고 줄지 않는다.
 decision_hash: 91d751fdbab0e5b6
 ---
