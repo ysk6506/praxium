@@ -27,7 +27,7 @@ amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
   - go:backend/internal/pgschema::TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList
 test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. (1) TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 11에서 12로 바꾼다(이 결정 9). (2) TestRcpTheKindsOfProblemTheFourthStepOwnsAreOnlyTheOnesItWritesAndEveryOneOfThemIsInTheClosedList는 4단계가 가진 종류의 목록을 정확히 견주는 단언이라 목록에 link_target_missing과 link_target_ambiguous가 들어가고(결정 8, 같은 상수), 그 둘이 "4단계가 아직 쓰지 않는 종류"의 목록에서 빠진다. 견주는 쪽은 여전히 목록 전체를 정확히 같게 단언하고, 쓰지 않는 종류로 남은 cardinality는 그대로 가진 것이 아니라고 단언한다.
-decision_hash: pending
+decision_hash: d9dd810ceac58805
 ---
 # ADR-0122 새 수집 흐름 4단계의 링크 쪽
 
@@ -84,7 +84,7 @@ ADR-0115(#110)와 ADR-0119(#112)가 4단계의 객체 쪽을 정했고 링크 �
 ## 알려진 한계와 넘김
 
 - 소스가 둘 이상일 때 `record_ref_lookup`에 소스 열이 없어 다른 소스의 같은 정의 번호·해시 행을 읽고 거른다. 소스 열을 인덱스에 더하면 풀리지만 읽는 쪽 표의 변경이라 이 결정에서 하지 않았다.
-- 객체 상한 기본값이 `Lines`를 따르게 하는 항목은 결정 10의 이유로 남겼다. `Lines`가 기본이 아닐 때 한도가 쪽보다 클 수 있다는 ADR-0119의 한계는 그대로다.
+- 객체 상한 기본값이 `Lines`를 따르게 하는 변경은 결정 10의 이유로 하지 않았다. `Lines`가 기본이 아닐 때 한도가 쪽보다 클 수 있다는 ADR-0119의 한계는 그대로다.
 - 차수(`:1` 끝)와 `cardinality`는 5단계다. 이 단계의 `stage_link`는 차수를 거르기 전의 후보다.
 - `calc_linkwin`에서 지는 쪽의 알림은 승자와 사슬로 이어질 때만 난다. 승자가 같은 속성이면 알림이 없다(옛 흐름과 같다).
 
