@@ -13,8 +13,10 @@ import (
 // (ObjectWhyRetire in calc_object) and the computation of the objects (step 4) makes no row for them and reads only that mark. An object
 // is a candidate when
 //
-//  1. no record of the run was bound to it (the identification wrote it to calc_object as ObjectWhyIdentified: a record that is bound to
-//     an object stands under it, and so does a record whose row a rule filters out and whose wait is not over),
+//  1. no record of the run was bound to it by a feed that makes objects (the bindings of the identification, read as the references it
+//     wrote of them, calc_ref: a record that is bound to an object stands under it, and so does a record whose row a rule filters out
+//     and whose wait is not over, but the record of a feed that only adds values does not, even when it changed and is bound again
+//     (ADR-0121); a binding of a feed that is not known stands under it),
 //  2. no record that is not in the run, or that is in it only because it is read again, and that is open, has a reference to it that is
 //     solved and that a feed that makes objects gave: the references of the records that are in the run for the reason that they changed
 //     or are closed are not what stands now, a record that was set aside by the identification (read by a declaration it was not made
@@ -28,6 +30,11 @@ import (
 // retires, is retired when the last record of the other feed is gone, whichever feed lets go of it first (ADR-0118). The references that
 // are kept (the ones there are when the run begins) say it for the object that was made in a run that has not been applied yet.
 // MarkRetirableObjects writes the mark; the step that applies the run calls it.
+//
+// The identification puts every object a record of the run is bound to in calc_object (ObjectWhyIdentified), whatever the feed of the
+// record, and an object is in the table once. So an object that only records of feeds that add values were bound to is judged too: the
+// rule old judges such an object once (the key of xkIdent says it was) and, when it is a candidate, turns its reason into
+// ObjectWhyRetire, so that the computation of the objects makes no row for it (ADR-0121).
 
 // expReplaced is the condition that the record of the reference named by the alias (a row of the references with the key of a record)
 // is a record that the run read again and wrote the references of anew (or ended): what it had does not stand now. The computation of
@@ -46,10 +53,13 @@ func expReplaced(alias string) string {
 // expRetirable is the condition that the object named by the column obj (an expression of the statement) is a candidate for retirement.
 func expRetirable(obj string) string {
 	replaced := expReplaced("s")
-	// the feed of the reference (the number of the feed is the def_no of an identity reference) is known not to make objects
-	valueOnly := "EXISTS (SELECT 1 FROM feeds f WHERE f.src_no = s.src_no AND f.feed_no = s.def_no AND NOT f.creates)"
-	return "(NOT EXISTS (SELECT 1 FROM {objrun} i WHERE i.obj_no = " + obj + " AND i.why = " + whyIdent + ")" +
-		" AND NOT EXISTS (SELECT 1 FROM {rref} s WHERE s.target_no = " + obj + " AND s.role = " + roleIdent + " AND s.state = " + stateFound + " AND NOT " + replaced + " AND NOT " + valueOnly + ")" +
+	// the feed of a reference (the number of the feed is the def_no of an identity reference) of the source src is known not to make objects
+	valueOnly := func(ref, src string) string {
+		return "EXISTS (SELECT 1 FROM feeds f WHERE f.src_no = " + src + " AND f.feed_no = " + ref + ".def_no AND NOT f.creates)"
+	}
+	return "(NOT EXISTS (SELECT 1 FROM {cref} b JOIN {rec} c ON c.rid = b.rid WHERE b.role = " + roleIdent + " AND b.target_no = " + obj + " AND b.state = " + stateFound +
+		" AND NOT " + valueOnly("b", "c.src_no") + ")" +
+		" AND NOT EXISTS (SELECT 1 FROM {rref} s WHERE s.target_no = " + obj + " AND s.role = " + roleIdent + " AND s.state = " + stateFound + " AND NOT " + replaced + " AND NOT " + valueOnly("s", "s.src_no") + ")" +
 		" AND (EXISTS (SELECT 1 FROM {retire} p WHERE p.obj_no = " + obj + ")" +
 		" OR EXISTS (SELECT 1 FROM {rref} t WHERE t.target_no = " + obj + " AND t.role = " + roleIdent + " AND t.retirable)))"
 }

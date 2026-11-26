@@ -392,7 +392,7 @@ func TestExpTheRecordOfALinkThatEndsAtTheObjectAnEndKeyOfARecordFindsIsReadAgain
 	l, _ := idnPipeline(s, t, idnServers("A,sn1,Zorvane,u1", "B,sn2,Zorvane,u2", "F,snF,Zorvane,uF"), rdfT0.Add(time.Hour), 0)
 	rid := s.e.count(t, fmt.Sprintf(`SELECT rid FROM "s_%d".calc_record WHERE key = 'F'`, k))
 	s.e.exec(t, fmt.Sprintf(`INSERT INTO "s_%d".calc_end (rid, def_no, side, lookup_hash, held) VALUES ($1, 5, %d, '\x07', false)`, k, pgschema.RefRoleLinkFrom), rid)
-	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: expCards()}); err != nil {
+	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: expCards(), Feeds: expFeeds(s)}); err != nil {
 		t.Fatal(err)
 	}
 	if got := expWhyOf(s, t, "P"); got != pgschema.CalcWhyExpanded {
@@ -426,7 +426,7 @@ func TestExpTheRecordOfASecondLinkThatEndsWhereTheLinkOfAChangedRecordEndedIsRea
 	expPutLink(s, t, 9102, expTypeToOne, objA, objB)
 	expPutFrom(s, t, "ds_s", "P", 9102)
 	l, _ := idnPipeline(s, t, idnServers("A,sn1,Zorvane,u1", "B,sn2,Zorvane,u2", "F,snF2,Zorvane,uF"), rdfT0.Add(time.Hour), 0)
-	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: expCards()}); err != nil {
+	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: expCards(), Feeds: expFeeds(s)}); err != nil {
 		t.Fatal(err)
 	}
 	if got := expWhyOf(s, t, "P"); got != pgschema.CalcWhyExpanded {
@@ -450,7 +450,7 @@ func TestExpTheRecordOfALinkThatStartsAtTheObjectAChangedRecordIsNowBoundToIsRea
 	if bound := idnRefOf(idnBounds(s, t), "ds_s", "F"); bound == "" || bound != expRefOf(s, t, "ds_s", "B") {
 		t.Fatal("F is not bound to the object of B: the test does not look at what it is meant to")
 	}
-	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: expCards()}); err != nil {
+	if _, err := ingest.RunExpand(s.e.ctx, s.e.st, l, ingest.ExpandStart{Cards: expCards(), Feeds: expFeeds(s)}); err != nil {
 		t.Fatal(err)
 	}
 	if got := expWhyOf(s, t, "P"); got != pgschema.CalcWhyExpanded {
@@ -463,7 +463,7 @@ func TestExpTheUnitsDoneAreTheUnitsTheExpansionWentByAndTheRunBeginsAtTheFirstRu
 	w := expMakeWorld(t, expRetiringMapping(t), 0, false)
 	expReset(w.s, t, w.l)
 	st, ctx := w.s.e.st, w.s.e.ctx
-	if err := st.BeginExpand(ctx, w.l, ingest.ExpandStart{Rows: 3, Cards: expCards()}); err != nil {
+	if err := st.BeginExpand(ctx, w.l, ingest.ExpandStart{Rows: 3, Cards: expCards(), Feeds: expFeeds(w.s)}); err != nil {
 		t.Fatal(err)
 	}
 	steps := 0

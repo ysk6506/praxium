@@ -77,7 +77,10 @@ func (r *identRun) decide(ctx context.Context, tx *sql.Tx) error {
 	}
 	if st.AskLeft > 0 {
 		st.Phase, st.Cur = phaseAsk, 0
-		return nil
+		// the questions of the round are all written: the planner is given their number (as it is for the other tables the run fills,
+		// analyze), so that the read of a page of them is not planned on a table it takes for empty, which reads every question and joins
+		// a record to each when the round asks many (ADR-0121)
+		return r.analyze(ctx, tx, pgschema.TableCalcAsk)
 	}
 	return r.nextRound(ctx, tx)
 }

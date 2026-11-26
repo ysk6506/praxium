@@ -46,10 +46,13 @@ func (f *expFake) ExpandReport(_ context.Context, _ RunLease) (ExpandCounts, err
 	return ExpandCounts{Retiring: f.units}, nil
 }
 
+// expOneFeed is the table of the feeds the runs of the fake are given: every expansion is given one (ADR-0121).
+var expOneFeed = []ExpandFeed{{SrcNo: 1, Feed: 0, Creates: true}}
+
 // [REQ-890]
 func TestExpTheRunOfTheExpansionBeginsOnceDoesTheUnitsInOrderAndReportsAtTheEnd(t *testing.T) {
 	f := &expFake{stage: RunComputing, total: 3}
-	counts, err := RunExpand(context.Background(), f, RunLease{No: 1}, ExpandStart{})
+	counts, err := RunExpand(context.Background(), f, RunLease{No: 1}, ExpandStart{Feeds: expOneFeed})
 	if err != nil || counts.Retiring != 3 {
 		t.Fatalf("%+v %v", counts, err)
 	}
@@ -64,7 +67,7 @@ func TestExpTheRunOfTheExpansionBeginsOnceDoesTheUnitsInOrderAndReportsAtTheEnd(
 	}
 	// a run that has begun goes on from where it is, without beginning again
 	g := &expFake{stage: RunComputing, total: 3, begun: true, units: 2}
-	if _, err := RunExpand(context.Background(), g, RunLease{No: 1}, ExpandStart{}); err != nil || g.calls[0] != "step" || len(g.calls) != 2 {
+	if _, err := RunExpand(context.Background(), g, RunLease{No: 1}, ExpandStart{Feeds: expOneFeed}); err != nil || g.calls[0] != "step" || len(g.calls) != 2 {
 		t.Errorf("%v %v", g.calls, err)
 	}
 }
@@ -72,22 +75,22 @@ func TestExpTheRunOfTheExpansionBeginsOnceDoesTheUnitsInOrderAndReportsAtTheEnd(
 // [REQ-890]
 func TestExpTheRunOfTheExpansionStopsAtAUnitThatFailsAtARunThatIsNotComputingAndAtACancelledContext(t *testing.T) {
 	f := &expFake{stage: RunComputing, total: 3, failStep: 2}
-	if _, err := RunExpand(context.Background(), f, RunLease{No: 1}, ExpandStart{}); err == nil || f.units != 1 {
+	if _, err := RunExpand(context.Background(), f, RunLease{No: 1}, ExpandStart{Feeds: expOneFeed}); err == nil || f.units != 1 {
 		t.Errorf("a unit that fails: %v after %d units", err, f.units)
 	}
-	if _, err := RunExpand(context.Background(), &expFake{stage: RunApplying, total: 3}, RunLease{No: 1}, ExpandStart{}); kernel.CodeOf(err) != CodeRunStage {
+	if _, err := RunExpand(context.Background(), &expFake{stage: RunApplying, total: 3}, RunLease{No: 1}, ExpandStart{Feeds: expOneFeed}); kernel.CodeOf(err) != CodeRunStage {
 		t.Errorf("a run that is applying: %v", err)
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	cancel()
 	g := &expFake{stage: RunComputing, total: 3, begun: true}
-	if _, err := RunExpand(ctx, g, RunLease{No: 1}, ExpandStart{}); !errors.Is(err, context.Canceled) || g.units != 0 {
+	if _, err := RunExpand(ctx, g, RunLease{No: 1}, ExpandStart{Feeds: expOneFeed}); !errors.Is(err, context.Canceled) || g.units != 0 {
 		t.Errorf("a context that is cancelled: %v after %d units", err, g.units)
 	}
-	if _, err := RunExpand(context.Background(), &expFake{stage: RunComputing}, RunLease{No: 1}, ExpandStart{Rows: -1}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
+	if _, err := RunExpand(context.Background(), &expFake{stage: RunComputing}, RunLease{No: 1}, ExpandStart{Rows: -1, Feeds: expOneFeed}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Errorf("a size below nothing: %v", err)
 	}
-	if _, err := RunExpand(context.Background(), &expFake{stage: RunComputing}, RunLease{No: 1}, ExpandStart{Cards: []ExpandCard{{LinkTypeNo: 1}, {LinkTypeNo: 1}}}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
+	if _, err := RunExpand(context.Background(), &expFake{stage: RunComputing}, RunLease{No: 1}, ExpandStart{Cards: []ExpandCard{{LinkTypeNo: 1}, {LinkTypeNo: 1}}, Feeds: expOneFeed}); kernel.CodeOf(err) != kernel.CodeInvalidValue {
 		t.Errorf("a link type given twice: %v", err)
 	}
 }
