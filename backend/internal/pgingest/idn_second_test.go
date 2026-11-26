@@ -74,8 +74,8 @@ func TestIdnMeasureTheIdentificationOfAGroupOfManyObjects(t *testing.T) {
 	t.Logf("a group of %d records of %d objects: %v, %+v", *idnGroup, *idnGroup, took, counts)
 }
 
-// idnShuffled is the rows of a chain of n records, in an order that has no relation to the chain (so that the numbers of the pairs are
-// no help to a search for the smallest of a group).
+// idnShuffled is the rows of a chain of n records in a shuffled row order. It does not shuffle the pair numbers: those follow the keys, and
+// the keys run along the chain (the random-key chain is in ADR-0108).
 func idnShuffled(n int, seed int64) []string {
 	rows := idnChain("c", n, n/2)
 	x := uint64(seed)*2862933555777941757 + 3037000493

@@ -27,6 +27,26 @@ var (
 	idnNow  = kernel.SystemClock{}
 )
 
+// The sizes of the sources of the two plan tests: each statement's reads must not grow with the source, so the smaller source only has to
+// be big enough for the fixed allowances (the +50 rows and the eight times the pairs of a unit) to hold on both.
+const (
+	idnPlanSmallRecords = 7_000
+	idnPlanLargeRecords = 21_000
+	idnHotSmallRecords  = 3_000
+	idnHotLargeRecords  = 9_000
+)
+
+// idnRowsGiven reports whether the command line set -idn.rows, which is what turns the measurement on.
+func idnRowsGiven() bool {
+	given := false
+	flag.Visit(func(f *flag.Flag) {
+		if f.Name == "idn.rows" {
+			given = true
+		}
+	})
+	return given
+}
+
 // idnPlace is what a statement read: the rows each relation gave (with the loops counted), the scans in words.
 type idnRead struct {
 	rows  map[string]float64
@@ -179,7 +199,7 @@ func idnScaledWith(t *testing.T, n, size int, explain bool, rows func(int, bool,
 	return plans.most, idnNow.Now().Sub(start), counts
 }
 
-// idnCheckReads holds what a unit of the second run read, in a source of 30000 records, to what the same unit read in one of 10000.
+// idnCheckReads holds what a unit of the second run read, in the larger source, to what the same unit read in the smaller one.
 func idnCheckReads(t *testing.T, small, large map[string]*idnRead, most, growth float64) {
 	t.Helper()
 	var whats []string
@@ -195,7 +215,7 @@ func idnCheckReads(t *testing.T, small, large map[string]*idnRead, most, growth 
 				t.Errorf("%s reads %v rows of %s, more than the %v a unit may read", what, n, table, most)
 			}
 			if before, ok := small[what]; ok && n > growth*before.rows[table]+50 {
-				t.Errorf("%s reads %v rows of %s in a source of 30000 records and %v in one of 10000", what, n, table, before.rows[table])
+				t.Errorf("%s reads %v rows of %s in the larger source and %v in the smaller one", what, n, table, before.rows[table])
 			}
 		}
 		whole := map[string]bool{}
@@ -210,7 +230,7 @@ func idnCheckReads(t *testing.T, small, large map[string]*idnRead, most, growth 
 			if p, ok := small[what]; ok {
 				before = p.rows
 			}
-			t.Logf("%s: rows read by a unit, source of 30000 records %v, of 10000 records %v", what, read.rows, before)
+			t.Logf("%s: rows read by a unit, the larger source %v, the smaller one %v", what, read.rows, before)
 		}
 	}
 }
@@ -218,8 +238,8 @@ func idnCheckReads(t *testing.T, small, large map[string]*idnRead, most, growth 
 // [REQ-883]
 func TestIdnEveryStatementOfAUnitReadsTheRegistryByItsIndexesAndWhatItReadsOfItDoesNotGrowWithTheSource(t *testing.T) {
 	const size = 100
-	small, _, _ := idnScaled(t, 10_000, size, true)
-	large, _, counts := idnScaled(t, 30_000, size, true)
+	small, _, _ := idnScaled(t, idnPlanSmallRecords, size, true)
+	large, _, counts := idnScaled(t, idnPlanLargeRecords, size, true)
 	if counts.NewObjects == 0 || len(small) < 10 {
 		t.Fatalf("%d statements, %+v", len(small), counts)
 	}
@@ -252,20 +272,24 @@ func idnHotRows(n int, withNew bool, tag func(i int) string) string {
 // [REQ-883]
 func TestIdnWhenEveryRecordIsInTheSamePlaceAUnitReadsOfTheRegistryWhatItDidWhenTheyWereInManyAndNoMore(t *testing.T) {
 	const size = 100
-	small, _, _ := idnScaledWith(t, 10_000, size, true, idnHotRows)
-	large, _, counts := idnScaledWith(t, 30_000, size, true, idnHotRows)
+	small, _, _ := idnScaledWith(t, idnHotSmallRecords, size, true, idnHotRows)
+	large, _, counts := idnScaledWith(t, idnHotLargeRecords, size, true, idnHotRows)
 	if counts.NewObjects == 0 || len(small) < 10 {
 		t.Fatalf("%d statements, %+v", len(small), counts)
 	}
 	// the records that are new or changed all have the place in common, so they are one group (a tenth of the source) and a unit reads
 	// the group: what it reads grows with that group, three times for three times the source, and is not more than a few times its pairs
 	// (the known limit of ADR-0108)
-	idnCheckReads(t, small, large, 8*30_000/10, 3.5)
+	idnCheckReads(t, small, large, 8*idnHotLargeRecords/10, 3.5)
 }
 
 // [REQ-883]
-// The one measurement: IDN_ROWS (default 30000) records, one in ten changed and one in a hundred new, with the five levels of context keys.
+// The one measurement: -idn.rows (default 30000) records, one in ten changed and one in a hundred new, with the five levels of context keys.
+// It asserts nothing, so it runs only when -idn.rows is given (go test -args -idn.rows=30000).
 func TestIdnMeasureTheIdentificationOfARunWithAChangeOfOneInTen(t *testing.T) {
+	if !idnRowsGiven() {
+		t.Skip("the measurement asserts nothing and runs only when -idn.rows is given (ADR-0108 measures it by hand)")
+	}
 	n := *idnRows
 	_, took, counts := idnScaled(t, n, *idnSize, false)
 	t.Logf("%d records, %d changed or new: %v, %+v", n, n/10+n/100, took, counts)

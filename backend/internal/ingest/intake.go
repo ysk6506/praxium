@@ -51,6 +51,9 @@ type IntakeReport struct {
 func (in Intake) Run(ctx context.Context) (IntakeReport, error) {
 	var rep IntakeReport
 	for _, ds := range in.Plan.Source.Datasets {
+		if ds.Helper() {
+			continue // read for its values by the dataset that has it as its parent, and no rows of its own (ADR-0111)
+		}
 		line, err := in.receive(ctx, ds)
 		if err != nil {
 			if kernel.CodeOf(err) == kernel.CodeNotFound {
