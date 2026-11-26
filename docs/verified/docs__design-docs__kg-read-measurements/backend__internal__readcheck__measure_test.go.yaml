@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-read-measurements.md"
 target: "backend/internal/readcheck/measure_test.go"
 hash: "8cf2e0bb34b0bf9d"
-date: "2026-11-13"
-note: "ADR-0027의 변경(KG 읽기 길, 명령줄, 개발용 적재기, 구조 계약)에 맞춰 대조해 고침"
+date: "2026-11-26"
+note: "감사에서 벤치마크와 대조해 고침: 벤치마크의 시계는 실제 시계가 아니라 고정한 수동 시계(kernel.NewManualClock)이고, 시드 7, 규모 500과 280000, 페이지 50, 벤치마크 이름은 문서와 같음"
 text_changed: true
-doc_hash: "e39e4182b744e728"
+doc_hash: "a2d434c990046f16"

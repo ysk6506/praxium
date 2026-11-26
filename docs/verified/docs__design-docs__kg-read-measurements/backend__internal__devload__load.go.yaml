@@ -1,7 +1,7 @@
 doc: "docs/design-docs/kg-read-measurements.md"
 target: "backend/internal/devload/load.go"
 hash: "2a0748a2f58fb0b6"
-date: "2026-11-13"
-note: "ADR-0027의 변경(KG 읽기 길, 명령줄, 개발용 적재기, 구조 계약)에 맞춰 대조해 고침"
-text_changed: true
-doc_hash: "e39e4182b744e728"
+date: "2026-11-26"
+note: "감사에서 적재기와 대조: 배치 5,000(DefaultBatchItems), 단일 리스, 객체 다음 링크 순서는 문서와 같음. 닫힌 TD-0011을 가리키던 문장을 ADR-0032로 고침"
+text_changed: false
+doc_hash: "a2d434c990046f16"
