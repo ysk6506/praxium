@@ -35,6 +35,17 @@ func (c *ContentHasher) Link(row LinkRow) (kernel.Hash, error) { return c.h.link
 // MinGrade is the lowest grade of the attributes of a row.
 func MinGrade(attrs map[int]Attr) model.Grade { return minGrade(attrs) }
 
+// GradeNo is the number a grade has in the tables: its place in the list, best first. A grade outside the list is a value that was
+// never checked, so it is refused.
+func GradeNo(g model.Grade) (int16, error) {
+	for i, c := range model.Grades() {
+		if c == g {
+			return int16(i), nil
+		}
+	}
+	return 0, kernel.Errorf(kernel.CodeInvalidValue, "the grade %q is not one of the grades", g)
+}
+
 // attrJSON is the stored form of one attribute: the value and what says how far it can be trusted.
 type attrJSON struct {
 	Value      any    `json:"v"`

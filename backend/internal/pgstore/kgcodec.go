@@ -13,16 +13,8 @@ const (
 	entityNameLink   = "link"
 )
 
-// gradeNo is the number a grade has in the tables: its place in the list, best first. A grade outside the list is
-// a value that was never checked, so it is refused.
-func gradeNo(g model.Grade) (int16, error) {
-	for i, c := range model.Grades() {
-		if c == g {
-			return int16(i), nil
-		}
-	}
-	return 0, kernel.Errorf(kernel.CodeInvalidValue, "the grade %q is not one of the grades", g)
-}
+// gradeNo is the number a grade has in the tables (graph.GradeNo, one meaning for both paths).
+func gradeNo(g model.Grade) (int16, error) { return graph.GradeNo(g) }
 
 // gradeOf is the grade of a number in the tables.
 func gradeOf(n int16) (model.Grade, error) {
