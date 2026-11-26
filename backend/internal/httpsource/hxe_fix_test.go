@@ -384,3 +384,58 @@ func TestHxeTheRequestForATokenIsNotCountedAmongThePreviewsRequestsOfTheChild(t 
 		t.Errorf("%d requests of the child, want %d", children, previewChildRequests)
 	}
 }
+
+// [REQ-912]
+// Four values that all answer with nothing are what was seen (more than three values with no record in any answer), and three of them
+// are complete: the line between the two is the fourth value.
+func TestHxeFourValuesThatAllAnswerNothingAreWhatWasSeenAndThreeAreComplete(t *testing.T) {
+	for _, c := range []struct {
+		n    int
+		want string
+	}{{4, "seen"}, {3, "complete"}} {
+		g := hxeNew(t, hxeDoc("", hxeIDs, hxeDetail("", "")), func(_ int, r hsRequest) hxeReply {
+			if r.hsPath() == "/v1/vm" {
+				return hxeOK(hxeList(hxeManyIDs(c.n)...))
+			}
+			return hxeOK(`{"items":[]}`)
+		})
+		pages, err := g.read("ds_vm")
+		if err != nil {
+			t.Fatalf("%d values: %v", c.n, err)
+		}
+		end := hxeEnd(t, pages)
+		got := "incomplete"
+		switch {
+		case end.Complete:
+			got = "complete"
+		case end.SeenOnly:
+			got = "seen"
+		}
+		if got != c.want {
+			t.Errorf("%d values all empty: %s, the end %+v", c.n, got, end)
+		}
+	}
+}
+
+// [REQ-914]
+// A request for a token is not counted against the requests a preview of a child may send: any number of them passes, and the requests of
+// the child stop at the limit of ten.
+func TestHxeATokenRequestIsNotCountedAgainstThePreviewOfAChild(t *testing.T) {
+	rn := &run{keep: true, unit: &unit{}}
+	for i := 0; i < 2*previewChildRequests; i++ {
+		if err := rn.chargeChild(plan{token: true}); err != nil {
+			t.Fatalf("token request %d was refused: %v", i+1, err)
+		}
+	}
+	if rn.sentOfChild != 0 {
+		t.Errorf("%d token requests were counted as requests of the child", rn.sentOfChild)
+	}
+	for i := 0; i < previewChildRequests; i++ {
+		if err := rn.chargeChild(plan{}); err != nil {
+			t.Fatalf("child request %d was refused: %v", i+1, err)
+		}
+	}
+	if err := rn.chargeChild(plan{}); err == nil {
+		t.Errorf("the request after the limit of the preview was not refused")
+	}
+}

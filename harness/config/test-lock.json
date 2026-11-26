@@ -21067,6 +21067,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestHxeATokenRequestIsNotCountedAgainstThePreviewOfAChild": {
+   "kind": "test",
+   "hash": "d0be385024c5f572",
+   "asserts": 4,
+   "literals": [
+    "3c40ef461fa7e2d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-914"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestHxeAUnitSaysWhatItHasAndAnswersForWhatItHasNot": {
    "kind": "test",
    "hash": "741ac9b666acfa6c",
@@ -21140,6 +21155,21 @@
     "REQ-917"
    ],
    "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxeFourValuesThatAllAnswerNothingAreWhatWasSeenAndThreeAreComplete": {
+   "kind": "test",
+   "hash": "655d131cc88c058a",
+   "asserts": 4,
+   "literals": [
+    "03129de24716601b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-912"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxeThe404OfTheRequestForATokenIsNotAValueThatIsGone": {
@@ -21459,7 +21489,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "33bbfa86968b1e51",
+   "hash": "b4b64e3524f6bf99",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -21564,7 +21594,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "8f6244ae39e3b9ee",
+   "hash": "cc960ed28de55d9f",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
