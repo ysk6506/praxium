@@ -70,7 +70,7 @@ const (
 // IngestTables lists the tables of the ingestion at scale in the order they are created: the permanent ones, the
 // ones a source is received into, and the ones of a computation.
 func IngestTables() []string {
-	out := []string{TableRawRecord, TableRecordWait, TableRecordRef, TableRecordProblem}
+	out := []string{TableRawRecord, TableRecordWait, TableRecordRef, TableRecordProblem, TableObjectRetire}
 	out = append(out, ReceiveTables()...)
 	return append(out, ComputeTables()...)
 }

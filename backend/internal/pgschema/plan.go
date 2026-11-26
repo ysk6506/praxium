@@ -17,9 +17,15 @@ import (
 // Version 7 adds, for the identification of the records of a run (ADR-0108), the column held to the keys, ends and claims of the
 // computation, the feed of a bound record, five working tables and the indexes they and the rows received are read by: Diff follows the
 // step from 6 to 7.
-// Version 8 adds the tables that describe the model, under the query schema (views, functions and roles) that is made on top of them
-// (ADR-0113): Diff follows the step from 7 to 8 by making the tables, and the query schema is made whole by the steps of Plan.Query.
-const GeneratorVersion = 8
+// Version 8 adds, for the new computation of the objects (ADR-0115), the index by which the references of the computation are read from an
+// object: Diff follows the step from 7 to 8.
+// Version 9 adds, for the expansion of the set of a run (ADR-0118), the table of the objects that are held to retire for good and the table
+// of the keys the expansion has read: Diff follows the step from 8 to 9.
+// Version 10 adds, for the objects the computation of the objects left (ADR-0119), the table of them (calc_left): Diff follows the step
+// from 9 to 10.
+// Version 11 adds the tables that describe the model, under the query schema (views, functions and roles) that is made on top of them
+// (ADR-0113): Diff follows the step from 10 to 11 by making the tables, and the query schema is made whole by the steps of Plan.Query.
+const GeneratorVersion = 11
 
 // Phase says where a step may run.
 type Phase int

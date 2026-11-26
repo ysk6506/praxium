@@ -6,12 +6,15 @@ import "strings"
 // make them in a schema that an older version made. A version that changed a table that was already there, or
 // took one away, has no entry, and a schema of an older version is not followed past it (Diff refuses it).
 var generatorAdditions = map[int]func(schema string, old Manifest) ([]Step, error){
-	3: func(schema string, _ Manifest) ([]Step, error) { return ingestSteps(schema), nil },
-	4: func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
-	5: valueSteps,
-	6: func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
-	7: func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
-	8: func(schema string, _ Manifest) ([]Step, error) { return modelTableSteps(schema), nil },
+	3:  func(schema string, _ Manifest) ([]Step, error) { return ingestSteps(schema), nil },
+	4:  func(schema string, _ Manifest) ([]Step, error) { return heldSteps(schema), nil },
+	5:  valueSteps,
+	6:  func(schema string, _ Manifest) ([]Step, error) { return rawDiffSteps(schema), nil },
+	7:  func(schema string, _ Manifest) ([]Step, error) { return identifySteps(schema), nil },
+	8:  func(schema string, _ Manifest) ([]Step, error) { return recomputeSteps(schema), nil },
+	9:  func(schema string, _ Manifest) ([]Step, error) { return expandSteps(schema), nil },
+	10: func(schema string, _ Manifest) ([]Step, error) { return leftSteps(schema), nil },
+	11: func(schema string, _ Manifest) ([]Step, error) { return modelTableSteps(schema), nil },
 }
 
 // oldestFollowed is the oldest generator version whose schemas a newer version follows. Version 1 was made by a
@@ -145,6 +148,39 @@ func identifySteps(schema string) []Step {
 				createIfNotExists(d.sql(schema, false)) + "; END IF; END $$"})
 	}
 	return steps
+}
+
+// recomputeSteps is what generator version 8 adds (ADR-0115): the index of the references of the computation by their object. A schema
+// made by this build has it already, so the step is made to be run twice, and a schema that has no such table is left as it is.
+func recomputeSteps(schema string) []Step {
+	var steps []Step
+	for _, d := range recomputeIndexDefs() {
+		steps = append(steps, Step{Phase: InTx, What: WhatIndex, Name: d.Name,
+			SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, d.Table) + "') IS NOT NULL THEN " +
+				createIfNotExists(d.sql(schema, false)) + "; END IF; END $$"})
+	}
+	return steps
+}
+
+// expandSteps is what generator version 9 adds for the expansion of the set of a run (ADR-0118): the table of the objects that are held to
+// retire for good (an object that a feed that retires made is retired once nothing stands under it: the old flow's "once on, always on"),
+// and the table of the keys the expansion has read. Both are tables made beside the others: no table that a reader may have open is
+// altered. A schema made by this build has them already, so each step is made to be run twice.
+func expandSteps(schema string) []Step {
+	var steps []Step
+	for _, d := range append([]tableDef{objectRetireDef()}, expandTableDefs()...) {
+		steps = append(steps, Step{Phase: InTx, What: WhatTable, Name: d.Name,
+			SQL: strings.Replace(d.sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1)})
+	}
+	return steps
+}
+
+// leftSteps is what generator version 10 adds (ADR-0119): the table of the objects the computation of the objects left. A schema made by
+// this build has it already, so the step is made to be run twice, and a schema that has no computation tables is left as it is.
+func leftSteps(schema string) []Step {
+	return []Step{{Phase: InTx, What: WhatTable, Name: TableCalcLeft,
+		SQL: "DO $$ BEGIN IF to_regclass('" + Qualified(schema, TableCalcRecord) + "') IS NOT NULL THEN " +
+			strings.Replace(leftTableDef().sql(schema), "CREATE TABLE ", "CREATE TABLE IF NOT EXISTS ", 1) + "; END IF; END $$"}}
 }
 
 // createIfNotExists is the statement of an index made to be run again.

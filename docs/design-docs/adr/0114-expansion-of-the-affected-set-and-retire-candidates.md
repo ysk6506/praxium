@@ -22,6 +22,9 @@ amends:
   - adr: "0108"
     what: 결정 1의 피드 표(`IdentifyFeed`)에 `Retires`를 더하고, 3단계의 끝내기가 `record_ref.retirable`을 그 표지로 쓰는 것
 decision_hash: 5afc9c2802c3c747
+amended_by:
+  - adr: "0118"
+    what: 결정 3(퇴역 후보의 조건 2와 3, 표의 "다른 소스의 레코드가 서 있는 객체" 행), 결정 5(스키마를 바꾸지 않는다, 생성기 7), 결정 6(읽는 양, 단위 안에서만 한 번)과 알려진 한계(단위를 넘어 같은 키를 다시 읽는다, 진 링크 문구), 결정 1의 `ExpandStart`
 ---
 # ADR-0114 새 수집 흐름의 영향 집합 확장과 퇴역 후보
 

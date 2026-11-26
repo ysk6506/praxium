@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-// modelTableDefs are the tables that describe the model to a user of the query schema (generator version 8). The names of the
+// modelTableDefs are the tables that describe the model to a user of the query schema (generator version 11). The names of the
 // types are the names of their views, so a user can join the description to what a view says. Every row says a thing of the
 // model and nothing of a KG's data.
 func modelTableDefs() []tableDef {

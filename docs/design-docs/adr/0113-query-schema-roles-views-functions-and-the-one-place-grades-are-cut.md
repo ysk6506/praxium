@@ -39,7 +39,7 @@ amends:
   - adr: "0018"
     what: 식별 키가 될 수 없는 속성이 confidential만이 아니라 open이 아닌 것(restricted 포함)이라는 것 — 키의 값은 등급이 없는 identifier 뷰에 나온다
   - adr: "0085"
-    what: 생성기 버전 8의 단계(고정 테이블 넷)와 스키마 계획이 질의 스키마의 뷰, 함수, 설명, 권한도 낸다는 것
+    what: 생성기 버전 11의 단계(고정 테이블 넷)와 스키마 계획이 질의 스키마의 뷰, 함수, 설명, 권한도 낸다는 것
   - adr: "0087"
     what: 실행기가 질의 스키마의 역할을 만들고 지우며 공용 마이그레이션 0008이 설치 토큰을 둔다는 것
 amends_tests:
@@ -133,8 +133,8 @@ amends_tests:
   - go:backend/internal/pgingest::TestRdfTheCountsOfTheRunSayForEachDatasetHowMuchOfItTheNextStepMayCount
   - go:backend/internal/pgingest::TestRdfWhatIsMadeDoesNotDependOnHowTheWorkIsCutIntoBuckets
   - go:backend/internal/pgingest::TestRdfWhatTheComparisonMadeOfARunIsWhatTheNextRunStartsFrom
-test_change_reason: 생성기 버전이 7에서 8이 되었다. 테스트는 단언을 한 글자도 약하게 하지 않고 버전 숫자만 맞춘다(버전 8이 더하는 단계는 그 버전의 테스트에 있다). pgingest 테스트들(Exp, Hka, Idn, Pgi, Rdf 89개)은 본문이 그대로이고 지문만 바뀌었다. 모두가 부르는 도우미 `pgiOpen`이 KG를 테스트 전용 모델 `pgstore.TestOnlyModelsWithoutQuerySchema`로 만든다. 이 모델은 서버의 모델(`StandardModels(true)`)과 같고 질의 스키마만 없다. 통계 객체는 서버처럼 함께 만들므로 실행 계획과 읽은 행을 보는 테스트(`idn_plan_test.go`, `rdf_plan_test.go`, `exp_scale_test.go`)는 서버와 같은 조건에서 계획을 본다. 이 테스트들이 보는 것은 수집이고 질의 스키마는 `Qsc` 테스트가 덮는다. 도우미는 모델을 얻다 실패하면 `t.Fatal`로 끝나는 검사 하나를 더했을 뿐이고 단언과 리터럴은 하나도 바뀌지 않았다.
-decision_hash: 0315e0d9de88e997
+test_change_reason: 생성기 버전이 10에서 11이 되었다(8~10은 먼저 병합된 ADR-0115·0118·0119가 썼다). 테스트는 단언을 한 글자도 약하게 하지 않고 버전 숫자만 맞춘다(버전 11이 더하는 단계는 그 버전의 테스트에 있다). pgingest 테스트들(Exp, Hka, Idn, Pgi, Rdf 89개)은 본문이 그대로이고 지문만 바뀌었다. 모두가 부르는 도우미 `pgiOpen`이 KG를 테스트 전용 모델 `pgstore.TestOnlyModelsWithoutQuerySchema`로 만든다. 이 모델은 서버의 모델(`StandardModels(true)`)과 같고 질의 스키마만 없다. 통계 객체는 서버처럼 함께 만들므로 실행 계획과 읽은 행을 보는 테스트(`idn_plan_test.go`, `rdf_plan_test.go`, `exp_scale_test.go`)는 서버와 같은 조건에서 계획을 본다. 이 테스트들이 보는 것은 수집이고 질의 스키마는 `Qsc` 테스트가 덮는다. 도우미는 모델을 얻다 실패하면 `t.Fatal`로 끝나는 검사 하나를 더했을 뿐이고 단언과 리터럴은 하나도 바뀌지 않았다.
+decision_hash: 9d5a2d0df8f302c1
 ---
 # ADR-0113 질의 스키마 — 등급마다의 스키마와 역할, 뷰와 함수, 등급을 거르는 한 곳
 
@@ -152,9 +152,9 @@ ADR-0080이 사용자가 SQL로 KG를 묻는 질의 스키마를 정했고, ADR-
 5. **뷰와 함수**: 타입마다 뷰(이름은 타입 이름의 snake_case, 부모는 자기 표와 모든 하위 타입 표의 `UNION ALL`, D-8: 객체는 구체 타입의 표에만 있어서 한 객체가 한 번만 나온다), 링크 타입마다 뷰, 공통 뷰(`object`, `link`, `attribute`, `identifier`, `kg_version`, `change`, `value_change`), 모델 설명 뷰 넷, 함수 `object_detail(id)`(등급마다 하나), `<타입>_at(변경 번호)`. 모든 뷰와 컬럼과 함수에 `COMMENT`가 있다. 근거 등급은 글자(`fact`, `assumed`, `unknown`)로 보인다. `provenance`는 이름이 키이고 `g`, `b`, `t`, `r`이 안의 키이며 값은 넣지 않는다. 변동 속성은 `<이름>`과 `<이름>_at` 두 컬럼이다. 속성 이름이 `name`이면 컬럼을 따로 두지 않는다. 컬럼 이름이 겹치거나 63바이트를 넘거나 예약된 이름과 같으면 계획이 거절한다. 조직 속성은 이름 그대로 큰따옴표로 감싼 컬럼이다.
 6. **함수의 권한**: 함수는 `SECURITY DEFINER`에 `search_path = pg_catalog, pg_temp`로 고정하고 `PUBLIC`의 실행 권한을 회수한다(질의 역할은 저장 스키마를 못 읽으므로 함수가 소유자의 권한으로 읽는다). 등급은 함수 안에 들어 있고 호출자가 올릴 수 없다. 뷰 안에서 부르는 시각 변환 함수 `public.praxium_ts`만 `PUBLIC`이 실행한다.
 7. **`<타입>_at(n)`**: 변동 값과 상태가 없는 같은 컬럼을 낸다. `n`이 이력의 바닥보다 작거나 읽기 워터마크보다 크거나 `NULL`이면 빈 결과가 아니라 SQLSTATE `PXNRD`의 오류다(온전해 보이지만 온전하지 않은 답을 막는다).
-8. **모델 설명 표 넷**(`model_type`, `model_attribute`, `model_link_type`, `model_link_rule`)은 저장 스키마의 고정 표이고 생성기 버전 8의 더하는 단계다(이미 있는 표에도 되풀이할 수 있게 `IF NOT EXISTS`다). 질의 스키마를 만드는 트랜잭션이 표를 비우고 다시 채운다.
+8. **모델 설명 표 넷**(`model_type`, `model_attribute`, `model_link_type`, `model_link_rule`)은 저장 스키마의 고정 표이고 생성기 버전 11의 더하는 단계다(이미 있는 표에도 되풀이할 수 있게 `IF NOT EXISTS`다). 질의 스키마를 만드는 트랜잭션이 표를 비우고 다시 채운다.
 9. **다시 다시 만들기와 삭제**: 스키마 관리기가 일을 할 때마다 질의 스키마 여섯 개를 지우고 통째로 다시 만든다(만든 것과 따라간 것이 같다, 테이블은 건드리지 않는다). KG를 지우면(`DeleteKG`, `DropStorageSchema`) 질의 스키마와 역할도 같은 트랜잭션에서 지운다.
-10. **생성기 버전 8**: 두 커밋(B3-1과 B3-2)이 한 버전 안이다. 버전 7은 먼저 합쳐진 변경(ADR-0108)이 썼으므로 이 변경이 8로 올렸다. 이미 있는 KG의 질의 스키마는 이 버전에 묶여 다시 만들어진다(시작할 때마다가 아니다): 서버가 시작할 때 생성기가 옛것인 KG를 따라가고(`AdjustOldSchemas`), 스키마 관리기가 일을 할 때(모델이 바뀌어 더하는 변경) 지우고 다시 만든다. 뷰의 SQL만 바뀌고 버전이 같으면 이미 있는 KG는 다시 만들어지지 않으므로, 합친 뒤에 뷰의 SQL을 바꾸는 변경은 생성기 버전을 올려야 한다. 근거(코드 위치): 생성기 버전은 `pgschema/plan.go:22`의 상수이고, 서버 시작은 `pgstore/schema_startup.go:90`(`needsAdjusting`)이 기록의 버전이 상수보다 낮은 KG를 골라 따라가며, 따라갈 일이 없으면(`schema_adjust.go:81`, 기록과 모델이 같으면) 질의 스키마를 건드리지 않고, 있으면 `schema_adjust.go:87`(`runQuerySteps`)이 여섯 스키마를 지우고 다시 만든다. 이 PR의 `attribute`와 `object_detail`의 SQL 변경은 이 PR 안에서 생성기 버전 8이 처음 나가는 것이므로 올릴 필요가 없다(버전 8이 main에 들어가기 전이다).
+10. **생성기 버전 11**: 두 커밋(B3-1과 B3-2)이 한 버전 안이다. 버전 7~10은 먼저 합쳐진 변경(ADR-0108·0115·0118·0119)이 썼으므로 이 변경이 11로 올렸다. 이미 있는 KG의 질의 스키마는 이 버전에 묶여 다시 만들어진다(시작할 때마다가 아니다): 서버가 시작할 때 생성기가 옛것인 KG를 따라가고(`AdjustOldSchemas`), 스키마 관리기가 일을 할 때(모델이 바뀌어 더하는 변경) 지우고 다시 만든다. 뷰의 SQL만 바뀌고 버전이 같으면 이미 있는 KG는 다시 만들어지지 않으므로, 합친 뒤에 뷰의 SQL을 바꾸는 변경은 생성기 버전을 올려야 한다. 근거(코드 위치): 생성기 버전은 `pgschema/plan.go:22`의 상수이고, 서버 시작은 `pgstore/schema_startup.go:90`(`needsAdjusting`)이 기록의 버전이 상수보다 낮은 KG를 골라 따라가며, 따라갈 일이 없으면(`schema_adjust.go:81`, 기록과 모델이 같으면) 질의 스키마를 건드리지 않고, 있으면 `schema_adjust.go:87`(`runQuerySteps`)이 여섯 스키마를 지우고 다시 만든다. 이 PR의 `attribute`와 `object_detail`의 SQL 변경은 이 PR 안에서 생성기 버전 8이 처음 나가는 것이므로 올릴 필요가 없다(버전 8이 main에 들어가기 전이다).
 11. **등급 밖의 면과 모델 검증**: 등급 필터링 밖에서 보이는 것은 객체의 이름(`name` 열), 참조(`ref`), `min_grade`, `change` 뷰의 변경 표시(숨은 속성만 바뀐 변경도 `changed`로 보인다), 모델 설명(`model_attribute`의 이름, 설명, 열거값과 `value_change`의 속성 이름)이다. 값이 아니라 메타데이터라서 이번에는 거르지 않고, **모델 설명은 등급 밖의 메타데이터**라고 정한다(숨은 속성의 이름, 설명, 열거값이 비용 순서에 따라 호출자의 함수에 보일 수 있다). 값이 새는 길 둘은 모델 검증이 막는다. (가) 객체의 이름을 주는 속성 `name`(`model.ObjectNameProperty`)은 표의 `name` 열에서 모든 등급에 보이므로 민감도가 `open`이 아니면 거절한다. (나) 식별 키의 속성은 `open`이어야 한다: 수집이 키의 첫 성분의 값을 키의 식별자 종류로 기록하고(`ingest/derive.go`의 `claim`) `identifier` 뷰는 등급이 없어서, `restricted` 속성이 키이면 그 값이 `open` 역할에 보인다. 식별 키는 `confidential`만 안 된다던 ADR-0018 10항을 넓힌 것이다(`amends`).
 12. **질의 실행기의 필수 조건**(REQ-666, B3-4가 테스트로 잠근다): 질의 실행기는 `SET`, `RESET`, `SET ROLE`, 둘 이상의 문장, `DO`, `CREATE`(임시 객체 포함)를 거절하고, 스키마 이름을 적은 질의는 그 등급의 지금 세트(일반 또는 `_w`)의 것만 통과시킨다. 앞의 것은 3항의 멤버십 때문에 없으면 등급이 무너지는 것이고, 뒤의 것은 큰 적용 중에 일반 세트를 이름으로 골라 온전해 보이지만 온전하지 않은 답(REQ-627)을 받는 길을 막는 것이다. 등급 역할이 `TEMP` 권한을 가져 임시 표와 임시 함수를 만들 수 있다는 것도 같은 조건으로 막는다. 이 변경에서는 코드가 아니라 조건을 적는다.
 

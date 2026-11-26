@@ -71,7 +71,13 @@ func permanentIngestDefs() []tableDef {
 			col(ColSrcNo, typeSrc), col(ColDatasetNo, typeInt), col(ColKey, typeKeyText), col(ColDefNo, typeDefNo),
 			col(ColField, "text NOT NULL DEFAULT ''"), kindCheck(), col(ColReason, "text NOT NULL"),
 		}},
+		objectRetireDef(),
 	}
+}
+
+// objectRetireDef is the table of the objects that are held to retire for good (ADR-0118): the number of the object is its key.
+func objectRetireDef() tableDef {
+	return tableDef{Name: TableObjectRetire, With: vacuumBig, Cols: []string{col(ColObjNo, "bigint NOT NULL PRIMARY KEY")}}
 }
 
 // receiveTableDefs are the tables a source is received into, one partition per source. A page gives all its rows
@@ -112,6 +118,7 @@ func computeTableDefs() []tableDef {
 	defs := computeRecordDefs()
 	defs = append(defs, computeKeyDefs()...)
 	defs = append(defs, identifyTableDefs()...)
+	defs = append(defs, expandTableDefs()...)
 	defs = append(defs, computeResultDefs()...)
 	return append(defs, ingestDiffDef())
 }
@@ -203,6 +210,18 @@ func identifyTableDefs() []tableDef {
 	}
 }
 
+// expandTableDefs is the working table of the expansion (generator version 8, ADR-0118): the keys whose shared rows a unit has read, by
+// the rule (kind) and the key (a number and a hash). A unit writes its rows and the keys it read in one transaction, so a key is read by
+// the one unit that wrote it.
+func expandTableDefs() []tableDef {
+	return []tableDef{
+		{Name: TableCalcXKey, Cols: []string{
+			col(ColKind, typeSmall), col(ColKeyNo, typeBig), col(ColKeyHash, typeHash16),
+			"PRIMARY KEY (" + ColKind + ", " + ColKeyNo + ", " + ColKeyHash + ")",
+		}},
+	}
+}
+
 // computeResultDefs are what the computation makes: the objects, the links, the volatile values, the identifier
 // claims, the problems and the new record references. The objects and the links have the columns of the tables
 // they will be put into, so the apply copies them.
@@ -235,7 +254,18 @@ func computeResultDefs() []tableDef {
 			col(ColRid, typeBig), col(ColRole, typeSmall), col(ColDefNo, typeInt), col(ColSub, typeInt), col(ColLookupHash, "bytea"),
 			col(ColTargetNo, "bigint"), col(ColState, typeSmall), col(ColRetirable, "boolean NOT NULL DEFAULT false"),
 		}},
+		leftTableDef(),
 	}
+}
+
+// leftTableDef is the table of the objects the computation of the objects left (generator version 10, ADR-0119): the object, why (Left*),
+// how many lines it had (for one that has more than the limit, the number counted up to the limit and one more), whether it is one the
+// run would have made, and the reason as a person reads it. A table of its own, so that the tables of the KG that readers have open
+// are not changed.
+func leftTableDef() tableDef {
+	return tableDef{Name: TableCalcLeft, Cols: []string{
+		col(ColObjNo, "bigint NOT NULL PRIMARY KEY"), col(ColWhy, typeSmall), col(ColLines, typeInt), col(ColIsNew, "boolean NOT NULL"), col(ColReason, "text NOT NULL"),
+	}}
 }
 
 // ingestDiffDef is the difference between the computed rows and the stored ones, in the order the apply writes
@@ -270,7 +300,17 @@ func ingestIndexDefs() []indexDef {
 		// takes the last row of a key by the place.
 		stageRecordKeyIndex(),
 	}
-	return append(out, identifyIndexDefs()...)
+	return append(append(out, identifyIndexDefs()...), recomputeIndexDefs()...)
+}
+
+// recomputeIndexDefs are the indexes the computation of the objects reads by (generator version 8, ADR-0115): from an object to the
+// references of the records of the run that are bound to it (the identity and the identifier claims), as record_ref_target is for the
+// references that are kept; and from the record and the feed of a new object to the question that asked for its parent's id.
+func recomputeIndexDefs() []indexDef {
+	return []indexDef{
+		{Name: "calc_ref_target", Table: TableCalcRef, Expr: ColRole + ", " + ColTargetNo, Where: ColTargetNo + " IS NOT NULL"},
+		{Name: "calc_ask_pair", Table: TableCalcAsk, Expr: ColRid + ", " + ColFeedNo, Where: ColParentRef + " IS NOT NULL"},
+	}
 }
 
 // identifyIndexDefs are the indexes the identification reads by (ADR-0108). The rows received are read by a range of pages, which is
