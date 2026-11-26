@@ -44,6 +44,43 @@ amends:
     what: 실행기가 질의 스키마의 역할을 만들고 지우며 공용 마이그레이션 0008이 설치 토큰을 둔다는 것
 amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
+  - go:backend/internal/pgingest::TestExpAKeyThatTwoUnitsHaveIsReadByTheFirstOfThemAndByNoOtherAndTheKeysAreOfTheRun
+  - go:backend/internal/pgingest::TestExpAReferenceOfAFeedThatOnlyAddsValuesIsNoSupportAndOneOfAFeedThatIsNotKnownIs
+  - go:backend/internal/pgingest::TestExpAnObjectThatOnlyARecordOfAFeedThatAddsValuesStandsUnderIsRetiredAsTheOldPipelineRetiresIt
+  - go:backend/internal/pgingest::TestExpAnObjectTwoFeedsMakeOfWhichOneRetiresIsRetiredAsTheOldPipelineRetiresItWhicheverFeedLetsGoOfItFirst
+  - go:backend/internal/pgingest::TestExpTheExpansionOfEverythingTakesTheRecordsTheIdentificationReadsAndNoOther
+  - go:backend/internal/pgingest::TestExpTheMarkOfTheRegistryIsOnTheObjectsThatARetirableReferenceOfTheRunPointsAtAndStays
+  - go:backend/internal/pgingest::TestExpTheNumbersOfTheRecordsOfARunAreAsManyAsTheRecordsWhateverTheRulesLookedAt
+  - go:backend/internal/pgingest::TestExpTheRecordOfALinkThatEndsAtTheObjectAnEndKeyOfARecordFindsIsReadAgain
+  - go:backend/internal/pgingest::TestExpTheRecordOfALinkThatStartsAtTheObjectAChangedRecordIsNowBoundToIsReadAgain
+  - go:backend/internal/pgingest::TestExpTheRecordOfASecondLinkThatEndsWhereTheLinkOfAChangedRecordEndedIsReadAgain
+  - go:backend/internal/pgingest::TestExpTheReferencesOfRecordsOfTwoSourcesWhoseFeedsHaveTheSameNumberAreRetirableByTheFeedOfTheirOwnSource
+  - go:backend/internal/pgingest::TestExpTheUnitsDoneAreTheUnitsTheExpansionWentByAndTheRunBeginsAtTheFirstRule
+  - go:backend/internal/pgingest::TestExpWhileTheIdentificationLeavesPairsNoObjectIsACandidateForRetirementWhoeverGoesOnWithTheExpansion
+  - go:backend/internal/pgingest::TestRcpACellAFeedThatMakesNoObjectCannotReadIsAProblemOfTheRecordAndTheValueIsLeftOut
+  - go:backend/internal/pgingest::TestRcpAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToRead
+  - go:backend/internal/pgingest::TestRcpARunStoppedBetweenPagesGoesOnFromTheNextPageAndStagesWhatOneThatDidNotStopStages
+  - go:backend/internal/pgingest::TestRcpAServerThatTakesTheRunOverUsesWhatTheRunBeganWithAndRefusesWhatIsDifferent
+  - go:backend/internal/pgingest::TestRcpAStatementThatFailsLeavesTheRunWhereItWasAndWhatIsWrittenIsNotKept
+  - go:backend/internal/pgingest::TestRcpAVolatileValueIsStagedAsAnEntryAndLeftOutOfTheDocument
+  - go:backend/internal/pgingest::TestRcpAnObjectOfTheRunThatNoRegistryAndNoNewObjectHasIsLeftAndDoesNotStopTheStep
+  - go:backend/internal/pgingest::TestRcpAnObjectThatHasMoreLinesThanTheLimitIsLeftAsItIsAndCounted
+  - go:backend/internal/pgingest::TestRcpAnObjectThatNoRecordGivesANameKeepsTheNameTheRegistryHasAndOneThatARecordNamesTakesTheValue
+  - go:backend/internal/pgingest::TestRcpAnObjectTheKGHasThatIsLeftIsToldAndIsNeverACandidateForRetirement
+  - go:backend/internal/pgingest::TestRcpAnObjectTheRunWouldMakeThatHasTooManyLinesIsTakenBackWithEverythingThatNamedItAndTheRecordsUnderItAreProblems
+  - go:backend/internal/pgingest::TestRcpAnObjectWhoseContextParentIsTakenBackIsTakenBackToo
+  - go:backend/internal/pgingest::TestRcpTheClaimRuleOfTheExpansionIsNeededForTheObjectsThatHoldAClaimToBeComputed
+  - go:backend/internal/pgingest::TestRcpTheComputationIsRefusedBeforeTheExpansionIsDoneAndAPageThatIsNotTheNextOneIsRefused
+  - go:backend/internal/pgingest::TestRcpTheComputationRefusesToBeginTwiceAndToRunOnTablesThatAreNotTheRunsAndAPageAfterTheEnd
+  - go:backend/internal/pgingest::TestRcpTheObjectsThatAreTakenBackAreTheSameWhateverThePageSizeIs
+  - go:backend/internal/pgingest::TestRcpTheObjectsTheRunTouchedAreTheSameWhenEveryRecordIsComputedAndTheOthersAreWhatTheRunBeforeMade
+  - go:backend/internal/pgingest::TestRcpThePageSizeDoesNotChangeWhatIsStaged
+  - go:backend/internal/pgingest::TestRcpTheReportIsWhatTheStatementsWroteAndAnObjectWithoutRecordsOrWithOnesThatCannotBeReadIsLeft
+  - go:backend/internal/pgingest::TestRcpTheSourceConflictsAreTheOnesTheOldPipelineReportsFromTheSameCaptures
+  - go:backend/internal/pgingest::TestRcpTheStagedObjectsAreTheOnesTheOldPipelineMakesFromTheSameCaptures
+  - go:backend/internal/pgingest::TestRcpTwoRecordsOfOneObjectThatSayDifferentThingsHaveOneValueAndTheLosingOneIsAProblem
+  - go:backend/internal/pgingest::TestRcpWhatManyRecordsOfAnObjectShareIsReadOnceSoTheRowsReadGoWithTheNumberOfLines
+  - go:backend/internal/pgingest::TestRcpWhatTheRunReadsIsTheReferencesThatStandAndOnlyOfTheObjectsThatAreNotCandidatesForRetirement
   - go:backend/internal/pgingest::TestExpAStatementThatFailsInAUnitLeavesTheUnitUndoneAndTheRunGoesOnFromIt
   - go:backend/internal/pgingest::TestExpAnObjectIsOnlyACandidateForRetirementWhenAFeedThatRetiresMadeIt
   - go:backend/internal/pgingest::TestExpAnObjectThatARecordOfAnotherSourceStandsUnderIsNotACandidateAndOneThatNoRecordStandsUnderIs
@@ -133,7 +170,7 @@ amends_tests:
   - go:backend/internal/pgingest::TestRdfTheCountsOfTheRunSayForEachDatasetHowMuchOfItTheNextStepMayCount
   - go:backend/internal/pgingest::TestRdfWhatIsMadeDoesNotDependOnHowTheWorkIsCutIntoBuckets
   - go:backend/internal/pgingest::TestRdfWhatTheComparisonMadeOfARunIsWhatTheNextRunStartsFrom
-test_change_reason: 생성기 버전이 10에서 11이 되었다(8~10은 먼저 병합된 ADR-0115·0118·0119가 썼다). 테스트는 단언을 한 글자도 약하게 하지 않고 버전 숫자만 맞춘다(버전 11이 더하는 단계는 그 버전의 테스트에 있다). pgingest 테스트들(Exp, Hka, Idn, Pgi, Rdf 89개)은 본문이 그대로이고 지문만 바뀌었다. 모두가 부르는 도우미 `pgiOpen`이 KG를 테스트 전용 모델 `pgstore.TestOnlyModelsWithoutQuerySchema`로 만든다. 이 모델은 서버의 모델(`StandardModels(true)`)과 같고 질의 스키마만 없다. 통계 객체는 서버처럼 함께 만들므로 실행 계획과 읽은 행을 보는 테스트(`idn_plan_test.go`, `rdf_plan_test.go`, `exp_scale_test.go`)는 서버와 같은 조건에서 계획을 본다. 이 테스트들이 보는 것은 수집이고 질의 스키마는 `Qsc` 테스트가 덮는다. 도우미는 모델을 얻다 실패하면 `t.Fatal`로 끝나는 검사 하나를 더했을 뿐이고 단언과 리터럴은 하나도 바뀌지 않았다.
+test_change_reason: 생성기 버전이 10에서 11이 되었다(8~10은 먼저 병합된 ADR-0115·0118·0119가 썼다). 테스트는 단언을 한 글자도 약하게 하지 않고 버전 숫자만 맞춘다(버전 11이 더하는 단계는 그 버전의 테스트에 있다). pgingest 테스트들(Exp, Hka, Idn, Pgi, Rdf 89개, 그리고 main을 합칠 때 먼저 병합된 ADR-0118·0119가 더한 Exp·Rcp 37개)은 본문이 그대로이고 지문만 바뀌었다(합친 뒤 이 PR이 pgingest에서 바꾼 파일은 `pgi_helpers_test.go` 하나다). 모두가 부르는 도우미 `pgiOpen`이 KG를 테스트 전용 모델 `pgstore.TestOnlyModelsWithoutQuerySchema`로 만든다. 이 모델은 서버의 모델(`StandardModels(true)`)과 같고 질의 스키마만 없다. 통계 객체는 서버처럼 함께 만들므로 실행 계획과 읽은 행을 보는 테스트(`idn_plan_test.go`, `rdf_plan_test.go`, `exp_scale_test.go`)는 서버와 같은 조건에서 계획을 본다. 이 테스트들이 보는 것은 수집이고 질의 스키마는 `Qsc` 테스트가 덮는다. 도우미는 모델을 얻다 실패하면 `t.Fatal`로 끝나는 검사 하나를 더했을 뿐이고 단언과 리터럴은 하나도 바뀌지 않았다.
 decision_hash: 9d5a2d0df8f302c1
 ---
 # ADR-0113 질의 스키마 — 등급마다의 스키마와 역할, 뷰와 함수, 등급을 거르는 한 곳
