@@ -30,11 +30,12 @@ func readToken(ctx context.Context, tx *sql.Tx, m SchemaModel) (SchemaModel, err
 }
 
 // CreateStorageSchema makes the storage schema of a KG from the model: it takes the number of the KG from the
-// sequence, runs the statements of the plan, and writes the record with the manifest last, all in one transaction
-// of the migration role on the write pool, under the lock of the KG's schema work. It either makes everything or
-// leaves nothing. Called again for a schema that was made from the same model it changes nothing and returns the
-// record; for one made from another model it is a conflict (AdjustStorageSchema follows a change of the model).
-// Two runs at once take turns, so both succeed and one of them works.
+// sequence, runs the statements of the plan, and writes the record with the manifest, in one transaction of the
+// migration role on the write pool, under the lock of the KG's schema work; then it makes the query schemas, one to a
+// transaction (ADR-0126). It either makes everything or leaves nothing: a query schema that fails deletes what was
+// made. Called again for a schema that was made from the same model it changes nothing and returns the record; for one
+// made from another model it is a conflict (AdjustStorageSchema follows a change of the model). Two runs at once take
+// turns, so both succeed and one of them works.
 func (s *Store) CreateStorageSchema(ctx context.Context, kg graph.KGID, m SchemaModel) (SchemaRecord, error) {
 	return s.createStorageSchema(ctx, kg, m, buildPlan)
 }
@@ -50,49 +51,87 @@ func (s *Store) createStorageSchema(ctx context.Context, kg graph.KGID, m Schema
 	if err != nil {
 		return SchemaRecord{}, err
 	}
-	var out SchemaRecord
+	if err := s.endClashingMakings(ctx, sh, kg, "", false); err != nil {
+		return SchemaRecord{}, err
+	}
+	var out made
 	err = locked(ctx, sh, kg, func(tx *sql.Tx) error {
 		var err error
-		out, err = createInTx(ctx, tx, kg, m, plan)
-		return err
+		if out, err = createInTx(ctx, tx, kg, m, plan); err != nil {
+			return err
+		}
+		return s.schemaStep(ctx, schemaStepMake, tx)
 	})
-	return out, err
-}
-
-func createInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, plan planner) (SchemaRecord, error) {
-	have, found, err := readRecord(ctx, tx, kg)
 	if err != nil {
 		return SchemaRecord{}, err
 	}
+	if err := s.makeRest(ctx, sh, kg, out.plan); err != nil {
+		return SchemaRecord{}, err
+	}
+	return out.rec, nil
+}
+
+// createInTx is the first transaction of a making: the storage schema, its record and, when the plan has a query schema, the mark
+// of the making (ADR-0126).
+func createInTx(ctx context.Context, tx *sql.Tx, kg graph.KGID, m SchemaModel, plan planner) (made, error) {
+	have, found, err := readRecord(ctx, tx, kg)
+	if err != nil {
+		return made{}, err
+	}
 	if found {
-		if err := CheckSchemaMatch(have, m); err != nil {
-			return SchemaRecord{}, kernel.Wrap(kernel.CodeConflict, err, "the KG has a storage schema already")
-		}
-		return have, nil
+		return joinMaking(ctx, tx, have, m, plan)
 	}
 	var kgNo int64
 	if err := tx.QueryRowContext(ctx, `SELECT nextval('kg_no_seq')`).Scan(&kgNo); err != nil {
-		return SchemaRecord{}, dbErr(err, "take the number of the KG")
+		return made{}, dbErr(err, "take the number of the KG")
 	}
 	if m, err = readToken(ctx, tx, m); err != nil {
-		return SchemaRecord{}, err
+		return made{}, err
 	}
 	p, err := plan(m, kgNo)
 	if err != nil {
-		return SchemaRecord{}, err
+		return made{}, err
 	}
 	if err := runSteps(ctx, tx, p.Steps, pgschema.InTx); err != nil {
-		return SchemaRecord{}, err
-	}
-	if err := runQuerySteps(ctx, tx, p); err != nil {
-		return SchemaRecord{}, err
+		return made{}, err
 	}
 	state := string(p.Manifest.State)
 	if err := writeRecord(ctx, tx, recordWrite{kg: kg, manifest: p.Manifest, state: state, insert: true}); err != nil {
-		return SchemaRecord{}, err
+		return made{}, err
+	}
+	if len(p.Query) > 0 {
+		if _, err := tx.ExecContext(ctx, `INSERT INTO kg_making (kg_id, expires_at) VALUES ($1, now() + make_interval(secs => $2))`,
+			kg.String(), makingTerm.Seconds()); err != nil {
+			return made{}, dbErr(err, "mark the KG as being made")
+		}
 	}
 	rec, _, err := readRecord(ctx, tx, kg)
-	return rec, err
+	return made{rec: rec, plan: p}, err
+}
+
+// joinMaking is the first transaction of a making that finds the record. One of another model is a conflict. One of the same model
+// is the record, with the plan of its query schema when another run is making it still: the two take turns over the query schemas
+// and both end. A making whose term is over is deleted before (endClashingMakings), so only a run at that very moment meets one; it
+// is a conflict.
+func joinMaking(ctx context.Context, tx *sql.Tx, have SchemaRecord, m SchemaModel, plan planner) (made, error) {
+	if err := CheckSchemaMatch(have, m); err != nil {
+		return made{}, kernel.Wrap(kernel.CodeConflict, err, "the KG has a storage schema already")
+	}
+	var over bool
+	err := tx.QueryRowContext(ctx, `SELECT expires_at < now() FROM kg_making WHERE kg_id = $1`, have.KG.String()).Scan(&over)
+	switch {
+	case isNoRows(err):
+		return made{rec: have}, nil
+	case err != nil:
+		return made{}, dbErr(err, "read the mark of a KG being made")
+	case over:
+		return made{}, kernel.Errorf(kernel.CodeConflict, "the making of the KG %s stopped and is deleted first; make it again", have.KG)
+	}
+	if m, err = readToken(ctx, tx, m); err != nil {
+		return made{}, err
+	}
+	p, err := plan(m, have.KGNo)
+	return made{rec: have, plan: p}, err
 }
 
 // runSteps runs the steps that belong to a phase, in order; a step of the other phase is a mistake of the

@@ -22,8 +22,9 @@ func readInstallToken(ctx context.Context, tx *sql.Tx) (string, error) {
 	return token, nil
 }
 
-// runQuerySteps gives a KG its query schema: the roles first (a plan without a query schema has none), then the steps of the plan,
-// which drop the schemas and make them again whole. It runs in the transaction of the change, so a failure leaves the KG as it was.
+// runQuerySteps gives a KG the query schemas of the steps: the roles first (a plan without a query schema has none), then the steps,
+// which drop the schemas and make them again whole. The executor gives it the steps of one schema at a time (queryPart, ADR-0126), each
+// in a transaction of its own, so a failure leaves that schema as it was.
 func runQuerySteps(ctx context.Context, tx *sql.Tx, p pgschema.Plan) error {
 	if len(p.Query) == 0 {
 		return nil
@@ -55,8 +56,18 @@ func ensureQueryRoles(ctx context.Context, tx *sql.Tx, roles []string) error {
 	return nil
 }
 
-// dropQuerySchema drops the query schemas of a KG and then its roles. The roles have rights on the schemas only, which the drop of the
-// schemas takes away with them.
+// dropQueryName drops one query schema of a KG, in a transaction of its own (ADR-0126). The token of the installation is read first,
+// as dropQuerySchema does, so a database whose token is not one drops nothing.
+func dropQueryName(ctx context.Context, tx *sql.Tx, name string) error {
+	if _, err := readInstallToken(ctx, tx); err != nil {
+		return err
+	}
+	_, err := tx.ExecContext(ctx, `DROP SCHEMA IF EXISTS `+pgschema.QuoteIdent(name)+` CASCADE`)
+	return dbErr(err, "drop a query schema")
+}
+
+// dropQuerySchema drops the query schemas of a KG that are left and then its roles: the last transaction of the query schemas of a
+// delete. The roles have rights on the schemas only, which the drop of the schemas takes away with them.
 func dropQuerySchema(ctx context.Context, tx *sql.Tx, kgNo int64) error {
 	token, err := readInstallToken(ctx, tx)
 	if err != nil {
@@ -67,7 +78,17 @@ func dropQuerySchema(ctx context.Context, tx *sql.Tx, kgNo int64) error {
 			return dbErr(err, "drop a query schema")
 		}
 	}
-	for _, stmt := range pgschema.DropRolesSQL(token, kgNo) {
+	// only the roles that are there: DROP ROLE needs the right to make roles even for one that is not, and a making that an executor
+	// without the right could not end made none and is deleted all the same (ADR-0126).
+	roles := pgschema.QueryRoleNames(token, kgNo)
+	for i, stmt := range pgschema.DropRolesSQL(token, kgNo) {
+		var have bool
+		if err := tx.QueryRowContext(ctx, `SELECT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = $1)`, roles[i]).Scan(&have); err != nil {
+			return dbErr(err, "look for a role of the query schema")
+		}
+		if !have {
+			continue
+		}
 		if _, err := tx.ExecContext(ctx, stmt); err != nil {
 			return dbErr(err, "drop a role of the query schema")
 		}

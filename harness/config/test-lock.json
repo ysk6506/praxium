@@ -32785,6 +32785,21 @@
    "added": "2026-11-26",
    "amended_by": null
   },
+  "go:backend/internal/pgingest::TestPgiAKGBeingMadeRefusesTheIngestionUntilItsMakingEnds": {
+   "kind": "test",
+   "hash": "12232c8091b54b90",
+   "asserts": 18,
+   "literals": [
+    "8a570e9706712925"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestPgiAPageOfTenThousandRowsGoesInWithOneCopyOfEachTable": {
    "kind": "test",
    "hash": "21eceedb5cdffcdd",
@@ -34571,10 +34586,10 @@
   },
   "go:backend/internal/pgschema::TestQscThePlanOfTheStandardModelHasTheStepsOfTheQuerySchemaAndTheRolesOnlyWhenItIsGivenAToken": {
    "kind": "test",
-   "hash": "ee0c4a5b312cbc0b",
+   "hash": "291deff740db21d7",
    "asserts": 12,
    "literals": [
-    "eed606207178bb31"
+    "cc591c4e1a7a7736"
    ],
    "precision": [],
    "skips": 0,
@@ -34582,7 +34597,7 @@
     "REQ-572"
    ],
    "added": "2026-11-26",
-   "amended_by": null
+   "amended_by": "0126-make-and-adjust-a-kg-in-steps-one-query-schema-to-a-transaction.md"
   },
   "go:backend/internal/pgschema::TestQscTheSearchPathPutsTheHighestGradeFirstAndStopsAtTheGradeOfTheCaller": {
    "kind": "test",
@@ -36487,10 +36502,10 @@
   },
   "go:backend/internal/pgstore::TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable": {
    "kind": "test",
-   "hash": "fa6c12efa0603689",
+   "hash": "dff8fd8342d204fe",
    "asserts": 19,
    "literals": [
-    "230b850ee7a99815"
+    "9c5e38158e2832eb"
    ],
    "precision": [],
    "skips": 0,
@@ -36498,7 +36513,7 @@
     "REQ-683"
    ],
    "added": "2026-11-26",
-   "amended_by": "0125-delete-a-kg-in-steps-compute-tables-first.md"
+   "amended_by": "0126-make-and-adjust-a-kg-in-steps-one-query-schema-to-a-transaction.md"
   },
   "go:backend/internal/pgstore::TestIngestPuttingASourceToAKGDoesNotWaitForAnotherSourceThatIsBeingReceived": {
    "kind": "test",
@@ -36647,6 +36662,202 @@
    "reqs": [
     "REQ-683",
     "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmADeleteOfAMakingThatFailsLeavesItForTheNextOneAndAStrayMarkIsAFailure": {
+   "kind": "test",
+   "hash": "e5748110eba0bf84",
+   "asserts": 20,
+   "literals": [
+    "40561f9907208cb3"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAMakingThatFailsAtAnyQuerySchemaDeletesWhatItMadeAndReturnsItsError": {
+   "kind": "test",
+   "hash": "d73db960240f76d3",
+   "asserts": 16,
+   "literals": [
+    "88eb637c0f014a2e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAMakingThatRunsPastItsTermOrWhoseKGIsDeletedStopsAndLeavesNothing": {
+   "kind": "test",
+   "hash": "9ac8cd0e35d62cde",
+   "asserts": 6,
+   "literals": [
+    "58b00d193ae9d529"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAMakingWhoseServerStopsIsClosedAndIsDeletedOnlyOnceItsTermIsOver": {
+   "kind": "test",
+   "hash": "e612976d92ac61fb",
+   "asserts": 25,
+   "literals": [
+    "a93c52b58c942584"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAnExecutorThatMayNotMakeRolesMakesNoKGAndLeavesNothing": {
+   "kind": "test",
+   "hash": "546a22d23a92602b",
+   "asserts": 12,
+   "literals": [
+    "7fa1e09aa6a71bea"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAQuerySchemaLeftStaleByAnAdjustmentThatStoppedIsMadeAgainWhenAServerStartsAndIsThenAsIfMadeWhole": {
+   "kind": "test",
+   "hash": "2da9dd7b01747e77",
+   "asserts": 20,
+   "literals": [
+    "d57f18000c8ac7fd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-921"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmARenameAloneIsFollowedByTheQuerySchemasWhenAServerStarts": {
+   "kind": "test",
+   "hash": "8f0b50a2298327dc",
+   "asserts": 10,
+   "literals": [
+    "bf6b053be7843c16"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-921"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAServerThatStartsAndCannotMakeAStaleQuerySchemaSaysSoAndTheNextOneMakesIt": {
+   "kind": "test",
+   "hash": "bc5705dea882d6d1",
+   "asserts": 12,
+   "literals": [
+    "700e87f80167d560"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-921"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmAStorageSchemaThatAnotherRunIsMakingIsEndedByARunOfTheSameModelAndOneWhoseTermIsOverIsMadeAnew": {
+   "kind": "test",
+   "hash": "65e4aa45c40e20cf",
+   "asserts": 17,
+   "literals": [
+    "18a0fbe98f83f737"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmServersThatStartTogetherMakeEachStaleQuerySchemaOnce": {
+   "kind": "test",
+   "hash": "c7d2691e73a0db22",
+   "asserts": 11,
+   "literals": [
+    "ca14a8ba282917e0"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-921"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmTheModelWithoutAQuerySchemaMakesAKGInOneTransactionAndAServerThatStartsMakesNone": {
+   "kind": "test",
+   "hash": "5ecbd93e0c402e19",
+   "asserts": 7,
+   "literals": [
+    "be05fb123eb0534f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-921"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmTheStepsOfTheQuerySchemaAreCutIntoItsSchemasAndAPlanThatMixesThemIsRefused": {
+   "kind": "test",
+   "hash": "deccc1a5dfd9ba31",
+   "asserts": 9,
+   "literals": [
+    "390cde4879cebdd7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-921"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgmTheTransactionsOfTheMakingFailInATransactionThatIsOver": {
+   "kind": "test",
+   "hash": "90f4c4fed2a12e23",
+   "asserts": 11,
+   "literals": [
+    "1e4aa53dd97d6daa"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-920",
+    "REQ-921"
    ],
    "added": "2026-11-26",
    "amended_by": null

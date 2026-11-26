@@ -22,12 +22,14 @@ import (
 //  2. the sources, one to a transaction (detachSources, ADR-0098), with their runs.
 //  3. the tables of the computation (pgschema.ComputeTables), computeDropBatch to a transaction. No run is left to write them:
 //     the runs went with their sources, and a transaction that was writing one holds its lock until it ends.
-//  4. the query schema and its roles (ADR-0113), in a transaction of their own: their views and functions lock about 2,200,
-//     and the storage schema with them would not fit.
-//  5. last: the rest of the storage schema, the state rows and the row of the list (the mark goes with it).
+//  4. the query schemas (ADR-0113), one to a transaction (ADR-0126), and the roles with the last: their views and functions
+//     lock about 2,200, and the storage schema with them would not fit.
+//  5. last: the rest of the storage schema, the state rows and the row of the list (the mark goes with it), and the mark of a
+//     making (ADR-0126) when the KG is one whose making did not end.
 //
 // Every step can be run again: a delete that stopped in the middle is ended by DeleteKG called again, by the server when it
-// starts (ResumeAllWork) and by CreateKG for a KG that would clash with the one being deleted.
+// starts (ResumeAllWork) and by CreateKG for a KG that would clash with the one being deleted. A making that did not end is
+// deleted by the same steps (unmake, kgmake.go).
 
 // computeDropBatch is how many tables of the computation one transaction drops. A table with its indexes, its row and array
 // types and its TOAST table is about a dozen locks, so a batch is a few hundred whatever the number of the tables grows to.
@@ -66,12 +68,18 @@ func (s *Store) DeleteKG(ctx context.Context, kg graph.KGID) error {
 	if !found {
 		return kernel.Errorf(graph.CodeKGNotFound, "no KG %q", kg)
 	}
-	return s.dropInSteps(ctx, sh, kg, func(tx *sql.Tx) error {
+	return s.dropInSteps(ctx, sh, kg, deleteListed(ctx, kg))
+}
+
+// deleteListed is the last step of the delete of a KG that has a row of the list: the row (the mark goes with it), the storage
+// schema and the state rows.
+func deleteListed(ctx context.Context, kg graph.KGID) func(tx *sql.Tx) error {
+	return func(tx *sql.Tx) error {
 		if _, err := tx.ExecContext(ctx, `DELETE FROM kg_catalog WHERE kg_id = $1`, kg.String()); err != nil {
 			return dbErr(err, "delete the KG from the list")
 		}
 		return dropSchemaRest(ctx, tx, kg)
-	})
+	}
 }
 
 // markDeleting is the first step: it writes the mark of a KG that has a row of the list and says whether there is a KG to
@@ -101,8 +109,8 @@ func (s *Store) markDeleting(ctx context.Context, sh *shard, kg graph.KGID) (boo
 	return found, err
 }
 
-// dropInSteps runs the steps after the mark: the sources, the tables of the computation, the query schema, and last, the work
-// the caller gives the last transaction.
+// dropInSteps runs the steps after the mark: the sources, the tables of the computation, the query schemas, and last, the work
+// the caller gives the last transaction, with the mark of a making (ADR-0126) that the KG may have.
 func (s *Store) dropInSteps(ctx context.Context, sh *shard, kg graph.KGID, last func(tx *sql.Tx) error) error {
 	if err := s.detachSources(ctx, sh, kg); err != nil {
 		return err
@@ -110,25 +118,45 @@ func (s *Store) dropInSteps(ctx context.Context, sh *shard, kg graph.KGID, last 
 	if err := s.dropComputeTables(ctx, sh, kg); err != nil {
 		return err
 	}
-	err := locked(ctx, sh, kg, func(tx *sql.Tx) error {
-		rec, found, err := readRecord(ctx, tx, kg)
-		if err != nil || !found {
-			return err
-		}
-		if err := dropQuerySchema(ctx, tx, rec.KGNo); err != nil {
-			return err
-		}
-		return s.seen(ctx, deleteStepQuery, tx)
-	})
-	if err != nil {
+	if err := s.dropQuerySchemas(ctx, sh, kg); err != nil {
 		return err
 	}
 	return locked(ctx, sh, kg, func(tx *sql.Tx) error {
+		if _, err := tx.ExecContext(ctx, `DELETE FROM kg_making WHERE kg_id = $1`, kg.String()); err != nil {
+			return dbErr(err, "delete the mark of the making of the KG")
+		}
 		if err := last(tx); err != nil {
 			return err
 		}
 		return s.seen(ctx, deleteStepLast, tx)
 	})
+}
+
+// dropQuerySchemas drops the query schemas of the KG one to a transaction (ADR-0126), in the order of pgschema.QuerySchemaNames;
+// the last transaction drops what is left and the roles (dropQuerySchema). A KG without a storage schema has none to drop.
+func (s *Store) dropQuerySchemas(ctx context.Context, sh *shard, kg graph.KGID) error {
+	for i := 0; ; i++ {
+		done := true
+		err := locked(ctx, sh, kg, func(tx *sql.Tx) error {
+			rec, found, err := readRecord(ctx, tx, kg)
+			if err != nil || !found {
+				return err
+			}
+			names := pgschema.QuerySchemaNames(rec.KGNo)
+			if done = i >= len(names)-1; done {
+				err = dropQuerySchema(ctx, tx, rec.KGNo)
+			} else {
+				err = dropQueryName(ctx, tx, names[i])
+			}
+			if err != nil {
+				return err
+			}
+			return s.seen(ctx, deleteStepQuery, tx)
+		})
+		if err != nil || done {
+			return err
+		}
+	}
 }
 
 // dropComputeTables drops the tables of the computation of the KG, computeDropBatch to a transaction. A table that is not
@@ -171,28 +199,43 @@ func dropSchemaRest(ctx context.Context, tx *sql.Tx, kg graph.KGID) error {
 	return dropStateRows(ctx, tx, kg)
 }
 
-// errKGDeleting is the refusal of a read or a write of a KG that is being deleted: it is not there for the caller any more.
-func errKGDeleting(kg graph.KGID) error {
-	return kernel.Errorf(graph.CodeKGNotFound, "KG %s is being deleted", kg)
+// closedKGs is every KG that is closed to reads, writes and ingestion and left out of the list: the ones being deleted (the mark
+// above) and the ones being made (kg_making, ADR-0126). The readers look at it alone.
+const closedKGs = `(SELECT kg_id FROM kg_deleting UNION ALL SELECT kg_id FROM kg_making)`
+
+// errKGClosed is the refusal of a read or a write of a KG that is being deleted (ADR-0125) or made (ADR-0126): it is not there
+// for the caller.
+func errKGClosed(kg graph.KGID) error {
+	return kernel.Errorf(graph.CodeKGNotFound, "KG %s is being made or deleted", kg)
 }
 
 // endDeletes ends every delete that a mark says a server left half done and returns the KGs it ended. A KG whose delete
 // cannot be ended does not stop the others: its error is in the one returned, which joins them.
 func (s *Store) endDeletes(ctx context.Context) ([]graph.KGID, error) {
+	return s.endMarked(ctx, `SELECT kg_id FROM kg_deleting ORDER BY kg_id`, "the delete",
+		func(_ *shard, id graph.KGID) (bool, error) { return true, s.endDelete(ctx, id) })
+}
+
+// endMarked ends, on every shard, the work of each KG that the query of the marks gives, and returns the KGs it ended it for. A KG
+// whose work cannot be ended does not stop the others: its error is in the one returned, which joins them.
+func (s *Store) endMarked(ctx context.Context, query, what string, end func(sh *shard, id graph.KGID) (bool, error)) ([]graph.KGID, error) {
 	var done []graph.KGID
 	var failed []error
 	for _, sh := range s.rt.all() {
-		ids, err := markedKGs(ctx, sh, `SELECT kg_id FROM kg_deleting ORDER BY kg_id`)
+		ids, err := markedKGs(ctx, sh, query)
 		if err != nil {
 			failed = append(failed, err)
 			continue
 		}
 		for _, id := range ids {
-			if err := s.endDelete(ctx, id); err != nil {
-				failed = append(failed, kernel.Wrap(kernel.CodeOf(err), err, "cannot end the delete of KG "+id.String()))
+			ended, err := end(sh, id)
+			if err != nil {
+				failed = append(failed, kernel.Wrap(kernel.CodeOf(err), err, "cannot end "+what+" of KG "+id.String()))
 				continue
 			}
-			done = append(done, id)
+			if ended {
+				done = append(done, id)
+			}
 		}
 	}
 	return done, errors.Join(failed...)
@@ -223,21 +266,21 @@ func (s *Store) endDelete(ctx context.Context, kg graph.KGID) error {
 	return nil
 }
 
-// markedKGs reads the ids of the KGs that a query of the marks gives, on the write pool: a mark that was just written is
-// there.
+// markedKGs reads the ids of the KGs that a query of the marks (of a delete or a making) gives, on the write pool: a mark that
+// was just written is there.
 func markedKGs(ctx context.Context, sh *shard, query string, args ...any) ([]graph.KGID, error) {
 	var out []graph.KGID
 	err := sh.tx(ctx, RoleAPIRead, false, func(tx *sql.Tx) error {
 		out = out[:0]
 		rows, err := tx.QueryContext(ctx, query, args...)
 		if err != nil {
-			return dbErr(err, "list the KGs being deleted")
+			return dbErr(err, "list the KGs being made or deleted")
 		}
 		defer func() { _ = rows.Close() }()
 		for rows.Next() {
 			var text string
 			if err := rows.Scan(&text); err != nil {
-				return dbErr(err, "read a KG being deleted")
+				return dbErr(err, "read a KG being made or deleted")
 			}
 			id, err := parseID[graph.KGKind](text)
 			if err != nil {
@@ -245,7 +288,7 @@ func markedKGs(ctx context.Context, sh *shard, query string, args ...any) ([]gra
 			}
 			out = append(out, id)
 		}
-		return dbErr(rows.Err(), "list the KGs being deleted")
+		return dbErr(rows.Err(), "list the KGs being made or deleted")
 	})
 	return out, err
 }

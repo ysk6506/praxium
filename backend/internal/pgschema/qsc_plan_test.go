@@ -37,7 +37,7 @@ func TestQscThePlanOfTheStandardModelHasTheStepsOfTheQuerySchemaAndTheRolesOnlyW
 			t.Errorf("the step %s %s runs outside the transaction", s.What, s.Name)
 		}
 	}
-	if kinds[pgschema.WhatGrant] != 3 || kinds[pgschema.WhatSchema] < 6 || kinds[pgschema.WhatView] == 0 || kinds[pgschema.WhatRows] < 4 {
+	if kinds[pgschema.WhatGrant] != 6 || kinds[pgschema.WhatSchema] < 6 || kinds[pgschema.WhatView] == 0 || kinds[pgschema.WhatRows] < 4 {
 		t.Errorf("the steps by kind: %v", kinds)
 	}
 	again := qscStandardPlan(t)

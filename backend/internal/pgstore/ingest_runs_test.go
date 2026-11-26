@@ -255,11 +255,10 @@ func TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable(t
 	// transaction takes what it needs from it. A KG must leave room for the others, so it may take at most
 	// 80% of the table of the default settings (64 for each of the 100 connections).
 	limit := 64 * 100 * 8 / 10
+	// The plan without its query schema, in one transaction, is kept as a number only: what the product does is measured below
+	// (igrMakeAndAdjustFits).
 	made := igrLocksOf(t, admin, igrSQL(plan.Steps)...)
-	t.Logf("making a KG of the standard model: %d locks held at the end; this server's lock table holds %d (%d x (%d + %d))", made, perTx*(conns+prepared), perTx, conns, prepared)
-	if made > limit {
-		t.Errorf("making a KG holds %d locks, more than %d (80%% of the lock table of the default settings)", made, limit)
-	}
+	t.Logf("making the storage schema alone of a KG of the standard model: %d locks held at the end; this server's lock table holds %d (%d x (%d + %d))", made, perTx*(conns+prepared), perTx, conns, prepared)
 	put, err := pgschema.SourcePartitionSteps(1, 1)
 	if err != nil {
 		t.Fatal(err)
@@ -296,6 +295,52 @@ func TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable(t
 	// with 9: every transaction of DeleteKG is counted at its end, when it holds all it took, and none may take more than 80%.
 	igrDeleteFits(t, st, admin, limit, 1, 0)
 	igrDeleteFits(t, st, admin, limit, 2, 9)
+	// What the product does to make a KG and to adjust it when a server starts (ADR-0126), every transaction counted at its end.
+	igrMakeAndAdjustFits(t, st, admin, limit, 3)
+}
+
+// igrMakeAndAdjustFits makes the KG of number no with CreateKG, and adjusts it with AdjustStorageSchema as a KG of the generator 9
+// (without the table of the objects the computation left, ADR-0119) whose query schemas have no mark, as every KG made before
+// ADR-0126 has none: the table is added and every query schema is made again. No transaction of either may hold more than limit.
+func igrMakeAndAdjustFits(t *testing.T, st *Store, admin *sql.DB, limit, no int) {
+	t.Helper()
+	ctx := context.Background()
+	steps := map[string]int{}
+	most := map[string]int{}
+	st.schemaSeen = func(_ context.Context, step string, tx *sql.Tx) error {
+		n := igrHeldLocks(t, tx)
+		steps[step]++
+		most[step] = max(most[step], n)
+		if n > limit {
+			t.Errorf("a transaction of the step %q holds %d locks, more than %d", step, n, limit)
+		}
+		return nil
+	}
+	defer func() { st.schemaSeen = nil }()
+	kg := pgsrcKG(t, st, admin, no, 0)
+	names := pgschema.QuerySchemaNames(int64(no))
+	t.Logf("making a KG: the most locks a transaction held, by step: %v (transactions: %v)", most, steps)
+	if steps[schemaStepMake] != 1 || steps[schemaStepQuery] != len(names) || steps[schemaStepFresh] != 0 {
+		t.Errorf("making a KG ran the transactions %v", steps)
+	}
+	schema := pgschema.SchemaName(int64(no))
+	sxRun(t, admin, `DROP TABLE `+pgschema.Qualified(schema, pgschema.TableCalcLeft))
+	sxRun(t, admin, `UPDATE kg_schema_state SET generator_version = 9, manifest = jsonb_set(manifest, '{generator_version}', '9') WHERE kg_id = $1`, kg.String())
+	for _, name := range names {
+		sxRun(t, admin, `COMMENT ON SCHEMA `+pgschema.QuoteIdent(name)+` IS NULL`)
+	}
+	clear(steps)
+	clear(most)
+	if _, err := st.AdjustStorageSchema(ctx, kg, sxStandard(t, true)); err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("adjusting a KG of the generator 9: the most locks a transaction held, by step: %v (transactions: %v)", most, steps)
+	if steps[schemaStepAdjust] != 1 || steps[schemaStepQuery] != len(names) || steps[schemaStepFresh] != 0 {
+		t.Errorf("adjusting a KG ran the transactions %v", steps)
+	}
+	if n := sxInt(t, admin, `SELECT count(*) FROM pg_tables WHERE schemaname = $1 AND tablename = $2`, schema, pgschema.TableCalcLeft); n != 1 {
+		t.Error("the adjustment did not add the table")
+	}
 }
 
 // igrDeleteFits makes the KG of number no with that many sources and deletes it with DeleteKG, counting the locks every
@@ -319,7 +364,7 @@ func igrDeleteFits(t *testing.T, st *Store, admin *sql.DB, limit, no, sources in
 		t.Fatal(err)
 	}
 	t.Logf("deleting a KG of %d sources: the most locks a transaction held, by step: %v (transactions: %v)", sources, most, steps)
-	if steps[deleteStepMark] != 1 || steps[deleteStepSource] != sources || steps[deleteStepCompute] < 1 || steps[deleteStepQuery] != 1 || steps[deleteStepLast] != 1 {
+	if steps[deleteStepMark] != 1 || steps[deleteStepSource] != sources || steps[deleteStepCompute] < 1 || steps[deleteStepQuery] != len(pgschema.QuerySchemaNames(int64(no))) || steps[deleteStepLast] != 1 {
 		t.Errorf("deleting a KG of %d sources ran the transactions %v", sources, steps)
 	}
 	if n := sxInt(t, admin, `SELECT count(*) FROM pg_namespace WHERE nspname = $1`, pgschema.SchemaName(int64(no))); n != 0 {

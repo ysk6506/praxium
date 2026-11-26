@@ -35,11 +35,13 @@ type queryBuild struct {
 	grades []gradeView
 }
 
-// buildQuery makes the steps that give a KG its query schemas: the description of the model is put into its tables, the schemas of
-// the KG are dropped and made again with every view and function, and the roles get what they may read. The steps are the same
-// whether the schemas are new or the model changed, so a model that was renamed has views with the new names and nothing of the
-// old, and they run in the transaction of the change. The roles themselves are not made here (Plan.Roles); a role belongs to the cluster
-// and the executor makes it when it is missing.
+// buildQuery makes the steps that give a KG its query schemas: the description of the model is put into its tables, and then each
+// schema of the KG is dropped and made again with every view and function, and the roles get what they may read in it. The steps are
+// the same whether the schemas are new or the model changed, so a model that was renamed has views with the new names and nothing of
+// the old. The steps of one schema follow each other, from the step that drops it to the step of its rights, and they read only the
+// storage schema, so the executor runs each schema in a transaction of its own (ADR-0126); the steps that fill the description come
+// before the first schema and run with it. The roles themselves are not made here (Plan.Roles); a role belongs to the cluster and the
+// executor makes it when it is missing.
 func buildQuery(reg *model.Registry, sh shape, opts Options, search SearchSet) ([]Step, error) {
 	if err := CheckInstallToken(opts.InstallToken); err != nil {
 		return nil, err
@@ -53,9 +55,6 @@ func buildQuery(reg *model.Registry, sh shape, opts Options, search SearchSet) (
 		b.grades = append(b.grades, newGradeView(reg, grade))
 	}
 	steps := qm.fillSteps(b.store)
-	for _, name := range QuerySchemaNames(b.kgNo) {
-		steps = append(steps, Step{Phase: InTx, What: WhatSchema, Name: name, SQL: "DROP SCHEMA IF EXISTS " + QuoteIdent(name) + " CASCADE"})
-	}
 	for _, watermark := range []bool{false, true} {
 		made, err := b.schemas(watermark)
 		if err != nil {
@@ -63,17 +62,19 @@ func buildQuery(reg *model.Registry, sh shape, opts Options, search SearchSet) (
 		}
 		steps = append(steps, made...)
 	}
-	return append(steps, b.grants()...), nil
+	return steps, nil
 }
 
-// schemas makes the three schemas of a set. A grade makes the objects that are not the same as those the grade below it sees, so
-// the schema of the highest grade has what is special to it and the search path finds the rest in the schemas below.
+// schemas makes the three schemas of a set, each from the step that drops it to the step of its rights. A grade makes the objects
+// that are not the same as those the grade below it sees, so the schema of the highest grade has what is special to it and the search
+// path finds the rest in the schemas below.
 func (b queryBuild) schemas(watermark bool) ([]Step, error) {
 	var steps []Step
 	seen := map[string]string{}
-	for _, g := range b.grades {
+	for i, g := range b.grades {
 		schema := QuerySchemaName(b.kgNo, g.grade, watermark)
-		steps = append(steps, Step{Phase: InTx, What: WhatSchema, Name: schema, SQL: "CREATE SCHEMA " + QuoteIdent(schema)})
+		steps = append(steps, Step{Phase: InTx, What: WhatSchema, Name: schema, SQL: "DROP SCHEMA IF EXISTS " + QuoteIdent(schema) + " CASCADE"},
+			Step{Phase: InTx, What: WhatSchema, Name: schema, SQL: "CREATE SCHEMA " + QuoteIdent(schema)})
 		gen := qGen{qm: b.qm, grade: g, store: b.store, watermark: watermark}
 		for _, o := range gen.objects() {
 			if strings.Contains(o.Body, bodyTag) {
@@ -86,28 +87,24 @@ func (b queryBuild) schemas(watermark bool) ([]Step, error) {
 			seen[o.What+" "+o.Name] = key
 			steps = append(steps, Step{Phase: InTx, What: o.What, Name: schema + "." + o.Name, SQL: o.statement(schema)})
 		}
+		steps = append(steps, b.grants(schema, b.grades[i:]))
 	}
 	return steps, nil
 }
 
-// grants give each role the right to read the schemas of its grade and of the grades below, in both sets: the schema, its views and
-// its functions, and nothing else. No role has a right on the storage schema, so what a role reads is what the views show it.
-func (b queryBuild) grants() []Step {
-	var steps []Step
-	for i, g := range b.grades {
-		var sql strings.Builder
+// grants give the roles of a grade and of the grades above it the right to read a schema of the grade: the schema, its views and its
+// functions, and nothing else. So each role reads the schemas of its grade and of the grades below, in both sets. No role has a right
+// on the storage schema, so what a role reads is what the views show it.
+func (b queryBuild) grants(schema string, readers []gradeView) Step {
+	var sql strings.Builder
+	quoted := QuoteIdent(schema)
+	for _, g := range readers {
 		role := QuoteIdent(QueryRoleName(b.token, b.kgNo, g.grade))
-		for _, lower := range b.grades[:i+1] {
-			for _, watermark := range []bool{false, true} {
-				schema := QuoteIdent(QuerySchemaName(b.kgNo, lower.grade, watermark))
-				sql.WriteString("GRANT USAGE ON SCHEMA " + schema + " TO " + role + ";\n")
-				sql.WriteString("GRANT SELECT ON ALL TABLES IN SCHEMA " + schema + " TO " + role + ";\n")
-				sql.WriteString("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA " + schema + " TO " + role + ";\n")
-			}
-		}
-		steps = append(steps, Step{Phase: InTx, What: WhatGrant, Name: string(g.grade), SQL: sql.String()})
+		sql.WriteString("GRANT USAGE ON SCHEMA " + quoted + " TO " + role + ";\n")
+		sql.WriteString("GRANT SELECT ON ALL TABLES IN SCHEMA " + quoted + " TO " + role + ";\n")
+		sql.WriteString("GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA " + quoted + " TO " + role + ";\n")
 	}
-	return steps
+	return Step{Phase: InTx, What: WhatGrant, Name: schema, SQL: sql.String()}
 }
 
 // CreateRoleSQL is the statement that makes a role of the query schema: one that cannot log in and has no right but those the plan

@@ -71,6 +71,10 @@ type Store struct {
 	// "source", "compute", "query", "last"). Only the tests of this unit (and StopDeleteAt) set it, to count the locks a transaction
 	// holds or to stop the delete in the middle.
 	deleteSeen func(ctx context.Context, step string, tx *sql.Tx) error
+	// schemaSeen is called at the end of every transaction of a making or an adjustment of a KG's schemas (ADR-0126), in the
+	// transaction, with its step ("make", "adjust", "query" for a query schema that was made, "fresh" for one that was left as it
+	// was). Only the tests of this unit set it, to count the locks a transaction holds or to stop the work in the middle.
+	schemaSeen func(ctx context.Context, step string, tx *sql.Tx) error
 	// record is called with every chunk that ApplyChunk wrote. Only tests set it (RecordChunks).
 	record func(graph.ChunkWrite)
 }

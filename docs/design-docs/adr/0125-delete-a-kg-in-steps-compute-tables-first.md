@@ -22,6 +22,9 @@ amends_tests:
   - go:backend/internal/pgstore::TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable
 test_change_reason: KG의 삭제가 한 트랜잭션에서 여러 트랜잭션으로 바뀌어(REQ-683), 테스트가 측정하는 것이 날 DROP SCHEMA 한 문장에서 제품의 DeleteKG가 실제로 여는 트랜잭션마다의 잠금 수로 바뀐다. 임계값은 같은 80%(5,120)이고, 날 DROP SCHEMA의 잠금 수는 기록으로 남긴다. 단언은 늘었다 — 소스 없는 KG와 소스 9개인 KG 둘 다 트랜잭션마다 임계값 안인지, 단계별 트랜잭션 수, 삭제한 뒤 스키마가 없는지를 본다(앞에서는 9개 쪽에 단언이 없었다). 만들기의 단언은 그대로다.
 decision_hash: 11f3d60042ffa2de
+amended_by:
+  - adr: "0126"
+    what: 결정 1의 4단계(질의 스키마를 한 트랜잭션)와 결정 5의 만들기는 한 트랜잭션이라는 것
 ---
 # ADR-0125 KG를 여러 트랜잭션으로 나눠 삭제한다
 

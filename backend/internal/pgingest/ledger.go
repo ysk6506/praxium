@@ -40,9 +40,9 @@ func (s *Store) OpenRun(ctx context.Context, open ingest.RunOpen) (ingest.RunLea
 	}
 	out := ingest.RunLease{Attempt: 1, Owner: open.Owner, Term: open.Term}
 	err := s.tx(ctx, roleApplier, func(tx *sql.Tx) error {
-		// a KG that is being deleted starts no run (ADR-0125); one that is marked after this run is opened takes it off with
-		// its source.
-		if err := refuseDeleting(ctx, tx, open.KG.String()); err != nil {
+		// a KG that is being deleted (ADR-0125) or made (ADR-0126) starts no run; one that is marked after this run is opened takes it
+		// off with its source.
+		if err := refuseClosed(ctx, tx, open.KG.String()); err != nil {
 			return err
 		}
 		var src int64
