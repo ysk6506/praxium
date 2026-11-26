@@ -16,6 +16,7 @@ touches_protected:
   - harness/config/test-lock.json
   - docs/product-specs/requirements-ingestion.md
   - docs/design-docs/adr/0115-recompute-objects-step-of-the-new-ingestion-flow.md
+  - docs/design-docs/adr/0086-redesign-ingestion-for-tens-of-millions-of-objects.md
 updates_docs:
   - docs/product-specs/requirements-ingestion.md
   - docs/design-docs/ingestion-at-scale.md
@@ -23,6 +24,8 @@ updates_docs:
 amends:
   - adr: "0115"
     what: 범위의 차수(5단계 격리로), 생성기 버전(10항)
+  - adr: "0086"
+    what: 불변식 I3(준비 테이블은 넣기만) — 4단계의 되돌림(ADR-0119)과 5단계의 격리는 단위의 쓰기와 위치 이동이 한 트랜잭션인 안에서 계산 표의 줄을 빼고 calc_ref를 바꾼다
 amends_tests:
   - go:backend/internal/pgschema::TestControlReservesThePartitionPrefix
 test_change_reason: 단언을 줄이거나 임계값을 넓힌 것은 없다. TestControlReservesThePartitionPrefix는 생성기 버전의 숫자를 단언하므로 12에서 13으로 바꾼다(이 결정 8). 파티션 접두어를 예약한다는 단언은 그대로다.
