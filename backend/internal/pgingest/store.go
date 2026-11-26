@@ -47,6 +47,8 @@ type Store struct {
 	rcpSeen identObserver
 	// rclSeen is the same for the computation of the links (ADR-0122); it is nil in the code that runs.
 	rclSeen identObserver
+	// isoSeen is the same for the fifth step (ADR-0123); it is nil in the code that runs.
+	isoSeen identObserver
 }
 
 var _ ingest.RunLedger = (*Store)(nil)

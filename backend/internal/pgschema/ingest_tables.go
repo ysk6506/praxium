@@ -305,11 +305,12 @@ func isolateTableDefs() []tableDef {
 }
 
 // isolateIndexDefs are the indexes the fifth step reads by (generator version 13, ADR-0123): the identifier lines of the run by the
-// identifier (the lines of one identifier are read together, a range of identifiers at a time), and the links of the run by their id (the
+// identifier in the order of its bytes (the lines of one identifier are read together, a range of identifiers at a time, and the place
+// between pages is compared the same way in Go), and the links of the run by their id (the
 // check of the cardinality goes through them in that order).
 func isolateIndexDefs() []indexDef {
 	return []indexDef{
-		{Name: "stage_ident_value", Table: TableStageIdent, Expr: strings.Join([]string{ColScheme, ColValue, ColScope, ColObjNo}, ", ")},
+		{Name: "stage_ident_value", Table: TableStageIdent, Expr: strings.Join([]string{ColScheme + ` COLLATE "C"`, ColValue + ` COLLATE "C"`, ColScope + ` COLLATE "C"`, ColObjNo}, ", ")},
 		{Name: "stage_link_ref", Table: TableStageLink, Expr: ColRef},
 	}
 }
