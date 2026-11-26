@@ -2,9 +2,10 @@ package ingest
 
 import (
 	"fmt"
-	"math/rand"
 	"sort"
 	"testing"
+
+	"github.com/ysk6506/praxium/backend/internal/kernel"
 )
 
 // The choice of the record a link is made by when several records make it (ADR-0122). Every helper of the tests starts with rcl.
@@ -51,9 +52,12 @@ func TestRclTheRecordThatComesLastMakesTheLinkAndTheOthersLoseItWhateverTheOrder
 		rclWho(8, 1, 0, false, 2, "k0"), rclWho(9, 0, 3, false, 5, "zz"),
 	}
 	want := ""
-	rng := rand.New(rand.NewSource(7))
+	rng := kernel.NewSeededRng(7)
 	for round := 0; round < 20; round++ {
-		rng.Shuffle(len(ws), func(i, j int) { ws[i], ws[j] = ws[j], ws[i] })
+		for i := len(ws) - 1; i > 0; i-- {
+			j := int(rng.Uint64() % uint64(i+1))
+			ws[i], ws[j] = ws[j], ws[i]
+		}
 		var cands []LinkCandidate
 		for _, w := range ws {
 			cands = append(cands, rclCand("l1", w))

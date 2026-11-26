@@ -128,35 +128,43 @@ func (r *rclRun) ends(ctx context.Context, tx *sql.Tx, page *ingest.RecomputeLin
 		counted[rclKey{k.SrcNo, k.Def, k.Hash}] = k
 	}
 	for rows.Next() {
-		var e ingest.RecomputeEnd
-		var hash []byte
-		var fields sql.NullString
-		var targets sql.NullInt64
-		var toObj sql.NullInt64
-		var toRef sql.NullString
-		if err := rows.Scan(&e.Rid, &e.SrcNo, &e.DatasetNo, &e.Dataset, &e.Key, &fields, &e.Def, &hash, &e.Held, &e.FromObj, &e.FromRef, &targets, &toObj, &toRef); err != nil {
-			return dbErr(err, "read an end of the From side")
-		}
-		if len(hash) != len(e.Hash) {
-			return kernel.Errorf(kernel.CodeInternal, "the key of the end of the record %d is not a hash", e.Rid)
-		}
-		copy(e.Hash[:], hash)
-		if fields.Valid {
-			if e.Fields, err = parseTextArray(fields.String); err != nil {
-				return err
-			}
-		}
-		if targets.Valid {
-			e.Targets, e.ToObj, e.ToRef = int(targets.Int64), toObj.Int64, toRef.String
-		} else if k, ok := counted[rclKey{e.SrcNo, e.Def, e.Hash}]; ok {
-			e.Targets, e.ToObj, e.ToRef = k.Targets, k.Obj, k.Ref
-		}
-		if e.Targets == 1 && e.ToRef == "" {
-			e.Targets = 0 // an object that no table knows cannot be linked to
+		e, err := scanEnd(rows, counted)
+		if err != nil {
+			return err
 		}
 		page.Ends = append(page.Ends, e)
 	}
 	return dbErr(rows.Err(), "read the ends of the From side")
+}
+
+// scanEnd reads an end of the From side, with what the To side has for its key: from the count kept, or from the count the page made.
+func scanEnd(rows *sql.Rows, counted map[rclKey]ingest.LinkKeyCount) (ingest.RecomputeEnd, error) {
+	var e ingest.RecomputeEnd
+	var hash []byte
+	var fields, toRef sql.NullString
+	var targets, toObj sql.NullInt64
+	if err := rows.Scan(&e.Rid, &e.SrcNo, &e.DatasetNo, &e.Dataset, &e.Key, &fields, &e.Def, &hash, &e.Held, &e.FromObj, &e.FromRef, &targets, &toObj, &toRef); err != nil {
+		return e, dbErr(err, "read an end of the From side")
+	}
+	if len(hash) != len(e.Hash) {
+		return e, kernel.Errorf(kernel.CodeInternal, "the key of the end of the record %d is not a hash", e.Rid)
+	}
+	copy(e.Hash[:], hash)
+	if fields.Valid {
+		var err error
+		if e.Fields, err = parseTextArray(fields.String); err != nil {
+			return e, err
+		}
+	}
+	if targets.Valid {
+		e.Targets, e.ToObj, e.ToRef = int(targets.Int64), toObj.Int64, toRef.String
+	} else if k, ok := counted[rclKey{e.SrcNo, e.Def, e.Hash}]; ok {
+		e.Targets, e.ToObj, e.ToRef = k.Targets, k.Obj, k.Ref
+	}
+	if e.Targets == 1 && e.ToRef == "" {
+		e.Targets = 0 // an object that no table knows cannot be linked to
+	}
+	return e, nil
 }
 
 // rclKey names a link end key: the source, the link definition and the hash.

@@ -234,7 +234,7 @@ follows:
 | REQ-873 | 4단계의 링크 쪽 결과(`stage_link`, 문제, 참조, 보고)는 쪽의 크기(1, 3, 기본), 행의 순서, 레코드의 번호가 달라도 id로 견줘 같다 (ADR-0122) |
 | REQ-874 | 링크 쪽의 한 쪽은 한 번만 쓰인다(같은 쪽을 다시 쓰면 `CodeRunStage`). 임대를 잃은 서버는 읽기도 `CodeRunLeaseLost`로 거절된다. 끊고 다른 서버가 이어도 같은 결과이고, 다른 링크 정의로 이으려 하면 `CodeConflict`다. 객체 쪽이 끝나기 전, 시작하기 전의 호출, 끝난 뒤의 쪽은 `CodeRunStage`다 (ADR-0122) |
 | REQ-875 | 링크 쪽 보고의 수(`Links`, `Keys`, `Refs`, `Lost`, `Missing`, `Ambiguous`, `Conflicts`, `Cells`, `Problems`, `Carried`)는 실제로 쓴 줄 수이고, 쪽의 크기가 달라도 같다 (ADR-0122) |
-| REQ-876 | `StepFourProblemKinds()`는 4단계가 실제로 쓰는 종류(`source_conflict`, `link_target_missing`, `link_target_ambiguous`)를 같은 상수로 돌려주고 닫힌 목록에 든다. `cardinality`는 5단계라 가지지 않고, 새 문제 종류와 이미 있는 표의 `ALTER`는 만들지 않는다 (ADR-0122) |
+| REQ-876 | `StepFourProblemKinds()`는 4단계가 실제로 쓰는 종류(`source_conflict`, `link_target_missing`, `link_target_ambiguous`)를 같은 상수로 돌려주고 고정 목록에 든다. `cardinality`는 5단계라 가지지 않고, 새 문제 종류와 이미 있는 표의 `ALTER`는 만들지 않는다 (ADR-0122) |
 | REQ-877 | 생성기 12는 표 `calc_tokey`, `calc_linkwin`, `calc_linklost`와 인덱스 `calc_end_key`, `calc_linklost_ref`만 더하며, 단계는 `to_regclass`로 지키고 두 번 해도 같다. 새 표는 계산 표라 실행이 끝나면 함께 비워진다 (ADR-0122) |
 | REQ-878 | 이번 실행이 끝 키가 움직여 다시 읽기만 하는 레코드는 `record_ref`가 가진 끝(`lookup_hash`)을 `calc_end`로 받아(`ends` 국면) 객체는 식별 참조의 대상으로 풀리고, 바뀐 레코드가 묶이지 못했으면 옛 참조로 되돌아가지 않는다 (ADR-0122) |
 | REQ-879 | `stage_link`의 끝(`src`, `dst`)은 등록부의 객체이거나 이번 실행이 `stage_object`에 두는 객체이고, 되돌려진 객체를 가리키는 링크는 없다 (SQL 불변식을 테스트가 확인한다) (ADR-0122) |
