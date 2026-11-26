@@ -20784,18 +20784,18 @@
   },
   "go:backend/internal/httpsource::TestHxeABatchOfValuesThatJSONWritesLongerFitsTheBody": {
    "kind": "test",
-   "hash": "7761c0b78cd8c017",
+   "hash": "a4e5fb336085219e",
    "asserts": 4,
    "literals": [
-    "fa98035c361fa11f"
+    "9c0d94414831c4d2"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-913"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestHxeACheckAndAPreviewReadTheFirstValuesOnly": {
    "kind": "test",
@@ -20812,6 +20812,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestHxeACheckOfADetailWithNoKeyTellsTheSettingIsWrong": {
+   "kind": "test",
+   "hash": "af5deb57ca6d3c99",
+   "asserts": 2,
+   "literals": [
+    "37104fa529be55ab"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-914"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestHxeACheckWhoseFirstDetailIsNotFoundTellsTheSettingIsWrong": {
    "kind": "test",
    "hash": "e123e5424f6bb9df",
@@ -20825,6 +20840,21 @@
     "REQ-914"
    ],
    "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxeACheckWhoseRetryIsStoppedSaysWhatTheFirstAnswerWas": {
+   "kind": "test",
+   "hash": "dab63c6d2dd24bea",
+   "asserts": 2,
+   "literals": [
+    "fd1ea6b0af1822b6"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-914"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxeAChildThatHasMorePagesThanMaxPagesIsNotComplete": {
@@ -20859,18 +20889,18 @@
   },
   "go:backend/internal/httpsource::TestHxeADetailThatHasNoKeyIsAValueThatWasNotRead": {
    "kind": "test",
-   "hash": "c875614b3cc8fa11",
+   "hash": "707ab50b30967895",
    "asserts": 4,
    "literals": [
-    "7ec86f161f210475"
+    "3ed3ef77306e4bc8"
    ],
    "precision": [],
    "skips": 0,
    "reqs": [
     "REQ-912"
    ],
-   "added": "2026-11-25",
-   "amended_by": null
+   "added": "2026-11-26",
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestHxeADetailThatIsAnObjectIsOneRecord": {
    "kind": "test",
@@ -21007,6 +21037,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestHxeAParentWithMoreValuesThanTheCeilingIsNotRead": {
+   "kind": "test",
+   "hash": "98b3d33b05144727",
+   "asserts": 2,
+   "literals": [
+    "54a1a6b0361faebc"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-912"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestHxeAPreviewAndACheckCountTheRequestsThatWereSent": {
    "kind": "test",
    "hash": "5657ee63a268eccc",
@@ -21020,6 +21065,21 @@
     "REQ-914"
    ],
    "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxeAPreviewAndACheckReadTheParentForTwentyRequestsAtMost": {
+   "kind": "test",
+   "hash": "d7bab69a430fa929",
+   "asserts": 6,
+   "literals": [
+    "63101c8de8eabddd"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-914"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxeAPreviewStopsAtTenRequestsWhateverTheSizeOfTheValues": {
@@ -21050,6 +21110,21 @@
     "REQ-912"
    ],
    "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxeATokenRequestIsNotCountedAgainstThePreviewOfAChild": {
+   "kind": "test",
+   "hash": "d0be385024c5f572",
+   "asserts": 4,
+   "literals": [
+    "3c40ef461fa7e2d7"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-914"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxeAUnitSaysWhatItHasAndAnswersForWhatItHasNot": {
@@ -21127,6 +21202,21 @@
    "added": "2026-11-25",
    "amended_by": null
   },
+  "go:backend/internal/httpsource::TestHxeFourValuesThatAllAnswerNothingAreWhatWasSeenAndThreeAreComplete": {
+   "kind": "test",
+   "hash": "655d131cc88c058a",
+   "asserts": 4,
+   "literals": [
+    "03129de24716601b"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-912"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/httpsource::TestHxeThe404OfTheRequestForATokenIsNotAValueThatIsGone": {
    "kind": "test",
    "hash": "889a0122f6221239",
@@ -21155,6 +21245,21 @@
     "REQ-915"
    ],
    "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxeTheFivePercentOfTheValuesIsTheLineBetweenSeenAndNotComplete": {
+   "kind": "test",
+   "hash": "5bf2aca89766a241",
+   "asserts": 4,
+   "literals": [
+    "b4ec639ee9c31e1f"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-912"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxeTheLimitsCountEveryRequestOnTheClockOfTheReader": {
@@ -21200,6 +21305,21 @@
     "REQ-914"
    ],
    "added": "2026-11-25",
+   "amended_by": null
+  },
+  "go:backend/internal/httpsource::TestHxeTheRequestForATokenIsNotCountedAmongThePreviewsRequestsOfTheChild": {
+   "kind": "test",
+   "hash": "60e2c19cd160b305",
+   "asserts": 3,
+   "literals": [
+    "0245253560c8e757"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-914"
+   ],
+   "added": "2026-11-26",
    "amended_by": null
   },
   "go:backend/internal/httpsource::TestHxeTheValuesOfABigParentAreHeldWithinTheLimit": {
@@ -21414,7 +21534,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "d36fa769a23d4f8f",
+   "hash": "b4b64e3524f6bf99",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -21424,8 +21544,8 @@
    "reqs": [
     "REQ-662"
    ],
-   "added": "2026-11-25",
-   "amended_by": "0111-http-source-child-datasets-values-of-a-parent-in-the-request.md"
+   "added": "2026-11-26",
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestTheRequestsAreSpacedByTheRateOfTheConnection": {
    "kind": "test",
@@ -21519,7 +21639,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "2d15fe3d0f6d3c21",
+   "hash": "cc960ed28de55d9f",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -21529,8 +21649,8 @@
    "reqs": [
     "REQ-665"
    ],
-   "added": "2026-11-25",
-   "amended_by": "0111-http-source-child-datasets-values-of-a-parent-in-the-request.md"
+   "added": "2026-11-26",
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestTheWordsForWhatIsNotASourceErrorAreFixed": {
    "kind": "test",

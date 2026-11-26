@@ -187,6 +187,9 @@ amends_tests:
   - go:backend/internal/ingest::TestRdfTheCoverageOfAReadIsOneOfThreeAndAValueThatSaysBothIsReadAsIncompleteAndAHeaderThatChangedLeavesTheDatasetOut
 test_change_reason: 단언은 바꾸지 않았다. 지문이 바뀐 이유는 둘이다. (1) 읽는 쪽 코드가 잠금 도구의 도달 범위 안에 있어서(자식 읽기, 한도, 요청마다 `charge`를 세는 것, `Reader`의 새 필드와 `openSigner`와 `needs`의 시그니처) httpsource의 옛 테스트 160개의 지문이 바뀌고, 새 hxe_rig_test.go의 가짜 타입이 Do, Read, Close 메서드를 정의하는 것도 이름으로 도달 범위를 세는 도구에서는 같은 영향을 준다(둘을 따로 가르지는 않았다. 예전 ADR-0109가 같은 모양으로 적었다). (2) 잠긴 사례 표 adpCases에 새 오류 코드의 사례 아홉 개를 더했고(사전 승인된 변경), 이 표를 읽는 ingest의 잠긴 테스트 셋의 지문이 바뀐다. 어느 단언도 바뀌지 않았고 어느 테스트도 사라지지 않았다.
 decision_hash: 61c18df706ef12de
+amended_by:
+  - adr: "0117"
+    what: 빈 응답 가드(6항), 미리 보기와 점검의 부모 요청 상한(8항), 키 없는 상세의 점검 문구와 다시 보내기의 직전 오류(7항과 8항), 보내지 않는 부모 값 규칙(4항)과 완결 분모의 문장
 ---
 # ADR-0111 HTTP 소스의 자식 데이터셋 — 앞 요청의 결과를 쓰는 요청(E7)
 
