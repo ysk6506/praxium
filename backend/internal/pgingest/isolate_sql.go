@@ -17,7 +17,9 @@ const isoIdentRange = "(" + isoIdentOrder + ") > ($1, $2, $3)"
 const isoIdentEndSQL = "SELECT scheme, value, scope FROM {stid} WHERE " + isoIdentRange + " ORDER BY " + isoIdentOrder + ", obj_no OFFSET $4 LIMIT 1"
 
 // isoHas is the condition that a table has a row of a condition, read by an index one row at a time.
-func isoHas(table, cond string) string { return "((SELECT count(*) FROM " + table + " x WHERE " + cond + ") > 0)" }
+func isoHas(table, cond string) string {
+	return "((SELECT count(*) FROM " + table + " x WHERE " + cond + ") > 0)"
+}
 
 // isoStaged, isoAlive and isoRetire say of the object o that the run staged it (it makes or computes it), that the KG has it and it is not
 // retired, and that the run retires it.
@@ -111,7 +113,7 @@ var isoEndsSQL = "WITH e AS (SELECT l.link_no, l.ref, " + isoMissing("l.src") + 
 // for a link that goes with an object that retires, and none for a record a rule filtered out, which reports nothing), the reference of
 // the record (not solved: the end is gone, or the place is another link's), and the staged link.
 const (
-	isoTakenRows       = "unnest($1::text::bigint[]) AS u(no) CROSS JOIN LATERAL (SELECT i.ref, i.why, i.reason FROM {iso} i WHERE i.kind = {KLINK} AND i.entity_no = u.no OFFSET 0) i " +
+	isoTakenRows = "unnest($1::text::bigint[]) AS u(no) CROSS JOIN LATERAL (SELECT i.ref, i.why, i.reason FROM {iso} i WHERE i.kind = {KLINK} AND i.entity_no = u.no OFFSET 0) i " +
 		"CROSS JOIN LATERAL (SELECT w.rid, w.def_no, w.held FROM {win} w WHERE w.ref = i.ref OFFSET 0) w"
 	isoTakeProblemsSQL = "INSERT INTO {prob} (rid, def_no, field, kind, reason) SELECT w.rid, w.def_no, '', CASE WHEN i.why = {MISSING} THEN '{KMISSING}' ELSE '{KCARD}' END, i.reason " +
 		"FROM " + isoTakenRows + " WHERE i.why IN ({MISSING}, {CARD}) AND NOT w.held"

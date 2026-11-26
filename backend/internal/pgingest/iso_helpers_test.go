@@ -82,7 +82,7 @@ func isoBroken(s *rdfSetup, t *testing.T, fromOne ...int) []string {
 
 // isoModel is the numbers of the model the cases use.
 type isoModel struct {
-	reg                                      *model.Registry
+	reg                                     *model.Registry
 	server, rack, host, vm, mounted, runsOn int
 }
 
@@ -134,7 +134,9 @@ func isoNewFix(t *testing.T) *isoFix {
 	return &isoFix{s: s, l: l, m: isoModelOf(t), no: map[string]int64{}}
 }
 
-func (f *isoFix) isoQ(query string) string { return strings.ReplaceAll(query, "{k}", fmt.Sprintf(`"s_%d"`, f.s.ref.KGNo)) }
+func (f *isoFix) isoQ(query string) string {
+	return strings.ReplaceAll(query, "{k}", fmt.Sprintf(`"s_%d"`, f.s.ref.KGNo))
+}
 
 // isoObj puts an object: where is one of kg (alive in the KG and untouched), new (staged only), both (in the KG and staged), retired (in
 // the KG retired), retiring (in the KG, a candidate the run retires), left (in the KG, left by the computation).
