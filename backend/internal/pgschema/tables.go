@@ -58,6 +58,10 @@ type indexDef struct {
 	Expr   string // the key: columns or expressions, as they go between the parentheses
 	Unique bool
 	Where  string
+	// Method is the kind of index when it is not a B-tree (brin).
+	Method string
+	// Include are the columns the index carries so that a read of them needs no table (INCLUDE).
+	Include string
 }
 
 func (d indexDef) sql(schema string, concurrently bool) string {
@@ -70,7 +74,14 @@ func (d indexDef) sql(schema string, concurrently bool) string {
 	if concurrently {
 		b.WriteString("CONCURRENTLY IF NOT EXISTS ")
 	}
-	b.WriteString(QuoteIdent(d.Name) + " ON " + Qualified(schema, d.Table) + " (" + d.Expr + ")")
+	b.WriteString(QuoteIdent(d.Name) + " ON " + Qualified(schema, d.Table))
+	if d.Method != "" {
+		b.WriteString(" USING " + d.Method)
+	}
+	b.WriteString(" (" + d.Expr + ")")
+	if d.Include != "" {
+		b.WriteString(" INCLUDE (" + d.Include + ")")
+	}
 	if d.Where != "" {
 		b.WriteString(" WHERE " + d.Where)
 	}

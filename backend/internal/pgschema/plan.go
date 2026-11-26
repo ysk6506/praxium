@@ -14,7 +14,10 @@ import (
 // Version 6 adds, for the comparison of the received rows with the raw records (ADR-0102), the column expired of the waits, the
 // place of the row (page, row_no) of a record of the computation, a problem that has no definition, the table that says which run
 // the computation is of and the index of the rows received by key: Diff follows the step from 5 to 6.
-const GeneratorVersion = 6
+// Version 7 adds, for the identification of the records of a run (ADR-0108), the column held to the keys, ends and claims of the
+// computation, the feed of a bound record, five working tables and the indexes they and the rows received are read by: Diff follows the
+// step from 6 to 7.
+const GeneratorVersion = 7
 
 // Phase says where a step may run.
 type Phase int

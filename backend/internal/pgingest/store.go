@@ -36,6 +36,10 @@ const (
 // Store is the record of runs, the sources of the KGs and the receiving of a source, on one database.
 type Store struct {
 	pool *pgconn.Pool
+	// identSeen is the hook the tests of the identification watch its statements by (see identObserver); it is nil in the code that runs.
+	identSeen identObserver
+	// expTest is the hook the tests of the expansion use (expand.go); it is nil in the code that runs.
+	expTest *expHook
 }
 
 var _ ingest.RunLedger = (*Store)(nil)
