@@ -95,7 +95,7 @@ func (k *kid) unitEnded() {
 // end is how the child ends when all its units were read. A value passed over, a value of a batch with no record and a parent that
 // was read as what was seen make it read as what was seen, none of them closes anything; passed over values that are more than 5%
 // of the values of the parent and more than three make it not complete (a path that is wrong, or an account that may not read, must
-// not look like a few things that are gone).
+// not look like a few things that are gone). More than three values that all had no record make it read as what was seen too.
 func (k *kid) end(l *loop) ingest.Completeness {
 	end := l.endOf(step{complete: true})
 	if !end.Complete && !end.SeenOnly {
@@ -105,9 +105,25 @@ func (k *kid) end(l *loop) ingest.Completeness {
 	if over > 3 && over*20 > k.total {
 		return ingest.Completeness{Reason: strconv.Itoa(over) + " of " + strconv.Itoa(k.total) + " distinct values of the parent were not read (a 404 with on_not_found skip, a value that is not sent: source.parent_value_invalid, or an answer with no natural key), which is more than 5% and more than 3, so the path or the rights may be wrong"}
 	}
+	notes := k.notes(l, end, over)
+	if len(notes) == 0 {
+		return end
+	}
+	return ingest.Completeness{SeenOnly: true, Reason: strings.Join(notes, "; ")}
+}
+
+// notes is what says why a child that ends as what was seen was not read as all there is: the values that were not read, the values
+// of a batch that had no record, the parent, and the answers that were all empty.
+func (k *kid) notes(l *loop, end ingest.Completeness, over int) []string {
 	var notes []string
 	if end.SeenOnly {
 		notes = append(notes, end.Reason)
+	}
+	// More than three values and not one record in any answer: a path that is wrong or an account that may not read looks like this
+	// (every answer is empty, as a 200 with null or a 204 is), so it is read as what was seen. A few of the values empty, the others not,
+	// is the normal case of a list that is empty for some values, and is complete.
+	if end.Complete && k.total > 3 && l.recs == 0 {
+		notes = append(notes, "the answers to all "+strconv.Itoa(k.total-k.invalid)+" values of the parent were empty: check the rights or the path of the request")
 	}
 	if over > 0 {
 		notes = append(notes, strconv.Itoa(over)+" values of the parent were not read (a 404 with on_not_found skip, source.parent_value_invalid, or an answer with no natural key), so what they have was not seen")
@@ -118,10 +134,7 @@ func (k *kid) end(l *loop) ingest.Completeness {
 	if k.parentNote != "" {
 		notes = append(notes, "the parent was read as what was seen: "+k.parentNote)
 	}
-	if len(notes) == 0 {
-		return end
-	}
-	return ingest.Completeness{SeenOnly: true, Reason: strings.Join(notes, "; ")}
+	return notes
 }
 
 // readChild reads the datasets of a child: the parent to its end, then the units.
@@ -165,7 +178,21 @@ func (rn *run) readChild(ctx context.Context, ds ingest.Dataset, opts ingest.Pag
 		l.finish(ingest.Completeness{Reason: sc.reason})
 		return
 	}
+	if sc.partial && len(sc.vals) == 0 {
+		l.finish(ingest.Completeness{Reason: "the first " + strconv.Itoa(previewParentRequests) + " requests of the parent gave no value, so no request of the dataset was made"})
+		return
+	}
 	rn.readUnits(l, sc.vals, size, sep)
+}
+
+// checkEnded ends a check after the first response it reads. A value whose detail is one object with no natural key made no row, which
+// is a setting that is wrong (a check says so), not a read that went on.
+func (l *loop) checkEnded() {
+	if l.kid != nil && l.kid.unread > 0 {
+		l.fail(l.rn.fail(ingest.SrcRequestRejected, "the detail of the first value of the parent is one object with no natural key, so it makes no row: check the path of the request and natural_key", nil))
+		return
+	}
+	l.finish(ingest.Completeness{Reason: reasonFirstOnly})
 }
 
 // readUnits reads the units, one value or one batch after the other, and ends the read.
@@ -182,7 +209,7 @@ func (rn *run) readUnits(l *loop, vals []string, size int, sep string) {
 		}
 		k.unitEnded()
 		if rn.firstOnly {
-			l.finish(ingest.Completeness{Reason: reasonFirstOnly})
+			l.checkEnded()
 			return
 		}
 	}

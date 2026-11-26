@@ -29,11 +29,15 @@ func hxeManyIDs(n int) []string {
 // [REQ-912]
 // A detail that is not what the definition reads (an error that comes with a 200, an object with no key) is a value that was not read:
 // all of them is not complete, even when the definition passes over rows with no key, one of them is what was seen, and a parent with
-// no value, or a list that is empty for each value, is complete as an empty answer is.
+// no value is complete as an empty answer is. An answer that is a list with one error in it is a value that was not read as well
+// (seen, not complete), and so is a list that is empty for every value of more than three: no value had a record, which a path that is
+// wrong or an account that may not read looks like. A list that is empty for some of the values, or for three values, is complete.
 func TestHxeADetailThatHasNoKeyIsAValueThatWasNotRead(t *testing.T) {
 	ids := hxeManyIDs(50)
 	envelope := func(string) string { return `{"error":"forbidden","status":403}` }
 	empty := func(string) string { return `{}` }
+	dataDetail := `{"id":"ds_vm","parent":{"dataset":"ds_ids","values":{"id":"id"}},"request":{"path":"/vm/{parent.id}"},"records_path":"data",` +
+		`"natural_key":["id"],"columns":[{"name":"id"}]}`
 	for _, c := range []struct {
 		name   string
 		child  string
@@ -50,8 +54,22 @@ func TestHxeADetailThatHasNoKeyIsAValueThatWasNotRead(t *testing.T) {
 			}
 			return `{"id":"` + id + `"}`
 		}, "seen"},
+		{"a list with an error element", hxeRootDetail(""), ids, func(string) string { return `[{"error":"x"}]` }, "seen"},
+		{"an items list with an error element", hxeDetail("", ""), ids, func(string) string { return `{"items":[{"error":"x"}]}` }, "seen"},
+		{"the same with rows with no key passed over", hxeDetail("", `"ignore_rows_without_key":true,`), ids, func(string) string {
+			return `{"items":[{"error":"x"}]}`
+		}, "seen"},
 		{"a parent with no value", hxeRootDetail(""), nil, envelope, "complete"},
-		{"an empty list for each value", hxeDetail("", ""), ids, func(string) string { return `{"items":[]}` }, "complete"},
+		{"an empty list for each value", hxeDetail("", ""), ids, func(string) string { return `{"items":[]}` }, "seen"},
+		{"null for each value under data", dataDetail, ids, func(string) string { return `{"data":null}` }, "seen"},
+		{"an empty top-level list for each value", hxeRootDetail(""), ids, func(string) string { return `[]` }, "seen"},
+		{"three values, all empty", hxeDetail("", ""), hxeManyIDs(3), func(string) string { return `{"items":[]}` }, "complete"},
+		{"one value with a row, the rest empty", hxeRootDetail(""), ids, func(id string) string {
+			if id == "v07" {
+				return `[{"id":"` + id + `"}]`
+			}
+			return `[]`
+		}, "complete"},
 	} {
 		g := hxeNew(t, hxeDoc("", hxeIDs, c.child), func(_ int, r hsRequest) hxeReply {
 			if r.hsPath() == "/v1/vm" {
@@ -182,7 +200,7 @@ func TestHxeThe404OfTheRequestForATokenIsNotAValueThatIsGone(t *testing.T) {
 // The values of a batch that JSON writes longer (< > & are six bytes) are cut so that the body is not over its limit.
 func TestHxeABatchOfValuesThatJSONWritesLongerFitsTheBody(t *testing.T) {
 	var ids []string
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 40; i++ {
 		ids = append(ids, fmt.Sprintf("%02d%s", i, strings.Repeat("<", 30)))
 	}
 	g := hxeNew(t, hxeDoc("", hxeIDs, hxeBatch(`,"size":100`)), func(_ int, r hsRequest) hxeReply {
@@ -190,7 +208,7 @@ func TestHxeABatchOfValuesThatJSONWritesLongerFitsTheBody(t *testing.T) {
 			return hxeOK(hxeList(ids...))
 		}
 		return hxeOK(`{"items":[]}`)
-	}, func(c *Config) { c.Ceilings.BodyBytes = 1000 })
+	}, func(c *Config) { c.Ceilings.BodyBytes = 4000 })
 	pages, err := g.read("ds_vm")
 	if err != nil || len(pages) == 0 {
 		t.Fatalf("%v", err)
@@ -199,8 +217,225 @@ func TestHxeABatchOfValuesThatJSONWritesLongerFitsTheBody(t *testing.T) {
 		t.Errorf("%d requests: the batch was not cut", len(g.srv.seen))
 	}
 	for _, r := range g.srv.seen {
-		if len(r.hsBody) > 1000 {
+		if len(r.hsBody) > 4000 {
 			t.Errorf("a body of %d bytes", len(r.hsBody))
 		}
+	}
+}
+
+// [REQ-912]
+// A parent with more values than the ceiling of values is not read: the child is not read at all and the dataset is not complete.
+func TestHxeAParentWithMoreValuesThanTheCeilingIsNotRead(t *testing.T) {
+	g := hxeNew(t, hxeDoc("", hxeIDs, hxeDetail("", "")), hxeVM(hxeManyIDs(20)...), func(c *Config) { c.Ceilings.ParentValues = 5 })
+	pages, err := g.read("ds_vm")
+	if end := hxeEndOf(pages); err != nil || end.Complete || end.SeenOnly || !strings.Contains(end.Reason, "more distinct values than 5") || len(g.srv.seen) != 1 {
+		t.Errorf("%v, the end %+v, %d requests", err, end, len(g.srv.seen))
+	}
+}
+
+// [REQ-912]
+// Values passed over for a 404 are seen, not complete, up to five percent of the values of the parent; past five percent (and more than
+// three) they are not complete. Here 100 values, so 5 is the line that is still seen and 6 is not complete.
+func TestHxeTheFivePercentOfTheValuesIsTheLineBetweenSeenAndNotComplete(t *testing.T) {
+	ids := hxeManyIDs(100)
+	for _, c := range []struct {
+		gone int
+		want string
+	}{{5, "seen"}, {6, "incomplete"}} {
+		gone := map[string]bool{}
+		for _, id := range ids[:c.gone] {
+			gone[id] = true
+		}
+		g := hxeNew(t, hxeDoc("", hxeIDs, hxeDetail("", `"on_not_found":"skip",`)), func(_ int, r hsRequest) hxeReply {
+			if r.hsPath() == "/v1/vm" {
+				return hxeOK(hxeList(ids...))
+			}
+			id := strings.TrimPrefix(r.hsPath(), "/v1/vm/")
+			if gone[id] {
+				return hxeReply{status: 404, body: "no"}
+			}
+			return hxeOK(hxeDetailBody(id))
+		})
+		pages, err := g.read("ds_vm")
+		if err != nil {
+			t.Fatalf("%d gone: %v", c.gone, err)
+		}
+		end := hxeEnd(t, pages)
+		got := "incomplete"
+		switch {
+		case end.Complete:
+			got = "complete"
+		case end.SeenOnly:
+			got = "seen"
+		}
+		if got != c.want {
+			t.Errorf("%d of 100 gone: %s, the end %+v", c.gone, got, end)
+		}
+	}
+}
+
+// [REQ-914]
+// A preview and a check read the parent for twenty requests at most, whatever its pages give: the same two values in turn, one value on
+// every page, or no value at all. A check of a parent with no value says so.
+func TestHxeAPreviewAndACheckReadTheParentForTwentyRequestsAtMost(t *testing.T) {
+	endless := `"pagination":{"kind":"cursor","cursor_param":"c","cursor_in":"query","next_cursor_path":"next","max_pages":5000}`
+	parent := `{"id":"ds_ids","collect":false,"request":{"path":"/vm"},"records_path":"items",` + endless + `}`
+	for _, c := range []struct {
+		name string
+		body func(n int) string
+	}{
+		{"two values in turn", func(n int) string {
+			return fmt.Sprintf(`{"items":[{"id":"%s"}],"next":"c%d"}`, []string{"a", "b"}[n%2], n)
+		}},
+		{"one value on every page", func(n int) string { return fmt.Sprintf(`{"items":[{"id":"x"}],"next":"c%d"}`, n) }},
+		{"no value on any page", func(n int) string { return fmt.Sprintf(`{"items":[],"next":"c%d"}`, n) }},
+	} {
+		handle := func(n int, r hsRequest) hxeReply {
+			if r.hsPath() == "/v1/vm" {
+				return hxeOK(c.body(n))
+			}
+			return hxeOK(hxeDetailBody("v"))
+		}
+		g := hxeNew(t, hxeDoc("", parent, hxeDetail("", "")), handle)
+		if _, err := g.reader.Preview(context.Background(), "src_hosts", g.dataset("ds_vm"), ingest.PreviewOptions{MaxRows: 1000, MaxPages: 1000}); err != nil {
+			t.Fatalf("%s: a preview: %v", c.name, err)
+		}
+		if got := hxeParentRequests(g); got == 0 || got > previewParentRequests {
+			t.Errorf("%s: a preview sent %d requests of the parent", c.name, got)
+		}
+		g = hxeNew(t, hxeDoc("", parent, hxeDetail("", "")), handle)
+		res := g.reader.Check(context.Background(), "src_hosts", g.dataset("ds_vm"))
+		if got := hxeParentRequests(g); got == 0 || got > previewParentRequests {
+			t.Errorf("%s: a check sent %d requests of the parent", c.name, got)
+		}
+		if c.name == "no value on any page" && (res.Kind != ingest.CheckTransient || !strings.Contains(res.Message, "gave no value")) {
+			t.Errorf("%s: the check said %+v", c.name, res)
+		}
+	}
+}
+
+// hxeParentRequests is how many requests of the parent (the list at /v1/vm) the source saw.
+func hxeParentRequests(g *hxeRig) int {
+	n := 0
+	for _, r := range g.srv.seen {
+		if r.hsPath() == "/v1/vm" {
+			n++
+		}
+	}
+	return n
+}
+
+// [REQ-914]
+// A check whose first value is one object with no natural key says the setting is wrong, not that the first page was read.
+func TestHxeACheckOfADetailWithNoKeyTellsTheSettingIsWrong(t *testing.T) {
+	g := hxeNew(t, hxeDoc("", hxeIDs, hxeRootDetail("")), func(_ int, r hsRequest) hxeReply {
+		if r.hsPath() == "/v1/vm" {
+			return hxeOK(hxeList("a", "b"))
+		}
+		return hxeOK(`{"error":"x"}`)
+	})
+	res := g.reader.Check(context.Background(), "src_hosts", g.dataset("ds_vm"))
+	if res.Kind != ingest.CheckConfig || !strings.Contains(res.Message, "natural key") {
+		t.Errorf("%+v", res)
+	}
+}
+
+// [REQ-914]
+// A retry that the check's limit of one request stops says what the first answer was (here 503), not only the limit.
+func TestHxeACheckWhoseRetryIsStoppedSaysWhatTheFirstAnswerWas(t *testing.T) {
+	g := hxeNew(t, hxeDoc("", hxeIDs, hxeDetail("", "")), func(_ int, r hsRequest) hxeReply {
+		if r.hsPath() == "/v1/vm" {
+			return hxeOK(hxeList("a", "b"))
+		}
+		return hxeReply{status: 503, body: "busy"}
+	})
+	res := g.reader.Check(context.Background(), "src_hosts", g.dataset("ds_vm"))
+	if res.Kind != ingest.CheckTransient || !strings.Contains(res.Message, "503") {
+		t.Errorf("%+v", res)
+	}
+}
+
+// [REQ-914]
+// The request for a token is not one of the requests of the child that a preview may send: ten of the child are sent after it.
+func TestHxeTheRequestForATokenIsNotCountedAmongThePreviewsRequestsOfTheChild(t *testing.T) {
+	cursor := `"pagination":{"kind":"cursor","cursor_param":"c","cursor_in":"query","next_cursor_path":"next","max_pages":5000},`
+	doc := `{"version":1,"id":"src_inventory","adapter":"http","connection":{"base_url":"https://api.example.test/v1","auth":{"kind":"token_request","credential":{"secret_id":"sec_pw"},` +
+		`"request":{"path":"/login","format":"json","body":{"username":"{{credential.username}}","password":"{{credential.password}}"}},"token_path":"token"}},"datasets":[` +
+		hxeIDs + `,` + hxeDetail("", cursor) + `]}`
+	g := hsNew(t, doc, func(n int, r hsRequest) hsReply {
+		switch {
+		case r.hsPath() == "/v1/login":
+			return hsJSON(`{"token":"t"}`)
+		case r.hsPath() == "/v1/vm":
+			return hsJSON(hxeList("a"))
+		}
+		return hsJSON(fmt.Sprintf(`{"items":[],"next":"c%d"}`, n))
+	})
+	if _, err := g.hsReader.Preview(context.Background(), hsSource, g.hsDef.Datasets[1], ingest.PreviewOptions{MaxRows: 1000, MaxPages: 1000}); err != nil {
+		t.Fatalf("a preview: %v", err)
+	}
+	children := 0
+	for _, r := range g.hsSrv.hsSeen {
+		if strings.HasPrefix(r.hsPath(), "/v1/vm/") {
+			children++
+		}
+	}
+	if children != previewChildRequests {
+		t.Errorf("%d requests of the child, want %d", children, previewChildRequests)
+	}
+}
+
+// [REQ-912]
+// Four values that all answer with nothing are what was seen (more than three values with no record in any answer), and three of them
+// are complete: the line between the two is the fourth value.
+func TestHxeFourValuesThatAllAnswerNothingAreWhatWasSeenAndThreeAreComplete(t *testing.T) {
+	for _, c := range []struct {
+		n    int
+		want string
+	}{{4, "seen"}, {3, "complete"}} {
+		g := hxeNew(t, hxeDoc("", hxeIDs, hxeDetail("", "")), func(_ int, r hsRequest) hxeReply {
+			if r.hsPath() == "/v1/vm" {
+				return hxeOK(hxeList(hxeManyIDs(c.n)...))
+			}
+			return hxeOK(`{"items":[]}`)
+		})
+		pages, err := g.read("ds_vm")
+		if err != nil {
+			t.Fatalf("%d values: %v", c.n, err)
+		}
+		end := hxeEnd(t, pages)
+		got := "incomplete"
+		switch {
+		case end.Complete:
+			got = "complete"
+		case end.SeenOnly:
+			got = "seen"
+		}
+		if got != c.want {
+			t.Errorf("%d values all empty: %s, the end %+v", c.n, got, end)
+		}
+	}
+}
+
+// [REQ-914]
+// A request for a token is not counted against the requests a preview of a child may send: any number of them passes, and the requests of
+// the child stop at the limit of ten.
+func TestHxeATokenRequestIsNotCountedAgainstThePreviewOfAChild(t *testing.T) {
+	rn := &run{keep: true, unit: &unit{}}
+	for i := 0; i < 2*previewChildRequests; i++ {
+		if err := rn.chargeChild(plan{token: true}); err != nil {
+			t.Fatalf("token request %d was refused: %v", i+1, err)
+		}
+	}
+	if rn.sentOfChild != 0 {
+		t.Errorf("%d token requests were counted as requests of the child", rn.sentOfChild)
+	}
+	for i := 0; i < previewChildRequests; i++ {
+		if err := rn.chargeChild(plan{}); err != nil {
+			t.Fatalf("child request %d was refused: %v", i+1, err)
+		}
+	}
+	if err := rn.chargeChild(plan{}); err == nil {
+		t.Errorf("the request after the limit of the preview was not refused")
 	}
 }
