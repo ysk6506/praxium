@@ -91,17 +91,44 @@ export function describeChange(entry: LockEntry, unit: Unit): string {
   return notes.join("; ") || "body changed";
 }
 
-function adrProblem(root: string, adrName: string, key: string): string | undefined {
+/** What the lock needs of one amendment ADR, read once however many items it claims (ADR-0124). */
+interface AdrFacts {
+  /** The problem every claim of this ADR has (missing, not sealed), if any. */
+  readonly broken?: string;
+  /** `amends_tests` when it is a list. */
+  readonly amends?: readonly unknown[];
+  readonly reasonOk: boolean;
+}
+
+function adrFacts(root: string, adrName: string): AdrFacts {
   const file = path.join(root, ADR_DIR, adrName);
-  if (!existsSync(file)) return `ADR ${adrName} does not exist`;
+  if (!existsSync(file)) return { broken: `ADR ${adrName} does not exist`, reasonOk: false };
   const { data, body } = splitFrontMatter(readFileSync(file, "utf8"));
   if (data === null || data.decision_hash !== bodyFingerprint(body))
-    return `ADR ${adrName} is not sealed (or was edited after sealing)`;
-  if (!Array.isArray(data.amends_tests) || !data.amends_tests.includes(key))
-    return `ADR ${adrName} does not list it in amends_tests`;
-  if (String(data.test_change_reason ?? "").trim().length < 40)
-    return `ADR ${adrName} has no real test_change_reason (min 40 chars)`;
-  return undefined;
+    return {
+      broken: `ADR ${adrName} is not sealed (or was edited after sealing)`,
+      reasonOk: false,
+    };
+  return {
+    ...(Array.isArray(data.amends_tests) ? { amends: data.amends_tests as unknown[] } : {}),
+    reasonOk: String(data.test_change_reason ?? "").trim().length >= 40,
+  };
+}
+
+/** Reads each amendment ADR at most once; the answers are those of reading it for every claim. */
+function adrChecker(root: string): (adrName: string, key: string) => string | undefined {
+  const facts = new Map<string, AdrFacts>();
+  return (adrName, key) => {
+    let f = facts.get(adrName);
+    if (!f) {
+      f = adrFacts(root, adrName);
+      facts.set(adrName, f);
+    }
+    if (f.broken) return f.broken;
+    if (!f.amends?.includes(key)) return `ADR ${adrName} does not list it in amends_tests`;
+    if (!f.reasonOk) return `ADR ${adrName} has no real test_change_reason (min 40 chars)`;
+    return undefined;
+  };
 }
 
 export function lockViolations(
@@ -147,8 +174,9 @@ export function lockViolations(
     ),
     ...Object.entries(lock.removed),
   ];
+  const adrProblem = adrChecker(root);
   for (const [key, adr] of claims.sort()) {
-    const problem = adrProblem(root, adr, key);
+    const problem = adrProblem(adr, key);
     if (problem)
       out.push(
         violation(
