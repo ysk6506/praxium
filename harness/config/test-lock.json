@@ -33023,10 +33023,10 @@
   },
   "go:backend/internal/pgingest::TestRclALinkTheRegistryHasKeepsItsNumberAndANewOneGetsANumberNoLinkHas": {
    "kind": "test",
-   "hash": "38cb03e136b27b92",
+   "hash": "f61aed13cdc291e6",
    "asserts": 18,
    "literals": [
-    "0d02f3dbc2c62819"
+    "0207b79b58d9f581"
    ],
    "precision": [],
    "skips": 0,
@@ -33038,10 +33038,10 @@
   },
   "go:backend/internal/pgingest::TestRclALinkToAnObjectThatIsALeftAsItIsOrACandidateForRetirementIsMade": {
    "kind": "test",
-   "hash": "b3d8bcb317b50c79",
+   "hash": "dc9f84a24e241b91",
    "asserts": 23,
    "literals": [
-    "87ec05400132b505"
+    "c538525e7fce6414"
    ],
    "precision": [],
    "skips": 0,
@@ -33053,10 +33053,10 @@
   },
   "go:backend/internal/pgingest::TestRclALinkToAnObjectThatWasRolledBackIsNoLinkAndALinkFromOneIsNoLinkAndNoProblem": {
    "kind": "test",
-   "hash": "11cc304ca26247a2",
+   "hash": "37a8de9457409404",
    "asserts": 14,
    "literals": [
-    "553ab32f9e9bb6cc"
+    "7f2bd855dc11d0ba"
    ],
    "precision": [],
    "skips": 0,
@@ -33069,10 +33069,10 @@
   },
   "go:backend/internal/pgingest::TestRclAPageIsDoneOnceAndAServerThatLostTheLeaseIsRefusedEvenToReadAndTheCallsInTheWrongOrderAreRefused": {
    "kind": "test",
-   "hash": "54b1a536606dd86a",
+   "hash": "e0b1c01b9b8294f3",
    "asserts": 25,
    "literals": [
-    "750adfb3b56286f2"
+    "d18cbe3a8f08aa11"
    ],
    "precision": [],
    "skips": 0,
@@ -33084,10 +33084,10 @@
   },
   "go:backend/internal/pgingest::TestRclARecordThatTheRunOnlyReadsAgainBecauseItsEndMovedIsResolvedByTheEndsItsReferencesSay": {
    "kind": "test",
-   "hash": "721eb22e00515134",
+   "hash": "0a1bb815c4a85ef3",
    "asserts": 14,
    "literals": [
-    "d15fbf6d317cb484"
+    "8834fe43b5ba06ec"
    ],
    "precision": [],
    "skips": 0,
@@ -33099,10 +33099,10 @@
   },
   "go:backend/internal/pgingest::TestRclARunTakenOverInThePhasesStagesWhatOneThatDidNotStopStagesAndAnEndInTheRunAlreadyIsKept": {
    "kind": "test",
-   "hash": "3057bb052e3ee1e1",
+   "hash": "3c20b3dde666f837",
    "asserts": 17,
    "literals": [
-    "7ecf5fa56c601f51"
+    "3b55594cbe4f6081"
    ],
    "precision": [],
    "skips": 0,
@@ -33115,10 +33115,10 @@
   },
   "go:backend/internal/pgingest::TestRclTheLinkOfADuplicateIsMadeByTheRecordThatComesLastACellThatGaveNoValueIsSaidAndAHeldRecordOrABlankKeyIsNoProblem": {
    "kind": "test",
-   "hash": "6f904c7e5ff2ba67",
+   "hash": "90743d86b348d0b9",
    "asserts": 14,
    "literals": [
-    "b0a3438f308d348b"
+    "ddac512d8bcab81c"
    ],
    "precision": [],
    "skips": 0,
@@ -33132,10 +33132,10 @@
   },
   "go:backend/internal/pgingest::TestRclThePageSizeAndTheOrderOfTheRowsDoNotChangeWhatIsStagedAndTheReportCountsTheRowsThatWereWritten": {
    "kind": "test",
-   "hash": "905e648535322480",
+   "hash": "a21a0aaa01e6970e",
    "asserts": 8,
    "literals": [
-    "725530add9f2dd5c"
+    "02d3471b4c17cbf8"
    ],
    "precision": [],
    "skips": 0,
@@ -33148,10 +33148,10 @@
   },
   "go:backend/internal/pgingest::TestRclTheSameLinkMadeByTheRecordsOfTwoSourcesIsMadeByTheLaterSourceAndTheOtherIsUnresolvedAndTold": {
    "kind": "test",
-   "hash": "531649e63c6788a8",
+   "hash": "4cf7e782d95be7a5",
    "asserts": 17,
    "literals": [
-    "a0cc934de1b87f19"
+    "546da8d90ac330a4"
    ],
    "precision": [],
    "skips": 0,
@@ -33164,10 +33164,10 @@
   },
   "go:backend/internal/pgingest::TestRclTheStagedLinksAreTheOnesTheOldPipelineMakesFromTheSameCaptures": {
    "kind": "test",
-   "hash": "0ffbe2e3518b109d",
+   "hash": "40fff6cfbf30759e",
    "asserts": 21,
    "literals": [
-    "cf23468b811c8751"
+    "6285e4d118bc821f"
    ],
    "precision": [],
    "skips": 0,
@@ -33179,10 +33179,10 @@
   },
   "go:backend/internal/pgingest::TestRclWhatManyEndsOfOneKeyShareIsReadOnceSoTheRowsReadGoWithTheNumberOfEnds": {
    "kind": "test",
-   "hash": "855b23bfa389c33d",
+   "hash": "79c9c4f16c2f0df2",
    "asserts": 7,
    "literals": [
-    "469d0eb4fd439e8d"
+    "bd718a87317aa8b6"
    ],
    "precision": [],
    "skips": 0,
