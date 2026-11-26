@@ -25,7 +25,7 @@ func dfiParitySteps() []pgiTexts {
 // dfiMappingRetire is the mapping of the first source whose feeds retire the objects they make once nothing shows them.
 var dfiMappingRetire = strings.ReplaceAll(rclMappingA, `"creates_objects":true`, `"creates_objects":true,"retires_objects":true`)
 
-// [REQ-970]
+// [REQ-961] [REQ-970]
 func TestDfiTheKGTheStagedApplyWritesIsTheOneTheOldPipelineMakesFromTheSameCaptures(t *testing.T) {
 	o := rcpOldNew(t, rclSourceA, dfiMappingRetire)
 	s := rdfNew(t, pgiPlan(t, rclSourceA, dfiMappingRetire))
@@ -50,7 +50,6 @@ func TestDfiTheKGTheStagedApplyWritesIsTheOneTheOldPipelineMakesFromTheSameCaptu
 			t.Errorf("step %d: the state hash of the new flow is %+v over %d rows and the old pipeline's %+v over %d", n, got.Sum, got.Rows, old.Hash.Sum, old.Hash.Rows)
 			t.Log(dfiKGText(s, t))
 		}
-		t.Logf("step %d: %+v", n, counts)
 	}
 	if retired < 2 {
 		t.Errorf("the steps retired %d objects", retired)

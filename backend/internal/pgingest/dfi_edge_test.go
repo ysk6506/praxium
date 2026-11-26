@@ -107,6 +107,9 @@ func TestDfiARunThatChangesNothingHasNoRowNoChunkTheFingerprintOfNothingAndAnEmp
 	if p := dfiApply(f.s, t, dfiApplierOf(f.s, t), f.l); p.State != graph.StagedEmpty {
 		t.Errorf("the apply of nothing is %+v", p)
 	}
+	if print := f.s.e.text(t, `SELECT encode(change_fingerprint, 'hex') FROM sync_run WHERE run_no = $1`, f.l.No); print != strings.Repeat("0", 64) {
+		t.Errorf("the record of the run keeps the fingerprint %q", print)
+	}
 	place, err := f.s.e.st.DiffPlace(f.s.e.ctx, f.l)
 	if err != nil || !place.Done() || place.Phase != ingest.DiffPhaseDone {
 		t.Errorf("%+v %v", place, err)

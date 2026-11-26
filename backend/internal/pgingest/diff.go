@@ -180,16 +180,22 @@ func (s *Store) BeginDiff(ctx context.Context, lease ingest.RunLease, start inge
 	})
 }
 
-// writeDiff writes the place to the run, moves the number of the units on and lets the lease run on. The attempt is the condition.
+// writeDiff writes the place to the run, moves the number of the units on and lets the lease run on; the unit that finishes the step
+// writes the fingerprint of the change to the run (change_fingerprint). The attempt is the condition.
 func writeDiff(ctx context.Context, tx *sql.Tx, l ingest.RunLease, st *diffState, begin bool) error {
 	text, _ := json.Marshal(map[string]any{"diff": st}) // a place of numbers and words cannot fail to be written as text
 	set := pgschema.ColCalcPart + " = " + pgschema.ColCalcPart + " + 1"
 	if begin {
 		set = pgschema.ColCalcJob + " = " + strconv.Itoa(int(pgschema.CalcJobDiff)) + ", " + pgschema.ColCalcPart + " = 0"
 	}
+	args := []any{l.No, l.Attempt, string(text), l.Term.Seconds()}
+	if st.Finished {
+		set += ", " + pgschema.ColFingerpr + " = decode($5, 'hex')"
+		args = append(args, st.Chain)
+	}
 	res, err := tx.ExecContext(ctx, "UPDATE "+pgschema.TableSyncRun+" SET "+set+", "+pgschema.ColCounts+" = "+pgschema.ColCounts+" || $3::jsonb, "+
 		pgschema.ColLeaseUntil+" = "+lease("$4")+", "+pgschema.ColUpdatedAt+" = now() WHERE "+guard()+" AND "+pgschema.ColStage+" = '"+
-		string(ingest.RunComputing)+"'", l.No, l.Attempt, string(text), l.Term.Seconds())
+		string(ingest.RunComputing)+"'", args...)
 	if err != nil {
 		return dbErr(err, "write the place of the difference")
 	}
