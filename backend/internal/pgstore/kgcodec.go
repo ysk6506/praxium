@@ -1,8 +1,6 @@
 package pgstore
 
 import (
-	"sort"
-
 	"github.com/ysk6506/praxium/backend/internal/graph"
 	"github.com/ysk6506/praxium/backend/internal/kernel"
 	"github.com/ysk6506/praxium/backend/internal/model"
@@ -35,31 +33,8 @@ func gradeOf(n int16) (model.Grade, error) {
 	return list[n], nil
 }
 
-// keyDoc is the stored form of the key an object was first seen with (first_key of the registry).
-type keyDoc struct {
-	Kind    string   `json:"k"`
-	Ref     string   `json:"r"`
-	Value   string   `json:"v,omitempty"`
-	Objects []string `json:"o,omitempty"`
-}
-
-// keyJSON is first_key of a new object; no key is null.
-func keyJSON(key []graph.KeyPart) (any, error) {
-	if len(key) == 0 {
-		return nil, nil
-	}
-	docs := make([]keyDoc, 0, len(key))
-	for _, p := range key {
-		d := keyDoc{Kind: string(p.Kind), Ref: p.Ref, Value: p.Value}
-		for _, o := range p.Objects {
-			d.Objects = append(d.Objects, o.String())
-		}
-		sort.Strings(d.Objects)
-		docs = append(docs, d)
-	}
-	raw, err := marshal(docs)
-	return string(raw), err
-}
+// keyJSON is first_key of a new object; no key is null (graph.EncodeKey, one meaning for both paths).
+func keyJSON(key []graph.KeyPart) (any, error) { return graph.EncodeKey(key) }
 
 // keySignature is what the identification index (object_key) keeps of a key: the context object that the key
 // hangs from (its first component, when it is a context; the object is found by ref and its number is ctx_no,
