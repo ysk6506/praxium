@@ -32500,6 +32500,21 @@
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
   },
+  "go:backend/internal/pgingest::TestPgiAKGBeingDeletedRefusesTheIngestionFromTheFirstStepOfTheDeleteUntilItEnds": {
+   "kind": "test",
+   "hash": "d33bb4cf944c41a9",
+   "asserts": 26,
+   "literals": [
+    "cea35c8d6886aaee"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
   "go:backend/internal/pgingest::TestPgiAPageOfTenThousandRowsGoesInWithOneCopyOfEachTable": {
    "kind": "test",
    "hash": "21eceedb5cdffcdd",
@@ -35971,10 +35986,10 @@
   },
   "go:backend/internal/pgstore::TestIngestMakingAndDroppingAKGOfTheStandardModelFitsInTheDefaultLockTable": {
    "kind": "test",
-   "hash": "d5010018bf837278",
-   "asserts": 18,
+   "hash": "fa6c12efa0603689",
+   "asserts": 19,
    "literals": [
-    "fd568cd39a7f6cc9"
+    "230b850ee7a99815"
    ],
    "precision": [],
    "skips": 0,
@@ -35982,7 +35997,7 @@
     "REQ-683"
    ],
    "added": "2026-11-26",
-   "amended_by": "0120-test-databases-copied-from-templates.md"
+   "amended_by": "0125-delete-a-kg-in-steps-compute-tables-first.md"
   },
   "go:backend/internal/pgstore::TestIngestPuttingASourceToAKGDoesNotWaitForAnotherSourceThatIsBeingReceived": {
    "kind": "test",
@@ -36058,6 +36073,82 @@
    ],
    "added": "2026-11-26",
    "amended_by": "0120-test-databases-copied-from-templates.md"
+  },
+  "go:backend/internal/pgstore::TestKgdADeleteThatStopsInItsFirstTransactionLeavesTheKGOpenAndTheDropOfTheSchemaAloneGoesByTheSameSteps": {
+   "kind": "test",
+   "hash": "8c6e0daac870b959",
+   "asserts": 18,
+   "literals": [
+    "d7ec198b52cfa81e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgdADeleteThatStopsInTheMiddleKeepsTheKGClosedAndEndsWhenCalledAgainOrWhenAServerStarts": {
+   "kind": "test",
+   "hash": "2e791c83bcc6b6f6",
+   "asserts": 21,
+   "literals": [
+    "3253369dc793e6fb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgdANewKGWithTheNameOrTheIDOfOneBeingDeletedEndsThatDeleteFirst": {
+   "kind": "test",
+   "hash": "65e8607a7a25d72b",
+   "asserts": 17,
+   "literals": [
+    "c71e383539b2a5fb"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgdATableOfTheComputationThatARunIsWritingIsDroppedOnlyAfterTheTransactionOfTheRunEnds": {
+   "kind": "test",
+   "hash": "74762fc6af30a2d3",
+   "asserts": 14,
+   "literals": [
+    "1e84b74c3c19afb1"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
+  },
+  "go:backend/internal/pgstore::TestKgdTheQuerySchemaAndItsRolesGoInATransactionOfTheirOwnBeforeTheLastOne": {
+   "kind": "test",
+   "hash": "60ac384556ae43b8",
+   "asserts": 11,
+   "literals": [
+    "a3c91588999a2d5e"
+   ],
+   "precision": [],
+   "skips": 0,
+   "reqs": [
+    "REQ-683",
+    "REQ-684"
+   ],
+   "added": "2026-11-26",
+   "amended_by": null
   },
   "go:backend/internal/pgstore::TestLeasesRefuseBadInputAndStaleHolders": {
    "kind": "test",
