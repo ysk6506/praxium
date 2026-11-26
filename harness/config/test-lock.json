@@ -20750,7 +20750,7 @@
     "REQ-913"
    ],
    "added": "2026-11-26",
-   "amended_by": "0111-http-source-child-datasets-values-of-a-parent-in-the-request.md"
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestHxeACheckAndAPreviewReadTheFirstValuesOnly": {
    "kind": "test",
@@ -20855,7 +20855,7 @@
     "REQ-912"
    ],
    "added": "2026-11-26",
-   "amended_by": "0111-http-source-child-datasets-values-of-a-parent-in-the-request.md"
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestHxeADetailThatIsAnObjectIsOneRecord": {
    "kind": "test",
@@ -21459,7 +21459,7 @@
   },
   "go:backend/internal/httpsource::TestTheRequestIsMadeInOnePlaceWithTheTwoMethodsAndNoOtherNetworkCodeIsImported": {
    "kind": "test",
-   "hash": "9a1abcf9d974903a",
+   "hash": "33bbfa86968b1e51",
    "asserts": 6,
    "literals": [
     "7581e76caf5a77de"
@@ -21470,7 +21470,7 @@
     "REQ-662"
    ],
    "added": "2026-11-26",
-   "amended_by": "0111-http-source-child-datasets-values-of-a-parent-in-the-request.md"
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestTheRequestsAreSpacedByTheRateOfTheConnection": {
    "kind": "test",
@@ -21564,7 +21564,7 @@
   },
   "go:backend/internal/httpsource::TestTheValuesOfASecretAreTakenOutInOneFileAndNothingIsLoggedOrPrinted": {
    "kind": "test",
-   "hash": "ea3ef54d2341af55",
+   "hash": "8f6244ae39e3b9ee",
    "asserts": 4,
    "literals": [
     "cf4702b30fb0bea7"
@@ -21575,7 +21575,7 @@
     "REQ-665"
    ],
    "added": "2026-11-26",
-   "amended_by": "0111-http-source-child-datasets-values-of-a-parent-in-the-request.md"
+   "amended_by": "0117-http-source-child-completeness-and-limits-after-review.md"
   },
   "go:backend/internal/httpsource::TestTheWordsForWhatIsNotASourceErrorAreFixed": {
    "kind": "test",
