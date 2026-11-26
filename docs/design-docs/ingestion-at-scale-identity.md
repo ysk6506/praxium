@@ -74,6 +74,7 @@ follows:
 - **이어 가기와 "커밋됐는지 모름".** 머리 행이 답해요. 실행 기록이 `applying`인데 머리가 닫혀 있고 마지막 적용 id가 이 실행의 적용 id면 적용은 끝난 것이에요. 머리가 열려 있고 적용 id가 이 실행의 것이면 다음 청크 번호부터 이어 가요. 적용 id는 실행 번호에서 만들어요.
 - 폐기되는 객체의 링크는 **함께 폐기해요**(다른 것이 만든 링크도. 지금의 뜻이에요). 격리로 다루지 않아요.
 - **①②③은 구현했어요**([ADR-0123](adr/0123-isolation-of-the-fifth-step-identifiers-ends-and-cardinality.md)). ①은 3단계의 주장 라운드가 보지 못한 것(다시 읽기만 하는 레코드의 유지된 주장, 주장 참조 없이 KG가 가진 식별자, 범위)만 잡고 2.4의 규칙을 그대로 써요. ③의 `:1` 끝은 결합마다 세고, KG에 있고 이번에도 남는 링크가 그 끝을 지키며(없으면 링크 id가 작은 것), 링크 id 순서로 한 번 지나요. 격리한 줄은 준비 테이블에서 빼고 `calc_isolated`에 남겨요.
+- **④ 남은 것(차이)도 구현했어요**([ADR-0127](adr/0127-difference-of-the-fifth-step-order-chunks-counts-and-fingerprint.md)). 이번 실행이 다시 만들지 않은 KG 링크는 ③이 남는다고 보는 조건(`isoKGLinkStays`, 한 곳)의 반대일 때 닫아서, 차수 검사와 차이가 한 링크를 두고 어긋나지 않아요. 퇴역하는 객체의 링크는 누가 만들었든 함께 닫고, 그 객체의 식별자는 닫지 않아요(옛 흐름과 같아요).
 - **정리는 멱등이에요.** 구간마다 준비 테이블의 값으로 덮어쓰므로 같은 값을 다시 써도 같아요. 이어받은 서버가 같은 일을 다시 불러도 돼요.
 - 상태 전체를 적용과 한 트랜잭션에 쓰지 않아요. 수천만 행의 한 트랜잭션은 청소를 막고 WAL을 한 번에 쏟기 때문이에요([ADR-0080](adr/0080-redesign-storage-and-queries-on-one-postgresql.md)이 한 번의 긴 트랜잭션을 기각한 것과 같은 이유예요).
 
@@ -129,7 +130,7 @@ follows:
 | I-3 | 테이블(스키마 관리기의 계획). 구현했어요([ADR-0095](adr/0095-ingestion-tables-in-the-schema-plan.md)) |
 | I-6 (I-4와 I-5와 나란히) | `StagedApplier`와 변동 값의 단계와 정답을 바로 싣는 적재기(합성 세계의 정답을 `stage_object`와 `stage_link`로). **저장의 3천만 측정이 여기서 먼저 서요** |
 | I-4 | 수신, 원본의 차이, 식별(문맥 키) |
-| I-5 | 영향 집합, 다시 계산, 차이, 격리. 영향 집합의 확장과 퇴역 후보는 구현했어요([ADR-0114](adr/0114-expansion-of-the-affected-set-and-retire-candidates.md), 검토 뒤의 고침 [ADR-0118](adr/0118-expansion-follow-up-support-mark-and-units-after-review.md)), 객체 다시 계산도 구현했어요([ADR-0115](adr/0115-recompute-objects-step-of-the-new-ingestion-flow.md)) |
+| I-5 | 영향 집합, 다시 계산, 차이, 격리. 영향 집합의 확장과 퇴역 후보는 구현했어요([ADR-0114](adr/0114-expansion-of-the-affected-set-and-retire-candidates.md), 검토 뒤의 고침 [ADR-0118](adr/0118-expansion-follow-up-support-mark-and-units-after-review.md)), 객체 다시 계산도 구현했어요([ADR-0115](adr/0115-recompute-objects-step-of-the-new-ingestion-flow.md)). 링크 다시 계산([ADR-0122](adr/0122-recompute-links-step-of-the-new-ingestion-flow.md)), 격리([ADR-0123](adr/0123-isolation-of-the-fifth-step-identifiers-ends-and-cardinality.md)), 차이([ADR-0127](adr/0127-difference-of-the-fifth-step-order-chunks-counts-and-fingerprint.md))도 구현했어요. I1과 I2의 테스트는 `adapter.pgingest`에 있어요(`StagedApplier`로 적용까지) |
 | I-7 | 실행의 상태 기계, 정리, 실행 기록, "정리를 버림", 잠정 규칙, `ingestpgcheck`의 테스트 |
 | I-8 | 수집 서비스와 REST, 안전장치와 확인 뒤 적용 |
 | I-9 | 여러 소스의 순위 규칙, 수집 경로의 3천만 측정(문맥 키가 있어야 뜻이 있어요. 첫 키가 문맥 키인 타입이 88개예요) |

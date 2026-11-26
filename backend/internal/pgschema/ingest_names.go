@@ -69,6 +69,11 @@ const (
 	// TableCalcSeat has a row for each place a binding holds to one link (the side, the object at that end, the binding) that a link of the
 	// run took in the check of the cardinality (generator version 13, ADR-0123): its key is the place, so a place has one link.
 	TableCalcSeat = "calc_seat"
+	// TableCalcDiffRow has a row for each row of the difference before it is numbered, in the order it is numbered in, and TableCalcDiffPlan a
+	// row for each kind and type of the difference: how many rows, and where their order and their chunks begin (generator version 14,
+	// ADR-0127).
+	TableCalcDiffRow  = "calc_diffrow"
+	TableCalcDiffPlan = "calc_diffplan"
 	// TableCalcOwner holds the number of the run that the tables of the computation are of (one row, written when the computation
 	// begins, emptied with the others): the tables are one set per KG, so a run that comes back to the KG after another source
 	// began its computation finds that they are not its own (ADR-0102).
@@ -177,6 +182,7 @@ const (
 	ColPhase       = "phase"
 	ColEndNo       = "end_no"
 	ColBindID      = "bind_id"
+	ColTie         = "tie"
 )
 
 // The codes of the small enumerations the ingestion tables keep as numbers, where a table has many rows.
@@ -270,6 +276,10 @@ const (
 	IsolatedEndMissing  int16 = 3
 	IsolatedEndRetires  int16 = 4
 	IsolatedCardinality int16 = 5
+
+	// CalcJobDiff is the job that makes the difference of what the run staged with what the KG has (step 5, ADR-0127): the rows, their
+	// order and chunks, the counts by kind, type and change, and the fingerprint of the change. Its place is in the counts.
+	CalcJobDiff int16 = 6
 
 	// The kinds of a row of ingest_diff, in the order the apply writes them: the objects (the registry, the type
 	// tables, the history, the retirement), the identification keys, the links, the identifiers.
@@ -391,7 +401,7 @@ func ComputeTables() []string {
 	return []string{
 		TableCalcRecord, TableCalcWait, TableCalcOwner, TableCalcKey, TableCalcEnd, TableCalcClaim, TableCalcBind, TableCalcNewKey,
 		TableCalcDropped, TableCalcObject, TableCalcSlot, TableCalcLabel, TableCalcKLabel, TableCalcAsk, TableCalcNewObj, TableCalcXKey, TableStageObject, TableStageLink, TableStageVolat, TableStageIdent,
-		TableCalcProblem, TableCalcRef, TableCalcLeft, TableCalcToKey, TableCalcLinkWin, TableCalcLinkLost, TableCalcIsolated, TableCalcSeat, TableIngestDiff,
+		TableCalcProblem, TableCalcRef, TableCalcLeft, TableCalcToKey, TableCalcLinkWin, TableCalcLinkLost, TableCalcIsolated, TableCalcSeat, TableCalcDiffRow, TableCalcDiffPlan, TableIngestDiff,
 	}
 }
 
