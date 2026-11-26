@@ -31,6 +31,11 @@ type scan struct {
 // its flags), so 2*16 for the headers and 64 for the entry.
 const parentValueOverhead = 96
 
+// previewParentRequests is how many requests of the parent a preview or a check sends at most (ADR-0111). Their values are the first
+// ones the parent gives, so a parent whose pages keep giving the same value or none (an endless one) is not read to its end, up to
+// the limit of the dataset's requests: the values read by then are what the preview or the check uses.
+const previewParentRequests = 20
+
 var intText = regexp.MustCompile(`^-?[0-9]+$`)
 
 // pickTyped reads a value of a record of the parent: a text that is not empty, or an integer (digits, with a sign). Anything else
@@ -158,6 +163,10 @@ func (rn *run) walkParent(ctx context.Context, parent ingest.Dataset, sc *scan, 
 	for {
 		if st.requests >= rn.maxPages {
 			sc.reason = "the parent has more than " + strconv.Itoa(rn.maxPages) + " pages (max_pages), so its values were not all read and no request of the dataset was made"
+			return nil
+		}
+		if (rn.keep || rn.firstOnly) && st.requests >= previewParentRequests {
+			sc.partial = true // the values read so far are what the preview or the check uses
 			return nil
 		}
 		if err := ctx.Err(); err != nil {
